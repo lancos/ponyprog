@@ -175,14 +175,14 @@ int PicBus::WaitReadyAfterWrite(long timeout)
 int PicBus::Reset(void)
 {
 	SetDelay();
-
+/**/
 	SetMCLR();
 	WaitMsec(150);	//Time to charge the cap with last jdm84 interface
-
+/**/
 	ClearMCLR();
-//	setDI();
-//	setCLK();
-	WaitMsec(10);
+	setDI();
+	setCLK();
+	WaitMsec(100);
 
 	clearCLK();
 	clearDI();
