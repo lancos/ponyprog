@@ -176,6 +176,9 @@ int PicBus::Reset(void)
 {
 	SetDelay();
 
+	SetMCLR();
+	WaitMsec(150);	//Time to charge the cap with last jdm84 interface
+
 	ClearMCLR();
 //	setDI();
 //	setCLK();
@@ -183,10 +186,10 @@ int PicBus::Reset(void)
 
 	clearCLK();
 	clearDI();
-	WaitMsec(5);
+	WaitMsec(15);
 
 	SetMCLR();
-	WaitMsec(50);
+	WaitMsec(5);
 /**
 	int k;
 	UWORD val = 0;
