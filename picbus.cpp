@@ -186,7 +186,7 @@ int PicBus::Reset(void)
 	WaitMsec(5);
 
 	SetMCLR();
-	WaitUsec(50);
+	WaitMsec(50);
 /**
 	int k;
 	UWORD val = 0;
