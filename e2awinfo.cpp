@@ -415,14 +415,28 @@ int e2AppWinInfo::Load(int split_bank)
 
 		//spostato qui il 10/04/99
 		if ( rval > 0 && GetEEPPriType() == PIC16XX )
-		{	//Altro barbatrucco, questa volta per i PIC.
+		{
+			//Altro barbatrucco, questa volta per i PIC.
 			//L'assemblatore colloca la eeprom e la configuration
 			//ad indirizzi alti, mentre noi li collochiamo subito
 			//dopo la flash. Qui facciamo la rilocazione.
-			memcpy(GetBufPtr()+GetSplittedInfo(), GetBufPtr() + (0x2000 * 2), 16);
-			memcpy(GetBufPtr()+GetSplittedInfo()+16, GetBufPtr() + (0x2100 * 2), GetSize() - (GetSplittedInfo() + 16) );
 
-			SetFuseBits( ~*(GetBufPtr()+GetSplittedInfo()+14) );
+			if (GetSplittedInfo() > 0 && GetSize() > GetSplittedInfo()+16)
+			{
+				//Copy Config memory
+				memcpy(GetBufPtr()+GetSplittedInfo(), GetBufPtr() + (0x2000 * 2), 16);
+
+				//Now copy data memory (copy only low byte every word)
+				int k;
+				BYTE *dst = GetBufPtr() + GetSplittedInfo() + 16;
+				WORD *src = (WORD *)GetBufPtr() + 0x2100;
+				for (k = 0; k < GetSize() - (GetSplittedInfo() + 16); k++)
+					*dst++ = (BYTE)(*src++ & 0xff);
+				//memcpy(GetBufPtr()+GetSplittedInfo()+16, GetBufPtr() + (0x2100 * 2), GetSize() - (GetSplittedInfo() + 16) );
+
+				//Set fuse bits so the dialog shows the correct values
+				SetFuseBits( ~*(GetBufPtr()+GetSplittedInfo()+14) );
+			}
 		}
 	}
 
