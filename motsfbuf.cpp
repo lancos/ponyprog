@@ -270,7 +270,9 @@ int MotorolaSFileBuf::Load(int bank)
 		}
 	}
 
-	int img_size = highestPC + 1 - GetBufPtr();
+	int img_size = 1;		//0 means 'bad format'. If the file is correct but withoud data (only header and end record) we return success
+	if (highestPC)
+		img_size = highestPC + 1 - GetBufPtr();
 	fclose(fh);
 
 //In questi formati di file "stupidi" la dimensione
