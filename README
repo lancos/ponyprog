@@ -1,5 +1,5 @@
 ------------------------------------------------
-PonyProg - Serial Device Programmer  v1.16h Beta
+PonyProg - Serial Device Programmer  v1.17a Beta
 
 PonyProg comes with a user friendly GUI framework available for Windows95, 98 & NT
 and Intel Linux. Its purpose is reading and writing every serial device.
@@ -62,6 +62,11 @@ TODO (PonyProg is still under development)
 =======
 History
 =======
+
+v 1.17a
+-------
+Added the erase command (not implemented with all devices).
+Added the lock bits for the AT89Sxx device.
 
 v 1.16h
 -------
