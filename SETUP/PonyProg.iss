@@ -18,7 +18,7 @@ Source: "PONYPROG.SYS"; DestDir: "{app}"
 Source: "PONYPROG.EXE"; DestDir: "{app}"
 Source: "PONYPROG.INI"; DestDir: "{app}"
 Source: "PONYPROG.HTML"; DestDir: "{app}"
-Source: "LOADDRV.EXE"; DestDir: "{app}"
+Source: "LOADDRIVER.EXE"; DestDir: "{app}"
 Source: "LANCOS.JPG"; DestDir: "{app}"
 Source: "PROG-EDIT.JPG"; DestDir: "{app}"
 Source: "PROG-NOTE.JPG"; DestDir: "{app}"
@@ -33,10 +33,10 @@ Type: files; Name: "{app}\BOGOMIPS.OUT"
 Name: "{group}\PonyProg"; Filename: "{app}\PONYPROG.EXE"
 
 [Run] 
-Filename: "{app}\LOADDRV.EXE"; Parameters: "install name={app}\PONYPROG.SYS"
+Filename: "{app}\LOADDRIVER.EXE"; Parameters: "install name={app}\PONYPROG.SYS"
 
 [UninstallRun] 
-Filename: "{app}\LOADDRV.EXE"; Parameters: "remove name={app}\PONYPROG.SYS"
+Filename: "{app}\LOADDRIVER.EXE"; Parameters: "remove name={app}\PONYPROG.SYS"
 
 [Registry]
 Root: HKCR; Subkey: ".e2p"; ValueType: string; ValueName: ""; ValueData: "PonyProgFile"; Flags: uninsdeletevalue
