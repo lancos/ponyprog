@@ -524,9 +524,16 @@ void PortInterface::DetectPorts()
 
 	// Detect the printer ports available
 	if (RunningWinNT)
-		DetectPortsNT(); // WinNT version
+	{
+		LPTCount = 3;      // No printer ports counted
+		COMCount = 4;		// No serial ports counted
+
+		//	DetectPortsNT(); // WinNT version
+	}
 	else
+	{
 		DetectPorts9x(); // Win9x version
+	}
 }
 
 
