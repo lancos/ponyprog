@@ -1,0 +1,535 @@
+<html>
+<! Author :    Claudio Lanconelli ->
+
+<head>
+<title>PonyProgr Documentation</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<hr>
+<font size="-1">
+
+<p align="center"></font><strong><font size="5">PonyProg<br>
+</font><font size="2">by<br>
+</font></strong><img src="lancos.jpg" alt="LancOS - Lanconelli Open Systems" WIDTH="460"
+HEIGHT="100"></p>
+
+<p align="center"><a href="http://www.cs.unibo.it/~lanconel">http://www.cs.unibo.it/~lanconel</a><br>
+mirrored at <a href="http://utenti.tripod.it/LancOS">http://utenti.tripod.it/LancOS</a></p>
+
+<p align="center"><small><small>Last update 16 Aug 1999</small></small></p>
+
+<hr>
+
+<h1>Contents</h1>
+
+<table width="285">
+  <tr>
+    <td colspan="3" width="281">1<tt> </tt><a href="ponyprog.html#s1"><b>Intalling</b></a></td>
+  </tr>
+  <tr>
+    <td colspan="3" width="281">2<tt> </tt><a href="ponyprog.html#s2"><b>Menu Commands</b></a></td>
+  </tr>
+  <tr>
+    <td width="26"></td>
+    <td colspan="2" width="251">2.1<tt> </tt><a href="ponyprog.html#s2.1">File</a></td>
+  </tr>
+  <tr>
+    <td width="26"></td>
+    <td width="25"></td>
+    <td width="222">2.1.1<tt> </tt><a href="ponyprog.html#s2.1.1">New</a></td>
+  </tr>
+  <tr>
+    <td width="26"></td>
+    <td width="25"></td>
+    <td width="222">2.1.2<tt> </tt><a href="ponyprog.html#s2.1.2">Open</a></td>
+  </tr>
+  <tr>
+    <td width="26"></td>
+    <td width="25"></td>
+    <td width="222">2.1.3<tt> </tt><a href="ponyprog.html#s2.1.3">Save</a></td>
+  </tr>
+  <tr>
+    <td width="26"></td>
+    <td width="25"></td>
+    <td width="222">2.1.4<tt> </tt><a href="ponyprog.html#s2.1.4">Save as</a></td>
+  </tr>
+  <tr>
+    <td width="26"></td>
+    <td width="25"></td>
+    <td width="222">2.1.5<tt> </tt><a href="ponyprog.html#s2.1.5">Print</a></td>
+  </tr>
+  <tr>
+    <td width="26"></td>
+    <td width="25"></td>
+    <td width="222">2.1.6<tt> </tt><a href="ponyprog.html#s2.1.6">Close</a></td>
+  </tr>
+  <tr>
+    <td width="26"></td>
+    <td width="25"></td>
+    <td width="222">2.1.7<tt> </tt><a href="ponyprog.html#s2.1.7">Exit</a></td>
+  </tr>
+  <tr>
+    <td width="26"></td>
+    <td colspan="2" width="251">2.2<tt> </tt><a href="ponyprog.html#s2.2">Edit</a></td>
+  </tr>
+  <tr>
+    <td width="26"></td>
+    <td width="25"></td>
+    <td width="222">2.2.1<tt> </tt><a href="ponyprog.html#s2.2.1">Edit note</a></td>
+  </tr>
+  <tr>
+    <td width="26"></td>
+    <td width="25"></td>
+    <td width="222">2.2.2<tt> </tt><a href="ponyprog.html#s2.2.2">Edit buffer enabled</a></td>
+  </tr>
+  <tr>
+    <td width="26"></td>
+    <td colspan="2" width="251">2.3<tt> </tt><a href="ponyprog.html#s2.3">Device</a></td>
+  </tr>
+  <tr>
+    <td width="26"></td>
+    <td width="25"></td>
+    <td width="222">2.3.1<tt> </tt><a href="ponyprog.html#s2.3.1">Type</a></td>
+  </tr>
+  <tr>
+    <td width="26"></td>
+    <td width="25"></td>
+    <td width="222">2.3.2<tt> </tt><a href="ponyprog.html#s2.3.2">Read</a></td>
+  </tr>
+  <tr>
+    <td width="26"></td>
+    <td width="25"></td>
+    <td width="222">2.3.3<tt> </tt><a href="ponyprog.html#s2.3.3">Write</a></td>
+  </tr>
+  <tr>
+    <td width="26"></td>
+    <td width="25"></td>
+    <td width="222">2.3.4<tt> </tt><a href="ponyprog.html#s2.3.4">Verify</a></td>
+  </tr>
+  <tr>
+    <td width="26"></td>
+    <td width="25"></td>
+    <td width="222">2.3.5<tt> </tt><a href="ponyprog.html#s2.3.5">GetInfo</a></td>
+  </tr>
+  <tr>
+    <td width="26"></td>
+    <td width="25"></td>
+    <td width="222">2.3.6<tt> </tt><a href="#s2.3.6">Reset</a></td>
+  </tr>
+  <tr>
+    <td width="26"></td>
+    <td colspan="2" width="251">2.4<tt> </tt><a href="ponyprog.html#s2.4">Utility</a></td>
+  </tr>
+  <tr>
+    <td width="26"></td>
+    <td width="25"></td>
+    <td width="222">2.4.1<tt> </tt><a href="ponyprog.html#s2.4.1">Double bank</a></td>
+  </tr>
+  <tr>
+    <td width="26"></td>
+    <td width="25"></td>
+    <td width="222">2.4.2&nbsp; <a href="ponyprog.html#s2.4.2">Byte swap</a></td>
+  </tr>
+  <tr>
+    <td width="26"></td>
+    <td width="25"></td>
+    <td width="222">2.4.3<tt> </tt><a href="ponyprog.html#s2.4.3">Write security</a></td>
+  </tr>
+  <tr>
+    <td width="26"></td>
+    <td width="25"></td>
+    <td width="222">2.4.4&nbsp; <a href="ponyprog.html#s2.4.4">Write high endurance</a></td>
+  </tr>
+  <tr>
+    <td width="26"></td>
+    <td width="25"></td>
+    <td width="222">2.4.5<tt> </tt><a href="#s2.4.5">Clear buffer</a></td>
+  </tr>
+  <tr>
+    <td width="26"></td>
+    <td width="25"></td>
+    <td width="222">2.4.6<tt> </tt><a href="#s2.4.6">Fill buffer</a></td>
+  </tr>
+  <tr>
+    <td width="26"></td>
+    <td colspan="2" width="251">2.5<tt> </tt><a href="ponyprog.html#s2.5">Options</a></td>
+  </tr>
+  <tr>
+    <td width="26"></td>
+    <td width="25"></td>
+    <td width="222">2.5.1<tt> </tt><a href="ponyprog.html#s2.5.1">Setup</a></td>
+  </tr>
+  <tr>
+    <td width="26"></td>
+    <td width="25"></td>
+    <td width="222">2.5.2<tt> </tt><a href="ponyprog.html#s2.5.2">Calibration</a></td>
+  </tr>
+  <tr>
+    <td width="273" colspan="3"><strong>Appendix</strong></td>
+  </tr>
+  <tr>
+    <td width="26"></td>
+    <td colspan="2" width="251">A<tt> </tt></td>
+  </tr>
+</table>
+
+<hr>
+
+<h2><a name="s1">1 Installing</a></h2>
+
+<p>Installing PonyProg depend on the system you have.<br>
+With Windows95/98 or NT just run the Setup.exe and follow the instructions.</p>
+
+<p>With Linux you need the V library v1.20 or newer correctly installed and the GNU g++
+compiler. If you want to use any parallel port interface you need also a 2.2.x kernel and
+parport, parport_pc and ppuser kernel modules.<br>
+Login as root and follow these instructions:<br>
+Copy the file downloaded to a directory like /usr/local/src and decompress it with
+&quot;tar xvfz ponyprog.tar.gz&quot;, then enter the directory ponyprog.<br>
+Make a link to the V configuration file, the Config.mk in the root directory of the V
+library:<br>
+&quot;rm -f Config.mk; ln -s ~/v/Config.mk ./Config.mk&quot;<br>
+Then build the executable and install it with &quot;make linux; make installLinux&quot;
+for a static linked executable or<br>
+&quot;make linuxelf; make installLinuxElf&quot; for a dinamic linked executable.<br>
+The executable will be installed in /usr/local/bin. You must run it in X-Window
+environment. Before to run the executable insert the modules into the kernel (insmod
+parport; insmod parport_pc; insmod ppuser).</p>
+
+<p>The first time you run the program remember to select the interface and port you use
+with the <a href="ponyprog.html#s2.5.1">Setup</a>. If the program report a message like
+&quot;The interface don't respond&quot; when started, it means that you not have
+configured the port properly, or the interface is not connected.<br>
+You need also to run <a href="ponyprog.html#s2.5.2">Calibration</a>.</p>
+
+<hr>
+
+<h2><a name="s2">2 Menu commands</a></h2>
+
+<p>The following is an explanation of each menu command. </p>
+
+<hr>
+
+<h2><a name="s2.1">2.1 File</a></h2>
+
+<h2><a name="s2.1.1">2.1.1 New</a></h2>
+
+<p>Open a new window, each window can display the content of a device or file. </p>
+
+<hr>
+
+<h2><a name="s2.1.2">2.1.2 Open</a></h2>
+
+<p>Open a file by name, and read its content in the current window. You can select the
+file to open through a dialog. PonyProg recognize four different types of file format:
+e2p, intel hex, motorola S-record and raw binary. If the selected file don't seem to be a
+e2p, it tries to open the file as intel hex; if also this operation fails, then it opens
+the file as binary. If the file has e2p format, you don't have to worry about the device
+type currently setted, otherwise you first have to <a href="ponyprog.html#s2.3.1">select</a>
+the correct device type, then load a file. If you want to load a file for the Atmel AVR,
+be sure to load the content of the flash first, and then the content of the eeprom. To do
+so you have to configure the AVR assembler to generate Intel hex format with extension
+.hex for the flash and .eep for the eeprom. The content of the eeprom will be displayed
+after the content of the flash memory in the current window.</p>
+
+<hr>
+
+<h2><a name="s2.1.3">2.1.3 Save</a></h2>
+
+<p>Save the content of current window to a file. If no name has been specified work like <a
+href="ponyprog.html#s2.1.4">Save as</a>.</p>
+
+<hr>
+
+<h2><a name="s2.1.4">2.1.4 Save as</a></h2>
+
+<p>Open a dialog box where you can specify the name of the file. In the bottom of the
+dialog box you can select the file format for the file to save (indicated by the
+extension). If you press OK the content of the current window will be saved in the file
+specified. I suggest to save always in e2p format, doing so the device type and the notes
+will be recorded in the file. The .bin format is raw binary format, it's suitable for
+exporting the file to other programs.</p>
+
+<p><img src="prog-saveas.jpg" alt="SaveAs screen shot" WIDTH="568" HEIGHT="408"></p>
+
+<hr>
+
+<h2><a name="s2.1.5">2.1.5 Print</a></h2>
+
+<p>Open a dialog box where you can select the printer name and options. If you press OK
+the content of the current buffer will be printed.</p>
+
+<hr>
+
+<h2><a name="s2.1.6">2.1.6 Close</a></h2>
+
+<p>Close the current window, if there is only one opened window it ask if you want to
+exit; you can choose Yes or No. If the current buffer is modified it ask you if you want
+to save the content in a file before to close the window.</p>
+
+<hr>
+
+<h2><a name="s2.1.7">2.1.7 Exit</a></h2>
+
+<p>Close all the opened window and exit the program. If exist a modified buffer it ask you
+if you want to save the content in a file before to close the window.</p>
+
+<hr>
+
+<h2><a name="s2.2">2.2 Edit</a></h2>
+
+<h2><a name="s2.2.1">2.2.1 Edit note</a></h2>
+
+<p>Open a dialog box where you can edit a Chip id and a note. These two fields are saved
+within the window content if you use the e2p file format (see <a
+href="ponyprog.html#s2.1.2">Open</a>). These two fields are free text editing, and are
+useful for a description of the device programmed and the meaning of its content.</p>
+
+<p><img src="prog-note.jpg" alt="Edit note screen shot" WIDTH="730" HEIGHT="157"></p>
+
+<hr>
+
+<h2><a name="s2.2.2">2.2.2 Edit buffer enabled</a></h2>
+
+<p>You can toggle this item either to enable or disable the edit mode. If this mode is
+enabled you can edit the buffer content by clicking on a location of the current window.
+Two editing modes are available: hexadecimal editing and text editing. If you click on the
+HEX (center) part of the screen or press ENTER you open a dialog where you can insert the
+new value for that byte in decimal, hexadecimal, or character. If you click on the ASCII
+(right) part of the screen you open a dialog where you can insert or modify a text
+starting from that location. You can CUT &amp; PASTE in the text entry dialog by the use
+of the right mouse button. Note that you can enable/disable the edit mode of the current
+window only, so if there are more than one buffer window opened, the edit mode of other
+window remains unchanged.</p>
+
+<p><img src="prog-edit.jpg" alt="Edit screen shot" WIDTH="188" HEIGHT="198"></p>
+
+<hr>
+
+<h2><a name="s2.3">2.3 Device</a></h2>
+
+<h2><a name="s2.3.1">2.3.1 Select</a></h2>
+
+<p>Select the type of current device. You have to select the device type before reading or
+writing the device. Selecting an &quot;Auto XXX&quot;&nbsp; type means that the device
+type is determined by the program during the read or write operation, this feature is
+useful when you need to query a device to know if it works and which device it is. There
+are some different device family: the I²C Bus eeproms that are addressed with 8 bit word,
+the I²C Bus eeproms that are addressed with 16 bit word, the Microwire eeproms, the SPI
+eeproms, the AVR microcontrollers and the PIC microcontrollers. You can select the device
+family in the tool bar with the combo-box, or directly the device type in the menu. The
+current device type is stored in the .INI file, so the next time you run the program it's
+recalled. To read and write I²C Bus eeproms other than 24xx (i.e. the SDE2526, SDA2546,
+SDA2586, SDA3546, SDA3586) select the type &quot;24XX Auto&quot;.<br>
+The 24C01 can be readed but not writed, you can read it as a 2402 or 24XX Auto device.
+Note that you can replace a 24C01 eeprom with a new 24C02 eeprom, because it's fully
+compatible to the 24C01.</p>
+
+<hr>
+
+<h2><a name="s2.3.2">2.3.2 Read</a></h2>
+
+<p>Read the content of a device in the current window.&nbsp; This operation can take a
+while to execute, so a dialog box shows that the operation is still in progress. If you
+want to stop the current read just press the &quot;Abort&quot; button. Finally a dialog
+box showing the result of the operation appears.<br>
+If the program report the message &quot;The device not responding&quot; means that you
+have missed to connect the device to read, or the interface is not configured properly
+(see the <a href="ponyprog.html#s2.5.1">Setup</a>). Note that only the devices that
+support probing report this type of message, other device simply read all 0's of FF's (if
+the device is missed). The devices that support probing are the 24XX serie and the
+&quot;AT90SXX Auto&quot;. In the specific case of&nbsp; &quot;AT90SXX Auto&quot; device
+type selected, the program can report the message &quot;The device is locked&quot; in case
+of the locked bits was programmed. Even some preproduction devices don't support auto
+probing. You can't read a locked device, to program it see <a href="ponyprog.html#s2.3.3">Write</a>.<br>
+<a name="sv15retry"></a>Since version 1.15c if you select an AVR device (AT90S2313 for
+example) and read it, the program try to probe the device first. If the device is missing,
+or the device is locked, or the device is a preproduction device a dialog box appears. It
+ask if you want to abort operation, retry or ignore the error. In case of preproduction
+devices just ignore it. If the device is locked you have to write to it before to read.</p>
+
+<hr>
+
+<h2><a name="s2.3.3">2.3.3 Write</a></h2>
+
+<p>Write the content of the current window to a device. A dialog box ask you to confirm
+this unrecoverable operation. This operation can take a while to execute, so a dialog box
+shows that the operation is still in progress. If you want to stop the current write just
+press the &quot;Abort&quot; button. After the writing an automatic verify is executed.
+Finally a dialog box showing the result of the operation appears.<br>
+Before to do a write I suggest to select the specific device type, not the &quot;24XX
+Auto&quot; or &quot;AT90SXX Auto&quot;. Note that if you select a &quot;AT90SXX Auto&quot;
+device and try to write a locked device you get the message: &quot;The device is
+locked&quot;.<br>
+Note that both the flash and eeprom are writed (only if the device have both flash and
+eeprom like the AVR), and then verified.<br>
+Since the version 1.15c a probe is performed on every AVR device (see <a href="#sv15retry">Read</a>).</p>
+
+<hr>
+
+<h2><a name="s2.3.4">2.3.4 Verify</a></h2>
+
+<p>Verify the content of a device, compares it to the content of&nbsp; the current
+window.&nbsp; This operation can take a while to execute, so a dialog box shows that the
+operation is still in progress. If you want to stop the current verify just press the
+&quot;Abort&quot; button. Finally a dialog box showing the result of the operation
+appears.</p>
+
+<hr>
+
+<h2><a name="s2.3.5">2.3.5 GetInfo</a></h2>
+
+<p>Shows some informations about the device. Some of these informations are showed also in
+the status bar at the bottom of the main window. 
+
+<ul>
+  <li>Size of the buffer, it's equal to the size of the device in bytes. In the case of AVR
+    devices, it's equal to the sum of the flash size plus the eeprom size.</li>
+  <li>CRC calculated on the content of the buffer.</li>
+  <li>Bank roll over. It's a characteristic of some old I²C Bus eeprom. You can't simply
+    replace a &quot;roll-over eeprom&quot; with a &quot;no roll-over eeprom&quot;.</li>
+  <li>Security and High endurance block. The 24C65, have a feature to protect some block from
+    writing, or enable some block to have 10 milions writing cycles. (see <a
+    href="ponyprog.html#s2.4.2">Write security</a> to change it).<p>&nbsp;</p>
+  </li>
+</ul>
+
+<hr>
+
+<h2><a name="s2.3.6">2.3.6 Reset</a></h2>
+
+<p>Reset the device. It's useful with in-system applications. </p>
+
+<hr>
+
+<h2><a name="s2.4">2.4 Utility</a></h2>
+
+<h2><a name="s2.4.1">2.4.1 Double bank</a></h2>
+
+<p>This operation duplicates every bank in the current buffer and changes the device type
+to a bigger device type. A bank is a cluster of 256 bytes for the 24xx and a word for
+other device. This utility is useful to replace a SDA2546 device with a 24C08 or a SDA2586
+with a 24C16. To do it you have to select the device type &quot;24xx Auto&quot;, connect
+the SDA2546 device and perform a <a href="ponyprog.html#s2.3.2">Read</a> operation. Then
+you have to perform a &quot;Double bank&quot;, replace the SDA2546 with a blank 24C08 and
+do a <a href="ponyprog.html#s2.3.3">Write</a> operation.</p>
+
+<hr>
+
+<h2><a name="s2.4.2">2.4.2 Byte swap</a></h2>
+
+<p>This operation swap bytes within every word in the buffer. This command is useful to
+convert from little endian representation to big endiand and viceversa. Some devices uses
+16bit word so you can represent it in both ways depending on your needs.<br>
+For example consider the number 1234 hex (4660 decimal), the little endian is 34 - 12,
+while the big endiand is 12 - 34.</p>
+
+<hr>
+
+<h2><a name="s2.4.3">2.4.3 Write security</a></h2>
+
+<p>This command is implemented only for some devices.<br>
+With the AVR you can lock the program and eeprom memory from further reading by using this
+command. When the device is locked you can rewrite it, but not read it. Note that if you
+try to read a locked device with the type &quot;AT90Sxx Auto&quot; setted you receive the
+message &quot;The device is locked&quot;; you have to select the specific device before to
+write to it.<br>
+With the 24C65 a dialog ask to insert the first block and the number of blocks to lock.
+When the device is locked you can't do a &quot;write security&quot; or a &quot;write high
+endurance&quot; anymore. To lock the device the number of blocks must be greater than 0.</p>
+
+<hr>
+
+<h2><a name="s2.4.4">2.4.4 Write high endurance</a></h2>
+
+<p>This command is implemented only for the 24C65 eeprom. A dialog ask you to insert the
+high endurance block (support more write operations). When the device is locked this
+command don't work.</p>
+
+<hr>
+
+<h2><a name="s2.4.5">2.4.5 Clear Buffer</a></h2>
+
+<p>Clear the current buffer with FF's.</p>
+
+<hr>
+
+<h2><a name="s2.4.6">2.4.6 Fill Buffer</a></h2>
+
+<p>Fill the current buffer with a character. Open a dialog where you can select the
+addresses fo fill (from - to locations), and the value of the character to fill. You can
+insert the value either in decimal (i.e. 45), hexadecimal (i.e. 0x45) or octal (i.e. 045)
+base.</p>
+
+<hr>
+
+<h2><a name="s2.5">2.5 Options</a></h2>
+
+<h2><a name="s2.5.1">2.5.1 Setup</a></h2>
+
+<p>Open a dialog box where you can select the interface type and the port number where the
+hardware is connected. You can choose from several hardware interfaces (see <a
+href="../prog.html#hardware">PonyProg Hardware interfaces</a> for more info). Note that
+only SI Prog support all the devices.</p>
+
+<p><img src="prog-setup.jpg" alt="Setup screen shot" WIDTH="400" HEIGHT="352"> 
+
+<ul>
+  <li><strong>SI-Prog interface</strong> select &quot;serial&quot; check-box and choose
+    &quot;SI-Prog API&quot; or&nbsp; &quot;SI-Prog I/O&quot; in the combo-box. Windows NT need
+    &quot;SI-Prog API&quot; to work, Win95 &amp; 98 works either with &quot;PonyProg API&quot;
+    and &quot;PonyProg I/O&quot;, but the latter is faster. The &quot;SI-Prog I/O&quot; with
+    Linux need you run PonyProg as root. Then select the COM port you use, if some COM ports
+    are disabled means that they are used by other programs (usually by the mouse driver or
+    modem), or not present.</li>
+  <li><strong>AVR ISP Parallel port interface</strong> select &quot;parallel&quot; check-box
+    and choose &quot;Avr ISP&quot; in the combo-box. Then select the LPT port you use. Note
+    that if you want to program the AT89Sxx device you need to select the &quot;Invert
+    Reset&quot; check-box. To use this interface with Linux you need a 2.2.x kernel and
+    parport, parport_pc and ppuser kernel modules.<br>
+    You can use this interface to read/write the AVR micros and SPI eeproms..</li>
+  <li><strong>Ludipipo interface</strong> select &quot;serial&quot; check-box and choose
+    &quot;SI-Prog API&quot; or &quot;SI-Prog I/O&quot;. Then select the COM port you use and
+    select the &quot;Invert D-OUT&quot; check-box. You can use this interface to read/write
+    the PIC16x84.</li>
+  <li><strong>Easy I²CBus interface</strong> select either &quot;serial&quot; or
+    &quot;parallel&quot; check-box, if you have the serial interface select serial, if you
+    have parallel interface select parallel. With Linux you need to run PonyProg as root. This
+    interface don't work with Windows NT.</li>
+</ul>
+
+<hr>
+
+<h2><a name="s2.5.2">2.5.2 Calibration</a></h2>
+
+<p>Calibration tunes the serial buses speed for your computer. When you run Calibration be
+sure that PonyProg is the only program running in the PC, and the hard disk is idle (look
+at the HD led). If your PC is busy because it's performing other tasks the Calibration
+thinks your PC is slower than actual speed, and all I/Os are performed without proper
+delay.<br>
+After the Calibration you can choose the speed for every serial bus modifying the
+following parameters in the ponyprog.ini (.ponyprogrc under Linux) file: 
+
+<ul>
+  <li><strong>I2CBusSpeed</strong>=<em>NORMAL&nbsp;&nbsp;&nbsp; </em>affect 24Cxx eeprom and
+    other I²CBus devices</li>
+  <li><strong>SPIBusSpeed</strong>=<em>NORMAL</em>&nbsp;&nbsp;&nbsp; affect AVR micro, AT89Sxx
+    micro and 25xxx eeprom</li>
+  <li><strong>MicroWireBusSpeed</strong>=<em>NORMAL</em>&nbsp;&nbsp;&nbsp; affect 93Cxx eeprom</li>
+  <li><strong>PICBusSpeed</strong>=<em>NORMAL</em>&nbsp;&nbsp;&nbsp; affect PIC16x84 micro</li>
+  <li><strong>SDEBusSpeed</strong>=<em>NORMAL&nbsp;&nbsp;&nbsp; </em>affect SDE2506 eeprom</li>
+</ul>
+
+<p>Every parameter can be assigned the value <em>SLOW</em>, <em>NORMAL</em>, <em>FAST</em>
+or <em>TURBO.<br>
+</em>Avoid to use the TURBO value because it means &quot;no delay&quot;, and probably it
+doesn't work on your PC, especially with the &quot;SI-Prog I/O&quot; and
+&quot;EasyI2CBus&quot; interfaces.<br>
+Just for example my PC run I2CBus at about 80Khz with <em>NORMAL,</em> and 110 Khz with <em>FAST.</em>
+Note that a lot of I²CBus devices don't work at speed above the 100KHz.</p>
+
+<hr>
+</body>
+</html>
