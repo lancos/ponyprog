@@ -58,6 +58,16 @@ void InitDrvLoader()
    strcpy(FLastError,"");    // No errors yet
 }
 
+char *GetLastErrorMsg()
+{
+	char *sp;
+
+	sp = FLastError;
+	strcpy(FLastError,"");
+
+	return sp;
+}
+
 //---------------------------------------------------------------------------
 // ConnectSCM()
 //    Connects to the WinNT Service Control Manager
@@ -103,7 +113,7 @@ bool ConnectSCM()
 // DisconnectSCM()
 //    Disconnects from the WinNT Service Control Manager
 //---------------------------------------------------------------------------
-void DisconnectSCM()
+bool DisconnectSCM()
 {
    if (hSCMan != NULL)
    {
@@ -111,6 +121,8 @@ void DisconnectSCM()
       CloseServiceHandle(hSCMan);
       hSCMan=NULL;
    }
+
+   return true;
 }
 
 //---------------------------------------------------------------------------

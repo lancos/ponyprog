@@ -3,26 +3,20 @@
 
 #define OKAY  0
 
-// globals
-//extern HINSTANCE hInst;
-//extern SC_HANDLE hSCMan;
-
 extern void InitDrvLoader();
+
 extern bool ConnectSCM();
-extern void DisconnectSCM();
+extern bool DisconnectSCM();
+
 extern bool DriverInstall();
 extern bool DriverRemove();
+
 extern bool DriverStart();
 extern bool DriverStop();
-extern void OpenDriver();
-void CloseDriver();
 
-/**
-// private prototypes
-extern DWORD DriverInstall(LPSTR, LPSTR);
-extern DWORD DriverStart(LPSTR, LPSTR);
-extern DWORD DriverStop(LPSTR, LPSTR);
-extern DWORD DriverRemove(LPSTR, LPSTR);
-**/
+extern void OpenDriver();
+extern void CloseDriver();
+
+extern char *GetLastErrorMsg();
 
 #endif
