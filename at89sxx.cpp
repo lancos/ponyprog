@@ -6,7 +6,7 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997, 1998  Claudio Lanconelli                           //
+//  Copyright (C) 1997-2000   Claudio Lanconelli                           //
 //                                                                         //
 //  e-mail: lanconel@cs.unibo.it                                           //
 //  http://www.cs.unibo.it/~lanconel                                       //
@@ -53,21 +53,17 @@ int At89sxx::Probe(int probe_size)
 	return GetSize();
 }
 
-int At89sxx::Erase()
+int At89sxx::Read(int probe)
 {
-	return GetBus()->Erase();
+	return At90sxx::Read(probe);
 }
 
-int At89sxx::SecurityWrite(int value, int notused)
+int At89sxx::Write(int probe)
 {
-	int rv;
-//	int rv = Probe();		//No size probe needed, just probe for presence
-
-//	if (rv >= 0)	//Try to write even with AutoXXX device setted
-//	{
-		rv = GetBus()->WriteLockBits(value);
-//	}
-
-	return rv;
+	return At90sxx::Write(probe);
 }
 
+int At89sxx::Verify()
+{
+	return At90sxx::Verify();
+}

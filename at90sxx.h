@@ -50,8 +50,6 @@ class At90sxx : public EEProm
 	int Write(int probe = 1);
 	int Verify();
 
-	int Erase();
-
 	//Write fuse bits
 	int SecurityRead(int &value, int &notused);
 	int SecurityWrite(int value, int notused);

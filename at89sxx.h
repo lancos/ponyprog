@@ -46,15 +46,11 @@ class At89sxx : public At90sxx
 	virtual ~At89sxx();
 
 	int Probe(int probe_size = 0);
-/**
 	int Read(int probe = 1);
 	int Write(int probe = 1);
 	int Verify();
-**/
-	//Write fuse bits
-	int SecurityWrite(int value, int notused);
 
-	int Erase();
+//	int Erase();
 
 	At89sBus *GetBus()
 		{ return (At89sBus *)EEProm::GetBus(); }

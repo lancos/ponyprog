@@ -350,11 +350,6 @@ int At90sxx::Read(int probe)
 	return rv;
 }
 
-int At90sxx::Erase()
-{
-	return GetBus()->Erase();
-}
-
 int At90sxx::Write(int probe)
 {
 	//Save Bus, so the AutoXXX can change the bus according
