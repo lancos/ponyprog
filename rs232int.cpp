@@ -112,8 +112,10 @@ int RS232Interface::OpenSerial(int no)
 			GetCommTimeouts(hCom, &old_timeout);
 			GetCommMask(hCom, &old_mask);
 
-			if ( SetSerialTimeouts() == OK )
-				ret_val = SetSerialParams();
+			SetSerialTimeouts();
+			SetSerialParams();
+
+			ret_val = OK;
 		}
 #else
 #ifdef	_LINUX_
