@@ -38,7 +38,7 @@
 #include "dlportio.h"
 
 #ifdef	_LINUX_
-#include <asm/io.h>
+//#include <asm/io.h>		//May be your system need this too
 #include <sys/io.h>
 //May be your system need this instead of <sys/io.h>
 //#include <linux/ioport.h>
