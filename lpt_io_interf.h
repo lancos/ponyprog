@@ -1,12 +1,12 @@
 //=========================================================================//
 //-------------------------------------------------------------------------//
-// lptinterf.h -- Header for LPTInterface class                            //
+// lpt_io_interf.h -- Header for LPTIOInterface class                      //
 // This file is part of PonyProg.                                          //
 //-------------------------------------------------------------------------//
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997, 1998  Claudio Lanconelli                           //
+//  Copyright (C) 1997-2000   Claudio Lanconelli                           //
 //                                                                         //
 //  e-mail: lanconel@cs.unibo.it                                           //
 //  http://www.cs.unibo.it/~lanconel                                       //
@@ -30,32 +30,23 @@
 //-------------------------------------------------------------------------//
 //=========================================================================//
 
-#ifndef	_LPTINTERFACE_H
-#define	_LPTINTERFACE_H
+#ifndef	_LPTIOINTERFACE_H
+#define	_LPTIOINTERFACE_H
 
 #include "types.h"
+#include "portint.h"
 
-#define LPTCON_CLOSEHANDLE      -1
-#define LPTCON_GETVERSION       0
-#define LPTCON_READ             10
-#define LPTCON_WRITE_DATA       20
-#define LPTCON_WRITE_CONTROL    30
-
-#ifndef	INVALID_HANDLE_VALUE
-#define	INVALID_HANDLE_VALUE	-1
-#endif
-
-//Define the structure used to communicate to the VxD.
-typedef struct{
-	int		LPPort;           //Port can be 1-3 
-	UBYTE	LPByte;           //Data can be any value between 00 and FFh
-} LPTCONDATA;
-
-class LPTInterface
+class LPTIOInterface : public PortInterface
 {
  public:		//------------------------------- public
-	LPTInterface();
-	virtual ~LPTInterface();
+	LPTIOInterface();
+	virtual ~LPTIOInterface();
+
+	void Close()
+	{
+		lpt_port = 0;
+		PortInterface::CloseParallel();
+	}
 
 	void SetPort(int port_no);
 	int InDataPort(int port_no = 0);
@@ -72,13 +63,8 @@ class LPTInterface
  protected:		//------------------------------- protected
 
  private:		//------------------------------- private
-#ifdef	_WINDOWS
-	HANDLE  hLPTCONVxD;			//Will be the handle to our VxD.
-#else
-	int hLpt;
-#endif
  
-	LPTCONDATA lpt_control;
+	int lpt_port;
 	UBYTE last_ctrl, last_data;
 };
 

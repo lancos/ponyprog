@@ -50,6 +50,9 @@
 
 #include "lptinterf.h"
 
+#define	MAX_LPTPORTS	3
+
+
 LPTInterface::LPTInterface()
 {
 	UserDebug(Constructor, "LPTInterface::LPTInterface() constructor\n");
