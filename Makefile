@@ -101,8 +101,6 @@ SRCS=\
 	imbus.cpp \
 	nvm3060.cpp \
 	at17xxx.cpp \
-	cryptor.cpp \
-	x-interf.cpp \
 	csmfbuf.cpp \
 	x2444.cpp \
 	x2444bus.cpp \
