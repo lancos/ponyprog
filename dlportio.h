@@ -26,6 +26,9 @@
  *  $Revision$
  *  <nl>
  *  $Log$
+ *  Revision 1.2  2000/06/29 15:06:57  lancos
+ *  Driver for direct port I/O header
+ *
  *  Revision 1.1  2000/06/23 17:19:25  lancos
  *  Modified for DLPortIO driver
  *
@@ -34,6 +37,8 @@
  * Initial revision.
  *
  ****************************************************************************/
+
+#ifdef	_WINDOWS
 
 #ifndef DLPORTIO_H
   #define DLPORTIO_H
@@ -128,3 +133,5 @@ DlPortWritePortBufferUlong(
 #endif
 
 #endif // DLPORTIO_H
+
+#endif
