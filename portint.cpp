@@ -50,36 +50,12 @@
 		UserDebug1(UserApp3, "PortInterface::IOPerm() %d\n", retval);
 		return retval;
 	}
-#else
-	int PortInterface::IOperm(int a, int b, int c)
-	{
-		a += b;
-
-		if (c)	//Open
-		{
-			hPort = CreateFile("\\\\.\\giveio", GENERIC_READ, 0, NULL,
-					OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-			if(hPort == INVALID_HANDLE_VALUE)
-			{
-			//	printf("Couldn't access giveio device\n");
-				return -1;
-			}
-		}
-		else	//Close
-		{
-			if (hPort != INVALID_HANDLE_VALUE)
-				CloseHandle(hPort);
-			hPort = INVALID_HANDLE_VALUE;
-		}
-
-		return 0;
-	}
 #endif
 
 #ifdef	_WINDOWS
 #ifdef __GNUC__
-# define	inb(id)		0
-# define	outb(val, id)
+//# define	inb(id)		0
+//# define	outb(val, id)
 #else
 # ifdef	__BORLANDC__
 #   include <conio.h>
@@ -94,6 +70,63 @@
 #   define _export
 # endif
 #endif
+#endif
+
+#ifdef	_WINDOWS
+HIDDEN int GetWinVersion()
+{ 
+	OSVERSIONINFO osvi;
+
+	memset(&osvi, 0, sizeof(OSVERSIONINFO));
+	osvi.dwOSVersionInfoSize = sizeof (OSVERSIONINFO);
+	GetVersionEx (&osvi);
+
+	if (osvi.dwPlatformId == VER_PLATFORM_WIN32s)
+		return 1;
+	else
+	if (osvi.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS)
+		return 2;
+	else
+	if (osvi.dwPlatformId == VER_PLATFORM_WIN32_NT)
+		return 3;
+	else
+		return 4;	//WIN2000 ???
+}
+
+int PortInterface::IOperm(int a, int b, int c)
+{
+	int rv = OK;
+
+	a += b;
+
+	rv = GetWinVersion();
+
+	if (rv == 1 || rv == 2)
+	{
+		rv = OK;
+	}
+	else
+	if (c)	//Open
+	{
+		hPort = CreateFile("\\\\.\\giveio", GENERIC_READ, 0, NULL,
+				OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+		if(hPort == INVALID_HANDLE_VALUE)
+		{
+		//	printf("Couldn't access giveio device\n");
+			rv = E2ERR_OPENFAILED;
+		}
+		else
+			rv = OK;
+	}
+	else	//Close
+	{
+	//	if (hPort != INVALID_HANDLE_VALUE)
+	//		CloseHandle(hPort);
+	//	hPort = INVALID_HANDLE_VALUE;
+	}
+
+	return rv;
+}
 #endif
 
 enum LptRegs {
@@ -139,6 +172,10 @@ PortInterface::PortInterface()
 
 PortInterface::~PortInterface()
 {
+	if (hPort != INVALID_HANDLE_VALUE)
+		CloseHandle(hPort);
+	hPort = INVALID_HANDLE_VALUE;
+
 	UserDebug(Destructor, "PortInterface::~PortInterface() Destructor\n");
 }
 
@@ -258,6 +295,7 @@ int PortInterface::OpenSerial(int no)
 		ret_val = OK;
 
 #ifdef	_WINDOWS
+		//Windows95/98 WindowsNT Windows2000
 		char str[8];
 
 		sprintf(str, "COM%d", no);
@@ -277,24 +315,36 @@ int PortInterface::OpenSerial(int no)
 		}
 		else
 			ret_val = E2ERR_OPENFAILED;
-#endif
+
 		if (ret_val == OK)
-		{
 			ret_val = OpenPort(ser_ports[no-1], 8);
 
-			if (ret_val == OK)
-			{
-#ifndef	_WINDOWS
-				lcr_copy = inb(GetFirstPort() + lcrOfst);
-				outb(0, GetFirstPort() + lcrOfst);
-				ier_copy = inb(GetFirstPort() + ierOfst);
-				outb(0, GetFirstPort() + ierOfst);
-#endif
-				write_port = GetFirstPort() + mcrOfst;
-				read_port = GetFirstPort() + msrOfst;
-				cpwreg = 0;
-			}
+		if (ret_val == OK)
+		{
+			write_port = GetFirstPort() + mcrOfst;
+			read_port = GetFirstPort() + msrOfst;
+			cpwreg = 0;
 		}
+		else
+		{
+			CloseSerial();
+		}
+#else	//Linux
+		if (ret_val == OK)
+			ret_val = OpenPort(ser_ports[no-1], 8);
+
+		if (ret_val == OK)
+		{
+			lcr_copy = inb(GetFirstPort() + lcrOfst);
+			outb(0, GetFirstPort() + lcrOfst);
+			ier_copy = inb(GetFirstPort() + ierOfst);
+			outb(0, GetFirstPort() + ierOfst);
+
+			write_port = GetFirstPort() + mcrOfst;
+			read_port = GetFirstPort() + msrOfst;
+			cpwreg = 0;
+		}
+#endif
 	}
 
 	UserDebug1(UserApp2, "PortInterface::OpenSerial() = %d O\n", ret_val);
@@ -346,7 +396,6 @@ int PortInterface::OpenParallel(int no)
 		);
 
 		if ( hCom != INVALID_HANDLE_VALUE )
-#endif
 		{
 			ret_val = OpenPort(par_ports[no-1], 8);
 			if (ret_val == OK)
@@ -356,6 +405,15 @@ int PortInterface::OpenParallel(int no)
 				cpwreg = 0;
 			}
 		}
+#else
+		ret_val = OpenPort(par_ports[no-1], 8);
+		if (ret_val == OK)
+		{
+			write_port = GetFirstPort() + dataOfst;
+			read_port = GetFirstPort() + statOfst;
+			cpwreg = 0;
+		}
+#endif
 	}
 
 	return ret_val;
