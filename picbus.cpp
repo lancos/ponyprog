@@ -182,7 +182,7 @@ int PicBus::Reset(void)
 	clearDI();
 	ClearMCLR();
 	setCLK();
-	WaitMsec(100);
+	WaitMsec(20);
 
 	clearCLK();
 	WaitMsec(15);
