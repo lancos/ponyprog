@@ -130,6 +130,14 @@ void Wait::WaitMsec(int msec)
 #endif
 }
 
+/* Switch optimization OFF, so the compiler don't remove
+ * the wait loop
+ */
+
+#ifdef	WIN32
+#pragma optimize( "", off )
+#endif
+
 void Wait::WaitUsec(int usec)
 {
 	if (htimer)
