@@ -466,7 +466,7 @@ void e2App::LookForBogoMips()
 
 	w.SetHwTimer(0);		//Disable Hw timer for bogomips calibration
 
-	// First BogoMIPS valuation
+	// First BogoMIPS evaluation
 	do {
 		multiplier *= 5;
 
