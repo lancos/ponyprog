@@ -44,8 +44,8 @@ class At89sBus : public At90sBus
 	long Read(int addr, UBYTE *data, long length);
 	long Write(int addr, UBYTE const *data, long length);
 	
-	int Reset();
-	int Erase(int type = 0);
+	virtual int Reset();
+	virtual int Erase();
 
 	int ReadDeviceCode(int addr);
 	int WriteLockBits(int byte);

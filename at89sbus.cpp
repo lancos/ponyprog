@@ -137,7 +137,7 @@ int At89sBus::WriteLockBits(int byte)
 	int mask = 0xff & ~byte;
 
 	SendDataByte(WriteLock0);
-	SendDataByte(mask);	//Atmel datasheets don't specify what bits are LB1, LB2, LB3!!
+	SendDataByte(mask | WriteLock1);	//Atmel datasheets don't specify what bits are LB1, LB2, LB3!!
 	SendDataByte(0);
 
 	WaitMsec(20);		//4msec dai datasheet Atmel
@@ -165,7 +165,7 @@ int At89sBus::ReadDeviceCode(int addr)
 	return OK;
 }
 
-int At89sBus::Erase(int type)
+int At89sBus::Erase()
 {
 	//Erase command
 	SendDataByte(ChipErase0);
