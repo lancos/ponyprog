@@ -172,10 +172,11 @@ PortInterface::PortInterface()
 
 PortInterface::~PortInterface()
 {
+#ifdef	_WINDOWS
 	if (hPort != INVALID_HANDLE_VALUE)
 		CloseHandle(hPort);
 	hPort = INVALID_HANDLE_VALUE;
-
+#endif
 	UserDebug(Destructor, "PortInterface::~PortInterface() Destructor\n");
 }
 

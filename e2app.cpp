@@ -40,10 +40,11 @@
 #include <stdlib.h>
 
 #ifdef	_LINUX_
-#include <sys/time.h>
-#include <unistd.h>
-#include <signal.h>
+# include <sys/time.h>
+# include <unistd.h>
+# include <signal.h>
 #else
+# include "loaddrv.h"
 #  ifdef	__BORLANDC__
 #    define	strncasecmp strnicmp
 #    define strcasecmp stricmp
@@ -146,6 +147,8 @@ void e2App::Exit(void)
 	if ( IsAppReady() )
 	{
 		SendWindowCommandAll(idAskToSave, 0, C_Button);
+
+		LoadDriver(0);
 
 		exit_ok = 1;
 		vApp::Exit();		// Default behavior
@@ -446,7 +449,17 @@ void e2App::LookForBogoMips()
 	DWORD t0;
 	DWORD count;
 	DWORD multiplier = 1;
-	FILE *fh = fopen("bogomips.out", "w");
+	static char strbuf[MAX_PATH];
+
+	strncpy(strbuf, THEAPP->helpfile, MAX_PATH);
+	char *sp = strrchr(strbuf, '\\');
+	if (sp == NULL)
+		sp = strrchr(strbuf, '/');
+	if (sp == NULL)
+		strcpy(strbuf, "bogomips.out");
+	else
+		strcpy(sp+1, "bogomips.out");
+	FILE *fh = fopen(strbuf, "w");
 
 	Wait w;
 	int k;
@@ -531,6 +544,37 @@ void e2App::LookForBogoMips()
 #endif
 }
 
+int e2App::LoadDriver(int start)
+{
+#ifdef	_WINDOWS
+	static char szDriver[MAX_PATH];
+
+	DWORD dwStatus = OK;
+
+	// connect to local service control manager
+	if ((hSCMan = OpenSCManager(NULL, NULL, SC_MANAGER_ALL_ACCESS)) == NULL) 
+	{
+	//	printf("Can't connect to service control manager\n");	//Probably we use Windows95/98
+		return 0;
+	}
+
+	if (start)
+	{
+		dwStatus = DriverStart(THEAPP->driverfile, szDriver);
+	}
+	else
+	{
+		dwStatus = DriverStop(THEAPP->driverfile, szDriver);
+	}
+
+	//Cleanup
+	if (hSCMan != NULL)
+		CloseServiceHandle(hSCMan);
+#endif
+
+	return OK;
+}
+
 //###########################################################################
 
 static e2App e2_App(APPNAME " - " APPNAME_EXT);	// The instance of the app
@@ -557,6 +601,8 @@ int AppMain(int argc, char** argv)
 	char *sp = strrchr(argv[0], '.');
 	strcpy(sp+1, "html");
 	strcpy(THEAPP->helpfile, argv[0]);
+	strcpy(sp+1, "sys");
+	strcpy(THEAPP->driverfile, argv[0]);
 	strcpy(sp+1, "ini");
 	e2_App.SetFileName(argv[0]);
 #endif
@@ -582,6 +628,7 @@ int AppMain(int argc, char** argv)
 
 //	if ( e2_App.GetBogoMips() == 0 )
 //		e2_App.LookForBogoMips();
+
 
 	// The first parameter of the command line is the file to open (optional)
 	char *param;

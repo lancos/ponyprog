@@ -155,6 +155,8 @@ class e2App : public vApp, public E2Profile
 
 	void SetLastProgrammedAddress(long addr);
 
+	int LoadDriver(int start);
+
   protected:	//--------------------------------------- protected
 
   private:		//--------------------------------------- private
@@ -200,5 +202,8 @@ class e2App : public vApp, public E2Profile
 	Avr1200Bus at1200B;
 
 	char helpfile[128];
+#ifdef	_WINDOWS
+	char driverfile[MAX_PATH];
+#endif
 };
 #endif

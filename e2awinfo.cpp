@@ -110,37 +110,18 @@ e2AppWinInfo::e2AppWinInfo(vCmdWindow* win, char* name, BusIO** busvptr, void* p
 	{
 		cmdWin->About();
 
-		//imposta il bus iniziale (relativo al tipo di eeprom)
+		//Load the I/O driver needed with WinNT & Win2000
+		THEAPP->LoadDriver(1);
+
+		//set starting bus
 		THEAPP->SetInitialBus( eep->GetBus() );
 
-		// Nel caso di parametro passato da linea di comando
+		//case of command line parameter
 		if (GetFileName())
 		{
 			if (Load(0) <= 0)
 				SetFileName(0);
 		}
-	/**
-		else
-		{
-			int err = THEAPP->TestPort();
-
-			if (err)
-			{
-				vNoticeDialog note(win);
-				if (err == E2ERR_ACCESSDENIED)
-				{
-					note.Notice("Error: you must be root to run this program");
-					theApp->Exit();
-				}
-				else
-				{
-					note.Notice("Error: the interface don't respond");
-				}
-			}
-			else
-				THEAPP->OpenPort();
-		}
-	**/
 		else
 		{
 			int err = THEAPP->OpenPort();
@@ -148,8 +129,11 @@ e2AppWinInfo::e2AppWinInfo(vCmdWindow* win, char* name, BusIO** busvptr, void* p
 			if (err == E2ERR_ACCESSDENIED)
 			{
 				vNoticeDialog note(win);
+#ifdef	_WINDOWS
+				note.Notice("I/O access denied. Driver not found, try to install the software again");
+#else
 				note.Notice("I/O access denied. Run as root, or change the interface");
-			//	theApp->Exit();
+#endif
 			}
 			THEAPP->ClosePort();
 		}
