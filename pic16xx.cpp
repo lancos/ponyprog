@@ -200,8 +200,12 @@ int Pic16xx::Verify()
 		// this must be the LAST operation (to exit from config mode we have to clear Vpp)
 		GetBus()->ReadConfig( (UWORD *) (localbuf+GetSplitted()) );
 
+		UWORD *wp1, *wp2;
+		wp1 = ( (UWORD *)(GetBufPtr()+GetSplitted()) );
+		wp2 = ( (UWORD *)(localbuf+GetSplitted()) );
 		if ( memcmp(GetBufPtr()+GetSplitted()+16, localbuf+GetSplitted()+16,  size - (GetSplitted()+16)) != 0 ||
-			GetBus()->CompareMultiWord(GetBufPtr(), localbuf, GetSplitted()+16) != 0 )
+			GetBus()->CompareMultiWord(GetBufPtr(), localbuf, GetSplitted()) != 0 ||
+			GetBus()->CompareSingleWord(wp1[7], wp2[7]) != 0  )
 		{
 			rval = 0;
 		}

@@ -54,7 +54,7 @@ class PicBus : public BusIO
 
 	void DisableCodeProtect();
 
-	int CompareSingleWord(UWORD data1, UWORD data2, UWORD mask);
+	int CompareSingleWord(UWORD data1, UWORD data2, UWORD mask = 0x3fff);
 	int CompareMultiWord(UBYTE *data1, UBYTE *data2, ULONG length, int prog = 1);
 
 	void SetDelay();
