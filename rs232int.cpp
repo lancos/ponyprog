@@ -111,6 +111,7 @@ int RS232Interface::OpenSerial(int no)
 			GetCommState(hCom, &old_dcb);
 			GetCommTimeouts(hCom, &old_timeout);
 			GetCommMask(hCom, &old_mask);
+			SetCommMask(hCom, EV_TXEMPTY);
 
 			SetSerialTimeouts();
 			SetSerialParams();
@@ -252,7 +253,7 @@ void RS232Interface::CloseSerial()
 #ifdef	_WINDOWS
 	if ( hCom != INVALID_HANDLE_VALUE )
 	{
-//		SetCommState(hCom, &old_dcb);		//This can raise the RTS line, so invalidating the PowerOff
+//		SetCommState(hCom, &old_dcb);		//This may raise the RTS line, so invalidating the PowerOff
 		SetCommTimeouts(hCom, &old_timeout);
 		SetCommMask(hCom, old_mask);
 		PurgeComm(hCom, PURGE_TXCLEAR|PURGE_RXCLEAR);
