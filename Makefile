@@ -50,6 +50,7 @@ OBJS=\
 	$(oDir)/easyi2c_lpt.o \
 	$(oDir)/ispinterf.o \
 	$(oDir)/lptinterf.o \
+	$(oDir)/lpt_io_interf.o \
         $(oDir)/i2cbus.o \
         $(oDir)/crc.o \
         $(oDir)/infomdlg.o \
@@ -106,6 +107,7 @@ SRCS=\
 	easyi2c_lpt.cpp \
 	ispinterf.cpp \
 	lptinterf.cpp \
+	lpt_io_interf.cpp \
         i2cbus.cpp \
         crc.cpp \
         infomdlg.cpp \

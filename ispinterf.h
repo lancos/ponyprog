@@ -41,7 +41,7 @@ class AvrISPInterface : public BusInterface
 {
  public:		//------------------------------- public
 	AvrISPInterface(int use_io = 0);
-//	virtual ~AvrISPInterface();
+	virtual ~AvrISPInterface() { };
 
 	virtual int Open(int com_no);
 	virtual void Close();

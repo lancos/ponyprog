@@ -6,7 +6,7 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-1999  Claudio Lanconelli                            //
+//  Copyright (C) 1997-2000  Claudio Lanconelli                            //
 //                                                                         //
 //  e-mail: lanconel@cs.unibo.it                                           //
 //  http://www.cs.unibo.it/~lanconel                                       //
@@ -73,7 +73,7 @@ MotorolaSFileBuf::~MotorolaSFileBuf()
 int MotorolaSFileBuf::WriteRecord(FILE *fh, long curaddr, long recsize, char fmt)
 {
 	int rval = 1;
-	int len;
+	int len = 0;
 
 	switch(fmt)
 	{
@@ -299,7 +299,7 @@ int MotorolaSFileBuf::ParseRecord(char *lbufPC, BYTE *bufAC, long offset, int no
 {
 	long addrL;
 	BYTE cksmB,        /* checksum of addr, count, & data length */
-		*bufPC;                 /* Pointer into memory array */
+		*bufPC = 0;                 /* Pointer into memory array */
 	int i, countN,              /* Number of bytes represented in record */
 		oheadN,                 /* Number of overhead (addr + chksum) bytes */
 		tvalN;                  /* Temp for check checksum */
