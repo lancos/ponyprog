@@ -21,8 +21,8 @@ include $(CONFIG)
 #xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 #Local configuration (changed from V Config)
 
-oDir = ./obj/$(Arch)
-Bin = ./bin/$(Arch)
+oDir = obj
+Bin = bin
 
 CFLAGS	+= -D_LINUX_ -D_PONYPROG_ -D_UDP_SERVER -Wall
 
@@ -198,12 +198,20 @@ $(PROG):	$(OBJS)
 $(oDir)/%.o: %.cpp
 	$(CXX) $(CFLAGS) -c $< -o $@
 
+#%.d: %.cpp
+#	$(SHELL) -ec '$(CXX) -MM $(CFLAGS) $< \
+#		| sed '\''s/\($*\)\.o[ :]*/$(soDir)\/\1\.o $@: /g'\'' > $@'
+
 %.d: %.cpp
 	$(SHELL) -ec '$(CXX) -MM $(CFLAGS) $< \
-		| sed '\''s/\($*\)\.o[ :]*/$(soDir)\/\1\.o $@: /g'\'' > $@'
+		| sed '\''s/\($*\)\.o[ :]*/$(oDir)\/\1\.o $@: /g'\'' > $@'
+
+dep:
+	$(CXX) -MM $(CFLAGS) $(SRCS) > dep.file
+
 
 #
 # include a dependency files
 #
 include $(SRCS:.cpp=.d)
-
+#include dep.file
