@@ -1,5 +1,5 @@
 -------------------------------------------
-PonyProg - Serial Device Programmer  v1.17f
+PonyProg - Serial Device Programmer  v1.17g
 
 PonyProg comes with a user friendly GUI framework available for Windows95/98,
 Windows2000, WindowsNT and Intel Linux.
@@ -64,6 +64,12 @@ TODO (PonyProg is still under development)
 =======
 History
 =======
+
+v 1.17g
+-------
+Fixed a problem in loading HEX files for PIC generated
+by MPAsm.
+Extension appended instead of replaced (Windows only).
 
 v 1.17f
 -------
