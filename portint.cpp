@@ -101,29 +101,53 @@ int PortInterface::IOperm(int a, int b, int c)
 
 	rv = GetWinVersion();
 
-	if (rv == 1 || rv == 2)
+	if (c)	//Open
+	{
+		if (rv == 1 || rv == 2)
+		{
+			rv = OK;
+		}
+		else
+		if (rv == 3)
+		{
+			hPort = CreateFile("\\\\.\\ponyprog", GENERIC_READ, 0, NULL,
+					OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+			if(hPort == INVALID_HANDLE_VALUE)
+			{
+			//	printf("Couldn't access giveio device\n");
+				rv = E2ERR_OPENFAILED;
+			}
+			else
+				rv = OK;
+		}
+		else
+		{
+			hPort = CreateFile(
+				"\\\\.\\DirectIo0",                 // pointer to name of the file
+				GENERIC_READ | GENERIC_WRITE,       // access (read-write) mode
+				FILE_SHARE_READ | FILE_SHARE_WRITE, // share mode
+				NULL,                               // pointer to security attributes
+				OPEN_EXISTING,                      // how to create
+				0,                                  // file attributes
+				NULL);                              // handle to file with attributes to copy
+
+			if (hPort == INVALID_HANDLE_VALUE)    // did we succeed?
+			{
+				// possibly call GetLastError() to get a hint what failed
+				rv = E2ERR_OPENFAILED;
+			}
+			else
+				rv = OK;
+		}
+	}
+	else
 	{
 		rv = OK;
 	}
-	else
-	if (c)	//Open
-	{
-		hPort = CreateFile("\\\\.\\giveio", GENERIC_READ, 0, NULL,
-				OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-		if(hPort == INVALID_HANDLE_VALUE)
-		{
-		//	printf("Couldn't access giveio device\n");
-			rv = E2ERR_OPENFAILED;
-		}
-		else
-			rv = OK;
-	}
-	else	//Close
-	{
+
 	//	if (hPort != INVALID_HANDLE_VALUE)
 	//		CloseHandle(hPort);
 	//	hPort = INVALID_HANDLE_VALUE;
-	}
 
 	return rv;
 }
