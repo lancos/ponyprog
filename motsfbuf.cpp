@@ -145,7 +145,7 @@ int MotorolaSFileBuf::Save()
 		{
 			int recsize = min( (size - curaddr), 16 );
 
-			if ( !WriteRecord(fh, curaddr, recsize, 1) )
+			if ( !WriteRecord(fh, curaddr, recsize, size > 0xffff ? 2 : 1) )
 			{
 				rval = WRITEERROR;
 				break;
@@ -221,6 +221,10 @@ int MotorolaSFileBuf::ParseRecord(char *lbufPC, BYTE *bufAC)
 	int i, countN,              /* Number of bytes represented in record */
 		oheadN,                 /* Number of overhead (addr + chksum) bytes */
 		tvalN;                  /* Temp for check checksum */
+	int unknow_rec = 0;
+
+	if (lbufPC[0] == '\n' || lbufPC[0] == '\r')
+	    return OK;          /* discard empty lines */
 
 	if (lbufPC[0] != 'S')
 		return BADFILETYPE;
@@ -257,30 +261,50 @@ int MotorolaSFileBuf::ParseRecord(char *lbufPC, BYTE *bufAC)
 		break;
 
 	default:                    /* ignore all but S1,2,3 records. */
-		return BADFILETYPE;
+		if( sscanf(lbufPC+2, "%2X", &countN ) != 1 )
+			return BADFILETYPE;       /* Flag error in SX record */
+		unknow_rec = 1;
+		break;
+	/*	return BADFILETYPE; */
 	}
 
-	if ( addrL >= GetBufSize() )
-		return BUFFEROVERFLOW; /* if address exceeds buffer size */
-
-	bufPC = bufAC + addrL;      /* otherwise, point to right spot in buffer */
-
-	/* OK now see if checksum is OK, while reading data to buffer */
-	cksmB = 0;
-	countN++;                   /* Bump counter to read final checksum too */
-	for( i = 1; i <= countN; i++ )
+	if (unknow_rec)
 	{
-		sscanf( lbufPC + i*2, "%2X", &tvalN );  /* Scan a 2 hex digit byte  */
-		cksmB += (BYTE)tvalN;
-		if( ( i > oheadN ) && ( i < countN ) )  /* If scanned a data byte */
-			*bufPC++ = (BYTE) tvalN;   /* write it to the buffer */
+    	cksmB = 0;
+    	countN++;                   /* Bump counter to read final checksum too */
+    	for( i = 1; i <= countN; i++ )
+    	{
+    		sscanf( lbufPC + i*2, "%2X", &tvalN );  /* Scan a 2 hex digit byte  */
+    		cksmB += (BYTE)tvalN;
+    	}
+    	
+    	if( ++cksmB )
+    		return BADFILETYPE;      /* flag checksum error */
 	}
+	else
+	{
+    	if ( addrL >= GetBufSize() )
+    		return BUFFEROVERFLOW; /* if address exceeds buffer size */
 
-	if( ++cksmB )
-		return BADFILETYPE;      /* flag checksum error */
+    	bufPC = bufAC + addrL;      /* otherwise, point to right spot in buffer */
 
-	if( (bufPC - 1) > highestPC )
-		highestPC = bufPC - 1;          /* track highest address loaded */
+    	/* OK now see if checksum is OK, while reading data to buffer */
+    	cksmB = 0;
+    	countN++;                   /* Bump counter to read final checksum too */
+    	for( i = 1; i <= countN; i++ )
+    	{
+    		sscanf( lbufPC + i*2, "%2X", &tvalN );  /* Scan a 2 hex digit byte  */
+    		cksmB += (BYTE)tvalN;
+    		if( ( i > oheadN ) && ( i < countN ) )  /* If scanned a data byte */
+    			*bufPC++ = (BYTE) tvalN;   /* write it to the buffer */
+    	}
+
+    	if( ++cksmB )
+    		return BADFILETYPE;      /* flag checksum error */
+
+    	if( (bufPC - 1) > highestPC )
+    		highestPC = bufPC - 1;          /* track highest address loaded */
+    }
 
 	return OK;                        /* Successful return */
 }
