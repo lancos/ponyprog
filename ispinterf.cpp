@@ -140,6 +140,8 @@ int AvrISPInterface::SetPower(int onoff)
 #ifdef	AVRISP
 	if (onoff)
 	{
+		OutDataMask(WF_TEST2, 1);	//Some PCs need /BUSY signal high to work properly as suggested by Marek Michalkiewicz <marekm@linux.org.pl>
+
 		OutDataMask(WF_RST|WF_ENA1, 0);
 		OutDataMask(WF_LED, 0);		//31/07/99 -- suggested by Ralph Koettlitz <koettlitz@gmx.net>
 		OutDataMask(WF_ENA2, 0);
