@@ -45,13 +45,13 @@ class At90sBus : public SPIBus
 	long Write(int addr, UBYTE const *data, long length);
 	
 	virtual int Reset();
-	int Erase();
+	virtual int Erase();
 
-	int ReadDeviceCode(int addr);
-	int WriteLockBits(int byte);
-	int WriteFuseBits(int byte);
-	int ReadLockBits();
-	int ReadFuseBits();
+	virtual int ReadDeviceCode(int addr);
+	virtual int WriteLockBits(int byte);
+	virtual int WriteFuseBits(int byte);
+	virtual int ReadLockBits();
+	virtual int ReadFuseBits();
 
  protected:		//------------------------------- protected
 
