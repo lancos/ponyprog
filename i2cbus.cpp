@@ -48,7 +48,7 @@
 #  endif
 #endif
 
-#define	SCLTIMEOUT	200	// enable SCL check and timing (for slaves that hold down the SCL line to slow the transfer)
+#define	SCLTIMEOUT	1000	// enable SCL check and timing (for slaves that hold down the SCL line to slow the transfer)
 
 #define BUSYDELAY	100
 #define SDATIMEOUT	200
