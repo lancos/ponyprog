@@ -1,16 +1,18 @@
 //=========================================================================//
 //-------------------------------------------------------------------------//
-// at90sxx.h -- Header for for At90sxx class                       //
+// at90sxx.h -- Header for for At90sxx class                               //
 // This file is part of PonyProg.                                          //
 //-------------------------------------------------------------------------//
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997, 1998  Claudio Lanconelli                           //
+//  Copyright (C) 1997-2001   Claudio Lanconelli                           //
 //                                                                         //
-//  e-mail: lanconel@cs.unibo.it                                           //
-//  http://www.cs.unibo.it/~lanconel                                       //
+//  e-mail: lancos@libero.it                                               //
+//  http://www.LancOS.com                                                  //
 //                                                                         //
+//-------------------------------------------------------------------------//
+// $Id$
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -38,7 +40,7 @@
 #include "eeprom.h"
 #include "at90sbus.h"
 
-class At90sxx : public EEProm
+class At90sxx : public Device
 {
   public:		//---------------------------------------- public
 
@@ -46,19 +48,20 @@ class At90sxx : public EEProm
 	virtual ~At90sxx();
 
 	int Probe(int probe_size = 0);
-	int Read(int probe = 1);
-	int Write(int probe = 1);
-	int Verify();
+	int Read(int probe = 1, int type = ALL_TYPE);
+	int Write(int probe = 1, int type = ALL_TYPE);
+	int Verify(int type = ALL_TYPE);
 
-	//Write fuse bits
-	int SecurityRead(int &value, int &notused);
-	int SecurityWrite(int value, int notused);
+	int Erase(int probe = 1, int type = ALL_TYPE);
 
-	int FusesRead(int &value);
-	int FusesWrite(int value);
+	int SecurityRead(DWORD &bits);
+	int SecurityWrite(DWORD bits);
+
+	int FusesRead(DWORD &bits);
+	int FusesWrite(DWORD bits);
 
 	At90sBus *GetBus()
-		{ return (At90sBus *)EEProm::GetBus(); }
+		{ return (At90sBus *)Device::GetBus(); }
 
   protected:	//--------------------------------------- protected
 

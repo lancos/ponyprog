@@ -6,11 +6,13 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2000  Claudio Lanconelli                            //
+//  Copyright (C) 1997-2002  Claudio Lanconelli                            //
 //                                                                         //
-//  e-mail: lanconel@cs.unibo.it                                           //
-//  http://www.cs.unibo.it/~lanconel                                       //
+//  e-mail: lancos@libero.it                                               //
+//  http://www.LancOS.com                                                  //
 //                                                                         //
+//-------------------------------------------------------------------------//
+// $Id$
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -33,27 +35,14 @@
 #include "types.h"
 #include "at90sbus.h"
 #include "errcode.h"
+#include "eeptypes.h"
 
 #include "e2app.h"
 
-/*Attenzione!! il format Intel Hex e` Little Endian */
+//Pay attention that Intel Hex format is Little Endian
 #undef	_BIG_ENDIAN_
 
-#ifdef	_LINUX_
-//#  include <asm/io.h>
-#  include <unistd.h>
-#else
-#  ifdef	__BORLANDC__
-#    define	__inline__
-#  else // _MICROSOFT_ VC++
-#    define	__inline__ __inline
-#    define _export
-#  endif
-#endif
-
-#define	PAGE_SIZE	256
-
-// Costruttore
+// Constructor
 At90sBus::At90sBus(BusInterface *ptr)
 	: SPIBus(ptr),
 		EnableProg0(0xAC), EnableProg1(0x53),
@@ -69,7 +58,12 @@ At90sBus::At90sBus(BusInterface *ptr)
 		ReadLock0(0x58), ReadLock1(0),
 		WriteLock0(0xAC), WriteLock1(0xFF),
 		ReadFuse0(0x50), ReadFuse1(0),
-		WriteFuse0(0xAC), WriteFuse1(0xBF),
+		WriteFuse0(0xAC), WriteFuse1a(0xBF), WriteFuse1b(0xA0),
+		ReadFuseHigh0(0x58), ReadFuseHigh1(0x08),
+		WriteFuseHigh0(0xAC), WriteFuseHigh1(0xA8),
+		ReadFuseExt0(0x50), ReadFuseExt1(0x08),
+		WriteFuseExt0(0xAC), WriteFuseExt1(0xA4),
+		ReadCalib0(0x38), ReadCalib1(0),
 		p1_a(0x80), p2_a(0x7F), pflash_a(0x7F),
 		p1_b(0x00), p2_b(0xFF), pflash_b(0xFF)
 {
@@ -165,7 +159,7 @@ int At90sBus::Reset()
 
 		SPIBus::Reset();
 
-		WaitMsec(50);	// At least 20msec (AVR datasheets)
+		WaitMsec( THEAPP->GetAVRDelayAfterReset() );	// At least 20msec (AVR datasheets)
 
 		int k;
 		for (k = 0; k < 32 && !success_flag; k++)
@@ -191,55 +185,567 @@ int At90sBus::Reset()
 	return success_flag;
 }
 
-int At90sBus::WriteLockBits(int byte)
+int At90sBus::WriteLockBits(DWORD param, long model)
 {
-	int mask = WriteLock1 & ~(byte & 0x1F);
+	int val1, val2, val3, val4;
+	int val5, val6, val7, val8;
 
-	SendDataByte(WriteLock0);
-	SendDataByte(mask);
-	SendDataByte(0);
-	SendDataByte(0);
+	val1 = -1;
+	val2 = val3 = val4 = 0;
 
-	WaitMsec(twd_prog);
+	val5 = -1;
+	val6 = val7 = val8 = 0;
+
+	switch (model)
+	{
+	case AT90S1200:
+	case AT90S2313:
+	case AT90S4414:
+	case AT90S8515:
+	case AT90S2323:
+	case AT90S2343:
+	case AT90S2333:
+	case AT90S4433:
+	case AT90S4434:
+	case AT90S8535:
+	case ATmega603:
+	case ATmega103:
+	case ATtiny12:
+	case ATtiny15:
+	case ATtiny22:
+		val1 = WriteLock0;
+		val2 = WriteLock1 & ~(param & 0x06);
+		break;
+
+	case ATtiny2313:
+	case ATtiny26:
+		val1 = WriteLock0;
+		val2 = WriteLock1;
+		//
+		val4 = ~(param & 0x03);
+		break;
+
+	case ATmega8:
+	case ATmega16:
+	case ATmega161:
+	case ATmega163:
+	case ATmega323:
+	case ATmega128:
+	case ATmega64:
+	case ATmega32:
+	case ATmega162:
+	case ATmega169:
+	case ATmega8515:
+	case ATmega8535:
+		val1 = WriteLock0;
+		val2 = WriteLock1;
+		//
+		val4 = ~(param & 0x3F);
+		break;
+
+	//Only Parallel programming
+	case AT90S8534:
+	case ATtiny28:
+
+	//Only HV programming
+	case ATtiny11:
+	case ATtiny10:
+		//No Locks
+		break;
+
+	default:
+		val1 = WriteLock0;
+		val2 = WriteLock1 & ~(param & 0x06);
+		break;
+	}
+
+	if (val1 != -1)
+	{
+		SendDataByte(val1);
+		SendDataByte(val2);
+		SendDataByte(val3);
+		SendDataByte(val4);
+
+		WaitMsec(twd_prog * 10);
+	}
+
+	if (val5 != -1)
+	{
+		SendDataByte(val5);
+		SendDataByte(val6);
+		SendDataByte(val7);
+		SendDataByte(val8);
+
+		WaitMsec(twd_prog * 10);
+	}
 
 	return OK;
 }
 
-int At90sBus::WriteFuseBits(int byte)
+int At90sBus::WriteFuseBits(DWORD param, long model)
 {
-	int mask1 = WriteFuse1 & ~(byte & 0x1F);
-	int mask2 = (~byte) & 0xFF;		//Tiny12 Fuses
+	int val1, val2, val3, val4;
+	int val5, val6, val7, val8;
+	int val9, valA, valB, valC;
 
-	SendDataByte(WriteFuse0);
-	SendDataByte(mask1);
-	SendDataByte(0);
-	SendDataByte(mask2);
+	val1 = -1;
+	val2 = val3 = val4 = 0;
 
-	WaitMsec(twd_prog);
+	val5 = -1;
+	val6 = val7 = val8 = 0;
+
+	val9 = -1;
+	valA = valB = valC = 0;
+
+	switch (model)
+	{
+	case AT90S1200:
+	case AT90S2313:
+	case AT90S4414:
+	case AT90S8515:
+	case ATtiny22:
+	case ATtiny11:
+	case ATtiny10:
+	case ATtiny28:
+	case AT90S8534:
+		//No fuses
+		break;
+
+	case AT90S2323:
+	case AT90S2343:
+	case AT90S4434:
+	case AT90S8535:
+		val1 = WriteFuse0;
+		val2 = WriteFuse1a & ~(param & 1);
+		break;
+
+	case ATmega603:
+	case ATmega103:
+		val1 = WriteFuse0;
+		val2 = WriteFuse1a & ~(param & 0x0B);
+		break;
+
+	case AT90S2333:
+	case AT90S4433:
+		val1 = WriteFuse0;
+		val2 = WriteFuse1a & ~(param & 0x1F);
+		break;
+
+	case ATtiny12:
+	case ATtiny15:
+		val1 = WriteFuse0;
+		val2 = WriteFuse1b;
+		//
+		val4 = ~(param & 0xFF);
+		break;
+
+	case ATmega161:
+		val1 = WriteFuse0;
+		val2 = WriteFuse1b;
+		//
+		val4 = ~(param & 0x7F);
+		break;
+
+	case ATmega163:
+		val1 = WriteFuse0;
+		val2 = WriteFuse1b;
+		//
+		val4 = ~(param & 0xCF);
+
+		val5 = WriteFuseHigh0;
+		val6 = WriteFuseHigh1;
+		//
+		val8 = ~((param >> 8) & 0x07);
+		break;
+
+	case ATmega323:
+		val1 = WriteFuse0;
+		val2 = WriteFuse1b;
+		//
+		val4 = ~(param & 0xCF);
+
+		val5 = WriteFuseHigh0;
+		val6 = WriteFuseHigh1;
+		//
+		val8 = ~((param >> 8) & 0xCF);
+		break;
+
+	case ATmega8:
+	case ATmega16:
+	case ATmega32:
+	case ATmega8515:
+	case ATmega8535:
+		val1 = WriteFuse0;
+		val2 = WriteFuse1b;
+		//
+		val4 = ~(param & 0xFF);
+
+		val5 = WriteFuseHigh0;
+		val6 = WriteFuseHigh1;
+		//
+		val8 = ~((param >> 8) & 0xDF);	//don't allow to modify SPIEN
+		break;
+
+	case ATtiny26:
+		val1 = WriteFuse0;
+		val2 = WriteFuse1b;
+		//
+		val4 = ~(param & 0xFF);
+
+		val5 = WriteFuseHigh0;
+		val6 = WriteFuseHigh1;
+		//
+		val8 = ~((param >> 8) & 0x17);	//don't allow to modify SPIEN
+		break;
+
+	case ATmega128:
+	case ATmega64:
+	case ATmega162:
+	case ATmega169:
+		val1 = WriteFuse0;
+		val2 = WriteFuse1b;
+		//
+		val4 = ~(param & 0xFF);
+
+		val5 = WriteFuseHigh0;
+		val6 = WriteFuseHigh1;
+		//
+		val8 = ~((param >> 8) & 0xDF);	//don't allow to modify SPIEN
+
+		val9 = WriteFuseExt0;
+		valA = WriteFuseExt1;
+		//
+		valC = ~((param >> 16) & 0xFF);
+		break;
+
+	case ATtiny2313:
+		val1 = WriteFuse0;
+		val2 = WriteFuse1b;
+		//
+		val4 = ~(param & 0xFF);
+
+		val5 = WriteFuseHigh0;
+		val6 = WriteFuseHigh1;
+		//
+		val8 = ~((param >> 8) & 0xDF);	//don't allow to modify SPIEN
+
+		val9 = WriteFuseExt0;
+		valA = WriteFuseExt1;
+		//
+		valC = ~((param >> 16) & 0x01);
+		break;
+
+	default:
+		//No Fuses
+		break;
+	}
+
+	if (val1 != -1)
+	{
+		SendDataByte(val1);
+		SendDataByte(val2);
+		SendDataByte(val3);
+		SendDataByte(val4);
+
+		WaitMsec(twd_prog * 10);
+	}
+
+	if (val5 != -1)
+	{
+		SendDataByte(val5);
+		SendDataByte(val6);
+		SendDataByte(val7);
+		SendDataByte(val8);
+
+		WaitMsec(twd_prog * 10);
+	}
+
+	if (val9 != -1)
+	{
+		SendDataByte(val9);
+		SendDataByte(valA);
+		SendDataByte(valB);
+		SendDataByte(valC);
+
+		WaitMsec(twd_prog * 10);
+	}
 
 	return OK;
 }
 
-int At90sBus::ReadFuseBits()
+DWORD At90sBus::ReadFuseBits(long model)
 {
-	int retval;
+	DWORD retval = 0;
+	DWORD rv1, rv2, rv3;
 
-	SendDataByte(ReadFuse0);
-	SendDataByte(ReadFuse1);
-	SendDataByte(0);
-	retval = RecDataByte();
+	switch (model)
+	{
+	case AT90S1200:
+	case AT90S2313:
+	case AT90S4414:
+	case AT90S8515:
+		//No fuses
+		break;
+
+	case ATtiny22:
+		SendDataByte(ReadLock0);	//NB Read LOCK!!
+		SendDataByte(ReadLock1);
+		SendDataByte(0);
+		rv1 = RecDataByte();
+		retval = ~rv1 & 0x20;
+		break;
+
+	case AT90S2323:
+	case AT90S2343:
+	case AT90S4434:
+	case AT90S8535:
+		SendDataByte(ReadLock0);	//NB Read LOCK!!
+		SendDataByte(ReadLock1);
+		SendDataByte(0);
+		rv1 = RecDataByte();
+		retval = ~rv1 & 0x21;
+		break;
+
+	case ATtiny12:
+		SendDataByte(ReadFuse0);
+		SendDataByte(ReadFuse1);
+		SendDataByte(0);
+		rv1 = RecDataByte();
+		retval = ~rv1 & 0xFF;
+		break;
+	case ATtiny15:
+		SendDataByte(ReadFuse0);
+		SendDataByte(ReadFuse1);
+		SendDataByte(0);
+		rv1 = RecDataByte();
+		retval = ~rv1 & 0xF3;
+		break;
+	case AT90S2333:
+	case AT90S4433:
+		SendDataByte(ReadFuse0);
+		SendDataByte(ReadFuse1);
+		SendDataByte(0);
+		rv1 = RecDataByte();
+		retval = ~rv1 & 0x3F;
+		break;
+	case ATmega603:
+	case ATmega103:
+		SendDataByte(ReadFuse0);
+		SendDataByte(ReadFuse1);
+		SendDataByte(0);
+		rv1 = RecDataByte();
+		retval = ~rv1 & 0x2B;
+		break;
+	case ATmega161:
+		SendDataByte(ReadFuse0);
+		SendDataByte(ReadFuse1);
+		SendDataByte(0);
+		rv1 = RecDataByte();
+		retval = ~rv1 & 0x7F;
+		break;
+
+	case ATmega163:
+		SendDataByte(ReadFuse0);
+		SendDataByte(ReadFuse1);
+		SendDataByte(0);
+		rv1 = RecDataByte();
+		rv1 = ~rv1 & 0xCF;
+
+		SendDataByte(ReadFuseHigh0);
+		SendDataByte(ReadFuseHigh1);
+		SendDataByte(0);
+		rv2 = RecDataByte();
+		rv2 = ~rv2 & 0x07;
+
+		retval = (rv2 << 8) | rv1;
+		break;
+
+	case ATmega323:
+		SendDataByte(ReadFuse0);
+		SendDataByte(ReadFuse1);
+		SendDataByte(0);
+		rv1 = RecDataByte();
+		rv1 = ~rv1 & 0xCF;
+
+		SendDataByte(ReadFuseHigh0);
+		SendDataByte(ReadFuseHigh1);
+		SendDataByte(0);
+		rv2 = RecDataByte();
+		rv2 = ~rv2 & 0xCF;
+
+		retval = (rv2 << 8) | rv1;
+		break;
+
+	case ATtiny26:
+		SendDataByte(ReadFuse0);
+		SendDataByte(ReadFuse1);
+		SendDataByte(0);
+		rv1 = RecDataByte();
+		rv1 = ~rv1 & 0xFF;
+
+		SendDataByte(ReadFuseHigh0);
+		SendDataByte(ReadFuseHigh1);
+		SendDataByte(0);
+		rv2 = RecDataByte();
+		rv2 = ~rv2 & 0x1F;
+
+		retval = (rv2 << 8) | rv1;
+		break;
+
+	case ATmega8:
+	case ATmega16:
+	case ATmega32:
+	case ATmega8515:
+	case ATmega8535:
+		SendDataByte(ReadFuse0);
+		SendDataByte(ReadFuse1);
+		SendDataByte(0);
+		rv1 = RecDataByte();
+		rv1 = ~rv1 & 0xFF;
+
+		SendDataByte(ReadFuseHigh0);
+		SendDataByte(ReadFuseHigh1);
+		SendDataByte(0);
+		rv2 = RecDataByte();
+		rv2 = ~rv2 & 0xFF;
+
+		retval = (rv2 << 8) | rv1;
+		break;
+
+	case ATmega128:
+	case ATmega64:
+	case ATmega162:
+	case ATmega169:
+		SendDataByte(ReadFuse0);
+		SendDataByte(ReadFuse1);
+		SendDataByte(0);
+		rv1 = RecDataByte();
+		rv1 = ~rv1 & 0xFF;
+
+		SendDataByte(ReadFuseHigh0);
+		SendDataByte(ReadFuseHigh1);
+		SendDataByte(0);
+		rv2 = RecDataByte();
+		rv2 = ~rv2 & 0xFF;
+
+		SendDataByte(ReadFuseExt0);
+		SendDataByte(ReadFuseExt1);
+		SendDataByte(0);
+		rv3 = RecDataByte();
+		rv3 = ~rv3 & 0xFF;
+
+		retval = (rv3 << 16) | (rv2 << 8) | rv1;
+		break;
+
+	case ATtiny2313:
+		SendDataByte(ReadFuse0);
+		SendDataByte(ReadFuse1);
+		SendDataByte(0);
+		rv1 = RecDataByte();
+		rv1 = ~rv1 & 0xFF;
+
+		SendDataByte(ReadFuseHigh0);
+		SendDataByte(ReadFuseHigh1);
+		SendDataByte(0);
+		rv2 = RecDataByte();
+		rv2 = ~rv2 & 0xFF;
+
+		SendDataByte(ReadFuseExt0);
+		SendDataByte(ReadFuseExt1);
+		SendDataByte(0);
+		rv3 = RecDataByte();
+		rv3 = ~rv3 & 0x01;
+
+		retval = (rv3 << 16) | (rv2 << 8) | rv1;
+		break;
+
+	default:
+		//No Fuses
+		break;
+	}
 
 	return retval;
 }
 
-int At90sBus::ReadLockBits()
+DWORD At90sBus::ReadLockBits(long model)
 {
-	int retval;
+	DWORD retval = 0;
+	int rv1, rv2;
 
-	SendDataByte(ReadLock0);
-	SendDataByte(ReadLock1);
-	SendDataByte(0);
-	retval = RecDataByte();
+	switch (model)
+	{
+	case AT90S1200:
+	case AT90S2313:
+	case AT90S4414:
+	case AT90S8515:
+		//No read locks command
+		int code[3];
+		code[0] = ReadDeviceCode(0);
+		code[1] = ReadDeviceCode(1);
+		code[2] = ReadDeviceCode(2);
+		if (code[0] == 0x00 && code[1] == 0x01 && code[2] == 0x02)
+			retval = 0x06;	//both lock bits programmed
+		break;
+
+	case ATtiny22:
+	case AT90S2323:
+	case AT90S2343:
+	case AT90S4434:
+	case AT90S8535:
+		SendDataByte(ReadLock0);
+		SendDataByte(ReadLock1);
+		SendDataByte(0);
+		rv2 = rv1 = RecDataByte();
+		rv1 = ~rv1 & 0x80;
+		rv2 = ~rv2 & 0x40;
+		retval = (rv1 >> 6) | (rv2 >> 4);
+		break;
+
+	case ATtiny12:
+	case ATtiny15:
+	case AT90S2333:
+	case AT90S4433:
+	case ATmega603:
+	case ATmega103:
+		SendDataByte(ReadLock0);
+		SendDataByte(ReadLock1);
+		SendDataByte(0);
+		rv1 = RecDataByte();
+		retval = ~rv1 & 0x06;
+		break;
+
+	case ATtiny26:
+		SendDataByte(ReadLock0);
+		SendDataByte(ReadLock1);
+		SendDataByte(0);
+		rv1 = RecDataByte();
+		retval = ~rv1 & 0x03;
+		break;
+
+	case ATtiny2313:
+	case ATmega8:
+	case ATmega16:
+	case ATmega161:
+	case ATmega163:
+	case ATmega323:
+	case ATmega128:
+	case ATmega64:
+	case ATmega32:
+	case ATmega162:
+	case ATmega169:
+	case ATmega8515:
+	case ATmega8535:
+		SendDataByte(ReadLock0);
+		SendDataByte(ReadLock1);
+		SendDataByte(0);
+		rv1 = RecDataByte();
+		retval = ~rv1 & 0x3F;
+		break;
+
+	default:
+		//No locks
+		break;
+	}
 
 	return retval;
 }
@@ -253,14 +759,24 @@ int At90sBus::ReadDeviceCode(int addr)
 	return RecDataByte();
 }
 
+long At90sBus::ReadCalibration(int addr)
+{
+	SendDataByte(ReadCalib0);
+	SendDataByte(ReadCalib1);
+	SendDataByte(addr & 3);
+
+	return RecDataByte();
+}
+
 long At90sBus::Read(int addr, UBYTE *data, long length)
 {
 	long len;
-	int code[3];
 
-	code[0] = ReadDeviceCode(0);
-	code[1] = ReadDeviceCode(1);
-	code[2] = ReadDeviceCode(2);
+//	int code[3];
+
+//	code[0] = ReadDeviceCode(0);
+//	code[1] = ReadDeviceCode(1);
+//	code[2] = ReadDeviceCode(2);
 
 	if (addr)
 	{	//EEprom
@@ -304,7 +820,7 @@ int At90sBus::WaitReadyAfterWrite(int type, long addr, int data, long timeout)
 		}
 		else
 		{
-			rval = -1;
+			rval = E2P_TIMEOUT;
 
 			int k;
 			for (k = 0; k < timeout; k++)
@@ -316,17 +832,6 @@ int At90sBus::WaitReadyAfterWrite(int type, long addr, int data, long timeout)
 					rval = OK;
 					break;
 				}
-			/**
-				else
-				if (val != p1_a && val != p2_a &&
-					val != p1_b && val != p2_b)
-				{
-				//	rval = OK;
-				//	if (val != data)
-				//		WaitMsec(twd_prog);
-					break;
-				}
-			**/
 			}
 		}
 
@@ -341,7 +846,7 @@ int At90sBus::WaitReadyAfterWrite(int type, long addr, int data, long timeout)
 		}
 		else
 		{
-			rval = -1;
+			rval = E2P_TIMEOUT;
 
 			int k;
 			for (k = 0; k < timeout; k++)
@@ -353,17 +858,6 @@ int At90sBus::WaitReadyAfterWrite(int type, long addr, int data, long timeout)
 					rval = OK;
 					break;
 				}
-			/**
-				else
-				if (val != pflash_a &&
-					val != pflash_b)
-				{
-				//	rval = OK;
-				//	if (val != data)
-				//		WaitMsec(twd_prog);
-					break;
-				}
-			**/
 			}
 		}
 	}
@@ -372,7 +866,7 @@ int At90sBus::WaitReadyAfterWrite(int type, long addr, int data, long timeout)
 }
 
 //11/09/99
-int At90sBus::Erase()
+int At90sBus::Erase(int type)
 {
 	//Erase command
 	SendDataByte(ChipErase0);
@@ -382,6 +876,20 @@ int At90sBus::Erase()
 
 	WaitMsec(twd_erase);
 	Reset();
+
+	/** Needed by ATtiny12 **/
+	WriteProgByte(0, 0xFF);
+	WaitMsec(twd_prog);
+
+	//Erase command
+	SendDataByte(ChipErase0);
+	SendDataByte(ChipErase1);
+	SendDataByte(0);
+	SendDataByte(0);
+
+	WaitMsec(twd_erase);
+	Reset();
+	/****/
 
 	return OK;
 }
@@ -401,6 +909,8 @@ long At90sBus::Write(int addr, UBYTE const *data, long length)
 			{
 				WriteEEPByte(addr, *data);
 
+				WaitUsec(100);
+
 				//Interrupt the writing and exit (device missing?)
 				if ( WaitReadyAfterWrite(1, addr, *data) != OK )
 					return E2ERR_WRITEFAILED;
@@ -413,19 +923,6 @@ long At90sBus::Write(int addr, UBYTE const *data, long length)
 	}
 	else
 	{	//Flash Eprom
-
-	/**	11/09/99
-		//Erase command
-		SendDataByte(ChipErase0);
-		SendDataByte(ChipErase1);
-		SendDataByte(0);
-		SendDataByte(0);
-
-		WaitMsec(twd_erase);
-		Reset();
-	**/
-
-		//Write
 		for(addr = 0, len = 0; len < length; addr++, data++, len++)
 		{
 			//09/10/98 -- program only locations not equal to FF (erase set all FF)
@@ -433,7 +930,9 @@ long At90sBus::Write(int addr, UBYTE const *data, long length)
 			{
 				WriteProgByte(addr, *data);
 
-				if ( WaitReadyAfterWrite(0, addr, *data) != OK )
+				WaitUsec(100);
+
+				if ( WaitReadyAfterWrite(0, addr, *data, 2000) != OK )
 					return E2ERR_WRITEFAILED;
 			}
 

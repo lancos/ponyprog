@@ -6,7 +6,7 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2000   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2000  Claudio Lanconelli                            //
 //                                                                         //
 //  e-mail: lanconel@cs.unibo.it                                           //
 //  http://www.cs.unibo.it/~lanconel                                       //
@@ -68,8 +68,9 @@ long At250BigBus::Read(int addr, UBYTE *data, long length)
 	{
 		*data++ = RecDataByte();
 
-		if ( CheckAbort(len * 100 / length) )
-			break;
+		if ( (len % 10) == 0 )
+			if ( CheckAbort(len * 100 / length) )
+				break;
 	}
 	EndCycle();
 
@@ -112,8 +113,9 @@ long At250BigBus::Write(int addr, UBYTE const *data, long length)
 		if (!WaitEndOfWrite())
 			return 0;		//Must return 0, because > 0 (and != length) means "Abort by user"
 
-		if ( CheckAbort(len * 100 / length) )
-			break;
+		if ( (len & 1) )
+			if ( CheckAbort(len * 100 / length) )
+				break;
 	}
 	CheckAbort(100);
 

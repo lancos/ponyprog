@@ -43,9 +43,9 @@ class E24xx5 : public E24xx
 	virtual ~E24xx5();
 
 //	int Probe(int probe_size = 0);
-//	int Read(int probe = 1);
-	virtual int Write(int probe = 1);
-//	int Verify();
+//	int Read(int probe = 1, int type = ALL_TYPE);
+	virtual int Write(int probe = 1, int type = ALL_TYPE);
+//	int Verify(int type = ALL_TYPE);
 
   protected:	//--------------------------------------- protected
 

@@ -6,11 +6,13 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-1999   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2002   Claudio Lanconelli                           //
 //                                                                         //
-//  e-mail: lanconel@cs.unibo.it                                           //
-//  http://www.cs.unibo.it/~lanconel                                       //
+//  e-mail: lancos@libero.it                                               //
+//  http://www.LancOS.com                                                  //
 //                                                                         //
+//-------------------------------------------------------------------------//
+// $Id$
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -35,15 +37,18 @@
 #include "errcode.h"
 
 #ifdef	_LINUX_
-#include <sys/types.h> 
-#include <sys/stat.h> 
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <sys/time.h>
-#include <fcntl.h> 
-#include <unistd.h> 
-#include <termios.h> 
-#include <sys/ioctl.h> 
+#include <fcntl.h>
+#include <unistd.h>
+#include <termios.h>
+#include <sys/ioctl.h>
 
 #define	INVALID_HANDLE_VALUE	-1
+
+#define	LOCK_DIR	"/var/lock/uucp"
+#define	DEV_TTYS	"/dev/ttyS"
 #endif
 
 RS232Interface::RS232Interface(int com_no)
@@ -60,6 +65,8 @@ RS232Interface::RS232Interface(int com_no)
 	//NO timeouts by default
 	read_total_timeout = 0;
 	read_interval_timeout = 0;
+
+	wait_endTX_mode = false;
 
 #ifdef	_WINDOWS
 	hCom = INVALID_HANDLE_VALUE;
@@ -93,7 +100,7 @@ int RS232Interface::OpenSerial(int no)
 	if (no >= 1 && no <= MAX_COMPORTS)
 	{
 #ifdef	_WINDOWS
-		char str[8];
+		char str[MAXNUMDIGIT];
 
 		sprintf(str, "COM%d", no);
 
@@ -111,7 +118,11 @@ int RS232Interface::OpenSerial(int no)
 			GetCommState(hCom, &old_dcb);
 			GetCommTimeouts(hCom, &old_timeout);
 			GetCommMask(hCom, &old_mask);
-		//	SetCommMask(hCom, EV_TXEMPTY);
+
+			if (wait_endTX_mode)
+				SetCommMask(hCom, EV_TXEMPTY);
+			else
+				SetCommMask(hCom, 0);
 
 			SetSerialTimeouts();
 			SetSerialParams();
@@ -121,85 +132,86 @@ int RS232Interface::OpenSerial(int no)
 #else
 #ifdef	_LINUX_
 
-		char devname[MAXLINESIZE]; 
-		int chars_read; 
+		char devname[MAXPATH];
+		int chars_read;
 
-		no--;		//linux call ttyS0 COM1, ttyS1 COM2, etc..
+		no--;		//linux call ttyS0 --> COM1, ttyS1 --> COM2, etc..
 
-		// implement device locking in /var/lock/LCK..ttySx 
-		sprintf(lockname,"/var/lock/LCK..ttyS%d",no); 
-		UserDebug1(UserApp2, "RS232Interface::OpenSerial() now lock the device %s\n", lockname); 
+		// implement device locking in /var/lock/LCK..ttySx
+		snprintf(lockname, MAXPATH, LOCK_DIR "/LCK..ttyS%d", no);
+		UserDebug1(UserApp2, "RS232Interface::OpenSerial() now lock the device %s\n", lockname);
 
-		fd = open ((const char *)lockname,O_RDWR|O_EXCL|O_CREAT); 
-		if (fd < 0) 
-		{ 
-			fd = open ((const char *)lockname,O_RDONLY); 
-			lockname[0]=0; 
-			UserDebug1(UserApp2, "RS232Interface::OpenSerial Can't lock port %d\n", no); 
-			if (fd < 0) 
-				return ret_val; 
-			chars_read = read(fd,devname,MAXLINESIZE-1); 
-			devname[chars_read]=0; 
-			UserDebug1(UserApp2, "RS232Interface::OpenSeriial locked by %s\n", devname); 
-			close(fd); 
-			return ret_val; 
-		} 
+		fd = open ((const char *)lockname,O_RDWR|O_EXCL|O_CREAT);
+		if (fd < 0)
+		{
+			fd = open ((const char *)lockname,O_RDONLY);
+			lockname[0]=0;
+			UserDebug1(UserApp2, "RS232Interface::OpenSerial Can't lock port %d\n", no);
+			if (fd < 0)
+				return ret_val;
+			chars_read = read(fd,devname,MAXLINESIZE-1);
+			devname[chars_read]=0;
+			UserDebug1(UserApp2, "RS232Interface::OpenSeriial locked by %s\n", devname);
+			close(fd);
+			return ret_val;
+		}
 
-		sprintf(devname,"%10d\n", (int) getpid() ); 
-		write(fd,devname,strlen(devname)); 
+		snprintf(devname, MAXPATH, "%10d\n", (int) getpid() );
+		write(fd, devname, strlen(devname));
+		close(fd);
 		fd = INVALID_HANDLE_VALUE;
 
-		sprintf(devname,"/dev/ttyS%d",no); 
-		UserDebug1(UserApp2, "RS232Interface::OpenSerial() now open the device %s\n", devname); 
+		snprintf(devname, MAXPATH, DEV_TTYS "%d",no);
+		UserDebug1(UserApp2, "RS232Interface::OpenSerial() now open the device %s\n", devname);
 
 		fd = open ((const char *)devname, O_RDWR|O_NONBLOCK|O_EXCL);
 	//	fd = open ((const char *)devname, O_RDWR);
 
 		UserDebug1(UserApp2, "RS232Interface::OpenSerial open result = %d\n", fd);
 
-		if (fd < 0) 
+		if (fd < 0)
 		{
-			UserDebug1(UserApp2, "RS232Interface::OpenSerial can't open the device %s\n", devname); 
+			UserDebug1(UserApp2, "RS232Interface::OpenSerial can't open the device %s\n", devname);
 			unlink(lockname);
-			return ret_val; 
+			return ret_val;
 		}
-		// Check for the needed IOCTLS 
-#if defined(TIOCSBRK) && defined(TIOCCBRK) //check if available for compilation 
-		// Check if available during runtime 
-		if ((ioctl(fd,TIOCSBRK,0) == -1) || (ioctl(fd,TIOCCBRK,0) == -1)) 
-		{ 
-			UserDebug(UserApp2, "RS232Interface::OpenPort IOCTL not available\n"); 
-			return ret_val; 
-		} 
-#else 
+		// Check for the needed IOCTLS
+#if defined(TIOCSBRK) && defined(TIOCCBRK) //check if available for compilation
+		// Check if available during runtime
+		if ((ioctl(fd,TIOCSBRK,0) == -1) || (ioctl(fd,TIOCCBRK,0) == -1))
+		{
+			UserDebug(UserApp2, "RS232Interface::OpenPort IOCTL not available\n");
+			return ret_val;
+		}
+#else
 		close(fd);
 		fd = INVALID_HANDLE_VALUE;
 		unlink(lockname);
-		return ret_val; 
+		return ret_val;
 #endif	/*TIOCSBRK*/
 
 		/* open sets RTS and DTR, reset it */
-#if defined(TIOCMGET) && defined(TIOCMSET) //check if available for compilation 
-		int flags; 
- 
+#if defined(TIOCMGET) && defined(TIOCMSET) //check if available for compilation
+		int flags;
+
 		if (ioctl(fd,TIOCMGET, &flags)== -1)
 		{
-			UserDebug(UserApp2, "RS232Interface::OpenPort IOCTL not available\n"); 
+			UserDebug(UserApp2, "RS232Interface::OpenPort IOCTL not available\n");
 			close(fd);
 			fd = INVALID_HANDLE_VALUE;
 			unlink(lockname);
-			return ret_val; 
+			return ret_val;
 		}
 		else
 		{
 			flags &= ~(TIOCM_RTS|TIOCM_DTR);
 			if (ioctl(fd,TIOCMSET, &flags)== -1)
 			{
-				UserDebug(UserApp2, "RS232Interface::OpenPort IOCTL not available\n"); 
+				UserDebug(UserApp2, "RS232Interface::OpenPort IOCTL not available\n");
 				close(fd);
 				fd = INVALID_HANDLE_VALUE;
 				unlink(lockname);
-				return ret_val; 
+				return ret_val;
 			}
 		}
 #endif /*TIOCMGET */
@@ -253,7 +265,7 @@ void RS232Interface::CloseSerial()
 #ifdef	_WINDOWS
 	if ( hCom != INVALID_HANDLE_VALUE )
 	{
-//		SetCommState(hCom, &old_dcb);		//This may raise the RTS line, so invalidating the PowerOff
+//		SetCommState(hCom, &old_dcb);		//This can raise the RTS line, so invalidating the PowerOff
 		SetCommTimeouts(hCom, &old_timeout);
 		SetCommMask(hCom, old_mask);
 		PurgeComm(hCom, PURGE_TXCLEAR|PURGE_RXCLEAR);
@@ -265,7 +277,7 @@ void RS232Interface::CloseSerial()
 #ifdef	_LINUX_
 	if ( fd != INVALID_HANDLE_VALUE )
 	{
-	//	tcsetattr(fd, TCSAFLUSH, &old_termios);
+	//	tcsetattr(fd, TCSAFLUSH, &old_termios);		//This can raise the RTS line, so invalidating the PowerOff
 
 		close(fd);
 		fd = INVALID_HANDLE_VALUE;
@@ -297,7 +309,7 @@ int RS232Interface::SetSerialBreak(int state)
 	if (state) 
 		result = ioctl(fd,TIOCSBRK,0); 
 	else 
-		result = ioctl(fd,TIOCCBRK,0); 
+		result = ioctl(fd,TIOCCBRK,0);
 #else 
 	UserDebug(UserApp1, "RS232Interface::SetSerialBreak Can't get IOCTL\n"); 
 #endif 
@@ -308,6 +320,7 @@ int RS232Interface::SetSerialBreak(int state)
 	return result;
 }
 
+/**
 void RS232Interface::SetSerialEventMask(long mask)
 {
 #ifdef	_WINDOWS
@@ -315,6 +328,7 @@ void RS232Interface::SetSerialEventMask(long mask)
 		SetCommMask(hCom, mask);
 #endif
 }
+**/
 
 void RS232Interface::SerialFlushRx()
 {
@@ -353,11 +367,10 @@ void RS232Interface::WaitForTxEmpty()
 			WaitCommEvent(hCom, &evento, NULL);
 		} while ( !(evento & EV_TXEMPTY) );
 	}
-#else
-# ifdef	_LINUX_
+#endif
+#ifdef	_LINUX_
 	if ( fd != INVALID_HANDLE_VALUE )
 		tcdrain(fd);
-# endif
 #endif
 }
 
@@ -433,7 +446,7 @@ long RS232Interface::ReadSerial(BYTE *buffer, DWORD len)
 	return retval;
 }
 
-long RS232Interface::WriteSerial(BYTE *buffer, DWORD len, int wait_end_tx)
+long RS232Interface::WriteSerial(BYTE *buffer, DWORD len)
 {
 	long retval = E2ERR_OPENFAILED;
 
@@ -468,8 +481,10 @@ long RS232Interface::WriteSerial(BYTE *buffer, DWORD len, int wait_end_tx)
 # endif
 #endif
 
-	if (wait_end_tx)
+	if (wait_endTX_mode)
+	{
 		WaitForTxEmpty();
+	}
 
 	return retval;
 }
@@ -493,7 +508,7 @@ int RS232Interface::SetSerialParams(long speed, int bits, int parity, int stops,
 		if (flow_control >= 0 && flow_control <= 2)
 			actual_flowcontrol = flow_control;
 
-		char dcb_str[128];
+		char dcb_str[256];
 		DCB com_dcb;
 
 		if ( GetCommState(hCom, &com_dcb) )

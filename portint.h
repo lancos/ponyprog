@@ -6,10 +6,10 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997, 1998  Claudio Lanconelli                           //
+//  Copyright (C) 1997-2002   Claudio Lanconelli                           //
 //                                                                         //
-//  e-mail: lanconel@cs.unibo.it                                           //
-//  http://www.cs.unibo.it/~lanconel                                       //
+//  e-mail: lancos@libero.it                                               //
+//  http://www.LancOS.com                                                  //
 //                                                                         //
 //-------------------------------------------------------------------------//
 //                                                                         //
@@ -40,7 +40,7 @@
 //#endif
 
 // Maximum number of printer ports that would be installed on a system
-#define MAX_LPTPORTS	4
+#define	MAX_LPTPORTS	4
 #define	MAX_COMPORTS	4
 
 class PortInterface
@@ -61,8 +61,8 @@ class PortInterface
 		{ return last_port; }
 	int GetNoPorts() const
 		{ return no_ports; }
-	int GetSerBasePort(int no) const;
-	int GetParBasePort(int no) const;
+	int GetSerBasePort(int no);
+	int GetParBasePort(int no);
 
 	virtual int InPort(int no = -1) const;
 	virtual int OutPort(int val, int no = -1);
@@ -74,7 +74,6 @@ class PortInterface
 
 #ifdef	_WINDOWS
 	HANDLE	hCom;
-	HANDLE	hPort;
 #endif
 
 	int		write_port,		// Number of output port (write I/O port address)
@@ -84,20 +83,16 @@ class PortInterface
  private:		//------------------------------- private
 	int IOperm(int a, int b, int c);
 
-#ifdef	_WINDOWS
 	void DetectPorts();
-	void DetectPorts9x(); // Win9x version
-	void DetectPortsNT(); // WinNT version
 
-//	BYTE FLPTNumber;    // Current number of the printer port, default=1
-//	WORD FLPTBase;      // The address of the current printer port (faster)
+#ifdef	_WINDOWS
+	void DetectPorts9x();	// Win9x version
+	void DetectLPTPortsNT();	// WinNT/2000 version
+	void DetectCOMPortsNT();	// WinNT/2000 version
 
-	int LPTCount;		//Number of LPT ports on the system
-	int COMCount;		//Number of COM ports on the system
+	int LPTCount;			//Number of LPT ports on the system
+	int COMCount;			//Number of COM ports on the system
 
-   // List of port addresses installed on the system
-//	WORD FLPTAddress[MAX_LPT_PORTS+1];
-	
 	DWORD	old_mask;
 #else
 	int lcr_copy;
@@ -109,10 +104,9 @@ class PortInterface
 	int no_ports;
 
 	int ser_ports_base[MAX_COMPORTS+1];
-	int ser_ports_len[MAX_COMPORTS+1];
-
+	int ser_ports_len [MAX_COMPORTS+1];
 	int par_ports_base[MAX_LPTPORTS+1];
-	int par_ports_len[MAX_LPTPORTS+1];
+	int par_ports_len [MAX_LPTPORTS+1];
 };
 
 #endif

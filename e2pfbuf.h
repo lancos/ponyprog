@@ -6,7 +6,7 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997, 1998  Claudio Lanconelli                           //
+//  Copyright (C) 1997-2000   Claudio Lanconelli                           //
 //                                                                         //
 //  e-mail: lanconel@cs.unibo.it                                           //
 //  http://www.cs.unibo.it/~lanconel                                       //
@@ -45,8 +45,8 @@ class e2pFileBuf : public FileBuf
 	e2pFileBuf(e2AppWinInfo *wininfo = 0);
 	virtual ~e2pFileBuf();
 
-	virtual int Load(int bank = 0);
-	virtual int Save();
+	virtual int Load(int loadtype = ALL_TYPE, long relocation_offfset = 0);
+	virtual int Save(int savetype = ALL_TYPE, long relocation_offfset = 0);
 
   protected:	//--------------------------------------- protected
 

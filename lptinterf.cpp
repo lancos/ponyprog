@@ -6,10 +6,10 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997, 1998  Claudio Lanconelli                           //
+//  Copyright (C) 1997-2001   Claudio Lanconelli                           //
 //                                                                         //
-//  e-mail: lanconel@cs.unibo.it                                           //
-//  http://www.cs.unibo.it/~lanconel                                       //
+//  e-mail: lancos@libero.it                                               //
+//  http://www.LancOS.com                                                  //
 //                                                                         //
 //-------------------------------------------------------------------------//
 //                                                                         //
@@ -28,6 +28,7 @@
 // Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. //
 //                                                                         //
 //-------------------------------------------------------------------------//
+// $Id$
 //=========================================================================//
 
 #include "types.h"
@@ -39,42 +40,65 @@
 #include <windows.h>
 #endif
 
+//#include <linux/parport.h>
+//If you use latest kernel (2.4.xx) you should use standard ppdev.o module and include ppdev.h
+//otherwise install the ppuser module, and include the file ppuser.h
+#define	USE_K2_4_PPDEV	1
+
 #ifdef	_LINUX_
 #include <stdio.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/ioctl.h>
-//#include <linux/parport.h>
-#include "ppuser.h"
+
+#if USE_K2_4_PPDEV == 1
+# include "linux/ppdev.h"
+# define PARPORTDEVNAME	"/dev/parport%d"
+//N.B. be sure to issue a "chmod 666 /dev/parport?"
+#else
+# include "ppuser.h"
+# define PARPORTDEVNAME	"/dev/ppuser%d0"
+//N.B. be sure to issue a "chmod 666 /dev/ppuser?"
 #endif
 
+#endif
+
+#include "globals.h"
 #include "lptinterf.h"
 
 #define	MAX_LPTPORTS	3
-
 
 LPTInterface::LPTInterface()
 {
 	UserDebug(Constructor, "LPTInterface::LPTInterface() constructor\n");
 
 	last_ctrl = last_data = 0;
-	lpt_control.LPPort = 1;		//by default use LPT1
 #ifdef	_WINDOWS
+	lpt_control.LPPort = 1;		//by default use LPT1
+
 	hLPTCONVxD = CreateFile("\\\\.\\LPTCON.VXD",0,0,NULL,0,
 							FILE_FLAG_DELETE_ON_CLOSE|FILE_FLAG_OVERLAPPED,
 							NULL);
 #else
+	lpt_control.LPPort = 0;		//no used port
+
+	hLpt = INVALID_HANDLE_VALUE;
+/**
 	char name[16];
-	sprintf(name, "/dev/ppuser%d0", lpt_control.LPPort-1);
+	int val;
+	sprintf(name, PARPORTDEVNAME, lpt_control.LPPort-1);
 	hLpt = open(name, O_RDWR);
 	if (hLpt != INVALID_HANDLE_VALUE)
 	{
-		if ( ioctl(hLpt, PPCLAIM, 0) )
+		val = ioctl(hLpt, PPCLAIM, 0);
+		if ( val )
 		{
+			UserDebug1(UserApp2, "LPTInterface::LPTInterface() ** ppclaim = %d\n", val);
 			close(hLpt);
 			hLpt = INVALID_HANDLE_VALUE;
 		}
 	}
+**/
 #endif
 }
 
@@ -86,20 +110,32 @@ LPTInterface::~LPTInterface()
 	CloseHandle(hLPTCONVxD);
 	hLPTCONVxD = INVALID_HANDLE_VALUE;
 #else
+	Close();
+#endif
+}
+
+void LPTInterface::Close()
+{
+#ifndef	_WINDOWS
+	UserDebug1(UserApp2, "LPTInterface::Close() I ** hLpt = %d\n", hLpt);
+
 	if (hLpt != INVALID_HANDLE_VALUE)
 	{
 		ioctl(hLpt, PPRELEASE, 0);
 		close(hLpt);
+		hLpt = INVALID_HANDLE_VALUE;
+		lpt_control.LPPort = 0;
 	}
+
+	UserDebug1(UserApp2, "LPTInterface::Close() O ** hLpt = %d\n", hLpt);
 #endif
 }
-
 
 void LPTInterface::SetPort(int port_no)
 {
 	UserDebug1(UserApp2, "LPTInterface::SetPort(%d)\n", port_no);
 
-	if ( port_no >= 1 && port_no <= MAX_LPTPORTS ) 
+	if ( port_no >= 1 && port_no <= MAX_LPTPORTS )
 	{
 		lpt_control.LPPort = port_no;
 
@@ -109,8 +145,9 @@ void LPTInterface::SetPort(int port_no)
 			ioctl(hLpt, PPRELEASE, 0);
 			close(hLpt);
 		}
-		char name[16];
-		sprintf(name, "/dev/ppuser%d0", lpt_control.LPPort-1);
+
+		char name[MAXPATH];
+		sprintf(name, PARPORTDEVNAME, lpt_control.LPPort-1);
 		hLpt = open(name, O_RDWR);
 		if (hLpt != INVALID_HANDLE_VALUE)
 		{
@@ -142,9 +179,9 @@ int LPTInterface::InDataPort(int port_no)
 #ifdef	_WINDOWS
 	if ( hLPTCONVxD != INVALID_HANDLE_VALUE )
 	{
-		if ( port_no >= 1 && port_no <= MAX_LPTPORTS ) 
+		if ( port_no >= 1 && port_no <= MAX_LPTPORTS )
 			lpt_control.LPPort = port_no;
-    
+
 		UBYTE value;
 		if ( !DeviceIoControl(hLPTCONVxD, LPTCON_READ,
 					&lpt_control, sizeof(LPTCONDATA),
@@ -154,8 +191,8 @@ int LPTInterface::InDataPort(int port_no)
 			ret_val = value;
 	}
 #else
-	if ( port_no >= 1 && port_no <= MAX_LPTPORTS 
-			&& port_no != lpt_control.LPPort ) 
+	if ( port_no >= 1 && port_no <= MAX_LPTPORTS
+			&& port_no != lpt_control.LPPort )
 	{
 		lpt_control.LPPort = port_no;
 		if (hLpt != INVALID_HANDLE_VALUE)
@@ -163,8 +200,8 @@ int LPTInterface::InDataPort(int port_no)
 			ioctl(hLpt, PPRELEASE, 0);
 			close(hLpt);
 		}
-		char name[16];
-		sprintf(name, "/dev/ppuser%d0", lpt_control.LPPort-1);
+		char name[MAXPATH];
+		sprintf(name, PARPORTDEVNAME, lpt_control.LPPort-1);
 		hLpt = open(name, O_RDWR);
 		if (hLpt != INVALID_HANDLE_VALUE)
 		{
@@ -212,17 +249,17 @@ int LPTInterface::OutDataPort(int val, int port_no)
 #ifdef	_WINDOWS
 	if ( hLPTCONVxD != INVALID_HANDLE_VALUE )
 	{
-		if ( port_no >= 1 && port_no <= MAX_LPTPORTS ) 
+		if ( port_no >= 1 && port_no <= MAX_LPTPORTS )
 			lpt_control.LPPort = port_no;
 		lpt_control.LPByte = last_data = (UBYTE)val;
-    
+
 		ret_val = DeviceIoControl(hLPTCONVxD, LPTCON_WRITE_DATA,
 					&lpt_control, sizeof(LPTCONDATA),
 					NULL, 0, NULL, 0) ? OK : E2ERR_NOTINSTALLED;
 	}
 #else
-	if ( port_no >= 1 && port_no <= MAX_LPTPORTS 
-			&& port_no != lpt_control.LPPort ) 
+	if ( port_no >= 1 && port_no <= MAX_LPTPORTS
+			&& port_no != lpt_control.LPPort )
 	{
 		lpt_control.LPPort = port_no;
 		if (hLpt != INVALID_HANDLE_VALUE)
@@ -230,8 +267,8 @@ int LPTInterface::OutDataPort(int val, int port_no)
 			ioctl(hLpt, PPRELEASE, 0);
 			close(hLpt);
 		}
-		char name[16];
-		sprintf(name, "/dev/ppuser%d0", lpt_control.LPPort-1);
+		char name[MAXPATH];
+		sprintf(name, PARPORTDEVNAME, lpt_control.LPPort-1);
 		hLpt = open(name, O_RDWR);
 		if (hLpt != INVALID_HANDLE_VALUE)
 		{
@@ -263,10 +300,10 @@ int LPTInterface::OutDataPort(int val, int port_no)
 
 
  //
- //   Bit           
- //    0 - Pin 1    
- //    1 - Pin 14   
- //    2 - Pin 16   
+ //   Bit
+ //    0 - Pin 1
+ //    1 - Pin 14
+ //    2 - Pin 16
  //    3 - Pin 17      NOTE: Bits 5-7 are not used.
  //
  /////////////////////////////////////////////////////////////////
@@ -280,17 +317,17 @@ int LPTInterface::OutControlPort(int val, int port_no)
 #ifdef	_WINDOWS
 	if ( hLPTCONVxD != INVALID_HANDLE_VALUE )
 	{
-		if ( port_no >= 1 && port_no <= MAX_LPTPORTS ) 
+		if ( port_no >= 1 && port_no <= MAX_LPTPORTS )
 			lpt_control.LPPort = port_no;
 		lpt_control.LPByte = last_ctrl = (UBYTE)val & 0x0F;
-    
+
 		ret_val = DeviceIoControl(hLPTCONVxD, LPTCON_WRITE_CONTROL,
 					&lpt_control, sizeof(LPTCONDATA),
 					NULL, 0, NULL, 0) ? OK : E2ERR_NOTINSTALLED;
 	}
 #else
-	if ( port_no >= 1 && port_no <= MAX_LPTPORTS 
-			&& port_no != lpt_control.LPPort ) 
+	if ( port_no >= 1 && port_no <= MAX_LPTPORTS
+			&& port_no != lpt_control.LPPort )
 	{
 		lpt_control.LPPort = port_no;
 		if (hLpt != INVALID_HANDLE_VALUE)
@@ -298,8 +335,8 @@ int LPTInterface::OutControlPort(int val, int port_no)
 			ioctl(hLpt, PPRELEASE, 0);
 			close(hLpt);
 		}
-		char name[16];
-		sprintf(name, "/dev/ppuser%d0", lpt_control.LPPort-1);
+		char name[MAXPATH];
+		sprintf(name, PARPORTDEVNAME, lpt_control.LPPort-1);
 		hLpt = open(name, O_RDWR);
 		if (hLpt != INVALID_HANDLE_VALUE)
 		{
@@ -354,7 +391,7 @@ int LPTInterface::OutDataMask(int mask, int val)
 		ret_val = OutDataPort(last_data);
 /***
 		lpt_control.LPByte = last_data;
-    
+
 		ret_val = DeviceIoControl(hLPTCONVxD, LPTCON_WRITE_DATA,
 					&lpt_control, sizeof(LPTCONDATA),
 					NULL, 0, NULL, 0) ? OK : E2ERR_NOTINSTALLED;
@@ -390,7 +427,7 @@ int LPTInterface::OutControlMask(int mask, int val)
 		ret_val = OutControlPort(last_ctrl);
 /****
 		lpt_control.LPByte = last_ctrl;
-    
+
 		ret_val = DeviceIoControl(hLPTCONVxD, LPTCON_WRITE_CONTROL,
 					&lpt_control, sizeof(LPTCONDATA),
 					NULL, 0, NULL, 0) ? OK : E2ERR_NOTINSTALLED;

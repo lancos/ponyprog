@@ -1,16 +1,18 @@
 //=========================================================================//
 //-------------------------------------------------------------------------//
-// busio.h -- Header for for BusIO class                             //
+// busio.h -- Header for for BusIO class                                   //
 // This file is part of PonyProg.                                          //
 //-------------------------------------------------------------------------//
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997, 1998  Claudio Lanconelli                           //
+//  Copyright (C) 1997-2001  Claudio Lanconelli                            //
 //                                                                         //
-//  e-mail: lanconel@cs.unibo.it                                           //
-//  http://www.cs.unibo.it/~lanconel                                       //
+//  e-mail: lancos@libero.it                                               //
+//  http://www.LancOS.com                                                  //
 //                                                                         //
+//-------------------------------------------------------------------------//
+// $Id$
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -57,9 +59,25 @@ class BusIO : public Wait
 
 	virtual long Read(int addr, UBYTE *data, long length) = 0;
 	virtual long Write(int addr,UBYTE const *data, long length) = 0;
+	virtual int Erase(int type = 0)
+		{ return NOTSUPPORTED; }
 
-	virtual int Erase()
+	virtual int ReadDeviceCode(int addr)
 		{ return OK; }
+	virtual int WriteLockBits(DWORD val, long model = 0)
+		{ return OK; }
+	virtual int WriteFuseBits(DWORD val, long model = 0)
+		{ return OK; }
+	virtual DWORD ReadLockBits(long model = 0)
+		{ return 0; }
+	virtual DWORD ReadFuseBits(long model = 0)
+		{ return 0; }
+
+	virtual long ReadCalibration(int addr = 0)
+		{ return -1; }			//No calibration value available
+
+	virtual int CompareMultiWord(UBYTE *data1, UBYTE *data2, ULONG length, int split)
+		{ return memcmp(data1, data2, length); }
 
 	int GetErrNo()
 		{ return errno; }

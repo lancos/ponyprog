@@ -6,11 +6,13 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2000   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2002  Claudio Lanconelli                            //
 //                                                                         //
-//  e-mail: lanconel@cs.unibo.it                                           //
-//  http://www.cs.unibo.it/~lanconel                                       //
+//  e-mail: lancos@libero.it                                               //
+//  http://www.LancOS.com                                                  //
 //                                                                         //
+//-------------------------------------------------------------------------//
+// $Id$
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -34,6 +36,8 @@
 #include "at93cbus.h"
 #include "errcode.h"
 
+#include "e2app.h"
+
 //Siamo sicuri BIGENDIAN?? Il formato HexIntel e` little-endian
 //  e quindi anche le AT90S1200
 #define	_BIG_ENDIAN_
@@ -56,11 +60,69 @@ At93cBus::At93cBus(BusInterface *ptr)
 		ReadCode(06),
 		WriteCode(05),
 		WriteEnableCode(04),
+		EraseAllCode(04),
+		PrClearCode(07),
 		loop_timeout(8000),
-		address_len(6)		//9346
+		address_len(6),		//9346
+		organization(ORG16)
 {
 	UserDebug(Constructor, "At93cBus::At93cBus()\n");
 }
+
+int At93cBus::Erase(int type)
+{
+	clearCS();
+	setCS();
+
+	SendCmdOpcode(WriteEnableCode);
+	SendDataWord(0xFFFF, address_len);
+
+	clearCS();
+	setCS();
+
+	SendCmdOpcode(EraseAllCode);
+	SendDataWord((2 << (address_len-2)), address_len);
+
+	clearCS();
+	setCS();
+
+	SendCmdOpcode(WriteEnableCode);
+	SendDataWord(0, address_len);
+
+	return 1;
+}
+
+
+/**** Protect disable sequence:
+	clearCS();
+	PRE = 0;
+	setCS();
+
+	SendCmdOpcode(WriteEnableCode);		//WEN
+	SendDataWord(0xFFFF, address_len);
+
+	clearCS();
+	PRE = 1;
+	setCS();
+
+	SendCmdOpcode(WriteEnableCode);		//PREN
+	SendDataWord(0xFFFF, address_len);
+
+	clearCS();
+	PRE = 1;
+	setCS();
+
+	SendCmdOpcode(PrClearCode);			//PRCLEAR
+	SendDataWord(0xFFFF, address_len);
+
+	clearCS();
+	PRE = 0;
+	setCS();
+
+	SendCmdOpcode(WriteEnableCode);		//WDS
+	SendDataWord(0, address_len);
+****/
+
 
 //ATTENZIONE!!! Le 93CXX vengono lette e scritte una WORD per volta,
 // non a BYTE
@@ -75,8 +137,14 @@ long At93cBus::Read(int addr, UBYTE *data, long length)
 
 	addr = 0;
 
+	int inc;
+	if (organization == ORG16)
+		inc = 2;
+	else
+		inc = 1;
+
 	//Dal piu` significativo al meno significativo
-	for (len = 0; len < length; len += 2)
+	for (len = 0; len < length; len += inc)
 	{	//17/08/98 -- now repeat the command every word
 		clearCS();
 		setCS();
@@ -85,18 +153,26 @@ long At93cBus::Read(int addr, UBYTE *data, long length)
 		SendCmdOpcode(ReadCode);
 		SendAddress(addr++, address_len);
 
-		UWORD val = RecDataWord();
+		UWORD val = RecDataWord(organization);
 
+		if (organization == ORG16)
+		{
 #ifdef	_BIG_ENDIAN_
-		*data++ = (UBYTE)(val >> 8);
-		*data++ = (UBYTE)(val & 0xFF);
+			*data++ = (UBYTE)(val >> 8);
+			*data++ = (UBYTE)(val & 0xFF);
 #else
-		*data++ = (UBYTE)(val & 0xFF);
-		*data++ = (UBYTE)(val >> 8);
+			*data++ = (UBYTE)(val & 0xFF);
+			*data++ = (UBYTE)(val >> 8);
 #endif
+		}
+		else
+		{
+			*data++ = (UBYTE)(val & 0xFF);
+		}
 
-		if ( CheckAbort(len * 100 / length) )
-			break;
+		if ( (len % 4) == 0 )
+			if ( CheckAbort(len * 100 / length) )
+				break;
 	}
 	CheckAbort(100);
 
@@ -112,7 +188,7 @@ long At93cBus::Write(int addr, UBYTE const *data, long length)
 	if (addr > 0)
 		address_len = addr;
 
-	clearCS();			//17/08/98 -- forse non necessario
+	clearCS();			//17/08/98 -- may be it's not needed
 	setCS();
 
 	SendCmdOpcode(WriteEnableCode);
@@ -121,35 +197,45 @@ long At93cBus::Write(int addr, UBYTE const *data, long length)
 	clearCS();
 	setCS();
 
-	length >>= 1;	//contatore da byte a word
+	if (organization == ORG16)
+		length >>= 1;	//byte to word  counter
+
 	for (curaddr = 0; curaddr < length; curaddr++)
 	{
 		UWORD val;
 
+		if (organization == ORG16)
+		{
 #ifdef	_BIG_ENDIAN_
-		val  = (UWORD)(*data++) << 8;
-		val |= (UWORD)(*data++);
+			val  = (UWORD)(*data++) << 8;
+			val |= (UWORD)(*data++);
 #else
-		val  = (UWORD)(*data++);
-		val |= (UWORD)(*data++) << 8;
+			val  = (UWORD)(*data++);
+			val |= (UWORD)(*data++) << 8;
 #endif
+		}
+		else
+		{
+			val = *data++;
+		}
+
 		//Send command opcode
 		SendCmdOpcode(WriteCode);
 		SendAddress(curaddr, address_len);
-		SendDataWord(val);
+		SendDataWord(val, organization);
 
 #if 1
 		if ( WaitReadyAfterWrite(loop_timeout) )
 			return 0;		//- 07/08/99 a number >0 but != length mean "User abort"
-		//	break;
 #else
 		WaitMsec(10);
 #endif
 		clearCS();
 		setCS();
 
-		if ( CheckAbort(curaddr * 100 / length) )
-			break;
+		if ( (curaddr & 1) )
+			if ( CheckAbort(curaddr * 100 / length) )
+				break;
 	}
 
 	SendCmdOpcode(WriteEnableCode);
@@ -157,5 +243,8 @@ long At93cBus::Write(int addr, UBYTE const *data, long length)
 
 	CheckAbort(100);
 
-	return curaddr << 1;		//word to byte counter
+	if (organization == ORG16)
+		curaddr <<= 1;		//word to byte counter
+
+	return curaddr;
 }

@@ -6,10 +6,10 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997, 1998  Claudio Lanconelli                           //
+//  Copyright (C) 1997-2001   Claudio Lanconelli                           //
 //                                                                         //
-//  e-mail: lanconel@cs.unibo.it                                           //
-//  http://www.cs.unibo.it/~lanconel                                       //
+//  e-mail: lancos@libero.it                                               //
+//  http://www.LancOS.com                                                  //
 //                                                                         //
 //-------------------------------------------------------------------------//
 //                                                                         //
@@ -28,6 +28,7 @@
 // Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. //
 //                                                                         //
 //-------------------------------------------------------------------------//
+// $Id$
 //=========================================================================//
 
 #ifndef	_AT89SBUS_H
@@ -43,15 +44,15 @@ class At89sBus : public At90sBus
 
 	long Read(int addr, UBYTE *data, long length);
 	long Write(int addr, UBYTE const *data, long length);
-	
-	virtual int Reset();
-	virtual int Erase();
 
-	int ReadDeviceCode(int addr);
-	int WriteLockBits(int byte);
-	int WriteFuseBits(int byte);
-	int ReadLockBits();
-	int ReadFuseBits();
+	virtual int Reset();
+	virtual int Erase(int type = 0);
+
+//	int ReadDeviceCode(int addr);
+	int WriteLockBits(DWORD val, long model = 0);
+	int WriteFuseBits(DWORD val, long model = 0);
+	DWORD ReadLockBits(long model = 0);
+	DWORD ReadFuseBits(long model = 0);
 
 	void SetDelay();
 
@@ -65,7 +66,7 @@ class At89sBus : public At90sBus
 	const BYTE ReadEEPMem;
 	const BYTE WriteEEPMem;
 	const BYTE WriteLock0, WriteLock1;
-	
+
 	int ReadEEPByte(long addr);
 	void WriteEEPByte(long addr, int data);
 	int ReadProgByte(long addr);

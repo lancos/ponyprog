@@ -6,11 +6,13 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2000  Claudio Lanconelli                            //
+//  Copyright (C) 1997-2002  Claudio Lanconelli                            //
 //                                                                         //
-//  e-mail: lanconel@cs.unibo.it                                           //
-//  http://www.cs.unibo.it/~lanconel                                       //
+//  e-mail: lancos@libero.it                                               //
+//  http://www.LancOS.com                                                  //
 //                                                                         //
+//-------------------------------------------------------------------------//
+// $Id$
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -43,15 +45,16 @@ class At90sBus : public SPIBus
 
 	long Read(int addr, UBYTE *data, long length);
 	long Write(int addr, UBYTE const *data, long length);
-	
+
 	virtual int Reset();
-	virtual int Erase();
+	virtual int Erase(int type = 0);
 
 	virtual int ReadDeviceCode(int addr);
-	virtual int WriteLockBits(int byte);
-	virtual int WriteFuseBits(int byte);
-	virtual int ReadLockBits();
-	virtual int ReadFuseBits();
+	virtual int WriteLockBits(DWORD byte, long model = 0);
+	virtual int WriteFuseBits(DWORD byte, long model = 0);
+	virtual DWORD ReadLockBits(long model = 0);
+	virtual DWORD ReadFuseBits(long model = 0);
+	virtual long ReadCalibration(int addr = 0);
 
  protected:		//------------------------------- protected
 
@@ -69,8 +72,13 @@ class At90sBus : public SPIBus
 	const BYTE ReadLock0, ReadLock1;
 	const BYTE WriteLock0, WriteLock1;
 	const BYTE ReadFuse0, ReadFuse1;
-	const BYTE WriteFuse0, WriteFuse1;
-	
+	const BYTE WriteFuse0, WriteFuse1a, WriteFuse1b;
+	const BYTE ReadFuseHigh0, ReadFuseHigh1;
+	const BYTE WriteFuseHigh0, WriteFuseHigh1;
+	const BYTE ReadFuseExt0, ReadFuseExt1;
+	const BYTE WriteFuseExt0, WriteFuseExt1;
+	const BYTE ReadCalib0, ReadCalib1;
+
 	int ReadEEPByte(long addr);
 	void WriteEEPByte(long addr, int data);
 	int ReadProgByte(long addr);

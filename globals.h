@@ -6,10 +6,10 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-1999   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2001   Claudio Lanconelli                           //
 //                                                                         //
-//  e-mail: lanconel@cs.unibo.it                                           //
-//  http://www.cs.unibo.it/~lanconel                                       //
+//  e-mail: lancos@libero.it                                               //
+//  http://www.LancOS.com                                                  //
 //                                                                         //
 //-------------------------------------------------------------------------//
 //                                                                         //
@@ -28,16 +28,31 @@
 // Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. //
 //                                                                         //
 //-------------------------------------------------------------------------//
+// $Id$
 //=========================================================================//
 
 #ifndef	_GLOBALS_H
 #define	_GLOBALS_H
 
-# define	APPNAME	"PonyProg"
+#ifdef	_PONYPROG_
+# define	APPNAME		"PonyProg2000"
 # define	AUTHORNAME	"Claudio Lanconelli"
-# define	APPNAME_EXT	"Serial Device Programmer"
+# define	AUTHORMAIL	"lancos@libero.it"
+# define	AUTHORWEB	"http://www.LancOS.com"
+# define	APPNAME_EXT	STR_APPNAME_EXT
+#endif
 
 #define	THEAPP	((e2App*)theApp)
+
+#ifdef	MAX_PATH
+#define	MAXPATH	MAX_PATH
+#else
+#define	MAXPATH	1024
+#endif
+
+#define	MAXMSG	256
+#define	MAXFNAMEMSG	40
+#define	MAXNUMDIGIT	64
 
 #define	NO_OF_FILETYPE	LAST_FT
 enum FileType {
@@ -45,6 +60,7 @@ enum FileType {
 	INTEL,
 	MOTOS,
 	BIN,
+	CSM,
 	LAST_FT
 };
 
@@ -54,10 +70,14 @@ enum HInterfaceType {
 	//Interface Identification
 	SIPROG_API = 1,
 	SIPROG_IO,
-	EASYI2C_COM,
-	EASYI2C_LPT,
+	EASYI2C_API,
+	EASYI2C_IO,
 	AVRISP,
-	AVRISPIO,
+	AVRISP_IO,
+	DT006_API,
+	DT006_IO,
+	JDM_API,
+//	JDM_IO,
 	LAST_HT
 };
 
@@ -67,7 +87,11 @@ enum BusType {
 	//Bus Type Identification
 	I2C = 1,
 	AT90S,
-	MEGAS,
+	MEGA103,
+	MEGA16x,
+	MEGA8x,
+	TINY2x,
+	MEGA128,
 	AT1200S,
 	AT89S,
 	AT93C,
@@ -76,9 +100,21 @@ enum BusType {
 	PICB,
 	SXB,
 	SDEB,
+	PICNEWB,
+	IMBUS,
+	PIC12B,
+	X2444B,
+	S2430B,
 	LAST_BT
 };
 
 #define	AUTOSIZE_ID	64768
+
+
+#define	PROG_TYPE	1
+#define	DATA_TYPE	2
+#define	CONFIG_TYPE	4
+
+#define	ALL_TYPE	(PROG_TYPE|DATA_TYPE|CONFIG_TYPE)
 
 #endif

@@ -6,10 +6,10 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997, 1998  Claudio Lanconelli                           //
+//  Copyright (C) 1997-2001   Claudio Lanconelli                           //
 //                                                                         //
-//  e-mail: lanconel@cs.unibo.it                                           //
-//  http://www.cs.unibo.it/~lanconel                                       //
+//  e-mail: lancos@libero.it                                               //
+//  http://www.LancOS.com                                                  //
 //                                                                         //
 //-------------------------------------------------------------------------//
 //                                                                         //
@@ -28,6 +28,7 @@
 // Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. //
 //                                                                         //
 //-------------------------------------------------------------------------//
+// $Id$
 //=========================================================================//
 
 #ifndef	_ATMEGABUS_H
@@ -38,23 +39,24 @@
 class AtMegaBus : public At90sBus
 {
  public:		//------------------------------- public
-	AtMegaBus(BusInterface *ptr = 0);
+	AtMegaBus(BusInterface *ptr = 0, int wpage_size = 256, bool page_poll = false);		//Default to ATmega103
 
-//	long Read(int addr, UBYTE *data, long length);
 	long Write(int addr, UBYTE const *data, long length);
-	
-//	virtual int Reset();
 
-//	int ReadDeviceCode(int addr);
-//	int WriteFuseBits(int write_lock, int read_lock);
+	void SetPageSize(int size);
+	int GetPageSize() const;
+	void SetFlashPagePolling(bool val);
+	bool GetFlashPagePolling() const;
 
  protected:		//------------------------------- protected
 
-	void WriteProgPage(long addr, UBYTE const *data, long page_size);
+	void WriteProgPage(long addr, UBYTE const *data, long page_size, long timeout = 20000);
+	bool CheckBlankPage(UBYTE const *data, ULONG length);
 
  private:		//------------------------------- private
 
-	int CheckBlankPage(UBYTE const *data, ULONG length);
+	bool enable_flashpage_polling;
+	int write_page_size;
 };
 
 #endif

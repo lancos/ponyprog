@@ -1,15 +1,15 @@
 //=========================================================================//
 //-------------------------------------------------------------------------//
-// at89sbus.cpp -- AT90Sxxxx (AVR micro) Bus Driver                        //
+// at89sbus.cpp -- AT89Sxxxx (Core51 micro) Bus Driver                     //
 // This file is part of PonyProg.                                          //
 //-------------------------------------------------------------------------//
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2000  Claudio Lanconelli                            //
+//  Copyright (C) 1997-2001  Claudio Lanconelli                            //
 //                                                                         //
-//  e-mail: lanconel@cs.unibo.it                                           //
-//  http://www.cs.unibo.it/~lanconel                                       //
+//  e-mail: lancos@libero.it                                               //
+//  http://www.LancOS.com                                                  //
 //                                                                         //
 //-------------------------------------------------------------------------//
 //                                                                         //
@@ -28,6 +28,7 @@
 // Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. //
 //                                                                         //
 //-------------------------------------------------------------------------//
+// $Id$
 //=========================================================================//
 
 #include "types.h"
@@ -85,6 +86,9 @@ void At89sBus::SetDelay()
 	case SLOW:
 		n = 30;
 		break;
+	case VERYSLOW:
+		n = 100;
+		break;
 	default:
 		n = 15;
 		break;
@@ -123,7 +127,10 @@ int At89sBus::Reset(void)
 
 	SetDelay();
 
-	WaitMsec(50);	// At least 20msec (AVR datasheet)
+	twd_prog = 20;
+	twd_erase = 50;
+
+	WaitMsec( THEAPP->GetAT89DelayAfterReset() );	// Almeno 20msec dai datasheet AVR atmel
 
 	SendDataByte(EnableProg0);
 	SendDataByte(EnableProg1);
@@ -132,40 +139,35 @@ int At89sBus::Reset(void)
 	return OK;
 }
 
-int At89sBus::WriteLockBits(int byte)
+int At89sBus::WriteLockBits(DWORD val, long model)
 {
-	int mask = 0xff & ~byte;
+	int mask = 0xff & ~val;
 
 	SendDataByte(WriteLock0);
-	SendDataByte(mask | WriteLock1);	//Atmel datasheets don't specify what bits are LB1, LB2, LB3!!
+	SendDataByte(mask|WriteLock1);	//Atmel datasheets don't specify what bits are LB1, LB2, LB3!!
 	SendDataByte(0);
 
-	WaitMsec(20);		//4msec dai datasheet Atmel
+	WaitMsec(twd_prog * 5);		//4msec dai datasheet Atmel
 
 	return OK;
 }
 
-int At89sBus::WriteFuseBits(int byte)
+int At89sBus::WriteFuseBits(DWORD val, long model)
 {
 	return OK;
 }
 
-int At89sBus::ReadLockBits()
+DWORD At89sBus::ReadLockBits(long model)
 {
 	return OK;
 }
 
-int At89sBus::ReadFuseBits()
+DWORD At89sBus::ReadFuseBits(long model)
 {
 	return OK;
 }
 
-int At89sBus::ReadDeviceCode(int addr)
-{
-	return OK;
-}
-
-int At89sBus::Erase()
+int At89sBus::Erase(int type)
 {
 	//Erase command
 	SendDataByte(ChipErase0);
@@ -181,11 +183,6 @@ int At89sBus::Erase()
 long At89sBus::Read(int addr, UBYTE *data, long length)
 {
 	long len;
-//	int code[3];
-//
-//	code[0] = ReadDeviceCode(0);
-//	code[1] = ReadDeviceCode(1);
-//	code[2] = ReadDeviceCode(2);
 
 	if (addr)
 	{	//EEprom
@@ -221,7 +218,7 @@ int At89sBus::WaitReadyAfterWrite(int type, long addr, int data, long timeout)
 
 #if 0
 	rval = OK;
-	WaitMsec(5);		//4msec dai datasheet Atmel
+	WaitMsec(twd_prog);		//4msec dai datasheet Atmel
 #else
 	rval = -1;
 

@@ -44,7 +44,11 @@
 class BusInterface
 {
  public:		//------------------------------- public
-//	BusInterface();
+	BusInterface()
+	{
+		cmd2cmd_delay = 0;
+		installed = 0;
+	}
 //	virtual ~BusInterface();
 
 	virtual int Open(int port) = 0;
@@ -52,18 +56,20 @@ class BusInterface
 
 	virtual int TestOpen(int port)
 	{
-		UserDebug1(UserApp1, "BusInterface::TestPort(%d) IN\n", port);
+		UserDebug1(UserApp1, "BusInterface::TestOpen(%d) IN\n", port);
 
 		int ret_val = TestSave(port);
 
 		TestRestore();
 
-		UserDebug1(UserApp2, "BusInterface::TestPort() = %d OUT\n", ret_val);
+		UserDebug1(UserApp2, "BusInterface::TestOpen() = %d OUT\n", ret_val);
 
 		return ret_val;
 	}
 	virtual int TestPort(int port)
 	{
+		UserDebug1(UserApp1, "BusInterface::TestPort(%d) IN\n", port);
+
 		return TestOpen(port);
 	}
 	virtual int TestSave(int port)
@@ -106,6 +112,8 @@ class BusInterface
 		{ }
 
 	virtual void SetDataOut(int sda = 1) = 0;
+	virtual void SetInvDataOut(int sda = 1)
+		{ SetDataOut(!sda); }
 	virtual void SetClock(int scl = 1) = 0;
 	virtual int GetDataIn() = 0;
 	virtual int GetClock() = 0;
@@ -114,6 +122,11 @@ class BusInterface
 		{ }
 	virtual int IsClockDataUP() = 0;
 	virtual int IsClockDataDOWN() = 0;
+
+	int GetCmd2CmdDelay() const
+		{ return cmd2cmd_delay; }
+	void SetCmd2CmdDelay(int delay)
+		{ if (delay >= 0) cmd2cmd_delay = delay; }
 
 	int IsInstalled() const
 		{ return installed; }
@@ -126,6 +139,7 @@ class BusInterface
 
  private:		//------------------------------- private
 	int		installed;		// 0 --> not installed, <> 0 number if the installed port
+	int		cmd2cmd_delay;	// <> 0 if a delay between commands is needed
 };
 
 #endif

@@ -38,7 +38,7 @@
 #include "eeprom.h"
 #include "sdebus.h"
 
-class Sde2506 : public EEProm
+class Sde2506 : public Device
 {
   public:		//---------------------------------------- public
 
@@ -46,14 +46,14 @@ class Sde2506 : public EEProm
 	virtual ~Sde2506();
 
 	int Probe(int probe_size = 0);
-	int Read(int probe = 1);
-	int Write(int probe = 1);
-	int Verify();
+	int Read(int probe = 1, int type = ALL_TYPE);
+	int Write(int probe = 1, int type = ALL_TYPE);
+	int Verify(int type = ALL_TYPE);
 
   protected:	//--------------------------------------- protected
 
 	Sde2506Bus *GetBus()
-		{ return (Sde2506Bus *)EEProm::GetBus(); }
+		{ return (Sde2506Bus *)Device::GetBus(); }
 
   private:		//--------------------------------------- private
 

@@ -57,6 +57,8 @@ class LPTInterface
 	LPTInterface();
 	virtual ~LPTInterface();
 
+	void Close();
+
 	void SetPort(int port_no);
 	int InDataPort(int port_no = 0);
 	int OutDataPort(int val, int port_no = 0);

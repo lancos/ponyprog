@@ -6,10 +6,10 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1998-2000  Claudio Lanconelli                            //
+//  Copyright (C) 1998-2003  Claudio Lanconelli                            //
 //                                                                         //
-//  e-mail: lanconel@cs.unibo.it                                           //
-//  http://www.cs.unibo.it/~lanconel                                       //
+//  e-mail: lancos@libero.it                                               //
+//  http://www.LancOS.com                                                  //
 //                                                                         //
 //-------------------------------------------------------------------------//
 //                                                                         //
@@ -28,6 +28,7 @@
 // Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. //
 //                                                                         //
 //-------------------------------------------------------------------------//
+// $Id$
 //=========================================================================//
 
 #include <stdio.h>
@@ -53,24 +54,32 @@ Wait::~Wait()
 int Wait::bogokips = 0;
 int Wait::htimer = -1;
 
+#ifdef	WIN32
+LARGE_INTEGER Wait::mlpf;
+#endif
+
 //Check for a good hardware usec timer
 int Wait::CheckHwTimer()
 {
 #ifdef	WIN32
 	LARGE_INTEGER i1,i2;
-	htimer = QueryPerformanceFrequency(&i1);
 
-	htimer = 0;		//Disable by default
+	htimer = 0;								//Disable by default
 
-	int k;
-	for (k = 0; k < 50; k++)
+	if ( QueryPerformanceFrequency(&mlpf) )		//return ticks per second if hw support high resolution timer
 	{
-		QueryPerformanceCounter(&i1);
-		QueryPerformanceCounter(&i2);
-		if ( (i2.QuadPart - i1.QuadPart) < 10 )
+		long usec = (long)(8 * mlpf.QuadPart / 1000000);	//test with 5 usec
+
+		int k;
+		for (k = 0; k < 50; k++)
 		{
-			htimer = 1;		//Enable for fast computers
-			break;
+			QueryPerformanceCounter(&i1);
+			QueryPerformanceCounter(&i2);
+			if ( (i2.QuadPart - i1.QuadPart) < usec )
+			{
+				htimer = 1;		//Enable for fast computers
+				break;
+			}
 		}
 	}
 #else
@@ -125,7 +134,10 @@ void Wait::WaitMsec(int msec)
 	usleep(msec * 1000);
 #else
 # ifdef _WINDOWS
-	Sleep(msec);
+	if (msec > 30)
+		Sleep(msec);
+	else
+		WaitUsec(msec * 1000);
 # endif
 #endif
 }
@@ -133,8 +145,7 @@ void Wait::WaitMsec(int msec)
 /* Switch optimization OFF, so the compiler don't remove
  * the wait loop
  */
-
-#ifdef	WIN32
+#ifndef __GNUC__
 #pragma optimize( "", off )
 #endif
 
@@ -146,9 +157,12 @@ void Wait::WaitUsec(int usec)
 		LARGE_INTEGER i1, i2;
 
 		QueryPerformanceCounter(&i1);
+
+		long i_usec = (long)(usec * mlpf.QuadPart / 1000000);
+
 		do {
 			QueryPerformanceCounter(&i2);
-		} while ( (int)(i2.QuadPart - i1.QuadPart) < usec );
+		} while ( (long)(i2.QuadPart - i1.QuadPart) < i_usec );
 #else
 		struct timeval t1, t2;
 

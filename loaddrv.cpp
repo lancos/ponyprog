@@ -5,6 +5,7 @@
 #include <windows.h>
 #include <stdio.h>
 
+#include "globals.h"
 #include "loaddrv.h"
 
 //---------------------------------------------------------------------------
@@ -12,12 +13,18 @@
 //---------------------------------------------------------------------------
 
 // DriverLINX DLL filename
-static const char LIBRARY_FILENAME[] = "DLPortIO.dll";
+//static const char LIBRARY_FILENAME[] = "DLPortIO.dll";
+#define	LIBRARY_FILENAME	"DLPortIO.dll"
 
 // WinNT DriverLINX Information
-static const char DRIVER_NAME[] = "DLPortIO";
-static const char DISPLAY_NAME[] = "DriverLINX Port I/O Driver";
-static const char DRIVER_GROUP[] = "SST miniport drivers";
+//static const char DRIVER_NAME[] = "DLPortIO";
+//static const char DISPLAY_NAME[] = "DriverLINX Port I/O Driver";
+//static const char DRIVER_GROUP[] = "SST miniport drivers";
+#define	DRIVER_NAME		"DLPortIO"
+#define	DRIVER_EXT		".SYS"
+#define	DRIVER_DIR		"\\DRIVERS"
+#define	DISPLAY_NAME	"DriverLINX Port I/O Driver"
+#define	DRIVER_GROUP	"SST miniport drivers"
 
 // globals
 //HINSTANCE hInst = NULL;
@@ -30,32 +37,33 @@ static bool FRunningWinNT;	// True when we're running Windows NT
 static bool FDrvPrevInst;   // DriverLINX driver already installed?
 static bool FDrvPrevStart;  // DriverLINX driver already running?
 
-static char FDriverPath[512]; // Full path of WinNT driver
-static char FDLLPath[512];    // Full path of DriverLINX DLL
-static char FLastError[512];  // Last error which occurred in Open/CloseDriver()
+static char FDriverPath[MAXPATH]; // Full path of WinNT driver
+static char FDLLPath[MAXPATH];    // Full path of DriverLINX DLL
+static char FLastError[MAXMSG];  // Last error which occurred in Open/CloseDriver()
 
 void InitDrvLoader()
 {
-   // Are we running Windows NT?
-   OSVERSIONINFO os;
-   memset(&os, NULL, sizeof(OSVERSIONINFO));
-   os.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-   GetVersionEx(&os);
-   FRunningWinNT=(os.dwPlatformId==VER_PLATFORM_WIN32_NT);
+	// Are we running Windows NT?
+	OSVERSIONINFO os;
+	memset(&os, NULL, sizeof(OSVERSIONINFO));
+	os.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+	GetVersionEx(&os);
+	FRunningWinNT=(os.dwPlatformId==VER_PLATFORM_WIN32_NT);
 
-   // Set default WinNT driver path
-   char Buffer[MAX_PATH];
-   GetSystemDirectory(Buffer, MAX_PATH);
-   strcpy(FDriverPath, Buffer);
-   strcat(FDriverPath, "\\DRIVERS");
+	// Set default WinNT driver path
+	char Buffer[MAX_PATH];
+	GetSystemDirectory(Buffer, MAX_PATH);
+	strncpy(FDriverPath, Buffer, MAXPATH);
+	if ( strlen(Buffer) + strlen(DRIVER_DIR) < MAXPATH )
+		strcat(FDriverPath, DRIVER_DIR);
 
-   // Set the default DLL path
-   strcpy(FDLLPath,"");
+	// Set the default DLL path
+	strcpy(FDLLPath,"");
 
-   FActiveHW=false;  // DLL/Driver not loaded
-   FHardAccess=true; // Not used, default true
+	FActiveHW=false;  // DLL/Driver not loaded
+	FHardAccess=true; // Not used, default true
 
-   strcpy(FLastError,"");    // No errors yet
+	strcpy(FLastError,"");    // No errors yet
 }
 
 char *GetLastErrorMsg()
@@ -131,44 +139,51 @@ bool DisconnectSCM()
 //---------------------------------------------------------------------------
 bool DriverInstall()
 {
-   SC_HANDLE hService; // Handle to the new service
-   DWORD dwStatus = 0; // Assume success, until we prove otherwise
+	SC_HANDLE hService; // Handle to the new service
+	DWORD dwStatus = 0; // Assume success, until we prove otherwise
 
-   FDrvPrevInst=false; // Assume the driver wasn't installed previously
+	FDrvPrevInst=false; // Assume the driver wasn't installed previously
 
-   // Path including filename
-   static char DriverPath[1024];
-   
-   sprintf(DriverPath, "%s\\%s.SYS", FDriverPath, DRIVER_NAME);
+	// Path including filename
+	static char DriverPath[MAXPATH];
 
-   // Is the DriverLINX driver already in the SCM? If so,
-   // indicate success and set FDrvPrevInst to true.
-   hService=OpenService(hSCMan, DRIVER_NAME, SERVICE_QUERY_STATUS);
-   if (hService!=NULL)
-   {
-      FDrvPrevInst=true;            // Driver previously installed, don't remove
-      CloseServiceHandle(hService); // Close the service
-      return true;                  // Success
-   }
+	if ( strlen(FDriverPath) + strlen("\\" DRIVER_NAME DRIVER_EXT) < MAXPATH )
+	{
+		strncpy(DriverPath, FDriverPath, MAXPATH);
+		strcat(DriverPath, "\\" DRIVER_NAME DRIVER_EXT);
+	}
+	else
+		strncpy(DriverPath, DRIVER_NAME ".SYS", MAXPATH);
+	DriverPath[MAXPATH-1] = '\0';
 
-   // Add to our Service Control Manager's database
-   hService=CreateService(
-               hSCMan,
-               DRIVER_NAME,
-               DISPLAY_NAME,
-               SERVICE_START | SERVICE_STOP | DELETE | SERVICE_QUERY_STATUS,
-               SERVICE_KERNEL_DRIVER,
-               SERVICE_DEMAND_START,
-               SERVICE_ERROR_NORMAL,
-               DriverPath,
-               DRIVER_GROUP,
-               NULL, NULL, NULL, NULL);
+	// Is the DriverLINX driver already in the SCM? If so,
+	// indicate success and set FDrvPrevInst to true.
+	hService=OpenService(hSCMan, DRIVER_NAME, SERVICE_QUERY_STATUS);
+	if (hService!=NULL)
+	{
+		FDrvPrevInst=true;            // Driver previously installed, don't remove
+		CloseServiceHandle(hService); // Close the service
+		return true;                  // Success
+	}
 
-   if (hService==NULL)
-      dwStatus=GetLastError();
-   else
-      // Close the service for now...
-      CloseServiceHandle(hService);
+	// Add to our Service Control Manager's database
+	hService=CreateService(
+				hSCMan,
+				DRIVER_NAME,
+				DISPLAY_NAME,
+				SERVICE_START | SERVICE_STOP | DELETE | SERVICE_QUERY_STATUS,
+				SERVICE_KERNEL_DRIVER,
+				SERVICE_DEMAND_START,
+				SERVICE_ERROR_NORMAL,
+				DriverPath,
+				DRIVER_GROUP,
+				NULL, NULL, NULL, NULL);
+
+	if (hService==NULL)
+		dwStatus=GetLastError();
+	else
+	// Close the service for now...
+		CloseServiceHandle(hService);
 
 	if (dwStatus!=0)
 		sprintf(FLastError, "DriverInstall: Error #%lu", dwStatus);

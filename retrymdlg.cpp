@@ -45,29 +45,9 @@ static DialogCmd DefaultCmds[] =
 	{C_Label,lblMainMsg,0," ",NoList,CA_None,isSens,NoFrame,0,0},
 //#endif
 
-	{C_Button, M_Cancel, 0,
-#ifdef	_WINDOWS
-		" &Abort ",
-#else
-		"  Abort ",
-#endif
-			NoList,CA_DefaultButton, isSens,NoFrame, 0, lblMainMsg},
-
-	{C_Button, M_OK, 0,
-#ifdef	_WINDOWS
-		" &Retry ",
-#else
-		"  Retry ",
-#endif
-			NoList, CA_None, isSens, NoFrame, M_Cancel, lblMainMsg},
-
-	{C_Button, btnIgnore, 0,
-#ifdef	_WINDOWS
-		" &Ignore ",
-#else
-		"  Ignore ",
-#endif
-			NoList, CA_None, isSens, NoFrame, M_OK, lblMainMsg},
+	{C_Button, M_Cancel, 0, STR_BTNABORT, NoList,CA_DefaultButton, isSens,NoFrame, 0, lblMainMsg},
+	{C_Button, M_OK, 0, STR_BTNRETRY, NoList, CA_None, isSens, NoFrame, M_Cancel, lblMainMsg},
+	{C_Button, btnIgnore, 0, STR_BTNIGNORE, NoList, CA_None, isSens, NoFrame, M_OK, lblMainMsg},
 
 	{C_EndOfList,0,0,0,0,CA_None,0,0,0}
 };

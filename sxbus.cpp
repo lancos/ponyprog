@@ -57,7 +57,7 @@ SxBus::SxBus(BusInterface *ptr)
 // Distruttore
 SxBus::~SxBus()
 {
-	Close();
+//	Close();
 }
 
 /**

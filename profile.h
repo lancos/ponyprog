@@ -6,10 +6,10 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997, 1998  Claudio Lanconelli                           //
+//  Copyright (C) 1997-2002   Claudio Lanconelli                           //
 //                                                                         //
-//  e-mail: lanconel@cs.unibo.it                                           //
-//  http://www.cs.unibo.it/~lanconel                                       //
+//  e-mail: lancos@libero.it                                               //
+//  http://www.LancOS.com                                                  //
 //                                                                         //
 //-------------------------------------------------------------------------//
 //                                                                         //
@@ -33,9 +33,21 @@
 #ifndef _PROFILE_H
 #define _PROFILE_H
 
-#define	MAXFILENAME	256
+#define	RELOAD_idx		0
+#define	READFLASH_idx	1
+#define	READEEP_idx		2
+#define	BYTESWAP_idx	3
+#define	SETID_idx		4
+#define READOSCCAL_idx  5
+#define	ERASE_idx		6
+#define	FLASH_idx		7
+#define	EEPROM_idx		8
+#define	LOCK_idx		9
+
+
+#define	MAXFILENAME	512
 #define	MAXLINENUM	1024
-#define MAXLINESIZE	256
+#define MAXLINESIZE	512
 
 class Profile
 {

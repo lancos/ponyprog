@@ -6,11 +6,13 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997, 1998  Claudio Lanconelli                           //
+//  Copyright (C) 1997-2001  Claudio Lanconelli                            //
 //                                                                         //
-//  e-mail: lanconel@cs.unibo.it                                           //
-//  http://www.cs.unibo.it/~lanconel                                       //
+//  e-mail: lancos@libero.it                                               //
+//  http://www.LancOS.com                                                  //
 //                                                                         //
+//-------------------------------------------------------------------------//
+// $Id$
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -43,8 +45,29 @@ class At93cBus : public MicroWireBus
 
 	long Read(int addr, UBYTE *data, long length);
 	long Write(int addr, UBYTE const *data, long length);
+
+	void SetOrganization(int org)
+	{
+		if (org == ORG8 || org == ORG16)
+		{
+			organization = org;
+		}
+	}
+	int GetOrganization() const
+	{
+		return organization;
+	}
+
+	int Erase(int type = 0);
+
+	int CalcAddressSize(int mem_size) const
+		{ return MicroWireBus::CalcAddressSize(mem_size, organization); }
+
 	
  protected:		//------------------------------- protected
+
+	int SendCmdOpcode(int opcode)
+		{ return SendDataWord(opcode, 3); }
 
  private:		//------------------------------- private
 
@@ -52,6 +75,8 @@ class At93cBus : public MicroWireBus
 	const UBYTE ReadCode;
 	const UBYTE WriteCode;
 	const UBYTE WriteEnableCode;
+	const UBYTE EraseAllCode;
+	const UBYTE PrClearCode;
 
 	const long loop_timeout;
 	
@@ -62,6 +87,7 @@ class At93cBus : public MicroWireBus
 		{ ClearReset(); }	//27/05/98
 
 	int address_len;
+	int organization;
 };
 
 #endif

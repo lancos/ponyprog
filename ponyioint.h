@@ -40,7 +40,7 @@ class PonyIOInterface : public BusInterface, public PortInterface
 {
  public:		//------------------------------- public
 	PonyIOInterface();
-//	virtual ~PonyIOInterface();
+	virtual ~PonyIOInterface();
 
 	virtual int Open(int com_no);
 	virtual void Close();

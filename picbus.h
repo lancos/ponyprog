@@ -6,7 +6,7 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997, 1998  Claudio Lanconelli                           //
+//  Copyright (C) 1997-2000 Claudio Lanconelli                             //
 //                                                                         //
 //  e-mail: lanconel@cs.unibo.it                                           //
 //  http://www.cs.unibo.it/~lanconel                                       //
@@ -45,7 +45,7 @@ class PicBus : public BusIO
 	long Read(int addr, UBYTE *data, long length);
 	long Write(int addr, UBYTE const *data, long length);
 	
-	int Erase();
+	int Erase(int type = ALL_TYPE);
 
 	int Reset();
 
@@ -54,8 +54,8 @@ class PicBus : public BusIO
 
 	void DisableCodeProtect();
 
-	int CompareSingleWord(UWORD data1, UWORD data2, UWORD mask = 0x3fff);
-	int CompareMultiWord(UBYTE *data1, UBYTE *data2, ULONG length, int prog = 1);
+	int CompareSingleWord(UWORD data1, UWORD data2, UWORD mask);
+	int CompareMultiWord(UBYTE *data1, UBYTE *data2, ULONG length, int split);
 
 	void SetDelay();
 
@@ -65,30 +65,11 @@ class PicBus : public BusIO
 	long RecDataWord(int wlen = 16);
 	int WaitReadyAfterWrite(long timeout = 5000);
 
-	int SendCmdCode(int opcode)
-		{ return SendDataWord(opcode, 6); }
-	int SendProgCode(UWORD data)
-	{
-		//the code is 14 bit data with leading and trailing 0's
-		data &= ProgMask;
-		data <<= 1;
-		return SendDataWord(data);
-	}
-	UWORD RecvProgCode()
-	{
-		return (UWORD)(RecDataWord() >> 1) & ProgMask;
-	}
-	int SendDataCode(UWORD data)
-	{
-		//the code is 8 bit data with leading and trailing 0's
-		data &= DataMask;
-		data <<= 1;
-		return SendDataWord(data);
-	}
-	UWORD RecvDataCode()
-	{
-		return (UWORD)(RecDataWord() >> 1) & DataMask;
-	}
+	int SendCmdCode(int opcode);
+	int SendProgCode(UWORD data);
+	UWORD RecvProgCode();
+	int SendDataCode(UWORD data);
+	UWORD RecvDataCode();
 
 	void SetMCLR()
 		{ busI->SetControlLine(1); }
@@ -105,10 +86,10 @@ class PicBus : public BusIO
 	const UBYTE LoadDataCode;
 	const UBYTE LoadConfigCode;
 	const UBYTE IncAddressCode;
-	const UBYTE BeginEraseProgCode;
-	const UBYTE BeginProgOnlyCode;
 	const UBYTE EraseProgMem;
 	const UBYTE EraseDataMem;
+	const UBYTE BeginEraseProgCode;
+	const UBYTE BeginProgOnlyCode;
 
  private:		//------------------------------- private
 
@@ -116,13 +97,13 @@ class PicBus : public BusIO
 	int RecDataBit();
 
 	void bitDI(int b)
-		{ busI->SetDataOut(!b); }
+		{ busI->SetInvDataOut(b); }
 
 	void setDI()
-		{ busI->SetDataOut(0); }
+		{ busI->SetInvDataOut(1); }
 
 	void clearDI()
-		{ busI->SetDataOut(1); }
+		{ busI->SetInvDataOut(0); }
 
 	void setCLK()
 		{ busI->SetClock(1); }

@@ -6,10 +6,10 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-1999  Claudio Lanconelli                            //
+//  Copyright (C) 1997-2001  Claudio Lanconelli                            //
 //                                                                         //
-//  e-mail: lanconel@cs.unibo.it                                           //
-//  http://www.cs.unibo.it/~lanconel                                       //
+//  e-mail: lancos@libero.it                                               //
+//  http://www.LancOS.com                                                  //
 //                                                                         //
 //-------------------------------------------------------------------------//
 //                                                                         //
@@ -28,6 +28,7 @@
 // Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. //
 //                                                                         //
 //-------------------------------------------------------------------------//
+// $Id$
 //=========================================================================//
 
 #include <stdio.h>
@@ -64,14 +65,15 @@ enum {
 	rdbLpt3,
 
 	frmPolsep, 
-	frmPolsel, 
+	frmPolsel,
 	lblPol1, 
 	chkPol1, 
 	chkPol2, 
 	chkPol3, 
 	chkPol4, 
 
-	btnTestDlg		// add your id's here
+	btnTestDlg,		// add your id's here
+	btnCheckHw
 };
 //@V@:EndIds
 
@@ -79,15 +81,18 @@ static char *interfList[] = {
 	//Serial interfaces list
 	" SI Prog API ",
 	" SI Prog I/O ",
-	" Easy I2CBus ",
+	"   JDM API   ",
 	0
 };
 
 static char *interfListL[] = {
 	//Parallel interfaces list
-	" Easy I2CBus ",
 	" Avr ISP API ",
 	" Avr ISP I/O ",
+	" DT-006 API  ",
+	" DT-006 I/O  ",
+	" EasyI2C API ",
+	" EasyI2C I/O ",
 	0
 };
 
@@ -95,59 +100,43 @@ static char *interfListL[] = {
 static DialogCmd DefaultCmds[] =
 {
 	{C_Label, lblMainMsg, 0,"X",NoList,CA_MainMsg,isSens,NoFrame, 0, 0},
-	{C_Frame,frmPortsel,0,"COM/LPT interface",NoList,CA_None,isSens,NoFrame,0,lblMainMsg},
-	{C_RadioButton,rdbComPort,0," Serial  ",NoList,CA_None,isSens,frmPortsel,0,0},
+
+	{C_Frame,frmPortsel,0,STR_LBLCOMLPT,NoList,CA_None,isSens,NoFrame,0,lblMainMsg},
+	{C_RadioButton,rdbComPort,0,STR_LBLSERIAL,NoList,CA_None,isSens,frmPortsel,0,0},
 	{C_Blank,blk0,0,"  ",NoList,CA_None,isSens,frmPortsel,rdbComPort,0},
 	{C_Blank,blk1,0,"  ",NoList,CA_None,isSens,frmPortsel,blk0,0},
 	{C_Blank,blk2,0,"  ",NoList,CA_None,isSens,frmPortsel,blk1,0},
-	{C_RadioButton,rdbLptPort,0," Parallel  ",NoList,CA_None,isSens,frmPortsel,blk2,0},
+	{C_RadioButton,rdbLptPort,0,STR_LBLPARALLEL,NoList,CA_None,isSens,frmPortsel,blk2,0},
 
-	{C_Frame,frmInterf,0," Interface select ",NoList,CA_NoBorder,isSens,NoFrame,0,frmPortsel},
-	{C_ComboBox,cbxInterf,0," Interface type ",(void*)interfList,CA_None,isSens,frmInterf,0,0},
+	{C_Frame,frmInterf,0,STR_LBLINTERFSEL,NoList,CA_NoBorder,isSens,NoFrame,0,frmPortsel},
+	{C_ComboBox,cbxInterf,0,STR_LBLINTERFTYPE,(void*)interfList,CA_None,isSens,frmInterf,0,0},
 
-	{C_Frame,frmComsel,0," COM Port select ",NoList,CA_None,isSens,frmInterf,0,cbxInterf},
-	{C_RadioButton,rdbCom1,0," COM1  ",NoList,CA_None,isSens,frmComsel,0,0},
-	{C_RadioButton,rdbCom2,0," COM2  ",NoList,CA_None,isSens,frmComsel,0,rdbCom1},
-	{C_RadioButton,rdbCom3,0," COM3  ",NoList,CA_None,isSens,frmComsel,rdbCom1,0},
-	{C_RadioButton,rdbCom4,0," COM4  ",NoList,CA_None,isSens,frmComsel,rdbCom1,rdbCom1},
+	{C_Frame,frmComsel,0,STR_LBLCOMSELECT,NoList,CA_None,isSens,frmInterf,0,cbxInterf},
+	{C_RadioButton,rdbCom1,0,STR_LBLCOM1,NoList,CA_None,isSens,frmComsel,0,0,		0, STR_TTCOM1},
+	{C_RadioButton,rdbCom2,0,STR_LBLCOM2,NoList,CA_None,isSens,frmComsel,0,rdbCom1, 0, STR_TTCOM2},
+	{C_RadioButton,rdbCom3,0,STR_LBLCOM3,NoList,CA_None,isSens,frmComsel,rdbCom1,0, 0, STR_TTCOM3},
+	{C_RadioButton,rdbCom4,0,STR_LBLCOM4,NoList,CA_None,isSens,frmComsel,rdbCom1,rdbCom1, 0, STR_TTCOM4},
 
-	{C_Frame,frmInterfL,0," Interface select ",NoList,CA_NoBorder,isSens,NoFrame,frmInterf,frmPortsel},
-	{C_ComboBox,cbxInterfL,0," Interface type ",(void*)interfListL,CA_None,isSens,frmInterfL,0,0},
+	{C_Frame,frmInterfL,0,STR_LBLINTERFSEL,NoList,CA_NoBorder,isSens,NoFrame,frmInterf,frmPortsel},
+	{C_ComboBox,cbxInterfL,0,STR_LBLINTERFTYPE,(void*)interfListL,CA_None,isSens,frmInterfL,0,0},
 
-	{C_Frame,frmLptsel,0," LPT Port select ",NoList,CA_None,isSens,frmInterfL,0,cbxInterfL},
-	{C_RadioButton,rdbLpt1,0," LPT1  ",NoList,CA_None,isSens,frmLptsel,0,0},
-	{C_RadioButton,rdbLpt2,0," LPT2  ",NoList,CA_None,isSens,frmLptsel,0,rdbLpt1},
-	{C_RadioButton,rdbLpt3,0," LPT3  ",NoList,CA_None,isSens,frmLptsel,rdbLpt1,0},
+	{C_Frame,frmLptsel,0,STR_LBLLPTSELECT,NoList,CA_None,isSens,frmInterfL,0,cbxInterfL},
+	{C_RadioButton,rdbLpt1,0,STR_LBLLPT1,NoList,CA_None,isSens,frmLptsel,0,0,		0, STR_TTLPT1},
+	{C_RadioButton,rdbLpt2,0,STR_LBLLPT2,NoList,CA_None,isSens,frmLptsel,0,rdbLpt1,	0, STR_TTLPT2},
+	{C_RadioButton,rdbLpt3,0,STR_LBLLPT3,NoList,CA_None,isSens,frmLptsel,rdbLpt1,0,	0, STR_TTLPT3},
 
-	{C_Frame,frmPolsel,0," Polarity  select ",NoList,CA_None,isSens,NoFrame,0,frmInterf}, 
-	{C_Label,lblPol1,0," Select Polarity of the Control lines",NoList,CA_None,isSens,frmPolsel,0,0}, 
-	{C_CheckBox,chkPol1,0," Invert Reset ",NoList,CA_None,isSens,frmPolsel,0,lblPol1}, 
-	{C_CheckBox,chkPol2,0," Invert SCKL  ",NoList,CA_None,isSens,frmPolsel,0,chkPol1}, 
-	{C_CheckBox,chkPol3,0," Invert D-IN  ",NoList,CA_None,isSens,frmPolsel,chkPol1,lblPol1}, 
-	{C_CheckBox,chkPol4,0," Invert D-OUT ",NoList,CA_None,isSens,frmPolsel,chkPol1,chkPol1}, 
+	{C_Frame,frmPolsel,0,STR_LBLSELPOLARITY,NoList,CA_None,isSens,NoFrame,0,frmInterf},
+	{C_Label,lblPol1,0,STR_LBLSELPOLARITY,NoList,CA_None,isSens,frmPolsel,0,0},
+	{C_CheckBox,chkPol1,0,STR_LBLINVRESET,NoList,CA_None,isSens,frmPolsel,0,lblPol1},
+	{C_CheckBox,chkPol2,0,STR_LBLINVSCK,NoList,CA_None,isSens,frmPolsel,0,chkPol1},
+	{C_CheckBox,chkPol3,0,STR_LBLINVDATAIN,NoList,CA_None,isSens,frmPolsel,chkPol1,lblPol1},
+	{C_CheckBox,chkPol4,0,STR_LBLINVDATAOUT,NoList,CA_None,isSens,frmPolsel,chkPol1,chkPol1},
 
-	{C_Button,M_Cancel,0,
-#ifdef	_WINDOWS
-		" &Cancel ",
-#else
-		"  Cancel ",
-#endif
-			NoList,CA_None,isSens,NoFrame,0,frmPolsel}, 
-	{C_Button,M_OK,0,
-#ifdef	_WINDOWS
-		" &OK ",
-#else
-		"  OK ",
-#endif
-			NoList,CA_DefaultButton,isSens,NoFrame,M_Cancel,frmPolsel}, 
+	{C_Button,M_Cancel,0,STR_BTNCANC, NoList,CA_None,isSens,NoFrame,0,frmPolsel}, 
+	{C_Button,M_OK,0,STR_BTNOK,	NoList,CA_DefaultButton,isSens,NoFrame,M_Cancel,frmPolsel},
 
-	{C_Button,btnTestDlg,0,
-#ifdef	_WINDOWS
-		" &Probe ",
-#else
-		"  Probe ",
-#endif
-			NoList,CA_None,isSens,NoFrame,M_OK,frmPolsel}, 
+	{C_Button,btnTestDlg,0,STR_BTNPROBE,NoList,CA_None,isSens,NoFrame,M_OK,frmPolsel},
+//	{C_Button,btnCheckHw,0,STR_BTNCHECKHW,NoList,CA_None,isSens,NoFrame,btnTestDlg,frmPolsel},
 
 	{C_EndOfList,0,0,0,0,CA_None,0,0,0}
 };
@@ -156,7 +145,7 @@ static DialogCmd DefaultCmds[] =
 
 //=========================>>> e2Dialog::e2Dialog <<<====================
 e2Dialog::e2Dialog(vBaseWindow* bw, char* title) :
-		vDialog(bw, 0, title),
+		vModalDialog(bw, title),
 			lpt_no(2),
 			com_no(3)
 {
@@ -191,22 +180,24 @@ void e2Dialog::DialogDisplayed()
 //====================>>> e2Dialog::UpdateDialog <<<=======================
 void e2Dialog::UpdateDialog(int init, int type)
 {
+	UserDebug2(UserApp1, "e2Dialog::UpdateDialog() IN *** init=%d, type=%d\n", init, type);
+
 	extern int TypeToInterfVector(HInterfaceType type);
 	extern int TypeToInterfIndex(HInterfaceType type);
 
 	if (init)
 		type = TypeToInterfVector(interf_type);
 
-	// care for the polarity control check boxes 
+	// care for the polarity control check boxes
 
-	if (THEAPP->GetPolarity() & RESETINV) 
-		SetValue(chkPol1,1,Checked); 
-	if (THEAPP->GetPolarity() & CLOCKINV) 
-		SetValue(chkPol2,1,Checked); 
-	if (THEAPP->GetPolarity() & DININV) 
-		SetValue(chkPol3,1,Checked); 
-	if (THEAPP->GetPolarity() & DOUTINV) 
-		SetValue(chkPol4,1,Checked); 
+	if (THEAPP->GetPolarity() & RESETINV)
+		SetValue(chkPol1,1,Checked);
+	if (THEAPP->GetPolarity() & CLOCKINV)
+		SetValue(chkPol2,1,Checked);
+	if (THEAPP->GetPolarity() & DININV)
+		SetValue(chkPol3,1,Checked);
+	if (THEAPP->GetPolarity() & DOUTINV)
+		SetValue(chkPol4,1,Checked);
 
 	if (type)
 	{
@@ -218,7 +209,7 @@ void e2Dialog::UpdateDialog(int init, int type)
 			SetValue(rdbLpt1 + lpt_no - 1, 1, Value);
 			SetValue(rdbCom1 + com_no - 1, 1, Value);
 		}
-		
+
 		int k;
 		for (k = 0; k < 3; k++)
 		{
@@ -242,7 +233,7 @@ void e2Dialog::UpdateDialog(int init, int type)
 			SetValue(rdbCom1 + com_no - 1, 1, Value);
 			SetValue(rdbLpt1 + lpt_no - 1, 1, Value);
 		}
-		
+
 		int k;
 		for (k = 0; k < 4; k++)
 		{
@@ -256,10 +247,13 @@ void e2Dialog::UpdateDialog(int init, int type)
 			SetValue(rdbLpt1 + k, 0, Sensitive);
 		SetValue(cbxInterfL, 0, Sensitive);
 	}
+	UserDebug(UserApp1, "e2Dialog::UpdateDialog() OUT ***\n");
 }
 
 int e2Dialog::Test(int p, int open_only) const
 {
+	UserDebug2(UserApp1, "e2Dialog::Test() IN *** p=%d, open_only=%d\n", p, open_only);
+
 	HInterfaceType old_interf = THEAPP->GetInterfaceType();
 	int test;
 
@@ -275,6 +269,8 @@ int e2Dialog::Test(int p, int open_only) const
 	else
 		test = THEAPP->TestPort(p, open_only);
 
+	UserDebug1(UserApp1, "e2Dialog::Test() = %d *** OUT\n", test);
+
 	return test;
 }
 
@@ -288,7 +284,6 @@ void e2Dialog::DialogCommand(ItemVal id, ItemVal retval, CmdType ctype)
 	UserDebug2(CmdEvents,"e2Dialog::DialogCommand(id:%d, val:%d)\n",id, retval)
 
 	vNoticeDialog note(this);
-	char str[64];
 
 	switch (id)		// We will do some things depending on value
 	{
@@ -327,38 +322,38 @@ void e2Dialog::DialogCommand(ItemVal id, ItemVal retval, CmdType ctype)
 		break;
 	  }
 
-	case chkPol1: 
-	 { 
-	        if (retval) 
-	                THEAPP->SetPolarity(THEAPP->GetPolarity()| RESETINV); 
-	        else 
-	                THEAPP->SetPolarity(THEAPP->GetPolarity()& ~RESETINV); 
-	        break; 
-	 } 
-	case chkPol2: 
-	 { 
-	        if (retval) 
-	                THEAPP->SetPolarity(THEAPP->GetPolarity() | CLOCKINV); 
-	        else                 
-	                THEAPP->SetPolarity(THEAPP->GetPolarity() & ~CLOCKINV); 
-	        break;               
-	 }                          
-	case chkPol3:                
-	 {                          
-	        if (retval)          
-	                THEAPP->SetPolarity(THEAPP->GetPolarity() | DININV); 
-	        else                 
-	                THEAPP->SetPolarity(THEAPP->GetPolarity() & ~DININV); 
-	        break;               
-	 }                          
-	case chkPol4:                
-	 {                          
-	        if (retval)          
-	                THEAPP->SetPolarity(THEAPP->GetPolarity() | DOUTINV); 
-	        else                                              
-	                THEAPP->SetPolarity(THEAPP->GetPolarity() & ~DOUTINV); 
-	        break; 
-	 } 
+	case chkPol1:
+	 {
+	        if (retval)
+	                THEAPP->SetPolarity(THEAPP->GetPolarity() | (UBYTE)RESETINV);
+	        else
+	                THEAPP->SetPolarity(THEAPP->GetPolarity() & (UBYTE)~RESETINV);
+	        break;
+	 }
+	case chkPol2:
+	 {
+	        if (retval)
+	                THEAPP->SetPolarity(THEAPP->GetPolarity() | (UBYTE)CLOCKINV);
+	        else
+	                THEAPP->SetPolarity(THEAPP->GetPolarity() & (UBYTE)~CLOCKINV);
+	        break;
+	 }
+	case chkPol3:
+	 {
+	        if (retval)
+	                THEAPP->SetPolarity(THEAPP->GetPolarity() | (UBYTE)DININV);
+	        else
+	                THEAPP->SetPolarity(THEAPP->GetPolarity() & (UBYTE)~DININV);
+	        break;
+	 }
+	case chkPol4:
+	 {
+	        if (retval)
+	                THEAPP->SetPolarity(THEAPP->GetPolarity() | (UBYTE)DOUTINV);
+	        else
+	                THEAPP->SetPolarity(THEAPP->GetPolarity() & (UBYTE)~DOUTINV);
+	        break;
+	 }
 
 	case cbxInterf:
 	  {
@@ -373,6 +368,10 @@ void e2Dialog::DialogCommand(ItemVal id, ItemVal retval, CmdType ctype)
 		UpdateDialog(0, 1);
 		break;
 	  }
+
+	case M_Cancel:
+		CloseDialog();
+		break;
 
 	case M_OK:
 	  {
@@ -392,17 +391,29 @@ void e2Dialog::DialogCommand(ItemVal id, ItemVal retval, CmdType ctype)
 		//Store values in the INI file
 		THEAPP->SetParInterfType(interf_type);
 		THEAPP->SetParPortNo(port_no);
-		THEAPP->SetPolarityControl(THEAPP->GetPolarity()); 
+		THEAPP->SetPolarityControl(THEAPP->GetPolarity());
+
+		CloseDialog();
 	  	break;
 	  }
 
 	//@V@:Case: btnTestDlg
 	case btnTestDlg:
 	  {
-		sprintf(str, "Test %s", Test() ? "Failed" : "Ok");
+		char str[MAXMSG];
+
+		if ( Test() )
+			strncpy(str, STR_MSGTEST " " STR_MSGFAILED, MAXMSG);
+		else
+			strncpy(str, STR_MSGTEST " " STR_MSGOK, MAXMSG);
+		str[MAXMSG-1] = '\0';
 		note.Notice(str);
 		break;
 	  }	//@V@:EndCase
+	case btnCheckHw:
+		{
+		break;
+		}
 	}
 
 	vDialog::DialogCommand(id,retval,ctype);
@@ -412,15 +423,9 @@ void e2Dialog::DialogCommand(ItemVal id, ItemVal retval, CmdType ctype)
 /********************************** PROGRESS DIALOG ********************************/
 
 static CommandObject ProgressDlg[] = {
-	{C_Label, lblMainMsg, 0,"X",NoList,CA_MainMsg,isSens,NoFrame, 0, 0},
-	{C_ProgressBar, pbrProgress, 0, "", NoList, CA_Horizontal|CA_Percent,isSens,NoFrame, 0, lblMainMsg},	// Horiz, with label
-	{C_Button, M_Cancel, 0,
-#ifdef	_WINDOWS
-		"&Abort",
-#else
-		" Abort",
-#endif
-			NoList,CA_None,isSens,NoFrame,0,pbrProgress},
+	{C_Label, lblMainMsg, 0,"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",NoList,CA_MainMsg,isSens,NoFrame, 0, 0},
+	{C_ProgressBar, pbrProgress, 0, "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", NoList, CA_Horizontal|CA_Percent,isSens,NoFrame, 0, lblMainMsg},	// Horiz, with label
+	{C_Button, M_Cancel, 0, STR_BTNABORT, NoList,CA_None,isSens,NoFrame,0,pbrProgress},
 
 	{C_EndOfList,0,0,0,0,CA_None,0,0,0}
 };

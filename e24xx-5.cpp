@@ -6,7 +6,7 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997, 1998  Claudio Lanconelli                           //
+//  Copyright (C) 1997-2000  Claudio Lanconelli                            //
 //                                                                         //
 //  e-mail: lanconel@cs.unibo.it                                           //
 //  http://www.cs.unibo.it/~lanconel                                       //
@@ -54,34 +54,37 @@ E24xx5::~E24xx5()
 {
 }
 
-int E24xx5::Write(int probe)
+int E24xx5::Write(int probe, int type)
 {
 	E24xx5::Probe(0);
 
-	//Enable writing
-	BYTE buffer[4];
+	if (type & PROG_TYPE)
+	{
+		//Enable writing
+		BYTE buffer[4];
 
-	buffer[0] = 0xFF;	//last address (Write protect register)
-	buffer[1] = 0x02;	//set WEL bit
-	if (GetBus()->StartWrite(eeprom_addr[n_bank-1], buffer, 2) != 2)
-		return GetBus()->Error();
+		buffer[0] = 0xFF;	//last address (Write protect register)
+		buffer[1] = 0x02;	//set WEL bit
+		if (GetBus()->StartWrite(eeprom_addr[n_bank-1], buffer, 2) != 2)
+			return GetBus()->Error();
 
-	buffer[0] = 0xFF;	//last address (Write protect register)
-	buffer[1] = 0x06;	//set RWEL+WEL bit
-	if (GetBus()->StartWrite(eeprom_addr[n_bank-1], buffer, 2) != 2)
-		return GetBus()->Error();
+		buffer[0] = 0xFF;	//last address (Write protect register)
+		buffer[1] = 0x06;	//set RWEL+WEL bit
+		if (GetBus()->StartWrite(eeprom_addr[n_bank-1], buffer, 2) != 2)
+			return GetBus()->Error();
 
-	buffer[0] = 0xFF;	//last address (Write protect register)
-	buffer[1] = 0x02;	//reset WPEN, BP1, BP0 (disable any write protection)
-	if (GetBus()->Write(eeprom_addr[n_bank-1], buffer, 2) != 2)
-		return GetBus()->Error();
+		buffer[0] = 0xFF;	//last address (Write protect register)
+		buffer[1] = 0x02;	//reset WPEN, BP1, BP0 (disable any write protection)
+		if (GetBus()->Write(eeprom_addr[n_bank-1], buffer, 2) != 2)
+			return GetBus()->Error();
 
-	//Ack polling
-	int k;
-	for (k = timeout_loop; k > 0 && GetBus()->Read(eeprom_addr[0], buffer, 1) != 1; k--)
-		;
-	if (k == 0)
-		return E2P_TIMEOUT;
+		//Ack polling
+		int k;
+		for (k = timeout_loop; k > 0 && GetBus()->Read(eeprom_addr[0], buffer, 1) != 1; k--)
+			;
+		if (k == 0)
+			return E2P_TIMEOUT;
+	}
 
 	return E24xx::Write(probe);
 }

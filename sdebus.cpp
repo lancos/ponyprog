@@ -6,7 +6,7 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2000   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2000  Claudio Lanconelli                            //
 //                                                                         //
 //  e-mail: lanconel@cs.unibo.it                                           //
 //  http://www.cs.unibo.it/~lanconel                                       //
@@ -60,7 +60,7 @@ Sde2506Bus::~Sde2506Bus()
 {
 	UserDebug(Destructor, "Sde2506Bus::~Sde2506Bus() destructor\n");
 
-	Close();
+//	Close();
 }
 
 void Sde2506Bus::SetDelay()
@@ -79,6 +79,9 @@ void Sde2506Bus::SetDelay()
     case SLOW:
         n = 30;
         break;
+	case VERYSLOW:
+		n = 100;
+		break;
     default:
         n = 10;         //Default (< 100KHz)
         break;
@@ -184,8 +187,9 @@ long Sde2506Bus::Read(int addr, UBYTE *data, long length)
 		WaitUsec(shot_delay+1);
 		setCE();
 
-		if ( CheckAbort(len * 100 / length) )
-			break;
+		if ( (len % 4) == 0 )
+			if ( CheckAbort(len * 100 / length) )
+				break;
 	}
 	CheckAbort(100);
 
@@ -224,8 +228,9 @@ long Sde2506Bus::Write(int addr, UBYTE const *data, long length)
 		WaitReadyAfterWrite();
 		setCE();				//End write
 
-		if ( CheckAbort(curaddr * 100 / length) )
-			break;
+		if ( (curaddr & 1) )
+			if ( CheckAbort(curaddr * 100 / length) )
+				break;
 	}
 	CheckAbort(100);
 

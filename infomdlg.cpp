@@ -6,11 +6,13 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997, 1998  Claudio Lanconelli                           //
+//  Copyright (C) 1997-2001   Claudio Lanconelli                           //
 //                                                                         //
-//  e-mail: lanconel@cs.unibo.it                                           //
-//  http://www.cs.unibo.it/~lanconel                                       //
+//  e-mail: lancos@libero.it                                               //
+//  http://www.LancOS.com                                                  //
 //                                                                         //
+//-------------------------------------------------------------------------//
+// $Id$
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -33,13 +35,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include "infomdlg.h"
 #include <v/vnotice.h>
 
+#include "globals.h"
+#include "infomdlg.h"
 #include "cmdenum.h"
 
 //@V@:BeginDialogCmd DefaultCmds
-static DialogCmd DefaultCmds[] =
+static DialogCmd e24xxCmds[] =
 {
 #ifdef	_LINUX_
 	{C_Label,lblMainMsg2,0,"X",NoList,CA_MainMsg,isSens,NoFrame,0,0},
@@ -47,84 +50,137 @@ static DialogCmd DefaultCmds[] =
 	{C_Blank,lblMainMsg2,0," ",NoList,CA_None,isSens,NoFrame,0,0},
 #endif
 
-	{C_Label,lblRllBnk,0,"Bank roll-over capability:",NoList,CA_None,isSens,NoFrame,0,lblMainMsg2},
+	{C_Label,lblRllBnk,0,STR_MSGBANKROLL,NoList,CA_None,isSens,NoFrame,0,lblMainMsg2},
 	{C_Text,txtRllBnk,0,"",NoList,CA_None,isSens,NoFrame,lblRllBnk,lblMainMsg2},
 
-	{C_Label,lblCRC,0,"CRC:",NoList,CA_None,isSens,NoFrame,0,lblRllBnk},
+	{C_Label,lblCRC,0,STR_MSGCRC,NoList,CA_None,isSens,NoFrame,0,lblRllBnk},
 	{C_Text,txtCRC,0,"0000h",NoList,CA_None,isSens,NoFrame,lblRllBnk,lblRllBnk},
 
-	{C_Label,lblSize,0,"Size:",NoList,CA_None,isSens,NoFrame,0,lblCRC},
-	{C_Text,txtSize,0,"0 Bytes",NoList,CA_None,isSens,NoFrame,lblRllBnk,lblCRC},
-
-	{C_Label,lblSecurity,0,"Security block:",NoList,CA_None,isSens,NoFrame,0,lblSize},
+	{C_Label,lblSize,0,STR_MSGSIZE,NoList,CA_None,isSens,NoFrame,0,lblCRC},
+	{C_Text,txtSize,0,"0 Byte",NoList,CA_None,isSens,NoFrame,lblRllBnk,lblCRC},
+/**
+	{C_Label,lblSecurity,0,STR_MSGSECBLOCK,NoList,CA_None,isSens,NoFrame,0,lblSize},
 	{C_Text,txtSecurity,0,"0",NoList,CA_None,isSens,NoFrame,lblRllBnk,lblSize},
 
-	{C_Label,lblHEndurance,0,"High endurance block:",NoList,CA_None,isSens,NoFrame,0,lblSecurity},
+	{C_Label,lblHEndurance,0,STR_HIGHENDURAN,NoList,CA_None,isSens,NoFrame,0,lblSecurity},
 	{C_Text,txtHEndurance,0,"0",NoList,CA_None,isSens,NoFrame,lblRllBnk,lblSecurity},
-
-	{C_Button,M_OK,0,
-#ifdef	_WINDOWS
-	" &Close ",
-#else
-	"  Close ",
-#endif
-		NoList,CA_DefaultButton,isSens, NoFrame,0,lblHEndurance},
+**/
+	{C_Button,M_OK,0, STR_BTNCLOSE, NoList,CA_DefaultButton,isSens, NoFrame,0,lblSize},
 
 	{C_EndOfList,0,0,0,0,CA_None,0,0,0}
 };
 //@V@:EndDialogCmd
 
+static DialogCmd otherCmds[] =
+{
+#ifdef	_LINUX_
+	{C_Label,lblMainMsg2,0,"X",NoList,CA_MainMsg,isSens,NoFrame,0,0},
+#else
+	{C_Blank,lblMainMsg2,0," ",NoList,CA_None,isSens,NoFrame,0,0},
+#endif
+
+	{C_Label,lblSecurity,0,STR_MSGEEPSIZE ":",NoList,CA_None,isSens,NoFrame,0,lblMainMsg2},
+	{C_Text,txtSecurity,0,"0 Byte",NoList,CA_None,isSens,NoFrame,lblSecurity,lblMainMsg2},
+
+	{C_Label,lblSize,0,STR_MSGFLASHSIZE ":",NoList,CA_None,isSens,NoFrame,0,lblSecurity},
+	{C_Text,txtSize,0,"0 Byte",NoList,CA_None,isSens,NoFrame,lblSecurity,lblSecurity},
+
+	{C_Label,lblCRC,0,STR_MSGCRC,NoList,CA_None,isSens,NoFrame,0,lblSize},
+	{C_Text,txtCRC,0,"0000h",NoList,CA_None,isSens,NoFrame,lblSecurity,lblSize},
+
+	{C_Button,M_OK,0, STR_BTNCLOSE, NoList,CA_DefaultButton,isSens, NoFrame,0,lblCRC},
+
+	{C_EndOfList,0,0,0,0,CA_None,0,0,0}
+};
+
+int SetCommandObject(const int id, const int val, CommandObject* CmdList);
+int SetCommandSensitive(const int id, const int val, CommandObject* CmdList);
+int SetCommandLabel(const int id, char *str, CommandObject* CmdList);
+int SetCommandHidden(const int id, const bool val, CommandObject* CmdList);
+int SetCommandArrayHidden(const int id, const int n, const bool val, CommandObject* CmdList);
 
 //======================>>> infoModalDialog::infoModalDialog <<<==================
-infoModalDialog::infoModalDialog(vBaseWindow* bw, int rlv, UWORD crc, long size, int security, int seclen, int highendurance, char* title) :
-//infoModalDialog::infoModalDialog(vBaseWindow* bw, int rlv, UWORD crc, long size, char* title) :
+e24xx_infoModalDialog::e24xx_infoModalDialog(vBaseWindow* bw, int rlv, UWORD crc, long size, char* title) :
     vModalDialog(bw, title)
 {
-	UserDebug(Constructor,"infoModalDialog::infoModalDialog()\n")
-	if (rlv > 0)
-		DefaultCmds[2].title = (rlv == 1) ? (char *)"Yes " : (char *)" No ";
+	if (rlv == 1)
+	{
+		SetCommandLabel(txtRllBnk, STR_MSGYES, e24xxCmds);
+	}
 	else
-		DefaultCmds[2].title = "Unknown";
+	if (rlv == 2)
+	{
+		SetCommandLabel(txtRllBnk, STR_MSGNO, e24xxCmds);
+	}
+	else
+	{
+		SetCommandLabel(txtRllBnk, STR_MSGUNKNOWN, e24xxCmds);
+	}
 
-	char str[32];
+	char str[MAXMSG];
 	sprintf(str, "%04Xh", crc);
-	DefaultCmds[4].title = new char[strlen(str)+1];
-	strcpy(DefaultCmds[4].title, str);
+	strptr[0] = new char[strlen(str)+1];
+	strcpy(strptr[0], str);
+	SetCommandLabel(txtCRC, strptr[0], e24xxCmds);
 
-	sprintf(str, "%ld Bytes", size);
-	DefaultCmds[6].title = new char[strlen(str)+1];
-	strcpy(DefaultCmds[6].title, str);
+	sprintf(str, "%ld Byte", size);
+	strptr[1] = new char[strlen(str)+1];
+	strcpy(strptr[1], str);
+	SetCommandLabel(txtSize, strptr[1], e24xxCmds);
 
-	if (security >= 0)
-		sprintf(str, "%d (len = %d)", security, seclen);
-	else
-		strcpy(str, "Unknown");
-	DefaultCmds[8].title = new char[strlen(str)+1];
-	strcpy(DefaultCmds[8].title, str);
+	strptr[2] = 0;
+	strptr[3] = 0;
 
-	if (security >= 0)
-		sprintf(str, "%d", highendurance);
-	else
-		strcpy(str, "Unknown");
-	DefaultCmds[10].title = new char[strlen(str)+1];
-	strcpy(DefaultCmds[10].title, str);
+	AddDialogCmds(e24xxCmds);		// add the predefined commands
+}
 
-	AddDialogCmds(DefaultCmds);		// add the predefined commands
+//======================>>> infoModalDialog::infoModalDialog <<<==================
+other_infoModalDialog::other_infoModalDialog(vBaseWindow* bw, long fsize, long esize, UWORD crc, char* title) :
+    vModalDialog(bw, title)
+{
+	char str[MAXMSG];
+	sprintf(str, "%04Xh", crc);
+	strptr[0] = new char[strlen(str)+1];
+	strcpy(strptr[0], str);
+	SetCommandLabel(txtCRC, strptr[0], otherCmds);
+
+	sprintf(str, "%ld Byte", fsize);
+	strptr[1] = new char[strlen(str)+1];
+	strcpy(strptr[1], str);
+	SetCommandLabel(txtSize, strptr[1], otherCmds);
+
+	sprintf(str, "%ld Byte", esize);
+	strptr[2] = new char[strlen(str)+1];
+	strcpy(strptr[2], str);
+	SetCommandLabel(txtSecurity, strptr[2], otherCmds);
+
+	strptr[3] = 0;
+
+	AddDialogCmds(otherCmds);		// add the predefined commands
 }
 
 //===================>>> infoModalDialog::~infoModalDialog <<<====================
-infoModalDialog::~infoModalDialog()
+e24xx_infoModalDialog::~e24xx_infoModalDialog()
 {
-	delete DefaultCmds[4].title;
-	delete DefaultCmds[6].title;
-	delete DefaultCmds[8].title;
-	delete DefaultCmds[10].title;
+	int k;
+	for (k = 0; k < 4; k++)
+		delete strptr[k];
+
+	UserDebug(Destructor,"infoModalDialog::~infoModalDialog() destructor\n")
+}
+
+//===================>>> infoModalDialog::~infoModalDialog <<<====================
+other_infoModalDialog::~other_infoModalDialog()
+{
+	int k;
+	for (k = 0; k < 4; k++)
+		delete strptr[k];
 
 	UserDebug(Destructor,"infoModalDialog::~infoModalDialog() destructor\n")
 }
 
 //====================>>> infoModalDialog::infoAction <<<====================
-int infoModalDialog::infoAction(char* msg)
+int other_infoModalDialog::infoAction(char* msg)
 {
 	ItemVal ans,rval;
 
@@ -137,14 +193,20 @@ int infoModalDialog::infoAction(char* msg)
 	return ans == M_OK;
 }
 
-/**
-//====================>>> infoModalDialog::DialogCommand <<<====================
-void infoModalDialog::DialogCommand(ItemVal id, ItemVal retval, CmdType ctype)
+//====================>>> infoModalDialog::infoAction <<<====================
+int e24xx_infoModalDialog::infoAction(char* msg)
 {
-	UserDebug2(CmdEvents,"infoModalDialog::DialogCommand(id:%d, val:%d)\n",id, retval)
-	vModalDialog::DialogCommand(id,retval,ctype);
+	ItemVal ans,rval;
+
+	ans = ShowModalDialog(msg,rval);
+	if (ans == M_Cancel)
+		return 0;
+
+	// *** Add code to process dialog values here
+
+	return ans == M_OK;
 }
-**/
+
 
 /********************************** NOTES DIALOG ********************************/
 
@@ -203,28 +265,16 @@ DialogCmd EditChar[] =
 	{C_Label,lblEditMsg,0,"X",NoList,CA_MainMsg,isSens,NoFrame,0,0},
 
 	{C_Frame, frmEditChar,0,"Edit Dialog",NoList,CA_None,isSens,NoFrame,0,lblEditMsg},
-	{C_Label, lblHexval,0, " Hex     ",NoList,CA_None,isSens,frmEditChar,0,0},
-	{C_Label, lblDecval,0, " Decimal ",NoList,CA_None,isSens,frmEditChar,0,lblHexval},
-	{C_Label, lblChval,0,  " Char    ",NoList,CA_None,isSens,frmEditChar,0,lblDecval},
+	{C_Label, lblHexval,0,STR_MSGHEX,NoList,CA_None,isSens,frmEditChar,0,0},
+	{C_Label, lblDecval,0,STR_MSGDECIMAL,NoList,CA_None,isSens,frmEditChar,0,lblHexval},
+	{C_Label, lblChval,0, STR_MSGCHAR,NoList,CA_None,isSens,frmEditChar,0,lblDecval},
 
-	{C_TextIn,txiHexval,0,"",NoList,CA_None,isSens,NoFrame,frmEditChar,lblEditMsg,5,"Hexadecimal value"},
-	{C_TextIn,txiDecval,0,"",NoList,CA_None,isSens,NoFrame,frmEditChar,txiHexval,5,"Decimal value"},
-	{C_TextIn,txiChval,0,"",NoList,CA_None,isSens,NoFrame,frmEditChar,txiDecval,5,"Char value"},
+	{C_TextIn,txiHexval,0,"",NoList,CA_None,isSens,NoFrame,frmEditChar,lblEditMsg,5,STR_TTHEX},
+	{C_TextIn,txiDecval,0,"",NoList,CA_None,isSens,NoFrame,frmEditChar,txiHexval,5,STR_TTDECIMAL},
+	{C_TextIn,txiChval,0,"",NoList,CA_None,isSens,NoFrame,frmEditChar,txiDecval,5,STR_TTCHAR},
 
-	{C_Button, M_Cancel, 0,
-#ifdef	_WINDOWS
-		" &Cancel ",
-#else
-		"  Cancel ",
-#endif
-			NoList,CA_None, isSens,NoFrame, 0, frmEditChar},
-	{C_Button, M_OK, 0,
-#ifdef	_WINDOWS
-		" &OK ",
-#else
-		"  OK ",
-#endif
-			NoList, CA_DefaultButton, isSens, NoFrame, M_Cancel, frmEditChar},
+	{C_Button, M_Cancel, 0, STR_BTNCANC, NoList,CA_None, isSens,NoFrame, 0, frmEditChar},
+	{C_Button, M_OK, 0, STR_BTNOK, NoList, CA_DefaultButton, isSens, NoFrame, M_Cancel, frmEditChar},
 
 	{C_EndOfList,0,0,0,0,CA_None,0,0,0}
 };
@@ -239,7 +289,7 @@ editModalDialog::editModalDialog(vBaseWindow* bw, int curval, char* title) :
 
 	oldval = curval;
 
-	char str[32];
+	char str[MAXNUMDIGIT];
 
 	sprintf(str, "%02X", curval);
 	EditChar[5].title = new char[strlen(str)+1];
@@ -274,7 +324,7 @@ int editModalDialog::editAction(char* msg, int &retval)
 		return 0;
 
 	int hexval, decval, chval;
-	char str[8];
+	char str[MAXNUMDIGIT];
 	GetTextIn(txiHexval, str, 3);
 	hexval = strtol(str,NULL,16);
 	GetTextIn(txiDecval, str, 4);
@@ -296,27 +346,15 @@ int editModalDialog::editAction(char* msg, int &retval)
 	return ans == M_OK;
 }
 
-//////////////////////////////////////////////////////////////
+//************************ EDIT DIALOG2 *******************************
 DialogCmd EditChar2[] =
 {
 	{C_Label,lblEditMsg,0,"X",NoList,CA_MainMsg,isSens,NoFrame,0,0},
 
 	{C_TextIn,txiEditText,0,"",NoList,CA_Large,isSens,NoFrame,0,lblEditMsg,80},
 
-	{C_Button, M_Cancel, 0,
-#ifdef	_WINDOWS
-		" &Cancel ",
-#else
-		"  Cancel ",
-#endif
-			NoList,CA_None, isSens,NoFrame, 0, txiEditText},
-	{C_Button, M_OK, 0,
-#ifdef	_WINDOWS
-		" &OK ",
-#else
-		"  OK ",
-#endif
-			NoList, CA_DefaultButton, isSens, NoFrame, M_Cancel, txiEditText},
+	{C_Button, M_Cancel, 0, STR_BTNCANC, NoList,CA_None, isSens,NoFrame, 0, txiEditText},
+	{C_Button, M_OK, 0, STR_BTNOK, NoList, CA_DefaultButton, isSens, NoFrame, M_Cancel, txiEditText},
 
 	{C_EndOfList,0,0,0,0,CA_None,0,0,0}
 };
@@ -363,4 +401,3 @@ int editModalDialog2::editAction(char* msg, char* text, int len)
 
 	return ans == M_OK;
 }
-

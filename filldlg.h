@@ -35,11 +35,12 @@
 #include <v/vmodald.h>
 
 #include "types.h"
+#include "string_table.h"
 
 class FillDialog : public vModalDialog
 {
   public:		//---------------------------------------- public
-	FillDialog(vBaseWindow* bw, long cfrom = -1, long cto = -1, int cval = -1, char* title = "Fill Buffer");
+	FillDialog(vBaseWindow* bw, long cfrom = -1, long cto = -1, int cval = -1, char* title = STR_LBLFILLBUF);
 	virtual ~FillDialog();		// Destructor
 	virtual int fillAction(char* msg);
 

@@ -1,16 +1,18 @@
 //=========================================================================//
 //-------------------------------------------------------------------------//
-// eeprom.h -- Header for for EEprom class                                 //
+// device.h -- Header for for Device class                                 //
 // This file is part of PonyProg.                                          //
 //-------------------------------------------------------------------------//
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997, 1998  Claudio Lanconelli                           //
+//  Copyright (C) 1997-2001  Claudio Lanconelli                            //
 //                                                                         //
-//  e-mail: lanconel@cs.unibo.it                                           //
-//  http://www.cs.unibo.it/~lanconel                                       //
+//  e-mail: lancos@libero.it                                               //
+//  http://www.LancOS.com                                                  //
 //                                                                         //
+//-------------------------------------------------------------------------//
+//  $Id$
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -30,8 +32,8 @@
 //-------------------------------------------------------------------------//
 //=========================================================================//
 
-#ifndef _EEPROM_H
-#define _EEPROM_H
+#ifndef _DEVICE_H
+#define _DEVICE_H
 
 #include "types.h"
 #include "globals.h"
@@ -39,37 +41,40 @@
 
 class e2AppWinInfo;
 
-//I'm too lazy to change the name, now should be Device class
-class EEProm
+class Device
 {
   public:		//---------------------------------------- public
 
-	EEProm(e2AppWinInfo *wininfo = 0, BusIO *busp = 0, int b_size = 0);
-	virtual ~EEProm();
+	Device(e2AppWinInfo *wininfo = 0, BusIO *busp = 0, int b_size = 0);
+	virtual ~Device();
 
-	virtual int Probe(int probe_size = 0) = 0;
-	virtual int Read(int probe = 1) = 0;
-	virtual int Write(int probe = 1) = 0;
-	virtual int Verify() = 0;
+	virtual int Probe(int probe_size = 0)
+		{ return OK; }
+	virtual int Read(int probe = 1, int type = ALL_TYPE) = 0;
+	virtual int Write(int probe = 1, int type = ALL_TYPE) = 0;
+	virtual int Verify(int type = ALL_TYPE) = 0;
+
+	virtual int Erase(int probe = 1, int type = ALL_TYPE)
+		{ return GetBus()->Erase(); }
+
 	virtual int BankRollOverDetect(int force)
-		{ return 2; }	//2 stand for no Bank Rollover
+		{ return 4; }	//4 means no need to know Bank Rollover for this device
 
-	virtual int Erase();
+	virtual int SecurityRead(DWORD &bits)
+		{ bits = 0; return 0; }
+	virtual int SecurityWrite(DWORD bits)
+		{ return 0; }
+	virtual int FusesRead(DWORD &bits)
+		{ bits = 0; return 0; }
+	virtual int FusesWrite(DWORD bits)
+		{ return 0; }
+	virtual int HighEnduranceRead(DWORD &block_no)
+		{ return 0; }
+	virtual int HighEnduranceWrite(DWORD block_no)
+		{ return 0; }
 
-	//aggiunto il 07/03/98
-	virtual int SecurityRead(int &blocks, int &bits)
-		{ bits = -1; return 0; }
-	virtual int SecurityWrite(int blocks, int bits)
-		{ return 0; }
-	virtual int HighEnduranceRead(int &block_no)
-		{ return 0; }
-	virtual int HighEnduranceWrite(int block_no)
-		{ return 0; }
-	//added 13/09/99
-	virtual int FusesRead(int &bits)
-		{ bits = -1; return 0; }
-	virtual int FusesWrite(int bits)
-		{ return 0; }
+	virtual int ReadCalibration(int addr = 0);
+
 	//--------
 	void SetAWInfo(e2AppWinInfo *wininfo);
 	BusIO *GetBus() const
@@ -81,7 +86,7 @@ class EEProm
 	int GetBankSize() const
 		{ return bank_size; }
 	int GetAddrSize() const;
-	void DefaultBankSize()
+	virtual void DefaultBankSize()
 		{ bank_size = def_bank_size; }
 
   protected:	//--------------------------------------- protected
@@ -97,9 +102,15 @@ class EEProm
 		return size == AUTOSIZE_ID ? 0 : size;
 	}
 
+	virtual int ReadProg();
+	virtual int ReadData();
+	virtual int WriteProg();
+	virtual int WriteData();
+	virtual int VerifyProg(unsigned char *localbuf);
+	virtual int VerifyData(unsigned char *localbuf);
+
 	e2AppWinInfo *GetAWInfo() const
 		{ return awi; }
-
 
   private:		//--------------------------------------- private
 

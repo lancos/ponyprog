@@ -6,10 +6,10 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997, 1998  Claudio Lanconelli                           //
+//  Copyright (C) 1997-2001   Claudio Lanconelli                           //
 //                                                                         //
-//  e-mail: lanconel@cs.unibo.it                                           //
-//  http://www.cs.unibo.it/~lanconel                                       //
+//  e-mail: lancos@libero.it                                               //
+//  http://www.LancOS.com                                                  //
 //                                                                         //
 //-------------------------------------------------------------------------//
 //                                                                         //
@@ -35,11 +35,11 @@
 #include "errcode.h"
 #include "eeptypes.h"
 
-#define	BANK_SIZE	2
+#define	BANK_SIZE	2		//16 bit organization
 
 //=====>>> Costruttore <<<======
 At93cxx::At93cxx(e2AppWinInfo *wininfo, BusIO *busp)
-	:	EEProm(wininfo, busp, BANK_SIZE)
+	:	Device(wininfo, busp, BANK_SIZE)
 {
 	UserDebug(Constructor, "At93cxx::At93cxx()\n");
 }
@@ -50,19 +50,11 @@ At93cxx::~At93cxx()
 	UserDebug(Destructor, "At93cxx::~At93cxx()\n");
 }
 
-// determina il numero di banchi (dimensione) dell'eeprom
-//---
-int At93cxx::Probe(int probe_size)
-{
-	UserDebug(UserApp1, "At93cxx::Probe()\n");
-
-	return OK;
-}
-
-
-int At93cxx::Read(int probe)
+int At93cxx::Read(int probe, int type)
 {
 	UserDebug1(UserApp1, "At93cxx::Read(%d)\n", probe);
+
+	GetBus()->SetOrganization(ORG16);
 
 	if (probe || GetNoOfBank() == 0)
 		Probe();
@@ -70,42 +62,52 @@ int At93cxx::Read(int probe)
 	int size = GetNoOfBank() * GetBankSize();
 	int asize = GetBus()->CalcAddressSize(GetAddrSize());
 
-	int rv = GetBus()->Read(asize, GetBufPtr(), size);
-	if (rv != size)
+	int rv = size;
+	if (type & PROG_TYPE)
 	{
-		if (rv > 0)
-			rv = OP_ABORTED;
+		rv = GetBus()->Read(asize, GetBufPtr(), size);
+		if (rv != size)
+		{
+			if (rv > 0)
+				rv = OP_ABORTED;
+		}
 	}
-
 	UserDebug1(UserApp1, "At93cxx::Read() = %d\n", rv);
 
 	return rv;
 }
 
-int At93cxx::Write(int probe)
+int At93cxx::Write(int probe, int type)
 {
+	GetBus()->SetOrganization(ORG16);
+
 	if (probe || GetNoOfBank() == 0)
 		Probe();
 
 	int size = GetNoOfBank() * GetBankSize();
 	int asize = GetBus()->CalcAddressSize(GetAddrSize());
 
-	int rv = GetBus()->Write(asize, GetBufPtr(), size);
-	if (rv != size)
+	int rv = size;
+	if (type & PROG_TYPE)
 	{
-		if (rv > 0)
-			rv = OP_ABORTED;
+		rv = GetBus()->Write(asize, GetBufPtr(), size);
+		if (rv != size)
+		{
+			if (rv > 0)
+				rv = OP_ABORTED;
+		}
 	}
 
 	return rv;
 }
 
-int At93cxx::Verify()
- {
+int At93cxx::Verify(int type)
+{
+	GetBus()->SetOrganization(ORG16);
+
 	if (GetNoOfBank() == 0)
 		return BADPARAM;
 
-	int rval = -1;
 	int size = GetNoOfBank() * GetBankSize();
 	int asize = GetBus()->CalcAddressSize(GetAddrSize());
 	unsigned char *localbuf;
@@ -113,15 +115,19 @@ int At93cxx::Verify()
 	if (localbuf == 0)
 		return OUTOFMEMORY;
 
-	rval = GetBus()->Read(asize, localbuf, size);
-	if (rval != size)
+	int rval = 1;
+	if (type & PROG_TYPE)
 	{
-		if (rval > 0)
-			rval = OP_ABORTED;
-	}
-	else
-	{
-		rval = ( memcmp(GetBufPtr(), localbuf, size) != 0 ) ? 0 : 1;
+		rval = GetBus()->Read(asize, localbuf, size);
+		if (rval != size)
+		{
+			if (rval > 0)
+				rval = OP_ABORTED;
+		}
+		else
+		{
+			rval = ( memcmp(GetBufPtr(), localbuf, size) != 0 ) ? 0 : 1;
+		}
 	}
 	delete localbuf;
 

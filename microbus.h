@@ -1,4 +1,4 @@
-//=========================================================================//
+/*=========================================================================//
 //-------------------------------------------------------------------------//
 // microbus.h -- Header for MicroWireBus class                             //
 // This file is part of PonyProg.                                          //
@@ -6,11 +6,13 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997, 1998  Claudio Lanconelli                           //
+//  Copyright (C) 1997-2001   Claudio Lanconelli                           //
 //                                                                         //
-//  e-mail: lanconel@cs.unibo.it                                           //
-//  http://www.cs.unibo.it/~lanconel                                       //
+//  e-mail: lancos@libero.it                                               //
+//  http://www.LancOS.com                                                  //
 //                                                                         //
+//-------------------------------------------------------------------------//
+//  $Id$
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -28,7 +30,7 @@
 // Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. //
 //                                                                         //
 //-------------------------------------------------------------------------//
-//=========================================================================//
+//=========================================================================*/
 
 #ifndef	_MICROBUS_H
 #define	_MICROBUS_H
@@ -36,8 +38,8 @@
 #include "busio.h"
 #include "pgminter.h"
 
-#define	ORG8	1
-#define	ORG16	0
+#define	ORG8	8
+#define	ORG16	16
 
 class MicroWireBus : public BusIO
 {
@@ -50,18 +52,17 @@ class MicroWireBus : public BusIO
 	
 	int Reset();
 
-	int CalcAddressSize(int mem_size, int org = ORG16) const;
+	virtual int CalcAddressSize(int mem_size, int org) const;
 
 	void SetDelay();
 
  protected:		//------------------------------- protected
 
-	int SendDataWord(int wo, int wlen = 16);
-	int RecDataWord(int wlen = 16);
+	int SendDataWord(int wo, int wlen, int lsb = 0);
+	int RecDataWord(int wlen, int lsb = 0);
+	int RecDataWordShort(int wlen, int lsb = 0);
 	int WaitReadyAfterWrite(long timeout = 50000);
 
-	int SendCmdOpcode(int opcode)
-		{ return SendDataWord(opcode, 3); }
 	int SendAddress(int addr, int alen)
 		{ return SendDataWord(addr, alen); }
 
@@ -74,6 +75,7 @@ class MicroWireBus : public BusIO
 
 	int SendDataBit(int b);
 	int RecDataBit();
+	int RecDataBitShort();
 
 	void bitDI(int b)
 		{ busI->SetDataOut(b); }

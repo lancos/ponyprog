@@ -6,10 +6,10 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-1999   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2001   Claudio Lanconelli                           //
 //                                                                         //
-//  e-mail: lanconel@cs.unibo.it                                           //
-//  http://www.cs.unibo.it/~lanconel                                       //
+//  e-mail: lancos@libero.it                                               //
+//  http://www.LancOS.com                                                  //
 //                                                                         //
 //-------------------------------------------------------------------------//
 //                                                                         //
@@ -28,6 +28,7 @@
 // Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. //
 //                                                                         //
 //-------------------------------------------------------------------------//
+// $Id$
 //=========================================================================//
 
 #ifndef _FILEBUF_H
@@ -54,8 +55,8 @@ class FileBuf
 	void SetFileName(char const *name);	//ok
 	char const *GetFileName() const;	//ok
 
-	virtual int Load(int bank) = 0;
-	virtual int Save() = 0;
+	virtual int Load(int loadtype = ALL_TYPE, long relocation_offset = 0) = 0;
+	virtual int Save(int savetype = ALL_TYPE, long relocation_offset = 0) = 0;
 	FileType GetFileType() const
 		{ return file_type; }
 //	void SetBlockSize(int blksize)
@@ -76,13 +77,13 @@ class FileBuf
 	int GetRollOver() const;
 	void SetRollOver(int rlv);
 
-	int GetSplitted() const;
-	void SetSplitted(int spl);
+	long GetSplitted() const;
+	void SetSplitted(long spl);
 
-	int GetLockBits() const;
-	void SetLockBits(int bits);
-	int GetFuseBits() const;
-	void SetFuseBits(int bits);
+	DWORD GetLockBits() const;
+	void SetLockBits(DWORD bits);
+	DWORD GetFuseBits() const;
+	void SetFuseBits(DWORD bits);
 
 //	UWORD GetCRC() const
 //		{ return awi->GetCRC(); }
@@ -91,7 +92,7 @@ class FileBuf
   protected:	//--------------------------------------- protected
 	
 	UBYTE *GetBufPtr() const;
-	int GetBufSize() const;
+	long GetBufSize() const;
 	e2AppWinInfo *GetAWInfo();
 	long GetFileSize(FILE *fh);
 

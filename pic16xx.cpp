@@ -6,10 +6,10 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997, 1998  Claudio Lanconelli                           //
+//  Copyright (C) 1997-2001  Claudio Lanconelli                            //
 //                                                                         //
-//  e-mail: lanconel@cs.unibo.it                                           //
-//  http://www.cs.unibo.it/~lanconel                                       //
+//  e-mail: lancos@libero.it                                               //
+//  http://www.LancOS.com                                                  //
 //                                                                         //
 //-------------------------------------------------------------------------//
 //                                                                         //
@@ -28,6 +28,7 @@
 // Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. //
 //                                                                         //
 //-------------------------------------------------------------------------//
+// $Id$
 //=========================================================================//
 
 #include "types.h"
@@ -40,9 +41,11 @@
 #undef	BANK_SIZE
 #define	BANK_SIZE	1
 
+#define	CONFIG_SIZE	( 8 * sizeof(WORD) )
+
 //=====>>> Costruttore <<<======
 Pic16xx::Pic16xx(e2AppWinInfo *wininfo, BusIO *busp)
-	:	EEProm(wininfo, busp, BANK_SIZE)
+	:	Device(wininfo, busp, BANK_SIZE)
 {
 	int j;
 	for (j = 0; j < 8; j++)
@@ -54,124 +57,123 @@ Pic16xx::~Pic16xx()
 {
 }
 
-int Pic16xx::SecurityRead(int &msb, int &lsb)
+int Pic16xx::CodeProtectAdjust(WORD &config, int read)
 {
-	GetBus()->ReadConfig(id_locations);
-
-	memcpy(GetBufPtr() + GetSplitted(), id_locations, 8*sizeof(WORD));
-
-	WORD config = id_locations[7];
-
-	config = ~config & 0x3fff;
-
-	msb = (config >> 8) & 0xff;
-	lsb = config & 0xff;
-
-	return OK;
-}
-
-int Pic16xx::SecurityWrite(int msb, int lsb)
-{
-	WORD config = ((WORD)msb << 8) | lsb;
-
-	//Extend the CP bit (PIC16F84)
-	if (lsb & (1<<4))
-		config |= 0xfff0;
-	else
-		config &= 0x000f;
-
-	config = ~config & 0x3fff;
-
-	id_locations[7] = config;
-
-	if ( GetBus()->WriteConfig(id_locations) == OK )
+	if (!read)
 	{
-		memcpy(GetBufPtr() + GetSplitted(), id_locations, 8*sizeof(WORD));
-	}
-
-	return OK;
-}
-
-int Pic16xx::Probe(int probe_size)
-{
-//	GetBus()->ReadConfig(id_locations);
-
-	return OK;
-}
-
-int Pic16xx::Read(int probe)
-{
-	Probe( probe || GetNoOfBank() == 0 );
-
-	int rv;
-	int size = GetNoOfBank() * GetBankSize();
-	if (size > GetSplitted())
-	{
-		// legge il contenuto attuale della FlashEPROM in memoria
-		rv = GetBus()->Read(0, GetBufPtr(), GetSplitted());
-
-		if (rv != GetSplitted())
-		{
-			if (rv > 0)
-				rv = OP_ABORTED;
-		}
+		//Extend the CP bit (PIC16F84)
+		if (config & (1<<4))
+			config |= 0xfff0;
 		else
-		{
-			// legge il contenuto attuale della EEPROM in memoria subito dopo la Flash
-			rv = GetBus()->Read(1, GetBufPtr()+GetSplitted()+16, size - (GetSplitted()+16) );
-			if (rv != size - (GetSplitted()+16) )
-			{
-				if (rv > 0)
-					rv = OP_ABORTED;
-			}
-			else
-			{
-				// read the config locations
-				// this must be the LAST operation (to exit from config mode we have to clear Vpp)
-				int f1,f0;
-				SecurityRead(f1, f0);
-				GetAWInfo()->SetFuseBits(f0);
-				GetAWInfo()->SetLockBits(f1);
-
-				rv = size;
-			}
-		}
+			config &= 0x000f;
 	}
-	else
-		rv = -1;	//Fatal error!!
+	config = ~config & 0x3fff;
+
+	return OK;
+}
+
+int Pic16xx::SecurityRead(DWORD &bits)
+{
+	int rv = GetBus()->ReadConfig(id_locations);
+
+	if (rv == OK)
+	{
+		WORD config = id_locations[7];
+
+		CodeProtectAdjust(config, 1);
+
+		bits = config;
+	}
 
 	return rv;
 }
 
-int Pic16xx::Write(int probe)
+int Pic16xx::SecurityWrite(DWORD bits)
 {
-	GetBus()->Erase();
+	WORD config = (WORD)bits;
 
-	if (probe || GetNoOfBank() == 0)
-		Probe();
+	CodeProtectAdjust(config, 0);
 
-	int size = GetNoOfBank() * GetBankSize();
-	if (size > GetSplitted())
-	{
-	//	GetBus()->Reset();		// 10/11/99
+	int k;
+	for (k = 0; k < 7; k++)
+		id_locations[k] = 0xffff;
+	id_locations[7] = config;
 
-		// write the Program FlashEPROM
-		GetBus()->Write(0, GetBufPtr(), GetSplitted());
-
-		// write the Data EEPROM
-		GetBus()->Write(1, GetBufPtr()+GetSplitted()+16, size - (GetSplitted()+16) );
-
-		// write the config locations
-		// this must be the LAST operation (to exit from config mode we have to clear Vpp)
-		GetBus()->WriteConfig( (WORD *) (GetBufPtr()+GetSplitted()) );
-	}
-	else
-		return -1;	//Fatal error!!
-
-	return GetNoOfBank();
+	return GetBus()->WriteConfig(id_locations);
 }
 
-int Pic16xx::Verify()
+int Pic16xx::Probe(int probe_size)
+{
+	return 1;
+}
+
+int Pic16xx::Read(int probe, int type)
+{
+	int rv = Probe( probe || GetNoOfBank() == 0 );
+
+	if (rv > 0)
+	{
+		if (type & PROG_TYPE)
+			rv = ReadProg();
+		if (rv > 0 && GetSize() > GetSplitted())	//Check for DATA size
+		{
+			if (type & DATA_TYPE)
+				rv = ReadData();
+		}
+		if ( rv > 0 && (type & CONFIG_TYPE) )
+		{
+			// read the config locations
+			// this must be the LAST operation (to exit from config mode we have to clear Vpp)
+			DWORD f;
+			SecurityRead(f);
+		//	GetAWInfo()->SetFuseBits(f0);
+			GetAWInfo()->SetLockBits(f);
+		}
+	}
+
+	return rv;
+}
+
+int Pic16xx::Write(int probe, int type)
+{
+	int rv = Probe( probe || GetNoOfBank() == 0 );
+
+	if (rv > 0)
+	{
+		if ( (type & PROG_TYPE) && (type & DATA_TYPE) )
+			GetBus()->Erase(ALL_TYPE);
+		else
+			GetBus()->Erase(type);
+
+		if (GetSize() >= GetSplitted())
+		{
+			if (type & PROG_TYPE)
+			{
+				rv = WriteProg();
+			}
+			if (rv > 0 && GetSize() > GetSplitted())	//check for DATA size
+			{
+				if (type & DATA_TYPE)
+					rv = WriteData();
+			}
+			if ( rv > 0 && (type & CONFIG_TYPE) )
+			{
+				// write the config locations
+				// this must be the LAST operation (to exit from config mode we have to clear Vpp)
+				DWORD f;
+				f = GetAWInfo()->GetLockBits();
+				SecurityWrite(f);
+			}
+		}
+	}
+	else
+	if (rv == 0)
+		rv = E2ERR_WRITEFAILED;
+
+	return rv;
+}
+
+int Pic16xx::Verify(int type)
 {
 	GetBus()->Reset();
 
@@ -179,40 +181,48 @@ int Pic16xx::Verify()
 		return BADPARAM;
 
 	int rval = -1;
-	int size = GetNoOfBank() * GetBankSize();
-	if (size > GetSplitted())
+	if (GetSize() >= GetSplitted())
 	{
 		unsigned char *localbuf;
-		localbuf = new unsigned char[size];
+		localbuf = new unsigned char[GetSize()];
 		if (localbuf == 0)
 			return OUTOFMEMORY;
 
-		//initialize local buffer to all FF
-		memset(localbuf, 0xff, size);
+		int v_data = OK, v_prog = OK, v_config = OK;
 
-		// legge il contenuto attuale della FlashEPROM in memoria
-		GetBus()->Read(0, localbuf, GetSplitted());
-
-		// legge il contenuto attuale della EEPROM in memoria subito dopo la Flash
-		GetBus()->Read(1, localbuf+GetSplitted()+16, size - (GetSplitted()+16) );
-
-		// read the config locations
-		// this must be the LAST operation (to exit from config mode we have to clear Vpp)
-		GetBus()->ReadConfig( (UWORD *) (localbuf+GetSplitted()) );
-
-		UWORD *wp1, *wp2;
-		wp1 = ( (UWORD *)(GetBufPtr()+GetSplitted()) );
-		wp2 = ( (UWORD *)(localbuf+GetSplitted()) );
-		if ( memcmp(GetBufPtr()+GetSplitted()+16, localbuf+GetSplitted()+16,  size - (GetSplitted()+16)) != 0 ||
-			GetBus()->CompareMultiWord(GetBufPtr(), localbuf, GetSplitted()) != 0 ||
-			GetBus()->CompareSingleWord(wp1[7], wp2[7]) != 0  )
+		if (type & PROG_TYPE)
+			v_prog = VerifyProg(localbuf);
+		if (type & DATA_TYPE)
+			v_data = VerifyData(localbuf);
+		if (type & CONFIG_TYPE)
 		{
-			rval = 0;
+			DWORD f;
+			SecurityRead(f);
+			if (GetAWInfo()->GetLockBits() == f)
+			{
+				v_config = OK;
+			}
+			else
+				v_config = 1;
 		}
-		else
-			rval = 1;
+
+		rval = (v_prog == OK && v_data == OK && v_config == OK) ? 1 : 0;
+
 		delete localbuf;
 	}
 
 	return rval;
+}
+
+int Pic16xx::Erase(int probe, int type)
+{
+	int rv;
+
+//	rv = Probe( probe || GetNoOfBank() == 0 );
+//	if (rv > 0)
+//	{
+		rv = GetBus()->Erase(type);
+//	}
+
+	return rv == OK ? 1 : rv;
 }

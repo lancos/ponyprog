@@ -6,10 +6,10 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997, 1998  Claudio Lanconelli                           //
+//  Copyright (C) 1997-2001   Claudio Lanconelli                           //
 //                                                                         //
-//  e-mail: lanconel@cs.unibo.it                                           //
-//  http://www.cs.unibo.it/~lanconel                                       //
+//  e-mail: lancos@libero.it                                               //
+//  http://www.LancOS.com                                                  //
 //                                                                         //
 //-------------------------------------------------------------------------//
 //                                                                         //
@@ -34,21 +34,21 @@
 #include "errcode.h"
 #include "e2app.h"	//for GetPolarity
 
-PGMInterface::PGMInterface()
+SIProgInterface::SIProgInterface()
 {
-	UserDebug(Constructor, "PGMInterface::PGMInterface() Constructor\n");
+	UserDebug(Constructor, "SIProgInterface::SIProgInterface() Constructor\n");
 
 	Install(0);
 	old_portno = 0;
 }
 
-//PGMInterface::~PGMInterface()
+//SIProgInterface::~SIProgInterface()
 //{
 //}
 
 //se  res == 1  abilita il BREAK --> Tx = +12v
 // altrimenti disabilita il BREAK --> Tx = -12v
-void PGMInterface::SetControlLine(int res)
+void SIProgInterface::SetControlLine(int res)
 {
 	if (IsInstalled())
 	{
@@ -61,7 +61,7 @@ void PGMInterface::SetControlLine(int res)
 
 //La alimentazione e` data dalle tre linee: SCL, SDA, RESET.
 // Se una qualsiasi di queste tre linee e` a 1 vi e` alimentazione
-int PGMInterface::SetPower(int onoff)
+int SIProgInterface::SetPower(int onoff)
 {
 	if (onoff)
 	{
@@ -77,9 +77,9 @@ int PGMInterface::SetPower(int onoff)
 	return OK;
 }
 
-int PGMInterface::Open(int com_no)
+int SIProgInterface::Open(int com_no)
 {
-	UserDebug2(UserApp1, "PGMInterface::Open(%d) IN *** Inst=%d\n", com_no, IsInstalled());
+	UserDebug2(UserApp1, "SIProgInterface::Open(%d) IN *** Inst=%d\n", com_no, IsInstalled());
 
 	int ret_val = OK;
 
@@ -87,21 +87,21 @@ int PGMInterface::Open(int com_no)
 	{
 		if ( (ret_val = RS232Interface::OpenSerial(com_no)) == OK )
 		{
-			SetSerialEventMask(0);
+		//	SetSerialEventMask(0);
 			//SetPower(1);	//08/02/1998 -- ora diamo alimentazione prima di ogni operazione e la togliamo subito dopo
 
 			Install(com_no);
 		}
 	}
 
-	UserDebug1(UserApp2, "PGMInterface::Open() = %d OUT\n", ret_val);
+	UserDebug1(UserApp2, "SIProgInterface::Open() = %d OUT\n", ret_val);
 
 	return ret_val;
 }
 
-void PGMInterface::Close()
+void SIProgInterface::Close()
 {
-	UserDebug1(UserApp1, "PGMInterface::Close() IN *** Inst=%d\n", IsInstalled());
+	UserDebug1(UserApp1, "SIProgInterface::Close() IN *** Inst=%d\n", IsInstalled());
 
 	if (IsInstalled())
 	{
@@ -113,12 +113,12 @@ void PGMInterface::Close()
 		RS232Interface::CloseSerial();
 	}
 
-	UserDebug(UserApp2, "PGMInterface::Close() OUT\n");
+	UserDebug(UserApp2, "SIProgInterface::Close() OUT\n");
 }
 
-void PGMInterface::SetDataOut(int sda)
+void SIProgInterface::SetDataOut(int sda)
 {
-	UserDebug2(UserApp3, "PGMInterface::SetSDA(%d) *** Inst=%d\n", sda, IsInstalled());
+	UserDebug2(UserApp3, "SIProgInterface::SetSDA(%d) *** Inst=%d\n", sda, IsInstalled());
 
 	if (IsInstalled())
 	{
@@ -129,9 +129,9 @@ void PGMInterface::SetDataOut(int sda)
 	}
 }
 
-void PGMInterface::SetClock(int scl)
+void SIProgInterface::SetClock(int scl)
 {
-	UserDebug2(UserApp3, "PGMInterface::SetSCL(%d) *** Inst=%d\n", scl, IsInstalled());
+	UserDebug2(UserApp3, "SIProgInterface::SetSCL(%d) *** Inst=%d\n", scl, IsInstalled());
 
 	if (IsInstalled())
 	{
@@ -142,9 +142,9 @@ void PGMInterface::SetClock(int scl)
 	}
 }
 
-void PGMInterface::SetClockData()
+void SIProgInterface::SetClockData()
 {
-	UserDebug1(UserApp3, "PGMInterface::SetSCLSDA() *** Inst=%d\n", IsInstalled());
+	UserDebug1(UserApp3, "SIProgInterface::SetSCLSDA() *** Inst=%d\n", IsInstalled());
 
 	if (IsInstalled())
 	{
@@ -176,9 +176,9 @@ void PGMInterface::SetClockData()
 }
 
 
-void PGMInterface::ClearClockData()	//aggiunto il 06/03/98
+void SIProgInterface::ClearClockData()	//aggiunto il 06/03/98
 {
-	UserDebug1(UserApp3, "PGMInterface::ClearSCLSDA() *** Inst=%d\n", IsInstalled());
+	UserDebug1(UserApp3, "SIProgInterface::ClearSCLSDA() *** Inst=%d\n", IsInstalled());
 
 	if (IsInstalled())
 	{
@@ -209,9 +209,9 @@ void PGMInterface::ClearClockData()	//aggiunto il 06/03/98
 	}
 }
 
-int PGMInterface::GetDataIn() 
+int SIProgInterface::GetDataIn() 
 {
-	UserDebug1(UserApp3, "PGMInterface::GetSDA() *** Inst=%d\n", IsInstalled());
+	UserDebug1(UserApp3, "SIProgInterface::GetSDA() *** Inst=%d\n", IsInstalled());
 
 	if (IsInstalled())
 	{
@@ -224,28 +224,28 @@ int PGMInterface::GetDataIn()
 		return E2ERR_NOTINSTALLED;
 }
 
-int PGMInterface::GetClock() 
+int SIProgInterface::GetClock() 
 {
 	return 1;
 }
 
-int PGMInterface::IsClockDataUP() 
+int SIProgInterface::IsClockDataUP() 
 {
-	UserDebug1(UserApp3, "PGMInterface::GetSCLSDAup() *** Inst=%d\n", IsInstalled());
+	UserDebug1(UserApp3, "SIProgInterface::GetSCLSDAup() *** Inst=%d\n", IsInstalled());
 
 	return GetDataIn();
 }
 
-int PGMInterface::IsClockDataDOWN() 
+int SIProgInterface::IsClockDataDOWN() 
 {
-	UserDebug1(UserApp3, "PGMInterface::GetSCLSDAdown() *** Inst=%d\n", IsInstalled());
+	UserDebug1(UserApp3, "SIProgInterface::GetSCLSDAdown() *** Inst=%d\n", IsInstalled());
 
 	return !GetDataIn();
 }
 
-int PGMInterface::TestPort(int com_no)
+int SIProgInterface::TestPort(int com_no)
 {
-	UserDebug1(UserApp1, "PGMInterface::TestPort(%d) IN\n", com_no);
+	UserDebug1(UserApp1, "SIProgInterface::TestPort(%d) IN\n", com_no);
 
 	int ret_val = TestSave(com_no);
 
@@ -277,16 +277,16 @@ int PGMInterface::TestPort(int com_no)
 	}
 	TestRestore();
 
-	UserDebug1(UserApp2, "PGMInterface::TestPort() = %d OUT\n", ret_val);
+	UserDebug1(UserApp2, "SIProgInterface::TestPort() = %d OUT\n", ret_val);
 
 	return ret_val;
 }
 
 /***
 //Salva le porte attuali ed apre una nuova seriale (per Test)
-int PGMInterface::TestSave(int port_no)
+int SIProgInterface::TestSave(int port_no)
 {
-	UserDebug1(UserApp1, "PGMInterface::TestSave(%d) IN\n", port_no);
+	UserDebug1(UserApp1, "SIProgInterface::TestSave(%d) IN\n", port_no);
 
 	int ret_val;
 
@@ -297,15 +297,15 @@ int PGMInterface::TestSave(int port_no)
 	{
 	}
 
-	UserDebug1(UserApp2, "PGMInterface::TestSave() = %d OUT\n", ret_val);
+	UserDebug1(UserApp2, "SIProgInterface::TestSave() = %d OUT\n", ret_val);
 
 	return ret_val;
 }
 
 //Ripristina la situazione precedente a TestSave()
-void PGMInterface::TestRestore()
+void SIProgInterface::TestRestore()
 {
-	UserDebug1(UserApp1, "PGMInterface::TestRestore() IN *** Inst=%d\n", IsInstalled());
+	UserDebug1(UserApp1, "SIProgInterface::TestRestore() IN *** Inst=%d\n", IsInstalled());
 
 	if (IsInstalled())
 	{
@@ -317,6 +317,6 @@ void PGMInterface::TestRestore()
 	}
 	old_portno = 0;
 
-	UserDebug(UserApp2, "PGMInterface::TestRestore() OUT\n");
+	UserDebug(UserApp2, "SIProgInterface::TestRestore() OUT\n");
 }
 ***/

@@ -6,10 +6,10 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2000   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2001   Claudio Lanconelli                           //
 //                                                                         //
-//  e-mail: lanconel@cs.unibo.it                                           //
-//  http://www.cs.unibo.it/~lanconel                                       //
+//  e-mail: lancos@libero.it                                               //
+//  http://www.LancOS.com                                                  //
 //                                                                         //
 //-------------------------------------------------------------------------//
 //                                                                         //
@@ -28,6 +28,7 @@
 // Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. //
 //                                                                         //
 //-------------------------------------------------------------------------//
+// $Id$
 //=========================================================================//
 
 #include "types.h"
@@ -35,17 +36,34 @@
 #include "errcode.h"
 #include "eeptypes.h"
 
-//#define	BANK_SIZE	1
+#undef	BANK_SIZE
+#define	BANK_SIZE	1
 
 //=====>>> Costruttore <<<======
 At89sxx::At89sxx(e2AppWinInfo *wininfo, BusIO *busp)
-	:	At90sxx(wininfo, busp)
+	:	Device(wininfo, busp, BANK_SIZE)
 {
+	UserDebug(Constructor, "At89sxx::At89sxx()\n");
 }
 
-//--- Distruttore
-At89sxx::~At89sxx()
+int At89sxx::SecurityRead(DWORD &bits)
 {
+	return OK;
+}
+
+int At89sxx::SecurityWrite(DWORD bits)
+{
+	return GetBus()->WriteLockBits(bits);
+}
+
+int At89sxx::FusesRead(DWORD &value)
+{
+	return OK;
+}
+
+int At89sxx::FusesWrite(DWORD value)
+{
+	return OK;
 }
 
 int At89sxx::Probe(int probe_size)
@@ -53,17 +71,72 @@ int At89sxx::Probe(int probe_size)
 	return GetSize();
 }
 
-int At89sxx::Read(int probe)
+int At89sxx::Read(int probe, int type)
 {
-	return At90sxx::Read(probe);
+	int rv = Probe( probe || GetNoOfBank() == 0 );
+
+	if (rv > 0)
+	{
+		if (GetSize() >= GetSplitted())
+		{
+			if (type & PROG_TYPE)
+				rv = ReadProg();
+			if (rv > 0 && GetSize() > GetSplitted())	//Check for DATA size
+			{
+				if (type & DATA_TYPE)
+					rv = ReadData();
+			}
+		}
+	}
+
+	return rv;
 }
 
-int At89sxx::Write(int probe)
+int At89sxx::Write(int probe, int type)
 {
-	return At90sxx::Write(probe);
+	int rv = Probe( probe || GetNoOfBank() == 0 );
+
+	if (rv > 0)
+	{
+		if (GetSize() >= GetSplitted())
+		{
+			if (type & PROG_TYPE)
+				rv = WriteProg();
+			if (rv > 0 && GetSize() > GetSplitted())	//check for DATA size
+			{
+				if (type & DATA_TYPE)
+					rv = WriteData();
+			}
+		}
+	}
+
+	return rv;
 }
 
-int At89sxx::Verify()
+int At89sxx::Verify(int type)
 {
-	return At90sxx::Verify();
+	if (GetSize() == 0)
+		return BADPARAM;
+
+	int rval = -1;
+	if (GetSize() >= GetSplitted())
+	{
+		unsigned char *localbuf;
+		localbuf = new unsigned char[GetSize()];
+		if (localbuf == 0)
+			return OUTOFMEMORY;
+
+		int v_data = OK, v_prog = OK;
+
+		if (type & PROG_TYPE)
+			v_prog = VerifyProg(localbuf);
+		if (type & DATA_TYPE)
+			v_data = VerifyData(localbuf);
+
+		rval = (v_prog == OK && v_data == OK) ? 1 : 0;
+
+		delete localbuf;
+	}
+
+	return rval;
 }

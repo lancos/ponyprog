@@ -36,10 +36,12 @@
 #include "types.h"
 #include <v/vmodald.h>
 
+#include "string_table.h"
+
 class retryModalDialog : public vModalDialog
 {
   public:		//---------------------------------------- public
-	retryModalDialog(vBaseWindow* bw, char* msg, char* title = "Alert");
+	retryModalDialog(vBaseWindow* bw, char* msg, char* title = STR_MSGALERT);
 	virtual ~retryModalDialog();		// Destructor
 	virtual void DialogCommand(ItemVal,ItemVal,CmdType); // action selected
 	virtual int retryAction();

@@ -6,7 +6,7 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2000   Claudio Lanconelli                           //
+//  Copyright (C) 1997, 1998  Claudio Lanconelli                           //
 //                                                                         //
 //  e-mail: lanconel@cs.unibo.it                                           //
 //  http://www.cs.unibo.it/~lanconel                                       //
@@ -44,6 +44,8 @@
 #include <v/vdebug.h>
 #endif
 
+#include "eeprom.h"
+
 #include "e2cnv.h"	// e2TextCanvasPane
 #include "e2dlg.h"	// e2Dialog
 
@@ -60,6 +62,12 @@ class e2Timer : public vTimer
 	e2CmdWindow* cmdw;
 };
 **/
+
+typedef enum {
+	verboseNo,
+	verboseErr,
+	verboseAll
+} VerboseType;
 
 class e2AppWinInfo;
 
@@ -89,7 +97,6 @@ class e2CmdWindow : public vCmdWindow
 	void CharEdit(int row = -1, int col = -1);
 
 	int IsBufChanged() const;
-	void SaveFile(int force_select = 0);
 
 	void SetTitle();
 
@@ -99,23 +106,24 @@ class e2CmdWindow : public vCmdWindow
 		{ return e2Prg; }
 
 	//All commands
-	int CmdOpen();
-	int CmdSave();
+	int CmdOpen(int type = ALL_TYPE, char *file = 0, long relocation = 0);
+	int CmdSave(int type = ALL_TYPE, char *file = 0, long relocation = 0);
+	int CmdSaveAs(int type = ALL_TYPE, long relocation = 0);
 	int CmdLastFile1();
 	int CmdLastFile2();
 	int CmdReload();
 	int CmdPrint();
-	int CmdRead();
-	int CmdWrite();
-	int CmdVerify();
-	int CmdErase();
+	int CmdRead(int type = ALL_TYPE);
+	int CmdWrite(int type = ALL_TYPE, bool verify = true);
+	int CmdVerify(int type = ALL_TYPE);
+	int CmdErase(int type = ALL_TYPE);
 	int CmdGetInfo();
 	int CmdReset();
 	int CmdReadLock();
 	int CmdWriteLock();
 	int CmdReadSpecial();
 	int CmdWriteSpecial();
-	int CmdReadSecurity();
+	int CmdReadSecurity(int display_dialog = 0);
 	int CmdWriteSecurity();
 	int CmdDoubleSize();
 	int CmdClearBuf();
@@ -127,11 +135,18 @@ class e2CmdWindow : public vCmdWindow
 	int CmdSelectDevice(long new_type);
 	int CmdSetDeviceType(ItemVal val);
 	int CmdSetDeviceSubType(ItemVal val);
+	int CmdProgram();
+	int CmdSetSerialNumber();
+	int CmdReadCalibration(int idx);
+	int CmdRunScript(bool test_mode = false);
 
 	int SpecialBits(int readonly = 0);
+	int ProgramOptions();
+	int SerialNumberOptions();
+	int OscCalibOption();
 
   protected:
-	void CmdRemoteMode();
+//	void CmdRemoteMode();
 
   private:		//--------------------------------------- private
 
@@ -140,22 +155,32 @@ class e2CmdWindow : public vCmdWindow
 	void FirstPage();
 	void LastPage();
 
-	void OpenFile(char const *file = 0);
+	int SaveFile(int force_select = 0);
+	int OpenFile(char const *file = 0);
 	void UpdateStrFromBuf();
 	void UpdateStrFromStr(char const *s1, char const *s2 = 0);
 	void UpdateStatusBar();
-	void UpdateChipType(int pritype = -1, int subtype = -1);
-	void SetChipSubType(int pritype, int subtype = 0);
+//	void UpdateChipType(int pritype = -1, int subtype = -1);
+//	void SetChipSubType(int pritype, int subtype = 0);
 	void UpdateMenuType(long new_type = 0);
 	void UpdateFileMenu();
 	int TypeToMenuId(long type);
 	long MenuIdToType(int id);
+	void MenuIdToCbxId(int id, int &idx1, int &idx2);
+	void TypeToCbxId(long type, int &idx1, int &idx2);
+	void CbxMenuInit();
+	long CbxIdToType(int idx1, int idx2);
+	int OpenScript(char const *file);
+
 	int OnError(int err, char const *msg = 0);
+	int PlaySoundMsg(bool val);
 
 	long GetDevSize() const;
 
 	int CoordToIndex(int row, int col);
 	void IndexToCoord(int index, int &row, int &col);
+
+	int ScriptError(int line_number, int arg_index, char *arg, char *msg = 0);
 
 	// Standard elements
 	vMenuPane* e2Menu;				// For the menu bar
@@ -166,7 +191,7 @@ class e2CmdWindow : public vCmdWindow
 //	e2Timer* _timer;				// Timer for Date/Time
 
 	// Dialogs associated with CmdWindow
-	e2Dialog* e2Dlg;
+//	e2Dialog* e2Dlg;
 	e2ProgressDialog *e2Prg;
 
 	// AppWinInfo associated with this window
@@ -183,7 +208,7 @@ class e2CmdWindow : public vCmdWindow
 
 	int curIndex;
 
-	//Remote mode flag
-	int remote;
+	//Verbose mode
+	VerboseType verbose;
 };
 #endif

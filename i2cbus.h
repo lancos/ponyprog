@@ -9,7 +9,7 @@
 //  Copyright (C) 1997-2000   Claudio Lanconelli                           //
 //                                                                         //
 //  e-mail: lanconel@cs.unibo.it                                           //
-//  http://www.cs.unibo.it/~lanconel                                       //
+//  http://www.LancOS.com                                                  //
 //                                                                         //
 //-------------------------------------------------------------------------//
 //                                                                         //
@@ -45,7 +45,8 @@ class I2CBus : public BusIO
 	long Write(int slave, UBYTE const *data, long length);
 	
 	int Start(UBYTE slave);
-	int ReadByte(int ack);
+	int ReadByte(int ack, int lsb = 0);
+	int WriteByte(int by, int lsb = 0);
 	ULONG StartRead(UBYTE slave, UBYTE *data, ULONG length);
 	ULONG StartWrite(UBYTE slave, UBYTE const *data, ULONG length);
 	int Stop();
@@ -59,15 +60,18 @@ class I2CBus : public BusIO
 
  protected:		//------------------------------- protected
 
- private:		//------------------------------- private
-
 	int CheckBusy();
 	int SendStart();
 	int SendStop();
 	int SendBitMast(int b);
 	int RecBitMast();
 	int SendByteMast(int by);
+	int SendByteMastLSB(int by);
 	int RecByteMast(int ack);
+	int RecByteMastLSB(int ack);
+
+ private:		//------------------------------- private
+
 
 	void setSCLSDA()
 		{ busI->SetClockData(); }

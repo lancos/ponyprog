@@ -89,6 +89,11 @@ PonyIOInterface::PonyIOInterface()
 	old_portno = 0;
 }
 
+PonyIOInterface::~PonyIOInterface()
+{
+	Close();
+}
+
 #define BREAK_MASK	0x40
 
 //se  res == 1  abilita il BREAK --> Tx = +12v

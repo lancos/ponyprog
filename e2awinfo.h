@@ -6,10 +6,10 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C)  1997-2000  Claudio Lanconelli                           //
+//  Copyright (C)  1997-2001  Claudio Lanconelli                           //
 //                                                                         //
-//  e-mail: lanconel@cs.unibo.it                                           //
-//  http://www.cs.unibo.it/~lanconel                                       //
+//  e-mail: lancos@libero.it                                               //
+//  http://www.LancOS.com                                                  //
 //                                                                         //
 //-------------------------------------------------------------------------//
 //                                                                         //
@@ -28,6 +28,7 @@
 // Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. //
 //                                                                         //
 //-------------------------------------------------------------------------//
+// $Id$
 //=========================================================================//
 
 #ifndef e2AWINFO_H
@@ -49,24 +50,35 @@
 //AutoTag
 //Include Device Classes
 #include "e24xx.h"
+#include "e2401.h"
+#include "e24xx-1.h"
 #include "e24xx-2.h"
 #include "e24xx-5.h"
 #include "at90sxx.h"
 #include "at89sxx.h"
 #include "at93cxx.h"
+#include "at93cxx8.h"
 #include "pic16xx.h"
+#include "pic168xx.h"
+#include "pic125xx.h"
 #include "at250xx.h"
 #include "at25xxx.h"
 #include "sde2506.h"
+#include "nvm3060.h"
+#include "at17xxx.h"
+#include "x2444.h"
 
 #include "filebuf.h"
 #include "e2pfbuf.h"
-#include "hexfbuf.h"
+#include "binfbuf.h"
 #include "intfbuf.h"
 #include "motsfbuf.h"
+#include "csmfbuf.h"
 
 #include "eeptypes.h"
 #include "e2app.h"
+
+#include "e2phead.h"
 
 //At the moment the bigger device is ATmega (128Kb + 4Kb)
 #define	BUFFER_SIZE (1024 * 132)
@@ -78,8 +90,8 @@
 # endif
 #endif
 
-#define	STRINGID_SIZE	32
-#define	COMMENT_SIZE	90
+#define	STRINGID_SIZE	E2P_STRID_SIZE
+#define	COMMENT_SIZE	E2P_COMM_SIZE
 
 class e2AppWinInfo : public vAppWinInfo
 {
@@ -88,10 +100,14 @@ class e2AppWinInfo : public vAppWinInfo
 	e2AppWinInfo(vCmdWindow* win = 0, char* name = "", BusIO** busptr = 0, void* ptr = 0);
 	~e2AppWinInfo();
 
-	int Read();
-	int Write(int leave_on = FALSE);
-	int Verify(int raise_power = TRUE);
-	int Load(int bank = 0);
+	int Read(int type = ALL_TYPE, int raise_power = TRUE, int leave_on = FALSE);
+	int Write(int type = ALL_TYPE, int raise_power = TRUE, int leave_on = FALSE);
+	int Verify(int type = ALL_TYPE, int raise_power = TRUE, int leave_on = FALSE);
+	int Erase(int type = ALL_TYPE, int raise_power = TRUE, int leave_on = FALSE);
+//	int BlankCheck(int type = ALL_TYPE, int raise_power = TRUE, int leave_on = FALSE);
+
+//	int Load(int bank = 0);
+	int Load();
 	int Save();
 	char const *Dump(int line, int type = 0);
 
@@ -101,19 +117,20 @@ class e2AppWinInfo : public vAppWinInfo
 		{ no_block = blk; }
 	int GetBlockSize() const
 		{ return block_size; }
-	
+
 	long GetSize() const;
 	int GetHexPerLine() const
 		{ return hex_per_line; }
 
 	void SetEEProm(int type = E24XX, int subtype = 0);
-	
+
 	void SetFileBuf(FileType type);
+	FileType GetFileBuf() const;
 
 	void SetFileName(char const *name);
 	char const *GetFileName() const
 		{ return fname; }
-	
+
 	char *GetStringID(char *s = 0);
 	void SetStringID(char const *s);
 
@@ -124,6 +141,8 @@ class e2AppWinInfo : public vAppWinInfo
 		{ return eep_type; }
 	int GetEEPSubType() const
 		{ return eep_subtype ? eep_subtype : GetE2PSubType( GetEEPTypeFromSize(eep_type, GetNoOfBlock()) ); } //GetNoOfBlock(); }
+  	int GetEEPType() const
+		{ return BuildE2PType(eep_type, eep_subtype); }
 
 	int GetBankRollOver() const
 		{ return roll_over; }
@@ -132,11 +151,10 @@ class e2AppWinInfo : public vAppWinInfo
 	int BankRollOverDetect(int force = 0);
 
 	void Reset();
-	int Erase();
 
-	int GetSplittedInfo() const
+	long GetSplittedInfo() const
 		{ return splitted; }
-	void SetSplittedInfo(int spl = 0)
+	void SetSplittedInfo(long spl = 0)
 		{ splitted = spl; }
 
 	UWORD GetCRC() const
@@ -144,7 +162,7 @@ class e2AppWinInfo : public vAppWinInfo
 	void SetCRC(int c = 0)
 		{ crc = c; }
 	UWORD RecalcCRC();
-	
+
 	UBYTE *GetBufPtr() const
 		{ return (UBYTE *)buffer; }
 	int GetBufSize() const
@@ -154,21 +172,21 @@ class e2AppWinInfo : public vAppWinInfo
 	void SwapBytes();
 	void FillBuffer(int first_pos = 0, int ch = 0xFF, long len = -1);
 
-	int SecurityRead(int &blocks);
-	int SecurityWrite(int blocks = -1);
-	int HighEnduranceRead(int &block_no);
-	int HighEnduranceWrite(int block_no = -1);
-	int FusesRead(int &bits);
-	int FusesWrite(int bits = -1);
+	int SecurityRead(DWORD &bits);
+	int SecurityWrite(DWORD bits, bool no_param = false);
+	int FusesRead(DWORD &bits);
+	int FusesWrite(DWORD bits, bool no_param = false);
+	int HighEnduranceRead(DWORD &block_no);
+	int HighEnduranceWrite(DWORD block_no, bool no_param = false);
 
-	UBYTE GetLockBits() const
+	int ReadOscCalibration(int addr = 0);
+
+	DWORD GetLockBits() const
 		{ return lock_bits; }
-	UBYTE GetFuseBits() const
+	DWORD GetFuseBits() const
 		{ return fuse_bits; }
-	void SetLockBits(UBYTE bits)
-		{ lock_bits = bits; }
-	void SetFuseBits(UBYTE bits)
-		{ fuse_bits = bits; }
+	void SetLockBits(DWORD bits);
+	void SetFuseBits(DWORD bits);
 
 	int IsBufferValid() const
 		{ return buf_ok; }
@@ -178,7 +196,15 @@ class e2AppWinInfo : public vAppWinInfo
 	int IsBufChanged() const
 		{ return buf_changed; }
 
+	int SetLoadType(int val);
+	int GetLoadType() const;
+	int SetSaveType(int val);
+	int GetSaveType() const;
 
+	void SetLoadRelocation(long val);
+	long GetLoadRelocation() const;
+	void SetSaveRelocation(long val);
+	long GetSaveRelocation() const;
 
   protected:	//--------------------------------------- protected
 	e2CmdWindow* cmdWin;
@@ -190,11 +216,17 @@ class e2AppWinInfo : public vAppWinInfo
 		{ THEAPP->SleepBus(); }
 	void SetBlockSize(int blk)
 		{ block_size = blk; }
-	void ClearBuffer();
-	int LoadFile(int bank = 0);
+	void ClearBuffer(int type = ALL_TYPE);
+	int LoadFile();
 
 	int const hex_per_line;
 	int const buffer_size;
+
+	int load_type;				//load ALL, Flash only or EEPROM only
+	int save_type;				//save ALL, Flash only or EEPROM only
+
+	long load_relocation;
+	long save_relocation;
 
 	UBYTE buffer[BUFFER_SIZE];	//buffer in cui risiede il contenuto dell'eeprom
 	char linebuf[128];			//buffer di appoggio per la visualizzazione
@@ -212,35 +244,44 @@ class e2AppWinInfo : public vAppWinInfo
 	int splitted;				//indica se la EEPROM e` divisa in due parti distinte (EEPROM - FLASH)
 	int roll_over;				//indica se e`presente una features della eeprom
 
-	//** 13/09/99
-	UBYTE fuse_bits;			//device dependent bits
-	UBYTE lock_bits;			//device dependent lock (security) bits
+	DWORD fuse_bits;			//device dependent bits
+	DWORD lock_bits;			//device dependent lock (security) bits
 
 	UWORD crc;					//CRC del contenuto della eeprom
 
 	char eeprom_string[STRINGID_SIZE];	//eeprom string ID
 	char eeprom_comment[COMMENT_SIZE];	//eeprom comment
 
-	EEProm *eep;				//puntatore al tipo di eeprom su cui si lavora
+	Device *eep;				//puntatore al tipo di eeprom su cui si lavora
 	//AutoTag
 	//List of available device types
 	E24xx eep24xx;
-	E24xx2 eep24xxx;
+	mE2401 eep2401;
+	E24xx1 eep24xx1;
+	E24xx2 eep24xx2;
 	E24xx5 eep24xx5;
 	At90sxx eepAt90s;
 	At89sxx eepAt89s;
-	At93cxx eep93x6;
+	At93cxx eep93xx16;
+	At93cxx8 eep93xx8;
 	Pic16xx eepPic16;
+	Pic168xx eepPic168xx;
+	Pic125xx eepPic125xx;
 	At250xx eep250xx;
 	At25xxx eep25xxx;
 	Sde2506 eep2506;
+	Nvm3060 eep3060;
+	At17xxx eep17xxx;
+	X2444 eep2444;
+	X2444 eep2430;
 
 	FileBuf *fbufp;				//puntatore al tipo di file su cui si lavora
 	FileBuf *fbufvet[NO_OF_FILETYPE];	//puntatori ai tipi di file conosciuti
 	//List of available file types
 	e2pFileBuf e2pfbuf;
-	hexFileBuf hexfbuf;
+	binFileBuf binfbuf;
 	IntelFileBuf intfbuf;
 	MotorolaSFileBuf motsfbuf;
+	csmFileBuf csmfbuf;
 };
 #endif

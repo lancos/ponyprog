@@ -9,7 +9,7 @@
 //  Copyright (C) 1997-2000   Claudio Lanconelli                           //
 //                                                                         //
 //  e-mail: lanconel@cs.unibo.it                                           //
-//  http://www.cs.unibo.it/~lanconel                                       //
+//  http://www.LancOS.com                                                  //
 //                                                                         //
 //-------------------------------------------------------------------------//
 //                                                                         //
@@ -48,7 +48,7 @@
 #  endif
 #endif
 
-#define	SCLTIMEOUT	1000	// enable SCL check and timing (for slaves that hold down the SCL line to slow the transfer)
+#define	SCLTIMEOUT	900	// enable SCL check and timing (for slaves that hold down the SCL line to slow the transfer)
 
 #define BUSYDELAY	100
 #define SDATIMEOUT	200
@@ -86,7 +86,7 @@ int I2CBus::SendStart()
 		int k;
 
 		for(k = SCLTIMEOUT; getSCL() == 0 && k > 0; k--)
-			WaitUsec(2);
+			WaitUsec(1);
 		if (k == 0)
 			return IICERR_SCLCONFLICT;
 	}
@@ -116,7 +116,7 @@ int I2CBus::SendStop()
 		int k;
 
 		for(k = SCLTIMEOUT; getSCL() == 0 && k > 0; k--)
-			WaitUsec(2);
+			WaitUsec(1);
 		if (k == 0)
 		{
 		//	UserDebug(UserApp2, "I2CBus::SendStop() *** SCL error\n");
@@ -154,7 +154,7 @@ int I2CBus::SendBitMast(int b)
 		int k;
 
 		for(k = SCLTIMEOUT; getSCL() == 0 && k > 0; k--)
-			WaitUsec(2);
+			WaitUsec(1);
 		if (k == 0)
 			return IICERR_SCLCONFLICT;
 #endif
@@ -185,7 +185,7 @@ int I2CBus::RecBitMast()
 		int k;
 
 		for(k = SCLTIMEOUT; getSCL() == 0 && k > 0; k--)
-			WaitUsec(2);
+			WaitUsec(1);
 		if (k == 0)
 			return IICERR_SCLCONFLICT;
 #endif
@@ -199,12 +199,29 @@ int I2CBus::RecBitMast()
 	return b;
 }
 
-/* OK, ora ci alziamo di un livello: operiamo sul byte */
+// OK, ora ci alziamo di un livello: operiamo sul byte
 int I2CBus::SendByteMast(int by)
 {
 	int lrb,k;
 
 	for (k = 7; k >= 0; k--)
+		if ( (lrb = SendBitMast(by & (1<<k))) )
+			return lrb;
+
+	lrb = RecBitMast();	// acknowledge bit
+	if (lrb < 0)		// < 0 means that an error occured
+		return lrb;
+	if (lrb)
+		return IICERR_NOTACK;
+
+	return 0;
+}
+
+int I2CBus::SendByteMastLSB(int by)
+{
+	int lrb,k;
+
+	for (k = 0; k < 8; k++)
 		if ( (lrb = SendBitMast(by & (1<<k))) )
 			return lrb;
 
@@ -236,6 +253,25 @@ int I2CBus::RecByteMast(int ack)
 	return val;
 }
 
+int I2CBus::RecByteMastLSB(int ack)
+{
+	int k,lrb,val = 0;
+
+	for (k = 0; k < 8; k++)
+	{
+		lrb = RecBitMast();
+		if (lrb < 0)
+			return lrb;
+		if (lrb)
+			val |= 1 << k;
+	}
+	if ( (k = SendBitMast(ack)) )	// send the ack
+		return k;
+	setSDA();	// release SDA line to the slave trasmitter
+
+	return val;
+}
+
 void I2CBus::SetDelay()
 {
 	int val = THEAPP->GetI2CSpeed();
@@ -252,9 +288,9 @@ void I2CBus::SetDelay()
 	case SLOW:
 		n = 20;		// (< 25 Khz)
 		break;
-//	case VERYSLOW:
-//		n = 100;
-//		break;
+	case VERYSLOW:
+		n = 100;
+		break;
 	default:
 		n = 5;		//Default (< 100KHz)
 		break;
@@ -263,7 +299,6 @@ void I2CBus::SetDelay()
 
 	UserDebug1(UserApp2, "I2CBus::SetDelay() = %d\n", n);
 }
-
 
 long I2CBus::Read(int slave, UBYTE *data, long length)
 {
@@ -296,11 +331,21 @@ long I2CBus::Write(int slave, UBYTE const *data, long length)
 	return len;
 }
 
-int I2CBus::ReadByte(int ack)
+int I2CBus::ReadByte(int ack, int lsb)
 {
-	return RecByteMast(ack);
+	if (lsb)
+		return RecByteMastLSB(ack);
+	else
+		return RecByteMast(ack);
 }
 
+int I2CBus::WriteByte(int by, int lsb)
+{
+	if (lsb)
+		return SendByteMastLSB(by);
+	else
+		return SendByteMast(by);
+}
 
 int I2CBus::Start(UBYTE slave)
 {

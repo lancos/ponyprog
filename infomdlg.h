@@ -36,26 +36,40 @@
 #include "types.h"
 #include <v/vmodald.h>
 
-class infoModalDialog : public vModalDialog
+#include "string_table.h"
+
+class e24xx_infoModalDialog : public vModalDialog
 {
   public:		//---------------------------------------- public
-	infoModalDialog(vBaseWindow* bw, int rlv, UWORD crc, long size, int security = 0, int seclen = 0, int highendurance = 0, char* title = "Device Info");
-	virtual ~infoModalDialog();		// Destructor
-//	virtual void DialogCommand(ItemVal,ItemVal,CmdType); // action selected
+	e24xx_infoModalDialog(vBaseWindow* bw, int rlv, UWORD crc, long size, char* title = STR_MSGDEVINFO);
+	virtual ~e24xx_infoModalDialog();		// Destructor
 	virtual int infoAction(char* msg = "Device Info");
 
   protected:	//--------------------------------------- protected
 
   private:		//--------------------------------------- private
+	char *strptr[4];
+};
 
+class other_infoModalDialog : public vModalDialog
+{
+  public:		//---------------------------------------- public
+	other_infoModalDialog(vBaseWindow* bw, long fsize, long esize, UWORD crc, char* title = STR_MSGDEVINFO);
+	virtual ~other_infoModalDialog();		// Destructor
+	virtual int infoAction(char* msg = "Device Info");
+
+  protected:	//--------------------------------------- protected
+
+  private:		//--------------------------------------- private
+	char *strptr[4];
 };
 
 class notesModalDialog : public vModalDialog
 {
   public:		//---------------------------------------- public
-	notesModalDialog(vBaseWindow* bw, char* id = 0, char* cm = 0, char* title = "Edit Chip Notes");
+	notesModalDialog(vBaseWindow* bw, char* id = 0, char* cm = 0, char* title = STR_MSGDEVNOTE);
 	virtual ~notesModalDialog();		// Destructor
-	virtual int notesAction(char* msg = "Edit Chip Notes");
+	virtual int notesAction(char* msg = STR_MSGDEVNOTE);
 
   protected:	//--------------------------------------- protected
 
@@ -66,7 +80,7 @@ class notesModalDialog : public vModalDialog
 class editModalDialog : public vModalDialog
 {
   public:		//---------------------------------------- public
-	editModalDialog(vBaseWindow* bw, int curval = 0, char* title = "Edit Buffer");
+	editModalDialog(vBaseWindow* bw, int curval = 0, char* title = STR_MSGEDITBUG);
 	virtual ~editModalDialog();		// Destructor
 	virtual int editAction(char* msg, int &retval);
 
@@ -79,7 +93,7 @@ class editModalDialog : public vModalDialog
 class editModalDialog2 : public vModalDialog
 {
   public:		//---------------------------------------- public
-	editModalDialog2(vBaseWindow* bw, char *curval = "", char* title = "Edit Buffer");
+	editModalDialog2(vBaseWindow* bw, char *curval = "", char* title = STR_MSGEDITBUG);
 	virtual ~editModalDialog2();		// Destructor
 	virtual int editAction(char* msg, char *text, int len);
 

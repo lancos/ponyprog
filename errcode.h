@@ -6,10 +6,10 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997, 1998  Claudio Lanconelli                           //
+//  Copyright (C) 1997-2001  Claudio Lanconelli                            //
 //                                                                         //
-//  e-mail: lanconel@cs.unibo.it                                           //
-//  http://www.cs.unibo.it/~lanconel                                       //
+//  e-mail: lancos@libero.it                                               //
+//  http://www.LancOS.com                                                  //
 //                                                                         //
 //-------------------------------------------------------------------------//
 //                                                                         //
@@ -59,6 +59,7 @@
 #define	IICERR_STOP			-20
 
 #define	E2ERR_WRITEFAILED	-21
+#define E2ERR_BLANKCHECKFAILED	-22
 
 #define	DEVICE_BADTYPE		-23
 #define	DEVICE_UNKNOWN		-24
@@ -67,7 +68,7 @@
 
 #define	BUFFEROVERFLOW		-30
 #define	OUTOFMEMORY			-31
-#define	BUFFERUNDERFLOW		-32
+#define BUFFERUNDERFLOW		-32
 
 //Codici di errore restituiti dall'interprete di comandi a menu
 #define	CMD_BUFFEREMPTY		-39
@@ -78,6 +79,8 @@
 #define	CMD_WRITEFAILED		-44
 #define	CMD_VERIFYFAILED	-45
 #define	CMD_ROLLOVERFAILED	-46
+
+#define	CMD_SCRIPTERROR		-50
 
 #endif
 

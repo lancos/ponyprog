@@ -6,11 +6,13 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2000  Claudio Lanconelli                            //
+//  Copyright (C) 1997-2003  Claudio Lanconelli                            //
 //                                                                         //
-//  e-mail: lanconel@cs.unibo.it                                           //
-//  http://www.cs.unibo.it/~lanconel                                       //
+//  e-mail: lancos@libero.it                                               //
+//  http://www.LancOS.com                                                  //
 //                                                                         //
+//-------------------------------------------------------------------------//
+// $Id$
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -41,14 +43,17 @@ enum {
 	idEnableToolBar,
 
 	m_Options,		// Options menu
+	m_Log,
 	m_Setup,		// Setup menu
+	m_InterfSetup,
 	m_Calibration,	// Calibration menu
-	m_Eeprom,
+	m_Device,
+	m_Command,
 	m_Read,
 	m_Write,
 	m_Verify,
-	m_Erase,
 	m_Info,
+	m_Erase,
 	m_Reset,
 	m_Help,			// Help menu
 	m_About,		// About
@@ -69,18 +74,61 @@ enum {
 	m_File1,
 	m_File2,
 	m_Remote,
+	m_Reload,
+	m_Program,
+	m_ProgOptions,
+	m_SerialNumConfig,
+	m_SetSerialNum,
+
+	m_OscCalibConfig,
+	m_OscCalibRead,
+
+	m_HalfOpen,
+	m_OpenProg,
+	m_OpenData,
+
+	m_HalfSave,
+	m_SaveProg,
+	m_SaveData,
+
+	m_HalfRead,
+	m_ReadProg,
+	m_ReadData,
+
+	m_HalfWrite,
+	m_WriteProg,
+	m_WriteData,
+
+	m_HalfVerify,
+	m_VerifyProg,
+	m_VerifyData,
+
+	m_Script,
+	m_EditScript,
+	m_AutoLoadScript,
+	m_LoadScript,
+	m_RunScript,
+	m_RunFile,
 
 	//List of device menu Item
-	m_I2Cbus,
+	m_I2Cbus8,
+	m_I2Cbus16,
+	m_at17xx,
 	m_SPI,
 	m_MicroWire,
 	m_AVR,
 	m_at89s,
-	m_PIC,
+	m_PIC16,
+	m_PIC12,
+	m_imbus,
+	m_sde25xx,
+	m_x2444xx,
 
 	//AutoTag
 	//List of device type menu Item
 	m_24XX,
+	m_2401a,
+	m_2401b,
 	m_2402,
 	m_2404,
 	m_2408,
@@ -88,24 +136,48 @@ enum {
 	m_24325,
 	m_24645,
 	m_24XXX,
+	m_24E16,
 	m_2432,
 	m_2464,
 	m_24128,
 	m_24256,
 	m_24512,
+
 	m_9306,
 	m_9346,
 	m_9356,
+	m_9357,
 	m_9366,
 	m_9376,
 	m_9386,
+
+	m_9306_8,
+	m_9346_8,
+	m_9356_8,
+	m_9357_8,
+	m_9366_8,
+	m_9376_8,
+	m_9386_8,
+
 	m_at90sXXXX,
 	m_at90s1200,
 	m_at90s2313,
 	m_at90s4414,
 	m_at90s8515,
+	m_atmega8515,
+	m_atmega8535,
 	m_atmega603,
 	m_atmega103,
+	m_atmega8,
+	m_atmega16,
+	m_atmega128,
+	m_atmega64,
+	m_atmega161,
+	m_atmega162,
+	m_atmega163,
+	m_atmega169,
+	m_atmega32,
+	m_atmega323,
 	m_at90s2323,
 	m_at90s2333,
 	m_at90s2343,
@@ -113,12 +185,47 @@ enum {
 	m_at90s4434,
 	m_at90s8534,
 	m_at90s8535,
+	m_attiny10,
+	m_attiny11,
 	m_attiny12,
+	m_attiny15,
 	m_attiny22,
+	m_attiny26,
+	m_attiny28,
+	m_attiny2313,
 
 	m_at89s8252,
 	m_at89s53,
+
+	m_pic1683,
 	m_pic1684,
+	m_pic1684A,
+	m_pic16870,
+	m_pic16871,
+	m_pic16872,
+	m_pic16873,
+	m_pic16874,
+	m_pic16876,
+	m_pic16877,
+
+	m_pic16873A,
+	m_pic16874A,
+	m_pic16876A,
+	m_pic16877A,
+	m_pic16627,
+	m_pic16628,
+
+	m_pic12508,
+	m_pic12509,
+	m_pic12508A,
+	m_pic12509A,
+	m_pic12518,
+	m_pic12519,
+	m_pic12671,
+	m_pic12672,
+	m_pic12673,
+	m_pic12674,
+
 	m_25010,
 	m_25020,
 	m_25040,
@@ -128,7 +235,23 @@ enum {
 	m_25640,
 	m_25128,
 	m_25256,
+
 	m_sde2506,
+
+	m_mda2062,
+	m_nvm3060,
+
+	m_at1765,
+	m_at17128,
+	m_at17256,
+	m_at17512,
+	m_at17010,
+
+	m_s2430,
+	m_x2444,
+	m_x2445,
+
+	btnHelp,
 
 	frmToolBar,
 	frmToolBar2,
@@ -136,14 +259,35 @@ enum {
 	frmToolBar4,
 
 	icbRead,		// Tool Bar Read
+	icbReadEep,
+	icbReadFlash,
 	icbWrite,
+	icbWriteEep,
+	icbWriteFlash,
 	icbVerify,
+	icbVerifyEep,
+	icbVerifyFlash,
 	icbLock,
 	icbOpen,
+	icbOpenEep,
+	icbOpenFlash,
 	icbSave,
+	icbSaveEep,
+	icbSaveFlash,
+	icbErase,
 	icbReload,
 	icbPrint,
+	icbEdit,
 	icbHelp,		// Tool Bar Help
+
+	icbNew,
+	icbScript,
+	icbProgram,
+	icbSernum,
+	icbSetup,
+
+	icoChip,
+
 	lblEEPType,
 	cbxEEPType,		// EEPROM type
 	lblEEPSubType,
@@ -156,6 +300,7 @@ enum {
 	lblTestStat,	// Status Bar test
 	lblCurTime,		// Date/Time field
 	lblEEPInfo,		// EEPROM Info
+	lblLegend,
 
 	//About Modal dialog
 	icoPonyProg,
@@ -166,6 +311,10 @@ enum {
 	frmAboutVgui,
 	icoVgui,
 	txtVgui,
+
+	btnAboutHelp,
+	btnAboutVgui,
+	chkSound,
 
 	//Notes Modal dialog
 	lblMainMsg,
@@ -190,6 +339,13 @@ enum {
 	//Retry Modal dialog
 	btnIgnore,
 	blkBlank,
+	blkBlank1,
+	blkBlank2,
+	blkBlank3,
+	blkBlank4,
+	blkBlank5,
+	blkBlank6,
+	blkBlank7,
 
 	//Edit buffer dialog
 	frmEditChar,

@@ -38,7 +38,7 @@
 #include "eeprom.h"
 #include "at250bus.h"
 
-class At250xx : public EEProm
+class At250xx : public Device
 {
   public:		//---------------------------------------- public
 
@@ -46,14 +46,14 @@ class At250xx : public EEProm
 	virtual ~At250xx();
 
 	virtual int Probe(int probe_size = 0);
-	virtual int Read(int probe = 1);
-	virtual int Write(int probe = 1);
-	virtual int Verify();
+	virtual int Read(int probe = 1, int type = ALL_TYPE);
+	virtual int Write(int probe = 1, int type = ALL_TYPE);
+	virtual int Verify(int type = ALL_TYPE);
 
   protected:	//--------------------------------------- protected
 
 	At250Bus *GetBus()
-		{ return (At250Bus *)EEProm::GetBus(); }
+		{ return (At250Bus *)Device::GetBus(); }
 
   private:		//--------------------------------------- private
 

@@ -6,10 +6,10 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C)  1997-1999   Claudio Lanconelli                          //
+//  Copyright (C)  1997-2001   Claudio Lanconelli                          //
 //                                                                         //
-//  e-mail: lanconel@cs.unibo.it                                           //
-//  http://www.cs.unibo.it/~lanconel                                       //
+//  e-mail: lancos@libero.it                                               //
+//  http://www.LancOS.com                                                  //
 //                                                                         //
 //-------------------------------------------------------------------------//
 //                                                                         //
@@ -35,7 +35,9 @@
 #include <v/vnotice.h>
 
 #include "types.h"
+#include "globals.h"
 #include "filldlg.h"
+#include "string_table.h"
 
 //@V@:BeginIDs
 enum {
@@ -58,29 +60,17 @@ static DialogCmd DefaultCmds[] =
 {
 	{C_Label,lblFillMsg,0,"X",NoList,CA_MainMsg,isSens,NoFrame,0,0},
 
-	{C_Frame, frmFill,0,"Fill Buffer",NoList,CA_None,isSens,NoFrame,0,lblFillMsg},
-	{C_Label, lblFrom,0, " From  ",NoList,CA_None,isSens,frmFill,0,0},
-	{C_Label, lblTo,  0, " To    ",NoList,CA_None,isSens,frmFill,0,lblFrom},
-	{C_Label, lblVal, 0, " Value ",NoList,CA_None,isSens,frmFill,0,lblTo},
+	{C_Frame, frmFill,0,STR_LBLFILLBUF,NoList,CA_None,isSens,NoFrame,0,lblFillMsg},
+	{C_Label, lblFrom,0, STR_LBLFROM,NoList,CA_None,isSens,frmFill,0,0},
+	{C_Label, lblTo,  0, STR_LBLTO,NoList,CA_None,isSens,frmFill,0,lblFrom},
+	{C_Label, lblVal, 0, STR_LBLVALUE,NoList,CA_None,isSens,frmFill,0,lblTo},
 
 	{C_TextIn,txiFrom,0,"",NoList,CA_None,isSens,NoFrame,frmFill,lblFillMsg,8,"From address"},
 	{C_TextIn,txiTo,  0,"",NoList,CA_None,isSens,NoFrame,frmFill,txiFrom,8,"To address"},
 	{C_TextIn,txiVal, 0,"",NoList,CA_None,isSens,NoFrame,frmFill,txiTo,8,"Byte value"},
 
-	{C_Button, M_Cancel, 0,
-#ifdef	_WINDOWS
-		" &Cancel ",
-#else
-		"  Cancel ",
-#endif
-			NoList,CA_None, isSens,NoFrame, 0, frmFill},
-	{C_Button, M_OK, 0,
-#ifdef	_WINDOWS
-		" &OK ",
-#else
-		"  OK ",
-#endif
-			NoList, CA_DefaultButton, isSens, NoFrame, M_Cancel, frmFill},
+	{C_Button, M_Cancel, 0, STR_BTNCANC, NoList,CA_None, isSens,NoFrame, 0, frmFill},
+	{C_Button, M_OK, 0, STR_BTNOK, NoList, CA_DefaultButton, isSens, NoFrame, M_Cancel, frmFill},
 
 	{C_EndOfList,0,0,0,0,CA_None,0,0,0}
 };
@@ -93,7 +83,7 @@ FillDialog::FillDialog(vBaseWindow* bw, long cfrom, long cto, int cval, char* ti
 {
 	UserDebug(Constructor,"FillDialog::FillDialog()\n")
 
-	char str[32];
+	char str[MAXNUMDIGIT];
 
 	mFrom = (cfrom < 0) ? 0 : cfrom;
 	mTo = (cto < 0) ? 0xFFFFFF : cto;
@@ -132,7 +122,7 @@ int FillDialog::fillAction(char* msg)
 	if (ans == M_Cancel)
 		return 0;
 
-	char str[10];
+	char str[MAXNUMDIGIT];
 	GetTextIn(txiFrom, str, 8);
 	mFrom = strtol(str,NULL,0);
 

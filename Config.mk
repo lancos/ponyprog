@@ -1,17 +1,18 @@
 #===============================================================
-# V Make Configuration file - Version 1.22 - 8/15/99
+# V Make Configuration file - Version 1.24 - 3/3/2000
 #
-# Copyright (C) 1995-1999  Bruce E. Wampler
+# Copyright (C) 1995-2000  Bruce E. Wampler
+# date:
 #
-# THIS IS THE Config.mk FILE FOR THE LessTif X VERSION OF V
+# THIS IS THE Config.mk FILE FOR THE X Athena VERSION OF V
 #
 # To build an X version, set the TOOLKIT variable to Athena
 # for the generic Athena version, or to Motif
 # for the Lesstif/Motif version. (See comment below)
 #
 # This file is part of the V C++ GUI Framework, and is covered
-# under the terms of the GNU Library General Public License,
-# Version 2. This library has NO WARRANTY. See the source file
+# under the terms of the GNU Lesser General Public License,
+# Version 2.1. This library has NO WARRANTY. See the source file
 # vapp.cxx for more complete information about license terms.
 #===============================================================
 
@@ -19,14 +20,15 @@
 #---------------------------------------------------------------------
 # Version info
 #---------------------------------------------------------------------
-VV	=	1.23
-VVW	=	123
+VV	=	1.25
+VVW	=	125
 
 
 #---------------------------------------------------------------------
 # HOMEV info
 #---------------------------------------------------------------------
 HOMEV	=	$(HOME)/v
+#HOMEV	=	..
 
 
 #---------------------------------------------------------------------
@@ -97,12 +99,6 @@ DEBUG	= no
 
 
 #---------------------------------------------------------------------
-# Select static link - useful for cross platfor dev.
-#---------------------------------------------------------------------
-#STATIC	=	yes
-STATIC	=	no
-
-#---------------------------------------------------------------------
 # Select Develop or not - used for original development
 #---------------------------------------------------------------------
 #DEVEL	=	yes
@@ -141,7 +137,7 @@ endif
 ifeq ($(TOOLKIT),Motif)
 	LIBNAME	= libV
 	V1NAME 	= v1
-	LIBS	= -lV -lXm
+	LIBS	= -lV -lXm -lXp
 endif
 
 
@@ -151,11 +147,7 @@ endif
 ifeq ($(Arch),linux)
 INCDIR	+=	-I/usr/$(X11RV)/include
 LIBDIR	+=	-L/usr/$(X11RV)/lib
-ifeq ($(STATIC),yes)
-LIBS    +=	-lXmu -lXt -lSM -lICE -lXext -lX11
-else
 LIBS	+=	-lXmu -lXt -lXext -lX11
-endif
 TARZ	=	z
 RANLIB	=	ranlib
 VGPATH	=	LINUX
@@ -304,9 +296,5 @@ endif
 #---------------------------------------------------------------------
 # LINK/LOAD options
 #---------------------------------------------------------------------
-ifeq ($(STATIC),yes)
-LDFLAGS	=	-static $(LIBDIR) $(LIBS)
-else
 LDFLAGS	=	$(LIBDIR) $(LIBS)
-endif
 

@@ -6,11 +6,13 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997, 1998  Claudio Lanconelli                           //
+//  Copyright (C) 1997-2002   Claudio Lanconelli                           //
 //                                                                         //
-//  e-mail: lanconel@cs.unibo.it                                           //
-//  http://www.cs.unibo.it/~lanconel                                       //
+//  e-mail: lancos@libero.it                                               //
+//  http://www.LancOS.com                                                  //
 //                                                                         //
+//-------------------------------------------------------------------------//
+// $Id$
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -45,16 +47,17 @@ class IntelFileBuf : public FileBuf
 	IntelFileBuf(e2AppWinInfo *wininfo = 0);
 	virtual ~IntelFileBuf();
 
-	virtual int Load(int bank = 0);
-	virtual int Save();
+	virtual int Load(int loadtype = ALL_TYPE, long relocation_offset = 0);
+	virtual int Save(int savetype = ALL_TYPE, long relocation_offset = 0);
 
   protected:	//--------------------------------------- protected
 
   private:		//--------------------------------------- private
 
-	int WriteRecord(FILE *fh, long curaddr, long recsize, int fmt);
-	int WriteAddressRecord(FILE *fh, long curaddr);
+	int WriteRecord(FILE *fh, BYTE *bptr, long curaddr, long recsize, int fmt);
+	int WriteAddressRecord(FILE *fh, long curaddr, bool linear_address = false);
 
-	DWORD ScanHex(char **sp, int len);
+	int ScanHex(char **sp, int len, DWORD &result);
+	int ScanHex(char **sp, int len, WORD &result);
 };
 #endif

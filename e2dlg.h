@@ -37,12 +37,14 @@
 #include "types.h"
 #include "globals.h"
 
+#include "string_table.h"
+
 class e2CmdWindow;
 
-class e2Dialog : public vDialog
+class e2Dialog : public vModalDialog
 {
   public:		//---------------------------------------- public
-	e2Dialog(vBaseWindow* bw, char* title = "Interface Setup");
+	e2Dialog(vBaseWindow* bw, char* title = STR_MSGINTSETUP);
 	virtual ~e2Dialog();		// Destructor
 	virtual void DialogCommand(ItemVal,ItemVal,CmdType); // action selected
 	void AddDefaultCmds();		// to add the defined commands
@@ -66,7 +68,7 @@ class e2Dialog : public vDialog
 class e2ProgressDialog : public vDialog
 {
   public:
-	e2ProgressDialog(vBaseWindow* bw, char* title = "Status");
+	e2ProgressDialog(vBaseWindow* bw, char* title = STR_MSGSTATUS);
 	virtual ~e2ProgressDialog();		// Destructor
 	virtual void DialogCommand(ItemVal,ItemVal,CmdType); // action selected
 //	void AddDefaultCmds();		// to add the defined commands

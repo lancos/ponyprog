@@ -45,15 +45,15 @@ class MotorolaSFileBuf : public FileBuf
 	MotorolaSFileBuf(e2AppWinInfo *wininfo = 0);
 	virtual ~MotorolaSFileBuf();
 
-	virtual int Load(int bank = 0);
-	virtual int Save();
+	virtual int Load(int loadtype = ALL_TYPE, long relocation_offset = 0);
+	virtual int Save(int savetype = ALL_TYPE, long relocation_offset = 0);
 
   protected:	//--------------------------------------- protected
 
   private:		//--------------------------------------- private
 
-	int WriteRecord(FILE *fh, long curaddr, long recsize, char fmt);
-	int ParseRecord(char *lbufPC, BYTE *bufAC, long offset, int nocopy);
+	int WriteRecord(FILE *fh, BYTE *bptr, long curaddr, long recsize, int fmt);
+	int ParseRecord(char *lbufPC, BYTE *buf_startP, BYTE *buf_endP, long offset, int nocopy);
 
 	BYTE *highestPC;
 	long highestAddr;

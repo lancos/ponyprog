@@ -6,10 +6,10 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-1999   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2001   Claudio Lanconelli                           //
 //                                                                         //
-//  e-mail: lanconel@cs.unibo.it                                           //
-//  http://www.cs.unibo.it/~lanconel                                       //
+//  e-mail: lancos@libero.it                                               //
+//  http://www.LancOS.com                                                  //
 //                                                                         //
 //-------------------------------------------------------------------------//
 //                                                                         //
@@ -28,6 +28,7 @@
 // Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. //
 //                                                                         //
 //-------------------------------------------------------------------------//
+// $Id$
 //=========================================================================//
 
 #include "types.h"
@@ -39,81 +40,81 @@
 /*Attenzione!! il format Intel Hex e` Little Endian */
 #undef	_BIG_ENDIAN_
 
-#define	PAGE_SIZE	256
-
 // Costruttore
-AtMegaBus::AtMegaBus(BusInterface *ptr)
+AtMegaBus::AtMegaBus(BusInterface *ptr, int wpage_size, bool page_poll)
 	: At90sBus(ptr)
 {
+	write_page_size = wpage_size;		//default to ATmega103 page size
+	enable_flashpage_polling = page_poll;	//default to ATmega103: no flash polling
 }
 
-//added 19/01/1999 for the mega device
-void AtMegaBus::WriteProgPage(long addr, UBYTE const *data, long page_size)
+bool AtMegaBus::GetFlashPagePolling() const
+{
+	return enable_flashpage_polling;
+}
+
+void AtMegaBus::SetFlashPagePolling(bool val)
+{
+	enable_flashpage_polling = val;
+}
+
+int AtMegaBus::GetPageSize() const
+{
+	return write_page_size;
+}
+
+void AtMegaBus::SetPageSize(int size)
+{
+	write_page_size = size;
+}
+
+void AtMegaBus::WriteProgPage(long addr, UBYTE const *data, long page_size, long timeout)
 {
 	long k;
+	long first_loc = -1;		//first location different from 0xFF
 
-	for (k = 0; k < page_size; k++)
+	if (page_size <= 0)
+		page_size = write_page_size;
+
+	//align addr to page boundary
+	addr &= ~(page_size - 1);	//0xFFFFFF00
+
+	for (k = 0; k < page_size; k++, data++)
 	{
-		WriteProgByte(k, *data++);
-	}
+		if (first_loc < 0 && *data != 0xFF)
+			first_loc = addr + k;
 
-	//addr is the address of the 127 words page just transmitted
-	addr &= 0xFFFFFF00;
-	THEAPP->SetLastProgrammedAddress(addr + page_size - 1);
-	addr >>= 1;			//convert to word address
+		WriteProgByte(k, *data);
+	}
 
 	SendDataByte(WriteProgPageMem);
-	SendDataByte(addr >> 8);
-	SendDataByte(addr);
+	SendDataByte(addr >> 9);		//send word address
+	SendDataByte(addr >> 1);
 	SendDataByte(0);
 
-	WaitMsec( THEAPP->GetMegaPageDelay() );
-}
+	THEAPP->SetLastProgrammedAddress(addr + page_size - 1);
 
-/***  commented 20/07/99 because is the same of At90sbus
-int AtMegaBus::Reset()
-{
-	SPIBus::Reset();
-
-	WaitMsec(50);	// Almeno 20msec dai datasheet AVR atmel
-
-	SendDataByte(EnableProg0);
-	SendDataByte(EnableProg1);
-	int val = RecDataByte();	//19/01/1999
-	SendDataByte(0);
-
-	//19/01/1999 -- check as suggested in the 8515 datasheets
-					//don't work with AT90S1200
-	int k = 0;
-	while (val != EnableProg1 && k++ < 32)
+	if (enable_flashpage_polling)
 	{
-		setSCK();
-		WaitMsec(10);
-		clearSCK();
-		WaitMsec(10);
-
-		SendDataByte(EnableProg0);
-		SendDataByte(EnableProg1);
-		val = RecDataByte();
-		SendDataByte(0);
+		for (k = timeout; k > 0; k--)
+		{
+			if ( ReadProgByte(first_loc) != 0xFF )
+				break;
+		}
 	}
-
-	if (k == 32)
-		return -1;
-
-	return OK;
+	else
+		WaitMsec( THEAPP->GetMegaPageDelay() );
 }
-***/
 
-int AtMegaBus::CheckBlankPage(UBYTE const *data, ULONG length)
+bool AtMegaBus::CheckBlankPage(UBYTE const *data, ULONG length)
 {
-	int blank_page = TRUE;
+	bool blank_page = true;
 
 	while (length--)
 	{
 		if (*data++ != 0xFF)
 		{
-			blank_page = FALSE;
+			blank_page = false;
 			break;
 		}
 	}
@@ -127,43 +128,15 @@ long AtMegaBus::Write(int addr, UBYTE const *data, long length)
 
 	if (addr)
 	{	//EEprom
-		for (addr = 0, len = 0; len < length; addr++, data++, len++)
-		{
-			//09/10/98 -- program only locations that really need to be programmed
-			int val = ReadEEPByte(addr);
-
-			if (val != *data)
-			{
-				WriteEEPByte(addr, *data);
-
-				//Interrupt the writing and exit (device missing?)
-				if ( WaitReadyAfterWrite(1, addr, *data) != OK )
-					return 0;
-			}
-
-			if ( CheckAbort(len * 100 / length) )
-				break;
-		}
-		CheckAbort(100);
+		len = At90sBus::Write(addr, data, length);	//The eeprom write routine is the same of AT90SBus
 	}
 	else
 	{	//Flash Eprom
-
-		//Erase command
-		SendDataByte(ChipErase0);
-		SendDataByte(ChipErase1);
-		SendDataByte(0);
-		SendDataByte(0);
-
-		WaitMsec(twd_erase);		//Erase delay
-		Reset();
-
-		//Write
-		for (addr = 0, len = 0; len < length; addr += PAGE_SIZE, data += PAGE_SIZE, len += PAGE_SIZE)
+		for (addr = 0, len = 0; len < length; addr += write_page_size, data += write_page_size, len += write_page_size)
 		{
-			//check for FF's page
-			if ( !CheckBlankPage(data, PAGE_SIZE) )
-				WriteProgPage(addr, data, PAGE_SIZE);
+			//check for FF's page to skip blank pages
+			if ( !CheckBlankPage(data, write_page_size) )
+				WriteProgPage(addr, data, write_page_size);
 
 			if ( CheckAbort(len * 100 / length) )
 				break;

@@ -6,11 +6,13 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C)  1997-2000  Claudio Lanconelli                           //
+//  Copyright (C)  1997-2001  Claudio Lanconelli                           //
 //                                                                         //
-//  e-mail: lanconel@cs.unibo.it                                           //
-//  http://www.cs.unibo.it/~lanconel                                       //
+//  e-mail: lancos@libero.it                                               //
+//  http://www.LancOS.com                                                  //
 //                                                                         //
+//-------------------------------------------------------------------------//
+//  $Id$
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -44,6 +46,10 @@ e2AppWinInfo::e2AppWinInfo(vCmdWindow* win, char* name, BusIO** busvptr, void* p
 	:	vAppWinInfo(name),
 		hex_per_line(16),
 		buffer_size(BUFFER_SIZE),
+		load_type(ALL_TYPE),
+		save_type(ALL_TYPE),
+		load_relocation(0),
+		save_relocation(0),
 		buf_ok(0),
 		buf_changed(0),
 		fname(0),
@@ -60,21 +66,26 @@ e2AppWinInfo::e2AppWinInfo(vCmdWindow* win, char* name, BusIO** busvptr, void* p
 	cmdWin = (e2CmdWindow*)win;
 	cmdWin->SetAWInfo(this);
 
-
 	//AutoTag
 	//Initialize Device Pointers vector
 	eep24xx.SetAWInfo(this);
 	eep24xx.SetBus(busvptr[I2C-1]);
-	eep24xxx.SetAWInfo(this);
-	eep24xxx.SetBus(busvptr[I2C-1]);
+	eep2401.SetAWInfo(this);
+	eep2401.SetBus(busvptr[I2C-1]);
+	eep24xx1.SetAWInfo(this);
+	eep24xx1.SetBus(busvptr[I2C-1]);
+	eep24xx2.SetAWInfo(this);
+	eep24xx2.SetBus(busvptr[I2C-1]);
 	eep24xx5.SetAWInfo(this);
 	eep24xx5.SetBus(busvptr[I2C-1]);
 	eepAt90s.SetAWInfo(this);
 	eepAt90s.SetBus(busvptr[AT90S-1]);
 	eepAt89s.SetAWInfo(this);
 	eepAt89s.SetBus(busvptr[AT89S-1]);
-	eep93x6.SetAWInfo(this);
-	eep93x6.SetBus(busvptr[AT93C-1]);
+	eep93xx16.SetAWInfo(this);
+	eep93xx16.SetBus(busvptr[AT93C-1]);
+	eep93xx8.SetAWInfo(this);
+	eep93xx8.SetBus(busvptr[AT93C-1]);
 	eepPic16.SetAWInfo(this);
 	eepPic16.SetBus(busvptr[PICB-1]);
 	eep250xx.SetAWInfo(this);
@@ -83,6 +94,20 @@ e2AppWinInfo::e2AppWinInfo(vCmdWindow* win, char* name, BusIO** busvptr, void* p
 	eep25xxx.SetBus(busvptr[AT250BIG-1]);
 	eep2506.SetAWInfo(this);
 	eep2506.SetBus(busvptr[SDEB-1]);
+	eepPic168xx.SetAWInfo(this);
+	eepPic168xx.SetBus(busvptr[PICNEWB-1]);
+	eep3060.SetAWInfo(this);
+	eep3060.SetBus(busvptr[IMBUS-1]);
+	eepPic125xx.SetAWInfo(this);
+	eepPic125xx.SetBus(busvptr[PIC12B-1]);
+	eep17xxx.SetAWInfo(this);
+	eep17xxx.SetBus(busvptr[I2C-1]);
+	eep2444.SetAWInfo(this);
+	eep2444.SetBus(busvptr[X2444B-1]);
+	eep2444.DefaultBankSize();
+	eep2430.SetAWInfo(this);
+	eep2430.SetBus(busvptr[S2430B-1]);
+	eep2430.DefaultBankSize();
 
 	if (name && strlen(name))
 		SetFileName(name);
@@ -91,7 +116,8 @@ e2AppWinInfo::e2AppWinInfo(vCmdWindow* win, char* name, BusIO** busvptr, void* p
 	fbufvet[E2P] = &e2pfbuf;
 	fbufvet[INTEL] = &intfbuf;
 	fbufvet[MOTOS] = &motsfbuf;		//** 17/03/99
-	fbufvet[BIN] = &hexfbuf;
+	fbufvet[BIN] = &binfbuf;
+	fbufvet[CSM] = &csmfbuf;
 
 	int k;
 	for (k = 0; k < NO_OF_FILETYPE; k++)
@@ -100,26 +126,28 @@ e2AppWinInfo::e2AppWinInfo(vCmdWindow* win, char* name, BusIO** busvptr, void* p
 	eeprom_string[0] = '\0';	//eeprom string ID
 	eeprom_comment[0] = '\0';	//eeprom comment
 
+	ClearBuffer();				//Clear the new buffer
+
 	//imposta il tipo di eeprom di default
 //	SetEEProm(THEAPP->GetLastEEPType());	18/10/98
 	SetEEProm( GetE2PPriType(THEAPP->GetLastDevType()), GetE2PSubType(THEAPP->GetLastDevType()) );
-	SetFileBuf(E2P);
+	SetFileBuf(THEAPP->GetDefaultFileType());	//	SetFileBuf(E2P);
 
 	// Test and initialize the hardware
 	if (THEAPP->GetCounter() == 1)
 	{
-		cmdWin->About();
+		if ( !THEAPP->scriptMode )
+			cmdWin->About();
 
-		//Load the I/O driver needed with WinNT & Win2000
 		THEAPP->LoadDriver(1);
 
-		//set starting bus
+		//imposta il bus iniziale (relativo al tipo di eeprom)
 		THEAPP->SetInitialBus( eep->GetBus() );
 
 		//case of command line parameter
 		if (GetFileName())
 		{
-			if (Load(0) <= 0)
+			if (Load() <= 0)
 				SetFileName(0);
 		}
 		else
@@ -138,6 +166,13 @@ e2AppWinInfo::e2AppWinInfo(vCmdWindow* win, char* name, BusIO** busvptr, void* p
 			THEAPP->ClosePort();
 		}
 	}
+	else
+	if (GetFileName())
+	{
+		if (Load() <= 0)
+			SetFileName(0);
+	}
+
 	cmdWin->PostInit();
 }
 
@@ -162,7 +197,7 @@ void e2AppWinInfo::Reset()
 //======================>>> e2AppWinInfo::SetEEProm <<<=======================
 void e2AppWinInfo::SetEEProm(int type, int subtype)
 {
-	extern long BuildE2PType(int x, int y = 0);
+//	extern long BuildE2PType(int x, int y = 0);
 	extern int GetE2PSubType(long x);
 	extern int GetE2PPriType(long x);
 
@@ -171,7 +206,7 @@ void e2AppWinInfo::SetEEProm(int type, int subtype)
 
 	eep_type = type;
 	eep_subtype = subtype;			//0 indica di usare GetNoOfBlock()
-	long xtype = BuildE2PType(eep_type, eep_subtype);
+	long xtype = GetEEPType();
 
 	switch(eep_type)
 	{
@@ -180,8 +215,24 @@ void e2AppWinInfo::SetEEProm(int type, int subtype)
 	case E24XX:
 		eep = &eep24xx;
 		break;
-	case E24XXX:
-		eep = &eep24xxx;
+	case E24XX1_A:
+		eep = &eep24xx1;
+		if (eep_subtype == 0)
+		{
+			//Forza impostazione manuale
+			eep_subtype = GetE2PSubType(E2401_A);
+		}
+		break;
+	case E24XX1_B:
+		eep = &eep2401;
+		if (eep_subtype == 0)
+		{
+			//Forza impostazione manuale
+			eep_subtype = GetE2PSubType(E2401_B);
+		}
+		break;
+	case E24XX2:
+		eep = &eep24xx2;
 		if (eep_subtype == 0)
 		{
 			//Forza impostazione manuale
@@ -207,9 +258,31 @@ void e2AppWinInfo::SetEEProm(int type, int subtype)
 		case AT90S1200:
 			eep->SetBus(THEAPP->GetBusVectorPtr()[AT1200S-1]);
 			break;
+		case ATmega128:
+		case ATmega64:
+			eep->SetBus(THEAPP->GetBusVectorPtr()[MEGA128-1]);
+			break;
 		case ATmega603:
 		case ATmega103:
-			eep->SetBus(THEAPP->GetBusVectorPtr()[MEGAS-1]);
+			eep->SetBus(THEAPP->GetBusVectorPtr()[MEGA103-1]);
+			break;
+		case ATtiny2313:
+		case ATtiny26:
+			eep->SetBus(THEAPP->GetBusVectorPtr()[TINY2x-1]);
+			break;
+		case ATmega8:
+		case ATmega8515:
+		case ATmega8535:
+			eep->SetBus(THEAPP->GetBusVectorPtr()[MEGA8x-1]);
+			break;
+		case ATmega16:
+		case ATmega32:
+		case ATmega161:
+		case ATmega163:
+		case ATmega162:
+		case ATmega169:
+		case ATmega323:
+			eep->SetBus(THEAPP->GetBusVectorPtr()[MEGA16x-1]);
 			break;
 		default:	//AT90S std
 			eep->SetBus(THEAPP->GetBusVectorPtr()[AT90S-1]);
@@ -225,11 +298,19 @@ void e2AppWinInfo::SetEEProm(int type, int subtype)
 		}
 		break;
 	case E93X6:
-		eep = &eep93x6;
+		eep = &eep93xx16;
 		if (eep_subtype == 0)
 		{
 			//Forza impostazione manuale
 			eep_subtype = GetE2PSubType(E9306);
+		}
+		break;
+	case E93XX_8:
+		eep = &eep93xx8;
+		if (eep_subtype == 0)
+		{
+			//Forza impostazione manuale
+			eep_subtype = GetE2PSubType(E9306_8);
 		}
 		break;
 	case PIC16XX:
@@ -238,6 +319,21 @@ void e2AppWinInfo::SetEEProm(int type, int subtype)
 		{
 			//Forza impostazione manuale
 			eep_subtype = GetE2PSubType(PIC1684);
+		}
+		break;
+	case PIC168XX:
+		eep = &eepPic168xx;
+	//	if (eep_subtype == 0)
+	//	{
+	//		eep_subtype = GetE2PSubType(PIC1684A);
+	//	}
+		break;
+ 	case PIC125XX:
+		eep = &eepPic125xx;
+		if (eep_subtype == 0)
+		{
+			//Forza impstazione manuale
+			eep_subtype = GetE2PSubType(PIC12508);
 		}
 		break;
 	case E250XX:
@@ -265,6 +361,33 @@ void e2AppWinInfo::SetEEProm(int type, int subtype)
 			eep_subtype = GetE2PSubType(E2506);
 		}
 		break;
+	case ENVMXXX:
+		eep = &eep3060;
+		if (eep_subtype == 0)
+		{
+			//Forza impostazione manuale
+			eep_subtype = GetE2PSubType(ENVM3060);
+		}
+		break;
+	case AT17XXX:
+		eep = &eep17xxx;
+		if (eep_subtype == 0)
+		{
+			//Forza impostazione manuale
+			eep_subtype = GetE2PSubType(AT1765);
+		}
+		break;
+	case X24C44XX:
+		if (eep_subtype == 0)
+		{
+			//Forza impostazione manuale
+			eep_subtype = GetE2PSubType(S24H30);
+		}
+		if (GetEEPType() == S24H30)
+			eep = &eep2430;
+		else
+			eep = &eep2444;
+		break;
 	default:
 		eep = &eep24xx;		//20/07/99	-- to prevent crash
 		break;
@@ -282,16 +405,34 @@ void e2AppWinInfo::SetEEProm(int type, int subtype)
 }
 
 //======================>>> e2AppWinInfo::Read <<<=======================
-int e2AppWinInfo::Read()
+int e2AppWinInfo::Read(int type, int raise_power, int leave_on)
 {
 	int probe = !eep_subtype;
-	int rval;
+	int rval = OK;
 
-	UserDebug(UserApp1, "e2AppWinInfo::Read() - IN\n");
+	UserDebug3(UserApp1, "e2AppWinInfo::Read(%d,%d,%d) - IN\n",type,raise_power,leave_on);
 
-	ClearBuffer();
+	if ( THEAPP->GetClearBufBeforeRead() )
+	{
+		if (load_type == ALL_TYPE)
+		{
+			ClearBuffer(ALL_TYPE);
+		}
+		else
+		{
+			if (load_type & PROG_TYPE)
+			{
+				ClearBuffer(PROG_TYPE);
+			}
+			if (load_type & DATA_TYPE)
+			{
+				ClearBuffer(DATA_TYPE);
+			}
+		}
+	}
 
-	rval = OpenBus();		//Set correct bus and power up
+	if (raise_power)
+		rval = OpenBus();		//Set correct bus and power up
 
 	UserDebug1(UserApp1, "e2AppWinInfo::Read() ** OpenBus = %d\n", rval);
 
@@ -299,7 +440,7 @@ int e2AppWinInfo::Read()
 	{
 		THEAPP->CheckEvents();
 
-		if ( (rval = eep->Read(probe)) > 0 )
+		if ( (rval = eep->Read(probe,type)) > 0 )
 		{
 			UserDebug1(UserApp1, "e2AppWinInfo::Read() ** Read = %d\n", rval);
 
@@ -313,9 +454,11 @@ int e2AppWinInfo::Read()
 			SetBlockSize( eep->GetBankSize() );
 		}
 
+		RecalcCRC();
+
+		if ( !(rval > 0 && leave_on) )
+			SleepBus();
 	}
-	RecalcCRC();
-	SleepBus();			//Close bus and power off
 
 	UserDebug1(UserApp1, "e2AppWinInfo::Read() = %d - OUT\n", rval);
 
@@ -323,18 +466,19 @@ int e2AppWinInfo::Read()
 }
 
 //======================>>> e2AppWinInfo::Write <<<=======================
-int e2AppWinInfo::Write(int leave_on)	//07/06/98 -- added leaveON to avoid the power-off between write and verify
+int e2AppWinInfo::Write(int type, int raise_power, int leave_on)
 {
 	int probe = !eep_subtype;
-	int rval;
+	int rval = OK;
 
-	UserDebug1(UserApp1, "e2AppWinInfo::Write(%d) - IN\n", leave_on);
+	UserDebug3(UserApp1, "e2AppWinInfo::Write(%d,%d,%d) - IN\n", type,raise_power,leave_on);
 
-	rval = OpenBus();
+	if (raise_power)
+		rval = OpenBus();
 	if ( rval == OK )
 	{
 		THEAPP->CheckEvents();
-		if ( (rval = eep->Write(probe)) > 0 )
+		if ( (rval = eep->Write(probe,type)) > 0 )
 		{
 			//Aggiunto il 18/03/99 con la determinazione dei numeri di banchi nelle E24xx2,
 			// affinche` la dimensione rimanga quella impostata bisogna correggere la dimensione
@@ -351,32 +495,43 @@ int e2AppWinInfo::Write(int leave_on)	//07/06/98 -- added leaveON to avoid the p
 }
 
 //======================>>> e2AppWinInfo::Verify <<<=======================
-int e2AppWinInfo::Verify(int raise_power)
+int e2AppWinInfo::Verify(int type, int raise_power, int leave_on)
 {
 	int rval = OK;
 
-	UserDebug1(UserApp1, "e2AppWinInfo::Verify(%d) - IN\n", raise_power);
+	UserDebug3(UserApp1, "e2AppWinInfo::Verify(%d,%d,%d) - IN\n", type,raise_power,leave_on);
 
-	if (raise_power)		//23/01/1999 -- if the Verify follow the Write don't reset the micro again
+	if (raise_power)
 		rval = OpenBus();
 	if (rval == OK)
-		rval = eep->Verify();
-	SleepBus();
+	{
+		rval = eep->Verify(type);
+		if ( !(rval >= 0 && leave_on) )
+			SleepBus();
+	}
 
 	UserDebug1(UserApp1, "e2AppWinInfo::Verify() = %d - OUT\n", rval);
 
 	return rval;
 }
 
-//===================>>> e2AppWinInfo::Erase <<<=============
-int e2AppWinInfo::Erase()
+//======================>>> e2AppWinInfo::Erase <<<=======================
+int e2AppWinInfo::Erase(int type, int raise_power, int leave_on)
 {
-	int rval;
+	int rval = OK;
 
-	rval = OpenBus();
+	UserDebug3(UserApp1, "e2AppWinInfo::Erase(%d,%d,%d) - IN\n", type,raise_power,leave_on);
+
+	if (raise_power)
+		rval = OpenBus();
 	if (rval == OK)
-		rval = eep->Erase();
-	SleepBus();
+	{
+		rval = eep->Erase(1, type);
+		if ( !(rval >= 0 && leave_on) )
+			SleepBus();
+	}
+
+	UserDebug1(UserApp1, "e2AppWinInfo::Erase() = %d - OUT\n", rval);
 
 	return rval;
 }
@@ -392,50 +547,75 @@ int e2AppWinInfo::BankRollOverDetect(int force)
 }
 
 //======================>>> e2AppWinInfo::Load <<<=======================
-int e2AppWinInfo::Load(int split_bank)
+int e2AppWinInfo::Load()
 {
 	int rval;
 
 	SetFileBuf(E2P);
-	rval = LoadFile(split_bank);
+	rval = LoadFile();
 	if ( rval <= 0 )
 	{
 		SetFileBuf(MOTOS);
-		rval = LoadFile(split_bank);
+		rval = LoadFile();
 		if ( rval <= 0 )
 		{
 			SetFileBuf(INTEL);
-			rval = LoadFile(split_bank);
+			rval = LoadFile();
+		}
+		if ( rval <= 0 )
+		{
+			SetFileBuf(CSM);
+			rval = LoadFile();
 		}
 		if ( rval <= 0 )
 		{
 			SetFileBuf(BIN);
-			rval = LoadFile(split_bank);
+			rval = LoadFile();
 		}
 
-		//spostato qui il 10/04/99
-		if ( rval > 0 && GetEEPPriType() == PIC16XX )
+		if ( rval > 0 )
 		{
-			//Altro barbatrucco, questa volta per i PIC.
-			//L'assemblatore colloca la eeprom e la configuration
-			//ad indirizzi alti, mentre noi li collochiamo subito
-			//dopo la flash. Qui facciamo la rilocazione.
+			if ( GetEEPPriType() == PIC16XX ||
+				  GetEEPPriType() == PIC168XX )
+      			{
+				//It seems a bit tricky...
+				//Relocate the DATA and CONFIG memory with PIC devices
+				//The assembler store the DATA at 0x2100 (word address) and
+				//CONFIG at 0x2000 (word address).
+				//We move them after PROGRAM memory
+				// PROGRAM MEMORY + DATA MEMORY + CONFIG (8 word)
+				if (GetSplittedInfo() > 0 && GetSize() > GetSplittedInfo())
+				{
+					//Copy Config memory
+					if ( GetSize()+16 <= GetBufSize() )
+						memcpy(GetBufPtr()+GetSize(), GetBufPtr() + (0x2000 * 2), 16);
 
-			if (GetSplittedInfo() > 0 && GetSize() > GetSplittedInfo()+16)
+					//Now copy data memory (copy only low byte every word)
+					int k;
+					BYTE *dst = GetBufPtr() + GetSplittedInfo();
+					WORD *src = (WORD *)GetBufPtr() + 0x2100;
+					for (k = 0; k < GetSize()-GetSplittedInfo(); k++)
+						*dst++ = (BYTE)(*src++ & 0xff);
+					//memcpy(GetBufPtr()+GetSplittedInfo()+16, GetBufPtr() + (0x2100 * 2), GetSize() - (GetSplittedInfo() + 16) );
+
+					//Set fuse bits so the dialog shows the correct values
+					BYTE *ptr = GetBufPtr() + GetSize() + 14;
+					WORD config = ptr[0] + ((WORD)ptr[1] << 8);		//little endian buffer
+					config = ~config & 0x3fff;		//	CodeProtectAdjust(config, 1);
+					SetLockBits(config);
+				}
+    			}
+			else
+			if ( GetEEPPriType() == PIC125XX )
 			{
 				//Copy Config memory
-				memcpy(GetBufPtr()+GetSplittedInfo(), GetBufPtr() + (0x2000 * 2), 16);
-
-				//Now copy data memory (copy only low byte every word)
-				int k;
-				BYTE *dst = GetBufPtr() + GetSplittedInfo() + 16;
-				WORD *src = (WORD *)GetBufPtr() + 0x2100;
-				for (k = 0; k < GetSize() - (GetSplittedInfo() + 16); k++)
-					*dst++ = (BYTE)(*src++ & 0xff);
-				//memcpy(GetBufPtr()+GetSplittedInfo()+16, GetBufPtr() + (0x2100 * 2), GetSize() - (GetSplittedInfo() + 16) );
+				if ( GetSize()+16 <= GetBufSize() )
+					memcpy(GetBufPtr()+GetSize()+14, GetBufPtr() + (0xFFF * 2), 2);
 
 				//Set fuse bits so the dialog shows the correct values
-				SetFuseBits( ~*(GetBufPtr()+GetSplittedInfo()+14) );
+				BYTE *ptr = GetBufPtr() + GetSize() + 14;
+				WORD config = ptr[0] + ((WORD)ptr[1] << 8);		//little endian buffer
+				SetLockBits( ~config & 0x0fff );
 			}
 		}
 	}
@@ -443,29 +623,228 @@ int e2AppWinInfo::Load(int split_bank)
 	return rval;
 }
 
-//======================>>> e2AppWinInfo::Load <<<=======================
-int e2AppWinInfo::LoadFile(int bank)
+//======================>>> e2AppWinInfo::LoadFile <<<=======================
+int e2AppWinInfo::LoadFile()
 {
-	if (!bank)
-		ClearBuffer();
-	int rval = fbufp->Load(bank);
+	if ( THEAPP->GetClearBufBeforeLoad() )
+	{
+		if (load_type == ALL_TYPE)
+		{
+			ClearBuffer(ALL_TYPE);
+		}
+		else
+		{
+			if (load_type & PROG_TYPE)
+			{
+				ClearBuffer(PROG_TYPE);
+			}
+			if (load_type & DATA_TYPE)
+			{
+				ClearBuffer(DATA_TYPE);
+			}
+		}
+	}
+
+	int rval = fbufp->Load(load_type, load_relocation);
 	if (rval > 0)
 	{
 		buf_ok = 1;
 		buf_changed = 0;
 	}
 	RecalcCRC();
+
 	return rval;
 }
 
 //======================>>> e2AppWinInfo::Save <<<=======================
 int e2AppWinInfo::Save()
 {
-	int rval = fbufp->Save();
+	int rval;
+
+	BYTE *localbuf;
+	localbuf = new BYTE[GetBufSize()];
+	if (localbuf == 0)
+		return OUTOFMEMORY;
+
+	//save buffer
+	memcpy( localbuf, GetBufPtr(), GetBufSize() );
+	memset( localbuf+GetSize(), 0xFF, GetBufSize()-GetSize() );
+
+	/**
+	 ** NON va qui!!! Va messo in IntelFileBuf::Save(int savetype)
+	 **               e MotorolaFileBus::Save
+	 **/
+ 	if (save_type == ALL_TYPE &&
+			(GetFileBuf() == INTEL || GetFileBuf() == MOTOS) )
+	{
+		if ( GetEEPPriType() == PIC16XX ||
+			  GetEEPPriType() == PIC168XX )
+		{
+			//It seems a bit tricky...
+			//Relocate the DATA and CONFIG memory with PIC devices
+			//The assembler store the DATA at 0x2100 (word address) and
+			//CONFIG at 0x2000 (word address).
+			//We move them after PROGRAM memory
+			// PROGRAM MEMORY + DATA MEMORY + CONFIG (8 word)
+			if (GetSplittedInfo() > 0 && GetSize() > GetSplittedInfo() )
+			{
+				//Set ALL overbound buffer to 0xFF
+				memset(GetBufPtr(), 0xFF, GetBufSize());
+
+				//Set fuse bits so the dialog shows the correct values
+				if ( 0x2000*2+16 <= GetBufSize() )
+				{
+					WORD config = (WORD)GetLockBits();
+
+					if ( GetEEPType() == PIC1683 ||
+						 GetEEPType() == PIC1684 ||
+						 GetEEPType() == PIC1684A )
+					{
+						if (config & (1<<4))
+							config |= 0xfff0;
+						else
+							config &= 0x000f;
+					}
+					config = ~config & 0x3fff;		//	CodeProtectAdjust(config, 0);
+
+					BYTE *ptr = GetBufPtr() + (0x2000*2) + 14;
+					ptr[0] = (BYTE)(config & 0xFF);			//little endian buffer
+					ptr[1] = (BYTE)(config >> 8);
+				}
+
+				//Copy prog memory
+				if ( GetSplittedInfo() <= GetBufSize() )
+				{
+					memcpy( GetBufPtr(), localbuf, GetSplittedInfo() );
+				}
+
+				//Copy data memory
+				if ( 0x2100*2 + (GetSize()-GetSplittedInfo()) <= GetBufSize() )
+				{
+					//copy only low byte every word
+					int k;
+					BYTE *src = localbuf + GetSplittedInfo();
+					WORD *dst = (WORD *)GetBufPtr() + 0x2100;
+					for (k = 0; k < GetSize()-GetSplittedInfo(); k++)
+						*dst++ = *src++;
+				}
+			}
+		}
+		else
+		if ( GetEEPPriType() == PIC125XX )
+		{
+			//Set ALL overbound buffer to 0xFF
+			memset(GetBufPtr(), 0xFF, GetBufSize());
+
+			//Copy prog memory
+			if ( GetSplittedInfo() <= GetBufSize() )
+			{
+				memcpy( GetBufPtr(), localbuf, GetSize() );
+			}
+
+			//Set fuse bits so the dialog shows the correct values
+			if ( 0xFFF*2+2 <= GetBufSize() )
+			{
+				WORD config = (WORD)GetLockBits();
+
+				config = ~config & 0x0fff;		//	CodeProtectAdjust(config, 0);
+
+				BYTE *ptr = GetBufPtr() + (0xFFF*2);
+				ptr[0] = (BYTE)(config & 0xFF);			//little endian buffer
+				ptr[1] = (BYTE)(config >> 8);
+			}
+		}
+	}
+
+	rval = fbufp->Save(save_type, save_relocation);
 	if (rval > 0)
 		buf_changed = 0;
 
+	//restore buffer
+	memcpy(GetBufPtr(), localbuf, GetBufSize());
+
+	delete localbuf;
+
 	return rval;
+}
+
+//====================>>> e2AppWinInfo::GetLoadRelocation <<<===================
+long e2AppWinInfo::GetLoadRelocation() const
+{
+	return load_relocation;
+}
+
+//===================>>> e2AppWinInfo::SetLoadRelocation <<<====================
+void e2AppWinInfo::SetLoadRelocation(long val)
+{
+	if ( val >= 0 && val < GetBufSize() )
+		load_relocation = val;
+}
+
+//====================>>> e2AppWinInfo::GetSaveRelocation <<<===================
+long e2AppWinInfo::GetSaveRelocation() const
+{
+	return save_relocation;
+}
+
+//===================>>> e2AppWinInfo::SetSaveRelocation <<<====================
+void e2AppWinInfo::SetSaveRelocation(long val)
+{
+	if ( val >= 0 && val < GetBufSize() )
+		save_relocation = val;
+}
+
+
+//======================>>> e2AppWinInfo::GetLoadType <<<=======================
+int e2AppWinInfo::GetLoadType() const
+{
+	return load_type;
+}
+
+//======================>>> e2AppWinInfo::SetLoadType <<<=======================
+int e2AppWinInfo::SetLoadType(int val)
+{
+	int rval = 0;
+
+	if (val == ALL_TYPE || val == PROG_TYPE || val == DATA_TYPE || val == CONFIG_TYPE)
+	{
+		load_type = val;
+		rval = 1;
+	}
+
+	return rval;
+}
+
+//======================>>> e2AppWinInfo::GetSaveType <<<=======================
+int e2AppWinInfo::GetSaveType() const
+{
+	return save_type;
+}
+
+//======================>>> e2AppWinInfo::SetSaveType <<<=======================
+int e2AppWinInfo::SetSaveType(int val)
+{
+	int rval = 0;
+
+	if (val == ALL_TYPE || val == PROG_TYPE || val == DATA_TYPE || val == CONFIG_TYPE)
+	{
+		save_type = val;
+		rval = 1;
+	}
+
+	return rval;
+}
+
+//======================>>> e2AppWinInfo::SetLockBits <<<=======================
+void e2AppWinInfo::SetLockBits(DWORD bits)
+{
+	lock_bits = bits;
+}
+
+//======================>>> e2AppWinInfo::SetFuseBits <<<=======================
+void e2AppWinInfo::SetFuseBits(DWORD bits)
+{
+	fuse_bits = bits;
 }
 
 //======================>>> e2AppWinInfo::GetSize <<<=======================
@@ -482,10 +861,25 @@ void e2AppWinInfo::SetFileBuf(FileType type)
 		fbufp = fbufvet[E2P];	//Tipo di default
 }
 
+FileType e2AppWinInfo::GetFileBuf() const
+{
+	FileType type;
+	int n;
+
+	for (n = 0; n < NO_OF_FILETYPE; n++)
+	{
+		type = (FileType)n;
+		if (fbufvet[type] == fbufp)
+			break;
+	}
+
+	return type;
+}
+
 void e2AppWinInfo::SetFileName(char const *name)
 {
 	if (name)
-		THEAPP->SetLastFile(name);
+		THEAPP->SetLastFile(name, load_type);
 
 	if (fname)
 		delete [] fname;
@@ -534,9 +928,30 @@ void e2AppWinInfo::SetComment(char const *s)
 	eeprom_comment[COMMENT_SIZE-1] = '\0';
 }
 
-void e2AppWinInfo::ClearBuffer()
+void e2AppWinInfo::ClearBuffer(int type)
 {
-	memset(GetBufPtr(), 0xFF, GetBufSize());
+	if (type == ALL_TYPE)
+	{
+		memset(GetBufPtr(), 0xFF, GetBufSize());
+	}
+	else
+	if (type == PROG_TYPE)
+	{
+		long s = GetSplittedInfo();
+		if (s <= 0 || s > GetBufSize())
+			s = GetSize();
+
+		memset(GetBufPtr(), 0xFF, s);
+	}
+	else
+	if (type == DATA_TYPE)
+	{
+		long s = GetSplittedInfo();
+		if (s < 0 || s >= GetSize())
+			s = 0;
+
+		memset(GetBufPtr() + s, 0xFF, GetSize() - s);
+	}
 }
 
 void e2AppWinInfo::FillBuffer(int init_pos, int ch, long len)
@@ -565,7 +980,7 @@ void e2AppWinInfo::FillBuffer(int init_pos, int ch, long len)
 	buf_ok = 1;		//Validate buffer
 
 	RecalcCRC();
-	BufChanged();
+//	BufChanged();
 }
 
 void e2AppWinInfo::SwapBytes()
@@ -599,7 +1014,7 @@ void e2AppWinInfo::DoubleSize()
 		if (k)
 		{	//Non copiarlo su se stesso!
 		memcpy(	buffer + k*2 * GetBlockSize(),
-				buffer + k * GetBlockSize(), 
+				buffer + k * GetBlockSize(),
 				GetBlockSize()
 				);
 		}
@@ -613,31 +1028,31 @@ void e2AppWinInfo::DoubleSize()
 	BufChanged();
 }
 
-int e2AppWinInfo::SecurityRead(int &blocks)
+int e2AppWinInfo::SecurityRead(DWORD &bits)
 {
-	int rv, val;
+	int rv;
 
 	OpenBus();
-	rv = eep->SecurityRead(blocks, val);
+	rv = eep->SecurityRead(bits);
 	SleepBus();
+
+	RecalcCRC();
 
 	if (rv == OK)
 	{
-		lock_bits = blocks;
-		if (val >= 0)
-			fuse_bits = val;
+		lock_bits = bits;
 	}
 	return rv;
 }
 
-int e2AppWinInfo::SecurityWrite(int blocks)
+int e2AppWinInfo::SecurityWrite(DWORD bits, bool no_param)
 {
 	int rv;
-	if (blocks < 0)
-		blocks = lock_bits;
+	if (no_param)
+		bits = lock_bits;
 
 	OpenBus();
-	rv = eep->SecurityWrite(blocks, fuse_bits);
+	rv = eep->SecurityWrite(bits);
 	SleepBus();
 
 	return rv;
@@ -647,7 +1062,7 @@ int e2AppWinInfo::SecurityWrite(int blocks)
 // in place of Fuse bits.
 // Use the same variable because there is no room for
 // both in the e2p header.
-int e2AppWinInfo::HighEnduranceRead(int &block_no)
+int e2AppWinInfo::HighEnduranceRead(DWORD &block_no)
 {
 	int rv;
 
@@ -660,10 +1075,10 @@ int e2AppWinInfo::HighEnduranceRead(int &block_no)
 	return rv;
 }
 
-int e2AppWinInfo::HighEnduranceWrite(int block_no)
+int e2AppWinInfo::HighEnduranceWrite(DWORD block_no, bool no_param)
 {
 	int rv;
-	if (block_no < 0)
+	if (no_param)
 		block_no = fuse_bits;
 
 	OpenBus();
@@ -672,7 +1087,7 @@ int e2AppWinInfo::HighEnduranceWrite(int block_no)
 
 	if (rv == OK)
 	{
-		int block2;
+		DWORD block2;
 
 		OpenBus();
 		rv = eep->HighEnduranceRead(block2);
@@ -685,7 +1100,7 @@ int e2AppWinInfo::HighEnduranceWrite(int block_no)
 	return rv;
 }
 
-int e2AppWinInfo::FusesRead(int &bits)
+int e2AppWinInfo::FusesRead(DWORD &bits)
 {
 	int rv;
 
@@ -693,25 +1108,27 @@ int e2AppWinInfo::FusesRead(int &bits)
 	rv = eep->FusesRead(bits);
 	SleepBus();
 
-	if (rv == OK && bits >= 0)
+	if (rv == OK)
 		fuse_bits = bits;
+
 	return rv;
 }
 
-int e2AppWinInfo::FusesWrite(int bits)
+int e2AppWinInfo::FusesWrite(DWORD bits, bool no_param)
 {
 	int rv;
-	if (bits < 0)
+
+	if (no_param)
 		bits = fuse_bits;
 
 	OpenBus();
 	rv = eep->FusesWrite(bits);
 	SleepBus();
 
-/**	the read doesn't work with every device
+/**	the read op doesn't work with every device
 	if (rv == OK)
 	{
-		int bits2;
+		DWORD bits2;
 
 		OpenBus();
 		rv = eep->FusesRead(bits2);
@@ -722,6 +1139,17 @@ int e2AppWinInfo::FusesWrite(int bits)
 	}
 **/
 	return rv;
+}
+
+int e2AppWinInfo::ReadOscCalibration(int addr)
+{
+	int val;
+
+	OpenBus();
+	val = eep->ReadCalibration(addr);
+	SleepBus();
+
+	return val;
 }
 
 #include "crc.h"
@@ -757,8 +1185,6 @@ char const *e2AppWinInfo::Dump(int line, int type)
 				tmpbuf[k] = isprint(buffer[idx+k]) ? buffer[idx+k] : '.';
 			tmpbuf[hex_per_line] = 0;
 
-		//*** 13/09/99
-		//	sprintf(linebuf, "%04lX) %02X %02X %02X %02X %02X %02X %02X %02X - %02X %02X %02X %02X %02X %02X %02X %02X    %s\n",
 			sprintf(linebuf, "  %06lX) %02X %02X %02X %02X %02X %02X %02X %02X - %02X %02X %02X %02X %02X %02X %02X %02X    %s\n",
 					idx,
 					buffer[idx+0],
@@ -785,8 +1211,6 @@ char const *e2AppWinInfo::Dump(int line, int type)
 		else
 		if (type == 1)
 		{
-		//*** 13/09/99
-		//	sprintf(linebuf, "%04lX)",	idx);
 			sprintf(linebuf, "  %06lX)",	idx);
 		}
 		else

@@ -6,10 +6,10 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997, 1998  Claudio Lanconelli                           //
+//  Copyright (C) 1997-2002   Claudio Lanconelli                           //
 //                                                                         //
-//  e-mail: lanconel@cs.unibo.it                                           //
-//  http://www.cs.unibo.it/~lanconel                                       //
+//  e-mail: lancos@libero.it                                               //
+//  http://www.LancOS.com                                                  //
 //                                                                         //
 //-------------------------------------------------------------------------//
 //                                                                         //
@@ -42,7 +42,24 @@
 #define DININV   (1<<2)
 #define DOUTINV  (1<<3)
 
+#define	RELOAD_YES		(1<<RELOAD_idx)
+#define	READFLASH_YES	(1<<READFLASH_idx)
+#define	READEEP_YES		(1<<READEEP_idx)
+#define	BYTESWAP_YES	(1<<BYTESWAP_idx)
+#define	SETID_YES		(1<<SETID_idx)
+#define	ERASE_YES		(1<<ERASE_idx)
+#define	FLASH_YES		(1<<FLASH_idx)
+#define	EEPROM_YES		(1<<EEPROM_idx)
+#define	LOCK_YES		(1<<LOCK_idx)
+#define	READOSCAL_YES	(1<<READOSCCAL_idx)
+
+typedef enum {
+	FMT_LITTLE_ENDIAN,
+	FMT_BIG_ENDIAN
+} FmtEndian;
+
 enum {
+	VERYSLOW,
 	SLOW,
 	NORMAL,
 	FAST,
@@ -57,8 +74,6 @@ class E2Profile : public Profile
 
 	E2Profile();
 
-//	int GetParDelayLoop();
-//	int SetParDelayLoop(int value);
 	HInterfaceType GetParInterfType();
 	int SetParInterfType(HInterfaceType type);
 	int GetParPortNo();
@@ -70,9 +85,12 @@ class E2Profile : public Profile
 	long GetLastDevType();
 	int SetLastDevType(long devtype);
 
-	char const *GetLastFile();
-	char const *GetPrevFile();
-	int SetLastFile(char const *name);
+	char const *GetLastFile(int &data);
+	char const *GetPrevFile(int &data);
+	int SetLastFile(char const *name, int data = ALL_TYPE);
+
+	char const *GetLastScript();
+	int SetLastScript(char const *name);
 
 	UBYTE GetPolarityControl(); 
 	int SetPolarityControl(UBYTE polarity_control); 
@@ -89,8 +107,17 @@ class E2Profile : public Profile
 	int GetI2CSpeed();
 	int SetI2CSpeed(int speed = NORMAL);
 
-	int GetSPIResetDelay();
-	int SetSPIResetDelay(int delay = 100);
+	int GetSPIResetPulse();
+	int SetSPIResetPulse(int delay = 100);
+
+	int GetSPIDelayAfterReset();
+	int SetSPIDelayAfterReset(int delay = 50);
+
+	int GetAT89DelayAfterReset();
+	int SetAT89DelayAfterReset(int delay = 50);
+
+	int GetAVRDelayAfterReset();
+	int SetAVRDelayAfterReset(int delay = 50);
 
 	int GetPowerUpDelay();
 	int SetPowerUpDelay(int delay = 200);
@@ -110,14 +137,68 @@ class E2Profile : public Profile
 	int GetSDESpeed();
 	int SetSDESpeed(int speed = NORMAL);
 
+	int GetIMBusSpeed();
+	int SetIMBusSpeed(int speed = NORMAL);
+
 	int GetAVRProgDelay();
 	int SetAVRProgDelay(int delay = 10);
 
 	int GetAVREraseDelay();
 	int SetAVREraseDelay(int delay = 30);
 
-	char const *GetIODriverName();
-	int SetIODriverName(char const *name);
+	int GetMDAProgDelay();
+	int SetMDAProgDelay(int delay = 30);
+	int GetNVMProgDelay();
+	int SetNVMProgDelay(int delay = 30);
+
+	ULONG GetSerialNumVal();
+	int SetSerialNumVal(ULONG val = 0);
+	int GetSerialNumAddress(long &start, int &size, bool &mtype);
+	int SetSerialNumAddress(long start, int size, bool mtype);
+	FmtEndian GetSerialNumFormat();
+	int SetSerialNumFormat(FmtEndian fmt);
+	bool GetSerialNumAutoInc();
+	int SetSerialNumAutoInc(bool val = true);
+
+	UWORD GetProgramOptions();
+	int SetProgramOptions(UWORD prog_option);
+
+	int GetCalibrationAddress(long &start, int &size, int &mtype);
+	int SetCalibrationAddress(long start, int size, int mtype);
+
+	char const *GetLogFileName();
+	int SetLogFileName(char const *name);
+
+	bool GetLogEnabled();
+	int SetLogEnabled(bool enabled = false);
+
+	bool GetClearBufBeforeLoad();
+	int SetClearBufBeforeLoad(bool val = false);
+	bool GetClearBufBeforeRead();
+	int SetClearBufBeforeRead(bool val = false);
+
+	char const *GetLanguageCode();
+	int SetLanguageCode(char const *code);
+
+	bool GetSoundEnabled();
+	int SetSoundEnabled(bool val = true);
+
+	bool GetVerifyAfterWrite();
+	int SetVerifyAfterWrite(bool enabled = true);
+
+	int GetJDMCmd2CmdDelay();
+	int SetJDMCmd2CmdDelay(int delay = 4000);
+
+	bool GetAutoDetectPorts();
+	int SetAutoDetectPorts(bool enabled = true);
+
+	int GetCOMAddress(int &com1, int &com2, int &com3, int &com4);
+	int SetCOMAddress(int com1, int com2, int com3, int com4);
+	int GetLPTAddress(int &lpt1, int &lpt2, int &lpt3);
+	int SetLPTAddress(int lpt1, int lpt2, int lpt3);
+
+	FileType GetDefaultFileType();
+	int SetDefaultFileType(FileType ft);
 
   protected:	//--------------------------------------- protected
 

@@ -6,10 +6,10 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997, 1998  Claudio Lanconelli                           //
+//  Copyright (C) 1997-2001   Claudio Lanconelli                           //
 //                                                                         //
-//  e-mail: lanconel@cs.unibo.it                                           //
-//  http://www.cs.unibo.it/~lanconel                                       //
+//  e-mail: lancos@libero.it                                               //
+//  http://www.LancOS.com                                                  //
 //                                                                         //
 //-------------------------------------------------------------------------//
 //                                                                         //
@@ -28,6 +28,7 @@
 // Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. //
 //                                                                         //
 //-------------------------------------------------------------------------//
+// $Id$
 //=========================================================================//
 
 #ifndef _PIC16XX_H
@@ -38,7 +39,7 @@
 #include "eeprom.h"
 #include "picbus.h"
 
-class Pic16xx : public EEProm
+class Pic16xx : public Device
 {
   public:		//---------------------------------------- public
 
@@ -46,20 +47,31 @@ class Pic16xx : public EEProm
 	virtual ~Pic16xx();
 
 	int Probe(int probe_size = 0);
-	int Read(int probe = 1);
-	int Write(int probe = 1);
-	int Verify();
+	int Read(int probe = 1, int type = ALL_TYPE);
+	int Write(int probe = 1, int type = ALL_TYPE);
+	int Verify(int type = ALL_TYPE);
+
+	int Erase(int probe = 1, int type = ALL_TYPE);
 
 	//Write lock bits
-	int SecurityRead(int &msb, int &lsb);
-	int SecurityWrite(int msb, int lsb);
+	int SecurityRead(DWORD &bits);
+	int SecurityWrite(DWORD bits);
 
   protected:	//--------------------------------------- protected
 
 	PicBus *GetBus()
-		{ return (PicBus *)EEProm::GetBus(); }
+		{ return (PicBus *)Device::GetBus(); }
 
 	WORD id_locations[8];
+/**
+	int ReadProg();
+	int ReadData();
+	int WriteProg();
+	int WriteData();
+	int VerifyProg(unsigned char *localbuf);
+	int VerifyData(unsigned char *localbuf);
+**/
+	virtual int CodeProtectAdjust(WORD &config, int read = 0);
 
   private:		//--------------------------------------- private
 

@@ -6,11 +6,13 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-1999   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2002   Claudio Lanconelli                           //
 //                                                                         //
-//  e-mail: lanconel@cs.unibo.it                                           //
-//  http://www.cs.unibo.it/~lanconel                                       //
+//  e-mail: lancos@libero.it                                               //
+//  http://www.LancOS.com                                                  //
 //                                                                         //
+//-------------------------------------------------------------------------//
+// $Id$
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -62,12 +64,11 @@ class RS232Interface
 
 	void SerialFlushRx();
 	void SerialFlushTx();
-	void WaitForTxEmpty();
 	long ReadSerial(BYTE *buffer, DWORD len);
-	long WriteSerial(BYTE *buffer, DWORD len, int wait_end_tx = 1);
+	long WriteSerial(BYTE *buffer, DWORD len);
 	int SetSerialParams(long speed = -1, int bits = -1, int parity = -1, int stops = -1, int flow_control = -1);
 	int SetSerialTimeouts(long init_read = -1, long while_read = -1);
-	void SetSerialEventMask(long mask);
+//	void SetSerialEventMask(long mask);
 	int SetSerialBreak(int state);
 
 	int SetSerialDTR(int dtr);
@@ -78,6 +79,8 @@ class RS232Interface
 
   protected:		//------------------------------- protected
 
+	void WaitForTxEmpty();
+
   private:		//------------------------------- private
 
 	long read_total_timeout, read_interval_timeout;
@@ -85,6 +88,7 @@ class RS232Interface
 	long actual_speed;
 	int actual_bits, actual_parity, actual_stops;
 	int actual_flowcontrol;
+	bool wait_endTX_mode;
 
 #ifdef	_WINDOWS
 	HANDLE hCom;
@@ -92,14 +96,11 @@ class RS232Interface
 	DWORD old_mask;
 	COMMTIMEOUTS old_timeout;
 	DCB old_dcb;
-#else
-# ifdef	_LINUX_
+#endif
+#ifdef	_LINUX_
 	int fd; 
 	struct termios old_termios;
-	char lockname[256]; 
-
-//	int OpenPort(int no); 
-# endif
+	char lockname[MAXPATH]; 
 #endif
 };
 

@@ -6,10 +6,10 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2000   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2001   Claudio Lanconelli                           //
 //                                                                         //
-//  e-mail: lanconel@cs.unibo.it                                           //
-//  http://www.cs.unibo.it/~lanconel                                       //
+//  e-mail: lancos@libero.it                                               //
+//  http://www.LancOS.com                                                  //
 //                                                                         //
 //-------------------------------------------------------------------------//
 //                                                                         //
@@ -28,6 +28,7 @@
 // Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. //
 //                                                                         //
 //-------------------------------------------------------------------------//
+// $Id$
 //=========================================================================//
 
 #include "errcode.h"
@@ -64,7 +65,7 @@
 #define	AVRISP_MAPPED
 
 #ifdef	AVRISP_MAPPED
-/** Real AVR ISP **/
+//Real AVR ISP
 # define WB_TEST1 0		/* DATA (pin 2) */
 # define WB_TEST2 1		/* DATA (pin 3) */
 # define WB_ENA1 2		/* DATA (pin 4) */
@@ -77,22 +78,23 @@
 # define RB_DIN	6		/* STATUS (pin 10) */
 # define RB_TEST1 5		/* STATUS (pin 12) */
 # define RB_TEST2 7		/* STATUS (pin 11) */
+
 #else
-/** Remapped AVR ISP **/
-# define WB_RST	0		// DATA (pin 2)
-# define WB_SCK 1		// DATA (pin 3) 
-# define WB_DOUT 2		// DATA (pin 4) 
+//Remapped AVR ISP
+# define WB_RST	0		/* DATA (pin 2) */
+# define WB_SCK 1		/* DATA (pin 3) */
+# define WB_DOUT 2		/* DATA (pin 4) */
 
-# define WB_ENA2 6		// DATA (pin 8) 
-# define WB_TEST2 7		// DATA (pin 9) 
+# define WB_ENA2 6		/* DATA (pin 8) */
+# define WB_TEST2 7		/* DATA (pin 9) */
 
-# define WB_LED 0		// CTRL (pin 1)- 
-# define WB_ENA1 2		// CTRL (pin 16)- 
-# define WB_TEST1 3		// CTRL (pin 17)- 
+# define WB_LED 0		/* CTRL (pin 1)- */
+# define WB_ENA1 2		/* CTRL (pin 16)- */
+# define WB_TEST1 3		/* CTRL (pin 17)- */
 
-# define RB_DIN	6		// STATUS (pin 10)
-# define RB_TEST2 7		// STATUS (pin 11)
-# define RB_TEST1 5		// STATUS (pin 12)
+# define RB_DIN	6		/* STATUS (pin 10) */
+# define RB_TEST2 7		/* STATUS (pin 11) */
+# define RB_TEST1 5		/* STATUS (pin 12) */
 #endif
 
 # define WF_TEST1	(1 << WB_TEST1)
@@ -109,14 +111,13 @@
 # define RF_TEST2	(1 << RB_TEST2)
 
 
-AvrISPInterface::AvrISPInterface(int use_io)
+AvrISPInterface::AvrISPInterface(bool use_io)
+	: LptExtInterface(use_io)
 {
 	UserDebug(Constructor, "AvrISPInterface::AvrISPInterface() Constructor\n");
 
 	Install(0);
 	old_portno = 0;
-
-	io_mode = use_io;
 }
 
 void AvrISPInterface::SetControlLine(int res)
@@ -208,7 +209,7 @@ void AvrISPInterface::Close()
 
 	if (IsInstalled())
 	{
-		lptio.Close();
+		LptExtInterface::Close();
 
 		Install(0);
 	}
@@ -335,16 +336,16 @@ int AvrISPInterface::IsClockDataDOWN()
 	return !GetDataIn();
 }
 
-int AvrISPInterface::TestPort(int com_no)
+int AvrISPInterface::TestPort(int port)
 {
-	UserDebug1(UserApp1, "AvrISPInterface::TestPort(%d) IN\n", com_no);
+	UserDebug1(UserApp1, "AvrISPInterface::TestPort(%d) IN\n", port);
 
-	int ret_val = TestSave(com_no);
+	int ret_val = TestSave(port);
+	Wait w;
 
 	if (ret_val == OK)
 	{
 		int test1 = FALSE, test2 = FALSE;
-		Wait w;
 
 #ifdef	AVRISP_MAPPED
 		//Test1

@@ -6,10 +6,10 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997, 1998  Claudio Lanconelli                           //
+//  Copyright (C) 1997-2001   Claudio Lanconelli                           //
 //                                                                         //
-//  e-mail: lanconel@cs.unibo.it                                           //
-//  http://www.cs.unibo.it/~lanconel                                       //
+//  e-mail: lancos@libero.it                                               //
+//  http://www.LancOS.com                                                  //
 //                                                                         //
 //-------------------------------------------------------------------------//
 //                                                                         //
@@ -28,6 +28,7 @@
 // Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. //
 //                                                                         //
 //-------------------------------------------------------------------------//
+// $Id$
 //=========================================================================//
 
 #ifndef _E24XX2_H
@@ -40,23 +41,21 @@ class E24xx2 : public E24xx
   public:		//---------------------------------------- public
 
 	E24xx2(e2AppWinInfo *wininfo = 0, BusIO *busp = 0);
-	virtual ~E24xx2();
+//	virtual ~E24xx2();
 
 	int Probe(int probe_size = 0);
-//	int Read(int probe = 1);
-//	int Write(int probe = 1);
-//	int Verify();
+	int Read(int probe = 1, int type = ALL_TYPE);
+	int Write(int probe = 1, int type = ALL_TYPE);
+	int Verify(int type = ALL_TYPE);
+
 //	int BankRollOverDetect(int force);
 
-	int SecurityRead(int &blocks);
-	int SecurityWrite(int blocks);
-	int HighEnduranceRead(int &block_no);
-	int HighEnduranceWrite(int block_no);
+	int SecurityRead(DWORD &blocks);
+	int SecurityWrite(DWORD blocks);
+	int HighEnduranceRead(DWORD &block_no);
+	int HighEnduranceWrite(DWORD block_no);
 
   protected:	//--------------------------------------- protected
-
-	virtual int bank_out(BYTE const *copy_buf, int bank_no, long size = -1, long idx = 0);
-	virtual int bank_in(BYTE *copy_buf, int bank_no, long size = -1, long idx = 0);
 
   private:		//--------------------------------------- private
 
@@ -64,8 +63,5 @@ class E24xx2 : public E24xx
 	int const SecurityWriteCode;
 	int const HEnduranceReadCode;
 	int const HEnduranceWriteCode;
-
-//	int bank_in(BYTE *copy_buf, long size, int bank);
-//	int bank_out(BYTE const *copy_buf, long size, int bank);
 };
 #endif

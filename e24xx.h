@@ -41,17 +41,18 @@
 #define BANK_SIZE	256
 #define	MAX_BANK	128
 
-class E24xx : public EEProm
+class E24xx : public Device
 {
   public:		//---------------------------------------- public
 
-	E24xx(e2AppWinInfo *wininfo = 0, BusIO *busp = 0, int max_no_of_bank = 8);
+	E24xx(e2AppWinInfo *wininfo = 0, BusIO *busp = 0, int max_no_of_bank = 8, int def_banksize = BANK_SIZE);
 	virtual ~E24xx();
 
 	int Probe(int probe_size = 0);
-	int Read(int probe = 1);
-	int Write(int probe = 1);
-	int Verify();
+	int Read(int probe = 1, int type = ALL_TYPE);
+	int Write(int probe = 1, int type = ALL_TYPE);
+	int Verify(int type = ALL_TYPE);
+
 	int BankRollOverDetect(int force);
 
 	int	const max_bank;		// max number of banks (max eeprom size)
@@ -61,19 +62,20 @@ class E24xx : public EEProm
 	int const timeout_loop;		//eeprom timeout
 
 	//!!! 07/03/98
-	int base_addr;				//eeprom I2CBus base address
+	int base_addr;				//eeprom I2C base address
 	int n_bank;					//numero indirizzi (o banchi reali)
 
 	int eeprom_addr[MAX_BANK];		// indirizzi I2C a cui risponde la EEPROM
 
-	int sequential_read;			//if 1 whole bank every read
-	int writepage_size;				//if > 1 perform page write
-
 	I2CBus *GetBus()
-		{ return (I2CBus *)EEProm::GetBus(); }
+		{ return (I2CBus *)Device::GetBus(); }
 
 	virtual int bank_out(BYTE const *copy_buf, int bank_no, long size = -1, long idx = 0);
 	virtual int bank_in(BYTE *copy_buf, int bank_no, long size = -1, long idx = 0);
+
+	//-- Parte riguardante la EEPROM
+	int sequential_read;			//1 --> legge un banco in una volta
+	int writepage_size;				//se > 1 scrive una pagina alla volta
 
   private:		//--------------------------------------- private
 

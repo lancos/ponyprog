@@ -57,7 +57,7 @@ SPIBus::SPIBus(BusInterface *ptr)
 // Distruttore
 SPIBus::~SPIBus()
 {
-	Close();
+//	Close();
 }
 
 void SPIBus::SetDelay()
@@ -75,6 +75,9 @@ void SPIBus::SetDelay()
 		break;
 	case SLOW:
 		n = 10;
+		break;
+	case VERYSLOW:
+		n = 80;
 		break;
 	default:
 		n = 5;         //Default (< 100KHz)
@@ -152,10 +155,10 @@ int SPIBus::Reset(void)
 
 	WaitMsec(20);
 	ClearReset();	//One pulse on the reset (datasheet AVR)
-	WaitMsec( THEAPP->GetSPIResetDelay() );	//AppNote AVR910 suggest >100 msec
+	WaitMsec( THEAPP->GetSPIResetPulse() );	//AppNote AVR910 suggest >100 msec
 	SetReset();
 
-	WaitMsec(5);
+	WaitMsec( THEAPP->GetSPIDelayAfterReset() );
 
 	UserDebug(UserApp2, "SPIBus::Reset() O\n");
 

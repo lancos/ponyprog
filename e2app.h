@@ -6,10 +6,10 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997, 1998  Claudio Lanconelli                           //
+//  Copyright (C) 1997-2001   Claudio Lanconelli                           //
 //                                                                         //
-//  e-mail: lanconel@cs.unibo.it                                           //
-//  http://www.cs.unibo.it/~lanconel                                       //
+//  e-mail: lancos@libero.it                                               //
+//  http://www.LancOS.com                                                  //
 //                                                                         //
 //-------------------------------------------------------------------------//
 //                                                                         //
@@ -28,6 +28,7 @@
 // Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. //
 //                                                                         //
 //-------------------------------------------------------------------------//
+// $Id$
 //=========================================================================//
 
 #ifndef e2APP_H
@@ -50,18 +51,24 @@
 #include "at250bus.h"
 #include "at250bus2.h"
 #include "picbus.h"
+#include "pic12bus.h"
 #include "sxbus.h"
 #include "sdebus.h"
 #include "at89sbus.h"
 #include "atmegabus.h"
 #include "avr1200bus.h"
+#include "picbusnew.h"
+#include "imbus.h"
+#include "x2444bus.h"
 
 //Include Interface Classes
 #include "pgminter.h"
 #include "ponyioint.h"
-#include "easyi2c_com.h"
-#include "easyi2c_lpt.h"
+#include "easyi2c_interf.h"
 #include "ispinterf.h"
+#include "jdminter.h"
+//#include "jdmiointer.h"
+#include "dt006interf.h"
 
 enum AppStatus {
 	AppReady,
@@ -82,11 +89,13 @@ class e2App : public vApp, public E2Profile
 	virtual vWindow* NewAppWin(vWindow* win, char* name, int w, int h,
 		vAppWinInfo* winInfo = 0);
 
-	virtual void Exit(void);
+	virtual void Exit();
 
 	virtual int CloseAppWin(vWindow*);
 
 	virtual void AppCommand(vWindow* win, ItemVal id, ItemVal val, CmdType cType);
+
+	virtual void DropFile(const char *fn);
 
 	virtual void KeyIn(vWindow*, vKey, unsigned int);
 
@@ -114,13 +123,13 @@ class e2App : public vApp, public E2Profile
 		{ return busvetp; }
 
 	int Calibration();
-//	void SetDelayLoop(int value)
-//		{ iicB.SetDelayLoop(value); }
-//	int GetDelayLoop() const
-//		{ return iicB.GetDelayLoop(); }
 
 	const char *GetHelpFile() const
 		{ return helpfile; }
+	const char *GetOkSound() const
+		{ return ok_soundfile; }
+	const char *GetErrSound() const
+		{ return err_soundfile; }
 
 	int GetAbortFlag();
 	void SetAbortFlag(int a = 1)
@@ -157,6 +166,10 @@ class e2App : public vApp, public E2Profile
 
 	int LoadDriver(int start);
 
+	bool scriptMode;	//Script Mode
+	int returnValue;	//return value in Command Line mode
+	char script_name[MAXPATH];
+
   protected:	//--------------------------------------- protected
 
   private:		//--------------------------------------- private
@@ -172,19 +185,23 @@ class e2App : public vApp, public E2Profile
 	HInterfaceType iType;	//current interface type
 	BusInterface *busIntp;	//pointer to current interface type
 
-	UBYTE polarity_control; //polarity for control lines 
+	UBYTE polarity_control; //polarity for control lines
 	AppStatus app_status;		//tell if the App is busy (reading, writing, ...) or can react to user events
 
 	long last_programmed_addr;	//record last programmed address for verify
 
 	//AutoTag
 	//List of available interface types
-	PGMInterface siprog_apiI;
+	SIProgInterface siprog_apiI;
 	PonyIOInterface siprog_ioI;
-	EasyI2CInterface easyi2c_comI;
-	EasyI2CLPTInterface easyi2c_lptI;
+	EasyI2CInterface easyi2c_apiI;
+	EasyI2CInterface easyi2c_ioI;
 	AvrISPInterface avrisp_apiI;
-	AvrISPInterface avrisp_ioI;
+	AvrISPInterface	avrisp_ioI;
+	Dt006Interface dt006_apiI;
+	Dt006Interface dt006_ioI;
+	JdmInterface jdm_apiI;
+//	JdmIOInterface jdm_ioI;
 
 	BusIO *iniBus;					//pointer to current Bus
 	BusIO *busvetp[NO_OF_BUSTYPE];	//array of pointers to available Bus
@@ -196,12 +213,23 @@ class e2App : public vApp, public E2Profile
 	At250Bus at250B;
 	At250BigBus at250BigB;
 	PicBus picB;
+	Pic12Bus pic12B;
 	SxBus sxB;
 	Sde2506Bus sdeB;
 	At89sBus at89sB;
-	AtMegaBus megaB;
+	AtMegaBus mega103B;
+	AtMegaBus mega128B;
+	AtMegaBus mega16xB;
+	AtMegaBus mega8xB;
+	AtMegaBus tiny2xB;
 	Avr1200Bus at1200B;
+	PicBusNew picNewB;
+	IMBus imB;
+	X2444Bus x2444B;
+	X2444Bus s2430B;
 
-	char helpfile[128];
+	char helpfile[MAXPATH];
+	char ok_soundfile[MAXPATH];
+	char err_soundfile[MAXPATH];
 };
 #endif

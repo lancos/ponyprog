@@ -1,0 +1,2216 @@
+<html>
+<! Author :    Claudio Lanconelli ->
+
+<head>
+<title>PonyProg Documentation</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<hr>
+<p align="center"> <strong><font size="5">PonyProg2000 documentation<br>
+</font><font size="2">by<br>
+  </font></strong><a href="http://www.lancos.com"><img src="Lancos.jpg" alt="LancOS - Lanconelli Open Systems" WIDTH="460" HEIGHT="100" border="0"></a></p>
+
+<p align="center"><a href="http://www.lancos.com">http://www.LancOS.com</a><br>
+</p>
+
+<p align="center"><small>Last update $Date$</small></p>
+
+<hr>
+<h1><a name="contents"></a>Contents</h1>
+
+<table width="466">
+  <tr> 
+    <td colspan="3">1<tt> </tt><a href="ponyprog2000.html#s1"><b>Installing</b></a></td>
+  </tr>
+  <tr> 
+    <td colspan="3">2<tt> </tt><a href="ponyprog2000.html#s2"><b>Menu Commands</b></a></td>
+  </tr>
+  <tr> 
+    <td width="37"></td>
+    <td colspan="2">2.1<tt> </tt><a href="ponyprog2000.html#s2.1">File</a></td>
+  </tr>
+  <tr> 
+    <td width="37"></td>
+    <td width="36"></td>
+    <td width="377">2.1.1<tt> </tt><a href="ponyprog2000.html#s2.1.1">New Window</a></td>
+  </tr>
+  <tr> 
+    <td width="37"></td>
+    <td width="36"></td>
+    <td width="377">2.1.2<tt> </tt><a href="ponyprog2000.html#s2.1.2">Open Device 
+      File</a></td>
+  </tr>
+  <tr> 
+    <td width="37"></td>
+    <td width="36"></td>
+    <td width="377">2.1.3<tt> </tt><a href="ponyprog2000.html#s2.1.3">Open Program 
+      (FLASH) File</a></td>
+  </tr>
+  <tr> 
+    <td width="37"></td>
+    <td width="36"></td>
+    <td width="377">2.1.4<tt> </tt><a href="ponyprog2000.html#s2.1.4">Open Data 
+      (EEPROM) File</a></td>
+  </tr>
+  <tr> 
+    <td width="37"></td>
+    <td width="36"></td>
+    <td width="377">2.1.5<tt> </tt><a href="ponyprog2000.html#s2.1.5">Save Device 
+      File</a></td>
+  </tr>
+  <tr> 
+    <td width="37"></td>
+    <td width="36"></td>
+    <td width="377">2.1.6<tt> </tt><a href="ponyprog2000.html#s2.1.6">Save Device 
+      File As</a></td>
+  </tr>
+  <tr> 
+    <td width="37"></td>
+    <td width="36"></td>
+    <td width="377">2.1.7<tt> </tt><a href="ponyprog2000.html#s2.1.7">Save Program 
+      (FLASH) File</a></td>
+  </tr>
+  <tr> 
+    <td width="37"></td>
+    <td width="36"></td>
+    <td width="377">2.1.8<tt> </tt><a href="ponyprog2000.html#s2.1.8">Save Data 
+      (EEPROM) File</a></td>
+  </tr>
+  <tr> 
+    <td width="37"></td>
+    <td width="36"></td>
+    <td width="377">2.1.9<tt> </tt><a href="ponyprog2000.html#s2.1.9">Reload Files</a></td>
+  </tr>
+  <tr> 
+    <td width="37"></td>
+    <td width="36"></td>
+    <td width="377">2.1.10<tt> </tt><a href="ponyprog2000.html#s2.1.10">Print</a></td>
+  </tr>
+  <tr> 
+    <td width="37"></td>
+    <td width="36"></td>
+    <td width="377">2.1.11<tt> </tt><a href="ponyprog2000.html#s2.1.11">Close</a></td>
+  </tr>
+  <tr> 
+    <td width="37"></td>
+    <td width="36"></td>
+    <td width="377">2.1.12<tt> </tt><a href="ponyprog2000.html#s2.1.12">Exit</a></td>
+  </tr>
+  <tr> 
+    <td width="37"></td>
+    <td colspan="2">2.2<tt> </tt><a href="ponyprog2000.html#s2.2">Edit</a></td>
+  </tr>
+  <tr> 
+    <td width="37"></td>
+    <td width="36"></td>
+    <td width="377">2.2.1<tt> </tt><a href="ponyprog2000.html#s2.2.1">Edit note</a></td>
+  </tr>
+  <tr> 
+    <td width="37"></td>
+    <td width="36"></td>
+    <td width="377">2.2.2<tt> </tt><a href="ponyprog2000.html#s2.2.2">Edit security 
+      bits</a></td>
+  </tr>
+  <tr> 
+    <td width="37"></td>
+    <td width="36"></td>
+    <td width="377">2.2.3<tt> </tt><a href="ponyprog2000.html#s2.2.3">Edit buffer 
+      enabled</a></td>
+  </tr>
+  <tr> 
+    <td width="37"></td>
+    <td colspan="2">2.3<tt> </tt><a href="ponyprog2000.html#s2.3">Device</a></td>
+  </tr>
+  <tr> 
+    <td width="37"></td>
+    <td colspan="2">2.4<tt> </tt><a href="ponyprog2000.html#s2.4">Command</a></td>
+  </tr>
+  <tr> 
+    <td width="37"></td>
+    <td width="36"></td>
+    <td width="377">2.4.1<tt> </tt><a href="ponyprog2000.html#s2.4.1">Read All</a></td>
+  </tr>
+  <tr> 
+    <td width="37"></td>
+    <td width="36"></td>
+    <td width="377">2.4.2<tt> </tt><a href="ponyprog2000.html#s2.4.2">Read Program 
+      (FLASH)</a></td>
+  </tr>
+  <tr> 
+    <td width="37"></td>
+    <td width="36"></td>
+    <td width="377">2.4.3<tt> </tt><a href="ponyprog2000.html#s2.4.3">Read Data 
+      (EEPROM)</a></td>
+  </tr>
+  <tr> 
+    <td width="37"></td>
+    <td width="36"></td>
+    <td width="377">2.4.4<tt> </tt><a href="ponyprog2000.html#s2.4.4">Read Security 
+      and Configuration Bits</a></td>
+  </tr>
+  <tr> 
+    <td width="37"></td>
+    <td width="36"></td>
+    <td width="377">2.4.5<tt> </tt><a href="ponyprog2000.html#s2.4.5">Write All</a></td>
+  </tr>
+  <tr> 
+    <td width="37"></td>
+    <td width="36"></td>
+    <td width="377">2.4.6<tt> </tt><a href="ponyprog2000.html#s2.4.6">Write Program 
+      (FLASH)</a></td>
+  </tr>
+  <tr> 
+    <td width="37"></td>
+    <td width="36"></td>
+    <td width="377">2.4.7<tt> </tt><a href="ponyprog2000.html#s2.4.7">Write Data 
+      (EEPROM)</a></td>
+  </tr>
+  <tr> 
+    <td width="37"></td>
+    <td width="36"></td>
+    <td width="377">2.4.8<tt> </tt><a href="ponyprog2000.html#s2.4.8">Write Security 
+      and Configuration Bits</a></td>
+  </tr>
+  <tr> 
+    <td width="37"></td>
+    <td width="36"></td>
+    <td width="377">2.4.9<tt> </tt><a href="ponyprog2000.html#s2.4.9">Verify All</a></td>
+  </tr>
+  <tr> 
+    <td width="37"></td>
+    <td width="36"></td>
+    <td width="377">2.4.10<tt> </tt><a href="ponyprog2000.html#s2.4.10">Verify 
+      Program (FLASH)</a></td>
+  </tr>
+  <tr> 
+    <td width="37"></td>
+    <td width="36"></td>
+    <td width="377">2.4.11<tt> </tt><a href="ponyprog2000.html#s2.4.11">Verify 
+      Data (EEPROM)</a></td>
+  </tr>
+  <tr> 
+    <td width="37"></td>
+    <td width="36"></td>
+    <td width="377">2.4.12<tt> </tt><a href="ponyprog2000.html#s2.4.12">Erase</a></td>
+  </tr>
+  <tr> 
+    <td width="37"></td>
+    <td width="36"></td>
+    <td width="377">2.4.13<tt> </tt><a href="ponyprog2000.html#s2.4.13">GetInfo</a></td>
+  </tr>
+  <tr> 
+    <td width="37"></td>
+    <td width="36"></td>
+    <td width="377">2.4.14<tt> </tt><a href="ponyprog2000.html#s2.4.14">Reset</a></td>
+  </tr>
+  <tr> 
+    <td width="37"></td>
+    <td width="36"></td>
+    <td width="377">2.4.15<tt> </tt><a href="ponyprog2000.html#s2.4.15">Program</a></td>
+  </tr>
+  <tr> 
+    <td width="37"></td>
+    <td width="36"></td>
+    <td width="377">2.4.16<tt> </tt><a href="ponyprog2000.html#s2.4.16">Program 
+      Options</a></td>
+  </tr>
+  <tr> 
+    <td width="37"></td>
+    <td colspan="2">2.5<tt> </tt><a href="ponyprog2000.html#s2.5">Utility</a></td>
+  </tr>
+  <tr> 
+    <td width="37"></td>
+    <td width="36"></td>
+    <td width="377">2.5.1<tt> </tt><a href="ponyprog2000.html#s2.5.1">Clear buffer</a></td>
+  </tr>
+  <tr> 
+    <td width="37"></td>
+    <td width="36"></td>
+    <td width="377">2.5.2<tt> </tt><a href="ponyprog2000.html#s2.5.2">Fill buffer</a></td>
+  </tr>
+  <tr> 
+    <td width="37"></td>
+    <td width="36"></td>
+    <td width="377">2.5.3<tt> </tt><a href="ponyprog2000.html#s2.5.3">Double bank</a></td>
+  </tr>
+  <tr> 
+    <td width="37"></td>
+    <td width="36"></td>
+    <td width="377">2.5.4&nbsp; <a href="ponyprog2000.html#s2.5.4">Byte swap</a></td>
+  </tr>
+  <tr> 
+    <td width="37"></td>
+    <td width="36"></td>
+    <td width="377">2.5.5<tt> </tt><a href="ponyprog2000.html#s2.5.5">Set Serial 
+      Number</a></td>
+  </tr>
+  <tr> 
+    <td width="37"></td>
+    <td width="36"></td>
+    <td width="377">2.5.6&nbsp; <a href="ponyprog2000.html#s2.5.6">Serial Number 
+      Config</a></td>
+  </tr>
+  <tr> 
+    <td width="37"></td>
+    <td colspan="2">2.6<tt> </tt><a href="ponyprog2000.html#s2.6">Setup</a></td>
+  </tr>
+  <tr> 
+    <td width="37"></td>
+    <td width="36"></td>
+    <td width="377">2.6.1<tt> </tt><a href="ponyprog2000.html#s2.6.1">Interface 
+      Setup</a></td>
+  </tr>
+  <tr> 
+    <td width="37"></td>
+    <td width="36"></td>
+    <td width="377">2.6.2<tt> </tt><a href="ponyprog2000.html#s2.6.2">Calibration</a></td>
+  </tr>
+  <tr> 
+    <td colspan="3"><strong>3 <a href="ponyprog2000.html#s3">Hardware interfaces</a></strong></td>
+  </tr>
+  <tr> 
+    <td width="37"></td>
+    <td colspan="2">3.1&nbsp;<a href="ponyprog2000.html#s3.1">SI Prog</a></td>
+  </tr>
+  <tr> 
+    <td width="37"></td>
+    <td width="36"></td>
+    <td width="377">3.1.1 <a href="ponyprog2000.html#s3.1.1">The main board</a></td>
+  </tr>
+  <tr> 
+    <td width="37"></td>
+    <td width="36"></td>
+    <td width="377">3.1.2 <a href="ponyprog2000.html#s3.1.2">I²CBus eeprom adapter</a></td>
+  </tr>
+  <tr> 
+    <td width="37"></td>
+    <td width="36"></td>
+    <td width="377">3.1.3 <a href="ponyprog2000.html#s3.1.3">Microwire eeprom 
+      adapter</a></td>
+  </tr>
+  <tr> 
+    <td width="37"></td>
+    <td width="36"></td>
+    <td width="377">3.1.4 <a href="ponyprog2000.html#s3.1.4">SPI eeprom adapter</a></td>
+  </tr>
+  <tr> 
+    <td width="37"></td>
+    <td width="36"></td>
+    <td width="377">3.1.5 <a href="ponyprog2000.html#s3.1.5">SDE2506 eeprom adapter</a></td>
+  </tr>
+  <tr> 
+    <td width="37"></td>
+    <td width="36"></td>
+    <td width="377">3.1.6 <a href="ponyprog2000.html#s3.1.6">NVM eeprom adapter</a></td>
+  </tr>
+  <tr> 
+    <td width="37"></td>
+    <td width="36"></td>
+    <td width="377">3.1.7 <a href="ponyprog2000.html#s3.1.7">AVR micro adapter</a></td>
+  </tr>
+  <tr> 
+    <td width="37"></td>
+    <td width="36"></td>
+    <td width="377">3.1.8 <a href="ponyprog2000.html#s3.1.8">PIC micro adapter</a></td>
+  </tr>
+  <tr> 
+    <td width="37"></td>
+    <td width="36"></td>
+    <td width="377">3.1.9 <a href="ponyprog2000.html#s3.1.9">Jumper setting summary</a></td>
+  </tr>
+  <tr> 
+    <td width="37"></td>
+    <td width="36"></td>
+    <td width="377">3.1.10 <a href="ponyprog2000.html#s3.1.10">Serial cable</a></td>
+  </tr>
+  <tr> 
+    <td width="37"></td>
+    <td width="36"></td>
+    <td width="377">3.1.11 <a href="ponyprog2000.html#s3.1.11">Electric schematic</a></td>
+  </tr>
+  <tr> 
+    <td width="37"></td>
+    <td width="36"></td>
+    <td width="377">3.1.12 <a href="ponyprog2000.html#s3.1.12">Mounting plan</a></td>
+  </tr>
+  <tr> 
+    <td colspan="3"><strong>4 <a href="#s4">Scripts</a></strong></td>
+  </tr>
+  <tr> 
+    <td width="37"></td>
+    <td colspan="2">4.1&nbsp;<a href="#s4_1">Quick start</a></td>
+  </tr>
+  <tr> 
+    <td width="37"></td>
+    <td colspan="2">4.2&nbsp;<a href="#s4_2">Command reference</a></td>
+  </tr>
+  <tr> 
+    <td width="37"></td>
+    <td width="36"></td>
+    <td width="377">&nbsp;</td>
+  </tr>
+  <tr> 
+    <td colspan="3"><strong>5&nbsp;<a href="#s5">FAQ</a></strong></td>
+  </tr>
+  <tr> 
+    <td colspan="3"><strong>Appendix</strong></td>
+  </tr>
+  <tr> 
+    <td width="37"></td>
+    <td colspan="2">A</td>
+  </tr>
+</table>
+
+<hr>
+
+<h2><a name="s1">1 Installing</a></h2>
+
+<p>Installing PonyProg depend on the system you have.<br>
+  With <b>Windows</b>95/98/ME or NT/2000 just run the Setup.exe and follow the 
+  instructions.</p>
+
+<p>With RedHat <b>Linux</b> 6.2/7.0 login as root and execute the command<br>
+  <i># tar xvfzP ponyprog-X.XXX.tar.gz<br>
+  # chmod +s /usr/local/bin/ponyprog2000</i> <b>(optional)</b></p>
+<p> If you want to use parallel port interfaces without run PonyProg as root you 
+  need also a 2.4.x kernel and <i>parport</i>, <i>parport_pc</i> and <i>ppdev</i> 
+  kernel modules. insmod all three modules before to execute PonyProg.<br>
+  If you want to use serial port interfaces be sure you have the rights to read/write 
+  the /dev/ttySx devices and /var/lock directory. With RedHat you may want to 
+  add your user to uucp group.<br>
+</p>
+<p>The first time you run the program remember to select the interface and port 
+  you use with the <a href="ponyprog2000.html#s2.5.1">Setup</a>. If the program 
+  report a message like &quot;The interface don't respond&quot; when started, 
+  it means that you not have configured the port properly, or the interface is 
+  not connected.<br>
+  You need also to run <a href="ponyprog2000.html#s2.5.2">Calibration</a> in most 
+  cases.</p>
+<hr>
+
+<h2><a name="s2">2 Menu commands</a></h2>
+
+<p>The following is an explanation of each menu command. </p>
+
+<hr>
+
+<h2><a name="s2.1">2.1 File</a></h2>
+
+<h2><a name="s2.1.1">2.1.1 New</a> Window</h2>
+
+<p>Open a new window, each window display a buffer for the device selected. </p>
+
+<hr>
+
+<h2><a name="s2.1.2">2.1.2 Open</a> Device File</h2>
+
+<p>Open a file by name, and read its content in the current window. You can select 
+  the file to open through a dialog or drag and drop the file to open over the 
+  PonyProg window. PonyProg recognize several different types of file format: 
+  e2p, intel hex, motorola S-record and raw binary. If the selected file doesn't 
+  seem to be a e2p, it tries to open the file as intel hex; if this operation 
+  fails, then it tries to open the file as S-Rec; if also this operation fails, 
+  then it opens the file as binary. If the file has e2p format, you don't need 
+  to worry about the device type currently selected, otherwise you first have 
+  to <a href="#s2.3">select</a> the correct device type, then load the file. In 
+  case of splitted Program/Data device like AVR and PIC the content of the data 
+  eeprom will be displayed after the content of the program flash memory in the 
+  current window with a different color.</p>
+
+<hr>
+<h2><a name="s2.1.3">2.1.3 </a>Open Program (FLASH) File</h2>
+<p>This command is available only for splitted Program/Data devices. The buffer 
+  is splitted in two different part for these devices: the first part for program 
+  memory and the second part for data memory. This command Open a file by name 
+  and load only the program memory. You can select the file to open through a 
+  dialog. The file to load may have one of these format: intel-hex, motorola S-record 
+  or raw binary. </p>
+<hr>
+<h2><a name="s2.1.4">2.1.4 </a>Open Data (EEPROM) File</h2>
+<p>This command is available only for splitted Program/Data devices. The buffer 
+  is splitted in two different part for these devices: the first part for program 
+  memory and the second part for data memory. This command Open a file by name 
+  and load only the data memory. You can select the file to open through a dialog. 
+  The file to load may have one of these format: intel-hex, motorola S-record 
+  or raw binary. </p>
+<hr>
+<h2><a name="s2.1.5">2.1.5 Save</a> Device File</h2>
+
+<p>Save the content of current window buffer to a file. If no name has been specified 
+  it works like <a href="ponyprog2000.html#s2.1.4">Save as</a>.</p>
+
+<hr>
+
+<h2><a name="s2.1.6">2.1.6 Save Device File As</a></h2>
+
+<p>Open a dialog box where you can specify the name of the file. In the bottom 
+  of the dialog box you can select the file format for the file to save (indicated 
+  by the extension). If you press OK the content of the current window will be 
+  saved in the file specified. I suggest to save always in e2p format, doing so 
+  the device type and the notes will be recorded in the file. The .bin format 
+  is raw binary format, it's commonly used to export the file to other programs.</p>
+
+<p><img src="prog-saveas.jpg" alt="SaveAs screen shot" WIDTH="568" HEIGHT="408"></p>
+
+<hr>
+<h2><a name="s2.1.7">2.1.7 Save</a> Program (FLASH) File</h2>
+<p>This command is available only for splitted Program/Data devices. The buffer 
+  is splitted in two different part for these devices: the first part for program 
+  memory and the second part for data memory. This command save the content of 
+  current window buffer program memory to a file. A dialog box asks you the name 
+  of the file to save and the file format by selecting the extension.</p>
+<hr>
+<h2><a name="s2.1.8">2.1.8 Save</a> Data (EEPROM) File</h2>
+<p>This command is available only for splitted Program/Data devices. The buffer 
+  is splitted in two different part for these devices: the first part for program 
+  memory and the second part for data memory. This command save the content of 
+  current window buffer data memory to a file. A dialog box asks you the name 
+  of the file to save and the file format by selecting the extension.</p>
+<hr>
+<h2><a name="s2.1.9">2.1.9 Reload Files</a></h2>
+<p>This command reload last opened files in the current window buffer. It's useful 
+  when you need to edit/build the files from an external program (assembler/compiler) 
+  and you need to repeat the same cycle: compile - load file - write device more 
+  than one time.</p>
+<hr>
+<h2><a name="s2.1.10">2.1.10 Print</a></h2>
+
+<p>Open a dialog box where you can select the printer name and options. If you 
+  press OK the content of the current window will be printed.</p>
+
+<hr>
+
+<h2><a name="s2.1.11">2.1.11 Close</a></h2>
+
+<p>Close the current window, if there is only one opened window a dialog window 
+  asks you if you want to exit; you can choose Yes or No. If the current window 
+  buffer is modified a dialog window asks you if you want to save the content 
+  in a file before to close the window.</p>
+
+<hr>
+
+<h2><a name="s2.1.12">2.1.12 Exit</a></h2>
+
+<p>Close all the opened window and exit the program. If there is a modified window 
+  buffer a dialog window asks you if you want to save the content to a file before 
+  to close the window.</p>
+
+<hr>
+
+<h2><a name="s2.2">2.2 Edit</a></h2>
+
+<h2><a name="s2.2.1">2.2.1 Edit note</a></h2>
+
+<p>Open a dialog box where you can edit a Chip id and a note. These two fields 
+  are saved within the window buffer if you use the e2p file format (see <a href="ponyprog2000.html#s2.1.2">Open</a>). 
+  These two fields are free text editing, and are useful for a description of 
+  the device programmed and the meaning of its content.</p>
+
+<p><img src="prog-note.jpg" alt="Edit note screen shot" WIDTH="730" HEIGHT="157"></p>
+
+<hr>
+<h2><a name="s2.2.2">2.2.2 Security Bits</a></h2>
+<p>Open a dialog box where you can edit a device specific Configuration and Security 
+  bits. This dialog is especially useful for microcontrollers, because they could 
+  not work at all without set these bits in a correct way. The following screen 
+  dumps show the configuration bits for some microcontroller families. Note that 
+  disabled bits (grayed) are not used or not modificable.</p>
+<p><b>AVR AT90S4433</b> Security and Fuse bits<br>
+  <img src="avr4433fuse.jpg" width="639" height="144"> </p>
+<p><b>PIC 16F84</b><br>
+  <img src="pic16f84fuse.jpg" width="527" height="137"> </p>
+<ul>
+  <li>CP: if checked all memory is code protected</li>
+  <li>PWRTE: if checked power-up timer is enabled</li>
+  <li>WDTE: if checked watchdog timer is disabled</li>
+  <li>FOSC1,FOSC0: oscillator selection bits<br>
+    <table width="582" border="1" cellspacing="0" cellpadding="2">
+      <tr bgcolor="#FFFFCC"> 
+        <td width="20%">FOSC1</td>
+        <td width="18%">FOSC0</td>
+        <td width="62%">Status</td>
+      </tr>
+      <tr> 
+        <td width="20%">not checked</td>
+        <td width="18%">not checked</td>
+        <td width="62%">RC resistor/capacitor oscillator</td>
+      </tr>
+      <tr> 
+        <td width="20%">not checked</td>
+        <td width="20%">checked</td>
+        <td width="60%">HS high speed crystal/resonator oscillator</td>
+      </tr>
+      <tr> 
+        <td width="20%">checked</td>
+        <td width="18%">not checked</td>
+        <td width="62%">XT crystal/resonator oscillator</td>
+      </tr>
+      <tr> 
+        <td width="20%">checked</td>
+        <td width="18%">checked</td>
+        <td width="62%">LP low power oscillator</td>
+      </tr>
+    </table>
+    <br>
+  </li>
+</ul>
+<p><b>AT89S8252<br>
+  <img src="at89s8252fuse.jpg" width="481" height="139"> </b></p>
+<p><b>Microchp 24C65<br>
+  <img src="24C65fuse.jpg" width="273" height="236"> </b></p>
+<p> The dialog ask you to insert the first block and the number of blocks to lock. 
+  When the device is locked you can't do a &quot;write security&quot; or a &quot;write 
+  high endurance&quot; anymore. To lock the device the number of blocks must be 
+  greater than 0.</p>
+<hr>
+
+<h2><a name="s2.2.3">2.2.3 Edit buffer enabled</a></h2>
+
+<p>You can toggle this item either to enable or disable the edit mode. If the 
+  edit mode is enabled you can modify the buffer content by clicking on a location 
+  of the current window. Two editing modes are available: hexadecimal editing 
+  and text editing. If you click on the HEX (center) part of the screen or press 
+  ENTER you open a dialog where you can insert the new value for that byte in 
+  decimal, hexadecimal, or character. If you click on the ASCII (right magenta) 
+  part of the screen you open a dialog where you can insert or modify a text starting 
+  from that location. You can CUT &amp; PASTE in the text entry dialog by the 
+  use of the right mouse button. Note that you can enable/disable only the edit 
+  mode of the current window, so if there are more than one buffer window opened, 
+  the edit mode of other windows are left unchanged.</p>
+
+<p><img src="prog-edit.jpg" alt="Edit screen shot" WIDTH="188" HEIGHT="198"></p>
+
+<hr>
+
+<h2><a name="s2.3">2.3 Device</a></h2>
+
+<p>Select the type of current device. You have to select the device type before 
+  any commands (read, writing, open, save, ...). Selecting an &quot;Auto XXX&quot;&nbsp; 
+  type means that the device type is determined by the program during the read 
+  or write operation, this feature is useful when you need to query a device to 
+  know if it works and which device it is. There are some different device family: 
+  the I²C Bus eeproms that are addressed with 8 bit word, the I²C Bus eeproms 
+  that are addressed with 16 bit word, the Microwire eeproms with 8 bit organization, 
+  the Microwire eeproms with 16 bit organization, the SPI eeproms, the AVR microcontrollers, 
+  the PIC 16 microcontrollers, the IMBus eeproms and SDE2506 eeprom. You can select 
+  the device family in the tool bar with the combo-box, or directly the device 
+  type in the menu. The current device type is stored in the .INI file, so the 
+  next time you run the program it's recalled. To read and write I²C Bus eeproms 
+  other than 24xx (i.e. the SDE2526, SDA2546, SDA2586, SDA3546, SDA3586) select 
+  the type &quot;24XX Auto&quot;.<br>
+  The 24C01 can be readed but not writed, you can read it as a 2402 or 24XX Auto 
+  device. Note that you can often replace a 24C01 eeprom with a new 24C02 eeprom, 
+  because it's fully compatible to the 24C01.<br>
+  Several microwire eeproms support two types of word organization: 16 bit organization 
+  and 8 bit organization. The organization is selected with a pin connected to 
+  VCC or GND. SI-Prog adapter connect this pin for 16 bit organization, however 
+  some devices support only 8 bit organization.</p>
+
+<hr>
+<h2><a name="s2.4">2.4 Command</a></h2>
+<h2><a name="s2.4.1">2.4.1 Read</a> All</h2>
+<p>Read the content of a device in the current window buffer.&nbsp; This operation 
+  can take a while to execute, so a dialog box shows the operation progression. 
+  If you want to stop the current read just press the &quot;Abort&quot; button. 
+  <img src="rdprogress.jpg" width="215" height="131"><br>
+  Finally a dialog box showing the result of the operation appears.<br>
+  If the program report the message &quot;Device not responding&quot; means that 
+  you missed to connect the device to read, or the interface is not configured 
+  properly (see the <a href="ponyprog2000.html#s2.6">Setup</a>). Note that only 
+  the devices that support probing report this type of message, other device simply 
+  read all 0's of FF's (if the device is missed). The devices that support probing 
+  are the 24XX, the AVR and some PIC. In the case of&nbsp;AVR device selected, 
+  the program can report the message &quot;Device locked&quot; in case of the 
+  locked bits was programmed. Even some preproduction devices don't support auto 
+  probing. You can't read a locked device, to program it see <a href="ponyprog2000.html#s2.4.5">Write</a>.<br>
+  <a name="sv15retry"></a>Since version 1.15c if you select an AVR device (AT90S2313 
+  for example) and read it, the program try to probe the device first. If the 
+  device is missing, or the device is locked, or the device is a preproduction 
+  device a dialog box appears. It asks you if you want to abort operation, retry 
+  or ignore the error. In case of a preproduction device just select &quot;Ignore&quot;.<br>
+  <img src="devmissing.jpg" width="295" height="97"></p>
+<hr>
+<h2><a name="s2.4.2">2.4.2 Read Program (FLASH)</a></h2>
+<p>This command is available only for splitted Program/Data devices. The buffer 
+  is splitted in two different part for these devices: the first part for program 
+  memory and the second part for data memory. This command read only the program 
+  memory from the device, and leave the data memory intact.</p>
+<hr>
+<h2><a name="s2.4.3">2.4.3 Read Data (EEPROM)</a></h2>
+<p>This command is available only for splitted Program/Data devices. The buffer 
+  is splitted in two different part for these devices: the first part for program 
+  memory and the second part for data memory. This command read only the data 
+  memory from the device, and leave the program memory intact.</p>
+<hr>
+<h2><a name="s2.4.4">2.4.4 Read Security</a> and Configuration bits</h2>
+<p>Read security and configuration bits from the device. Note that this command 
+  is implemented only for some devices. To modify the security and configuration 
+  bits refer to <a href="#s2.2.2">edit</a> command.</p>
+<hr>
+<h2><a name="s2.4.5">2.4.5 Write</a> All</h2>
+<p>Write the content of the current window buffer to a device. A dialog box ask 
+  you to confirm this unrecoverable operation. This operation can take a while 
+  to execute, so a dialog box shows the operation progression. If you want to 
+  stop the current write just press the &quot;Abort&quot; button. After the write 
+  operation an automatic verify is executed. Finally a dialog box showing the 
+  result of the operation appears.<br>
+  Before to perform a write I suggest to select the exact device type, not the 
+  &quot;24XX Auto&quot; or &quot;AVR Auto&quot;.<br>
+  Note that both the program (FLASH) and data (EEPROM) memory are writed (only 
+  if the device is a splitted device like the AVR or PIC), and then verified.<br>
+  Since the version 1.15c a probe is performed on every AVR device (see <a href="#sv15retry">Read</a>).</p>
+<hr>
+<h2><a name="s2.4.6">2.4.6 Write Program (FLASH)</a></h2>
+<p>This command is available only for splitted Program/Data devices. The buffer 
+  is splitted in two different part for these devices: the first part for program 
+  memory and the second part for data memory. This command write only the program 
+  memory to the device, and leave the data memory intact. The exception is the 
+  AVR device: to write the program memory an erase is needed, so the data memory 
+  is erased too.</p>
+<hr>
+<h2><a name="s2.4.7">2.4.7 Write Data (EEPROM)</a></h2>
+<p>This command is available only for splitted Program/Data devices. The buffer 
+  is splitted in two different part for these devices: the first part for program 
+  memory and the second part for data memory. This command write only the data 
+  memory to the device, and leave the program memory intact.</p>
+<hr>
+<h2><a name="s2.4.8">2.4.8 Write Security</a> and Configuration bits</h2>
+<p>Write security and configuration bits to the device. Note that this command 
+  is implemented only for some devices. To modify the security and configuration 
+  bits refer to <a href="#s2.2.2">edit</a> command.</p>
+<hr>
+<h2></h2>
+<h2><a name="s2.4.9">2.4.9 Verify</a> All</h2>
+<p>Verify the content of a device, compares it to the content of&nbsp; the current 
+  window buffer.&nbsp; This operation can take a while to execute, so a dialog 
+  box shows the operation progression. If you want to stop the verify just press 
+  the &quot;Abort&quot; button. Finally a dialog box showing the result of the 
+  operation appears.</p>
+<hr>
+<h2></h2>
+<h2><a name="s2.4.10">2.4.10 Verify Program (FLASH)</a></h2>
+<p>This command is available only for splitted Program/Data devices. The buffer 
+  is splitted in two different part for these devices: the first part for program 
+  memory and the second part for data memory. This command verify only the program 
+  memory from the device, and ignore the data memory.</p>
+<hr>
+<h2><a name="s2.4.11">2.4.11 Verify Data (EEPROM)</a></h2>
+<p>This command is available only for splitted Program/Data devices. The buffer 
+  is splitted in two different part for these devices: the first part for program 
+  memory and the second part for data memory. This command verify only the data 
+  memory from the device, and ignore the program memory.</p>
+<hr>
+<h2><a name="s2.4.12">2.4.12 Erase</a></h2>
+<p>Erase all the content of a device to FF's (both program and data memory). Note 
+  that this command is implemented only for AVR and PIC devices.</p>
+<hr>
+<h2><a name="s2.4.13">2.4.13 GetInfo</a></h2>
+<p>Shows some informations about the device. Some of these informations are showed 
+  also in the status bar at the bottom of the main window. 
+<ul>
+  <li>Size of the buffer, it's equal to the size of the device in bytes. In the 
+    case of AVR or PIC devices, it's equal to the sum of the program memory size 
+    plus the data memory size.</li>
+  <li>CRC calculated on the content of the buffer.</li>
+  <li>Bank roll over. It's a characteristic of some old I²C Bus eeprom (24XX). 
+    In some case uou can't replace a &quot;roll-over eeprom&quot; with a &quot;no 
+    roll-over eeprom&quot;.</li>
+  <li>Security and High endurance block. The Microchip 24C65 has a feature to 
+    protect some block from writing, or enable some block to have 10 milions writing 
+    cycles. (see <a href="#s2.2.2">edit</a> to change it).</li>
+</ul>
+<hr>
+<h2><a name="s2.4.14">2.4.14 Reset</a></h2>
+<p>Reset the device. It's useful with in-system applications. </p>
+<hr>
+<h2><a name="s2.4.15">2.4.15 Program</a></h2>
+<p>Execute a customizable sequence of commands. You can select the commands to 
+  execute with <a href="#s2.4.16">program options</a></p>
+<hr>
+<h2><a name="s2.4.16">2.4.16 Program Options</a></h2>
+<p>Select the commands to execute with the Program command.<br>
+  <img src="progoptions.jpg" width="291" height="404"> </p>
+<hr>
+<h2><a name="s2.5">2.5 Utility</a></h2>
+<h2><a name="s2.5.1">2.5.1 Clear Buffer</a></h2>
+<p>Clear the current window buffer with FF's.</p>
+<hr>
+<h2><a name="s2.5.2">2.5.2 Fill Buffer</a></h2>
+<p>Fill the current window buffer with a character. A dialog box asks you to select 
+  the addresses fo fill (from - to locations), and the value of the character 
+  to fill. You can insert the value either in decimal (i.e. 45), hexadecimal (i.e. 
+  0x45) or octal (i.e. 045) base.<br>
+  <img src="filldlg.jpg" width="188" height="201"> </p>
+<hr>
+<h2><a name="s2.5.3">2.5.3 Double bank</a></h2>
+
+<p>This command duplicates every bank in the current buffer and changes the device 
+  type to a bigger device type. A bank is a cluster of 256 bytes for the 24xx 
+  and a word for other devices. This utility is useful to replace a SDA2546 device 
+  with a 24C08 or a SDA2586 with a 24C16. Example: you have to select the device 
+  type &quot;24xx Auto&quot;, connect the SDA2546 device and perform a <a href="#s2.4.1">Read</a> 
+  operation. Then you have to perform a &quot;Double bank&quot;, replace the SDA2546 
+  with a blank 24C08 and perform a <a href="#s2.4.5">Write</a> operation (Refer 
+  also to <a href="#s3.1.2">I2CBus adapter</a>).</p>
+
+<hr>
+
+<h2><a name="s2.5.4">2.5.4 Byte swap</a></h2>
+
+<p>This command swap bytes within every word in the current window buffer. It's 
+  useful to convert from little endian representation to big endiand and viceversa. 
+  Some devices uses 16bit word so you can represent it in both ways depending 
+  on your needs.<br>
+For example consider the number 1234 hex (4660 decimal), the little endian is 34 - 12,
+while the big endiand is 12 - 34.</p>
+
+<hr>
+<h2><a name="s2.5.5">2.5.5 Set Serial Number</a></h2>
+<p>This command set the serial number in the configured locations of the current 
+  window buffer. You can configure the serial number location, value and size 
+  with the <a href="#s2.5.6">serial number config</a> command. Every time you 
+  execute this command the value is incremented.</p>
+<hr>
+<h2><a name="s2.5.6">2.5.6 Serial Number Config</a></h2>
+<p>This command open a dialog box where you can configure the serial number locations, 
+  value, format and size.<br>
+  <img src="sernumdlg.jpg" width="265" height="271"> </p>
+<hr>
+<h2><a name="s2.6">2.6 Setup</a></h2>
+
+<h2><a name="s2.6.1">2.6.1 Interface Setup</a></h2>
+
+<p>Open a dialog box where you can select the interface type and the port number 
+  where the hardware is connected. You can choose from several hardware interfaces 
+  (see <a href="http://www.lancos.com/prog.html#hardware">PonyProg Hardware interfaces</a> 
+  for more info). Note that only SI Prog support all devices.</p>
+
+<p><img src="prog-setup.jpg" alt="Setup screen shot" WIDTH="400" HEIGHT="352"> 
+
+<ul>
+  <li><strong>SI-Prog interface</strong> select &quot;serial&quot; check-box and 
+    choose &quot;SI-Prog API&quot; or&nbsp; &quot;SI-Prog I/O&quot; in the combo-box. 
+    Windows 95/98/ME and NT/2000 work either with &quot;PonyProg API&quot; and 
+    &quot;PonyProg I/O&quot;, but the latter is faster. To use the &quot;SI-Prog 
+    I/O&quot; with Linux you need to run PonyProg as root. Then select the COM 
+    port you want to use, if some COM ports are disabled it means that they are 
+    used by other programs (usually by the mouse driver or modem), or not installed.</li>
+  <li><strong>AVR ISP Parallel port interface</strong> select &quot;parallel&quot; 
+    check-box and choose &quot;Avr ISP API&quot; or &quot;Avr ISP I/O&quot; in 
+    the combo-box. WindowsNT/2000 work only with &quot;Avr ISP I/O&quot;. To use 
+    the &quot;Avr ISP I/O&quot; with Linux you need to run PonyProg as root. Then 
+    select the LPT port you want to use. Note that if you want to program the 
+    AT89Sxx device you need to select the &quot;Invert Reset&quot; check-box. 
+    To use this interface with Linux you need a 2.4.x kernel and parport, parport_pc 
+    and ppdev kernel modules.<br>
+    You can use this interface to read/write the AVR micros and SPI eeproms.</li>
+  <li><strong>Ludipipo/JDM interface</strong> select &quot;JDM API&quot; or &quot;JDM 
+    I/O&quot;. Then select the COM port you use. All the considerations for &quot;SI-Prog&quot; 
+    interface above are valid for JDM too. You can use this interface to read/write 
+    the PIC16x84 and 24Cxx eeproms. If you want to use JDM interface to program 
+    24Cxx devices you have to connect pin 7 of the 24Cxx to GND (schematics are 
+    wrong).<br>
+  </li>
+  <li><strong>Easy I²CBus interface</strong> select the &quot;parallel&quot; check-box, 
+    then select the LPT port you want to use. All the considerations for &quot;Avr 
+    ISP&quot; abore are valid for &quot;EasyI2CBus&quot; too.</li>
+  <li><strong>DT-006 interface</strong>&nbsp;This are the simplest interface for AVR 
+    programming (you can find the board on Dontronics site). However I strongly 
+    suggest to use the buffered and safer &quot;Avr ISP&quot; interface above, 
+    especially for ISP, since the buffer go in Hi-Z state after programming.</li>
+</ul>
+
+<hr>
+
+<h2><a name="s2.6.2">2.6.2 Calibration</a></h2>
+
+<p>Calibration tunes the serial bus speed for your computer. When you run Calibration 
+  be sure that PonyProg is the only program running in the PC, and the hard disk 
+  is idle (look at the HD led). If your PC is busy because it's performing other 
+  tasks the Calibration thinks your PC is slower than actual speed, and all I/Os 
+  are performed without proper delay.<br>
+After the Calibration you can choose the speed for every serial bus modifying the
+following parameters in the ponyprog.ini (.PonyProgrc under Linux) file: 
+
+<ul>
+  <li><strong>I2CBusSpeed</strong>=<em>NORMAL&nbsp;&nbsp;&nbsp; </em>affect 24Cxx eeprom and
+    other I²CBus devices</li>
+  <li><strong>SPIBusSpeed</strong>=<em>NORMAL</em>&nbsp;&nbsp;&nbsp; affect AVR micro, AT89Sxx
+    micro and 25xxx eeprom</li>
+  <li><strong>MicroWireBusSpeed</strong>=<em>NORMAL</em>&nbsp;&nbsp;&nbsp; affect 93Cxx eeprom</li>
+  <li><strong>PICBusSpeed</strong>=<em>NORMAL</em>&nbsp;&nbsp;&nbsp; affect PIC16x84 micro</li>
+  <li><strong>SDEBusSpeed</strong>=<em>NORMAL&nbsp;&nbsp;&nbsp; </em>affect SDE2506 eeprom</li>
+</ul>
+
+<p>Every parameter can be assigned the value <em>SLOW</em>, <em>NORMAL</em>, <em>FAST</em> 
+  or <em>TURBO.<br>
+  </em>Avoid to use the TURBO value because it means &quot;no delay&quot;, and 
+  probably it doesn't work on your PC, especially with the I/O driver.<br>
+  Just for example my PC (Pentium MMX 200MHz) run I²CBus at about 80Khz with <em>NORMAL,</em> 
+  and 110 Khz with <em>FAST.</em> Note that a lot of I²CBus devices don't work 
+  at speed above the 100KHz.</p>
+
+<hr>
+<h2><a name="s3">3 Hardware interfaces</a></h2>
+<p>PonyProg supports several hardware interfaces, however note that only with 
+  SI-Prog interface you are able to program all the devices.<br>
+  Next paragraphs show to you all the hardware interfaces in detail.<br>
+</p>
+<hr>
+<h2><a name="s3.1">3.1 SI-Prog</a></h2>
+<h2><a name="s3.1.1">3.1.1 The main board</a></h2>
+<p>Connect the DB9 connector to PC COM port using standard <a href="#s3.1.10">serial 
+  cable</a>.<br>
+  Connect J2 connector to the correct adapter observing polarity (look at pin 
+  1 and pin 10).</p>
+<hr>
+<h2><a name="s3.1.2">3.1.2 </a>I²CBus (2-wire) eeprom adapter</h2>
+<p>This adapter is needed to program all I²CBus devices: 24C02, 24C04, 24C08, 
+  24C16, 24C32, 24C64, 24C128, 24C256, 24C512, PCF858x and SDA2526, SDA2546, SDA2586 
+  eeproms. Connect the adapter to main board observing polarity. Insert the eeprom 
+  in the socket with the signature: 24xx (A0). If you need to access a 24xx eeprom 
+  with SMT case (SO8) place the device with every pin exactly on the corrisponding 
+  pad and press to make the contact good during the read/write operation.<br>
+  Some devices mount two 24Cxx eeproms at different address and access them as 
+  a large single eeprom. You can achieve this with the two sockets A0 and A2. 
+  For example if you insert two 24C02 eeproms, select the &quot;24XX Auto&quot; 
+  device and perform a read. PonyProg detect a 24C04 eeprom and the content is 
+  the sum of the two 24C02 eeproms.</p>
+<p>Some eeproms (especially old SDE and SDA eeproms) need external power for a 
+  correct programming.<br>
+  To use external power you need to connect a 9V battery to J9 and move JP2 to 
+  &quot;ext&quot; position.</p>
+<hr>
+<h2><a name="s3.1.3">3.1.3 </a>Microwire (3-wire) eeprom adapter</h2>
+<p>This adapter is needed to program the Microwire devices: 93C06, 93C46, 93C56, 
+  93C66, 93C76, 93C86 eeproms. Connect the adapter to main board observing polarity. 
+  Insert the eeprom in the socket with the signature: 93Cx6 or 93Cx6X depending 
+  on the exact device model. Note that some devices support only 8 bit organization, 
+  look at the following table to know what socket to use and menu device to select.</p>
+<p align=CENTER><font color="#800000"><b>Microchip Microwire (3-wire) Serial eeprom</b></font></p>
+<center>
+  <table width=100% border=1 bordercolor="#000000" cellpadding=5 cellspacing=0 name="microchip-3wire">
+    <col width=150> <col width=95> <col width=92> <col width=125> <col width=289> 
+    <thead> 
+    <tr bgcolor="#00ffff" valign=TOP> 
+      <th> 
+        <p>Part Code</p>
+      </th>
+      <th> 
+        <p>Org.</p>
+      </th>
+      <th> 
+        <p>Socket</p>
+      </th>
+      <th> 
+        <p>Power (*)</p>
+      </th>
+      <th> 
+        <p>Menu Label</p>
+      </th>
+    </tr>
+    </thead> <tbody> 
+    <tr bgcolor="#ffff99" valign=TOP> 
+      <td> 
+        <p align=CENTER><b>93AA46</b></p>
+      </td>
+      <td> 
+        <p align=CENTER>8/16bit</p>
+      </td>
+      <td> 
+        <p align=CENTER>93Cx6</p>
+      </td>
+      <td> 
+        <p align=CENTER>Ext/Int</p>
+      </td>
+      <td> 
+        <p align=CENTER>MicroWire 16 -&gt; 9346</p>
+      </td>
+    </tr>
+    <tr bgcolor="#ffff99" valign=TOP> 
+      <td> 
+        <p align=CENTER><b>93LC46A</b></p>
+      </td>
+      <td> 
+        <p align=CENTER>8bit</p>
+      </td>
+      <td> 
+        <p align=CENTER>93Cx6</p>
+      </td>
+      <td> 
+        <p align=CENTER>Ext/Int</p>
+      </td>
+      <td> 
+        <p align=CENTER>MicroWire 8 -&gt; 9346</p>
+      </td>
+    </tr>
+    <tr bgcolor="#ffff99" valign=TOP> 
+      <td> 
+        <p align=CENTER><b>93LC46B</b></p>
+      </td>
+      <td> 
+        <p align=CENTER>16bit</p>
+      </td>
+      <td> 
+        <p align=CENTER>93Cx6</p>
+      </td>
+      <td> 
+        <p align=CENTER>Ext/Int</p>
+      </td>
+      <td> 
+        <p align=CENTER>MicroWire 16 -&gt; 9346</p>
+      </td>
+    </tr>
+    <tr bgcolor="#ffff99" valign=TOP> 
+      <td> 
+        <p align=CENTER><b>93C46B</b></p>
+      </td>
+      <td> 
+        <p align=CENTER>16bit</p>
+      </td>
+      <td> 
+        <p align=CENTER>93Cx6</p>
+      </td>
+      <td> 
+        <p align=CENTER>Ext</p>
+      </td>
+      <td> 
+        <p align=CENTER>MicroWire 16 -&gt; 9346</p>
+      </td>
+    </tr>
+    <tr bgcolor="#ffcc99" valign=TOP> 
+      <td> 
+        <p align=CENTER><b>93AA46X</b></p>
+      </td>
+      <td> 
+        <p align=CENTER>8/16bit</p>
+      </td>
+      <td> 
+        <p align=CENTER>93Cx6X</p>
+      </td>
+      <td> 
+        <p align=CENTER>Ext/Int</p>
+      </td>
+      <td> 
+        <p align=CENTER>MicroWire 16 -&gt; 9346</p>
+      </td>
+    </tr>
+    <tr bgcolor="#ffcc99" valign=TOP> 
+      <td> 
+        <p align=CENTER><b>93LC46AX</b></p>
+      </td>
+      <td> 
+        <p align=CENTER>8bit</p>
+      </td>
+      <td> 
+        <p align=CENTER>93Cx6X</p>
+      </td>
+      <td> 
+        <p align=CENTER>Ext/Int</p>
+      </td>
+      <td> 
+        <p align=CENTER>MicroWire 8 -&gt; 9346</p>
+      </td>
+    </tr>
+    <tr bgcolor="#ffcc99" valign=TOP> 
+      <td> 
+        <p align=CENTER><b>93LC46BX</b></p>
+      </td>
+      <td> 
+        <p align=CENTER>16bit</p>
+      </td>
+      <td> 
+        <p align=CENTER>93Cx6X</p>
+      </td>
+      <td> 
+        <p align=CENTER>Ext/Int</p>
+      </td>
+      <td> 
+        <p align=CENTER>MicroWire 16 -&gt; 9346</p>
+      </td>
+    </tr>
+    <tr bgcolor="#ffcc99" valign=TOP> 
+      <td> 
+        <p align=CENTER><b>93C46BX</b></p>
+      </td>
+      <td> 
+        <p align=CENTER>16bit</p>
+      </td>
+      <td> 
+        <p align=CENTER>93Cx6X</p>
+      </td>
+      <td> 
+        <p align=CENTER>Ext</p>
+      </td>
+      <td> 
+        <p align=CENTER>MicroWire 16 -&gt; 9346</p>
+      </td>
+    </tr>
+    <tr bgcolor="#ffff99" valign=TOP> 
+      <td> 
+        <p align=CENTER><b>93AA56</b></p>
+      </td>
+      <td> 
+        <p align=CENTER>8/16bit</p>
+      </td>
+      <td> 
+        <p align=CENTER>93Cx6</p>
+      </td>
+      <td> 
+        <p align=CENTER>Ext/Int</p>
+      </td>
+      <td> 
+        <p align=CENTER>MicroWire 16 -&gt; 9356</p>
+      </td>
+    </tr>
+    <tr bgcolor="#ffff99" valign=TOP> 
+      <td> 
+        <p align=CENTER><b>93LC56A</b></p>
+      </td>
+      <td> 
+        <p align=CENTER>8bit</p>
+      </td>
+      <td> 
+        <p align=CENTER>93Cx6</p>
+      </td>
+      <td> 
+        <p align=CENTER>Ext/Int</p>
+      </td>
+      <td> 
+        <p align=CENTER>MicroWire 8 -&gt; 9356</p>
+      </td>
+    </tr>
+    <tr bgcolor="#ffff99" valign=TOP> 
+      <td> 
+        <p align=CENTER><b>93LC56B</b></p>
+      </td>
+      <td> 
+        <p align=CENTER>16bit</p>
+      </td>
+      <td> 
+        <p align=CENTER>93Cx6</p>
+      </td>
+      <td> 
+        <p align=CENTER>Ext/Int</p>
+      </td>
+      <td> 
+        <p align=CENTER>MicroWire 16 -&gt; 9356</p>
+      </td>
+    </tr>
+    <tr bgcolor="#ffff99" valign=TOP> 
+      <td> 
+        <p align=CENTER><b>93C56A</b></p>
+      </td>
+      <td> 
+        <p align=CENTER>8bit</p>
+      </td>
+      <td> 
+        <p align=CENTER>93Cx6</p>
+      </td>
+      <td> 
+        <p align=CENTER>Ext</p>
+      </td>
+      <td> 
+        <p align=CENTER>MicroWire16 -&gt; 9356</p>
+      </td>
+    </tr>
+    <tr bgcolor="#ffff99" valign=TOP> 
+      <td> 
+        <p align=CENTER><b>93C56B</b></p>
+      </td>
+      <td> 
+        <p align=CENTER>16bit</p>
+      </td>
+      <td> 
+        <p align=CENTER>93Cx6</p>
+      </td>
+      <td> 
+        <p align=CENTER>Ext</p>
+      </td>
+      <td> 
+        <p align=CENTER>MicroWire 16 -&gt; 9356</p>
+      </td>
+    </tr>
+    <tr bgcolor="#ffcc99" valign=TOP> 
+      <td> 
+        <p align=CENTER><b>93AA56X</b></p>
+      </td>
+      <td> 
+        <p align=CENTER>8/16bit</p>
+      </td>
+      <td> 
+        <p align=CENTER>93Cx6X</p>
+      </td>
+      <td> 
+        <p align=CENTER>Ext/Int</p>
+      </td>
+      <td> 
+        <p align=CENTER>MicroWire 16 -&gt; 9356</p>
+      </td>
+    </tr>
+    <tr bgcolor="#ffcc99" valign=TOP> 
+      <td> 
+        <p align=CENTER><b>93LC56AX</b></p>
+      </td>
+      <td> 
+        <p align=CENTER>8bit</p>
+      </td>
+      <td> 
+        <p align=CENTER>93Cx6X</p>
+      </td>
+      <td> 
+        <p align=CENTER>Ext/Int</p>
+      </td>
+      <td> 
+        <p align=CENTER>MicroWire 8 -&gt; 9356</p>
+      </td>
+    </tr>
+    <tr bgcolor="#ffcc99" valign=TOP> 
+      <td> 
+        <p align=CENTER><b>93LC56BX</b></p>
+      </td>
+      <td> 
+        <p align=CENTER>16bit</p>
+      </td>
+      <td> 
+        <p align=CENTER>93Cx6X</p>
+      </td>
+      <td> 
+        <p align=CENTER>Ext/Int</p>
+      </td>
+      <td> 
+        <p align=CENTER>MicroWire 16 -&gt; 9356</p>
+      </td>
+    </tr>
+    <tr bgcolor="#ffcc99" valign=TOP> 
+      <td> 
+        <p align=CENTER><b>93C56AX</b></p>
+      </td>
+      <td> 
+        <p align=CENTER>8bit</p>
+      </td>
+      <td> 
+        <p align=CENTER>93Cx6X</p>
+      </td>
+      <td> 
+        <p align=CENTER>Ext</p>
+      </td>
+      <td> 
+        <p align=CENTER>MicroWire16 -&gt; 9356</p>
+      </td>
+    </tr>
+    <tr bgcolor="#ffcc99" valign=TOP> 
+      <td> 
+        <p align=CENTER><b>93C56BX</b></p>
+      </td>
+      <td> 
+        <p align=CENTER>16bit</p>
+      </td>
+      <td> 
+        <p align=CENTER>93Cx6X</p>
+      </td>
+      <td> 
+        <p align=CENTER>Ext</p>
+      </td>
+      <td> 
+        <p align=CENTER>MicroWire 16 -&gt; 9356</p>
+      </td>
+    </tr>
+    <tr bgcolor="#ffff99" valign=TOP> 
+      <td> 
+        <p align=CENTER><b>93AA66</b></p>
+      </td>
+      <td> 
+        <p align=CENTER>8/16bit</p>
+      </td>
+      <td> 
+        <p align=CENTER>93Cx6</p>
+      </td>
+      <td> 
+        <p align=CENTER>Ext/Int</p>
+      </td>
+      <td> 
+        <p align=CENTER>MicroWire 16 -&gt; 9366</p>
+      </td>
+    </tr>
+    <tr bgcolor="#ffff99" valign=TOP> 
+      <td> 
+        <p align=CENTER><b>93LC66A</b></p>
+      </td>
+      <td> 
+        <p align=CENTER>8bit</p>
+      </td>
+      <td> 
+        <p align=CENTER>93Cx6</p>
+      </td>
+      <td> 
+        <p align=CENTER>Ext/Int</p>
+      </td>
+      <td> 
+        <p align=CENTER>MicroWire 8 -&gt; 9366</p>
+      </td>
+    </tr>
+    <tr bgcolor="#ffff99" valign=TOP> 
+      <td> 
+        <p align=CENTER><b>93LC66B</b></p>
+      </td>
+      <td> 
+        <p align=CENTER>16bit</p>
+      </td>
+      <td> 
+        <p align=CENTER>93Cx6</p>
+      </td>
+      <td> 
+        <p align=CENTER>Ext/Int</p>
+      </td>
+      <td> 
+        <p align=CENTER>MicroWire 16 -&gt; 9366</p>
+      </td>
+    </tr>
+    <tr bgcolor="#ffff99" valign=TOP> 
+      <td> 
+        <p align=CENTER><b>93C66A</b></p>
+      </td>
+      <td> 
+        <p align=CENTER>8bit</p>
+      </td>
+      <td> 
+        <p align=CENTER>93Cx6</p>
+      </td>
+      <td> 
+        <p align=CENTER>Ext</p>
+      </td>
+      <td> 
+        <p align=CENTER>MicroWire16 -&gt; 9366</p>
+      </td>
+    </tr>
+    <tr bgcolor="#ffff99" valign=TOP> 
+      <td> 
+        <p align=CENTER><b>93C66B</b></p>
+      </td>
+      <td> 
+        <p align=CENTER>16bit</p>
+      </td>
+      <td> 
+        <p align=CENTER>93Cx6</p>
+      </td>
+      <td> 
+        <p align=CENTER>Ext</p>
+      </td>
+      <td> 
+        <p align=CENTER>MicroWire 16 -&gt; 9366</p>
+      </td>
+    </tr>
+    <tr bgcolor="#ffcc99" valign=TOP> 
+      <td> 
+        <p align=CENTER><b>93AA66X</b></p>
+      </td>
+      <td> 
+        <p align=CENTER>8/16bit</p>
+      </td>
+      <td> 
+        <p align=CENTER>93Cx6X</p>
+      </td>
+      <td> 
+        <p align=CENTER>Ext/Int</p>
+      </td>
+      <td> 
+        <p align=CENTER>MicroWire 16 -&gt; 9366</p>
+      </td>
+    </tr>
+    <tr bgcolor="#ffcc99" valign=TOP> 
+      <td> 
+        <p align=CENTER><b>93LC66AX</b></p>
+      </td>
+      <td> 
+        <p align=CENTER>8bit</p>
+      </td>
+      <td> 
+        <p align=CENTER>93Cx6X</p>
+      </td>
+      <td> 
+        <p align=CENTER>Ext/Int</p>
+      </td>
+      <td> 
+        <p align=CENTER>MicroWire 8 -&gt; 9366</p>
+      </td>
+    </tr>
+    <tr bgcolor="#ffcc99" valign=TOP> 
+      <td> 
+        <p align=CENTER><b>93LC66BX</b></p>
+      </td>
+      <td> 
+        <p align=CENTER>16bit</p>
+      </td>
+      <td> 
+        <p align=CENTER>93Cx6X</p>
+      </td>
+      <td> 
+        <p align=CENTER>Ext/Int</p>
+      </td>
+      <td> 
+        <p align=CENTER>MicroWire 16 -&gt; 9366</p>
+      </td>
+    </tr>
+    <tr bgcolor="#ffcc99" valign=TOP> 
+      <td> 
+        <p align=CENTER><b>93C66AX</b></p>
+      </td>
+      <td> 
+        <p align=CENTER>8bit</p>
+      </td>
+      <td> 
+        <p align=CENTER>93Cx6X</p>
+      </td>
+      <td> 
+        <p align=CENTER>Ext</p>
+      </td>
+      <td> 
+        <p align=CENTER>MicroWire16 -&gt; 9366</p>
+      </td>
+    </tr>
+    <tr bgcolor="#ffcc99" valign=TOP> 
+      <td> 
+        <p align=CENTER><b>93C66BX</b></p>
+      </td>
+      <td> 
+        <p align=CENTER>16bit</p>
+      </td>
+      <td> 
+        <p align=CENTER>93Cx6X</p>
+      </td>
+      <td> 
+        <p align=CENTER>Ext</p>
+      </td>
+      <td> 
+        <p align=CENTER>MicroWire 16 -&gt; 9366</p>
+      </td>
+    </tr>
+    <tr bgcolor="#ffff99" valign=TOP> 
+      <td> 
+        <p align=CENTER><b>93AA76</b></p>
+      </td>
+      <td> 
+        <p align=CENTER>8/16bit</p>
+      </td>
+      <td> 
+        <p align=CENTER>93Cx6</p>
+      </td>
+      <td> 
+        <p align=CENTER>Ext/Int</p>
+      </td>
+      <td> 
+        <p align=CENTER>MicroWire 16 -&gt; 9376</p>
+      </td>
+    </tr>
+    <tr bgcolor="#ffff99" valign=TOP> 
+      <td> 
+        <p align=CENTER><b>93LC76</b></p>
+      </td>
+      <td> 
+        <p align=CENTER>8/16bit</p>
+      </td>
+      <td> 
+        <p align=CENTER>93Cx6</p>
+      </td>
+      <td> 
+        <p align=CENTER>Ext/Int</p>
+      </td>
+      <td> 
+        <p align=CENTER>MicroWire 16 -&gt; 9376</p>
+      </td>
+    </tr>
+    <tr bgcolor="#ffff99" valign=TOP> 
+      <td> 
+        <p align=CENTER><b>93C76</b></p>
+      </td>
+      <td> 
+        <p align=CENTER>8/16bit</p>
+      </td>
+      <td> 
+        <p align=CENTER>93Cx6</p>
+      </td>
+      <td> 
+        <p align=CENTER>Ext</p>
+      </td>
+      <td> 
+        <p align=CENTER>MicroWire 16 -&gt; 9376</p>
+      </td>
+    </tr>
+    <tr bgcolor="#ffcc99" valign=TOP> 
+      <td> 
+        <p align=CENTER><b>93AA86</b></p>
+      </td>
+      <td> 
+        <p align=CENTER>8/16bit</p>
+      </td>
+      <td> 
+        <p align=CENTER>93Cx6</p>
+      </td>
+      <td> 
+        <p align=CENTER>Ext/Int</p>
+      </td>
+      <td> 
+        <p align=CENTER>MicroWire 16 -&gt; 9386</p>
+      </td>
+    </tr>
+    <tr bgcolor="#ffcc99" valign=TOP> 
+      <td> 
+        <p align=CENTER><b>93LC86</b></p>
+      </td>
+      <td> 
+        <p align=CENTER>8/16bit</p>
+      </td>
+      <td> 
+        <p align=CENTER>93Cx6</p>
+      </td>
+      <td> 
+        <p align=CENTER>Ext/Int</p>
+      </td>
+      <td> 
+        <p align=CENTER>MicroWire 16 -&gt; 9386</p>
+      </td>
+    </tr>
+    <tr bgcolor="#ffcc99" valign=TOP> 
+      <td> 
+        <p align=CENTER><b>93C86</b></p>
+      </td>
+      <td> 
+        <p align=CENTER>8/16bit</p>
+      </td>
+      <td> 
+        <p align=CENTER>93Cx6</p>
+      </td>
+      <td> 
+        <p align=CENTER>Ext</p>
+      </td>
+      <td> 
+        <p align=CENTER>MicroWire 16 -&gt; 9386</p>
+      </td>
+    </tr>
+    </tbody> 
+  </table>
+</center>
+<p style="margin-bottom: 0cm"><font size=2>(*) If you experiment problems during 
+  the &#147;write&#148; operation, use the &#147;Ext&#148; power. &#147;Int&#148; 
+  power may not work on some PC, it depends on how much current is capable your 
+  PC COM port. If you don't use the LM2936Z-5 use the &#147;Ext&#148; power with 
+  ALL devices.</font></p>
+<p align=CENTER><font color="#800000"><b>Atmel Microwire (3-wire) Serial eeprom</b></font></p>
+<center>
+  <table width=100% border=1 bordercolor="#000000" cellpadding=5 cellspacing=0>
+    <col width=150> <col width=95> <col width=92> <col width=125> <col width=289> 
+    <thead> 
+    <tr bgcolor="#00ffff" valign=TOP> 
+      <th> 
+        <p>Part Code</p>
+      </th>
+      <th> 
+        <p>Org.</p>
+      </th>
+      <th> 
+        <p>Socket</p>
+      </th>
+      <th> 
+        <p>Power (*)</p>
+      </th>
+      <th> 
+        <p>Menu Label</p>
+      </th>
+    </tr>
+    </thead> <tbody> 
+    <tr bgcolor="#ffff99" valign=TOP> 
+      <td> 
+        <p align=CENTER><b>AT93C46</b></p>
+      </td>
+      <td> 
+        <p align=CENTER>8/16bit</p>
+      </td>
+      <td> 
+        <p align=CENTER>93Cx6</p>
+      </td>
+      <td> 
+        <p align=CENTER>Ext/Int</p>
+      </td>
+      <td> 
+        <p align=CENTER>MicroWire 16 -&gt; 9346</p>
+      </td>
+    </tr>
+    <tr bgcolor="#ffff99" valign=TOP> 
+      <td> 
+        <p align=CENTER><b>AT93C46W</b></p>
+      </td>
+      <td> 
+        <p align=CENTER>8/16bit</p>
+      </td>
+      <td> 
+        <p align=CENTER>93Cx6</p>
+      </td>
+      <td> 
+        <p align=CENTER>Ext/Int</p>
+      </td>
+      <td> 
+        <p align=CENTER>MicroWire 16 -&gt; 9346</p>
+      </td>
+    </tr>
+    <tr bgcolor="#ffff99" valign=TOP> 
+      <td> 
+        <p align=CENTER><b>AT93C46R</b></p>
+      </td>
+      <td> 
+        <p align=CENTER>8/16bit</p>
+      </td>
+      <td> 
+        <p align=CENTER>93Cx6X</p>
+      </td>
+      <td> 
+        <p align=CENTER>Ext/Int</p>
+      </td>
+      <td> 
+        <p align=CENTER>MicroWire 16 -&gt; 9346</p>
+      </td>
+    </tr>
+    <tr bgcolor="#ffff99" valign=TOP> 
+      <td> 
+        <p align=CENTER><b>AT93C46A</b></p>
+      </td>
+      <td> 
+        <p align=CENTER>16bit</p>
+      </td>
+      <td> 
+        <p align=CENTER>93Cx6</p>
+      </td>
+      <td> 
+        <p align=CENTER>Ext/Int</p>
+      </td>
+      <td> 
+        <p align=CENTER>MicroWire 16 -&gt; 9346</p>
+      </td>
+    </tr>
+    <tr bgcolor="#ffff99" valign=TOP> 
+      <td> 
+        <p align=CENTER><b>AT93C46C</b></p>
+      </td>
+      <td> 
+        <p align=CENTER>16bit</p>
+      </td>
+      <td> 
+        <p align=CENTER>93Cx6</p>
+      </td>
+      <td> 
+        <p align=CENTER>Ext/Int</p>
+      </td>
+      <td> 
+        <p align=CENTER>MicroWire 16 -&gt; 9346</p>
+      </td>
+    </tr>
+    <tr bgcolor="#ffcc99" valign=TOP> 
+      <td> 
+        <p align=CENTER><b>AT93C56</b></p>
+      </td>
+      <td> 
+        <p align=CENTER>8/16bit</p>
+      </td>
+      <td> 
+        <p align=CENTER>93Cx6</p>
+      </td>
+      <td> 
+        <p align=CENTER>Ext/Int</p>
+      </td>
+      <td> 
+        <p align=CENTER>MicroWire 16 -&gt; 9356</p>
+      </td>
+    </tr>
+    <tr bgcolor="#ffcc99" valign=TOP> 
+      <td> 
+        <p align=CENTER><b>AT93C56W</b></p>
+      </td>
+      <td> 
+        <p align=CENTER>8/16bit</p>
+      </td>
+      <td> 
+        <p align=CENTER>93Cx6</p>
+      </td>
+      <td> 
+        <p align=CENTER>Ext/Int</p>
+      </td>
+      <td> 
+        <p align=CENTER>MicroWire 16 -&gt; 9356</p>
+      </td>
+    </tr>
+    <tr bgcolor="#ffff99" valign=TOP> 
+      <td> 
+        <p align=CENTER><b>AT93C66</b></p>
+      </td>
+      <td> 
+        <p align=CENTER>8/16bit</p>
+      </td>
+      <td> 
+        <p align=CENTER>93Cx6</p>
+      </td>
+      <td> 
+        <p align=CENTER>Ext/Int</p>
+      </td>
+      <td> 
+        <p align=CENTER>MicroWire 16 -&gt; 9366</p>
+      </td>
+    </tr>
+    <tr bgcolor="#ffff99" valign=TOP> 
+      <td> 
+        <p align=CENTER><b>AT93C66W</b></p>
+      </td>
+      <td> 
+        <p align=CENTER>8/16bit</p>
+      </td>
+      <td> 
+        <p align=CENTER>93Cx6</p>
+      </td>
+      <td> 
+        <p align=CENTER>Ext/Int</p>
+      </td>
+      <td> 
+        <p align=CENTER>MicroWire 16 -&gt; 9366</p>
+      </td>
+    </tr>
+    <tr bgcolor="#ffcc99" valign=TOP> 
+      <td> 
+        <p align=CENTER><b>AT93C86</b></p>
+      </td>
+      <td> 
+        <p align=CENTER>8/16bit</p>
+      </td>
+      <td> 
+        <p align=CENTER>93Cx6</p>
+      </td>
+      <td> 
+        <p align=CENTER>Ext/Int</p>
+      </td>
+      <td> 
+        <p align=CENTER>MicroWire 16 -&gt; 9386</p>
+      </td>
+    </tr>
+    </tbody> 
+  </table>
+</center>
+<p style="margin-bottom: 0cm"><font size=2>(*) If you experiment problems during 
+  the &#147;write&#148; operation, use the &#147;Ext&#148; power. &#147;Int&#148; 
+  power may not work on some PC, it depends on how much current is capable your 
+  PC COM port. If you don't use the LM2936Z-5 use the &#147;Ext&#148; power with 
+  ALL devices.</font></p>
+<p style="margin-bottom: 0cm">To use external power you need to connect a 9V battery 
+  to J9 and move JP2 to &quot;ext&quot; position.<br>
+  <br>
+</p>
+<hr>
+<h2><a name="s3.1.8">3.1.8 PIC micro adapter</a></h2>
+<p>This adapter is needed to program the Microchip PIC microcontrollers: PIC16F84, 
+  PIC16F84A, PIC16F87x, PIC12C50x. Connect the adapter to main board observing 
+  polarity. Insert the PIC in the correct socket (look at the text in silkscreen 
+  on the PCB). Pay attention to polarity (pin 1).<br>
+  To program PIC16F84, PIC16F84A and PIC16F87x you need a 9V battery connected 
+  to BT1, the JP2 on &quot;Int&quot; position, and the JP1 on &quot;Bat&quot; 
+  position. If your COM port can't provide enaugh current you have to provide 
+  an external power: connect a stabilized +15 Volt D.C. to J9 (pay attention to 
+  the polarity), move JP2 on &quot;Ext&quot; position and JP1 on &quot;Ext&quot; 
+  position.<br>
+  To program PIC12C50x you need a stabilized +13 Volt D.C. to J9 and move JP2 
+  on &quot;Ext&quot; position and JP1 on &quot;Ext&quot; position.</p>
+<p style="margin-bottom: 0cm">&nbsp;</p>
+<hr>
+<h2><a name="s3.1.9">3.1.9 Jumper setting summary</a></h2>
+<p>Version 2.2 of PDF schematic</p>
+<table width="100%" border="1">
+  <tr bgcolor="#FFFFCC"> 
+    <td>Jumper name (silkscreened on the PCB)</td>
+    <td>Jumper function</td>
+  </tr>
+  <tr> 
+    <td>JP1</td>
+    <td>Switch between battery powered and external powered PIC Vpp modes.</td>
+  </tr>
+  <tr> 
+    <td>JP2</td>
+    <td>Switch between internal COM powered and external powered Vdd modes.</td>
+  </tr>
+  <tr> 
+    <td>JP3</td>
+    <td>Select the polarity of Reset line for AVR AT90Sxx and AT89Sxx microcontroller</td>
+  </tr>
+  <tr> 
+    <td>JP4</td>
+    <td>Connect pin 7 to GND. 24Cxx devices usually need this pin connected to 
+      GND, while PCF8582 no.</td>
+  </tr>
+  <tr> 
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr> 
+    <td>J9</td>
+    <td> 
+      <p>Connector for Vdd external power. You need to provide an external power 
+        (9V, i.e.battery) when the Vdd drops under 5 Volts during programming. 
+        This may happen in three cases:</p>
+      <ol>
+        <li> your COM port don't provide enaugh current</li>
+        <li> the device sink too much current (i.e. N-Mos devices)</li>
+        <li>you replace the LM2936Z-5 with a 78L05</li>
+      </ol>
+    </td>
+  </tr>
+  <tr> 
+    <td>BT1</td>
+    <td>Connector for Vpp battery generated power. PIC16Fxxx devices need a battery 
+      to generate the Vpp = Vdd + 9V</td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+<hr>
+<h2><a name="s3.1.10">3.1.10 Serial cable</a></h2>
+<p>To use PonyProg you need a serial cable DB9 Female to DB9 Male with ALL pins 
+  connected in the following way:</p>
+<table width="75%" border="1">
+  <tr bgcolor="#FFFFCC"> 
+    <td>DB9 Female</td>
+    <td>DB9 Male</td>
+  </tr>
+  <tr>
+    <td>1</td>
+    <td>1</td>
+  </tr>
+  <tr>
+    <td>2</td>
+    <td>2</td>
+  </tr>
+  <tr>
+    <td>3</td>
+    <td>3</td>
+  </tr>
+  <tr>
+    <td>4</td>
+    <td>4</td>
+  </tr>
+  <tr>
+    <td>5</td>
+    <td>5</td>
+  </tr>
+  <tr>
+    <td>6</td>
+    <td>6</td>
+  </tr>
+  <tr>
+    <td>7</td>
+    <td>7</td>
+  </tr>
+  <tr>
+    <td>8</td>
+    <td>8</td>
+  </tr>
+  <tr>
+    <td>9</td>
+    <td>9</td>
+  </tr>
+</table>
+<p>It's sometime called &quot;modem cable&quot;, however check that all pins are 
+  connected. Avoid to use &quot;null modem cable&quot;s.</p>
+<hr>
+<h2><a name="s3.1.11">3.1.11 Electric schematic</a></h2>
+<p><a href="http://www.lancos.com/e2p/si-prog-v2_2.pdf">Version 2.2 of PDF schematic</a></p>
+<hr>
+<h2><a name="s3.1.12">3.1.12 Mounting plan</a></h2>
+<p><a href="http://www.lancos.com/e2p/mplan2_2.pdf">Version 2.2 of PDF mounting 
+  plan</a></p>
+<hr>
+<h2><a name="s4">4 Scripts</a></h2>
+<p>PonyProg SCRIPT is a tool to automate programming. A script is a text file 
+  with extension .e2s containing a sequence of commands to execute. Every line 
+  contain a command, lines starting with the character # are skipped (comments) 
+  as well as blank lines.</p>
+<h2><a name="s4_1">4.1 Quick start</a></h2>
+<p>With your favourite text editor create a text file like this:</p>
+<pre>#------ START --------
+#Programming sequence
+SELECTDEVICE ATTINY12
+CLEARBUFFER
+LOAD-PROG flash.hex
+LOAD-DATA eeprom.hex
+PAUSE &quot;Connect and powerup the circuit, are you ready?&quot;
+READ-CALIBRATION 0x3ff
+ERASE-ALL
+WRITE&amp;VERIFY-ALL
+
+#Pay attention to NOT disable RSTDISBL
+#Fuse: &quot;BODLEVEL &quot;,&quot;BODEN &quot;,&quot;SPIEN &quot;,&quot;RSTDISBL    &quot;,&quot;CKSEL3 &quot;,&quot;CKSEL2 &quot;,&quot;CKSEL1&quot;,&quot;CKSEL0    &quot;
+# 1 1 1 0 1 1 0 1
+WRITE-FUSE 0xED
+
+#Lock: {X,X,X,X,X,&quot;Lock2 &quot;,&quot;Lock1 &quot;,X}
+# 0 0 0 0 0 1 1 0
+WRITE-LOCK 0x06
+#------- END ---------</pre>
+<p>Save the file with extension .e2s (for example script.e2s) and then run:<br>
+  &gt; ponyprog2000.exe script.e2s<br>
+  <br>
+  PonyProg will startup, select the ATtiny12 device, clear the buffer, load flash 
+  and eeprom files, read the osc.calibration to location 0x3ff in the buffer and 
+  then program the device with flash, eeprom, fuses and lock bits. When finished 
+  PonyProg exit.</p>
+<p>If you use the avr-gcc compiler you will find useful to call PonyProg directly 
+  from the make file.<br>
+  Insert the following lines in your makefile and then launch &quot;make isp&quot;<br>
+</p>
+<pre>	ISPEXE = c:/programmi/ponyprog2000/ponyprog2000.exe
+	MCU = atmega128
+	TRG = myapp
+isp: $(TRG).hex $(TRG).eep
+	echo -e &quot;SELECTDEVICE $(MCU)\nLOAD-PROG $(TRG).hex\nLOAD-DATA $(TRG).eep\nWRITE&amp;VERIFY-ALL&quot; &gt;isp.e2s
+	$(ISPEXE) isp.e2s</pre>
+<h2><a name="s4_2"></a>4.2 Command reference</h2>
+<p><font face="Verdana, Arial, Helvetica, sans-serif"><a href="#cmd_sharp">#</a></font><font face="Verdana, Arial, Helvetica, sans-serif"><br>
+  <a href="#cmd_byteswap">BYTESWAP</a><br>
+  <a href="#cmd_call">CALL &lt;command&gt;</a><br>
+  <a href="#cmd_clearbuffer">CLEARBUFFER</a><br>
+  <a href="#cmd_delay">DELAY &lt;msec&gt;</a><br>
+  <a href="#cmd_edit_security">EDIT-SECURITY</a><br>
+  <a href="#cmd_erase">ERASE-ALL</a><br>
+  <a href="#cmd_fillbuffer">FILLBUFFER [val][from][to]</a><br>
+  <a href="#cmd_load">LOAD-ALL [file][relocation_offset]</a><br>
+  <a href="#cmd_load">LOAD-PROG [file][relocation_offset]</a><br>
+  <a href="#cmd_load">LOAD-DATA [file][relocation_offset]</a><br>
+  <a href="#cmd_pause">PAUSE [message]</a><br>
+  <a href="#cmd_read">READ-ALL</a><br>
+  <a href="#cmd_read_calibration">READ-CALIBRATION &lt;address&gt;[mem][osc_index]</a><br>
+  <a href="#cmd_read">READ-DATA</a><br>
+  <a href="#cmd_read">READ-PROG</a><br>
+  <a href="#cmd_read_fuse">READ-FUSE</a><br>
+  <a href="#cmd_read_lock">READ-LOCK</a><br>
+  <a href="#cmd_reset">RESET</a><br>
+  <a href="#cmd_save">SAVE-ALL [file | '--'][file_type]</a><br>
+  <a href="#cmd_save">SAVE-DATA [file | '--'][file_type]</a><br>
+  <a href="#cmd_save">SAVE-PROG [file | '--'][file_type]</a><br>
+  <a href="#cmd_selectdevice">SELECTDEVICE &lt;device&gt;</a><br>
+  <a href="#cmd_serialnumber">SERIALNUMBER [value][start][size][mem][format][autoinc]</a><br>
+  <a href="#cmd_verify">VERIFY-ALL</a><br>
+  <a href="#cmd_verify">VERIFY-DATA</a><br>
+  <a href="#cmd_verify">VERIFY-PROG</a><br>
+  <a href="#cmd_write">WRITE-ALL</a><br>
+  <a href="#cmd_write">WRITE-DATA</a><br>
+  <a href="#cmd_write">WRITE-PROG</a><br>
+  <a href="#cmd_write_fuse">WRITE-FUSE [bits]</a><br>
+  <a href="#cmd_write_lock">WRITE-LOCK [bits]</a><br>
+  <a href="#cmd_write_and_verify">WRITE&amp;VERIFY-ALL</a><br>
+  <a href="#cmd_write_and_verify">WRITE&amp;VERIFY-DATA</a><br>
+  <a href="#cmd_write_and_verify">WRITE&amp;VERIFY-PROG</a></font><br>
+  <br>
+  <font face="Verdana, Arial, Helvetica, sans-serif">[ ] optional argument<br>
+  &lt; &gt; required argument</font></p>
+<hr>
+<p><font face="Verdana, Arial, Helvetica, sans-serif"><a name="cmd_sharp"></a>#</font></p>
+<blockquote>
+  <p>Description:<br>
+    Any line starting with # character is considered as a comment and skipped.</p>
+</blockquote>
+<hr>
+<p><font face="Verdana, Arial, Helvetica, sans-serif"><a name="cmd_selectdevice"></a>SELECTDEVICE 
+  &lt;device&gt;</font></p>
+<blockquote> 
+  <p>Description:<br>
+    Select the device model to read/write.</p>
+  <p>Example:<br>
+    SELECTDEVICE ATMEGA128</p>
+</blockquote>
+<hr>
+<p><font face="Verdana, Arial, Helvetica, sans-serif"><a name="cmd_load"></a>LOAD-ALL 
+  [file][relocation_offset]<br>
+  LOAD-DATA [file][relocation_offset]<br>
+  LOAD-PROG [file][relocation_offset]</font></p>
+<blockquote>
+  <p>Description:<br>
+    LOAD-ALL load the whole content of the selected device from the file specified, 
+    this command is useful to load PIC and EEPROM devices with HEX or BIN format, 
+    or is useful to load every devices with E2P files.<br>
+    LOAD-PROG load only the program FLASH portion of the device (useful with the 
+    AVR)<br>
+    LOAD-DATA load only the data EEPROM portion of the device (useful with the 
+    AVR)<br>
+    If no file is specified then open a file dialog to choose the file to load. 
+    The relocation_offset is an optional argument useful if you want to load at 
+    memory addresses different from that specified in the file. In case of binary 
+    file you specify the address from which start to load the buffer.</p>
+  <p>Example:<br>
+    LOAD-PROG prog_memory.hex<br>
+    LOAD-ALL memory.bin 0x100 (skip the first 256 bytes of the buffer)</p>
+</blockquote>
+<hr>
+<p><font face="Verdana, Arial, Helvetica, sans-serif"><a name="cmd_save"></a>SAVE-ALL 
+  [file | '--'][file_type]<br>
+  SAVE-DATA [file | '--'][file_type]<br>
+  SAVE-PROG [file | '--'][file_type]</font></p>
+<blockquote>
+  <p>Description:<br>
+    SAVE-ALL save the whole content of the selected device to the file specified.<br>
+    SAVE-PROG save only the program FLASH portion of the device (useful with the 
+    AVR)<br>
+    SAVE-DATA save only the data EEPROM portion of the device (useful with the 
+    AVR)<br>
+    If no file is specified it saves to the current file name, in case of no current 
+    file name it opens the file dialog to choose a file name. If the -- string 
+    is specified it opens the file dialog to choose a new file name. If you specify 
+    the file_type it saves the buffer in the selected file format, useful to convert 
+    a file from one type to another.<br>
+    file_type can be:<br>
+    - e2p to select the default E2P file used by PonyProg<br>
+    - bin to select a raw binary format<br>
+    - csm to select a custom CSM file format used by some TV repairer<br>
+    - intel-hex to select standard INTEX-HEX text format<br>
+    - mot-srec to select standard MOTOROLA SREC text format</p>
+  <p>Example:<br>
+    SAVE-DATA data_memory.hex intel-hex<br>
+    SAVE-ALL -- (save all the device and ask the file name)</p>
+</blockquote>
+<hr>
+<p><a name="cmd_read"></a>READ-ALL<br>
+  READ-DATA<br>
+  READ-PROG</p>
+<blockquote>
+  <p>Description:<br>
+    READ-ALL read the whole content of the selected device to the current buffer<br>
+    READ-PROG read only the program FLASH portion of the device (useful with the 
+    AVR or PIC)<br>
+    READ-DATA read only the data EEPROM portion of the device (useful with the 
+    AVR or PIC)</p>
+  <p>Example:<br>
+    READ-ALL</p>
+</blockquote>
+<hr>
+<p><a name="cmd_write_and_verify"></a>WRITE&amp;VERIFY-ALL<br>
+  WRITE&amp;VERIFY-DATA<br>
+  WRITE&amp;VERIFY-PROG</p>
+<blockquote>
+  <p>Description:<br>
+    WRITE&amp;VERIFY-ALL write and then verify the whole content of the selected 
+    device reading from the buffer<br>
+    WRITE&amp;VERIFY-PROG write and then verify only the program FLASH portion 
+    of the device (useful with the AVR or PIC)<br>
+    WRITE&amp;VERIFY-DATA write and then verify only the data EEPROM portion of 
+    the device (useful with the AVR or PIC)<br>
+    WRITE&amp;VERIFY commands require PonyProg version 2.05 or more recent. Usually 
+    you will use the WRITE&amp;VERIFY, not the WRITE and then the VERIFY command 
+    because the former verify only programmed locations instead the latter verify 
+    all the buffer (slower).</p>
+  <p>Example:<br>
+    WRITE&amp;VERIFY-PROG</p>
+</blockquote>
+<hr>
+<p><a name="cmd_write"></a>WRITE-ALL<br>
+  WRITE-DATA<br>
+  WRITE-PROG</p>
+<blockquote>
+  <p>Description:<br>
+    WRITE-ALL write the whole content of the selected device reading from the 
+    buffer<br>
+    WRITE-PROG write only the program FLASH portion of the device (useful with 
+    the AVR or PIC)<br>
+    WRITE-DATA write only the data EEPROM portion of the device (useful with the 
+    AVR or PIC)</p>
+  <p>Example:<br>
+    WRITE-ALL</p>
+</blockquote>
+<hr>
+<p><a name="cmd_verify"></a>VERIFY-ALL<br>
+  VERIFY-DATA<br>
+  VERIFY-PROG</p>
+<blockquote>
+  <p>Description:<br>
+    VERIFY-ALL read and compare the whole content of the selected device against 
+    the buffer<br>
+    VERIFY-PROG verify only the program FLASH portion of the device (useful with 
+    the AVR or PIC)<br>
+    VERIFY-DATA verify only the data EEPROM portion of the device (useful with 
+    the AVR or PIC)</p>
+  <p>Example:<br>
+    VERIFY-ALL</p>
+</blockquote>
+<hr>
+<p><a name="cmd_erase"></a>ERASE-ALL</p>
+<blockquote>
+  <p>Description:<br>
+    ERASE-ALL erase the whole content of the selected device. Usually this operation 
+    bring all the locations of the selected device to FF.</p>
+  <p>Example:<br>
+    ERASE-ALL</p>
+</blockquote>
+<hr>
+<p><a name="cmd_edit_security"></a>EDIT-SECURITY</p>
+<blockquote>
+  <p>Description:<br>
+    Open the fuse and lock bits dialog to edit them.</p>
+</blockquote>
+<hr>
+<p><a name="cmd_read_fuse"></a>READ-FUSE<br>
+  <a name="cmd_read_lock"></a>READ-LOCK</p>
+<blockquote>
+  <p>Description:<br>
+    READ-FUSE read the fuse bits (device dependant) and open the fuse and lock 
+    bits dialog<br>
+    READ-LOCK read the lock bits (device dependant) and open the fuse and lock 
+    bits dialog</p>
+  <p>Example:<br>
+    READ-FUSE</p>
+</blockquote>
+<hr>
+<p><a name="cmd_write_fuse"></a>WRITE-FUSE [bits]<br>
+  <a name="cmd_write_lock"></a>WRITE-LOCK [bits]</p>
+<blockquote>
+  <p>Description:<br>
+    WRITE-FUSE write the fuse bits (device dependant).<br>
+    WRITE-LOCK write the lock bits (device dependant).<br>
+    If the argument is specified it is the numeric value of the bits rapresentation 
+    (note that a 1 means programmed). If no argument is specified the current 
+    value is programmed. Pay Attention to program the FUSE bits with the AVR, 
+    you can specify a wrong bit combination that will prevent you to access the 
+    AVR device in the future. Refer to the datasheets for the meaning of every 
+    bit.</p>
+  <p>Example:<br>
+    SELECTDEVICE AT90S1200<br>
+    #Lock: {X,X,X,X,X,&quot;Lock2 &quot;,&quot;Lock1 &quot;,X}<br>
+    # 0 0 0 0 0 1 1 0<br>
+    WRITE-LOCK 0x06</p>
+</blockquote>
+<hr>
+<p><a name="cmd_serialnumber"></a>SERIALNUMBER [value][start][size][mem][format][autoinc]</p>
+<blockquote>
+  <p>Description:<br>
+    Used to set a serial number in a location in the buffer before to write the 
+    device. This number can be specified every time or autoincremented from the 
+    previous one.</p>
+  <p>Example:<br>
+    SERIALNUMBER 136 0x100 2 DATA LITTLEENDIAN NO<br>
+    Set the serial number of '2' bytes and value '136' at address '0x100' starting 
+    from 'DATA' memory. The format should be LITTLEENDIAN without autoincrement</p>
+</blockquote>
+<hr>
+<p><a name="cmd_read_calibration"></a>READ-CALIBRATION &lt;address&gt;[mem][osc_index]</p>
+<blockquote>
+  <p>Description:<br>
+    Read the internal oscillator calibration value from the AVR and write it to 
+    a location in the buffer at the specified address (and memory type DATA or 
+    PROG). The osc_index argument specify which calibration value should be read 
+    since some AVR have several oscillator frequencies. The osc_index argument 
+    is available only from the 2.06c version</p>
+  <p>Example:<br>
+    SELECTDEVICE ATMEGA128<br>
+    READ-CALIBRATION 0x100 DATA 3<br>
+    Read the oscillator calibration value for 8MHz frequency</p>
+</blockquote>
+<hr>
+<p><a name="cmd_byteswap"></a>BYTESWAP</p>
+<blockquote>
+  <p>Description:<br>
+    Swap the order of bytes within a word in the buffer (low byte &lt;--&gt; high 
+    byte)</p>
+</blockquote>
+<hr>
+<p><a name="cmd_reset"></a>RESET</p>
+<blockquote>
+  <p>Description:<br>
+    Reset the device</p>
+</blockquote>
+<hr>
+<p><a name="cmd_clearbuffer"></a>CLEARBUFFER</p>
+<blockquote>
+  <p>Description:<br>
+    Clear the buffer (all bytes to FF)</p>
+</blockquote>
+<hr>
+<p><a name="cmd_fillbuffer"></a>FILLBUFFER [val][from][to]</p>
+<blockquote>
+  <p>Description:<br>
+    Fill the buffer from location 'from' to location 'to' with the 'val' value.<br>
+    If no argument is specified a dialog ask for these values.</p>
+  <p>Example:<br>
+    FILLBUFFER 24 0x100 0x200</p>
+</blockquote>
+<hr>
+<p><a name="cmd_pause"></a>PAUSE [message]</p>
+<blockquote>
+  <p>Description:<br>
+    Pause the program and show a message dialog asking confirmation to continue.</p>
+</blockquote>
+<hr>
+<p><a name="cmd_call"></a>CALL &lt;command&gt;</p>
+<blockquote>
+  <p>Description:<br>
+    Call an external program and wait for it terminates.</p>
+  <p>Example:<br>
+    CALL notepad.exe</p>
+</blockquote>
+<hr>
+<p><a name="cmd_delay"></a>DELAY &lt;msec&gt;</p>
+<blockquote>
+  <p>Description:<br>
+    Wait for the specified amount fo milliseconds.</p>
+  <p>Example:<br>
+    DELAY 1000<br>
+    Suspend the script and wait for 1 second</p>
+</blockquote>
+<hr>
+<h2><a name="s5">5 F.A.Q.</a></h2>
+<pre>
+=============
+AVR questions
+=============
+
+Q: I can't program ATmega, I always got "Write failed message".
+Q: I can't program AVR AT90Sxxx, I receive error -21 and the program fails. What is the problem?
+
+A: Increase the following parameters in the ponyprog.ini file (all times are in milliseconds)
+
+   AVRByteWriteDelay=30         'Delay to complete the write of a single word
+   AVREraseDelay=100            'Delay to complete the erase of all the memory
+
+   In case of ATmega increase also the following parameter:
+   ATMegaPageWriteDelay=50      'Delay to complete the write of a page of flash memory
+
+--------
+
+Q: I can't read or write AT90S1200 device. I receive the error message:
+   "Device missing or unknown device -24"
+
+A: Select "Ignore" button, if the final message is "Write succesful" you have a sample that
+   doesn't reply to the identify command. It seems that early devices don't reply to this command.
+
+--------
+
+Q: I need to program the AVR mounted on the target circuit (In system programming), but PonyProg
+   fails to program because an external reset circuit hold the reset line low for a long time.
+
+A: Try to play with the following parameters in the INI file, it should solve the problem (all the
+times are in milliseconds)
+
+  SPIResetPulse=100        'How long is the reset pulse generated by PonyProg
+  SPIDelayAfterReset=50    'How many milliseconds PonyProg waits after the reset pulse
+
+
+===============
+Other questions
+===============
+
+Q: What type of cable I should use to connect SI-Prog to the COM port?
+
+A: You must use "straight through" cable with all 9 pins connected.
+   Don't use "null modem" cable. (look at <a href="ponyprog2000.html#s3.1.10">3.1.10</a>)
+
+--------
+
+Q: With Windows2000/XP I can't access the LPT ports without being administrator, I need to run PonyProg
+   logged in as normal user, what can I do?
+
+A: You cannot load the DLPORTIO.SYS driver w/o being an administrator.
+   As Administrator, Start the Computer Management console -&gt; Device Manager -&gt; View: show hidden devices.
+   Then Expand Non-Plug and Play Drivers and find the driver in the list.
+   Then, for this driver -&gt; properties -&gt; driver startup. Set startup to boot. Reboot the system.</pre>
+</body>
+</html>

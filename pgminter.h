@@ -1,15 +1,15 @@
 //=========================================================================//
 //-------------------------------------------------------------------------//
-// pgminter.h -- Header for PGMInterface class                             //
+// pgminter.h -- Header for SIProgInterface class                          //
 // This file is part of PonyProg.                                          //
 //-------------------------------------------------------------------------//
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997, 1998  Claudio Lanconelli                           //
+//  Copyright (C) 1997-2001   Claudio Lanconelli                           //
 //                                                                         //
-//  e-mail: lanconel@cs.unibo.it                                           //
-//  http://www.cs.unibo.it/~lanconel                                   `   //
+//  e-mail: lancos@libero.it                                               //
+//  http://www.LancOS.com                                                  //
 //                                                                         //
 //-------------------------------------------------------------------------//
 //                                                                         //
@@ -30,17 +30,17 @@
 //-------------------------------------------------------------------------//
 //=========================================================================//
 
-#ifndef	_PGMINTERFACE_H
-#define	_PGMINTERFACE_H
+#ifndef	_SIPROGINTERFACE_H
+#define	_SIPROGINTERFACE_H
 
 #include "businter.h"
 #include "rs232int.h"
 
-class PGMInterface : public BusInterface, public RS232Interface
+class SIProgInterface : public BusInterface, public RS232Interface
 {
  public:		//------------------------------- public
-	PGMInterface();
-//	virtual ~PGMInterface();
+	SIProgInterface();
+//	virtual ~SIProgInterface();
 
 	virtual int Open(int com_no);
 	virtual void Close();

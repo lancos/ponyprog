@@ -1,15 +1,15 @@
 //=========================================================================//
 //-------------------------------------------------------------------------//
-// at93cxx.h -- Header for for At93cxx class                             //
+// $Id$
 // This file is part of PonyProg.                                          //
 //-------------------------------------------------------------------------//
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997, 1998  Claudio Lanconelli                           //
+//  Copyright (C) 1997-2001   Claudio Lanconelli                           //
 //                                                                         //
-//  e-mail: lanconel@cs.unibo.it                                           //
-//  http://www.cs.unibo.it/~lanconel                                       //
+//  e-mail: lancos@libero.it                                               //
+//  http://www.LancOS.com                                                  //
 //                                                                         //
 //-------------------------------------------------------------------------//
 //                                                                         //
@@ -38,22 +38,22 @@
 #include "eeprom.h"
 #include "at93cbus.h"
 
-class At93cxx : public EEProm
+class At93cxx : public Device
 {
   public:		//---------------------------------------- public
 
 	At93cxx(e2AppWinInfo *wininfo = 0, BusIO *busp = 0);
 	virtual ~At93cxx();
 
-	int Probe(int probe_size = 0);
-	int Read(int probe = 1);
-	int Write(int probe = 1);
-	int Verify();
+//	int Probe(int probe_size = 0);
+	int Read(int probe = 1, int type = ALL_TYPE);
+	int Write(int probe = 1, int type = ALL_TYPE);
+	int Verify(int type = ALL_TYPE);
 
   protected:	//--------------------------------------- protected
 
 	At93cBus *GetBus()
-		{ return (At93cBus *)EEProm::GetBus(); }
+		{ return (At93cBus *)Device::GetBus(); }
 
   private:		//--------------------------------------- private
 

@@ -6,10 +6,10 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997, 1998  Claudio Lanconelli                           //
+//  Copyright (C) 1997-2001   Claudio Lanconelli                           //
 //                                                                         //
-//  e-mail: lanconel@cs.unibo.it                                           //
-//  http://www.cs.unibo.it/~lanconel                                       //
+//  e-mail: lancos@libero.it                                               //
+//  http://www.LancOS.com                                                  //
 //                                                                         //
 //-------------------------------------------------------------------------//
 //                                                                         //
@@ -28,25 +28,35 @@
 // Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. //
 //                                                                         //
 //-------------------------------------------------------------------------//
+// $Id$
 //=========================================================================//
 
 #ifndef	_E2PHEAD_H
 #define	_EP2HEAD_H
 
-//#define	BUSTYPE_I2C		1
+#define	E2P_ID_SIZE	8
+#define	E2P_STRID_SIZE	28
+#define	E2P_COMM_SIZE	86
+
+#define	E2P_FVERSION	0x02
 
 // Header dei file
 struct e2pHeader {
-	char fileID[8] PACK;
+	char fileID[E2P_ID_SIZE] PACK;
 	UBYTE e2pFuseBits PACK;
 	UBYTE e2pLockBits PACK;
 	ULONG e2pType PACK;
-	ULONG e2pSize PACK;
+	long e2pSize PACK;
 	UBYTE flags PACK;		//rollOver, splitted
-	UBYTE pad[5] PACK;		//reserved for future use
-	UWORD split_size;		//used by splitted devices
-	char e2pStringID[32] PACK;
-	char e2pComment[90] PACK;
+	UWORD e2pExtFuseBits PACK;
+	UWORD e2pExtLockBits PACK;
+	UBYTE fversion PACK;	//file version
+	UWORD split_size_Low PACK;	//used by splitted devices
+	char e2pStringID[E2P_STRID_SIZE] PACK;
+	ULONG e2pProgBits PACK;
+	char e2pComment[E2P_COMM_SIZE] PACK;
+	UWORD split_size_High PACK;
+	UWORD pad PACK;
 	UWORD e2pCrc PACK;
 	UWORD headCrc PACK;
 };

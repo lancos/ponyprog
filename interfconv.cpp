@@ -6,10 +6,10 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997, 1998  Claudio Lanconelli                           //
+//  Copyright (C) 1997-2001   Claudio Lanconelli                           //
 //                                                                         //
-//  e-mail: lanconel@cs.unibo.it                                           //
-//  http://www.cs.unibo.it/~lanconel                                       //
+//  e-mail: lancos@libero.it                                               //
+//  http://www.LancOS.com                                                  //
 //                                                                         //
 //-------------------------------------------------------------------------//
 //                                                                         //
@@ -28,6 +28,7 @@
 // Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. //
 //                                                                         //
 //-------------------------------------------------------------------------//
+// $Id$
 //=========================================================================//
 
 #include <string.h>
@@ -54,10 +55,13 @@ static Interf2Index index_interface[] = {
 	//Interfaces vector
 	{0,0,"SI-ProgAPI",SIPROG_API},
 	{0,1,"SI-ProgI/O",SIPROG_IO},
-	{0,2,"EasyI2C-COM",EASYI2C_COM},
-	{1,0,"EasyI2C-LPT",EASYI2C_LPT},
-	{1,1,"AvrISP-API",AVRISP},
-	{1,2,"AvrISP-I/O",AVRISPIO},
+	{0,2,"JDM-API",JDM_API},
+	{1,0,"AvrISP-API",AVRISP},
+	{1,1,"AvrISP-I/O",AVRISP_IO},
+	{1,2,"DT-006-API",DT006_API},
+	{1,3,"DT-006-I/O",DT006_IO},
+	{1,4,"EasyI2C-API",EASYI2C_API},
+	{1,5,"EasyI2C-I/O",EASYI2C_IO},
 	{0,0,0,LAST_HT}
 };
 

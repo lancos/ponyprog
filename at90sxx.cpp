@@ -6,11 +6,13 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-1999  Claudio Lanconelli                            //
+//  Copyright (C) 1997-2001  Claudio Lanconelli                            //
 //                                                                         //
-//  e-mail: lanconel@cs.unibo.it                                           //
-//  http://www.cs.unibo.it/~lanconel                                       //
+//  e-mail: lancos@libero.it                                               //
+//  http://www.LancOS.com                                                  //
 //                                                                         //
+//-------------------------------------------------------------------------//
+// $Id$
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -43,7 +45,7 @@
 
 //=====>>> Costruttore <<<======
 At90sxx::At90sxx(e2AppWinInfo *wininfo, BusIO *busp)
-	:	EEProm(wininfo, busp, BANK_SIZE)
+	:	Device(wininfo, busp, BANK_SIZE)
 {
 	UserDebug(Constructor, "At90sxx::At90sxx()\n");
 }
@@ -54,82 +56,66 @@ At90sxx::~At90sxx()
 	UserDebug(Destructor, "At90sxx::~At90sxx()\n");
 }
 
-//Doesn't work with early AVR
-int At90sxx::SecurityRead(int &value, int &notused)
+int At90sxx::SecurityRead(DWORD &bits)
 {
 	int rv = Probe();		//No size probe needed, just probe for presence
 
-	if (rv == DEVICE_LOCKED)
+	if (rv != DEVICE_UNKNOWN)
 	{
-		value = 0x06;		//Both lock bits programmed
+		bits = GetBus()->ReadLockBits( GetAWInfo()->GetEEPType() );
 		rv = OK;
 	}
-	else
-	if (rv >= 0)
-	{
-		rv = GetBus()->ReadLockBits();
 
-		if (rv >= 0)
-		{
-			value = (~rv) & 0xFF;
-			rv = OK;
-		}
+	return rv;
+}
+
+int At90sxx::SecurityWrite(DWORD bits)
+{
+	int rv = Probe();		//No size probe needed, just probe for presence
+
+	if (rv != DEVICE_UNKNOWN)	//Try to write even with AutoXXX device setted
+	{
+		rv = GetBus()->WriteLockBits(bits,  GetAWInfo()->GetEEPType());
 	}
 
 	return rv;
 }
 
-int At90sxx::SecurityWrite(int value, int notused)
+int At90sxx::FusesRead(DWORD &bits)
 {
 	int rv = Probe();		//No size probe needed, just probe for presence
 
-	if (rv >= 0)	//Try to write even with AutoXXX device setted
+	if (rv != DEVICE_UNKNOWN)
 	{
-		rv = GetBus()->WriteLockBits(value);
+		bits = GetBus()->ReadFuseBits( GetAWInfo()->GetEEPType() );
+		rv = OK;
 	}
 
 	return rv;
 }
 
-//Doesn't work with early AVR
-int At90sxx::FusesRead(int &value)
+int At90sxx::FusesWrite(DWORD bits)
 {
 	int rv = Probe();		//No size probe needed, just probe for presence
 
-	if (rv >= 0)
+	if (rv != DEVICE_UNKNOWN)
 	{
-		rv = GetBus()->ReadFuseBits();
-
-		if (rv >= 0)
-		{
-			value = (~rv) & 0xFF;
-			rv = OK;
-		}
+		rv = GetBus()->WriteFuseBits(bits, GetAWInfo()->GetEEPType());
 	}
-
-	return rv;
-}
-
-int At90sxx::FusesWrite(int value)
-{
-	int rv = Probe();		//No size probe needed, just probe for presence
-
-	if (rv >= 0)	//Try to write even with AutoXXX device setted
-		rv = GetBus()->WriteFuseBits(value);
 
 	return rv;
 }
 
 /**
  * code[0]: Vendor Code
- *			0x1E (manucaftured by Atmel)
+ *			0x1E (manufactured by Atmel)
  * code[1]: Part Family and Flash Size
  *			0x90 AVR with 1K flash
  *			0x91 AVR with 2K flash
  *			0x92 AVR with 4K flash
  *			0x93 AVR with 8K flash
- *			0x94 AVR with 16K flash (?)
- *			0x95 AVR with 32K flash (?)
+ *			0x94 AVR with 16K flash
+ *			0x95 AVR with 32K flash
  *			0x96 AVR with 64K flash
  *			0x97 AVR with 128K flash
  * code[2]: Part Number
@@ -157,11 +143,23 @@ int At90sxx::FusesWrite(int value)
  *
  * 0x93		0x04		AT90C8534 (8K + 512)
  *
+ * 0x93		0x07		ATmega8 (8K + 512)
+ * 0x94		0x03		ATmega16 (16K + 512)
+ *
+ * 0x94		0x01		ATmega161 (16K + 512)
+ * 0x94		0x02		ATmega163 (16K + 512)
+ *
+ * 0x95		0x01		ATmega323 (32K + 1K)
+ * 0x97		0x02		ATmega128 (128K + 4K)
+ * 0x96     0x02        ATmega64 (64K + 2K)
+ *
  * 0x90		0x03		ATtiny10 (1K)
  * 0x90		0x04		ATtiny11 (1K)
  * 0x90		0x05		ATtiny12 (1K + 64)
+ * 0x90		0x06		ATtiny15 (1K + 64)
  *
  * 0x91		0x06		ATtiny22 (2K + 128)
+ * 0x91		0x07		ATtiny28 (2K)
  **/
 
 typedef struct {
@@ -192,11 +190,36 @@ static IdType IdArray[] = {
 
 	{0x93, 0x04,	AT90S8534},
 
-	{0x90, 0x03,	ATtiny10},
-	{0x90, 0x04,	ATtiny11},
+	{0x93, 0x07,	ATmega8},
+	{0x93, 0x06,	ATmega8515},
+	{0x93, 0x08,	ATmega8535},
+
+	{0x94, 0x01,	ATmega161},
+	{0x94, 0x02,	ATmega163},
+	{0x94, 0x03,	ATmega16},
+	{0x94, 0x04,	ATmega162},
+	{0x94, 0x05,	ATmega169},
+
+	{0x95, 0x01,	ATmega323},
+	{0x95, 0x02,	ATmega32},
+
+	{0x97, 0x02,	ATmega128},
+	{0x96, 0x02,	ATmega64},
+
+	{0x90, 0x03,	ATtiny10},		//only HV prog
+	{0x90, 0x04,	ATtiny11},		//only HV prog
 	{0x90, 0x05,	ATtiny12},
+	{0x90, 0x06,	ATtiny15},
 
 	{0x91, 0x06,	ATtiny22},
+	{0x91, 0x09,	ATtiny26},
+	{0x91, 0x07,	ATtiny28},		//only HV parallel prog
+
+	{0x91, 0x0A,	ATtiny2313},	//new
+
+//	{0x51, 0x06,	AT89551},
+//	{0x52, 0x06,	AT89552},
+//	{0x91, 0x81,	AT86RF401},
 
 	{0x00, 0x00,	AT90S0000}
 };
@@ -274,9 +297,31 @@ int At90sxx::Probe(int probe_size)
 			case AT90S1200:
 				SetBus(THEAPP->GetBusVectorPtr()[AT1200S-1]);
 				break;
+			case ATmega128:
+			case ATmega64:
+				SetBus(THEAPP->GetBusVectorPtr()[MEGA128-1]);
+				break;
 			case ATmega603:
 			case ATmega103:
-				SetBus(THEAPP->GetBusVectorPtr()[MEGAS-1]);
+				SetBus(THEAPP->GetBusVectorPtr()[MEGA103-1]);
+				break;
+			case ATtiny2313:
+			case ATtiny26:
+				SetBus(THEAPP->GetBusVectorPtr()[TINY2x-1]);
+				break;
+			case ATmega8:
+			case ATmega8515:
+			case ATmega8535:
+				SetBus(THEAPP->GetBusVectorPtr()[MEGA8x-1]);
+				break;
+			case ATmega16:
+			case ATmega32:
+			case ATmega161:
+			case ATmega163:
+			case ATmega162:
+			case ATmega169:
+			case ATmega323:
+				SetBus(THEAPP->GetBusVectorPtr()[MEGA16x-1]);
 				break;
 			default:	//AT90S std
 				SetBus(THEAPP->GetBusVectorPtr()[AT90S-1]);
@@ -311,8 +356,26 @@ int At90sxx::Probe(int probe_size)
 	return rv;
 }
 
+int At90sxx::Erase(int probe, int type)
+{
+	BusIO *old_bus = GetBus();
 
-int At90sxx::Read(int probe)
+	int rv = OK;
+
+	if ( (type & PROG_TYPE) && (type & DATA_TYPE) )
+	{
+		GetBus()->Erase();
+		rv = Probe( probe || GetNoOfBank() == 0 );
+	}
+	else
+		rv = NOTSUPPORTED;
+
+	SetBus(old_bus);
+
+	return rv;
+}
+
+int At90sxx::Read(int probe, int type)
 {
 	//Save Bus, so the AutoXXX can change the bus according
 	// to the device with Probe(). After the read we restore
@@ -325,22 +388,23 @@ int At90sxx::Read(int probe)
 	{
 		if (GetSize() >= GetSplitted())
 		{
-			// legge il contenuto attuale della FlashEPROM in memoria
-			rv = GetBus()->Read(0, GetBufPtr(), GetSplitted());
-			if (rv != GetSplitted())
+			if (type & PROG_TYPE)
+				rv = ReadProg();
+			if (rv > 0 && GetSize() > GetSplitted())	//Check for DATA size
 			{
-				if (rv > 0)
-					rv = OP_ABORTED;
+				if (type & DATA_TYPE)
+					rv = ReadData();
 			}
-			else
-			if (GetSize() > GetSplitted())
+			if (rv > 0)
 			{
-				// legge il contenuto attuale della EEPROM in memoria subito dopo la Flash
-				rv = GetBus()->Read(1, GetBufPtr()+GetSplitted(), GetSize()-GetSplitted());
-				if ( rv != GetSize()-GetSplitted() )
+				if (type & CONFIG_TYPE)
 				{
-					if (rv > 0)
-						rv = OP_ABORTED;
+					// read the fuses
+					DWORD f = GetBus()->ReadFuseBits( GetAWInfo()->GetEEPType() );
+					GetAWInfo()->SetFuseBits(f);
+
+					f = GetBus()->ReadLockBits( GetAWInfo()->GetEEPType() );
+					GetAWInfo()->SetLockBits(f);
 				}
 			}
 		}
@@ -350,15 +414,16 @@ int At90sxx::Read(int probe)
 	return rv;
 }
 
-int At90sxx::Write(int probe)
+int At90sxx::Write(int probe, int type)
 {
 	//Save Bus, so the AutoXXX can change the bus according
 	// to the device with Probe(). After the write we restore
 	// the original bus so the next operation still work.
 	BusIO *old_bus = GetBus();
 
-	//11/09/99
-	GetBus()->Erase();
+//	if ( (type & PROG_TYPE) && (type & DATA_TYPE) )
+	if ( (type & PROG_TYPE) )		//Because to write the flash we must erase ALL the device (a msg may alert that doing so the DATA may be erased too)
+		GetBus()->Erase();
 
 	int rv = Probe( probe || GetNoOfBank() == 0 );
 
@@ -366,22 +431,39 @@ int At90sxx::Write(int probe)
 	{
 		if (GetSize() >= GetSplitted())
 		{
-			//program the FlashEPROM
-			rv = GetBus()->Write(0, GetBufPtr(), GetSplitted());
-			if ( rv != GetSplitted() )
+			if (type & PROG_TYPE)
+				rv = WriteProg();
+			if (rv > 0 && GetSize() > GetSplitted())	//check for DATA size
 			{
-				if (rv > 0)
-					rv = OP_ABORTED;
+				if (type & DATA_TYPE)
+					rv = WriteData();
 			}
-			else
-			if (GetSize() > GetSplitted())
+			if (rv > 0)
 			{
-				//program the EEPROM
-				rv = GetBus()->Write(1, GetBufPtr()+GetSplitted(), GetSize()-GetSplitted());
-				if ( rv != GetSize()-GetSplitted() )
+				if (type & CONFIG_TYPE)
 				{
-					if (rv > 0)
-						rv = OP_ABORTED;
+					if ( GetAWInfo()->GetEEPType() == AT90S4433 || GetAWInfo()->GetEEPType() == AT90S2333 )
+					{
+						//write the locks
+						DWORD f = GetAWInfo()->GetLockBits();
+						GetBus()->WriteLockBits(f,  GetAWInfo()->GetEEPType());
+
+						GetBus()->WaitMsec(100);
+
+						//write the fuses
+						f = GetAWInfo()->GetFuseBits();
+						GetBus()->WriteFuseBits(f, GetAWInfo()->GetEEPType());
+					}
+					else
+					{
+						//write the fuses
+						DWORD f = GetAWInfo()->GetFuseBits();
+						GetBus()->WriteFuseBits(f, GetAWInfo()->GetEEPType());
+
+						//write the locks
+						f = GetAWInfo()->GetLockBits();
+						GetBus()->WriteLockBits(f,  GetAWInfo()->GetEEPType());
+					}
 				}
 			}
 		}
@@ -391,49 +473,41 @@ int At90sxx::Write(int probe)
 	return rv;
 }
 
-int At90sxx::Verify()
+int At90sxx::Verify(int type)
 {
 	if (GetSize() == 0)
 		return BADPARAM;
 
 	int rval = -1;
-	long size = GetSize();
-	if (size > GetSplitted())
+	if (GetSize() >= GetSplitted())
 	{
 		unsigned char *localbuf;
-		localbuf = new unsigned char[size];
+		localbuf = new unsigned char[GetSize()];
 		if (localbuf == 0)
 			return OUTOFMEMORY;
 
-		//Verify only programmed bytes (to save time in big devices)
-		long v_len = GetSplitted();
-		if (THEAPP->GetLastProgrammedAddress() > 0 && THEAPP->GetLastProgrammedAddress() < GetSplitted() )
-		{
-			v_len = THEAPP->GetLastProgrammedAddress() + 1;
-			THEAPP->ClearLastProgrammedAddress();		//reset last_programmed_addr, so next verify not preceeded by write verify all the flash
-		}
-		//Set blank locations to default 0xFF (erased)
-		memset(localbuf, 0xFF, GetSplitted());
+		int v_data = OK, v_prog = OK, v_config = OK;
 
-		// read the current flash content and store it in localbuf
-		rval = GetBus()->Read(0, localbuf, v_len);
-		if ( rval != v_len )
+		if (type & PROG_TYPE)
+			v_prog = VerifyProg(localbuf);
+		if (type & DATA_TYPE)
+			v_data = VerifyData(localbuf);
+		if (type & CONFIG_TYPE)
 		{
-			if (rval > 0)
-				rval = OP_ABORTED;
-		}
-		else
-		{
-			// legge il contenuto attuale della EEPROM in memoria subito dopo la Flash
-			rval = GetBus()->Read(1, localbuf+GetSplitted(), size-GetSplitted());
-			if ( rval != size-GetSplitted() )
+			// read the fuses & locks
+			DWORD f = GetBus()->ReadFuseBits( GetAWInfo()->GetEEPType() );
+			DWORD l = GetBus()->ReadLockBits( GetAWInfo()->GetEEPType() );
+
+			if ( GetAWInfo()->GetLockBits() == l && GetAWInfo()->GetFuseBits() == f )
 			{
-				if (rval > 0)
-					rval = OP_ABORTED;
+				v_config = OK;
 			}
 			else
-				rval = memcmp(GetBufPtr(), localbuf, size) != 0 ? 0 : 1;
+				v_config = 1;
 		}
+
+		rval = (v_prog == OK && v_data == OK && v_config == OK) ? 1 : 0;
+
 		delete localbuf;
 	}
 

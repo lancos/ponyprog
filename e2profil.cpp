@@ -6,10 +6,10 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2000  Claudio Lanconelli                            //
+//  Copyright (C) 1997-2001  Claudio Lanconelli                            //
 //                                                                         //
-//  e-mail: lanconel@cs.unibo.it                                           //
-//  http://www.cs.unibo.it/~lanconel                                       //
+//  e-mail: lancos@libero.it                                               //
+//  http://www.LancOS.com                                                  //
 //                                                                         //
 //-------------------------------------------------------------------------//
 //                                                                         //
@@ -54,24 +54,6 @@ E2Profile::E2Profile()	: Profile("e2p.ini")
 {
 }
 
-/**
-int E2Profile::GetParDelayLoop()
-{
-	char const *sp = GetParameter("BusDelayLoop");
-	int rval = -1;
-	if (sp)
-		rval = atoi(sp);
-	return rval;
-}
-
-int E2Profile::SetParDelayLoop(int value)
-{
-	char str[16];
-	sprintf(str, "%d", value);
-	return SetParameter("BusDelayLoop", str);
-}
-**/
-
 int E2Profile::GetBogoMips()
 {
 	char const *sp = GetParameter("BogoMipsX1000");
@@ -83,7 +65,7 @@ int E2Profile::GetBogoMips()
 
 int E2Profile::SetBogoMips(int value)
 {
-	char str[16];
+	char str[MAXNUMDIGIT];
 	sprintf(str, "%d", value);
 	return SetParameter("BogoMipsX1000", str);
 }
@@ -146,13 +128,14 @@ int E2Profile::SetParPortNo(int port)
 	int rval = -1;
 	if (port >= 1 && port <= 4)
 	{
-		char str[16];
+		char str[MAXNUMDIGIT];
 		sprintf(str, "%d", port);
 		rval = SetParameter("PortNumber", str);
 	}
 	return rval;
 }
 
+/**
 int E2Profile::SetLastFile(char const *name)
 {
 	int rval = -1;
@@ -174,48 +157,156 @@ char const *E2Profile::GetLastFile()
 char const *E2Profile::GetPrevFile()
 {
 	return GetParameter("PreviousFile");
+
+**/
+
+char const *E2Profile::GetLastScript()
+{
+	return GetParameter("LastScript");
 }
 
+int E2Profile::SetLastScript(char const *name)
+{
+	return SetParameter("LastScript", name);
+}
 
-UBYTE E2Profile::GetPolarityControl() 
-{ 
-  UBYTE res; 
-  const char * rval; 
-   
-  res = 0; 
-  rval = GetParameter("ClockPolarity"); 
-  if (rval) 
-    if (!strcasecmp(rval,"INV")) 
-      res |=CLOCKINV; 
-  rval = GetParameter("ResetPolarity"); 
-  if (rval) 
-    if (!strcasecmp(rval,"INV")) 
-      res |=RESETINV; 
-  rval = GetParameter("DOutPolarity"); 
-  if (rval) 
-    if (!strcasecmp(rval,"INV")) 
-      res |=DOUTINV; 
-  rval = GetParameter("DInPolarity"); 
-  if (rval) 
-    if (!strcasecmp(rval,"INV")) 
-      res |=DININV; 
-  return res; 
-} 
- 
-int E2Profile::SetPolarityControl(UBYTE polarity_control) 
-{ 
-  int rval; 
- 
-  rval = (SetParameter("ResetPolarity", 
-                     (THEAPP->GetPolarity() & RESETINV)?"INV":"TRUE")); 
-  rval &=  (SetParameter("ClockPolarity", 
-                        (THEAPP->GetPolarity() & CLOCKINV)?"INV":"TRUE")); 
-  rval &=  (SetParameter("DOutPolarity", 
-                        (THEAPP->GetPolarity() & DOUTINV)?"INV":"TRUE")); 
-  rval &=  (SetParameter("DInPolarity", 
-                        (THEAPP->GetPolarity() & DININV)?"INV":"TRUE")); 
-  return rval; 
-} 
+int E2Profile::SetLastFile(char const *name, int data)
+{
+	int rval = -1;
+	if (name && strlen(name))
+	{
+		char str[MAXPATH];
+		int n;
+		char *sp = (char *)GetLastFile(n);
+		if (sp && strcasecmp(name, sp) != 0)
+		{
+			strncpy(str, sp, MAXPATH-6);
+			str[MAXPATH-6] = '\0';
+
+			if (n == PROG_TYPE)
+				strcat(str, "?PROG");
+			else
+			if (n == DATA_TYPE)
+				strcat(str, "?DATA");
+			else
+				strcat(str, "?ALL");
+
+			SetParameter("PreviousFile", str);
+		}
+
+		strncpy(str, name, MAXPATH-6);
+		str[MAXPATH-6] = '\0';
+
+		if (data == PROG_TYPE)
+		{
+			strcat(str, "?PROG");
+		}
+		else
+		if (data == DATA_TYPE)
+		{
+			strcat(str, "?DATA");
+		}
+		else
+		{
+			strcat(str, "?ALL");
+		}
+
+		rval = SetParameter("LastFile", str);
+	}
+	return rval;
+}
+
+static char param_copy[MAXLINESIZE+1];
+
+char const *E2Profile::GetLastFile(int &data)
+{
+	char const *sp = GetParameter("LastFile");
+
+	data = ALL_TYPE;
+	if (sp)
+	{
+		strcpy(param_copy, sp);
+		sp = param_copy;
+
+		char *p = strchr(sp, '?');
+		if (p)
+		{
+			*p++ = '\0';
+			if (strcasecmp(p, "DATA") == 0)
+				data = DATA_TYPE;
+			else
+			if (strcasecmp(p, "PROG") == 0)
+				data = PROG_TYPE;
+		}
+	}
+
+	return sp;
+}
+
+char const *E2Profile::GetPrevFile(int &data)
+{
+	char *sp = (char *)GetParameter("PreviousFile");
+
+	data = ALL_TYPE;
+	if (sp)
+	{
+		strcpy(param_copy, sp);
+		sp = param_copy;
+
+		char *p = strchr(sp, '?');
+		if (p)
+		{
+			*p++ = '\0';
+			if (strcasecmp(p, "DATA") == 0)
+				data = DATA_TYPE;
+			else
+			if (strcasecmp(p, "PROG") == 0)
+				data = PROG_TYPE;
+		}
+	}
+
+	return sp;
+}
+
+UBYTE E2Profile::GetPolarityControl()
+{
+  UBYTE res;
+  const char * rval;
+
+  res = 0;
+  rval = GetParameter("ClockPolarity");
+  if (rval)
+    if (!strcasecmp(rval,"INV"))
+      res |=CLOCKINV;
+  rval = GetParameter("ResetPolarity");
+  if (rval)
+    if (!strcasecmp(rval,"INV"))
+      res |=RESETINV;
+  rval = GetParameter("DOutPolarity");
+  if (rval)
+    if (!strcasecmp(rval,"INV"))
+      res |=DOUTINV;
+  rval = GetParameter("DInPolarity");
+  if (rval)
+    if (!strcasecmp(rval,"INV"))
+      res |=DININV;
+  return res;
+}
+
+int E2Profile::SetPolarityControl(UBYTE polarity_control)
+{
+  int rval;
+
+  rval = (SetParameter("ResetPolarity",
+                     (THEAPP->GetPolarity() & RESETINV)?"INV":"TRUE"));
+  rval &=  (SetParameter("ClockPolarity",
+                        (THEAPP->GetPolarity() & CLOCKINV)?"INV":"TRUE"));
+  rval &=  (SetParameter("DOutPolarity",
+                        (THEAPP->GetPolarity() & DOUTINV)?"INV":"TRUE"));
+  rval &=  (SetParameter("DInPolarity",
+                        (THEAPP->GetPolarity() & DININV)?"INV":"TRUE"));
+  return rval;
+}
 
 int E2Profile::GetI2CPageWrite()
 {
@@ -234,7 +325,7 @@ int E2Profile::SetI2CPageWrite(int page_write)
 	int rval = -1;
 	if (page_write > 0)
 	{
-		char str[16];
+		char str[MAXNUMDIGIT];
 		sprintf(str, "%d", page_write);
 		rval = SetParameter("I2CBusPageWrite", str);
 	}
@@ -244,7 +335,7 @@ int E2Profile::SetI2CPageWrite(int page_write)
 int E2Profile::GetSPIPageWrite()
 {
 	char const *sp = GetParameter("BigSPIPageWrite");
-	int rval = 16;		//Default: no page write (1 byte)
+	int rval = 16;		//Default: 16 bytes page write
 
 	if (sp)
 	{
@@ -258,7 +349,7 @@ int E2Profile::SetSPIPageWrite(int page_write)
 	int rval = -1;
 	if (page_write > 0)
 	{
-		char str[16];
+		char str[MAXNUMDIGIT];
 		sprintf(str, "%d", page_write);
 		rval = SetParameter("BigSPIPageWrite", str);
 	}
@@ -283,7 +374,7 @@ int E2Profile::SetI2CBaseAddr(int base_addr)
 	int rval = -1;
 	if (base_addr >= 0x00 && base_addr < 0x100)
 	{
-		char str[16];
+		char str[MAXNUMDIGIT];
 		sprintf(str, "0x%02X", base_addr);
 		rval = SetParameter("I2CBaseAddress", str);
 	}
@@ -305,6 +396,9 @@ int E2Profile::GetI2CSpeed()
 		else
 		if ( strcasecmp(sp,"SLOW") == 0 )
 			rval = SLOW;
+		else
+		if ( strcasecmp(sp,"VERYSLOW") == 0 )
+			rval = VERYSLOW;
 	}
 	return rval;
 }
@@ -324,14 +418,17 @@ int E2Profile::SetI2CSpeed(int speed)
 	else
 	if (speed == SLOW)
 		rval = SetParameter("I2CBusSpeed", "SLOW");
+	else
+	if (speed == VERYSLOW)
+		rval = SetParameter("I2CBusSpeed", "VERYSLOW");
 
 	return rval;
 }
 
 
-int E2Profile::GetSPIResetDelay()
+int E2Profile::GetSPIResetPulse()
 {
-	char const *sp = GetParameter("SPIResetDelay");
+	char const *sp = GetParameter("SPIResetPulse");
 	int rval = 100;		//Default: 100 msec
 
 	if (sp)
@@ -341,14 +438,86 @@ int E2Profile::GetSPIResetDelay()
 	return rval;
 }
 
-int E2Profile::SetSPIResetDelay(int delay)
+int E2Profile::SetSPIResetPulse(int delay)
 {
 	int rval = -1;
 	if (delay > 0)
 	{
-		char str[32];
+		char str[MAXNUMDIGIT];
 		sprintf(str, "%d", delay);
-		rval = SetParameter("SPIResetDelay", str);
+		rval = SetParameter("SPIResetPulse", str);
+	}
+	return rval;
+}
+
+int E2Profile::GetSPIDelayAfterReset()
+{
+	char const *sp = GetParameter("SPIDelayAfterReset");
+	int rval = 50;		//Default: 50 msec
+
+	if (sp)
+	{
+		rval = atoi(sp);
+	}
+	return rval;
+}
+
+int E2Profile::SetSPIDelayAfterReset(int delay)
+{
+	int rval = -1;
+	if (delay > 0)
+	{
+		char str[MAXNUMDIGIT];
+		sprintf(str, "%d", delay);
+		rval = SetParameter("SPIDelayAfterReset", str);
+	}
+	return rval;
+}
+
+int E2Profile::GetAT89DelayAfterReset()
+{
+	char const *sp = GetParameter("AT89DelayAfterReset");
+	int rval = 50;		//Default: 50 msec
+
+	if (sp)
+	{
+		rval = atoi(sp);
+	}
+	return rval;
+}
+
+int E2Profile::SetAT89DelayAfterReset(int delay)
+{
+	int rval = -1;
+	if (delay > 0)
+	{
+		char str[MAXNUMDIGIT];
+		sprintf(str, "%d", delay);
+		rval = SetParameter("AT89DelayAfterReset", str);
+	}
+	return rval;
+}
+
+int E2Profile::GetAVRDelayAfterReset()
+{
+	char const *sp = GetParameter("AVRDelayAfterReset");
+	int rval = 50;		//Default: 50 msec
+
+	if (sp)
+	{
+		rval = atoi(sp);
+	}
+	return rval;
+}
+
+int E2Profile::SetAVRDelayAfterReset(int delay)
+{
+	int rval = -1;
+	if (delay > 0)
+	{
+		char str[MAXNUMDIGIT];
+		sprintf(str, "%d", delay);
+		rval = SetParameter("AVRDelayAfterReset", str);
 	}
 	return rval;
 }
@@ -368,6 +537,9 @@ int E2Profile::GetSPISpeed()
 		else
 		if ( strcasecmp(sp,"SLOW") == 0 )
 			rval = SLOW;
+		else
+		if ( strcasecmp(sp,"VERYSLOW") == 0 )
+			rval = VERYSLOW;
 	}
 	return rval;
 }
@@ -387,6 +559,9 @@ int E2Profile::SetSPISpeed(int speed)
 	else
 	if (speed == SLOW)
 		rval = SetParameter("SPIBusSpeed", "SLOW");
+	else
+	if (speed == VERYSLOW)
+		rval = SetParameter("SPIBusSpeed", "VERYSLOW");
 
 	return rval;
 }
@@ -394,7 +569,7 @@ int E2Profile::SetSPISpeed(int speed)
 int E2Profile::GetMegaPageDelay()
 {
 	char const *sp = GetParameter("ATMegaPageWriteDelay");
-	int rval = 30;		//Default: 30 msec
+	int rval = 50;		//Default: 50 msec
 
 	if (sp)
 	{
@@ -408,7 +583,7 @@ int E2Profile::SetMegaPageDelay(int delay)
 	int rval = -1;
 	if (delay > 0)
 	{
-		char str[32];
+		char str[MAXNUMDIGIT];
 		sprintf(str, "%d", delay);
 		rval = SetParameter("ATMegaPageWriteDelay", str);
 	}
@@ -430,6 +605,9 @@ int E2Profile::GetMicroWireSpeed()
 		else
 		if ( strcasecmp(sp,"SLOW") == 0 )
 			rval = SLOW;
+		else
+		if ( strcasecmp(sp,"VERYSLOW") == 0 )
+			rval = VERYSLOW;
 	}
 	return rval;
 }
@@ -449,6 +627,9 @@ int E2Profile::SetMicroWireSpeed(int speed)
 	else
 	if (speed == SLOW)
 		rval = SetParameter("MicroWireBusSpeed", "SLOW");
+	else
+	if (speed == VERYSLOW)
+		rval = SetParameter("MicroWireBusSpeed", "VERYSLOW");
 
 	return rval;
 }
@@ -468,6 +649,9 @@ int E2Profile::GetPICSpeed()
 		else
 		if ( strcasecmp(sp,"SLOW") == 0 )
 			rval = SLOW;
+		else
+		if ( strcasecmp(sp,"VERYSLOW") == 0 )
+			rval = VERYSLOW;
 	}
 	return rval;
 }
@@ -487,6 +671,9 @@ int E2Profile::SetPICSpeed(int speed)
 	else
 	if (speed == SLOW)
 		rval = SetParameter("PICBusSpeed", "SLOW");
+	else
+	if (speed == VERYSLOW)
+		rval = SetParameter("PICBusSpeed", "VERYSLOW");
 
 	return rval;
 }
@@ -506,6 +693,9 @@ int E2Profile::GetSDESpeed()
 		else
 		if ( strcasecmp(sp,"SLOW") == 0 )
 			rval = SLOW;
+		else
+		if ( strcasecmp(sp,"VERYSLOW") == 0 )
+			rval = VERYSLOW;
 	}
 	return rval;
 }
@@ -525,6 +715,53 @@ int E2Profile::SetSDESpeed(int speed)
 	else
 	if (speed == SLOW)
 		rval = SetParameter("SDEBusSpeed", "SLOW");
+	else
+	if (speed == VERYSLOW)
+		rval = SetParameter("SDEBusSpeed", "VERYSLOW");
+
+	return rval;
+}
+
+int E2Profile::GetIMBusSpeed()
+{
+	char const *sp = GetParameter("IMBusSpeed");
+	int rval = NORMAL;		//Default speed
+
+	if (sp)
+	{
+		if ( strcasecmp(sp,"TURBO") == 0 )
+			rval = TURBO;
+		else
+		if ( strcasecmp(sp,"FAST") == 0 )
+			rval = FAST;
+		else
+		if ( strcasecmp(sp,"SLOW") == 0 )
+			rval = SLOW;
+		else
+		if ( strcasecmp(sp,"VERYSLOW") == 0 )
+			rval = VERYSLOW;
+	}
+	return rval;
+}
+
+int E2Profile::SetIMBusSpeed(int speed)
+{
+	int rval = -1;
+
+	if (speed == TURBO)
+		rval = SetParameter("IMBusSpeed", "TURBO");
+	else
+	if (speed == FAST)
+		rval = SetParameter("SDEBusSpeed", "FAST");
+	else
+	if (speed == NORMAL)
+		rval = SetParameter("SDEBusSpeed", "NORMAL");
+	else
+	if (speed == SLOW)
+		rval = SetParameter("SDEBusSpeed", "SLOW");
+	else
+	if (speed == VERYSLOW)
+		rval = SetParameter("SDEBusSpeed", "VERYSLOW");
 
 	return rval;
 }
@@ -546,7 +783,7 @@ int E2Profile::SetPowerUpDelay(int delay)
 	int rval = -1;
 	if (delay > 0)
 	{
-		char str[32];
+		char str[MAXNUMDIGIT];
 		sprintf(str, "%d", delay);
 		rval = SetParameter("PowerUpDelay", str);
 	}
@@ -556,7 +793,7 @@ int E2Profile::SetPowerUpDelay(int delay)
 int E2Profile::GetAVRProgDelay()
 {
 	char const *sp = GetParameter("AVRByteWriteDelay");
-	int rval = 10;		//Default: 10 msec
+	int rval = 20;		//Default: 20 msec
 
 	if (sp)
 	{
@@ -570,7 +807,7 @@ int E2Profile::SetAVRProgDelay(int delay)
 	int rval = -1;
 	if (delay > 0)
 	{
-		char str[32];
+		char str[MAXNUMDIGIT];
 		sprintf(str, "%d", delay);
 		rval = SetParameter("AVRByteWriteDelay", str);
 	}
@@ -580,7 +817,7 @@ int E2Profile::SetAVRProgDelay(int delay)
 int E2Profile::GetAVREraseDelay()
 {
 	char const *sp = GetParameter("AVREraseDelay");
-	int rval = 30;		//Default: 30 msec
+	int rval = 50;		//Default: 50 msec
 
 	if (sp)
 	{
@@ -594,29 +831,623 @@ int E2Profile::SetAVREraseDelay(int delay)
 	int rval = -1;
 	if (delay > 0)
 	{
-		char str[32];
+		char str[MAXNUMDIGIT];
 		sprintf(str, "%d", delay);
 		rval = SetParameter("AVREraseDelay", str);
 	}
 	return rval;
 }
 
-char const *E2Profile::GetIODriverName()
+int E2Profile::GetMDAProgDelay()
 {
-	char const *sp = GetParameter("IODriverName");
+	char const *sp = GetParameter("MDAWriteDelay");
+	int rval = 30;		//Default: 30 msec
 
 	if (sp)
-		return sp;
-	else
-		return "\\\\.\\ponyprog";
-}
-
-int E2Profile::SetIODriverName(char const *name)
-{
-	int rval = -1;
-	if (name && strlen(name))
 	{
-		rval = SetParameter("IODriverName", (char *)name);
+		rval = atoi(sp);
 	}
 	return rval;
+}
+
+int E2Profile::SetMDAProgDelay(int delay)
+{
+	char str[MAXNUMDIGIT];
+
+	sprintf(str, "%d", delay);
+	return SetParameter("MDAWriteDelay", str);
+}
+
+int E2Profile::GetNVMProgDelay()
+{
+	char const *sp = GetParameter("NVMWriteDelay");
+	int rval = 30;		//Default: 30 msec
+
+	if (sp)
+	{
+		rval = atoi(sp);
+	}
+	return rval;
+}
+
+int E2Profile::SetNVMProgDelay(int delay)
+{
+	char str[MAXNUMDIGIT];
+
+	sprintf(str, "%d", delay);
+	return SetParameter("NVMWriteDelay", str);
+}
+
+ULONG E2Profile::GetSerialNumVal()
+{
+	char const *sp = GetParameter("SerialNumberVal");
+	ULONG rval = 0;		//Default 0
+
+	if (sp)
+	{
+		rval = strtoul(sp,NULL,0);
+	}
+	return rval;
+}
+
+int E2Profile::SetSerialNumVal(ULONG val)
+{
+	int rval = -1;
+	if (val > 0)
+	{
+		char str[MAXNUMDIGIT];
+		sprintf(str, "%lu", val);
+		rval = SetParameter("SerialNumberVal", str);
+	}
+
+	return rval;
+}
+
+int E2Profile::GetSerialNumAddress(long &start, int &size, bool &mtype)
+{
+	char const *sp;
+
+	start = 0; size = 1; mtype = false;
+
+	if ( (sp = GetParameter("SerialNumberAddr")) )
+	{
+		start = strtol(sp,NULL,0);
+	}
+	if ( (sp = GetParameter("SerialNumberSize")) )
+	{
+		size = atoi(sp);
+	}
+	if ( (sp = GetParameter("SerialNumberType")) )
+	{
+		if (strcmp(sp, "DATA") == 0)
+			mtype = true;
+	}
+
+	return OK;
+}
+
+int E2Profile::SetSerialNumAddress(long start, int size, bool mtype)
+{
+	int rval = -1;
+	char str[MAXNUMDIGIT];
+
+	if (start >= 0)
+	{
+		sprintf(str, "0x%lX", start);
+		rval = SetParameter("SerialNumberAddr", str);
+	}
+	if (size >= 1)
+	{
+		sprintf(str, "%d", size);
+		rval = SetParameter("SerialNumberSize", str);
+	}
+	rval = SetParameter("SerialNumberType", mtype ? "DATA" : "PROG");
+
+	return rval;
+}
+
+FmtEndian E2Profile::GetSerialNumFormat()
+{
+	char const *sp = GetParameter("SerialNumberFormat");
+
+	if ( sp && strcmp("LITTLEENDIAN", sp) == 0 )
+	{
+		return FMT_LITTLE_ENDIAN;
+	}
+	else
+		return FMT_BIG_ENDIAN;
+}
+
+int E2Profile::SetSerialNumFormat(FmtEndian fmt)
+{
+	if (fmt == FMT_BIG_ENDIAN)
+		SetParameter("SerialNumberFormat", "BIGENDIAN");
+	else
+		SetParameter("SerialNumberFormat", "LITTLEENDIAN");
+
+	return OK;
+}
+
+bool E2Profile::GetSerialNumAutoInc()
+{
+	char const *sp = GetParameter("SerialNumAutoIncrement");
+
+	if (sp && strcasecmp(sp, "NO") == 0)
+		return false;
+	else
+		return true;
+}
+
+int E2Profile::SetSerialNumAutoInc(bool val)
+{
+	if (val)
+		SetParameter("SerialNumAutoIncrement", "YES");
+	else
+		SetParameter("SerialNumAutoIncrement", "NO");
+
+	return OK;
+}
+
+UWORD E2Profile::GetProgramOptions()
+{
+  UWORD res;
+  const char * rval;
+
+  res = 0;
+  rval = GetParameter("ReloadOption");
+  if (rval)
+    if (strcasecmp(rval,"NO") != 0)
+      res |=RELOAD_YES;
+  rval = GetParameter("ReadFlashOption");
+  if (rval)
+    if (strcasecmp(rval,"NO") != 0)
+      res |=READFLASH_YES;
+  rval = GetParameter("ReadEEpromOption");
+  if (rval)
+    if (strcasecmp(rval,"NO") != 0)
+      res |=READEEP_YES;
+  rval = GetParameter("ByteSwapOption");
+  if (rval)
+    if (strcasecmp(rval,"NO") != 0)
+      res |=BYTESWAP_YES;
+  rval = GetParameter("SetIDkeyOption");
+  if (rval)
+    if (strcasecmp(rval,"NO") != 0)
+      res |=SETID_YES;
+  rval = GetParameter("ReadOscCalibration");
+  if (rval)
+    if (strcasecmp(rval,"NO") != 0)
+      res |=READOSCAL_YES;
+  rval = GetParameter("EraseOption");
+  if (rval)
+    if (strcasecmp(rval,"NO") != 0)
+      res |=ERASE_YES;
+  rval = GetParameter("WriteFlashOption");
+  if (rval)
+    if (strcasecmp(rval,"NO") != 0)
+      res |=FLASH_YES;
+  rval = GetParameter("WriteEEpromOption");
+  if (rval)
+    if (strcasecmp(rval,"NO") != 0)
+      res |=EEPROM_YES;
+  rval = GetParameter("WriteSecurityOption");
+  if (rval)
+    if (strcasecmp(rval,"NO") != 0)
+      res |=LOCK_YES;
+  return res;
+}
+
+int E2Profile::SetProgramOptions(UWORD prog_option)
+{
+  int rval;
+
+  rval =   (SetParameter("ReloadOption",
+                        (prog_option & RELOAD_YES)?"YES":"NO"));
+  rval &=  (SetParameter("ReadFlashOption",
+                        (prog_option & READFLASH_YES)?"YES":"NO"));
+  rval &=  (SetParameter("ReadEEpromOption",
+                        (prog_option & READEEP_YES)?"YES":"NO"));
+  rval &=  (SetParameter("ByteSwapOption",
+                        (prog_option & BYTESWAP_YES)?"YES":"NO"));
+  rval &=  (SetParameter("SetIDkeyOption",
+                        (prog_option & SETID_YES)?"YES":"NO"));
+  rval &=  (SetParameter("ReadOscCalibration",
+                        (prog_option & READOSCAL_YES)?"YES":"NO"));
+  rval &=  (SetParameter("EraseOption",
+                        (prog_option & ERASE_YES)?"YES":"NO"));
+  rval &=  (SetParameter("WriteFlashOption",
+                        (prog_option & FLASH_YES)?"YES":"NO"));
+  rval &=  (SetParameter("WriteEEpromOption",
+                        (prog_option & EEPROM_YES)?"YES":"NO"));
+  rval &=  (SetParameter("WriteSecurityOption",
+                        (prog_option & LOCK_YES)?"YES":"NO"));
+  return rval;
+}
+
+
+char const *E2Profile::GetLogFileName()
+{
+	char const *sp = GetParameter("LogFileName");
+
+	if (sp == 0)
+		sp = "PonyProg.log";
+
+	return sp;
+}
+
+int E2Profile::SetLogFileName(char const *name)
+{
+	if (name && strlen(name))
+	{
+		SetParameter("LogFileName", name);
+	}
+
+	return OK;
+}
+
+char const *E2Profile::GetLanguageCode()
+{
+	char const *sp = GetParameter("LanguageCode");
+
+	if (sp == 0)
+	{
+		sp = "C";
+	}
+
+	return sp;
+}
+
+int E2Profile::SetLanguageCode(char const *name)
+{
+	if (name && strlen(name))
+	{
+		SetParameter("LanguageCode", name);
+	}
+
+	return OK;
+}
+
+bool E2Profile::GetLogEnabled()
+{
+	char const *sp = GetParameter("LogEnabled");
+
+	if (sp && strcasecmp(sp, "YES") == 0)
+		return true;
+	else
+		return false;
+}
+
+int E2Profile::SetLogEnabled(bool enabled)
+{
+	if (enabled)
+		SetParameter("LogEnabled", "YES");
+	else
+		SetParameter("LogEnabled", "NO");
+
+	return OK;
+}
+
+bool E2Profile::GetClearBufBeforeLoad()
+{
+	char const *sp = GetParameter("ClearBufferBeforeLoad");
+
+	if (sp && strcasecmp(sp, "YES") == 0)
+		return true;
+	else
+		return false;
+}
+
+int E2Profile::SetClearBufBeforeLoad(bool enabled)
+{
+	if (enabled)
+		SetParameter("ClearBufferBeforeLoad", "YES");
+	else
+		SetParameter("ClearBufferBeforeLoad", "NO");
+
+	return OK;
+}
+
+bool E2Profile::GetClearBufBeforeRead()
+{
+	char const *sp = GetParameter("ClearBufferBeforeRead");
+
+	if (sp && strcasecmp(sp, "YES") == 0)
+		return true;
+	else
+		return false;
+}
+
+int E2Profile::SetClearBufBeforeRead(bool enabled)
+{
+	if (enabled)
+		SetParameter("ClearBufferBeforeRead", "YES");
+	else
+		SetParameter("ClearBufferBeforeRead", "NO");
+
+	return OK;
+}
+
+bool E2Profile::GetSoundEnabled()
+{
+	char const *sp = GetParameter("SoundEnabled");
+
+	if (sp && strcasecmp(sp, "YES") == 0)
+		return true;
+	else
+		return false;
+}
+
+int E2Profile::SetSoundEnabled(bool enabled)
+{
+	if (enabled)
+		SetParameter("SoundEnabled", "YES");
+	else
+		SetParameter("SoundEnabled", "NO");
+
+	return OK;
+}
+
+
+int E2Profile::GetCalibrationAddress(long &start, int &size, int &mtype)
+{
+	char const *sp;
+
+	start = 0; size = 1; mtype = 0;
+
+	if ( (sp = GetParameter("OscCalibrationAddr")) )
+	{
+		start = strtol(sp,NULL,0);
+	}
+	if ( (sp = GetParameter("OscCalibrationSize")) )
+	{
+		size = atoi(sp);
+	}
+	if ( (sp = GetParameter("OscCalibrationMemType")) )
+	{
+		if (strcmp(sp, "DATA") == 0)
+			mtype = 1;
+	}
+
+	return OK;
+}
+
+int E2Profile::SetCalibrationAddress(long start, int size, int mtype)
+{
+	int rval = -1;
+	char str[MAXNUMDIGIT];
+
+	if (start >= 0)
+	{
+		sprintf(str, "0x%lX", start);
+		rval = SetParameter("OscCalibrationAddr", str);
+	}
+	if (size >= 1)
+	{
+		sprintf(str, "%d", size);
+		rval = SetParameter("OscCalibrationSize", str);
+	}
+	if (mtype == 0 || mtype == 1)
+	{
+		if (mtype == 1)
+			rval = SetParameter("OscCalibrationType", "DATA");
+		else
+			rval = SetParameter("OscCalibrationType", "PROG");
+	}
+
+	return rval;
+}
+
+int E2Profile::GetJDMCmd2CmdDelay()
+{
+	char const *sp = GetParameter("JDM-CmdToCmdDelay");
+	int rval = 4000;		//Default: 4000 usec
+
+	if (sp)
+	{
+		rval = atoi(sp);
+	}
+	return rval;
+}
+
+int E2Profile::SetJDMCmd2CmdDelay(int delay)
+{
+	int rval = -1;
+	if (delay >= 0)
+	{
+		char str[MAXNUMDIGIT];
+		sprintf(str, "%d", delay);
+		rval = SetParameter("JDM-CmdToCmdDelay", str);
+	}
+	return rval;
+}
+
+bool E2Profile::GetVerifyAfterWrite()
+{
+	char const *sp = GetParameter("VerifyAfterWrite");
+
+	if (sp && strcasecmp(sp, "NO") == 0)
+		return false;
+	else
+		return true;
+}
+
+int E2Profile::SetVerifyAfterWrite(bool enabled)
+{
+	if (enabled)
+		SetParameter("VerifyAfterWrite", "YES");
+	else
+		SetParameter("VerifyAfterWrite", "NO");
+
+	return OK;
+}
+
+bool E2Profile::GetAutoDetectPorts()
+{
+	char const *sp = GetParameter("AutoDetectPorts");
+
+	if (sp && strcasecmp(sp, "NO") == 0)
+		return false;
+	else
+		return true;
+}
+
+int E2Profile::SetAutoDetectPorts(bool enabled)
+{
+	if (enabled)
+		SetParameter("AutoDetectPorts", "YES");
+	else
+		SetParameter("AutoDetectPorts", "NO");
+
+	return OK;
+}
+
+int E2Profile::GetCOMAddress(int &com1, int &com2, int &com3, int &com4)
+{
+	char const *sp = GetParameter("COMPorts");
+
+	com1 = 0x3F8;
+	com2 = 0x2F8;
+	com3 = 0x3E8;
+	com4 = 0x2E8;
+
+	if (sp)
+	{
+		sscanf(sp, "%x,%x,%x,%x", &com1, &com2, &com3, &com4);
+	}
+
+	return OK;
+}
+
+int E2Profile::SetCOMAddress(int com1, int com2, int com3, int com4)
+{
+	char str[256];
+
+	if (com1 > 0)
+	{
+		if (com2 > 0)
+		{
+			if (com3 > 0)
+			{
+				if (com4 > 0)
+				{
+					sprintf(str, "%X,%X,%X,%X", com1, com2, com3, com4);
+				}
+				else
+				{
+					sprintf(str, "%X,%X,%X", com1, com2, com3);
+				}
+			}
+			else
+			{
+				sprintf(str, "%X,%X", com1, com2);
+			}
+		}
+		else
+		{
+			sprintf(str, "%X", com1);
+		}
+
+		SetParameter("COMPorts", str);
+	}
+
+	return OK;
+}
+
+int E2Profile::GetLPTAddress(int &lpt1, int &lpt2, int &lpt3)
+{
+	char const *sp = GetParameter("LPTPorts");
+
+	lpt1 = 0x378;
+	lpt2 = 0x278;
+	lpt3 = 0x3BC;
+
+	if (sp)
+	{
+		sscanf(sp, "%x,%x,%x", &lpt1, &lpt2, &lpt3);
+	}
+
+	return OK;
+}
+
+int E2Profile::SetLPTAddress(int lpt1, int lpt2, int lpt3)
+{
+	char str[256];
+
+	if (lpt1 > 0)
+	{
+		if (lpt2 > 0)
+		{
+			if (lpt3 > 0)
+			{
+				sprintf(str, "%X,%X,%X", lpt1, lpt2, lpt3);
+			}
+			else
+			{
+				sprintf(str, "%X,%X", lpt1, lpt2);
+			}
+		}
+		else
+		{
+			sprintf(str, "%X", lpt1);
+		}
+
+		SetParameter("LPTPorts", str);
+	}
+
+	return OK;
+}
+
+FileType E2Profile::GetDefaultFileType()
+{
+	char const *sp = GetParameter("DefaultFileType");
+	FileType ft = E2P;
+
+	if (sp)
+	{
+		if ( strcasecmp(sp, "e2p") == 0 )
+			ft = E2P;
+		else
+		if ( strcasecmp(sp, "bin") == 0 )
+			ft = BIN;
+		else
+		if ( strcasecmp(sp, "csm") == 0 )
+			ft = CSM;
+		else
+		if ( strcasecmp(sp, "intel-hex") == 0 )
+			ft = INTEL;
+		else
+		if ( strcasecmp(sp, "mot-srec") == 0 )
+			ft = MOTOS;
+	}
+
+	return ft;
+}
+
+int E2Profile::SetDefaultFileType(FileType ft)
+{
+	char str[32];
+
+	str[0] = str[31] = '\0';
+
+	if (ft == E2P)
+		strncpy(str, "E2P", 31);
+	else
+	if (ft == BIN)
+		strncpy(str, "BIN", 31);
+	else
+	if (ft == CSM)
+		strncpy(str, "CSM", 31);
+	else
+	if (ft == INTEL)
+		strncpy(str, "INTEL-HEX", 31);
+	else
+	if (ft == MOTOS)
+		strncpy(str, "MOT-SREC", 31);
+
+	if (strlen(str))
+	{
+		SetParameter("DefaultFileType", str);
+	}
+
+	return OK;
 }

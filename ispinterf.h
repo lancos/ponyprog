@@ -6,10 +6,10 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2000   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2001   Claudio Lanconelli                           //
 //                                                                         //
-//  e-mail: lanconel@cs.unibo.it                                           //
-//  http://www.cs.unibo.it/~lanconel                                       //
+//  e-mail: lancos@libero.it                                               //
+//  http://www.LancOS.com                                                  //
 //                                                                         //
 //-------------------------------------------------------------------------//
 //                                                                         //
@@ -28,20 +28,18 @@
 // Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. //
 //                                                                         //
 //-------------------------------------------------------------------------//
+// $Id$
 //=========================================================================//
 
 #ifndef	_AVRISPINTERFACE_H
 #define	_AVRISPINTERFACE_H
 
-#include "businter.h"
-#include "lptinterf.h"
-#include "lpt_io_interf.h"
+#include "lpt_ext_interf.h"
 
-class AvrISPInterface : public BusInterface
+class AvrISPInterface : public LptExtInterface
 {
  public:		//------------------------------- public
-	AvrISPInterface(int use_io = 0);
-	virtual ~AvrISPInterface() { };
+	AvrISPInterface(bool use_io = false);
 
 	virtual int Open(int com_no);
 	virtual void Close();
@@ -60,46 +58,10 @@ class AvrISPInterface : public BusInterface
 	int SetPower(int onoff);
 	void SetControlLine(int res = 1);
 
-	void SetIOmode(int use_io)
-		{ io_mode = use_io; }
-
  protected:		//------------------------------- protected
-	int InDataPort(int port_no = 0)
-	{
-		return io_mode ? lptio.InDataPort(port_no) : lpt.InDataPort(port_no);
-	}
-	int OutDataPort(int val, int port_no = 0)
-	{
-		return io_mode ? lptio.OutDataPort(val, port_no) : lpt.OutDataPort(val, port_no);
-	}
-	int OutControlPort(int val, int port_no = 0)
-	{
-		return io_mode ? lptio.OutControlPort(val, port_no) : lpt.OutControlPort(val, port_no);
-	}
-	int OutDataMask(int mask, int val)
-	{
-		return io_mode ? lptio.OutDataMask(mask, val) : lpt.OutDataMask(mask, val);
-	}
-	int OutControlMask(int mask, int val)
-	{
-		return io_mode ? lptio.OutControlMask(mask, val) : lpt.OutControlMask(mask, val);
-	}
-	int GetLastData() const
-	{
-		return io_mode ? lptio.GetLastData() : lpt.GetLastData();
-	}
-	int GetLastCtrl() const
-	{
-		return io_mode ? lptio.GetLastCtrl() : lpt.GetLastCtrl();
-	}
 
  private:		//------------------------------- private
 	int GetPresence();
-
-	LPTInterface lpt;
-	LPTIOInterface lptio;
-
-	int io_mode;
 };
 
 #endif

@@ -26,6 +26,15 @@
  *  $Revision$
  *  <nl>
  *  $Log$
+ *  Revision 1.3  2004/11/30 17:46:48  lancos
+ *  Commit PonyProg2000 2.06e
+ *
+ *  Revision 1.2  2001/02/02 17:08:55  lanconel
+ *  no change
+ *
+ *  Revision 1.1  2000/07/24 08:46:30  lanconel
+ *  Apportate le modifiche fino alla versione 1.17e. Ora PonyProg200 e` aggiornato, manca solo da aggiornare il setup
+ *
  *  Revision 1.2  2000/06/29 15:06:57  lancos
  *  Driver for direct port I/O header
  *

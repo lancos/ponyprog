@@ -6,10 +6,10 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2000  Claudio Lanconelli                            //
+//  Copyright (C) 1997-2002   Claudio Lanconelli                           //
 //                                                                         //
-//  e-mail: lanconel@cs.unibo.it                                           //
-//  http://www.cs.unibo.it/~lanconel                                       //
+//  e-mail: lancos@libero.it                                               //
+//  http://www.LancOS.com                                                  //
 //                                                                         //
 //-------------------------------------------------------------------------//
 //                                                                         //
@@ -152,22 +152,16 @@ long At250Bus::Read(int addr, UBYTE *data, long length)
 	UserDebug3(UserApp2, "At250Bus::Read(%xh, %xh, %ld)\n", addr, (unsigned int)data, length);
 
 	long len;
-#if 0
-	if (length--)
-	{
-		*data++ = (UBYTE)ReadEEPByte(addr);
-		while (length--)
-			*data++ = RecDataByte();
-	}
-#else
+
 	for (len = 0; len < length; len++)
 	{
 		*data++ = (UBYTE)ReadEEPByte(addr++);
-		if ( CheckAbort(len * 100 / length) )
-			break;
+
+		if ( (len % 10) == 0 )
+			if ( CheckAbort(len * 100 / length) )
+				break;
 	}
 	CheckAbort(100);
-#endif
 
 	UserDebug1(UserApp2, "At250Bus::Read() = %ld\n", len);
 
@@ -194,8 +188,9 @@ long At250Bus::Write(int addr, UBYTE const *data, long length)
 		if (!WaitEndOfWrite())
 			return 0;		//Must return 0, because > 0 (and != length) means "Abort by user"
 
-		if ( CheckAbort(len * 100 / length) )
-			break;
+		if ( (len & 1) )
+			if ( CheckAbort(len * 100 / length) )
+				break;
 	}
 	CheckAbort(100);
 

@@ -6,10 +6,10 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997, 1998  Claudio Lanconelli                           //
+//  Copyright (C) 1997-2001   Claudio Lanconelli                           //
 //                                                                         //
-//  e-mail: lanconel@cs.unibo.it                                           //
-//  http://www.cs.unibo.it/~lanconel                                       //
+//  e-mail: lancos@libero.it                                               //
+//  http://www.LancOS.com                                                  //
 //                                                                         //
 //-------------------------------------------------------------------------//
 //                                                                         //
@@ -28,6 +28,7 @@
 // Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. //
 //                                                                         //
 //-------------------------------------------------------------------------//
+// $Id$
 //=========================================================================//
 
 #ifndef _AT89SXX_H
@@ -35,25 +36,31 @@
 
 #include "types.h"
 
-#include "at90sxx.h"
+#include "eeprom.h"
 #include "at89sbus.h"
 
-class At89sxx : public At90sxx
+class At89sxx : public Device
 {
   public:		//---------------------------------------- public
 
 	At89sxx(e2AppWinInfo *wininfo = 0, BusIO *busp = 0);
-	virtual ~At89sxx();
+//	virtual ~At89sxx();
 
 	int Probe(int probe_size = 0);
-	int Read(int probe = 1);
-	int Write(int probe = 1);
-	int Verify();
+	int Read(int probe = 1, int type = ALL_TYPE);
+	int Write(int probe = 1, int type = ALL_TYPE);
+	int Verify(int type = ALL_TYPE);
 
-//	int Erase();
+//	int Erase(int probe = 1, int type = ALL_TYPE);
+
+	int SecurityRead(DWORD &bits);
+	int SecurityWrite(DWORD bits);
+
+	int FusesRead(DWORD &bits);
+	int FusesWrite(DWORD bits);
 
 	At89sBus *GetBus()
-		{ return (At89sBus *)EEProm::GetBus(); }
+		{ return (At89sBus *)Device::GetBus(); }
 
   protected:	//--------------------------------------- protected
 

@@ -39,7 +39,7 @@
 
 //=====>>> Costruttore <<<======
 At250xx::At250xx(e2AppWinInfo *wininfo, BusIO *busp)
-	:	EEProm(wininfo, busp, BANK_SIZE)
+	:	Device(wininfo, busp, BANK_SIZE)
 {
 }
 
@@ -63,11 +63,9 @@ int At250xx::Probe(int probe_size)
 }
 
 
-int At250xx::Read(int probe)
+int At250xx::Read(int probe, int type)
 {
 	UserDebug1(UserApp1, "At250xx::Read(%d)\n", probe);
-
-//	GetBus()->Reset();
 
 	if (probe || GetNoOfBank() == 0)
 		Probe();
@@ -76,11 +74,15 @@ int At250xx::Read(int probe)
 
 	UserDebug1(UserApp1, "At250xx::Read() ** Size = %d\n", size);
 
-	int rv = GetBus()->Read(0, GetBufPtr(), size);
-	if (rv != size)
+	int rv = size;
+	if (type & PROG_TYPE)
 	{
-		if (rv > 0)
-			rv = OP_ABORTED;
+		rv = GetBus()->Read(0, GetBufPtr(), size);
+		if (rv != size)
+		{
+			if (rv > 0)
+				rv = OP_ABORTED;
+		}
 	}
 
 	UserDebug1(UserApp1, "At250xx::Read() = %d\n", rv);
@@ -88,47 +90,51 @@ int At250xx::Read(int probe)
 	return rv;
 }
 
-int At250xx::Write(int probe)
+int At250xx::Write(int probe, int type)
 {
-//	GetBus()->Reset();
-
 	if (probe || GetNoOfBank() == 0)
 		Probe();
 
 	int size = GetNoOfBank() * GetBankSize();
-	int rv = GetBus()->Write(0, GetBufPtr(), size);
-	if (rv != size)
+
+	int rv = size;
+	if (type & PROG_TYPE)
 	{
-		if (rv > 0)
-			rv = OP_ABORTED;
+		rv = GetBus()->Write(0, GetBufPtr(), size);
+		if (rv != size)
+		{
+			if (rv > 0)
+				rv = OP_ABORTED;
+		}
 	}
 
 	return rv;
 }
 
-int At250xx::Verify()
- {
+int At250xx::Verify(int type)
+{
 	if (GetNoOfBank() == 0)
 		return BADPARAM;
 
-//	GetBus()->Reset();
-
-	int rval = -1;
 	int size = GetNoOfBank() * GetBankSize();
 	unsigned char *localbuf;
 	localbuf = new unsigned char[size];
 	if (localbuf == 0)
 		return OUTOFMEMORY;
 
-	rval = GetBus()->Read(0, localbuf, size);
-	if (rval != size)
+	int rval = 1;
+	if (type & PROG_TYPE)
 	{
-		if (rval > 0)
-			rval = OP_ABORTED;
-	}
-	else
-	{
-		rval = ( memcmp(GetBufPtr(), localbuf, size) != 0 ) ? 0 : 1;
+		rval = GetBus()->Read(0, localbuf, size);
+		if (rval != size)
+		{
+			if (rval > 0)
+				rval = OP_ABORTED;
+		}
+		else
+		{
+			rval = ( memcmp(GetBufPtr(), localbuf, size) != 0 ) ? 0 : 1;
+		}
 	}
 	delete localbuf;
 

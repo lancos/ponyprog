@@ -6,10 +6,10 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1998-2000  Claudio Lanconelli                            //
+//  Copyright (C) 1998-2001  Claudio Lanconelli                            //
 //                                                                         //
-//  e-mail: lanconel@cs.unibo.it                                           //
-//  http://www.cs.unibo.it/~lanconel                                       //
+//  e-mail: lancos@libero.it                                               //
+//  http://www.LancOS.com                                                  //
 //                                                                         //
 //-------------------------------------------------------------------------//
 //                                                                         //
@@ -32,6 +32,10 @@
 
 #ifndef _WAIT_H
 #define _WAIT_H
+
+#ifdef	WIN32
+#include "windows.h"
+#endif
 
 class Wait
 {
@@ -58,5 +62,9 @@ class Wait
 
 	static int bogokips;
 	static int htimer;
+
+#ifdef	WIN32
+	static LARGE_INTEGER mlpf;
+#endif
 };
 #endif

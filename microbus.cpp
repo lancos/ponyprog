@@ -6,11 +6,13 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997, 1998  Claudio Lanconelli                           //
+//  Copyright (C) 1997-2001   Claudio Lanconelli                           //
 //                                                                         //
-//  e-mail: lanconel@cs.unibo.it                                           //
-//  http://www.cs.unibo.it/~lanconel                                       //
+//  e-mail: lancos@libero.it                                               //
+//  http://www.LancOS.com                                                  //
 //                                                                         //
+//-------------------------------------------------------------------------//
+// $Id$
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -60,7 +62,7 @@ MicroWireBus::~MicroWireBus()
 {
 	UserDebug(Destructor, "MicroWireBus::~MicroWireBus()\n");
 
-	Close();
+//	Close();
 }
 
 void MicroWireBus::SetDelay()
@@ -78,6 +80,9 @@ void MicroWireBus::SetDelay()
 		break;
 	case SLOW:
 		n = 10;
+		break;
+	case VERYSLOW:
+		n = 80;
 		break;
 	default:
 		n = 5;         //Default (< 100KHz)
@@ -124,28 +129,84 @@ int MicroWireBus::RecDataBit()
 	return b;
 }
 
-//* OK, ora ci alziamo di un livello: operiamo sul byte
-int MicroWireBus::SendDataWord(int wo, int wlen)
+int MicroWireBus::RecDataBitShort()
+{
+	clearCLK();		//si assicura che SCK low
+	WaitUsec(shot_delay);
+	return getDO();
+}
+
+// OK, ora ci alziamo di un livello: operiamo sul byte
+int MicroWireBus::SendDataWord(int wo, int wlen, int lsb)
 {
 	int k;
 
 	clearCLK();
-	//Dal piu` significativo al meno significativo
-	for (k = wlen-1; k >= 0; k--)
-		SendDataBit(wo & (1<<k));
+	if (lsb)
+	{		//Dal meno significativo al piu` significativo
+		for (k = 0; k < wlen; k++)
+			SendDataBit(wo & (1<<k));
+	}
+	else	//Dal piu` significativo al meno significativo
+	{
+		for (k = wlen-1; k >= 0; k--)
+			SendDataBit(wo & (1<<k));
+	}
 	clearDI();
 
 	return OK;
 }
 
-int MicroWireBus::RecDataWord(int wlen)
+//Standard Receive data word
+int MicroWireBus::RecDataWord(int wlen, int lsb)
 {
 	int k, val = 0;
 
 	clearCLK();
-	for (k = wlen-1; k >= 0; k--)
-		if ( RecDataBit() )
-			val |= 1 << k;
+	if (lsb)
+	{
+		for (k = 0; k < wlen; k++)
+			if ( RecDataBit() )
+				val |= (1<<k);
+	}
+	else
+	{
+		for (k = wlen-1; k >= 0; k--)
+			if ( RecDataBit() )
+				val |= (1<<k);
+	}
+
+	return val;
+}
+
+//Receive Data word with the first clock pulse shortened.
+//  In case of the device doesn't leave a clock pulse to switch
+//  from DataOut to DataIn after the command
+int MicroWireBus::RecDataWordShort(int wlen, int lsb)
+{
+	int k, val = 0;
+
+	clearCLK();
+
+	if (wlen > 0)
+	{
+		if (lsb)
+		{
+			val = RecDataBitShort() ? 1 : 0;
+
+			for (k = 1; k < wlen; k++)
+				if ( RecDataBit() )
+					val |= (1<<k);
+		}
+		else
+		{
+			val = RecDataBitShort() ? 1 << (wlen-1) : 0;
+
+			for (k = wlen-2; k >= 0; k--)
+				if ( RecDataBit() )
+					val |= (1<<k);
+		}
+	}
 
 	return val;
 }
@@ -169,7 +230,7 @@ int MicroWireBus::WaitReadyAfterWrite(long timeout)
 
 	UserDebug1(UserApp1, "MicroWireBus::WaitReadyAfterWrite() = %ld\n", k);
 
-	return k ? OK : -1;
+	return k ? OK : E2P_TIMEOUT;
 }
 
 int MicroWireBus::Reset(void)
@@ -201,8 +262,6 @@ int MicroWireBus::CalcAddressSize(int mem_size, int org) const
 	for (k = 15; k > 0; k--)
 		if ( mem_size & (1<<k) )
 			break;
-	if (org)
-		k++;
 
 	return k+1;
 }

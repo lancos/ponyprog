@@ -1,8 +1,9 @@
 PonyProg is copyright by Claudio Lanconelli.
 PonyProg is free software, you can freely copy and
 redistribute it if no fee is charged for use, copying
-or distribution. Is not required any payment to the
-author; however the author would welcome any donations.
+or distribution.
+If you want to distribute PonyProg with your program or
+your hardware programmer, ask me by e-mail (lancos@libero.it)
 
 PONYPROG IS PROVIDED TO YOU "AS IS," WITHOUT WARRANTY.
 THERE IS NO WARRANTY FOR THE PROGRAM, EITHER EXPRESSED

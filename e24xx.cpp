@@ -6,10 +6,10 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2000   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2001   Claudio Lanconelli                           //
 //                                                                         //
-//  e-mail: lanconel@cs.unibo.it                                           //
-//  http://www.cs.unibo.it/~lanconel                                       //
+//  e-mail: lancos@libero.it                                               //
+//  http://www.LancOS.com                                                  //
 //                                                                         //
 //-------------------------------------------------------------------------//
 //                                                                         //
@@ -38,8 +38,8 @@
 #include "eeptypes.h"
 
 //=====>>> Costruttore <<<======
-E24xx::E24xx(e2AppWinInfo *wininfo, BusIO *busp, int max_no_of_bank)
-	:	EEProm(wininfo, busp, BANK_SIZE),
+E24xx::E24xx(e2AppWinInfo *wininfo, BusIO *busp, int max_no_of_bank, int def_banksize)
+	:	Device(wininfo, busp, def_banksize),
 		max_bank(max_no_of_bank),
 		timeout_loop(200),
 		n_bank(0),
@@ -48,6 +48,14 @@ E24xx::E24xx(e2AppWinInfo *wininfo, BusIO *busp, int max_no_of_bank)
 {
 	base_addr = THEAPP->GetI2CBaseAddr();
 	THEAPP->SetI2CBaseAddr(base_addr);
+/***
+	//Inizializza il vettori degli indirizzi di default
+	//  questo nel caso non venga determinata automaticamente
+	//  la dimensione con il Probe()
+	int addr, k;
+	for (addr = base_addr, k = 0; k < max_bank; k++, addr += 2)
+			eeprom_addr[k] = addr;
+***/
 }
 
 //--- Distruttore
@@ -91,7 +99,7 @@ int E24xx::Probe(int probe_size)
 }
 
 
-int E24xx::Read(int probe)
+int E24xx::Read(int probe, int type)
 {
 	int error = Probe( probe || GetNoOfBank() == 0 );
 	if (error < 0)
@@ -99,22 +107,25 @@ int E24xx::Read(int probe)
 
 	GetBus()->CheckAbort(0);
 
-	int k;
-	// legge il contenuto attuale della EEPROM in memoria
-//	for (k = 0; k < GetNoOfBank(); k++)
-	//modificata in modo che legga sempre tutto l'intero
-	// contenuto del dispositivo indipendentemente dalla
-	// capacita` correntemente selezionata
-	for (k = 0; k < n_bank; k++)
+	if (type & PROG_TYPE)
 	{
-		if ( (error = bank_in(GetBufPtr() + k * GetBankSize(), k)) )
+		int k;
+		// legge il contenuto attuale della EEPROM in memoria
+	//	for (k = 0; k < GetNoOfBank(); k++)
+		//modificata in modo che legga sempre tutto l'intero
+		// contenuto del dispositivo indipendentemente dalla
+		// capacita` correntemente selezionata
+		for (k = 0; k < n_bank; k++)
 		{
-		//	GetBus()->Open(THEAPP->GetPort());		//ormai obsoleta
-			return error;
-		}
+			if ( (error = bank_in(GetBufPtr() + k * GetBankSize(), k)) )
+			{
+			//	GetBus()->Open(THEAPP->GetPort());		//ormai obsoleta
+				return error;
+			}
 
-		if ( GetBus()->CheckAbort((k+1) * 100 / n_bank) )
-			return OP_ABORTED;
+			if ( GetBus()->CheckAbort((k+1) * 100 / n_bank) )
+				return OP_ABORTED;
+		}
 	}
 	GetBus()->CheckAbort(100);
 
@@ -124,7 +135,7 @@ int E24xx::Read(int probe)
 		return 0;
 }
 
-int E24xx::Write(int probe)
+int E24xx::Write(int probe, int type)
 {
 	int error = Probe( probe || GetNoOfBank() == 0 );
 	if (error < 0)
@@ -132,27 +143,30 @@ int E24xx::Write(int probe)
 
 	GetBus()->CheckAbort(0);
 
-	// program the eeprom
-	int k;
-	for (k = 0; k < GetNoOfBank(); k++)
+	if (type & PROG_TYPE)
 	{
-		if ( (error = bank_out(GetBufPtr() + k * GetBankSize(), k)) )
+		// program the eeprom
+		int k;
+		for (k = 0; k < GetNoOfBank(); k++)
 		{
-		//	GetBus()->Open(THEAPP->GetPort());
-			return error;
-		}
+			if ( (error = bank_out(GetBufPtr() + k * GetBankSize(), k)) )
+			{
+			//	GetBus()->Open(THEAPP->GetPort());
+				return error;
+			}
 
-		if ( GetBus()->CheckAbort((k+1) * 100 / GetNoOfBank()) )
-			return OP_ABORTED;
+			if ( GetBus()->CheckAbort((k+1) * 100 / GetNoOfBank()) )
+				return OP_ABORTED;
+		}
 	}
 	GetBus()->CheckAbort(100);
 
 	return GetNoOfBank();
 }
 
-int E24xx::Verify()
+int E24xx::Verify(int type)
 {
-	Probe();	//Determina gli indirizzi I2C
+	Probe();	//Moved here from 7 lines above (10/12/99)
 
 	if (GetNoOfBank() == 0)
 		return BADPARAM;
@@ -165,28 +179,31 @@ int E24xx::Verify()
 	GetBus()->CheckAbort(0);
 
 	int rval = 1;
-	// legge il contenuto attuale della EEPROM in memoria
-	int k;
-	for (k = 0; k < GetNoOfBank(); k++)
+	if (type & PROG_TYPE)
 	{
-		int error;
-		if ( (error = bank_in(localbuf, k)) )
+		// legge il contenuto attuale della EEPROM in memoria
+		int k;
+		for (k = 0; k < GetNoOfBank(); k++)
 		{
-		//	GetBus()->Open(THEAPP->GetPort());
-			rval = error;
-			break;
-		}
+			int error;
+			if ( (error = bank_in(localbuf, k)) )
+			{
+			//	GetBus()->Open(THEAPP->GetPort());
+				rval = error;
+				break;
+			}
 
-		if ( memcmp(GetBufPtr() + k * GetBankSize(), localbuf, GetBankSize()) != 0 )
-		{
-			rval = 0;
-			break;
-		}
+			if ( memcmp(GetBufPtr() + k * GetBankSize(), localbuf, GetBankSize()) != 0 )
+			{
+				rval = 0;
+				break;
+			}
 
-		if ( GetBus()->CheckAbort((k+1) * 100 / GetNoOfBank()) )
-		{
-			rval = OP_ABORTED;
-			break;
+			if ( GetBus()->CheckAbort((k+1) * 100 / GetNoOfBank()) )
+			{
+				rval = OP_ABORTED;
+				break;
+			}
 		}
 	}
 	GetBus()->CheckAbort(100);

@@ -6,10 +6,10 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-1999   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2001   Claudio Lanconelli                           //
 //                                                                         //
-//  e-mail: lanconel@cs.unibo.it                                           //
-//  http://www.cs.unibo.it/~lanconel                                       //
+//  e-mail: lancos@libero.it                                               //
+//  http://www.LancOS.com                                                  //
 //                                                                         //
 //-------------------------------------------------------------------------//
 //                                                                         //
@@ -28,6 +28,7 @@
 // Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. //
 //                                                                         //
 //-------------------------------------------------------------------------//
+// $Id$
 //=========================================================================//
 
 #include <stdio.h>
@@ -65,7 +66,7 @@ UBYTE *FileBuf::GetBufPtr() const
 	return (UBYTE *)awi->GetBufPtr();
 }
 
-int FileBuf::GetBufSize() const
+long FileBuf::GetBufSize() const
 {
 	return awi->GetBufSize();
 }
@@ -122,12 +123,12 @@ int FileBuf::GetRollOver() const
 	return awi->GetBankRollOver();
 }
 
-int FileBuf::GetLockBits() const
+DWORD FileBuf::GetLockBits() const
 {
 	return awi->GetLockBits();
 }
 
-int FileBuf::GetFuseBits() const
+DWORD FileBuf::GetFuseBits() const
 {
 	return awi->GetFuseBits();
 }
@@ -137,22 +138,22 @@ void FileBuf::SetRollOver(int rlv)
 	awi->SetBankRollOver(rlv);
 }
 
-int FileBuf::GetSplitted() const
+long FileBuf::GetSplitted() const
 {
 	return awi->GetSplittedInfo();
 }
 
-void FileBuf::SetSplitted(int spl)
+void FileBuf::SetSplitted(long spl)
 {
 	awi->SetSplittedInfo(spl);
 }
 
-void FileBuf::SetLockBits(int bits)
+void FileBuf::SetLockBits(DWORD bits)
 {
 	awi->SetLockBits(bits);
 }
 
-void FileBuf::SetFuseBits(int bits)
+void FileBuf::SetFuseBits(DWORD bits)
 {
 	awi->SetFuseBits(bits);
 }
