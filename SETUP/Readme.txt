@@ -1,5 +1,5 @@
 -------------------------------------------
-PonyProg - Serial Device Programmer  v1.17c
+PonyProg - Serial Device Programmer  v1.17d
 
 PonyProg comes with a user friendly GUI framework available for Windows95/98,
 Windows2000, WindowsNT and Intel Linux.
