@@ -86,7 +86,8 @@ static char *interfList[] = {
 static char *interfListL[] = {
 	//Parallel interfaces list
 	" Easy I2CBus ",
-	"   Avr ISP   ",
+	" Avr ISP API ",
+	" Avr ISP I/O ",
 	0
 };
 
@@ -142,9 +143,9 @@ static DialogCmd DefaultCmds[] =
 
 	{C_Button,btnTestDlg,0,
 #ifdef	_WINDOWS
-		" &Test ",
+		" &Probe ",
 #else
-		"  Test ",
+		"  Probe ",
 #endif
 			NoList,CA_None,isSens,NoFrame,M_OK,frmPolsel}, 
 
