@@ -1,5 +1,5 @@
 -------------------------------------------
-PonyProg - Serial Device Programmer  v1.17d
+PonyProg - Serial Device Programmer  v1.17e
 
 PonyProg comes with a user friendly GUI framework available for Windows95/98,
 Windows2000, WindowsNT and Intel Linux.
@@ -64,6 +64,14 @@ TODO (PonyProg is still under development)
 =======
 History
 =======
+
+v 1.17e
+-------
+Changed the driver for direct I/O, the old one work only 
+with WinNT, while the new one work on Win2000 too (tested
+by Luis Frigon, thanks).
+Added the "AVRISP I/O" interface, and renamed the old one to
+"AVRISP API". WinNT/2000 users have to select "AVRISP I/O"
 
 v 1.17c
 -------
@@ -301,5 +309,9 @@ Italy
 
 E-mail: lanconel@CS.UniBO.it
 
-You can download last version of PonyProg from my home page:
-http://www.cs.unibo.it/~lanconel
+Download last version of PonyProg from my home page:
+http://www.LancOS.com
+
+if you have problems to reach this site try
+
+http://members.tripod.com/lancos
