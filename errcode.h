@@ -67,6 +67,7 @@
 
 #define	BUFFEROVERFLOW		-30
 #define	OUTOFMEMORY			-31
+#define	BUFFERUNDERFLOW		-32
 
 //Codici di errore restituiti dall'interprete di comandi a menu
 #define	CMD_BUFFEREMPTY		-39
