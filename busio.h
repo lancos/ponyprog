@@ -58,6 +58,9 @@ class BusIO : public Wait
 	virtual long Read(int addr, UBYTE *data, long length) = 0;
 	virtual long Write(int addr,UBYTE const *data, long length) = 0;
 
+	virtual int Erase()
+		{ return OK; }
+
 	int GetErrNo()
 		{ return errno; }
 	int GetLastAddr() const		//useful in I2C Bus transaction,
