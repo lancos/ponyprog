@@ -4,7 +4,7 @@
 [Setup]
 Bits=32
 AppName=PonyProg
-AppVerName=PonyProg v1.17g
+AppVerName=PonyProg v1.17h
 AppCopyright=Copyright © 1997-2000 by Claudio Lanconelli
 DefaultDirName={pf}\PonyProg
 DefaultGroupName=PonyProg
@@ -24,6 +24,9 @@ Source: "PROG-EDIT.JPG"; DestDir: "{app}"
 Source: "PROG-NOTE.JPG"; DestDir: "{app}"
 Source: "PROG-SAVEAS.JPG"; DestDir: "{app}"
 Source: "PROG-SETUP.JPG"; DestDir: "{app}"
+Source: "AT89S8252FUSE.JPG"; DestDir: "{app}"
+Source: "AVR4433FUSE.JPG"; DestDir: "{app}"
+Source: "PIC16F84FUSE.JPG"; DestDir: "{app}"
 Source: "README.TXT"; DestDir: "{app}"; Flags: isreadme
 Source: "DLPORTIO.DLL"; DestDir: "{sys}"; CopyMode: onlyifdoesntexist; Flags: sharedfile
 

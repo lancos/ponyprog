@@ -1,5 +1,5 @@
 -------------------------------------------
-PonyProg - Serial Device Programmer  v1.17g
+PonyProg - Serial Device Programmer  v1.17h
 
 PonyProg comes with a user friendly GUI framework available for Windows95/98,
 Windows2000, WindowsNT and Intel Linux.
@@ -9,7 +9,7 @@ ATMEL AVR AT90SXXXX, AT89SXX microcontrollers, and PIC micro.
 PonyProg needs a very cheap and simple hardware. But if you don't want to make it
 yourself, you can email me and ask for a pcb ready to use.
 You can send well documented bug reports to
-lanconel@cs.unibo.it with the subject "PROG BUG REPORT". 
+lancos@libero.it with the subject "PROG BUG REPORT". 
 
 --------
 Features
@@ -32,7 +32,7 @@ Features
 - Support 93C06, 93C46, 93C56, 93C66, 93C76, 93C86 Microwire EEPROM (C and LC series,
   the CS serie is not supported yet).
 - Support 93C13 (as a 93C06) and 93C14 (as a 93C46) Microwire EEPROM
-- Support PIC 16C84/16F84 microcontroller
+- Support PIC 16C84/16F84 and PIC16F84A microcontroller
 - Support 25010, 25020, 25040 SPI EEPROM
 - Support 25080, 25160, 25320, 25640, 25642, 25128, 25256, 95640 Big SPI EEPROM
 - Read Intel hex format file as well as raw binary file.
@@ -64,6 +64,11 @@ TODO (PonyProg is still under development)
 =======
 History
 =======
+
+v 1.17h
+-------
+Fixed the "Verify failed" message at the end of PIC16F84A
+programming.
 
 v 1.17g
 -------
@@ -318,7 +323,7 @@ via Minardi, 10
 48022 Lugo (RA)
 Italy
 
-E-mail: lanconel@CS.UniBO.it
+E-mail: lancos@libero.it
 
 Download last version of PonyProg from my home page:
 http://www.LancOS.com
