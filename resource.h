@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Developer Studio generated include file.
-// Used by ponyprog.rc
+// Used by Pony.rc
 //
 
 // Next default values for new objects
