@@ -1,8 +1,9 @@
-------------------------------------------------
-PonyProg - Serial Device Programmer  v1.17a Beta
+-------------------------------------------
+PonyProg - Serial Device Programmer  v1.17c
 
-PonyProg comes with a user friendly GUI framework available for Windows95, 98 & NT
-and Intel Linux. Its purpose is reading and writing every serial device.
+PonyProg comes with a user friendly GUI framework available for Windows95/98,
+Windows2000, WindowsNT and Intel Linux.
+Its purpose is reading and writing every serial device.
 At the moment it supports I²C Bus, Microwire, and SPI eeprom and the flash
 ATMEL AVR AT90SXXXX, AT89SXX microcontrollers, and PIC micro.
 PonyProg needs a very cheap and simple hardware. But if you don't want to make it
@@ -39,7 +40,7 @@ Features
 - Features a custom E²P format file to store the EEPROM characteristics, an editable
   comment and memory content all together with CRC. 
 - Enhanced buffer edit, text and hexadecimal.
-- Work with Windows95, Windows98, WindowsNT and Linux.
+- Work with Windows95, Windows98, Windows2000, WindowsNT and Linux.
 - Work with "ludipipo" and AVR ISP (STK200/300) hardware.
 - Easily adaptable to any new hardware interface.
 
@@ -54,14 +55,22 @@ TODO (PonyProg is still under development)
 - Write flash and eeprom separately in the AVR
 - Add color to highlight differences after a verify
 - Add remote control mode for Build/Makefile support
-- Add PIC16F8XX support
+- Add PIC16F8XX and PIC12C50x support
 - Add autoprogram command (like AVR ISP)
+- Add multilanguage support
 - Add SX Parallax micro
 ... any suggestions are welcome
 
 =======
 History
 =======
+
+v 1.17c
+-------
+Added ponyprog.sys driver for direct I/O on WinNT and Win2000.
+Fixed some bugs in IntelHex and MotorolaSRec file loading.
+Now generate a S2 format for ATmega. Lengthened the reset delay
+for PIC.
 
 v 1.17a
 -------
@@ -278,7 +287,7 @@ Downloading and Installing
 PonyProg for Windows95
 Run setup.exe and follow the instructions.
 
-If you are updating from an older release deintall it before
+If you are updating from an older release deinstall it before
 to install the new release. Be sure to delete the ponyprog.ini
 file.
 
