@@ -90,3 +90,8 @@ void EEProm::SetSplitted(int split)
 	if (split > 0)
 		awi->SetSplittedInfo(split);
 }
+
+int EEProm::Erase()
+{
+	return GetBus()->Erase();
+}
