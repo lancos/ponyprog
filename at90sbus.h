@@ -78,7 +78,7 @@ class At90sBus : public SPIBus
 
 	void RefreshParameters();
 
-	virtual int WaitReadyAfterWrite(int type, long addr, int data, long timeout = 5000);
+	virtual int WaitReadyAfterWrite(int type, long addr, int data, long timeout = 20000);
 
 	//Polling codes
 	const BYTE p1_a, p2_a, pflash_a;
