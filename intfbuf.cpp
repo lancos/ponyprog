@@ -284,10 +284,15 @@ int IntelFileBuf::Load(int bank)
 			//jmpaddr = ScanHex(&s, 8);
 			ScanHex(&s, 8);
 		}
-		else if (rectype != END_RECORD)
+	/**	else if (rectype != END_RECORD)
 		{
 			rval = BADFILETYPE;
 			break;
+		} **/
+		else	/* Unknown record type: discard data bytes */
+		{
+			while (bcount--)
+				ScanHex(&s, 2);
 		}
 
 		data = (BYTE)ScanHex(&s, 2);
