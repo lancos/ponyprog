@@ -39,8 +39,9 @@
 #include <v/vdebug.h>
 //#endif
 
+// Maximum number of printer ports that would be installed on a system
+#define MAX_LPTPORTS	4
 #define	MAX_COMPORTS	4
-#define	MAX_LPTPORTS	3
 
 class PortInterface
 {
@@ -64,7 +65,7 @@ class PortInterface
 	int GetParBasePort(int no) const;
 
 	virtual int InPort(int no = -1) const;
-	virtual void OutPort(int val, int no = -1);
+	virtual int OutPort(int val, int no = -1);
 	virtual int OutPortMask(int mask, int val);
 
  protected:		//------------------------------- protected
@@ -84,6 +85,19 @@ class PortInterface
 	int IOperm(int a, int b, int c);
 
 #ifdef	_WINDOWS
+	void DetectPorts();
+	void DetectPorts9x(); // Win9x version
+	void DetectPortsNT(); // WinNT version
+
+//	BYTE FLPTNumber;    // Current number of the printer port, default=1
+//	WORD FLPTBase;      // The address of the current printer port (faster)
+
+	int LPTCount;		//Number of LPT ports on the system
+	int COMCount;		//Number of COM ports on the system
+
+   // List of port addresses installed on the system
+//	WORD FLPTAddress[MAX_LPT_PORTS+1];
+	
 	DWORD	old_mask;
 #else
 	int lcr_copy;
@@ -94,8 +108,11 @@ class PortInterface
 	int last_port;
 	int no_ports;
 
-	int ser_ports[MAX_COMPORTS];
-	int par_ports[MAX_LPTPORTS];
+	int ser_ports_base[MAX_COMPORTS+1];
+	int ser_ports_len[MAX_COMPORTS+1];
+
+	int par_ports_base[MAX_LPTPORTS+1];
+	int par_ports_len[MAX_LPTPORTS+1];
 };
 
 #endif
