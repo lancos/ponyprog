@@ -6,7 +6,7 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997, 1998  Claudio Lanconelli                           //
+//  Copyright (C) 1997-2000   Claudio Lanconelli                           //
 //                                                                         //
 //  e-mail: lanconel@cs.unibo.it                                           //
 //  http://www.cs.unibo.it/~lanconel                                       //
@@ -41,6 +41,7 @@
 //#include <linux/ioport.h>
 #include <unistd.h>
 
+	//Request Access to I/O ports
 	int PortInterface::IOperm(int a, int b, int c)
 	{
 		int retval;
@@ -52,7 +53,25 @@
 #else
 	int PortInterface::IOperm(int a, int b, int c)
 	{
-		c = a + b;
+		a += b;
+
+		if (c)	//Open
+		{
+			hPort = CreateFile("\\\\.\\giveio", GENERIC_READ, 0, NULL,
+					OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+			if(hPort == INVALID_HANDLE_VALUE)
+			{
+			//	printf("Couldn't access giveio device\n");
+				return -1;
+			}
+		}
+		else	//Close
+		{
+			if (hPort != INVALID_HANDLE_VALUE)
+				CloseHandle(hPort);
+			hPort = INVALID_HANDLE_VALUE;
+		}
+
 		return 0;
 	}
 #endif
@@ -107,7 +126,7 @@ PortInterface::PortInterface()
 	par_ports[2] = 0x3BC;
 
 #ifdef	_WINDOWS
-	hCom = INVALID_HANDLE_VALUE;
+	hCom = hPort = INVALID_HANDLE_VALUE;
 #else
 	lcr_copy = ier_copy = -1;
 #endif
@@ -189,14 +208,14 @@ int PortInterface::OpenPort(int from_port, int len)
 
 	int ret_val = E2ERR_OPENFAILED;
 
-	// le porte ISA del PC sono di soli 10 bit di indirizzi
-	// controlla che le porte siano accessibili
+	// PC ISA ports have only 10 bit addresses
+	// check for the access to ports is granted
 	if (from_port >= 0x100 && from_port + len <= 0x400 && len > 0)
 	{
-		// richiede il permesso di accedere alle porte di I/O
+		// request the access to I/O ports
 		if ( IOperm(from_port, len, 1) == 0  )
 		{
-			ClosePort();	// chiude eventuali porte precedenti
+			ClosePort();	// close any opened port
 			first_port = from_port;
 			last_port = from_port + len - 1;
 			no_ports = len;

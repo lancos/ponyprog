@@ -73,6 +73,7 @@ class PortInterface
 
 #ifdef	_WINDOWS
 	HANDLE	hCom;
+	HANDLE	hPort;
 #endif
 
 	int		write_port,		// Number of output port (write I/O port address)
