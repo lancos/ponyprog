@@ -111,7 +111,7 @@ int RS232Interface::OpenSerial(int no)
 			GetCommState(hCom, &old_dcb);
 			GetCommTimeouts(hCom, &old_timeout);
 			GetCommMask(hCom, &old_mask);
-			SetCommMask(hCom, EV_TXEMPTY);
+		//	SetCommMask(hCom, EV_TXEMPTY);
 
 			SetSerialTimeouts();
 			SetSerialParams();
