@@ -53,3 +53,21 @@ int At89sxx::Probe(int probe_size)
 	return GetSize();
 }
 
+int At89sxx::Erase()
+{
+	return GetBus()->Erase();
+}
+
+int At89sxx::SecurityWrite(int value, int notused)
+{
+	int rv;
+//	int rv = Probe();		//No size probe needed, just probe for presence
+
+//	if (rv >= 0)	//Try to write even with AutoXXX device setted
+//	{
+		rv = GetBus()->WriteLockBits(value);
+//	}
+
+	return rv;
+}
+

@@ -108,6 +108,7 @@ class e2CmdWindow : public vCmdWindow
 	int CmdRead();
 	int CmdWrite();
 	int CmdVerify();
+	int CmdErase();
 	int CmdGetInfo();
 	int CmdReset();
 	int CmdReadLock();

@@ -28,9 +28,6 @@ typedef	unsigned char	BYTE;		/* unsigned  8-bit quantity */
 typedef unsigned long	WORD32;		/* unsigned 32-bit quantity */
 typedef unsigned short	WORD16;		/* unsigned 16-bit quantity */
 typedef unsigned char	WORD8;		/* unsigned  8-bit quantity */
-typedef signed long		INT32;		/*   signed 32-bit quantity */
-typedef signed short	INT16;		/*   signed 16-bit quantity */
-typedef signed char		INT8;		/*   signed  8-bit quantity */
 
 #ifdef	__GNUC__
 #define	PACK	__attribute__ ((packed))

@@ -384,6 +384,19 @@ int e2AppWinInfo::Verify(int raise_power)
 	return rval;
 }
 
+//===================>>> e2AppWinInfo::Erase <<<=============
+int e2AppWinInfo::Erase()
+{
+	int rval;
+
+	rval = OpenBus();
+	if (rval == OK)
+		rval = eep->Erase();
+	SleepBus();
+
+	return rval;
+}
+
 //===================>>> e2AppWinInfo::BankRollOverDetect <<<=============
 int e2AppWinInfo::BankRollOverDetect(int force)
 {

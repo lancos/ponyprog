@@ -6,7 +6,7 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-1999  Claudio Lanconelli                            //
+//  Copyright (C) 1997-2000  Claudio Lanconelli                            //
 //                                                                         //
 //  e-mail: lanconel@cs.unibo.it                                           //
 //  http://www.cs.unibo.it/~lanconel                                       //
@@ -123,7 +123,7 @@ int At89sBus::Reset(void)
 
 	SetDelay();
 
-	WaitMsec(50);	// Almeno 20msec dai datasheet AVR atmel
+	WaitMsec(50);	// At least 20msec (AVR datasheet)
 
 	SendDataByte(EnableProg0);
 	SendDataByte(EnableProg1);

@@ -6,7 +6,7 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997, 1998  Claudio Lanconelli                           //
+//  Copyright (C) 1997-2000   Claudio Lanconelli                           //
 //                                                                         //
 //  e-mail: lanconel@cs.unibo.it                                           //
 //  http://www.cs.unibo.it/~lanconel                                       //
@@ -462,7 +462,7 @@ void e2App::LookForBogoMips()
 
 		t0 = GetTickCount();
 		for (k = 0; k < N_CICLI/10; k++)
-			w.WaitUsec(UDELAY, 1);
+			w.WaitUsec(UDELAY);
 		count = GetTickCount() - t0;
 
 		if (fh)
@@ -471,7 +471,7 @@ void e2App::LookForBogoMips()
 
 	t0 = GetTickCount();
 	for (k = 0; k < N_CICLI; k++)
-		w.WaitUsec(UDELAY, 1);
+		w.WaitUsec(UDELAY);
 	count = GetTickCount() - t0;
 
 	if (fh)
@@ -490,7 +490,7 @@ void e2App::LookForBogoMips()
 
 		t0 = GetTickCount();
 		for (k = 0; k < N_CICLI; k++)
-			w.WaitUsec(UDELAY, 1);
+			w.WaitUsec(UDELAY);
 		count = GetTickCount() - t0;
 
 		if (fh)
@@ -508,7 +508,7 @@ void e2App::LookForBogoMips()
 
 		t0 = GetTickCount();
 		for (k = 0; k < N_CICLI; k++)
-			w.WaitUsec(UDELAY, 1);
+			w.WaitUsec(UDELAY);
 		count = GetTickCount() - t0;
 
 		if (fh)

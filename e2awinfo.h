@@ -132,6 +132,7 @@ class e2AppWinInfo : public vAppWinInfo
 	int BankRollOverDetect(int force = 0);
 
 	void Reset();
+	int Erase();
 
 	int GetSplittedInfo() const
 		{ return splitted; }

@@ -53,6 +53,10 @@ class EEProm
 	virtual int Verify() = 0;
 	virtual int BankRollOverDetect(int force)
 		{ return 2; }	//2 stand for no Bank Rollover
+
+	virtual int Erase()
+		{ return 0; }
+
 	//aggiunto il 07/03/98
 	virtual int SecurityRead(int &blocks, int &bits)
 		{ bits = -1; return 0; }

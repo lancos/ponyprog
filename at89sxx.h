@@ -50,10 +50,11 @@ class At89sxx : public At90sxx
 	int Read(int probe = 1);
 	int Write(int probe = 1);
 	int Verify();
-
-	//Write fuse bits
-	int SecurityWrite(int start_block, int no_of_block);
 **/
+	//Write fuse bits
+	int SecurityWrite(int value, int notused);
+
+	int Erase();
 
 	At89sBus *GetBus()
 		{ return (At89sBus *)EEProm::GetBus(); }

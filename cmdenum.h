@@ -6,7 +6,7 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-1999  Claudio Lanconelli                            //
+//  Copyright (C) 1997-2000  Claudio Lanconelli                            //
 //                                                                         //
 //  e-mail: lanconel@cs.unibo.it                                           //
 //  http://www.cs.unibo.it/~lanconel                                       //
@@ -47,6 +47,7 @@ enum {
 	m_Read,
 	m_Write,
 	m_Verify,
+	m_Erase,
 	m_Info,
 	m_Reset,
 	m_Help,			// Help menu
