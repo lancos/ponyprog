@@ -6,7 +6,7 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997, 1998  Claudio Lanconelli                           //
+//  Copyright (C) 1997-2000   Claudio Lanconelli                           //
 //                                                                         //
 //  e-mail: lanconel@cs.unibo.it                                           //
 //  http://www.cs.unibo.it/~lanconel                                       //
@@ -35,11 +35,12 @@
 
 #include "businter.h"
 #include "lptinterf.h"
+#include "lpt_io_interf.h"
 
-class AvrISPInterface : public BusInterface, public LPTInterface
+class AvrISPInterface : public BusInterface
 {
  public:		//------------------------------- public
-	AvrISPInterface();
+	AvrISPInterface(int use_io = 0);
 //	virtual ~AvrISPInterface();
 
 	virtual int Open(int com_no);
@@ -59,11 +60,46 @@ class AvrISPInterface : public BusInterface, public LPTInterface
 	int SetPower(int onoff);
 	void SetControlLine(int res = 1);
 
+	void SetIOmode(int use_io)
+		{ io_mode = use_io; }
+
  protected:		//------------------------------- protected
+	int InDataPort(int port_no = 0)
+	{
+		return io_mode ? lptio.InDataPort(port_no) : lpt.InDataPort(port_no);
+	}
+	int OutDataPort(int val, int port_no = 0)
+	{
+		return io_mode ? lptio.OutDataPort(val, port_no) : lpt.OutDataPort(val, port_no);
+	}
+	int OutControlPort(int val, int port_no = 0)
+	{
+		return io_mode ? lptio.OutControlPort(val, port_no) : lpt.OutControlPort(val, port_no);
+	}
+	int OutDataMask(int mask, int val)
+	{
+		return io_mode ? lptio.OutDataMask(mask, val) : lpt.OutDataMask(mask, val);
+	}
+	int OutControlMask(int mask, int val)
+	{
+		return io_mode ? lptio.OutControlMask(mask, val) : lpt.OutControlMask(mask, val);
+	}
+	int GetLastData() const
+	{
+		return io_mode ? lptio.GetLastData() : lpt.GetLastData();
+	}
+	int GetLastCtrl() const
+	{
+		return io_mode ? lptio.GetLastCtrl() : lpt.GetLastCtrl();
+	}
 
  private:		//------------------------------- private
 	int GetPresence();
 
+	LPTInterface lpt;
+	LPTIOInterface lptio;
+
+	int io_mode;
 };
 
 #endif

@@ -6,7 +6,7 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997, 1998  Claudio Lanconelli                           //
+//  Copyright (C) 1997-2000   Claudio Lanconelli                           //
 //                                                                         //
 //  e-mail: lanconel@cs.unibo.it                                           //
 //  http://www.cs.unibo.it/~lanconel                                       //
@@ -60,10 +60,11 @@
  * bit 7: BUSY		(pin 11)-
  */
 
-#undef	AVRISP
-#define	AVRISP
+//Real AVR ISP
+#define	AVRISP_MAPPED
 
-#ifdef	AVRISP			//Real AVR ISP
+#ifdef	AVRISP_MAPPED
+/** Real AVR ISP **/
 # define WB_TEST1 0		/* DATA (pin 2) */
 # define WB_TEST2 1		/* DATA (pin 3) */
 # define WB_ENA1 2		/* DATA (pin 4) */
@@ -76,22 +77,22 @@
 # define RB_DIN	6		/* STATUS (pin 10) */
 # define RB_TEST1 5		/* STATUS (pin 12) */
 # define RB_TEST2 7		/* STATUS (pin 11) */
-
 #else
-# define WB_RST	0		/* DATA (pin 2) */
-# define WB_SCK 1		/* DATA (pin 3) */
-# define WB_DOUT 2		/* DATA (pin 4) */
+/** Remapped AVR ISP **/
+# define WB_RST	0		// DATA (pin 2)
+# define WB_SCK 1		// DATA (pin 3) 
+# define WB_DOUT 2		// DATA (pin 4) 
 
-# define WB_ENA2 6		/* DATA (pin 8) */
-# define WB_TEST2 7		/* DATA (pin 9) */
+# define WB_ENA2 6		// DATA (pin 8) 
+# define WB_TEST2 7		// DATA (pin 9) 
 
-# define WB_LED 0		/* CTRL (pin 1)- */
-# define WB_ENA1 2		/* CTRL (pin 16)- */
-# define WB_TEST1 3		/* CTRL (pin 17)- */
+# define WB_LED 0		// CTRL (pin 1)- 
+# define WB_ENA1 2		// CTRL (pin 16)- 
+# define WB_TEST1 3		// CTRL (pin 17)- 
 
-# define RB_DIN	6		/* STATUS (pin 10) */
-# define RB_TEST2 7		/* STATUS (pin 11) */
-# define RB_TEST1 5		/* STATUS (pin 12) */
+# define RB_DIN	6		// STATUS (pin 10)
+# define RB_TEST2 7		// STATUS (pin 11)
+# define RB_TEST1 5		// STATUS (pin 12)
 #endif
 
 # define WF_TEST1	(1 << WB_TEST1)
@@ -108,12 +109,14 @@
 # define RF_TEST2	(1 << RB_TEST2)
 
 
-AvrISPInterface::AvrISPInterface()
+AvrISPInterface::AvrISPInterface(int use_io)
 {
 	UserDebug(Constructor, "AvrISPInterface::AvrISPInterface() Constructor\n");
 
 	Install(0);
 	old_portno = 0;
+
+	io_mode = use_io;
 }
 
 void AvrISPInterface::SetControlLine(int res)
@@ -137,7 +140,7 @@ void AvrISPInterface::SetControlLine(int res)
 
 int AvrISPInterface::SetPower(int onoff)
 {
-#ifdef	AVRISP
+#ifdef	AVRISP_MAPPED
 	if (onoff)
 	{
 		OutDataMask(WF_TEST2, 1);	//Some PCs need /BUSY signal high to work properly as suggested by Marek Michalkiewicz <marekm@linux.org.pl>
@@ -186,7 +189,7 @@ int AvrISPInterface::Open(int port_no)
 		else
 		{
 			Install(port_no);
-#ifdef	AVRISP
+#ifdef	AVRISP_MAPPED
 			OutDataMask(WF_ENA1|WF_ENA2, 1);
 #else
 			OutControlMask(WF_ENA1, 0);
@@ -205,6 +208,8 @@ void AvrISPInterface::Close()
 
 	if (IsInstalled())
 	{
+		lptio.Close();
+
 		Install(0);
 	}
 
@@ -341,7 +346,7 @@ int AvrISPInterface::TestPort(int com_no)
 		int test1 = FALSE, test2 = FALSE;
 		Wait w;
 
-#ifdef	AVRISP
+#ifdef	AVRISP_MAPPED
 		//Test1
 		OutDataMask(WF_TEST1, 1);
 		w.WaitMsec(50);
