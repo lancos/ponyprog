@@ -34,6 +34,9 @@
 #include "portint.h"
 #include "errcode.h"
 
+//#include "e2app.h"
+#include "dlportio.h"
+
 #ifdef	_LINUX_
 #include <asm/io.h>
 #include <sys/io.h>
@@ -98,7 +101,7 @@ int PortInterface::IOperm(int a, int b, int c)
 	int rv = OK;
 
 	a += b;
-
+/**
 	rv = GetWinVersion();
 
 	if (c)	//Open
@@ -108,22 +111,10 @@ int PortInterface::IOperm(int a, int b, int c)
 			rv = OK;
 		}
 		else
-		if (rv == 3)
-		{
-			hPort = CreateFile("\\\\.\\ponyprog", GENERIC_READ, 0, NULL,
-					OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-			if(hPort == INVALID_HANDLE_VALUE)
-			{
-			//	printf("Couldn't access giveio device\n");
-				rv = E2ERR_OPENFAILED;
-			}
-			else
-				rv = OK;
-		}
-		else
 		{
 			hPort = CreateFile(
-				"\\\\.\\DirectIo0",                 // pointer to name of the file
+			//	"\\\\.\\DirectIo0",                 // pointer to name of the file
+				THEAPP->GetIODriverName(),
 				GENERIC_READ | GENERIC_WRITE,       // access (read-write) mode
 				FILE_SHARE_READ | FILE_SHARE_WRITE, // share mode
 				NULL,                               // pointer to security attributes
@@ -148,7 +139,7 @@ int PortInterface::IOperm(int a, int b, int c)
 	//	if (hPort != INVALID_HANDLE_VALUE)
 	//		CloseHandle(hPort);
 	//	hPort = INVALID_HANDLE_VALUE;
-
+**/
 	return rv;
 }
 #endif
@@ -214,7 +205,11 @@ int PortInterface::InPort(int nport) const
 	else
 		nport += first_port;
 
+#ifdef	_WINDOWS
+	return DlPortReadPortUchar(nport);
+#else
 	return inb(nport);
+#endif
 }
 
 void PortInterface::OutPort(int val, int nport)
@@ -233,7 +228,12 @@ void PortInterface::OutPort(int val, int nport)
 		cpwreg = val;
 
 	UserDebug2(UserApp3, "PortInterface::outb(%xh, %xh)\n", val, nport);
+
+#ifdef	_WINDOWS
+	DlPortWritePortUchar(nport, val);
+#else
 	outb(val, nport);
+#endif
 }
 
 int PortInterface::OutPortMask(int mask, int val)
@@ -259,7 +259,11 @@ int PortInterface::OutPortMask(int mask, int val)
 
 	UserDebug2(UserApp3, "PortInterface::outb(%xh, %xh)\n", cpwreg, write_port);
 
+#ifdef	_WINDOWS
+	DlPortWritePortUchar(write_port, cpwreg);
+#else
 	outb(cpwreg, write_port);
+#endif
 
 	return OK;
 }

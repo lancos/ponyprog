@@ -116,6 +116,9 @@ class E2Profile : public Profile
 	int GetAVREraseDelay();
 	int SetAVREraseDelay(int delay = 30);
 
+	char const *GetIODriverName();
+	int SetIODriverName(char const *name);
+
   protected:	//--------------------------------------- protected
 
   private:		//--------------------------------------- private

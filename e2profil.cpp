@@ -6,7 +6,7 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997, 1998  Claudio Lanconelli                           //
+//  Copyright (C) 1997-2000  Claudio Lanconelli                            //
 //                                                                         //
 //  e-mail: lanconel@cs.unibo.it                                           //
 //  http://www.cs.unibo.it/~lanconel                                       //
@@ -175,6 +175,7 @@ char const *E2Profile::GetPrevFile()
 {
 	return GetParameter("PreviousFile");
 }
+
 
 UBYTE E2Profile::GetPolarityControl() 
 { 
@@ -600,3 +601,22 @@ int E2Profile::SetAVREraseDelay(int delay)
 	return rval;
 }
 
+char const *E2Profile::GetIODriverName()
+{
+	char const *sp = GetParameter("IODriverName");
+
+	if (sp)
+		return sp;
+	else
+		return "\\\\.\\ponyprog";
+}
+
+int E2Profile::SetIODriverName(char const *name)
+{
+	int rval = -1;
+	if (name && strlen(name))
+	{
+		rval = SetParameter("IODriverName", (char *)name);
+	}
+	return rval;
+}

@@ -547,29 +547,14 @@ void e2App::LookForBogoMips()
 int e2App::LoadDriver(int start)
 {
 #ifdef	_WINDOWS
-	static char szDriver[MAX_PATH];
-
-	DWORD dwStatus = OK;
-
-	// connect to local service control manager
-	if ((hSCMan = OpenSCManager(NULL, NULL, SC_MANAGER_ALL_ACCESS)) == NULL) 
-	{
-	//	printf("Can't connect to service control manager\n");	//Probably we use Windows95/98
-		return 0;
-	}
-
 	if (start)
 	{
-		dwStatus = DriverStart(THEAPP->driverfile, szDriver);
+		OpenDriver();
 	}
 	else
 	{
-		dwStatus = DriverStop(THEAPP->driverfile, szDriver);
+		CloseDriver();
 	}
-
-	//Cleanup
-	if (hSCMan != NULL)
-		CloseServiceHandle(hSCMan);
 #endif
 
 	return OK;
@@ -601,12 +586,9 @@ int AppMain(int argc, char** argv)
 	char *sp = strrchr(argv[0], '.');
 	strcpy(sp+1, "html");
 	strcpy(THEAPP->helpfile, argv[0]);
-	strcpy(sp+1, "sys");
-	strcpy(THEAPP->driverfile, argv[0]);
 	strcpy(sp+1, "ini");
 	e2_App.SetFileName(argv[0]);
 #endif
-
 
 	// Read parameters from INI file
 	// Make sure all parameters (even default values) are written
@@ -626,9 +608,11 @@ int AppMain(int argc, char** argv)
 	e2_App.SetPICSpeed( e2_App.GetPICSpeed() );
 	e2_App.SetSDESpeed( e2_App.GetSDESpeed() );
 
-//	if ( e2_App.GetBogoMips() == 0 )
-//		e2_App.LookForBogoMips();
+#ifdef	_WINDOWS
+	e2_App.SetIODriverName( e2_App.GetIODriverName() );
 
+	InitDrvLoader();
+#endif
 
 	// The first parameter of the command line is the file to open (optional)
 	char *param;
