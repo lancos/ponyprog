@@ -493,19 +493,24 @@ int RS232Interface::SetSerialParams(long speed, int bits, int parity, int stops,
 		char dcb_str[128];
 		DCB com_dcb;
 
-		sprintf(dcb_str, "baud=%ld parity=%c data=%d stop=%d", actual_speed, actual_parity, actual_bits, actual_stops);
-		if ( BuildCommDCB(dcb_str, &com_dcb) )
+		if ( GetCommState(hCom, &com_dcb) )
 		{
-			if (actual_flowcontrol == 0)
+			sprintf(dcb_str, "baud=%ld parity=%c data=%d stop=%d", actual_speed, actual_parity, actual_bits, actual_stops);
+			if ( BuildCommDCB(dcb_str, &com_dcb) )
 			{
-				com_dcb.fDtrControl = DTR_CONTROL_DISABLE;
-				com_dcb.fRtsControl = RTS_CONTROL_DISABLE;
+				if (actual_flowcontrol == 0)
+				{
+					com_dcb.fDtrControl = DTR_CONTROL_DISABLE;
+					com_dcb.fRtsControl = RTS_CONTROL_DISABLE;
+				}
+
+				if ( SetCommState(hCom, &com_dcb) )
+					result = OK;
+				else
+					result = GetLastError();
+
+				PurgeComm(hCom, PURGE_TXCLEAR|PURGE_RXCLEAR);
 			}
-
-			if ( SetCommState(hCom, &com_dcb) )
-				result = OK;
-
-			PurgeComm(hCom, PURGE_TXCLEAR|PURGE_RXCLEAR);
 		}
 	}
 #else
