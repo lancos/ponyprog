@@ -183,7 +183,8 @@ class e2App : public vApp, public E2Profile
 	PonyIOInterface siprog_ioI;
 	EasyI2CInterface easyi2c_comI;
 	EasyI2CLPTInterface easyi2c_lptI;
-	AvrISPInterface avrispI;
+	AvrISPInterface avrisp_apiI;
+	AvrISPInterface avrisp_ioI;
 
 	BusIO *iniBus;					//pointer to current Bus
 	BusIO *busvetp[NO_OF_BUSTYPE];	//array of pointers to available Bus

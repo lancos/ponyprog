@@ -57,6 +57,7 @@ enum HInterfaceType {
 	EASYI2C_COM,
 	EASYI2C_LPT,
 	AVRISP,
+	AVRISPIO,
 	LAST_HT
 };
 

@@ -352,7 +352,6 @@ void e2App::KeyIn(vWindow* win, vKey key, unsigned int shift)
 //=======================>>> e2App::SetInterface <<<=========================
 void e2App::SetInterfaceType(HInterfaceType type)
 {
-
 	switch (type)
 	{
 	//Interface initializers
@@ -374,7 +373,15 @@ void e2App::SetInterfaceType(HInterfaceType type)
 		break;
 	case AVRISP:
 		iType = AVRISP;
-		busIntp = &avrispI;
+		busIntp = &avrisp_apiI;
+		avrisp_apiI.SetIOmode(0);
+		avrisp_apiI.Close();
+		break;
+	case AVRISPIO:
+		iType = AVRISPIO;
+		busIntp = &avrisp_ioI;
+		avrisp_ioI.SetIOmode(1);
+		avrisp_ioI.Close();
 		break;
 	default:
 		iType = SIPROG_API;		//20/07/99 -- to prevent crash

@@ -56,7 +56,8 @@ static Interf2Index index_interface[] = {
 	{0,1,"SI-ProgI/O",SIPROG_IO},
 	{0,2,"EasyI2C-COM",EASYI2C_COM},
 	{1,0,"EasyI2C-LPT",EASYI2C_LPT},
-	{1,1,"AvrISP",AVRISP},
+	{1,1,"AvrISP-API",AVRISP},
+	{1,2,"AvrISP-I/O",AVRISPIO},
 	{0,0,0,LAST_HT}
 };
 
