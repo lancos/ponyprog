@@ -4,7 +4,7 @@
 [Setup]
 Bits=32
 AppName=PonyProg
-AppVerName=PonyProg v1.17e
+AppVerName=PonyProg v1.17f
 AppCopyright=Copyright © 1997-2000 by Claudio Lanconelli
 DefaultDirName={pf}\PonyProg
 DefaultGroupName=PonyProg

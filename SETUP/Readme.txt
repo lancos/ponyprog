@@ -1,5 +1,5 @@
 -------------------------------------------
-PonyProg - Serial Device Programmer  v1.17e
+PonyProg - Serial Device Programmer  v1.17f
 
 PonyProg comes with a user friendly GUI framework available for Windows95/98,
 Windows2000, WindowsNT and Intel Linux.
@@ -64,6 +64,11 @@ TODO (PonyProg is still under development)
 =======
 History
 =======
+
+v 1.17f
+-------
+Fixed another problem with the new driver for Win2K.
+Fixed a load problem with Motorola S-record files.
 
 v 1.17e
 -------
