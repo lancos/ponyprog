@@ -182,14 +182,14 @@ int PicBus::Reset(void)
 	ClearMCLR();
 //	setDI();
 //	setCLK();
-//	WaitMsec(10);
+	WaitMsec(10);
 
 	clearCLK();
 	clearDI();
 	WaitMsec(15);
 
 	SetMCLR();
-	WaitMsec(5);
+	WaitMsec(10);
 /**
 	int k;
 	UWORD val = 0;
