@@ -21,8 +21,8 @@ include $(CONFIG)
 #xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 #Local configuration (changed from V Config)
 
-oDir = obj
-Bin = bin
+oDir = .
+Bin = .
 
 CFLAGS	+= -D_LINUX_ -D_PONYPROG_ -D_UDP_SERVER -Wall
 
@@ -145,9 +145,13 @@ SRCS=\
 
 #xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
-.PHONY: default all objs clean cleanobj cleanall backup backuplink
+.PHONY: default all objs clean cleanobj cleanall backup backuplink dep
 
-default: $(PROG)
+default:	$(PROG)
+
+all:
+	$(MAKE) dep
+	$(MAKE) $(PROG)
 
 linux linuxelf:
 	$(MAKE) ARCH=$@ $(PROG)
@@ -209,9 +213,11 @@ $(oDir)/%.o: %.cpp
 dep:
 	$(CXX) -MM $(CFLAGS) $(SRCS) > dep.file
 
+dep.file:	$(SRCS)
+	$(CXX) -MM $(CFLAGS) $(SRCS) > dep.file
 
 #
 # include a dependency files
 #
-include $(SRCS:.cpp=.d)
-#include dep.file
+#include $(SRCS:.cpp=.d)
+include dep.file
