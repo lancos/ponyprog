@@ -6,7 +6,7 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C)  1997-1999  Claudio Lanconelli                           //
+//  Copyright (C)  1997-2000  Claudio Lanconelli                           //
 //                                                                         //
 //  e-mail: lanconel@cs.unibo.it                                           //
 //  http://www.cs.unibo.it/~lanconel                                       //
@@ -46,13 +46,13 @@ e2AppWinInfo::e2AppWinInfo(vCmdWindow* win, char* name, BusIO** busvptr, void* p
 		buffer_size(BUFFER_SIZE),
 		buf_ok(0),
 		buf_changed(0),
+		fname(0),
 		no_block(0),
-		roll_over(0),
-		lock_bits(0),
-		fuse_bits(0),
 		splitted(0),
-		crc(0),
-		fname(0)
+		roll_over(0),
+		fuse_bits(0),
+		lock_bits(0),
+		crc(0)
 {
 	UserDebug(Constructor, "e2AppWinInfo::e2AppWinInfo()\n");
 

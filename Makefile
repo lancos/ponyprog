@@ -24,7 +24,7 @@ include $(CONFIG)
 oDir = ./obj/$(Arch)
 Bin = ./bin/$(Arch)
 
-CFLAGS	+= -D_LINUX_ -D_PONYPROG_ -D_UDP_SERVER
+CFLAGS	+= -D_LINUX_ -D_PONYPROG_ -D_UDP_SERVER -Wall
 
 #xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 

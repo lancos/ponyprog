@@ -6,7 +6,7 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997, 1998  Claudio Lanconelli                           //
+//  Copyright (C) 1997-2000  Claudio Lanconelli                            //
 //                                                                         //
 //  e-mail: lanconel@cs.unibo.it                                           //
 //  http://www.cs.unibo.it/~lanconel                                       //
@@ -59,10 +59,10 @@ PicBus::PicBus(BusInterface *ptr)
 		LoadDataCode(0x03),
 		LoadConfigCode(0x00),
 		IncAddressCode(0x06),
-		EraseProgMem(0x09),
-		EraseDataMem(0x0b),
 		BeginEraseProgCode(0x08),
-		BeginProgOnlyCode(0x18)
+		BeginProgOnlyCode(0x18),
+		EraseProgMem(0x09),
+		EraseDataMem(0x0b)
 {
 }
 

@@ -6,7 +6,7 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997, 1998  Claudio Lanconelli                           //
+//  Copyright (C) 1997-2000   Claudio Lanconelli                           //
 //                                                                         //
 //  e-mail: lanconel@cs.unibo.it                                           //
 //  http://www.cs.unibo.it/~lanconel                                       //
@@ -165,7 +165,7 @@ int Sde2506Bus::Reset(void)
 
 long Sde2506Bus::Read(int addr, UBYTE *data, long length)
 {
-	UserDebug3(UserApp2, "Sde2506Bus::Read(%Xh, %Xh, %d)\n", addr, data, length);
+	UserDebug3(UserApp2, "Sde2506Bus::Read(%Xh, %Xh, %ld)\n", addr, (unsigned int)data, length);
 
 	long len;
 
@@ -189,7 +189,7 @@ long Sde2506Bus::Read(int addr, UBYTE *data, long length)
 	}
 	CheckAbort(100);
 
-	UserDebug1(UserApp2, "Sde2506Bus::Read() = %d\n", len);
+	UserDebug1(UserApp2, "Sde2506Bus::Read() = %ld\n", len);
 
 	return len;
 }

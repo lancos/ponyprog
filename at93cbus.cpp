@@ -6,7 +6,7 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997, 1998  Claudio Lanconelli                           //
+//  Copyright (C) 1997-2000   Claudio Lanconelli                           //
 //                                                                         //
 //  e-mail: lanconel@cs.unibo.it                                           //
 //  http://www.cs.unibo.it/~lanconel                                       //
@@ -66,7 +66,7 @@ At93cBus::At93cBus(BusInterface *ptr)
 // non a BYTE
 long At93cBus::Read(int addr, UBYTE *data, long length)
 {
-	UserDebug3(UserApp1, "At93cBus::Read(%xh, %xh, %d)\n", addr, data, length);
+	UserDebug3(UserApp1, "At93cBus::Read(%xh, %xh, %ld)\n", addr, (unsigned int)data, length);
 
 	long len;
 
@@ -100,7 +100,7 @@ long At93cBus::Read(int addr, UBYTE *data, long length)
 	}
 	CheckAbort(100);
 
-	UserDebug1(UserApp1, "At93cBus::Read() = %d\n", len);
+	UserDebug1(UserApp1, "At93cBus::Read() = %ld\n", len);
 
 	return len;
 }

@@ -6,7 +6,7 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-1999  Claudio Lanconelli                            //
+//  Copyright (C) 1997-2000  Claudio Lanconelli                            //
 //                                                                         //
 //  e-mail: lanconel@cs.unibo.it                                           //
 //  http://www.cs.unibo.it/~lanconel                                       //
@@ -149,7 +149,7 @@ int At250Bus::Reset(void)
 
 long At250Bus::Read(int addr, UBYTE *data, long length)
 {
-	UserDebug3(UserApp2, "At250Bus::Read(%xh, %xh, %d)\n", addr, data, length);
+	UserDebug3(UserApp2, "At250Bus::Read(%xh, %xh, %ld)\n", addr, (unsigned int)data, length);
 
 	long len;
 #if 0
@@ -169,7 +169,7 @@ long At250Bus::Read(int addr, UBYTE *data, long length)
 	CheckAbort(100);
 #endif
 
-	UserDebug1(UserApp2, "At250Bus::Read() = %d\n", len);
+	UserDebug1(UserApp2, "At250Bus::Read() = %ld\n", len);
 
 	return len;
 }

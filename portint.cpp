@@ -37,6 +37,8 @@
 #ifdef	_LINUX_
 #include <asm/io.h>
 #include <sys/io.h>
+//May be your system need this instead of <sys/io.h>
+//#include <linux/ioport.h>
 #include <unistd.h>
 
 	int PortInterface::IOperm(int a, int b, int c)
@@ -61,14 +63,14 @@
 # define	outb(val, id)
 #else
 # ifdef	__BORLANDC__
-#    include <conio.h>
-#    define	inb(id)			inp(id)
-#    define	outb(val, id)	outp(id, val)
+#   include <conio.h>
+#   define	inb(id)			inp(id)
+#   define	outb(val, id)	outp(id, val)
 #   define	__inline__
 # else // MICROSOFT VC++
-#    include <conio.h>
-#    define	inb(id)			_inp(id)
-#    define	outb(val, id)	_outp(id, val)
+#   include <conio.h>
+#   define	inb(id)			_inp(id)
+#   define	outb(val, id)	_outp(id, val)
 #   define	__inline__ __inline
 #   define _export
 # endif

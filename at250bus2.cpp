@@ -1,12 +1,12 @@
 //=========================================================================//
 //-------------------------------------------------------------------------//
-// at250bus.cpp -- AT250x0 (SPI eeproms) Bus Driver                        //
+// at250bus2.cpp -- AT25xxx (Big SPI eeproms) Bus Driver                   //
 // This file is part of PonyProg.                                          //
 //-------------------------------------------------------------------------//
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997, 1998  Claudio Lanconelli                           //
+//  Copyright (C) 1997-2000   Claudio Lanconelli                           //
 //                                                                         //
 //  e-mail: lanconel@cs.unibo.it                                           //
 //  http://www.cs.unibo.it/~lanconel                                       //
@@ -49,12 +49,12 @@
 At250BigBus::At250BigBus(BusInterface *ptr)
 	: At250Bus(ptr)
 {
-	UserDebug1(Constructor, "At250BigBus::At250BigBus(%xh)\n", ptr);
+	UserDebug1(Constructor, "At250BigBus::At250BigBus(%xh)\n", (unsigned int)ptr);
 }
 
 long At250BigBus::Read(int addr, UBYTE *data, long length)
 {
-	UserDebug3(UserApp2, "At250BigBus::Read(%xh, %xh, %d)\n", addr, data, length);
+	UserDebug3(UserApp2, "At250BigBus::Read(%xh, %xh, %ld)\n", addr, (unsigned int)data, length);
 
 	long len;
 
@@ -75,7 +75,7 @@ long At250BigBus::Read(int addr, UBYTE *data, long length)
 
 	CheckAbort(100);
 
-	UserDebug1(UserApp2, "At250BigBus::Read() = %d\n", len);
+	UserDebug1(UserApp2, "At250BigBus::Read() = %ld\n", len);
 
 	return len;
 }

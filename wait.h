@@ -6,7 +6,7 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997, 1998  Claudio Lanconelli                           //
+//  Copyright (C) 1998-2000  Claudio Lanconelli                            //
 //                                                                         //
 //  e-mail: lanconel@cs.unibo.it                                           //
 //  http://www.cs.unibo.it/~lanconel                                       //
@@ -41,9 +41,14 @@ class Wait
 	virtual ~Wait();
 
 	void WaitMsec(int msec);
-	void WaitUsec(int usec, int test = 0);
+	void WaitUsec(int usec);
 
 	void SetBogoKips();
+
+	int GetHwTimer() const
+		{ return htimer; }
+	void SetHwTimer(int ok = -1);
+	int CheckHwTimer();
 
   protected:	//--------------------------------------- protected
 
@@ -52,5 +57,6 @@ class Wait
   private:		//--------------------------------------- private
 
 	static int bogokips;
+	static int htimer;
 };
 #endif

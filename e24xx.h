@@ -6,7 +6,7 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997, 1998  Claudio Lanconelli                           //
+//  Copyright (C) 1997-2000   Claudio Lanconelli                           //
 //                                                                         //
 //  e-mail: lanconel@cs.unibo.it                                           //
 //  http://www.cs.unibo.it/~lanconel                                       //
@@ -54,29 +54,26 @@ class E24xx : public EEProm
 	int Verify();
 	int BankRollOverDetect(int force);
 
-	int	const max_bank;		// numero massimo di banchi (dim.max eeprom)
+	int	const max_bank;		// max number of banks (max eeprom size)
 
   protected:	//--------------------------------------- protected
 
-	int const timeout_loop;		// timeout della EEPROM
+	int const timeout_loop;		//eeprom timeout
 
 	//!!! 07/03/98
-//	int const base_addr;		// indirizzo I2C base delle eeprom
-	int base_addr;				// indirizzo I2C base delle eeprom
+	int base_addr;				//eeprom I2CBus base address
 	int n_bank;					//numero indirizzi (o banchi reali)
 
-	//-- Parte riguardante la EEPROM
 	int eeprom_addr[MAX_BANK];		// indirizzi I2C a cui risponde la EEPROM
+
+	int sequential_read;			//if 1 whole bank every read
+	int writepage_size;				//if > 1 perform page write
 
 	I2CBus *GetBus()
 		{ return (I2CBus *)EEProm::GetBus(); }
 
 	virtual int bank_out(BYTE const *copy_buf, int bank_no, long size = -1, long idx = 0);
 	virtual int bank_in(BYTE *copy_buf, int bank_no, long size = -1, long idx = 0);
-
-	//-- Parte riguardante la EEPROM
-	int sequential_read;			//1 --> legge un banco in una volta
-	int writepage_size;				//se > 1 scrive una pagina alla volta
 
   private:		//--------------------------------------- private
 

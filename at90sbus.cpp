@@ -6,7 +6,7 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-1999  Claudio Lanconelli                            //
+//  Copyright (C) 1997-2000  Claudio Lanconelli                            //
 //                                                                         //
 //  e-mail: lanconel@cs.unibo.it                                           //
 //  http://www.cs.unibo.it/~lanconel                                       //
@@ -66,10 +66,10 @@ At90sBus::At90sBus(BusInterface *ptr)
 		ReadEEPMem0(0xA0), ReadEEPMem1(0),
 		WriteEEPMem0(0xC0), WriteEEPMem1(0),
 		ReadDevCode0(0x30), ReadDevCode1(0),
-		WriteLock0(0xAC), WriteLock1(0xFF),
-		WriteFuse0(0xAC), WriteFuse1(0xBF),
 		ReadLock0(0x58), ReadLock1(0),
+		WriteLock0(0xAC), WriteLock1(0xFF),
 		ReadFuse0(0x50), ReadFuse1(0),
+		WriteFuse0(0xAC), WriteFuse1(0xBF),
 		p1_a(0x80), p2_a(0x7F), pflash_a(0x7F),
 		p1_b(0x00), p2_b(0xFF), pflash_b(0xFF)
 {

@@ -6,7 +6,7 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997, 1998  Claudio Lanconelli                           //
+//  Copyright (C) 1997-2000   Claudio Lanconelli                           //
 //                                                                         //
 //  e-mail: lanconel@cs.unibo.it                                           //
 //  http://www.cs.unibo.it/~lanconel                                       //
@@ -41,22 +41,13 @@
 E24xx::E24xx(e2AppWinInfo *wininfo, BusIO *busp, int max_no_of_bank)
 	:	EEProm(wininfo, busp, BANK_SIZE),
 		max_bank(max_no_of_bank),
-		n_bank(0),
 		timeout_loop(200),
-	//	base_addr(0xA0),		// default I2C address
-		writepage_size(1),		// scrittura di un byte alla volta (no page write)
-		sequential_read(1)		// lettura di un banco alla volta
+		n_bank(0),
+		sequential_read(1),		// lettura di un banco alla volta
+		writepage_size(1)		// scrittura di un byte alla volta (no page write)
 {
 	base_addr = THEAPP->GetI2CBaseAddr();
 	THEAPP->SetI2CBaseAddr(base_addr);
-/***
-	//Inizializza il vettori degli indirizzi di default
-	//  questo nel caso non venga determinata automaticamente
-	//  la dimensione con il Probe()
-	int addr, k;
-	for (addr = base_addr, k = 0; k < max_bank; k++, addr += 2)
-			eeprom_addr[k] = addr;
-***/
 }
 
 //--- Distruttore

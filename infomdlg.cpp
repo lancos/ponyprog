@@ -82,7 +82,7 @@ infoModalDialog::infoModalDialog(vBaseWindow* bw, int rlv, UWORD crc, long size,
 {
 	UserDebug(Constructor,"infoModalDialog::infoModalDialog()\n")
 	if (rlv > 0)
-		DefaultCmds[2].title = (rlv == 1) ? "Yes " : " No ";
+		DefaultCmds[2].title = (rlv == 1) ? (char *)"Yes " : (char *)" No ";
 	else
 		DefaultCmds[2].title = "Unknown";
 

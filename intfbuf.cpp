@@ -6,7 +6,7 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997, 1998  Claudio Lanconelli                           //
+//  Copyright (C) 1997-2000   Claudio Lanconelli                           //
 //                                                                         //
 //  e-mail: lanconel@cs.unibo.it                                           //
 //  http://www.cs.unibo.it/~lanconel                                       //
@@ -77,7 +77,7 @@ int IntelFileBuf::WriteRecord(FILE *fh, long curaddr, long recsize, int fmt)
 		checksum += len & 0xFF;
 
 		//addr field
-		fprintf(fh, "%04X", curaddr);
+		fprintf(fh, "%04lX", curaddr);
 		checksum += (curaddr >> 8) & 0xFF;
 		checksum += curaddr & 0xFF;
 
@@ -121,7 +121,7 @@ int IntelFileBuf::WriteAddressRecord(FILE *fh, long curaddr)
 		//adjust extended address
 		curaddr >>= 4;
 
-		fprintf(fh, "%04X", curaddr);
+		fprintf(fh, "%04lX", curaddr);
 		checksum += (curaddr >> 8) & 0xFF;
 		checksum += curaddr & 0xFF;
 

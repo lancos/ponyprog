@@ -6,7 +6,7 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997, 1998  Claudio Lanconelli                           //
+//  Copyright (C) 1997-2000   Claudio Lanconelli                           //
 //                                                                         //
 //  e-mail: lanconel@cs.unibo.it                                           //
 //  http://www.cs.unibo.it/~lanconel                                       //
@@ -264,53 +264,18 @@ void I2CBus::SetDelay()
 	UserDebug1(UserApp2, "I2CBus::SetDelay() = %d\n", n);
 }
 
-/** Obsolete calibration routine
-//Calibra il ritardo per la temporizzazione I2C
-int I2CBus::Calibration(int slave)
-{
-	UBYTE ch;
-	int step = 2;
-
-	delay_loop = 10000;		//ritardo con cui deve funzionare anche un PentiumII 300MHz e successivi...
-	if ( StartWrite(slave, &ch, 1) == 1 )
-	{
-		delay_loop = 1;
-		int k;
-		for (k = 0; Read(slave, &ch, 1) != 1 && k < 100; k++)
-			if ( errno == IICERR_NOADDRACK )
-			{
-				delay_loop += step;
-				if ( delay_loop > 80 )
-					step = 20;
-				else
-				if ( delay_loop > 40 )
-					step = 10;
-				else
-				if ( delay_loop > 20 )
-					step = 5;
-			}
-	}
-
-	if (errno)
-		delay_loop = DELAYLOOP;
-	else
-		delay_loop++;
-
-	return errno;
-}
-**/
 
 long I2CBus::Read(int slave, UBYTE *data, long length)
 {
 	long len;
 
-	UserDebug3(UserApp2, "I2CBus::Read(%d, %x, %ld) - IN\n", slave, data, length);
+	UserDebug3(UserApp2, "I2CBus::Read(%d, %x, %ld) - IN\n", slave, (unsigned int)data, length);
 	len = StartRead(slave, data, length);
 	if (len == length)
 		if ( errno || Stop() )
 			len = 0;
 
-	UserDebug2(UserApp2, "I2CBus::Read() = %d, errno = %d - OUT\n", len, errno);
+	UserDebug2(UserApp2, "I2CBus::Read() = %ld, errno = %d - OUT\n", len, errno);
 
 	return len;
 }
@@ -319,14 +284,14 @@ long I2CBus::Write(int slave, UBYTE const *data, long length)
 {
 	long len;
 
-	UserDebug3(UserApp2, "I2CBus::Write(%d, %x, %ld) - IN\n", slave, data, length);
+	UserDebug3(UserApp2, "I2CBus::Write(%d, %x, %ld) - IN\n", slave, (unsigned int)data, length);
 
 	len = StartWrite(slave, data, length);
 	if (len == length)
 		if ( errno || Stop())
 			len = 0;
 
-	UserDebug2(UserApp2, "I2CBus::Write() = %d, errno = %d - OUT\n", len, errno);
+	UserDebug2(UserApp2, "I2CBus::Write() = %ld, errno = %d - OUT\n", len, errno);
 
 	return len;
 }
@@ -368,7 +333,7 @@ ULONG I2CBus::StartRead(UBYTE slave, UBYTE *data, ULONG length)
 	int temp;
 	ULONG len = length;
 
-	UserDebug3(UserApp2, "I2CBus::StartRead(%d, %x, %ld) - IN\n", slave, data, length);
+	UserDebug3(UserApp2, "I2CBus::StartRead(%d, %x, %ld) - IN\n", slave, (unsigned int)data, length);
 
 	if (len > 0)
 	{
@@ -409,7 +374,7 @@ ULONG I2CBus::StartRead(UBYTE slave, UBYTE *data, ULONG length)
 	errno = 0;
 
 fineR:
-	UserDebug2(UserApp2, "I2CBus::StartRead() = %d, errno = %d - OUT\n", length-len, errno);
+	UserDebug2(UserApp2, "I2CBus::StartRead() = %ld, errno = %d - OUT\n", length-len, errno);
 
 	return length-len;
 }
@@ -419,7 +384,7 @@ ULONG I2CBus::StartWrite(UBYTE slave, UBYTE const *data, ULONG length)
 	int error;
 	ULONG len = length;
 
-	UserDebug3(UserApp2, "I2CBus::StartWrite(%d, %x, %ld) - IN\n", slave, data, length);
+	UserDebug3(UserApp2, "I2CBus::StartWrite(%d, %x, %ld) - IN\n", slave, (unsigned int)data, length);
 
 	if (len == 0)
 		return 0;
@@ -447,7 +412,7 @@ ULONG I2CBus::StartWrite(UBYTE slave, UBYTE const *data, ULONG length)
 	}
 
 fineW:
-	UserDebug2(UserApp2, "I2CBus::StartWrite() = %d, errno = %d - OUT\n", length-len, errno);
+	UserDebug2(UserApp2, "I2CBus::StartWrite() = %ld, errno = %d - OUT\n", length-len, errno);
 
 	return length-len;
 }
@@ -481,7 +446,7 @@ int I2CBus::Reset(void)
 
 void I2CBus::Close(void)
 {
-	UserDebug1(UserApp1, "I2CBus::Close() busI=%xh\n", busI);
+	UserDebug1(UserApp1, "I2CBus::Close() busI=%xh\n", (unsigned int)busI);
 
 	setSCLSDA();
 	BusIO::Close();

@@ -59,9 +59,9 @@
 e2App::e2App(char* name, int w, int h)
 	: vApp(name, 0, w, h),
 		winCounter(0),
+		port_number(3),		// uses COM3 by default
 		abortFlag(0),
-		app_status(AppReady),
-		port_number(3)		// uses COM3 by default
+		app_status(AppReady)
 {
 	// Constructor
 	UserDebug(Constructor, "e2App::e2App()\n");
@@ -235,7 +235,7 @@ int e2App::OpenPort(int port)
 //=====================>>> e2App::ClosePort <<<==============================
 void e2App::ClosePort()
 {
-	UserDebug1(UserApp1,"e2App::ClosePort() iniBus=%xh\n",iniBus);
+	UserDebug1(UserApp1,"e2App::ClosePort() iniBus=%xh\n",(unsigned int)iniBus);
 	iniBus->Close();
 }
 
@@ -254,7 +254,7 @@ int e2App::TestPort(int port, int open_only)
 //=====================>>> e2App::OpenBus <<<==============================
 int e2App::OpenBus(BusIO *p)
 {
-	UserDebug1(UserApp1,"e2App::OpenBus(%xh)\n", p);
+	UserDebug1(UserApp1,"e2App::OpenBus(%xh)\n", (unsigned int)p);
 
 	iniBus->Close();
 
@@ -286,7 +286,7 @@ int e2App::OpenBus(BusIO *p)
 //=====================>>> e2App::SleepBus <<<==============================
 void e2App::SleepBus()
 {
-	UserDebug1(UserApp2,"e2App::CloseBus() iniBus=%xh\n", iniBus);
+	UserDebug1(UserApp2,"e2App::CloseBus() iniBus=%xh\n", (unsigned int)iniBus);
 
 	iniBus->WaitMsec(5);	// 08/04/98 -- hold time dell'alimentazione
 	busIntp->SetPower(0);
@@ -451,6 +451,8 @@ void e2App::LookForBogoMips()
 	Wait w;
 	int k;
 
+	w.SetHwTimer(0);		//Disable Hw timer for bogomips calibration
+
 	// First BogoMIPS valuation
 	do {
 		multiplier *= 5;
@@ -513,12 +515,16 @@ void e2App::LookForBogoMips()
 			fprintf(fh, "3) count = %d ** mslice = %f *** bogo = %d\n", count, MSLICE, GetBogoMips());
 	}
 
+	w.CheckHwTimer();		//Check to enable again Hw timer
+
 	if (fh)
 	{
-	//	if ( fabs((double)count - MSLICE) < (MSLICE * 0.05) )
-	//		fprintf(fh, "The right BogoMIPS for your computer is %d\n", GetBogoMips());
-	//	else
-	//		fprintf(fh, "BogoMips calculation failed (%d vs. %f)\n", count, MSLICE);
+		if (w.GetHwTimer())
+		{
+			fprintf(fh, "Hardware timer is OK\n");
+		}
+		else
+			fprintf(fh, "Hardware timer too slow, use bogomips (%d)\n", GetBogoMips());
 
 		fclose(fh);
 	}
