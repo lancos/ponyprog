@@ -42,7 +42,7 @@
 #include "e2app.h"
 
 #ifdef	_PONYPROG_
-# define	VERSIONE	"2.06e Beta"
+# define	VERSIONE	"2.06f Beta"
 #endif
 
 //@V@:About Dialog Commands
@@ -68,7 +68,7 @@ static DialogCmd AboutDlg[] = {
 	{C_Frame,frmAbout1,0,"About",NoList,CA_NoBorder,isSens,NoFrame,0,lblAbout0},
 	{C_Icon,icoPonyProg,0,APPNAME,&ponyI,CA_None,isSens,frmAbout1,0,0},
 	{C_Text,lblAbout1,0,
-		"Copyright (C) 1997-2002  by  " AUTHORNAME "\n\nE-mail: " AUTHORMAIL "\n" STR_APPDOWNLOAD1 " " APPNAME " " STR_APPDOWNLOAD2 "\n" AUTHORWEB,
+		"Copyright (C) 1997-2005  by  " AUTHORNAME "\n\nE-mail: " AUTHORMAIL "\n" STR_APPDOWNLOAD1 " " APPNAME " " STR_APPDOWNLOAD2 "\n" AUTHORWEB,
 			NoList,CA_None,isSens,frmAbout1,icoPonyProg,0},
 	{C_Text,lblAbout2,0,
 		MSG_TRANSLATORCREDITS "\n" MSG_TRANSLATORNAME,
