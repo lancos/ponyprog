@@ -1,0 +1,4 @@
+edit the v/Config.mk file to update the HOMEV variable (make it point to your v absolute path)
+then do:
+make
+sudo make install
