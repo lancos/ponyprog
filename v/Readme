@@ -1,0 +1,41 @@
+Welcome to the V FTP site. This site contains the main
+distribution for the V, a free, portable C++ GUI Framework.
+
+This file was last updated 26 Sept 2000
+
+--------------------------------------------------------------
+--------------------------------------------------------------
+The files of interest:
+
+v-1.25.tar.gz -- Gzipped tar file of the Full version - X and Windows.
+      This includes all source for X and MS-Windows, as well
+      as full documentation.
+
+vos2-121.zip  -- ZIP file with V for OS/2, Version 1.21.
+
+
+videsrc118.tar.gz -- Gzipped tar file of VIDE source.
+
+videsetup.exe -- VIDE for MS-Windows
+
+vide-linux.tar.gz -- Static Linux executable of VIDE.
+
+winutils.zip -- MS-Windows ZIP file of some essential tools used
+      by V and VIDE, including gunzip and tar. You will need a
+      version of ZIP for windows. See http://zipcentral.iscool.net
+      for a completely free ZIP program. (Virus-free version)
+
+
+******************* LATEST NEWS ABOUT V ***********************
+September 26, 2000
+
+This is the V 1.25 release. See the full V documentation
+for a description of what is new in V 1.25 at
+
+      http://objectcentral.com/vgui/vrefman/install.htm
+
+----------------
+----------------
+January 10, 1996
+
+Version 1.0 posted.

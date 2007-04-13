@@ -15,10 +15,10 @@
 #  GNU General Public License for more details.
 #=======================================================================
 
-CONFIG=Config.mk
+CONFIG=v/Config.mk
 include $(CONFIG)
 
-PONYVER = 2.06e
+PONYVER = 2.06f
 TAR = tar
 
 #xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -26,7 +26,7 @@ TAR = tar
 
 Bin = ./bin
 
-CFLAGS	+= -D_LINUX_ -D_PONYPROG_ -Wall
+CFLAGS	+= -D_LINUX_ -D_PONYPROG_ -Wall -fpermissive
 
 #xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
@@ -114,24 +114,25 @@ PRPS = $(SRCS:.cpp=.i)
 
 .PHONY: default all objs clean cleanobj cleanall backup backuplink
 
-default: $(PROG)
+default: vlib $(PROG)
 
-linux linuxelf:
-	$(MAKE) ARCH=$@ $(PROG)
-
-installLinux:
-	$(MAKE)	ARCH=linux install
+vlib:
+	cd v; $(MAKE) vlib
 
 installLinuxElf:
 	$(MAKE)	ARCH=linuxelf install
 
+buildtar:
+	cp $(PROG) /usr/local/bin
+	cd /; $(TAR) cvfzP ponyprog-$(PONYVER).tar.gz /usr/local/bin/$(PROGNAME) /usr/local/lib/libVx.*
+	mv /ponyprog-$(PONYVER).tar.gz .
+	chown lanconel.lanconel ponyprog-$(PONYVER).tar.gz
+
 install:	$(PROG)
 	chmod	755 $(PROG)
 #	chmod	+s $(PROG)
-	cp $(PROG) /usr/local/bin
-	cd /; $(TAR) cvfzP ponyprog-$(PONYVER).tar.gz /usr/local/bin/$(PROGNAME) /usr/lib/libVx.*
-	mv /ponyprog-$(PONYVER).tar.gz .
-	chown lanconel.lanconel ponyprog-$(PONYVER).tar.gz
+	cp	$(PROG) /usr/local/bin
+	cd v; $(MAKE) install
 
 distrib:
 	rm -f *.gz
@@ -298,6 +299,7 @@ distrib:
 	gzip -9 PonyProg2000-English
 
 clean:
+	cd v; $(MAKE) clean
 	-rm -f $(CLEANEXTS)
 	-rm -f dep.file
 
