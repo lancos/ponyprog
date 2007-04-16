@@ -4,7 +4,7 @@
 
 BusIO::BusIO(BusInterface *p)
 {
-	errno = last_addr = 0;
+	err_no = last_addr = 0;
 	busI = p;
 	old_progress = 0;
 }
@@ -30,8 +30,8 @@ int BusIO::CheckAbort(int progress)
 
 int BusIO::Error()
 {
-	int old_val = errno;
-	errno = 0;
+	int old_val = err_no;
+	err_no = 0;
 	return old_val;
 }
 

@@ -47,7 +47,7 @@ class BusIO : public Wait
 //	virtual ~BusIO() { }
 
 	virtual int Open(int port)
-		{ return (errno = busI->Open(port)); }
+		{ return (err_no = busI->Open(port)); }
 	virtual void Close()
 		{ busI->Close(); }
 	virtual int Error();
@@ -80,7 +80,7 @@ class BusIO : public Wait
 		{ return memcmp(data1, data2, length); }
 
 	int GetErrNo()
-		{ return errno; }
+		{ return err_no; }
 	int GetLastAddr() const		//useful in I2C Bus transaction,
 		{ return last_addr; }	// tell the slave address no ack
 
@@ -96,7 +96,7 @@ class BusIO : public Wait
 
  protected:		//------------------------------- protected
 
-	int	errno;			//eventuale codice di errore
+	int	err_no;			//error code
 	int	last_addr;
 
 	int shot_delay;		//delay unit to perform bus timing

@@ -307,10 +307,10 @@ long I2CBus::Read(int slave, UBYTE *data, long length)
 	UserDebug3(UserApp2, "I2CBus::Read(%d, %x, %ld) - IN\n", slave, (unsigned int)data, length);
 	len = StartRead(slave, data, length);
 	if (len == length)
-		if ( errno || Stop() )
+		if ( err_no || Stop() )
 			len = 0;
 
-	UserDebug2(UserApp2, "I2CBus::Read() = %ld, errno = %d - OUT\n", len, errno);
+	UserDebug2(UserApp2, "I2CBus::Read() = %ld, err_no = %d - OUT\n", len, err_no);
 
 	return len;
 }
@@ -323,10 +323,10 @@ long I2CBus::Write(int slave, UBYTE const *data, long length)
 
 	len = StartWrite(slave, data, length);
 	if (len == length)
-		if ( errno || Stop())
+		if ( err_no || Stop())
 			len = 0;
 
-	UserDebug2(UserApp2, "I2CBus::Write() = %ld, errno = %d - OUT\n", len, errno);
+	UserDebug2(UserApp2, "I2CBus::Write() = %ld, err_no = %d - OUT\n", len, err_no);
 
 	return len;
 }
@@ -354,15 +354,15 @@ int I2CBus::Start(UBYTE slave)
 	// send Start
 	if ( (temp = SendStart()) )
 	{
-		errno = temp;
-		return errno;
+		err_no = temp;
+		return err_no;
 	}
 
 	if ( (temp = SendByteMast(slave)) != 0 )
 	{
-		errno = (temp == IICERR_NOTACK) ? IICERR_NOADDRACK : temp;
+		err_no = (temp == IICERR_NOTACK) ? IICERR_NOADDRACK : temp;
 		last_addr = slave;
-		return errno;
+		return err_no;
 	}
 
 	return 0;
@@ -385,13 +385,13 @@ ULONG I2CBus::StartRead(UBYTE slave, UBYTE *data, ULONG length)
 		// send Start
 		if ( (temp = SendStart()) )
 		{
-			errno = temp;
+			err_no = temp;
 			return 0;
 		}
 
 		if ( (temp = SendByteMast(slave | 1)) != 0 )
 		{
-			errno = (temp == IICERR_NOTACK) ? IICERR_NOADDRACK : temp;
+			err_no = (temp == IICERR_NOTACK) ? IICERR_NOADDRACK : temp;
 			last_addr = slave | 1;
 			return 0;
 		}
@@ -400,7 +400,7 @@ ULONG I2CBus::StartRead(UBYTE slave, UBYTE *data, ULONG length)
 		{
 			if ((temp = RecByteMast(0)) < 0)
 			{
-				errno = temp;
+				err_no = temp;
 				goto fineR;
 			}
 			*data++ = (UBYTE)temp;
@@ -410,16 +410,16 @@ ULONG I2CBus::StartRead(UBYTE slave, UBYTE *data, ULONG length)
 	// last byte received without acknowledge
 	if ((temp = RecByteMast(1)) < 0)
 	{
-		errno = temp;
+		err_no = temp;
 		goto fineR;
 	}
 	len--;
 
 	*data = (UBYTE)temp;
-	errno = 0;
+	err_no = 0;
 
 fineR:
-	UserDebug2(UserApp2, "I2CBus::StartRead() = %ld, errno = %d - OUT\n", length-len, errno);
+	UserDebug2(UserApp2, "I2CBus::StartRead() = %ld, err_no = %d - OUT\n", length-len, err_no);
 
 	return length-len;
 }
@@ -436,12 +436,12 @@ ULONG I2CBus::StartWrite(UBYTE slave, UBYTE const *data, ULONG length)
 
 	if ( (error = SendStart()) )
 	{
-		errno = error;
+		err_no = error;
 		return 0;
 	}
 	if ( (error = SendByteMast(slave & 0xFE)) )
 	{
-		errno = (error == IICERR_NOTACK) ? IICERR_NOADDRACK : error;
+		err_no = (error == IICERR_NOTACK) ? IICERR_NOADDRACK : error;
 		last_addr = slave & 0xFE;
 		return 0;
 	}
@@ -450,14 +450,14 @@ ULONG I2CBus::StartWrite(UBYTE slave, UBYTE const *data, ULONG length)
 	{
 		if ( (error = SendByteMast(*data++)) != 0 )
 		{
-			errno = error;
+			err_no = error;
 			goto fineW;
 		}
 		len--;
 	}
 
 fineW:
-	UserDebug2(UserApp2, "I2CBus::StartWrite() = %ld, errno = %d - OUT\n", length-len, errno);
+	UserDebug2(UserApp2, "I2CBus::StartWrite() = %ld, err_no = %d - OUT\n", length-len, err_no);
 
 	return length-len;
 }
@@ -466,11 +466,11 @@ int I2CBus::Stop(void)
 {
 	UserDebug(UserApp3, "I2CBus::Stop() - IN\n");
 
-	errno = SendStop() ? IICERR_STOP : 0;
+	err_no = SendStop() ? IICERR_STOP : 0;
 
-	UserDebug1(UserApp3, "I2CBus::Stop() = %d - OUT\n", errno);
+	UserDebug1(UserApp3, "I2CBus::Stop() = %d - OUT\n", err_no);
 
-	return errno;
+	return err_no;
 }
 
 int I2CBus::Reset(void)
