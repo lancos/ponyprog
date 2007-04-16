@@ -6,7 +6,7 @@ AppName=PonyProg2000
 AppPublisher=LancOS 
 AppPublisherURL=http://www.LancOS.com/
 AppUpdatesURL=http://www.lancos.com/prog.html
-AppVersion=2.06f
+AppVersion=2.06g
 AppVerName=PonyProg2000 v2.06g
 AppCopyright=Copyright © 1997-2007 by Claudio Lanconelli
 DefaultDirName={pf}\PonyProg2000
@@ -15,8 +15,9 @@ Compression=lzma/max
 SolidCompression=yes
 LicenseFile=license.txt
 ChangesAssociations=yes
-;AdminPrivilegesRequired=yes
 PrivilegesRequired=admin
+;run in 32bit mode only due to dlportio.sys
+ArchitecturesAllowed=x86
 
 ;I never tested with WinNT 3.51, may be we need to replace 3.51 with 4.00
 MinVersion=4,4
