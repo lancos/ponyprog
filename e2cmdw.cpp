@@ -82,7 +82,8 @@
 #  ifdef	__BORLANDC__
 #    define	strcasecmp stricmp
 #  else // _MICROSOFT_ VC++
-#    define strcasecmp	stricmp
+#    define strcasecmp	_stricmp
+#    define snprintf	_snprintf
 #  endif
 #endif
 
@@ -907,13 +908,13 @@ void e2CmdWindow::KeyIn(vKey keysym, unsigned int shift)
 }
 
 
-int e2CmdWindow::OnError(int errno, char const *msgerr)
+int e2CmdWindow::OnError(int err_no, char const *msgerr)
 {
 	int rv = 0;
 	char msg[MAXMSG];
 	vNoticeDialog note(this);
 
-	switch(errno)
+	switch(err_no)
 	{
 	case 0:
 		strncpy(msg, STR_DEVNOTRESP, MAXMSG);
@@ -928,21 +929,24 @@ int e2CmdWindow::OnError(int errno, char const *msgerr)
 	}
 	case DEVICE_BADTYPE:
 	{
-		sprintf(msg, STR_DEVBADTYPE " (%d)", errno);
-		retryModalDialog re(this,msg);
+		snprintf(msg, MAXMSG, STR_DEVBADTYPE " (%d)", err_no);
+		msg[MAXMSG-1] = '\0';
+		retryModalDialog re(this, msg);
 		rv = re.retryAction();
 		break;
 	}
 	case DEVICE_UNKNOWN:
 	{
-		sprintf(msg, STR_DEVUNKNOWN " (%d)", errno);
+		snprintf(msg, MAXMSG, STR_DEVUNKNOWN " (%d)", err_no);
+		msg[MAXMSG-1] = '\0';
 		retryModalDialog re(this,msg);
 		rv = re.retryAction();
 		break;
 	}
 	case DEVICE_LOCKED:
 	{
-		sprintf(msg, STR_DEVLOCKED " (%d)", errno);
+		snprintf(msg, MAXMSG, STR_DEVLOCKED " (%d)", err_no);
+		msg[MAXMSG-1] = '\0';
 		retryModalDialog re(this,msg);
 		rv = re.retryAction();
 		break;
@@ -951,66 +955,76 @@ int e2CmdWindow::OnError(int errno, char const *msgerr)
 		note.Notice(STR_OPABORTED);
 		break;
 	case E2ERR_OPENFAILED:
-		sprintf(msg, STR_OPENFAILED " (%d)", errno);
+		snprintf(msg, MAXMSG, STR_OPENFAILED " (%d)", err_no);
+		msg[MAXMSG-1] = '\0';
 		note.Notice(msg);
 		break;
 	case E2ERR_ACCESSDENIED:
-		sprintf(msg, STR_ACCDENIED " (%d)", errno);
+		snprintf(msg, MAXMSG, STR_ACCDENIED " (%d)", err_no);
+		msg[MAXMSG-1] = '\0';
 		note.Notice(msg);
 		break;
 	case E2ERR_NOTINSTALLED:
-		sprintf(msg, STR_NOTINST " (%d)", errno);
+		snprintf(msg, MAXMSG, STR_NOTINST " (%d)", err_no);
+		msg[MAXMSG-1] = '\0';
 		note.Notice(msg);
 		break;
 	case IICERR_SDACONFLICT:
 	case IICERR_SCLCONFLICT:
-		sprintf(msg, STR_HWERROR " (%d)", errno);
+		snprintf(msg, MAXMSG, STR_HWERROR " (%d)", err_no);
+		msg[MAXMSG-1] = '\0';
 		note.Notice(msg);
 		break;
 	case IICERR_BUSBUSY:
-		sprintf(msg, STR_BUSBUSY " (%d)", errno);
+		snprintf(msg, MAXMSG, STR_BUSBUSY " (%d)", err_no);
+		msg[MAXMSG-1] = '\0';
 		note.Notice(msg);
 		break;
 	case IICERR_NOTACK:
-		sprintf(msg, STR_I2CNOACK " (%d)", errno);
+		snprintf(msg, MAXMSG, STR_I2CNOACK " (%d)", err_no);
+		msg[MAXMSG-1] = '\0';
 		note.Notice(msg);
 		break;
 	case IICERR_NOADDRACK:
 	{
-		sprintf(msg, STR_I2CNODEV " (%d)", errno);
+		snprintf(msg, MAXMSG, STR_I2CNODEV " (%d)", err_no);
+		msg[MAXMSG-1] = '\0';
 		retryModalDialog re(this,msg);
 		rv = re.retryAction();
 	//	note.Notice(msg);
 		break;
 	}
 	case IICERR_TIMEOUT:
-		sprintf(msg, STR_I2CTIMEOUT " (%d)", errno);
+		snprintf(msg, MAXMSG, STR_I2CTIMEOUT " (%d)", err_no);
+		msg[MAXMSG-1] = '\0';
 		note.Notice(msg);
 		break;
 	case IICERR_STOP:
-		sprintf(msg, STR_I2CSTOPERR " (%d)", errno);
+		snprintf(msg, MAXMSG, STR_I2CSTOPERR " (%d)", err_no);
+		msg[MAXMSG-1] = '\0';
 		note.Notice(msg);
 		break;
 	case E2ERR_WRITEFAILED:
-		sprintf(msg, STR_WRITEERR " (%d)", errno);
+		snprintf(msg, MAXMSG, STR_WRITEERR " (%d)", err_no);
+		msg[MAXMSG-1] = '\0';
 		note.Notice(msg);
 		break;
 	case E2ERR_BLANKCHECKFAILED:
-		sprintf(msg, STR_BLANKCHECKERR " (%d)", errno);
+		snprintf(msg, MAXMSG, STR_BLANKCHECKERR " (%d)", err_no);
+		msg[MAXMSG-1] = '\0';
 		note.Notice(msg);
 		break;
 	case NOTSUPPORTED:
-		sprintf(msg, STR_OPNOTSUP " (%d)", errno);
+		snprintf(msg, MAXMSG, STR_OPNOTSUP " (%d)", err_no);
+		msg[MAXMSG-1] = '\0';
 		note.Notice(msg);
 		break;
 	default:
 		if (msgerr)
-		{
 			strncpy(msg, msgerr, MAXMSG);
-			msg[MAXMSG-1] = '\0';
-		}
 		else
-			sprintf(msg, STR_ERRNO "%d", errno);
+			snprintf(msg, MAXMSG, STR_ERRNO "%d", err_no);
+		msg[MAXMSG-1] = '\0';
 		note.Notice(msg);
 		break;
 	}
@@ -1202,8 +1216,16 @@ void e2CmdWindow::WindowCommand(ItemVal id, ItemVal val, CmdType cType)
 				THEAPP->SetLastScript( THEAPP->script_name );
 
 				char str[MAXPATH];
-				strncpy(str, STR_RUNSCR " ", MAXPATH - strlen(THEAPP->script_name));
-				strcat(str, THEAPP->script_name);
+				int len = strlen(THEAPP->script_name);
+				if (len >= MAXPATH)
+				{
+					strncpy(str, THEAPP->script_name, MAXPATH);
+				}
+				else
+				{
+					strncpy(str, STR_RUNSCR " ", MAXPATH - len);
+					strcat(str, THEAPP->script_name);
+				}
 				str[MAXPATH-1] = '\0';
 				SetStringAll(m_RunFile, str);
 				SetValueAll(m_RunFile, isSens, Sensitive);
@@ -1226,9 +1248,10 @@ void e2CmdWindow::WindowCommand(ItemVal id, ItemVal val, CmdType cType)
 			THEAPP->SetAppBusy();
 
 			char const *sp = THEAPP->GetLastScript();
-			if (sp && strlen(sp) > 0 && strlen(sp) < 512)
+			if (sp && strlen(sp) > 0 && strlen(sp) < MAXPATH)
 			{
-				strcpy(THEAPP->script_name, sp);
+				strncpy(THEAPP->script_name, sp, MAXPATH);
+				THEAPP->script_name[MAXPATH-1] = '\0';
 				CmdRunScript();
 			}
 			THEAPP->SetAppReady();
@@ -1648,9 +1671,9 @@ void e2CmdWindow::WindowCommand(ItemVal id, ItemVal val, CmdType cType)
 			vYNReplyDialog yn(this);
 			char str[MAXPATH + MAXMSG];
 			if ( strlen(GetFileName()) + strlen(STR_BUFCHANGED) < MAXPATH + MAXMSG )
-				sprintf(str, STR_BUFCHANGED, GetFileName());
+				snprintf(str, MAXPATH + MAXMSG, STR_BUFCHANGED, GetFileName());
 			else
-				strncpy(str, STR_BUFCHANGED, MAXMSG);
+				strncpy(str, STR_BUFCHANGED, MAXPATH + MAXMSG);
 
 			if ( yn.AskYN(str) > 0 )
 			{
@@ -1961,10 +1984,11 @@ int e2CmdWindow::CmdCalibration()
 		else
 		{
 			char str[MAXMSG];
-			if ( strlen(STR_BUSCALIBRAFAIL) + 10 < MAXPATH )
-				sprintf(str, STR_BUSCALIBRAFAIL " (%d)", err);
+			if (strlen(STR_BUSCALIBRAFAIL) + 10 < MAXMSG)
+				snprintf(str, MAXMSG, STR_BUSCALIBRAFAIL " (%d)", err);
 			else
-				sprintf(str, "Calibration failed (%d)", err);
+				snprintf(str, MAXMSG, "Calibration failed (%d)", err);
+			str[MAXMSG-1] = '\0';
 			note.Notice(str);
 		}
 	}
@@ -2225,9 +2249,10 @@ int e2CmdWindow::CmdReadCalibration(int idx)
 		retry_flag = 0;
 
 		long loc;
-		int size, mtype;
+		int size;
+		bool mtype;
 
-		loc = 0; size = 1; mtype = 0;
+		loc = 0; size = 1; mtype = false;
 		THEAPP->GetCalibrationAddress(loc, size, mtype);
 
 		if (mtype)
@@ -3087,8 +3112,10 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 					if (n >= 2)
 					{
 						long start;
-						int size, mtype;
-						start = 0; size = 1; mtype = 0;
+						int size;
+						bool mtype;
+
+						start = 0; size = 1; mtype = false;
 						THEAPP->GetCalibrationAddress(start, size, mtype);
 						if (n >= 2 && arg[1])
 						{
@@ -3097,7 +3124,7 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 						if (n >= 3 && arg[2])
 						{
 							if (strcmp(arg[2], "DATA") == 0)	//offset
-								mtype = 1;
+								mtype = true;
 						}
 						THEAPP->SetCalibrationAddress(start, size, mtype);
 					}
@@ -3577,7 +3604,7 @@ int e2CmdWindow::OscCalibOption()
 {
 	long loc = 0;
 	BYTE val = 0;
-	int memtype = 0;
+	bool memtype = false;
 	int size = 1;
 
 	THEAPP->GetCalibrationAddress(loc, size, memtype);
@@ -4798,7 +4825,7 @@ HIDDEN int CmpExtension(char const *name, char const *ext)
 	if ( name && strlen(name) &&
 		 ext && strlen(ext) )
 	{
-		char *sp = strrchr(name, '.');	//cerca l'estensione
+		const char *sp = strrchr(name, '.');	//cerca l'estensione
 		if (sp)
 			rv = strcasecmp(sp, ext);
 	}
@@ -4953,16 +4980,15 @@ int e2CmdWindow::SaveFile(int force_select)
 
 		if ( fsel.FileSelectSave(s, fn, MAXPATH, filter, filterIndex) && fn[0] )
 		{
-			//Forza l'estensione
 			AddExtension(fn, MAXPATH);
 
-			//Salva il nome vecchio, cosi nel caso il salvataggio
-			//  non riuscisse lo ripristina
+			//Save the old name in case some error occurs, so it can restore it
 			char oldname[MAXPATH];
 			char *oldnamep;
 			if (awip->GetFileName())
 			{
-				strcpy(oldname, awip->GetFileName());
+				strncpy(oldname, awip->GetFileName(), MAXPATH);
+				oldname[MAXPATH-1] = '\0';
 				oldnamep = oldname;
 			}
 			else
@@ -5008,6 +5034,10 @@ int e2CmdWindow::SaveFile(int force_select)
 	return err;
 }
 
+#if MAXFNAMEMSG >= MAXMSG
+#error "MAXFNAMEMSG should be less than MAXMSG"
+#endif
+
 void e2CmdWindow::SetTitle()
 {
 	if (awip->GetFileName() && strlen(awip->GetFileName()) > 0)
@@ -5017,14 +5047,14 @@ void e2CmdWindow::SetTitle()
 		strncpy(str, STR_TITLE, MAXFNAMEMSG);
 		str[MAXFNAMEMSG] = '\0';
 
-		if ( strlen(awip->GetFileName()) < MAXFNAMEMSG )
+		int flen = strlen(awip->GetFileName());
+		if (flen < (MAXMSG-MAXFNAMEMSG))
 			strcat(str, awip->GetFileName());
 		else
 		{
-			int l = strlen(awip->GetFileName()) - MAXFNAMEMSG;
-			const char *s = awip->GetFileName() + l;
+			int offset = flen - (MAXMSG-MAXFNAMEMSG) + 1;
 
-			strcat(str, s);
+			strcat(str, awip->GetFileName() + offset);
 		}
 		vCmdWindow::SetTitle(str);
 	}
@@ -5042,11 +5072,11 @@ const char *e2CmdWindow::GetFileName() const
 
 void e2CmdWindow::UpdateFileMenu()
 {
-	char *sp;
+	char const *sp;
 
 	if ( !THEAPP->scriptMode )
 	{
-		sp = (char *)THEAPP->GetLastScript();
+		sp = THEAPP->GetLastScript();
 		if (sp && strlen(sp) > 0 && strlen(sp) < MAXPATH)
 		{
 			strncpy(THEAPP->script_name, sp, MAXPATH);
@@ -5056,14 +5086,14 @@ void e2CmdWindow::UpdateFileMenu()
 			strncpy(str, STR_RUNSCR " ", MAXFNAMEMSG);
 			str[MAXFNAMEMSG] = '\0';
 
-			if ( strlen(THEAPP->script_name) < MAXFNAMEMSG )
+			int flen = strlen(THEAPP->script_name);
+			if (flen < (MAXMSG-MAXFNAMEMSG))
 				strcat(str, THEAPP->script_name);
 			else
 			{
-				int l = strlen(THEAPP->script_name) - MAXFNAMEMSG;
-				char *s = THEAPP->script_name + l;
+				int offset = flen - (MAXMSG-MAXFNAMEMSG) + 1;
 
-				strcat(str, s);
+				strcat(str, THEAPP->script_name + offset);
 			}
 			SetStringAll(m_RunFile, str);
 			SetValueAll(m_RunFile, isSens, Sensitive);
@@ -5071,11 +5101,11 @@ void e2CmdWindow::UpdateFileMenu()
 	}
 
 	int data_type;
-	sp = (char *)THEAPP->GetLastFile(data_type);
+	sp = THEAPP->GetLastFile(data_type);
 	if (sp)
 	{
 		char str[MAXPATH];
-		char *p = strrchr(sp, '\\');
+		const char *p = strrchr(sp, '\\');
 		if (p)
 			strncpy(str,p+1,MAXPATH-6);		//strlen(" DATA") == 6
 		else
@@ -5097,11 +5127,11 @@ void e2CmdWindow::UpdateFileMenu()
 		SetValueAll(m_File1, notSens, Sensitive);
 	}
 
-	sp = (char *)THEAPP->GetPrevFile(data_type);
+	sp = THEAPP->GetPrevFile(data_type);
 	if (sp)
 	{
 		char str[MAXPATH];
-		char *p = strrchr(sp, '\\');
+		char *p = (char *)strrchr(sp, '\\');
 		if (p)
 			strncpy(str,p+1,MAXPATH-6);		//strlen(" DATA") == 6
 		else

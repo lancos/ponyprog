@@ -39,7 +39,7 @@
 #  ifdef	__BORLANDC__
 #    define	strcasecmp stricmp
 #  else // _MICROSOFT_ VC++
-#    define strcasecmp	stricmp
+#    define strcasecmp	_stricmp
 #  endif
 #endif
 

@@ -52,8 +52,8 @@
 #    define	strncasecmp strnicmp
 #    define strcasecmp stricmp
 #  else // _MICROSOFT_ VC++
-#    define strncasecmp	strnicmp
-#    define strcasecmp stricmp
+#    define strncasecmp	_strnicmp
+#    define strcasecmp _stricmp
 #  endif
 #endif
 

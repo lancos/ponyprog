@@ -163,8 +163,8 @@ class E2Profile : public Profile
 	UWORD GetProgramOptions();
 	int SetProgramOptions(UWORD prog_option);
 
-	int GetCalibrationAddress(long &start, int &size, int &mtype);
-	int SetCalibrationAddress(long start, int size, int mtype);
+	int GetCalibrationAddress(long &start, int &size, bool &mtype);
+	int SetCalibrationAddress(long start, int size, bool mtype);
 
 	char const *GetLogFileName();
 	int SetLogFileName(char const *name);

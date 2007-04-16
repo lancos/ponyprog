@@ -43,11 +43,55 @@
 #    define	strncasecmp strnicmp
 #    define	strcasecmp stricmp
 #  else // _MICROSOFT_ VC++
-#    define strncasecmp	strnicmp
-#    define	strcasecmp stricmp
+#    define strncasecmp	_strnicmp
+#    define	strcasecmp _stricmp
+#    define snprintf _snprintf
 #  endif
 #endif
 
+static int decnum2str(int value, char *str, int len)
+{
+	int ret = snprintf(str, len, "%d", value);
+	str[len - 1] = '\0';
+
+	if (ret > 0 && ret < len)
+		return OK;
+	else
+		return BADPARAM;
+}
+
+static int decnum2str(unsigned long value, char *str, int len)
+{
+	int ret = snprintf(str, len, "%lu", value);
+	str[len - 1] = '\0';
+
+	if (ret > 0 && ret < len)
+		return OK;
+	else
+		return BADPARAM;
+}
+
+static int hexnum2str(int value, char *str, int len)
+{
+	int ret = snprintf(str, len, "0x%02X", value);
+	str[len - 1] = '\0';
+
+	if (ret > 0 && ret < len)
+		return OK;
+	else
+		return BADPARAM;
+}
+
+static int hexnum2str(unsigned long value, char *str, int len)
+{
+	int ret = snprintf(str, len, "0x%04lX", value);
+	str[len - 1] = '\0';
+
+	if (ret > 0 && ret < len)
+		return OK;
+	else
+		return BADPARAM;
+}
 
 //=====>>> Costruttore <<<======
 E2Profile::E2Profile()	: Profile("e2p.ini")
@@ -66,8 +110,11 @@ int E2Profile::GetBogoMips()
 int E2Profile::SetBogoMips(int value)
 {
 	char str[MAXNUMDIGIT];
-	sprintf(str, "%d", value);
-	return SetParameter("BogoMipsX1000", str);
+
+	if ( decnum2str(value, str, MAXNUMDIGIT) == OK )
+		return SetParameter("BogoMipsX1000", str);
+	else
+		return BADPARAM;
 }
 
 #include "eeptypes.h"
@@ -125,12 +172,14 @@ int E2Profile::GetParPortNo()
 
 int E2Profile::SetParPortNo(int port)
 {
-	int rval = -1;
+	int rval = BADPARAM;
+
 	if (port >= 1 && port <= 4)
 	{
 		char str[MAXNUMDIGIT];
-		sprintf(str, "%d", port);
-		rval = SetParameter("PortNumber", str);
+
+		if ( decnum2str(port, str, MAXNUMDIGIT) == OK )
+			rval = SetParameter("PortNumber", str);
 	}
 	return rval;
 }
@@ -172,12 +221,13 @@ int E2Profile::SetLastScript(char const *name)
 
 int E2Profile::SetLastFile(char const *name, int data)
 {
-	int rval = -1;
+	int rval = BADPARAM;
+
 	if (name && strlen(name))
 	{
 		char str[MAXPATH];
 		int n;
-		char *sp = (char *)GetLastFile(n);
+		const char *sp = GetLastFile(n);
 		if (sp && strcasecmp(name, sp) != 0)
 		{
 			strncpy(str, sp, MAXPATH-6);
@@ -225,10 +275,11 @@ char const *E2Profile::GetLastFile(int &data)
 	data = ALL_TYPE;
 	if (sp)
 	{
-		strcpy(param_copy, sp);
+		strncpy(param_copy, sp, MAXLINESIZE+1);
+		param_copy[MAXLINESIZE] = '\0';
 		sp = param_copy;
 
-		char *p = strchr(sp, '?');
+		char *p = (char *)strchr(sp, '?');
 		if (p)
 		{
 			*p++ = '\0';
@@ -245,15 +296,16 @@ char const *E2Profile::GetLastFile(int &data)
 
 char const *E2Profile::GetPrevFile(int &data)
 {
-	char *sp = (char *)GetParameter("PreviousFile");
+	char const *sp = GetParameter("PreviousFile");
 
 	data = ALL_TYPE;
 	if (sp)
 	{
-		strcpy(param_copy, sp);
+		strncpy(param_copy, sp, MAXLINESIZE+1);
+		param_copy[MAXLINESIZE] = '\0';
 		sp = param_copy;
 
-		char *p = strchr(sp, '?');
+		char *p = (char *)strchr(sp, '?');
 		if (p)
 		{
 			*p++ = '\0';
@@ -322,12 +374,14 @@ int E2Profile::GetI2CPageWrite()
 
 int E2Profile::SetI2CPageWrite(int page_write)
 {
-	int rval = -1;
+	int rval = BADPARAM;
+
 	if (page_write > 0)
 	{
 		char str[MAXNUMDIGIT];
-		sprintf(str, "%d", page_write);
-		rval = SetParameter("I2CBusPageWrite", str);
+
+		if ( decnum2str(page_write, str, MAXNUMDIGIT) == OK )
+			rval = SetParameter("I2CBusPageWrite", str);
 	}
 	return rval;
 }
@@ -346,12 +400,14 @@ int E2Profile::GetSPIPageWrite()
 
 int E2Profile::SetSPIPageWrite(int page_write)
 {
-	int rval = -1;
+	int rval = BADPARAM;
+
 	if (page_write > 0)
 	{
 		char str[MAXNUMDIGIT];
-		sprintf(str, "%d", page_write);
-		rval = SetParameter("BigSPIPageWrite", str);
+
+		if ( decnum2str(page_write, str, MAXNUMDIGIT) == OK )
+			rval = SetParameter("BigSPIPageWrite", str);
 	}
 	return rval;
 }
@@ -371,12 +427,14 @@ int E2Profile::GetI2CBaseAddr()
 
 int E2Profile::SetI2CBaseAddr(int base_addr)
 {
-	int rval = -1;
+	int rval = BADPARAM;
+
 	if (base_addr >= 0x00 && base_addr < 0x100)
 	{
 		char str[MAXNUMDIGIT];
-		sprintf(str, "0x%02X", base_addr);
-		rval = SetParameter("I2CBaseAddress", str);
+
+		if ( hexnum2str(base_addr, str, MAXNUMDIGIT) == OK )
+			rval = SetParameter("I2CBaseAddress", str);
 	}
 	return rval;
 }
@@ -405,7 +463,7 @@ int E2Profile::GetI2CSpeed()
 
 int E2Profile::SetI2CSpeed(int speed)
 {
-	int rval = -1;
+	int rval = BADPARAM;
 
 	if (speed == TURBO)
 		rval = SetParameter("I2CBusSpeed", "TURBO");
@@ -440,12 +498,14 @@ int E2Profile::GetSPIResetPulse()
 
 int E2Profile::SetSPIResetPulse(int delay)
 {
-	int rval = -1;
+	int rval = BADPARAM;
+
 	if (delay > 0)
 	{
 		char str[MAXNUMDIGIT];
-		sprintf(str, "%d", delay);
-		rval = SetParameter("SPIResetPulse", str);
+
+		if ( decnum2str(delay, str, MAXNUMDIGIT) == OK )
+			rval = SetParameter("SPIResetPulse", str);
 	}
 	return rval;
 }
@@ -464,12 +524,14 @@ int E2Profile::GetSPIDelayAfterReset()
 
 int E2Profile::SetSPIDelayAfterReset(int delay)
 {
-	int rval = -1;
+	int rval = BADPARAM;
+
 	if (delay > 0)
 	{
 		char str[MAXNUMDIGIT];
-		sprintf(str, "%d", delay);
-		rval = SetParameter("SPIDelayAfterReset", str);
+
+		if ( decnum2str(delay, str, MAXNUMDIGIT) == OK )
+			rval = SetParameter("SPIDelayAfterReset", str);
 	}
 	return rval;
 }
@@ -488,12 +550,14 @@ int E2Profile::GetAT89DelayAfterReset()
 
 int E2Profile::SetAT89DelayAfterReset(int delay)
 {
-	int rval = -1;
+	int rval = BADPARAM;
+
 	if (delay > 0)
 	{
 		char str[MAXNUMDIGIT];
-		sprintf(str, "%d", delay);
-		rval = SetParameter("AT89DelayAfterReset", str);
+
+		if ( decnum2str(delay, str, MAXNUMDIGIT) == OK )
+			rval = SetParameter("AT89DelayAfterReset", str);
 	}
 	return rval;
 }
@@ -512,12 +576,14 @@ int E2Profile::GetAVRDelayAfterReset()
 
 int E2Profile::SetAVRDelayAfterReset(int delay)
 {
-	int rval = -1;
+	int rval = BADPARAM;
+
 	if (delay > 0)
 	{
 		char str[MAXNUMDIGIT];
-		sprintf(str, "%d", delay);
-		rval = SetParameter("AVRDelayAfterReset", str);
+
+		if ( decnum2str(delay, str, MAXNUMDIGIT) == OK )
+			rval = SetParameter("AVRDelayAfterReset", str);
 	}
 	return rval;
 }
@@ -546,7 +612,7 @@ int E2Profile::GetSPISpeed()
 
 int E2Profile::SetSPISpeed(int speed)
 {
-	int rval = -1;
+	int rval = BADPARAM;
 
 	if (speed == TURBO)
 		rval = SetParameter("SPIBusSpeed", "TURBO");
@@ -580,12 +646,14 @@ int E2Profile::GetMegaPageDelay()
 
 int E2Profile::SetMegaPageDelay(int delay)
 {
-	int rval = -1;
+	int rval = BADPARAM;
+
 	if (delay > 0)
 	{
 		char str[MAXNUMDIGIT];
-		sprintf(str, "%d", delay);
-		rval = SetParameter("ATMegaPageWriteDelay", str);
+
+		if ( decnum2str(delay, str, MAXNUMDIGIT) == OK )
+			rval = SetParameter("ATMegaPageWriteDelay", str);
 	}
 	return rval;
 }
@@ -614,7 +682,7 @@ int E2Profile::GetMicroWireSpeed()
 
 int E2Profile::SetMicroWireSpeed(int speed)
 {
-	int rval = -1;
+	int rval = BADPARAM;
 
 	if (speed == TURBO)
 		rval = SetParameter("MicroWireBusSpeed", "TURBO");
@@ -658,7 +726,7 @@ int E2Profile::GetPICSpeed()
 
 int E2Profile::SetPICSpeed(int speed)
 {
-	int rval = -1;
+	int rval = BADPARAM;
 
 	if (speed == TURBO)
 		rval = SetParameter("PICBusSpeed", "TURBO");
@@ -702,7 +770,7 @@ int E2Profile::GetSDESpeed()
 
 int E2Profile::SetSDESpeed(int speed)
 {
-	int rval = -1;
+	int rval = BADPARAM;
 
 	if (speed == TURBO)
 		rval = SetParameter("SDEBusSpeed", "TURBO");
@@ -746,22 +814,22 @@ int E2Profile::GetIMBusSpeed()
 
 int E2Profile::SetIMBusSpeed(int speed)
 {
-	int rval = -1;
+	int rval = BADPARAM;
 
 	if (speed == TURBO)
 		rval = SetParameter("IMBusSpeed", "TURBO");
 	else
 	if (speed == FAST)
-		rval = SetParameter("SDEBusSpeed", "FAST");
+		rval = SetParameter("IMBusSpeed", "FAST");
 	else
 	if (speed == NORMAL)
-		rval = SetParameter("SDEBusSpeed", "NORMAL");
+		rval = SetParameter("IMBusSpeed", "NORMAL");
 	else
 	if (speed == SLOW)
-		rval = SetParameter("SDEBusSpeed", "SLOW");
+		rval = SetParameter("IMBusSpeed", "SLOW");
 	else
 	if (speed == VERYSLOW)
-		rval = SetParameter("SDEBusSpeed", "VERYSLOW");
+		rval = SetParameter("IMBusSpeed", "VERYSLOW");
 
 	return rval;
 }
@@ -780,12 +848,14 @@ int E2Profile::GetPowerUpDelay()
 
 int E2Profile::SetPowerUpDelay(int delay)
 {
-	int rval = -1;
+	int rval = BADPARAM;
+
 	if (delay > 0)
 	{
 		char str[MAXNUMDIGIT];
-		sprintf(str, "%d", delay);
-		rval = SetParameter("PowerUpDelay", str);
+
+		if ( decnum2str(delay, str, MAXNUMDIGIT) == OK )
+			rval = SetParameter("PowerUpDelay", str);
 	}
 	return rval;
 }
@@ -804,12 +874,14 @@ int E2Profile::GetAVRProgDelay()
 
 int E2Profile::SetAVRProgDelay(int delay)
 {
-	int rval = -1;
+	int rval = BADPARAM;
+
 	if (delay > 0)
 	{
 		char str[MAXNUMDIGIT];
-		sprintf(str, "%d", delay);
-		rval = SetParameter("AVRByteWriteDelay", str);
+
+		if ( decnum2str(delay, str, MAXNUMDIGIT) == OK )
+			rval = SetParameter("AVRByteWriteDelay", str);
 	}
 	return rval;
 }
@@ -828,12 +900,14 @@ int E2Profile::GetAVREraseDelay()
 
 int E2Profile::SetAVREraseDelay(int delay)
 {
-	int rval = -1;
+	int rval = BADPARAM;
+
 	if (delay > 0)
 	{
 		char str[MAXNUMDIGIT];
-		sprintf(str, "%d", delay);
-		rval = SetParameter("AVREraseDelay", str);
+
+		if ( decnum2str(delay, str, MAXNUMDIGIT) == OK )
+			rval = SetParameter("AVREraseDelay", str);
 	}
 	return rval;
 }
@@ -854,8 +928,10 @@ int E2Profile::SetMDAProgDelay(int delay)
 {
 	char str[MAXNUMDIGIT];
 
-	sprintf(str, "%d", delay);
-	return SetParameter("MDAWriteDelay", str);
+	if ( decnum2str(delay, str, MAXNUMDIGIT) == OK )
+		return SetParameter("MDAWriteDelay", str);
+	else
+		return BADPARAM;
 }
 
 int E2Profile::GetNVMProgDelay()
@@ -874,8 +950,10 @@ int E2Profile::SetNVMProgDelay(int delay)
 {
 	char str[MAXNUMDIGIT];
 
-	sprintf(str, "%d", delay);
-	return SetParameter("NVMWriteDelay", str);
+	if ( decnum2str(delay, str, MAXNUMDIGIT) == OK )
+		return SetParameter("NVMWriteDelay", str);
+	else
+		return BADPARAM;
 }
 
 ULONG E2Profile::GetSerialNumVal()
@@ -892,12 +970,14 @@ ULONG E2Profile::GetSerialNumVal()
 
 int E2Profile::SetSerialNumVal(ULONG val)
 {
-	int rval = -1;
+	int rval = BADPARAM;
+
 	if (val > 0)
 	{
 		char str[MAXNUMDIGIT];
-		sprintf(str, "%lu", val);
-		rval = SetParameter("SerialNumberVal", str);
+
+		if ( hexnum2str(val, str, MAXNUMDIGIT) == OK )
+			rval = SetParameter("SerialNumberVal", str);
 	}
 
 	return rval;
@@ -928,18 +1008,18 @@ int E2Profile::GetSerialNumAddress(long &start, int &size, bool &mtype)
 
 int E2Profile::SetSerialNumAddress(long start, int size, bool mtype)
 {
-	int rval = -1;
+	int rval = BADPARAM;
 	char str[MAXNUMDIGIT];
 
 	if (start >= 0)
 	{
-		sprintf(str, "0x%lX", start);
-		rval = SetParameter("SerialNumberAddr", str);
+		if ( hexnum2str(start, str, MAXNUMDIGIT) == OK )
+			rval = SetParameter("SerialNumberAddr", str);
 	}
 	if (size >= 1)
 	{
-		sprintf(str, "%d", size);
-		rval = SetParameter("SerialNumberSize", str);
+		if ( decnum2str(size, str, MAXNUMDIGIT) == OK )
+			rval = SetParameter("SerialNumberSize", str);
 	}
 	rval = SetParameter("SerialNumberType", mtype ? "DATA" : "PROG");
 
@@ -1188,11 +1268,11 @@ int E2Profile::SetSoundEnabled(bool enabled)
 }
 
 
-int E2Profile::GetCalibrationAddress(long &start, int &size, int &mtype)
+int E2Profile::GetCalibrationAddress(long &start, int &size, bool &mtype)
 {
 	char const *sp;
 
-	start = 0; size = 1; mtype = 0;
+	start = 0; size = 1; mtype = false;
 
 	if ( (sp = GetParameter("OscCalibrationAddr")) )
 	{
@@ -1205,34 +1285,28 @@ int E2Profile::GetCalibrationAddress(long &start, int &size, int &mtype)
 	if ( (sp = GetParameter("OscCalibrationMemType")) )
 	{
 		if (strcmp(sp, "DATA") == 0)
-			mtype = 1;
+			mtype = true;
 	}
 
 	return OK;
 }
 
-int E2Profile::SetCalibrationAddress(long start, int size, int mtype)
+int E2Profile::SetCalibrationAddress(long start, int size, bool mtype)
 {
-	int rval = -1;
+	int rval = BADPARAM;
 	char str[MAXNUMDIGIT];
 
 	if (start >= 0)
 	{
-		sprintf(str, "0x%lX", start);
-		rval = SetParameter("OscCalibrationAddr", str);
+		if ( hexnum2str(start, str, MAXNUMDIGIT) == OK )
+			rval = SetParameter("OscCalibrationAddr", str);
 	}
 	if (size >= 1)
 	{
-		sprintf(str, "%d", size);
-		rval = SetParameter("OscCalibrationSize", str);
+		if ( decnum2str(size, str, MAXNUMDIGIT) == OK )
+			rval = SetParameter("OscCalibrationSize", str);
 	}
-	if (mtype == 0 || mtype == 1)
-	{
-		if (mtype == 1)
-			rval = SetParameter("OscCalibrationType", "DATA");
-		else
-			rval = SetParameter("OscCalibrationType", "PROG");
-	}
+	rval = SetParameter("OscCalibrationType", mtype ? "DATA" : "PROG");
 
 	return rval;
 }
@@ -1251,12 +1325,14 @@ int E2Profile::GetJDMCmd2CmdDelay()
 
 int E2Profile::SetJDMCmd2CmdDelay(int delay)
 {
-	int rval = -1;
+	int rval = BADPARAM;
+
 	if (delay >= 0)
 	{
 		char str[MAXNUMDIGIT];
-		sprintf(str, "%d", delay);
-		rval = SetParameter("JDM-CmdToCmdDelay", str);
+
+		if ( decnum2str(delay, str, MAXNUMDIGIT) == OK )
+			rval = SetParameter("JDM-CmdToCmdDelay", str);
 	}
 	return rval;
 }
@@ -1320,7 +1396,7 @@ int E2Profile::GetCOMAddress(int &com1, int &com2, int &com3, int &com4)
 
 int E2Profile::SetCOMAddress(int com1, int com2, int com3, int com4)
 {
-	char str[256];
+	char str[STRBUFSIZE];
 
 	if (com1 > 0)
 	{
@@ -1330,21 +1406,21 @@ int E2Profile::SetCOMAddress(int com1, int com2, int com3, int com4)
 			{
 				if (com4 > 0)
 				{
-					sprintf(str, "%X,%X,%X,%X", com1, com2, com3, com4);
+					snprintf(str, STRBUFSIZE, "%X,%X,%X,%X", com1, com2, com3, com4);
 				}
 				else
 				{
-					sprintf(str, "%X,%X,%X", com1, com2, com3);
+					snprintf(str, STRBUFSIZE, "%X,%X,%X", com1, com2, com3);
 				}
 			}
 			else
 			{
-				sprintf(str, "%X,%X", com1, com2);
+				snprintf(str, STRBUFSIZE, "%X,%X", com1, com2);
 			}
 		}
 		else
 		{
-			sprintf(str, "%X", com1);
+			snprintf(str, STRBUFSIZE, "%X", com1);
 		}
 
 		SetParameter("COMPorts", str);
@@ -1371,7 +1447,7 @@ int E2Profile::GetLPTAddress(int &lpt1, int &lpt2, int &lpt3)
 
 int E2Profile::SetLPTAddress(int lpt1, int lpt2, int lpt3)
 {
-	char str[256];
+	char str[STRBUFSIZE];
 
 	if (lpt1 > 0)
 	{
@@ -1379,16 +1455,16 @@ int E2Profile::SetLPTAddress(int lpt1, int lpt2, int lpt3)
 		{
 			if (lpt3 > 0)
 			{
-				sprintf(str, "%X,%X,%X", lpt1, lpt2, lpt3);
+				snprintf(str, STRBUFSIZE, "%X,%X,%X", lpt1, lpt2, lpt3);
 			}
 			else
 			{
-				sprintf(str, "%X,%X", lpt1, lpt2);
+				snprintf(str, STRBUFSIZE, "%X,%X", lpt1, lpt2);
 			}
 		}
 		else
 		{
-			sprintf(str, "%X", lpt1);
+			snprintf(str, STRBUFSIZE, "%X", lpt1);
 		}
 
 		SetParameter("LPTPorts", str);
@@ -1425,25 +1501,26 @@ FileType E2Profile::GetDefaultFileType()
 
 int E2Profile::SetDefaultFileType(FileType ft)
 {
-	char str[32];
+	char str[STRBUFSIZE];
 
-	str[0] = str[31] = '\0';
+	str[0] = '\0';
 
 	if (ft == E2P)
-		strncpy(str, "E2P", 31);
+		strncpy(str, "E2P", STRBUFSIZE);
 	else
 	if (ft == BIN)
-		strncpy(str, "BIN", 31);
+		strncpy(str, "BIN", STRBUFSIZE);
 	else
 	if (ft == CSM)
-		strncpy(str, "CSM", 31);
+		strncpy(str, "CSM", STRBUFSIZE);
 	else
 	if (ft == INTEL)
-		strncpy(str, "INTEL-HEX", 31);
+		strncpy(str, "INTEL-HEX", STRBUFSIZE);
 	else
 	if (ft == MOTOS)
-		strncpy(str, "MOT-SREC", 31);
+		strncpy(str, "MOT-SREC", STRBUFSIZE);
 
+	str[STRBUFSIZE-1] = '\0';
 	if (strlen(str))
 	{
 		SetParameter("DefaultFileType", str);

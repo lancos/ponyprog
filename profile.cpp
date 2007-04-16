@@ -39,7 +39,7 @@
 #  ifdef	__BORLANDC__
 #    define	strncasecmp strnicmp
 #  else // _MICROSOFT_ VC++
-#    define strncasecmp	strnicmp
+#    define strncasecmp	_strnicmp
 #  endif
 #endif
 

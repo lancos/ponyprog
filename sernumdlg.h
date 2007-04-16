@@ -62,7 +62,7 @@ class OscCalibDialog : public vModalDialog
 	OscCalibDialog(vBaseWindow* bw, e2AppWinInfo* aw, char* title = STR_MSGOSCCALIBCFG);
 	virtual ~OscCalibDialog();		// Destructor
 	virtual void DialogCommand(ItemVal,ItemVal,CmdType); // action selected
-	virtual int OscCalibAction(long &cLoc, int &cMemType, BYTE &cVal);
+	virtual int OscCalibAction(long &cLoc, bool &cMemType, BYTE &cVal);
 
   protected:	//--------------------------------------- protected
 

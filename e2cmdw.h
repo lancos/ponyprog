@@ -172,7 +172,7 @@ class e2CmdWindow : public vCmdWindow
 	long CbxIdToType(int idx1, int idx2);
 	int OpenScript(char const *file);
 
-	int OnError(int err, char const *msg = 0);
+	int OnError(int err_no, char const *msgerr = 0);
 	int PlaySoundMsg(bool val);
 
 	long GetDevSize() const;

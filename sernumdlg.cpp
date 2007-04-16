@@ -39,6 +39,15 @@
 #include "types.h"
 #include "sernumdlg.h"
 
+#ifdef	WIN32
+#  ifdef	__BORLANDC__
+#    define	strcasecmp stricmp
+#  else // _MICROSOFT_ VC++
+#    define strcasecmp	_stricmp
+#    define snprintf	_snprintf
+#  endif
+#endif
+
 //@V@:BeginIDs
 enum {
 	lblSNMsg = 1000,
@@ -125,9 +134,9 @@ int SerNumDialog::SerNumAction(long &cLoc, bool &cMemType, bool &cAutoInc, FmtEn
 	char str2[MAXNUMDIGIT];
 	char str3[MAXNUMDIGIT];
 
-	sprintf(str1, "0x%04lX", cLoc);
-	sprintf(str2, "%d", cLen);
-	sprintf(str3, "%ld", cVal);
+	snprintf(str1, MAXNUMDIGIT, "0x%04lX", cLoc);
+	snprintf(str2, MAXNUMDIGIT, "%d", cLen);
+	snprintf(str3, MAXNUMDIGIT, "%ld", cVal);
 	SetCommandLabel(txiLoc, str1, DefaultCmds);
 	SetCommandLabel(txiLen, str2, DefaultCmds);
 	SetCommandLabel(txiVal, str3, DefaultCmds);
@@ -217,10 +226,9 @@ OscCalibDialog::~OscCalibDialog()
 }
 
 //======================>>> OscCalibDialog::OscCalibAction <<<======================
-int OscCalibDialog::OscCalibAction(long &cLoc, int &cMemType, BYTE &cVal)
+int OscCalibDialog::OscCalibAction(long &cLoc, bool &cMemType, BYTE &cVal)
 {
 	cLoc = (cLoc < 0) ? 0 : cLoc;
-	cMemType = (cMemType == 0 || cMemType == 1) ? cMemType : 0;
 
 	char str1[MAXNUMDIGIT];
 	char str3[MAXNUMDIGIT];
@@ -246,7 +254,7 @@ int OscCalibDialog::OscCalibAction(long &cLoc, int &cMemType, BYTE &cVal)
 	GetTextIn(txiVal, str, 10);
 	cVal = (BYTE)strtol(str,NULL,0);
 
-	cMemType = GetValue(chkMemOffset);
+	cMemType = GetValue(chkMemOffset) ? true : false;
 
 	return (ans == M_OK);
 }
