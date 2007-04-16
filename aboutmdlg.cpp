@@ -41,9 +41,6 @@
 
 #include "e2app.h"
 
-#ifdef	_PONYPROG_
-# define	VERSIONE	"2.06f Beta"
-#endif
 
 //@V@:About Dialog Commands
 #include "icons/PonyProg2000.vbm"
@@ -63,7 +60,7 @@ static CommandObject AboutVguiDlg[] = {
 };
 
 static DialogCmd AboutDlg[] = {
-	{C_Text,lblAbout0,0,APPNAME " - " APPNAME_EXT "\n    " STR_MSGVERSION "  " VERSIONE "  " __DATE__,
+	{C_Text,lblAbout0,0,APPNAME " - " APPNAME_EXT "\n    " STR_MSGVERSION "  " APPVERSION "  " __DATE__,
 			NoList,CA_NoBorder,isSens,NoFrame,icoPonyProg,0},
 	{C_Frame,frmAbout1,0,"About",NoList,CA_NoBorder,isSens,NoFrame,0,lblAbout0},
 	{C_Icon,icoPonyProg,0,APPNAME,&ponyI,CA_None,isSens,frmAbout1,0,0},

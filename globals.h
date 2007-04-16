@@ -34,13 +34,13 @@
 #ifndef	_GLOBALS_H
 #define	_GLOBALS_H
 
-#ifdef	_PONYPROG_
-# define	APPNAME		"PonyProg2000"
-# define	AUTHORNAME	"Claudio Lanconelli"
-# define	AUTHORMAIL	"lancos@libero.it"
-# define	AUTHORWEB	"http://www.LancOS.com"
-# define	APPNAME_EXT	STR_APPNAME_EXT
-#endif
+#define	APPNAME		"PonyProg2000"
+#define	AUTHORNAME	"Claudio Lanconelli"
+#define	AUTHORMAIL	"lancos@libero.it"
+#define	AUTHORWEB	"http://www.LancOS.com"
+#define	APPNAME_EXT	STR_APPNAME_EXT
+
+#define	APPVERSION	"2.06g Beta"
 
 #define	THEAPP	((e2App*)theApp)
 
