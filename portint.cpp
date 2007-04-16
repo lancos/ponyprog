@@ -202,7 +202,7 @@ int PortInterface::OpenPort(int from_port, int len)
 
 	// PC ISA ports have only 10 bit addresses
 	// check for the access to ports is granted
-	if (from_port >= 0x100 && from_port + len <= 0x400 && len > 0)
+	if (from_port >= 0x100 && /* from_port + len <= 0x400 && */ len > 0)
 	{
 		// request the access to I/O ports
 		if ( IOperm(from_port, len, 1) == 0  )
@@ -941,9 +941,10 @@ void PortInterface::DetectLPTPortsNT()
 				if ( ValueType == REG_RESOURCE_LIST && strcmp(KeyName, ALLOCCONFIG) == 0 )
 				{
 					int found = 0;
+					DWORD k;
 					WORD *Data = new WORD[DataSize/2+1];
 					RegQueryValueEx(CurKey, KeyName, NULL, &ValueType, (BYTE *)Data, &DataSize);
-					for (DWORD k = 0; k < DataSize/2; k++)
+					for (k = 0; k < DataSize/2; k++)
 					{
 						if (Data[k] == 0x3BC || Data[k] == 0x378 || Data[k] == 0x278)
 						{
@@ -1147,9 +1148,10 @@ void PortInterface::DetectCOMPortsNT()
 				if ( ValueType == REG_RESOURCE_LIST && strcmp(KeyName, ALLOCCONFIG) == 0 )
 				{
 					int found = 0;
+					DWORD k;
 					WORD *Data = new WORD[DataSize/2+1];
 					RegQueryValueEx(CurKey, KeyName, NULL, &ValueType, (BYTE *)Data, &DataSize);
-					for (DWORD k = 0; k < DataSize/2; k++)
+					for (k = 0; k < DataSize/2; k++)
 					{
 						if (Data[k] == 0x3F8 || Data[k] == 0x2F8 || Data[k] == 0x3E8 || Data[k] == 0x2E8)
 						{
