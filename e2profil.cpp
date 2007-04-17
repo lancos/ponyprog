@@ -1013,7 +1013,7 @@ int E2Profile::SetSerialNumAddress(long start, int size, bool mtype)
 
 	if (start >= 0)
 	{
-		if ( hexnum2str(start, str, MAXNUMDIGIT) == OK )
+		if ( hexnum2str((unsigned long)start, str, MAXNUMDIGIT) == OK )
 			rval = SetParameter("SerialNumberAddr", str);
 	}
 	if (size >= 1)
@@ -1298,7 +1298,7 @@ int E2Profile::SetCalibrationAddress(long start, int size, bool mtype)
 
 	if (start >= 0)
 	{
-		if ( hexnum2str(start, str, MAXNUMDIGIT) == OK )
+		if ( hexnum2str((unsigned long)start, str, MAXNUMDIGIT) == OK )
 			rval = SetParameter("OscCalibrationAddr", str);
 	}
 	if (size >= 1)
