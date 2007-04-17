@@ -34,7 +34,7 @@ endif
 
 #Added -fpermissive for gcc 4
 ifeq ($(Arch),linuxelf)
-	CXFLAGSLIB	= -fpic -fpermissive $(CFLAGS)
+	CXFLAGSLIB	= -fpic -fpermissive -Wno-deprecated $(CFLAGS)
 	CCFLAGSLIB	= -fpic $(CFLAGS)
 else
 	CXFLAGSLIB	= $(CFLAGS)
