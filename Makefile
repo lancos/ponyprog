@@ -18,7 +18,7 @@
 CONFIG=v/Config.mk
 include $(CONFIG)
 
-PONYVER = 2.06f
+PONYVER = 2.06g
 TAR = tar
 
 #xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -39,7 +39,7 @@ SRCS=\
 	e2cnv.cpp \
 	e2cmdw.cpp \
 	e2awinfo.cpp \
-	eeprom.cpp \
+	device.cpp \
 	e24xx.cpp \
 	e24xx-1.cpp \
 	e24xx-2.cpp \
