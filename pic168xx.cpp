@@ -1,16 +1,13 @@
 //=========================================================================//
-//-------------------------------------------------------------------------//
-// pic168xx.cpp -- Source for Pic168xx Class                               //
-// This file is part of PonyProg.                                          //
-//-------------------------------------------------------------------------//
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2003  Claudio Lanconelli                            //
+//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
 //                                                                         //
-//  e-mail: lancos@libero.it                                               //
-//  http://www.LancOS.com                                                  //
+//  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
+//-------------------------------------------------------------------------//
+// $Id$
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -28,7 +25,6 @@
 // Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
 //=========================================================================//
 
 #include "types.h"

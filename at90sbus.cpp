@@ -1,15 +1,10 @@
 //=========================================================================//
-//-------------------------------------------------------------------------//
-// at90sbus.cpp -- AT90Sxxxx (AVR micro) Bus Driver                        //
-// This file is part of PonyProg.                                          //
-//-------------------------------------------------------------------------//
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2002  Claudio Lanconelli                            //
+//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
 //                                                                         //
-//  e-mail: lancos@libero.it                                               //
-//  http://www.LancOS.com                                                  //
+//  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
 // $Id$

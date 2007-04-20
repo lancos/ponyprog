@@ -1,15 +1,10 @@
 //=========================================================================//
-//-------------------------------------------------------------------------//
-// at90sxx.h -- Header for for At90sxx class                               //
-// This file is part of PonyProg.                                          //
-//-------------------------------------------------------------------------//
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2001   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
 //                                                                         //
-//  e-mail: lancos@libero.it                                               //
-//  http://www.LancOS.com                                                  //
+//  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
 // $Id$
@@ -37,7 +32,7 @@
 
 #include "types.h"
 
-#include "eeprom.h"
+#include "device.h"
 #include "at90sbus.h"
 
 class At90sxx : public Device

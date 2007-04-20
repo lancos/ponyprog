@@ -1,16 +1,13 @@
 //=========================================================================//
-//-------------------------------------------------------------------------//
-// e24xx.h -- Header for for E24xx class                                   //
-// This file is part of PonyProg.                                          //
-//-------------------------------------------------------------------------//
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2000   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
 //                                                                         //
-//  e-mail: lanconel@cs.unibo.it                                           //
-//  http://www.cs.unibo.it/~lanconel                                       //
+//  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
+//-------------------------------------------------------------------------//
+// $Id$
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -35,7 +32,7 @@
 
 #include "types.h"
 
-#include "eeprom.h"
+#include "device.h"
 #include "i2cbus.h"
 
 #define BANK_SIZE	256

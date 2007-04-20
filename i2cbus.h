@@ -1,16 +1,13 @@
 //=========================================================================//
-//-------------------------------------------------------------------------//
-// i2cbus.h -- Header for I2CBus class                                     //
-// This file is part of PonyProg.                                          //
-//-------------------------------------------------------------------------//
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2000   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
 //                                                                         //
-//  e-mail: lanconel@cs.unibo.it                                           //
-//  http://www.LancOS.com                                                  //
+//  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
+//-------------------------------------------------------------------------//
+// $Id$
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -43,7 +40,7 @@ class I2CBus : public BusIO
 
 	long Read(int slave, UBYTE *data, long length);
 	long Write(int slave, UBYTE const *data, long length);
-	
+
 	int Start(UBYTE slave);
 	int ReadByte(int ack, int lsb = 0);
 	int WriteByte(int by, int lsb = 0);

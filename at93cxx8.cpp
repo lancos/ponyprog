@@ -1,16 +1,13 @@
 //=========================================================================//
-//-------------------------------------------------------------------------//
-// at93cxx8.cpp -- Source for at93cxx8 class (Microwire eeprom class)       //
-// This file is part of PonyProg.                                          //
-//-------------------------------------------------------------------------//
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997, 1998  Claudio Lanconelli                           //
+//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
 //                                                                         //
-//  e-mail: lanconel@cs.unibo.it                                           //
-//  http://www.cs.unibo.it/~lanconel                                       //
+//  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
+//-------------------------------------------------------------------------//
+// $Id$
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //

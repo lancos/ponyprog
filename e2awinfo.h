@@ -1,16 +1,13 @@
 //=========================================================================//
-//-------------------------------------------------------------------------//
-// e2awinfo.h -- Header for for e2AppWinInfo class                         //
-// This file is part of PonyProg.                                          //
-//-------------------------------------------------------------------------//
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C)  1997-2001  Claudio Lanconelli                           //
+//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
 //                                                                         //
-//  e-mail: lancos@libero.it                                               //
-//  http://www.LancOS.com                                                  //
+//  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
+//-------------------------------------------------------------------------//
+// $Id$
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -28,7 +25,6 @@
 // Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
 //=========================================================================//
 
 #ifndef e2AWINFO_H
@@ -46,7 +42,7 @@
 
 #include "e2cmdw.h"
 
-#include "eeprom.h"
+#include "device.h"
 //AutoTag
 //Include Device Classes
 #include "e24xx.h"

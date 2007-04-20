@@ -1,15 +1,10 @@
 //=========================================================================//
-//-------------------------------------------------------------------------//
-// e2401.h -- Header for for mE2401 class                                   //
-// This file is part of PonyProg.                                          //
-//-------------------------------------------------------------------------//
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2002   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
 //                                                                         //
-//  e-mail: lancos@libero.it                                               //
-//  http://www.LancOS.com                                                  //
+//  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
 // $Id$
@@ -37,7 +32,7 @@
 
 #include "types.h"
 
-#include "eeprom.h"
+#include "device.h"
 #include "i2cbus.h"
 
 class mE2401 : public Device

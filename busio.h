@@ -1,15 +1,10 @@
 //=========================================================================//
-//-------------------------------------------------------------------------//
-// busio.h -- Header for for BusIO class                                   //
-// This file is part of PonyProg.                                          //
-//-------------------------------------------------------------------------//
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2001  Claudio Lanconelli                            //
+//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
 //                                                                         //
-//  e-mail: lancos@libero.it                                               //
-//  http://www.LancOS.com                                                  //
+//  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
 // $Id$
@@ -82,7 +77,7 @@ class BusIO : public Wait
 	int GetErrNo()
 		{ return err_no; }
 	int GetLastAddr() const		//useful in I2C Bus transaction,
-		{ return last_addr; }	// tell the slave address no ack
+		{ return last_addr; }	// tell the address where error occurs
 
 	void SetBusInterface(BusInterface *ptr)
 		{ if (ptr) busI = ptr; }

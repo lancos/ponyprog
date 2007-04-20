@@ -1,16 +1,13 @@
 //=========================================================================//
-//-------------------------------------------------------------------------//
-// e2dlg.cpp -- Source for Options dialog class                            //
-// This file is part of PonyProg.                                          //
-//-------------------------------------------------------------------------//
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2001  Claudio Lanconelli                            //
+//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
 //                                                                         //
-//  e-mail: lancos@libero.it                                               //
-//  http://www.LancOS.com                                                  //
+//  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
+//-------------------------------------------------------------------------//
+// $Id$
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -28,7 +25,6 @@
 // Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
 //=========================================================================//
 
 #include <stdio.h>
@@ -481,7 +477,6 @@ void e2ProgressDialog::DialogCommand(ItemVal id, ItemVal retval, CmdType ctype)
 	// Dialog commands to here
 
 	UserDebug2(CmdEvents,"e2ProgressDialog::DialogCommand(id:%d, val:%d)\n",id, retval)
-
 
 	switch (id)		// We will do some things depending on value
 	{

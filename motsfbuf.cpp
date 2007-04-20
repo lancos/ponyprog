@@ -1,18 +1,13 @@
 //=========================================================================//
-//-------------------------------------------------------------------------//
-// motsfbuf.cpp -- Source for MotorolaS FileBuf                            //
-// This file is part of PonyProg.                                          //
-//-------------------------------------------------------------------------//
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2002  Claudio Lanconelli                            //
+//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
 //                                                                         //
-//  e-mail: lancos@libero.it                                               //
-//  http://www.LancOS.com                                                  //
+//  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-//  $Id$
+// $Id$
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -33,7 +28,6 @@
 //=========================================================================//
 
 #include <stdio.h>
-
 #include <string.h>
 #include <stdlib.h>
 

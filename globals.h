@@ -1,16 +1,13 @@
 //=========================================================================//
-//-------------------------------------------------------------------------//
-// globals.h -- Some global ID and #defines                                //
-// This file is part of PonyProg.                                          //
-//-------------------------------------------------------------------------//
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2001   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
 //                                                                         //
-//  e-mail: lancos@libero.it                                               //
-//  http://www.LancOS.com                                                  //
+//  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
+//-------------------------------------------------------------------------//
+// $Id$
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -28,16 +25,16 @@
 // Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
 //=========================================================================//
+// Some global ID and #defines
 
 #ifndef	_GLOBALS_H
 #define	_GLOBALS_H
 
 #define	APPNAME		"PonyProg2000"
 #define	AUTHORNAME	"Claudio Lanconelli"
-#define	AUTHORMAIL	"lancos@libero.it"
-#define	AUTHORWEB	"http://www.LancOS.com"
+#define	AUTHORMAIL	"PonyProg2000@gmail.com"
+#define	AUTHORWEB	"http://ponyprog.sourceforge.net"
 #define	APPNAME_EXT	STR_APPNAME_EXT
 
 #define	APPVERSION	"2.06g Beta"

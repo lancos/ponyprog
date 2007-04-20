@@ -1,19 +1,13 @@
 //=========================================================================//
-//-------------------------------------------------------------------------//
-// e24xx-1.cpp -- Source for E24xx1 class (I2C Bus "small" eeproms)        //
-// 24XX-1 are I2C Bus eeproms that uses 8 bits (1 bytes) for addresses.    //
-// Total capacity can be up to 256 bytes.                                  //
-//                                                                         //
-// This file is part of PonyProg.                                          //
-//-------------------------------------------------------------------------//
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2001  Claudio Lanconelli                            //
+//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
 //                                                                         //
-//  e-mail: lancos@libero.it                                               //
-//  http://www.LancOS.com                                                  //
+//  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
+//-------------------------------------------------------------------------//
+// $Id$
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -32,6 +26,8 @@
 //                                                                         //
 //-------------------------------------------------------------------------//
 //=========================================================================//
+// 24XX-1 are I2C Bus eeproms that uses 8 bits (1 bytes) for addresses.    //
+// Total capacity can be up to 256 bytes.                                  //
 
 #include <string.h>
 #include "types.h"
