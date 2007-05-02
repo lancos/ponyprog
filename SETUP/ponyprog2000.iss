@@ -5,9 +5,9 @@
 AppName=PonyProg2000
 AppPublisher=LancOS 
 AppPublisherURL=http://www.LancOS.com/
-AppUpdatesURL=http://www.lancos.com/prog.html
-AppVersion=2.06g
-AppVerName=PonyProg2000 v2.06g
+AppUpdatesURL=http://ponyprog.sourceforge.net
+AppVersion=2.07a
+AppVerName=PonyProg2000 v2.07a
 AppCopyright=Copyright © 1997-2007 by Claudio Lanconelli
 DefaultDirName={pf}\PonyProg2000
 DefaultGroupName=PonyProg
