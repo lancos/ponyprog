@@ -247,40 +247,36 @@ void e2AppWinInfo::SetEEProm(int type, int subtype)
 			eep_subtype = GetE2PSubType(AT90S1200);
 		}
 **/
+		eep->SetWritePageSize( GetEEPTypeWPageSize(eep_type, eep_subtype) );
+
 		switch(xtype)
 		{
 		case AT90S0000:		//The AT1200S bus have to work with all AVR device
 		case AT90S1200:
 			eep->SetBus(THEAPP->GetBusVectorPtr()[AT1200S-1]);
 			break;
-		case ATmega128:
-		case ATmega64:
-			eep->SetBus(THEAPP->GetBusVectorPtr()[MEGA128-1]);
-			break;
-		case ATmega603:
+		case ATmega603:		//Old mega don't support page polling
 		case ATmega103:
-			eep->SetBus(THEAPP->GetBusVectorPtr()[MEGA103-1]);
+			{
+				AtMegaBus *b = (AtMegaBus *)THEAPP->GetBusVectorPtr()[ATMEGAB-1];
+				if (b)
+				{
+					b->SetFlashPagePolling(false);
+					b->SetPageSize( eep->GetWritePageSize() );
+				}
+				eep->SetBus(b);
+			}
 			break;
-		case ATtiny2313:
-		case ATtiny26:
-			eep->SetBus(THEAPP->GetBusVectorPtr()[TINY2x-1]);
-			break;
-		case ATmega8:
-		case ATmega8515:
-		case ATmega8535:
-			eep->SetBus(THEAPP->GetBusVectorPtr()[MEGA8x-1]);
-			break;
-		case ATmega16:
-		case ATmega32:
-		case ATmega161:
-		case ATmega163:
-		case ATmega162:
-		case ATmega169:
-		case ATmega323:
-			eep->SetBus(THEAPP->GetBusVectorPtr()[MEGA16x-1]);
-			break;
-		default:	//AT90S std
-			eep->SetBus(THEAPP->GetBusVectorPtr()[AT90S-1]);
+		default:
+			{
+				AtMegaBus *b = (AtMegaBus *)THEAPP->GetBusVectorPtr()[ATMEGAB-1];
+				if (b)
+				{
+					b->SetFlashPagePolling(true);
+					b->SetPageSize( eep->GetWritePageSize() );
+				}
+				eep->SetBus(b);
+			}
 			break;
 		}
 		break;

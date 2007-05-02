@@ -83,6 +83,10 @@ class Device
 	int GetAddrSize() const;
 	virtual void DefaultBankSize()
 		{ bank_size = def_bank_size; }
+	int GetWritePageSize() const
+		{ return writepage_size; }
+	void SetWritePageSize(int pagesize)
+		{ writepage_size = pagesize; }
 
   protected:	//--------------------------------------- protected
 	void SetBankSize(int size)
@@ -111,8 +115,10 @@ class Device
 
 	e2AppWinInfo *awi;	// pointer to container object
 	BusIO *bus;			// bus used by the device
-	int bank_size;		// dimensione di un banco
+	int bank_size;		// used only with banked memory (240x)
 
-	int const def_bank_size;	// dimensione di default di un banco
+	int const def_bank_size;
+
+	int writepage_size;	//some devices write whole pages instead of bytes to speed up programming
 };
 #endif

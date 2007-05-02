@@ -33,9 +33,6 @@
 
 #include "e2app.h"
 
-/*Attenzione!! il format Intel Hex e` Little Endian */
-#undef	_BIG_ENDIAN_
-
 // Costruttore
 AtMegaBus::AtMegaBus(BusInterface *ptr, int wpage_size, bool page_poll)
 	: At90sBus(ptr)
@@ -122,12 +119,12 @@ long AtMegaBus::Write(int addr, UBYTE const *data, long length)
 {
 	long len;
 
-	if (addr)
-	{	//EEprom
-		len = At90sBus::Write(addr, data, length);	//The eeprom write routine is the same of AT90SBus
+	if (addr || write_page_size <= 1)
+	{	//EEprom of flash without page write
+		len = At90sBus::Write(addr, data, length);		//Use standard routine
 	}
 	else
-	{	//Flash Eprom
+	{	//Flash Eprom with page write
 		for (addr = 0, len = 0; len < length; addr += write_page_size, data += write_page_size, len += write_page_size)
 		{
 			//check for FF's page to skip blank pages

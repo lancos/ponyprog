@@ -35,9 +35,10 @@
 #define	AUTHORNAME	"Claudio Lanconelli"
 #define	AUTHORMAIL	"PonyProg2000@gmail.com"
 #define	AUTHORWEB	"http://ponyprog.sourceforge.net"
+#define COPYRIGHTYEAR	"1997-2007"
 #define	APPNAME_EXT	STR_APPNAME_EXT
 
-#define	APPVERSION	"2.06g Beta"
+#define	APPVERSION	"2.07a Beta"
 
 #define	THEAPP	((e2App*)theApp)
 
@@ -84,11 +85,7 @@ enum BusType {
 	//Bus Type Identification
 	I2C = 1,
 	AT90S,
-	MEGA103,
-	MEGA16x,
-	MEGA8x,
-	TINY2x,
-	MEGA128,
+	ATMEGAB,
 	AT1200S,
 	AT89S,
 	AT93C,

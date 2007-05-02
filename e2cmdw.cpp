@@ -187,6 +187,27 @@ static Menu2Type index_menu_type[] = {
 	{m_attiny26, ATtiny26},
 	{m_attiny28, ATtiny28},
 	{m_attiny2313, ATtiny2313},
+	{m_attiny13, ATtiny13},
+	{m_attiny25, ATtiny25},
+	{m_attiny45, ATtiny45},
+	{m_attiny85, ATtiny85},
+	{m_attiny261, ATtiny261},
+	{m_attiny461, ATtiny461},
+	{m_attiny861, ATtiny861},
+	{m_atmega48, ATmega48},
+	{m_atmega88, ATmega88},
+	{m_atmega168, ATmega168},
+	{m_atmega164, ATmega164},
+	{m_atmega324, ATmega324},
+	{m_atmega644, ATmega644},
+	{m_atmega640, ATmega640},
+	{m_atmega1280, ATmega1280},
+	{m_atmega1281, ATmega1281},
+//	{m_atmega2560, ATmega2560},
+//	{m_atmega2561, ATmega2561},
+	{m_at90can32, AT90CAN32},
+	{m_at90can64, AT90CAN64},
+	{m_at90can128, AT90CAN128},
 
 	{m_at89s8252, AT89S8252},
 	{m_at89s53, AT89S53},
@@ -350,25 +371,46 @@ static vMenu avrMenu[] = {
 	{"", m_at90s8515, isSens, notChk, noKeyLbl, noKey, noSub},
 	{"", m_at90s8534, isSens, notChk, noKeyLbl, noKey, noSub},
 	{"", m_at90s8535, isSens, notChk, noKeyLbl, noKey, noSub},
+	{"", m_at90can32, isSens, notChk, noKeyLbl, noKey, noSub},
+	{"", m_at90can64, isSens, notChk, noKeyLbl, noKey, noSub},
+	{"", m_at90can128, isSens, notChk, noKeyLbl, noKey, noSub},
+	{"", m_attiny12, isSens, notChk, noKeyLbl, noKey, noSub},
+	{"", m_attiny13, isSens, notChk, noKeyLbl, noKey, noSub},
+	{"", m_attiny15, isSens, notChk, noKeyLbl, noKey, noSub},
+	{"", m_attiny22, isSens, notChk, noKeyLbl, noKey, noSub},
+	{"", m_attiny2313, isSens, notChk, noKeyLbl, noKey, noSub},
+	{"", m_attiny25, isSens, notChk, noKeyLbl, noKey, noSub},
+	{"", m_attiny45, isSens, notChk, noKeyLbl, noKey, noSub},
+	{"", m_attiny85, isSens, notChk, noKeyLbl, noKey, noSub},
+	{"", m_attiny26, isSens, notChk, noKeyLbl, noKey, noSub},
+	{"", m_attiny261, isSens, notChk, noKeyLbl, noKey, noSub},
+	{"", m_attiny461, isSens, notChk, noKeyLbl, noKey, noSub},
+	{"", m_attiny861, isSens, notChk, noKeyLbl, noKey, noSub},
 	{"", m_atmega603, isSens, notChk, noKeyLbl, noKey, noSub},
 	{"", m_atmega103, isSens, notChk, noKeyLbl, noKey, noSub},
+	{"", m_atmega48, isSens, notChk, noKeyLbl, noKey, noSub},
+	{"", m_atmega8, isSens, notChk, noKeyLbl, noKey, noSub},
 	{"", m_atmega8515, isSens, notChk, noKeyLbl, noKey, noSub},
 	{"", m_atmega8535, isSens, notChk, noKeyLbl, noKey, noSub},
-	{"", m_atmega8, isSens, notChk, noKeyLbl, noKey, noSub},
+	{"", m_atmega88, isSens, notChk, noKeyLbl, noKey, noSub},
 	{"", m_atmega16, isSens, notChk, noKeyLbl, noKey, noSub},
 	{"", m_atmega161, isSens, notChk, noKeyLbl, noKey, noSub},
 	{"", m_atmega162, isSens, notChk, noKeyLbl, noKey, noSub},
 	{"", m_atmega163, isSens, notChk, noKeyLbl, noKey, noSub},
+	{"", m_atmega164, isSens, notChk, noKeyLbl, noKey, noSub},
+	{"", m_atmega168, isSens, notChk, noKeyLbl, noKey, noSub},
 	{"", m_atmega169, isSens, notChk, noKeyLbl, noKey, noSub},
 	{"", m_atmega32, isSens, notChk, noKeyLbl, noKey, noSub},
 	{"", m_atmega323, isSens, notChk, noKeyLbl, noKey, noSub},
+	{"", m_atmega324, isSens, notChk, noKeyLbl, noKey, noSub},
 	{"", m_atmega64, isSens, notChk, noKeyLbl, noKey, noSub},
+	{"", m_atmega640, isSens, notChk, noKeyLbl, noKey, noSub},
+	{"", m_atmega644, isSens, notChk, noKeyLbl, noKey, noSub},
 	{"", m_atmega128, isSens, notChk, noKeyLbl, noKey, noSub},
-	{"", m_attiny12, isSens, notChk, noKeyLbl, noKey, noSub},
-	{"", m_attiny15, isSens, notChk, noKeyLbl, noKey, noSub},
-	{"", m_attiny22, isSens, notChk, noKeyLbl, noKey, noSub},
-	{"", m_attiny26, isSens, notChk, noKeyLbl, noKey, noSub},
-	{"", m_attiny2313, isSens, notChk, noKeyLbl, noKey, noSub},
+	{"", m_atmega1280, isSens, notChk, noKeyLbl, noKey, noSub},
+	{"", m_atmega1281, isSens, notChk, noKeyLbl, noKey, noSub},
+//	{"", m_atmega2560, isSens, notChk, noKeyLbl, noKey, noSub},
+//	{"", m_atmega2561, isSens, notChk, noKeyLbl, noKey, noSub},
 	{NULL}
 };
 
@@ -1590,7 +1632,15 @@ void e2CmdWindow::WindowCommand(ItemVal id, ItemVal val, CmdType cType)
 	case m_attiny22:
 	case m_attiny26:
 	case m_attiny2313:
+	case m_attiny13:
 	case m_attiny28:
+	case m_attiny25: case m_attiny45: case m_attiny85:
+	case m_attiny261: case m_attiny461: case m_attiny861:
+	case m_atmega48: case m_atmega88: case m_atmega168:
+	case m_atmega164: case m_atmega324: case m_atmega644:
+	case m_atmega640: case m_atmega1280: case m_atmega1281:
+//	case m_atmega2560: case m_atmega2561:
+	case m_at90can32: case m_at90can64: case m_at90can128:
 	case m_at89s8252:
 	case m_at89s53:
 	case m_pic12508:
@@ -4569,16 +4619,27 @@ void e2CmdWindow::CbxMenuInit()
 		{
 			int id = avrMenu[j].menuId;
 			long type = MenuIdToType(id);
-			avrMenu[j].label = (char *)GetEEPTypeString(GetE2PPriType(type), GetE2PSubType(type));
-			avrMenu[j].checked = 0;
+			char *sp = (char *)GetEEPTypeString(GetE2PPriType(type), GetE2PSubType(type));
 
-			for (k = 0; index_menu_type[k].menu_id != 0; k++)
-				if (index_menu_type[k].menu_id == id)
-				{
-					index_menu_type[k].cbx1_id = 6;		//<< -- 6
-					index_menu_type[k].cbx2_id = j;
-					break;
-				}
+			if (!sp)
+			{
+				printf("Errore! Type: 0x%04lx (%d, %d) - Id: %d\n", type,
+							GetE2PPriType(type), GetE2PSubType(type), id);
+				sp = (char *)GetEEPTypeString(GetE2PPriType(type), GetE2PSubType(type));
+			}
+			else
+			{
+				avrMenu[j].label = sp;
+				avrMenu[j].checked = 0;
+
+				for (k = 0; index_menu_type[k].menu_id != 0; k++)
+					if (index_menu_type[k].menu_id == id)
+					{
+						index_menu_type[k].cbx1_id = 6;		//<< -- 6
+						index_menu_type[k].cbx2_id = j;
+						break;
+					}
+			}
 		}
 	}
 

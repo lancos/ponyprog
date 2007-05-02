@@ -204,13 +204,40 @@ static IdType IdArray[] = {
 	{0x90, 0x03,	ATtiny10},		//only HV prog
 	{0x90, 0x04,	ATtiny11},		//only HV prog
 	{0x90, 0x05,	ATtiny12},
+	{0x90, 0x07,	ATtiny13},		//new (Paul 2005/03/24)
 	{0x90, 0x06,	ATtiny15},
 
 	{0x91, 0x06,	ATtiny22},
 	{0x91, 0x09,	ATtiny26},
 	{0x91, 0x07,	ATtiny28},		//only HV parallel prog
 
-	{0x91, 0x0A,	ATtiny2313},	//new
+	{0x91, 0x0A,	ATtiny2313},
+
+	{0x91, 0x08,	ATtiny25},
+	{0x92, 0x06,	ATtiny45},
+	{0x93, 0x0B,	ATtiny85},
+
+	{0x91, 0x0C,	ATtiny261},
+	{0x92, 0x08,	ATtiny461},
+	{0x93, 0x0D,	ATtiny861},
+
+	{0x92, 0x05,	ATmega48},
+	{0x93, 0x0A,	ATmega88},
+	{0x94, 0x06,	ATmega168},
+
+	{0x94, 0x0A,	ATmega164},
+	{0x95, 0x08,	ATmega324},
+	{0x96, 0x0A,	ATmega644},
+
+	{0x95, 0x81,	AT90CAN32},
+	{0x96, 0x81,	AT90CAN64},
+	{0x97, 0x81,	AT90CAN128},
+
+	{0x96, 0x08,	ATmega640},
+	{0x97, 0x03,	ATmega1280},
+	{0x97, 0x04,	ATmega1281},
+//	{0x98, 0x01,	ATmega2560},
+//	{0x98, 0x02,	ATmega2561},
 
 //	{0x51, 0x06,	AT89551},
 //	{0x52, 0x06,	AT89552},
@@ -287,43 +314,39 @@ int At90sxx::Probe(int probe_size)
 	{
 		if (rv == OK)
 		{
+			SetWritePageSize( GetEEPTypeWPageSize(AT90SXX, subtype) );
+
 			switch(type)
 			{
 			case AT90S1200:
 				SetBus(THEAPP->GetBusVectorPtr()[AT1200S-1]);
 				break;
-			case ATmega128:
-			case ATmega64:
-				SetBus(THEAPP->GetBusVectorPtr()[MEGA128-1]);
-				break;
-			case ATmega603:
+			case ATmega603:		//Old mega don't support page polling
 			case ATmega103:
-				SetBus(THEAPP->GetBusVectorPtr()[MEGA103-1]);
+				{
+					AtMegaBus *b = (AtMegaBus *)THEAPP->GetBusVectorPtr()[ATMEGAB-1];
+					if (b)
+					{
+						b->SetFlashPagePolling(false);
+						b->SetPageSize( GetWritePageSize() );
+					}
+					SetBus(b);
+				}
 				break;
-			case ATtiny2313:
-			case ATtiny26:
-				SetBus(THEAPP->GetBusVectorPtr()[TINY2x-1]);
-				break;
-			case ATmega8:
-			case ATmega8515:
-			case ATmega8535:
-				SetBus(THEAPP->GetBusVectorPtr()[MEGA8x-1]);
-				break;
-			case ATmega16:
-			case ATmega32:
-			case ATmega161:
-			case ATmega163:
-			case ATmega162:
-			case ATmega169:
-			case ATmega323:
-				SetBus(THEAPP->GetBusVectorPtr()[MEGA16x-1]);
-				break;
-			default:	//AT90S std
-				SetBus(THEAPP->GetBusVectorPtr()[AT90S-1]);
+			default:
+				{
+					AtMegaBus *b = (AtMegaBus *)THEAPP->GetBusVectorPtr()[ATMEGAB-1];
+					if (b)
+					{
+						b->SetFlashPagePolling(true);
+						b->SetPageSize( GetWritePageSize() );
+					}
+					SetBus(b);
+				}
 				break;
 			}
 
-			SetNoOfBank(  GetEEPTypeSize(AT90SXX, subtype) );
+			SetNoOfBank( GetEEPTypeSize(AT90SXX, subtype) );
 			SetSplitted( GetEEPTypeSplit(AT90SXX, subtype) );
 			rv = GetSize();
 		}

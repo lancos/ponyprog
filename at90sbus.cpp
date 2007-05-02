@@ -51,7 +51,7 @@ At90sBus::At90sBus(BusInterface *ptr)
 		WriteEEPMem0(0xC0), WriteEEPMem1(0),
 		ReadDevCode0(0x30), ReadDevCode1(0),
 		ReadLock0(0x58), ReadLock1(0),
-		WriteLock0(0xAC), WriteLock1(0xFF),
+		WriteLock0(0xAC), WriteLock1(0xE0),
 		ReadFuse0(0x50), ReadFuse1(0),
 		WriteFuse0(0xAC), WriteFuse1a(0xBF), WriteFuse1b(0xA0),
 		ReadFuseHigh0(0x58), ReadFuseHigh1(0x08),
@@ -209,11 +209,14 @@ int At90sBus::WriteLockBits(DWORD param, long model)
 	case ATtiny15:
 	case ATtiny22:
 		val1 = WriteLock0;
-		val2 = WriteLock1 & ~(param & 0x06);
+		val2 = ~(param & 0x06);
 		break;
 
 	case ATtiny2313:
 	case ATtiny26:
+	case ATtiny13:
+	case ATtiny25: case ATtiny45: case ATtiny85:
+	case ATtiny261: case ATtiny461: case ATtiny861:
 		val1 = WriteLock0;
 		val2 = WriteLock1;
 		//
@@ -230,8 +233,12 @@ int At90sBus::WriteLockBits(DWORD param, long model)
 	case ATmega32:
 	case ATmega162:
 	case ATmega169:
-	case ATmega8515:
-	case ATmega8535:
+	case ATmega8515: case ATmega8535:
+	case ATmega48: case ATmega88: case ATmega168:
+	case ATmega164: case ATmega324: case ATmega644:
+	case ATmega640: case ATmega1280: case ATmega1281:
+	case ATmega2560: case ATmega2561:
+	case AT90CAN32: case AT90CAN64: case AT90CAN128:
 		val1 = WriteLock0;
 		val2 = WriteLock1;
 		//
@@ -250,7 +257,7 @@ int At90sBus::WriteLockBits(DWORD param, long model)
 
 	default:
 		val1 = WriteLock0;
-		val2 = WriteLock1 & ~(param & 0x06);
+		val2 = ~(param & 0x06);
 		break;
 	}
 
@@ -294,18 +301,6 @@ int At90sBus::WriteFuseBits(DWORD param, long model)
 
 	switch (model)
 	{
-	case AT90S1200:
-	case AT90S2313:
-	case AT90S4414:
-	case AT90S8515:
-	case ATtiny22:
-	case ATtiny11:
-	case ATtiny10:
-	case ATtiny28:
-	case AT90S8534:
-		//No fuses
-		break;
-
 	case AT90S2323:
 	case AT90S2343:
 	case AT90S4434:
@@ -326,45 +321,21 @@ int At90sBus::WriteFuseBits(DWORD param, long model)
 		val2 = WriteFuse1a & ~(param & 0x1F);
 		break;
 
+	//One byte fuse
 	case ATtiny12:
 	case ATtiny15:
+	case ATmega161:
 		val1 = WriteFuse0;
 		val2 = WriteFuse1b;
 		//
 		val4 = ~(param & 0xFF);
 		break;
 
-	case ATmega161:
-		val1 = WriteFuse0;
-		val2 = WriteFuse1b;
-		//
-		val4 = ~(param & 0x7F);
-		break;
-
+	//Two byte fuse
+	case ATtiny13:
+	case ATtiny26:
 	case ATmega163:
-		val1 = WriteFuse0;
-		val2 = WriteFuse1b;
-		//
-		val4 = ~(param & 0xCF);
-
-		val5 = WriteFuseHigh0;
-		val6 = WriteFuseHigh1;
-		//
-		val8 = ~((param >> 8) & 0x07);
-		break;
-
 	case ATmega323:
-		val1 = WriteFuse0;
-		val2 = WriteFuse1b;
-		//
-		val4 = ~(param & 0xCF);
-
-		val5 = WriteFuseHigh0;
-		val6 = WriteFuseHigh1;
-		//
-		val8 = ~((param >> 8) & 0xCF);
-		break;
-
 	case ATmega8:
 	case ATmega16:
 	case ATmega32:
@@ -378,25 +349,22 @@ int At90sBus::WriteFuseBits(DWORD param, long model)
 		val5 = WriteFuseHigh0;
 		val6 = WriteFuseHigh1;
 		//
-		val8 = ~((param >> 8) & 0xDF);	//don't allow to modify SPIEN
+		val8 = ~((param >> 8) & 0xFF);
 		break;
 
-	case ATtiny26:
-		val1 = WriteFuse0;
-		val2 = WriteFuse1b;
-		//
-		val4 = ~(param & 0xFF);
-
-		val5 = WriteFuseHigh0;
-		val6 = WriteFuseHigh1;
-		//
-		val8 = ~((param >> 8) & 0x17);	//don't allow to modify SPIEN
-		break;
-
+	//Three byte fuse
+	case ATtiny2313:
+	case ATtiny25: case ATtiny45: case ATtiny85:
+	case ATtiny261: case ATtiny461: case ATtiny861:
 	case ATmega128:
 	case ATmega64:
 	case ATmega162:
 	case ATmega169:
+	case ATmega48: case ATmega88: case ATmega168:
+	case ATmega164: case ATmega324: case ATmega644:
+	case AT90CAN32: case AT90CAN64: case AT90CAN128:
+	case ATmega640: case ATmega1280: case ATmega1281:
+//	case ATmega2560: case ATmega2561:
 		val1 = WriteFuse0;
 		val2 = WriteFuse1b;
 		//
@@ -405,7 +373,7 @@ int At90sBus::WriteFuseBits(DWORD param, long model)
 		val5 = WriteFuseHigh0;
 		val6 = WriteFuseHigh1;
 		//
-		val8 = ~((param >> 8) & 0xDF);	//don't allow to modify SPIEN
+		val8 = ~((param >> 8) & 0xFF);
 
 		val9 = WriteFuseExt0;
 		valA = WriteFuseExt1;
@@ -413,23 +381,16 @@ int At90sBus::WriteFuseBits(DWORD param, long model)
 		valC = ~((param >> 16) & 0xFF);
 		break;
 
-	case ATtiny2313:
-		val1 = WriteFuse0;
-		val2 = WriteFuse1b;
-		//
-		val4 = ~(param & 0xFF);
-
-		val5 = WriteFuseHigh0;
-		val6 = WriteFuseHigh1;
-		//
-		val8 = ~((param >> 8) & 0xDF);	//don't allow to modify SPIEN
-
-		val9 = WriteFuseExt0;
-		valA = WriteFuseExt1;
-		//
-		valC = ~((param >> 16) & 0x01);
-		break;
-
+	//No fuses
+	case AT90S1200:
+	case AT90S2313:
+	case AT90S4414:
+	case AT90S8515:
+	case ATtiny22:
+	case ATtiny11:
+	case ATtiny10:
+	case ATtiny28:
+	case AT90S8534:
 	default:
 		//No Fuses
 		break;
@@ -475,13 +436,6 @@ DWORD At90sBus::ReadFuseBits(long model)
 
 	switch (model)
 	{
-	case AT90S1200:
-	case AT90S2313:
-	case AT90S4414:
-	case AT90S8515:
-		//No fuses
-		break;
-
 	case ATtiny22:
 		SendDataByte(ReadLock0);	//NB Read LOCK!!
 		SendDataByte(ReadLock1);
@@ -501,92 +455,26 @@ DWORD At90sBus::ReadFuseBits(long model)
 		retval = ~rv1 & 0x21;
 		break;
 
+	//One byte fuse
+	case AT90S2333:
+	case AT90S4433:
+	case ATmega603:
+	case ATmega103:
 	case ATtiny12:
+	case ATtiny15:
+	case ATmega161:
 		SendDataByte(ReadFuse0);
 		SendDataByte(ReadFuse1);
 		SendDataByte(0);
 		rv1 = RecDataByte();
 		retval = ~rv1 & 0xFF;
 		break;
-	case ATtiny15:
-		SendDataByte(ReadFuse0);
-		SendDataByte(ReadFuse1);
-		SendDataByte(0);
-		rv1 = RecDataByte();
-		retval = ~rv1 & 0xF3;
-		break;
-	case AT90S2333:
-	case AT90S4433:
-		SendDataByte(ReadFuse0);
-		SendDataByte(ReadFuse1);
-		SendDataByte(0);
-		rv1 = RecDataByte();
-		retval = ~rv1 & 0x3F;
-		break;
-	case ATmega603:
-	case ATmega103:
-		SendDataByte(ReadFuse0);
-		SendDataByte(ReadFuse1);
-		SendDataByte(0);
-		rv1 = RecDataByte();
-		retval = ~rv1 & 0x2B;
-		break;
-	case ATmega161:
-		SendDataByte(ReadFuse0);
-		SendDataByte(ReadFuse1);
-		SendDataByte(0);
-		rv1 = RecDataByte();
-		retval = ~rv1 & 0x7F;
-		break;
 
-	case ATmega163:
-		SendDataByte(ReadFuse0);
-		SendDataByte(ReadFuse1);
-		SendDataByte(0);
-		rv1 = RecDataByte();
-		rv1 = ~rv1 & 0xCF;
-
-		SendDataByte(ReadFuseHigh0);
-		SendDataByte(ReadFuseHigh1);
-		SendDataByte(0);
-		rv2 = RecDataByte();
-		rv2 = ~rv2 & 0x07;
-
-		retval = (rv2 << 8) | rv1;
-		break;
-
-	case ATmega323:
-		SendDataByte(ReadFuse0);
-		SendDataByte(ReadFuse1);
-		SendDataByte(0);
-		rv1 = RecDataByte();
-		rv1 = ~rv1 & 0xCF;
-
-		SendDataByte(ReadFuseHigh0);
-		SendDataByte(ReadFuseHigh1);
-		SendDataByte(0);
-		rv2 = RecDataByte();
-		rv2 = ~rv2 & 0xCF;
-
-		retval = (rv2 << 8) | rv1;
-		break;
-
+	//Two byte fuse
+	case ATtiny13:
 	case ATtiny26:
-		SendDataByte(ReadFuse0);
-		SendDataByte(ReadFuse1);
-		SendDataByte(0);
-		rv1 = RecDataByte();
-		rv1 = ~rv1 & 0xFF;
-
-		SendDataByte(ReadFuseHigh0);
-		SendDataByte(ReadFuseHigh1);
-		SendDataByte(0);
-		rv2 = RecDataByte();
-		rv2 = ~rv2 & 0x1F;
-
-		retval = (rv2 << 8) | rv1;
-		break;
-
+	case ATmega163:
+	case ATmega323:
 	case ATmega8:
 	case ATmega16:
 	case ATmega32:
@@ -607,10 +495,19 @@ DWORD At90sBus::ReadFuseBits(long model)
 		retval = (rv2 << 8) | rv1;
 		break;
 
+	//Three byte fuse
+	case ATtiny2313:
+	case ATtiny25: case ATtiny45: case ATtiny85:
+	case ATtiny261: case ATtiny461: case ATtiny861:
 	case ATmega128:
 	case ATmega64:
 	case ATmega162:
 	case ATmega169:
+	case ATmega48: case ATmega88: case ATmega168:
+	case ATmega164: case ATmega324: case ATmega644:
+	case AT90CAN32: case AT90CAN64: case AT90CAN128:
+	case ATmega640: case ATmega1280: case ATmega1281:
+//	case ATmega2560: case ATmega2561:
 		SendDataByte(ReadFuse0);
 		SendDataByte(ReadFuse1);
 		SendDataByte(0);
@@ -632,28 +529,11 @@ DWORD At90sBus::ReadFuseBits(long model)
 		retval = (rv3 << 16) | (rv2 << 8) | rv1;
 		break;
 
-	case ATtiny2313:
-		SendDataByte(ReadFuse0);
-		SendDataByte(ReadFuse1);
-		SendDataByte(0);
-		rv1 = RecDataByte();
-		rv1 = ~rv1 & 0xFF;
-
-		SendDataByte(ReadFuseHigh0);
-		SendDataByte(ReadFuseHigh1);
-		SendDataByte(0);
-		rv2 = RecDataByte();
-		rv2 = ~rv2 & 0xFF;
-
-		SendDataByte(ReadFuseExt0);
-		SendDataByte(ReadFuseExt1);
-		SendDataByte(0);
-		rv3 = RecDataByte();
-		rv3 = ~rv3 & 0x01;
-
-		retval = (rv3 << 16) | (rv2 << 8) | rv1;
-		break;
-
+	//No fuses
+	case AT90S1200:
+	case AT90S2313:
+	case AT90S4414:
+	case AT90S8515:
 	default:
 		//No Fuses
 		break;
@@ -709,7 +589,11 @@ DWORD At90sBus::ReadLockBits(long model)
 		retval = ~rv1 & 0x06;
 		break;
 
+	case ATtiny13:
 	case ATtiny26:
+	case ATtiny2313:
+	case ATtiny25: case ATtiny45: case ATtiny85:
+	case ATtiny261: case ATtiny461: case ATtiny861:
 		SendDataByte(ReadLock0);
 		SendDataByte(ReadLock1);
 		SendDataByte(0);
@@ -717,7 +601,6 @@ DWORD At90sBus::ReadLockBits(long model)
 		retval = ~rv1 & 0x03;
 		break;
 
-	case ATtiny2313:
 	case ATmega8:
 	case ATmega16:
 	case ATmega161:
@@ -728,8 +611,12 @@ DWORD At90sBus::ReadLockBits(long model)
 	case ATmega32:
 	case ATmega162:
 	case ATmega169:
-	case ATmega8515:
-	case ATmega8535:
+	case ATmega8515: case ATmega8535:
+	case ATmega48: case ATmega88: case ATmega168:
+	case ATmega164: case ATmega324: case ATmega644:
+	case AT90CAN32: case AT90CAN64: case AT90CAN128:
+	case ATmega640: case ATmega1280: case ATmega1281:
+//	case ATmega2560: case ATmega2561:
 		SendDataByte(ReadLock0);
 		SendDataByte(ReadLock1);
 		SendDataByte(0);

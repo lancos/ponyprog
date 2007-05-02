@@ -69,6 +69,7 @@
 
 #define	ATtiny22	0x030011
 #define	ATtiny12	0x030012
+#define ATtiny13	0x030013
 #define	ATtiny15	0x030014
 
 #define	ATmega8515	0x030015
@@ -82,15 +83,37 @@
 #define	ATmega32	0x030024
 #define	ATmega162	0x030025
 #define	ATmega169	0x030026
+#define ATmega164	0x030027
+#define ATmega324	0x030028
+#define ATmega644	0x030029
 
 #define	ATmega64	0x03002A
 #define	ATmega128	0x030030
+
+#define ATmega48	0x030031
+#define ATmega88	0x030032
+#define ATmega168	0x030033
+#define ATmega640	0x030034
+#define ATmega1280	0x030035
+#define ATmega1281	0x030036
+#define ATmega2560	0x030037
+#define ATmega2561	0x030038
 
 #define	ATtiny11	0x030080
 #define	ATtiny10	0x030081
 #define ATtiny28	0x030082
 #define ATtiny26	0x030083
 #define ATtiny2313	0x030084
+#define ATtiny25	0x030085
+#define ATtiny45	0x030086
+#define ATtiny85	0x030087
+#define ATtiny261	0x030088
+#define ATtiny461	0x030089
+#define ATtiny861	0x03008A
+
+#define AT90CAN32	0x030100
+#define AT90CAN64	0x030101
+#define AT90CAN128	0x030102
 
 #define	E93X6	0x04
 // Sub types
@@ -228,29 +251,55 @@
 
 #define	NO_OF_EEPTYPE	0x13
 
-#define	MAXEEPSUBTYPE	48
+#define	MAXEEPSUBTYPE	64
 
-long BuildE2PType(int x, int y = 0);
-int GetE2PSubType(long x);
-int GetE2PPriType(long x);
+extern long BuildE2PType(int x, int y = 0);
+extern int GetE2PSubType(long x);
+extern int GetE2PPriType(long x);
 
-char const *GetEEPTypeString(int pritype, int subtype);
-char const *GetEEPTypeString(long type);
+extern char const *GetEEPTypeString(int pritype, int subtype);
+extern char const *GetEEPTypeString(long type);
 
-int GetEEPTypeIndex(int type);
-char const **GetEEPSubTypeList(int type);
-long *GetEEPSubTypeVector(int type);
-int GetEEPSubTypeIndex(long type);
-int GetEEPTypeSize(int pritype, int subtype);
-int GetEEPAddrSize(int pritype, int subtype);
-int GetEEPTypeSplit(int pritype, int subtype);
+extern int GetEEPTypeIndex(int type);
+extern char const **GetEEPSubTypeList(int type);
+extern long *GetEEPSubTypeVector(int type);
+extern int GetEEPSubTypeIndex(long type);
+extern int GetEEPTypeSize(int pritype, int subtype);
+extern int GetEEPAddrSize(int pritype, int subtype);
+extern int GetEEPTypeSplit(int pritype, int subtype);
 
-long GetEEPTypeFromSize(int pritype, int size);
-long GetEEPTypeFromString(char const *name);
+extern long GetEEPTypeFromSize(int pritype, int size);
+extern long GetEEPTypeFromString(char const *name);
 
-//extern int eeptype_vector[NO_OF_EEPTYPE];
-//extern char const *eepstr_vector[NO_OF_EEPTYPE+1];
+extern int GetEEPTypeWPageSize(int pritype, int subtype);
 
-extern char const *eepAt90str_vector[MAXEEPSUBTYPE];
+#define	LOCKPACKSIZE	8
+#define	FUSEPACKSIZE	LOCKPACKSIZE
+
+typedef struct {
+	long type;
+
+	BYTE lockenable3;
+	char *locklabel3[LOCKPACKSIZE];
+	BYTE lockenable2;
+	char *locklabel2[LOCKPACKSIZE];
+	BYTE lockenable1;
+	char *locklabel1[LOCKPACKSIZE];
+	BYTE lockenable0;
+	char *locklabel0[LOCKPACKSIZE];
+
+	WORD fuseenable3;
+	char *fuselabel3[FUSEPACKSIZE];
+	WORD fuseenable2;
+	char *fuselabel2[FUSEPACKSIZE];
+	WORD fuseenable1;
+	char *fuselabel1[FUSEPACKSIZE];
+	WORD fuseenable0;
+	char *fuselabel0[FUSEPACKSIZE];
+} FuseBit;
+
+extern const FuseBit eep_fusebits[];
+
+extern int eep_FindFuses(long type);
 
 #endif

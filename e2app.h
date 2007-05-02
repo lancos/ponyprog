@@ -213,11 +213,7 @@ class e2App : public vApp, public E2Profile
 	SxBus sxB;
 	Sde2506Bus sdeB;
 	At89sBus at89sB;
-	AtMegaBus mega103B;
-	AtMegaBus mega128B;
-	AtMegaBus mega16xB;
-	AtMegaBus mega8xB;
-	AtMegaBus tiny2xB;
+	AtMegaBus atMegaB;
 	Avr1200Bus at1200B;
 	PicBusNew picNewB;
 	IMBus imB;

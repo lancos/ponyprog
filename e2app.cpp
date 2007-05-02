@@ -69,26 +69,22 @@ e2App::e2App(char* name, int w, int h)
 	UserDebug(Constructor, "e2App::e2App()\n");
 
 	s2430B.SetOrganization(ORG8);		//Default X2444Bus organization is ORG16, but S24H30 organization is ORG8
-	mega103B.SetPageSize(256);
-	mega103B.SetFlashPagePolling(false);
-	mega128B.SetPageSize(256);
-	mega128B.SetFlashPagePolling(true);
-	mega16xB.SetPageSize(128);
-	mega16xB.SetFlashPagePolling(true);
-	mega8xB.SetPageSize(64);
-	mega8xB.SetFlashPagePolling(true);
-	tiny2xB.SetPageSize(32);
-	tiny2xB.SetFlashPagePolling(true);
+//	mega103B.SetPageSize(256);
+//	mega103B.SetFlashPagePolling(false);
+//	atMegaB.SetPageSize(256);
+//	atMegaB.SetFlashPagePolling(true);
+//	mega16xB.SetPageSize(128);
+//	mega16xB.SetFlashPagePolling(true);
+//	mega8xB.SetPageSize(64);
+//	mega8xB.SetFlashPagePolling(true);
+//	tiny2xB.SetPageSize(32);
+//	tiny2xB.SetFlashPagePolling(true);
 
 	//AutoTag
 	//Initialize Bus Pointers vector
 	busvetp[I2C-1] = &iicB;
 	busvetp[AT90S-1] = &at90sB;
-	busvetp[MEGA103-1] = &mega103B;
-	busvetp[MEGA16x-1] = &mega16xB;
-	busvetp[MEGA8x-1] = &mega8xB;
-	busvetp[TINY2x-1] = &tiny2xB;
-	busvetp[MEGA128-1] = &mega128B;
+	busvetp[ATMEGAB-1] = &atMegaB;
 	busvetp[AT1200S-1] = &at1200B;
 	busvetp[AT89S-1] = &at89sB;
 	busvetp[AT93C-1] = &at93cB;
