@@ -37,7 +37,7 @@ ifeq ($(Arch),linuxelf)
 	CXFLAGSLIB	= -fpic -fpermissive -Wno-deprecated $(CFLAGS)
 	CCFLAGSLIB	= -fpic $(CFLAGS)
 else
-	CXFLAGSLIB	= $(CFLAGS)
+	CXFLAGSLIB	= -fpermissive -Wno-deprecated $(CFLAGS)
 	CCFLAGSLIB	= $(CFLAGS)
 endif
 
