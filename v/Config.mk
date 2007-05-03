@@ -29,7 +29,7 @@ VVW	=	125
 #---------------------------------------------------------------------
 #HOMEV	=	$(HOME)/v
 #HOMEV	=	..
-HOMEV	=	$(HOME)/progetti/ponyprog_software/v
+HOMEV	=	$(HOME)/Progetti/PonyProg_Sourceforge/v
 
 
 #---------------------------------------------------------------------
@@ -52,8 +52,8 @@ VPATH=$(HOMEV)/includex/v
 # User contributed definitions are available for:
 # hpux, aix, solaris, bsd
 #---------------------------------------------------------------------
-#ARCH	= linux
-ARCH	= linuxelf
+ARCH	= linux
+#ARCH	= linuxelf
 #ARCH	= sun4
 #ARCH	= mips
 #ARCH	= sgi
@@ -95,7 +95,7 @@ Xdir11	= X11R6
 #---------------------------------------------------------------------
 # Select Debug or no Debug
 #---------------------------------------------------------------------
-#DEBUG	=	yes
+#DEBUG	= yes
 DEBUG	= no
 
 
