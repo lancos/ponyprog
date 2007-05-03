@@ -18,7 +18,7 @@
 CONFIG=v/Config.mk
 include $(CONFIG)
 
-PONYVER = 2.06g
+PONYVER = 2.07a
 TAR = tar
 
 #xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -26,7 +26,7 @@ TAR = tar
 
 Bin = ./bin
 
-CFLAGS	+= -D_LINUX_ -D_PONYPROG_ -Wall -fpermissive
+CFLAGS	+= -D_LINUX_ -Wall -fpermissive -Wno-deprecated
 
 #xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 

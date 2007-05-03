@@ -229,7 +229,7 @@ long eepAt90s_vector[MAXEEPSUBTYPE] = {
 	ATtiny25,
 	ATtiny26,
 	ATtiny261,
-	ATtiny28,
+//	ATtiny28,
 	ATtiny2313,
 	ATtiny45,
 	ATtiny461,
@@ -288,7 +288,7 @@ int eepAt90s_size[MAXEEPSUBTYPE] = {
 	KB(2)+128,		//tiny25
 	KB(2)+128,		//tiny26
 	KB(2)+128,		//tiny261
-	KB(2),			//tiny28
+//	KB(2),			//tiny28
 	KB(2)+128,		//tiny2313
 	KB(4)+256,		//tiny45
 	KB(4)+256,		//tiny461
@@ -346,7 +346,7 @@ int eepAt90s_split[MAXEEPSUBTYPE] = {
 	KB(2),		//tiny25
 	KB(2),		//tiny26
 	KB(2),		//tiny261
-	KB(2),		//tiny28
+//	KB(2),		//tiny28
 	KB(2),		//tiny2313
 	KB(4),		//tiny45
 	KB(4),		//tiny461
@@ -404,7 +404,7 @@ int eepAt90s_wpagesize[MAXEEPSUBTYPE] = {
 	32,			//tiny25
 	32,			//tiny26
 	32,			//tiny261
-	0,			//tiny28
+//	0,			//tiny28
 	32,			//tiny2313
 	64,			//tiny45
 	64,			//tiny461
@@ -463,7 +463,7 @@ char const *eepAt90str_vector[MAXEEPSUBTYPE] = {
 	"ATtiny25",
 	"ATtiny26",
 	"ATtiny261",
-	"ATtiny28",
+//	"ATtiny28",
 	"ATtiny2313",
 	"ATtiny45",
 	"ATtiny461",
@@ -1288,12 +1288,12 @@ const FuseBit eep_fusebits[] = {
 		0x00,{0}, 0x00,{0}, 0x00,{0}, 0x06,{0,0,0,0,0,"Lock2 ","Lock1 ",0},
 		0x00,{0}, 0x00,{0}, 0x00,{0}, 0x00,{0} },
 
-	{ ATtiny10,
-		0x00,{0}, 0x00,{0}, 0x00,{0}, 0x06,{0,0,0,0,0,"Lock2 ","Lock1 ",0},
-		0x00,{0}, 0x00,{0}, 0x00,{0}, 0x00,{0} },
-	{ ATtiny11,
-		0x00,{0}, 0x00,{0}, 0x00,{0}, 0x06,{0,0,0,0,0,"Lock2 ","Lock1 ",0},
-		0x00,{0}, 0x00,{0}, 0x00,{0}, 0x17,{0,0,0,"FSTRT ","RSTDISBL ","CKSEL2 ","CKSEL1 ","CKSEL0 "} },
+//	{ ATtiny10,
+//		0x00,{0}, 0x00,{0}, 0x00,{0}, 0x06,{0,0,0,0,0,"Lock2 ","Lock1 ",0},
+//		0x00,{0}, 0x00,{0}, 0x00,{0}, 0x00,{0} },
+//	{ ATtiny11,
+//		0x00,{0}, 0x00,{0}, 0x00,{0}, 0x06,{0,0,0,0,0,"Lock2 ","Lock1 ",0},
+//		0x00,{0}, 0x00,{0}, 0x00,{0}, 0x17,{0,0,0,"FSTRT ","RSTDISBL ","CKSEL2 ","CKSEL1 ","CKSEL0 "} },
 	{ ATtiny12,
 		0x00,{0}, 0x00,{0}, 0x00,{0}, 0x06,{0,0,0,0,0,"Lock2 ","Lock1 ",0},
 		0x00,{0}, 0x00,{0}, 0x00,{0}, 0xCF,{"BODLEVEL ","BODEN ","SPIEN ","RSTDISBL ","CKSEL3 ","CKSEL2 ","CKSEL1 ","CKSEL0 "} },
@@ -1309,9 +1309,9 @@ const FuseBit eep_fusebits[] = {
 	{ ATtiny26,
 		0x00,{0}, 0x00,{0}, 0x00,{0}, 0x03,{0,0,0,0,0, 0,"Lock2 ","Lock1 "},
 		0x00,{0}, 0x00,{0}, 0x07,{0,0,0,"RSTDISBL ","SPIEN ","EESAVE ","BODLEVEL ","BODEN "}, 0xFF,{"PLLCK ","CKOPT ","SUT1 ","SUT0 ","CKSEL3 ","CKSEL2 ","CKSEL1 ","CKSEL0 "} },
-	{ ATtiny28,
-		0x00,{0}, 0x00,{0}, 0x00,{0}, 0x06,{0,0,0,0,0,"Lock2 ","Lock1 ",0},
-		0x00,{0}, 0x00,{0}, 0x00,{0}, 0x00,{0} },
+//	{ ATtiny28,
+//		0x00,{0}, 0x00,{0}, 0x00,{0}, 0x06,{0,0,0,0,0,"Lock2 ","Lock1 ",0},
+//		0x00,{0}, 0x00,{0}, 0x00,{0}, 0x00,{0} },
 
 	{ ATtiny2313,
 		0x00,{0}, 0x00,{0}, 0x00,{0}, 0x03,{0,0,0,0,0, 0,"Lock2 ","Lock1 "},

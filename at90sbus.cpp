@@ -247,17 +247,8 @@ int At90sBus::WriteLockBits(DWORD param, long model)
 
 	//Only Parallel programming
 	case AT90S8534:
-	case ATtiny28:
-
-	//Only HV programming
-	case ATtiny11:
-	case ATtiny10:
-		//No Locks
-		break;
-
 	default:
-		val1 = WriteLock0;
-		val2 = ~(param & 0x06);
+		//No Locks
 		break;
 	}
 
@@ -387,9 +378,6 @@ int At90sBus::WriteFuseBits(DWORD param, long model)
 	case AT90S4414:
 	case AT90S8515:
 	case ATtiny22:
-	case ATtiny11:
-	case ATtiny10:
-	case ATtiny28:
 	case AT90S8534:
 	default:
 		//No Fuses

@@ -179,13 +179,13 @@ static Menu2Type index_menu_type[] = {
 	{m_at90s4434, AT90S4434},
 	{m_at90s8534, AT90S8534},
 	{m_at90s8535, AT90S8535},
-	{m_attiny10, ATtiny10},
-	{m_attiny11, ATtiny11},
+//	{m_attiny10, ATtiny10},
+//	{m_attiny11, ATtiny11},
 	{m_attiny12, ATtiny12},
 	{m_attiny15, ATtiny15},
 	{m_attiny22, ATtiny22},
 	{m_attiny26, ATtiny26},
-	{m_attiny28, ATtiny28},
+//	{m_attiny28, ATtiny28},
 	{m_attiny2313, ATtiny2313},
 	{m_attiny13, ATtiny13},
 	{m_attiny25, ATtiny25},
@@ -287,6 +287,9 @@ static Menu2Type index_menu_type[] = {
 
 	{0,0}
 };
+
+//The order of items in these list corresponds to menu item list at video
+// only the labeld is replaced run-time with correspondign device label
 
 //AutoTag
 //List of vmenu items (device type)
@@ -1635,7 +1638,7 @@ void e2CmdWindow::WindowCommand(ItemVal id, ItemVal val, CmdType cType)
 	case m_attiny26:
 	case m_attiny2313:
 	case m_attiny13:
-	case m_attiny28:
+//	case m_attiny28:
 	case m_attiny25: case m_attiny45: case m_attiny85:
 	case m_attiny261: case m_attiny461: case m_attiny861:
 	case m_atmega48: case m_atmega88: case m_atmega168:
@@ -3477,6 +3480,8 @@ int e2CmdWindow::CmdSetDeviceSubType(ItemVal val)
 	ItemVal v1 = GetValue(cbxEEPType);
 	long newtype = CbxIdToType(v1, val);
 
+	UserDebug3(UserApp1, "CmdSetDeviceSubType(%d), v1=%d, type=0x%lx\n", val, v1, newtype);
+
 	awip->SetEEProm(GetE2PPriType(newtype), GetE2PSubType(newtype));
 	UpdateMenuType();
 	char const *sp = GetEEPTypeString(awip->GetEEPPriType(), awip->GetEEPSubType());
@@ -4639,6 +4644,8 @@ void e2CmdWindow::CbxMenuInit()
 			avrMenu[j].label = (char *)GetEEPTypeString(GetE2PPriType(type), GetE2PSubType(type));
 			avrMenu[j].checked = 0;
 
+			UserDebug3(UserApp1, "Label: %s, Type: 0x%lx, Id: %d\n", avrMenu[j].label, type, id);
+
 			for (k = 0; index_menu_type[k].menu_id != 0; k++)
 			{
 				if (index_menu_type[k].menu_id == id)
@@ -4769,6 +4776,12 @@ void e2CmdWindow::CbxMenuInit()
 					break;
 				}
 		}
+	}
+
+	for (k = 0; index_menu_type[k].menu_id != 0; k++)
+	{
+		UserDebug2(UserApp1, "Menu Type: 0x%lx, Id: %d", index_menu_type[k].type, index_menu_type[k].menu_id);
+		UserDebug2(UserApp1, " Cbx1: %d, Cbx2: %d\n", index_menu_type[k].cbx1_id, index_menu_type[k].cbx2_id);
 	}
 
 	//Clear the check in menu Edit buffer
