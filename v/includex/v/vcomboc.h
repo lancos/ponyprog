@@ -20,7 +20,7 @@ extern "C"		// wrap in "C"
 #include <X11/StringDefs.h>
 }
 
-    const int MAX_COMBO_LIST = 32;	// put 8 items in the list
+    const int MAX_COMBO_LIST = 64;	// put 8 items in the list
 
     class vCmdParent;
 
