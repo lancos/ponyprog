@@ -46,6 +46,15 @@
 #define	DEV_TTYS	"/dev/ttyS"
 #endif
 
+#ifdef	WIN32
+#  ifdef	__BORLANDC__
+#    define	strcasecmp stricmp
+#  else // _MICROSOFT_ VC++
+#    define strcasecmp	_stricmp
+#    define snprintf	_snprintf
+#  endif
+#endif
+
 RS232Interface::RS232Interface(int com_no)
 {
 	UserDebug(Constructor, "RS232Interface::RS232Interface() Constructor\n");
@@ -508,7 +517,8 @@ int RS232Interface::SetSerialParams(long speed, int bits, int parity, int stops,
 
 		if ( GetCommState(hCom, &com_dcb) )
 		{
-			sprintf(dcb_str, "baud=%ld parity=%c data=%d stop=%d", actual_speed, actual_parity, actual_bits, actual_stops);
+			snprintf(dcb_str, 256, "baud=%ld parity=%c data=%d stop=%d", actual_speed, actual_parity, actual_bits, actual_stops);
+			dcb_str[255] = '\0';
 			if ( BuildCommDCB(dcb_str, &com_dcb) )
 			{
 				if (actual_flowcontrol == 0)

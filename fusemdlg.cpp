@@ -40,6 +40,15 @@
 
 #include "eeptypes.h"
 
+#ifdef	WIN32
+#  ifdef	__BORLANDC__
+#    define	strcasecmp stricmp
+#  else // _MICROSOFT_ VC++
+#    define strcasecmp	_stricmp
+#    define snprintf	_snprintf
+#  endif
+#endif
+
 int SetCommandObject(const int id, const int val, CommandObject* CmdList);
 int SetCommandSensitive(const int id, const int val, CommandObject* CmdList);
 int SetCommandLabel(const int id, char *str, CommandObject* CmdList);
@@ -330,7 +339,7 @@ fuseModalDialog::~fuseModalDialog()
 //====================>>> fuseModalDialog::fuseAction <<<====================
 int fuseModalDialog::fuseAction(char* msg, long type, DWORD &lock, DWORD &fuse, int readonly)
 {
-	char str1[10], str2[10], str3[10];
+	char str1[MAXNUMDIGIT], str2[MAXNUMDIGIT], str3[MAXNUMDIGIT];
 
 	int k;
 	int j = eep_FindFuses(type);
@@ -555,9 +564,12 @@ int fuseModalDialog::fuseAction(char* msg, long type, DWORD &lock, DWORD &fuse, 
 		SetCommandObject(chk7_F3+k, ( fuse & (0x80>>k)) ? 1 : 0, FuseDialogCmds);
 	}
 
-	sprintf(str1, "%d", (int)((lock >> 4) & 0x0F) );
-	sprintf(str2, "%d", (int)(lock & 0x0F) );
-	sprintf(str3, "%d", (int)(fuse & 0x0F) );
+	snprintf(str1, MAXNUMDIGIT, "%d", (int)((lock >> 4) & 0x0F) );
+	str1[MAXNUMDIGIT-1] = '\0';
+	snprintf(str2, MAXNUMDIGIT, "%d", (int)(lock & 0x0F) );
+	str2[MAXNUMDIGIT-1] = '\0';
+	snprintf(str3, MAXNUMDIGIT, "%d", (int)(fuse & 0x0F) );
+	str3[MAXNUMDIGIT-1] = '\0';
 	SetCommandLabel(txiFrom, str1, BlockDialogCmds);
 	SetCommandLabel(txiTo, str2, BlockDialogCmds);
 	SetCommandLabel(txiVal, str3, BlockDialogCmds);

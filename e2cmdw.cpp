@@ -652,11 +652,13 @@ static vMenu StandardMenu[] =
 	static vIcon editI(&edit20x20_bits[0],edit20x20_height,edit20x20_width,edit20x20_depth);
 //@V@:EndIcons
 
-static char* comboList1[128];
+#define COMBOLIST_SIZE	128
+
+static char* comboList1[COMBOLIST_SIZE];
 
 //this determines only the size of the comboBox, the content will be initialized
 //  within PostInit()
-static char* comboList2[128] =
+static char* comboList2[COMBOLIST_SIZE] =
   {
     "123456789012345",   // The first item in the list
     0            // 0 terminates the list
@@ -2088,10 +2090,11 @@ int e2CmdWindow::CmdRead(int type)
 			UpdateStatusBar();
 
 			char str[MAXMSG];
-			if (strlen(STR_MSGREADOK) + 20 < MAXPATH)
-				sprintf(str, STR_MSGREADOK " %ld Byte", GetDevSize());
+			if (strlen(STR_MSGREADOK) + 20 < MAXMSG)
+				snprintf(str, MAXMSG, STR_MSGREADOK " %ld Byte", GetDevSize());
 			else
-				strncpy(str, "Translate error: STR_MSGREADOK", MAXPATH);
+				strncpy(str, "Translate error: STR_MSGREADOK", MAXMSG);
+			str[MAXMSG-1] = '\0';
 
 			if (verbose == verboseAll)
 			{
@@ -2325,10 +2328,11 @@ int e2CmdWindow::CmdReadCalibration(int idx)
 				{
 					char str[MAXMSG];
 
-					if (strlen(STR_MSGREADCALIBOK) + 20 < MAXPATH)
-						sprintf(str, STR_MSGREADCALIBOK ": 0x%02X (%d)", rval, rval);
+					if (strlen(STR_MSGREADCALIBOK) + 20 < MAXMSG)
+						snprintf(str, MAXMSG, STR_MSGREADCALIBOK ": 0x%02X (%d)", rval, rval);
 					else
-						strncpy(str, "Translate error: STR_MSGREADCALIBOK", MAXPATH);
+						strncpy(str, "Translate error: STR_MSGREADCALIBOK", MAXMSG);
+					str[MAXMSG-1] = '\0';
 
 					vNoticeDialog note(this);
 					note.Notice(str);
@@ -2574,7 +2578,8 @@ int e2CmdWindow::CmdProgram()
 		if (verbose != verboseNo)
 		{
 			char str[MAXMSG];
-			sprintf(str,STR_MSGPROGRAMFAIL " (%d)", result);
+			snprintf(str, MAXMSG, STR_MSGPROGRAMFAIL " (%d)", result);
+			str[MAXMSG-1] = '\0';
 			note.Notice(str);
 		}
 	}
@@ -2688,12 +2693,13 @@ int e2CmdWindow::ScriptError(int line_number, int arg_index, char *arg, char *ms
 
 	vNoticeDialog note(this);
 	if (arg_index == 0)
-		sprintf(str, STR_MSGSCRIPTERROR " %d: %s '%s'", line_number, msg ? msg : STR_MSGSCRIPTBADCOMMAND, arg);
+		snprintf(str, MAXMSG, STR_MSGSCRIPTERROR " %d: %s '%s'", line_number, msg ? msg : STR_MSGSCRIPTBADCOMMAND, arg);
 	else
 	if (arg == NULL || arg[0] == '\0')
-		sprintf(str, STR_MSGSCRIPTERROR " %d: %s",line_number, msg ? msg : STR_MSGSCRIPTARGMISSING);
+		snprintf(str, MAXMSG, STR_MSGSCRIPTERROR " %d: %s", line_number, msg ? msg : STR_MSGSCRIPTARGMISSING);
 	else
-		sprintf(str, STR_MSGSCRIPTERROR " %d: %s '%s'", line_number, msg ? msg : STR_MSGSCRIPTBADARGUMENT, arg);
+		snprintf(str, MAXMSG, STR_MSGSCRIPTERROR " %d: %s '%s'", line_number, msg ? msg : STR_MSGSCRIPTBADARGUMENT, arg);
+	str[MAXMSG-1] = '\0';
 	note.Notice(str);
 
 	return CMD_SCRIPTERROR;
@@ -3338,7 +3344,8 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 		if (verbose != verboseNo)
 		{
 			char str[MAXMSG];
-			sprintf(str,STR_MSGPROGRAMFAIL " (%d)", result);
+			snprintf(str, MAXMSG, STR_MSGPROGRAMFAIL " (%d)", result);
+			str[MAXMSG-1] = '\0';
 			note.Notice(str);
 		}
 	}
@@ -4217,10 +4224,10 @@ void e2CmdWindow::UpdateStatusBar()
 {
 //	int is_splitted = awip->GetSplittedInfo() > 0 && awip->GetSplittedInfo() != awip->GetSize();
 
-  	char buf[MAXMSG];
+  	char buf[MAXMSG+1];
 	//*** 13/09/99
-//	sprintf(buf,STATUSBAR_PRINT, awip->GetEEPPriType(), awip->GetEEPSubType(), GetDevSize(), awip->GetCRC(), awip->IsBufChanged() ? '*' : ' ');
-	sprintf(buf,STATUSBAR_PRINT, GetDevSize(), awip->GetCRC(), awip->IsBufChanged() ? '*' : ' ');
+	snprintf(buf, MAXMSG+1, STATUSBAR_PRINT, GetDevSize(), awip->GetCRC(), awip->IsBufChanged() ? '*' : ' ');
+	buf[MAXMSG] = '\0';
 	SetString(lblEEPInfo, buf);
 	SetString(lblStringID, awip == 0 ? (char *)" " : awip->GetStringID());
 }
@@ -4289,10 +4296,10 @@ void e2CmdWindow::UpdateMenuType(long new_type)
 	if (new_type == 0)
 		new_type = BuildE2PType( awip->GetEEPPriType(), awip->GetEEPSubType() );
 
-	//deseleziona il menu attuale
+	//deselect current menu item
 	if (type_index > 0)
 		SetValue(type_index, 0, Checked);
-	//seleziona il nuovo menu
+	//select new menu item
 	type_index = TypeToMenuId(new_type);
 	if (type_index > 0)
 		SetValue(type_index, 1, Checked);
@@ -4307,11 +4314,16 @@ void e2CmdWindow::UpdateMenuType(long new_type)
 		if (vm)
 		{
 			int k;
-			for (k = 0; vm[k].label != 0; k++)
+			for (k = 0; vm[k].label != 0 && k < COMBOLIST_SIZE; k++)
 			{
 				comboList2[k] = vm[k].label;
 			}
-			comboList2[k] = 0;
+			//Null terminate the list
+			if (k < COMBOLIST_SIZE)
+				comboList2[k] = 0;
+			else
+				comboList2[COMBOLIST_SIZE-1] = 0;
+
 			SetValue(cbxEEPSubType, 0, ChangeList);
 			SetValue(cbxEEPSubType, b, Value);
 		}
@@ -4489,8 +4501,13 @@ void e2CmdWindow::CbxMenuInit()
 			DeviceMenu[j].checked = 0;
 		}
 
-		comboList1[j] = DeviceMenu[j].label;
+		if (j < COMBOLIST_SIZE)
+			comboList1[j] = DeviceMenu[j].label;
 	}
+	if (j < COMBOLIST_SIZE)
+		comboList1[j] = 0;
+	else
+		comboList1[COMBOLIST_SIZE-1] = 0;		//Null terminated list
 
 	//i2c8Menu
 	for (j = 0; i2c8Menu[j].label != NULL; j++)
@@ -4619,26 +4636,17 @@ void e2CmdWindow::CbxMenuInit()
 		{
 			int id = avrMenu[j].menuId;
 			long type = MenuIdToType(id);
-			char *sp = (char *)GetEEPTypeString(GetE2PPriType(type), GetE2PSubType(type));
+			avrMenu[j].label = (char *)GetEEPTypeString(GetE2PPriType(type), GetE2PSubType(type));
+			avrMenu[j].checked = 0;
 
-			if (!sp)
+			for (k = 0; index_menu_type[k].menu_id != 0; k++)
 			{
-				printf("Errore! Type: 0x%04lx (%d, %d) - Id: %d\n", type,
-							GetE2PPriType(type), GetE2PSubType(type), id);
-				sp = (char *)GetEEPTypeString(GetE2PPriType(type), GetE2PSubType(type));
-			}
-			else
-			{
-				avrMenu[j].label = sp;
-				avrMenu[j].checked = 0;
-
-				for (k = 0; index_menu_type[k].menu_id != 0; k++)
-					if (index_menu_type[k].menu_id == id)
-					{
-						index_menu_type[k].cbx1_id = 6;		//<< -- 6
-						index_menu_type[k].cbx2_id = j;
-						break;
-					}
+				if (index_menu_type[k].menu_id == id)
+				{
+					index_menu_type[k].cbx1_id = 6;		//<< -- 6
+					index_menu_type[k].cbx2_id = j;
+					break;
+				}
 			}
 		}
 	}
@@ -4996,8 +5004,9 @@ int e2CmdWindow::SaveFile(int force_select)
 //		awip->SetNoOfBlock(awip->GetNoOfBank());
 		if ( (err = awip->Save()) <= 0 && verbose != verboseNo)
 		{
-			char str[MAXMSG];
-			sprintf(str, STR_MSGFILESAVEFAIL " (%d)\n", err);
+			char str[MAXMSG+1];
+			snprintf(str, MAXMSG+1, STR_MSGFILESAVEFAIL " (%d)\n", err);
+			str[MAXMSG] = '\0';
 			note.Notice(str);
 		}
 	}
@@ -5057,12 +5066,10 @@ int e2CmdWindow::SaveFile(int force_select)
 			{
 				char str[MAXMSG];
 				if ( strlen(STR_MSGFILESAVEFAIL) + strlen(fn) + 10 < MAXMSG )
-					sprintf(str, STR_MSGFILESAVEFAIL " %s (%d)\n", fn, err);
+					snprintf(str, MAXMSG, STR_MSGFILESAVEFAIL " %s (%d)\n", fn, err);
 				else
-				{
 					strncpy(str, STR_MSGFILESAVEFAIL, MAXMSG);
-					str[MAXMSG-1] = '\0';
-				}
+				str[MAXMSG-1] = '\0';
 
 				note.Notice(str);
 				//ripristina il nome precedente
@@ -5470,7 +5477,8 @@ void e2CmdWindow::CharEdit(int row, int col)
 				str[k] = '\0';
 
 				editModalDialog2 ed(this, str);
-				sprintf(str, STR_MSGENTERTEXT " %04Xh", index);
+				snprintf(str, MAXMSG, STR_MSGENTERTEXT " %04Xh", index);
+				str[MAXMSG-1] = '\0';
 				sp = str;
 				if ( ed.editAction(str,sp,255) )
 				{
@@ -5612,18 +5620,23 @@ void e2CmdWindow::Print()
 	{
 		pdc.BeginPage();
 		curRow = 0;
-		sprintf(str, STR_MSGPAGE " %d   ---   " APPNAME " by " AUTHORNAME , ++curPage);
+		snprintf(str, MAXMSG, STR_MSGPAGE " %d   ---   " APPNAME " by " AUTHORNAME , ++curPage);
+		str[MAXMSG-1] = '\0';
 		pdc.DrawText(0,curRow++ * cHeight, str);
 		if (curPage == 1)
 		{
 			curRow++;
-			sprintf(str, "File  : %s", GetFileName());
+			snprintf(str, MAXMSG, "File  : %s", GetFileName());
+			str[MAXMSG-1] = '\0';
 			pdc.DrawText(0,curRow++ * cHeight, str);
-			sprintf(str, "Device: %s", awip->GetStringID());
+			snprintf(str, MAXMSG, "Device: %s", awip->GetStringID());
+			str[MAXMSG-1] = '\0';
 			pdc.DrawText(0,curRow++ * cHeight, str);
-			sprintf(str, "Note  : %s", awip->GetComment());
+			snprintf(str, MAXMSG, "Note  : %s", awip->GetComment());
+			str[MAXMSG-1] = '\0';
 			pdc.DrawText(0,curRow++ * cHeight, str);
-			sprintf(str, "Size  : %ld Bytes    CRC: %04X", GetDevSize(), awip->GetCRC());
+			snprintf(str, MAXMSG, "Size  : %ld Bytes    CRC: %04X", GetDevSize(), awip->GetCRC());
+			str[MAXMSG-1] = '\0';
 			pdc.DrawText(0,curRow++ * cHeight, str);
 		}
 		curRow++;

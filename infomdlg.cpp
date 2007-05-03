@@ -36,6 +36,15 @@
 #include "infomdlg.h"
 #include "cmdenum.h"
 
+#ifdef	WIN32
+#  ifdef	__BORLANDC__
+#    define	strcasecmp stricmp
+#  else // _MICROSOFT_ VC++
+#    define strcasecmp	_stricmp
+#    define snprintf	_snprintf
+#  endif
+#endif
+
 //@V@:BeginDialogCmd DefaultCmds
 static DialogCmd e24xxCmds[] =
 {
@@ -113,12 +122,14 @@ e24xx_infoModalDialog::e24xx_infoModalDialog(vBaseWindow* bw, int rlv, UWORD crc
 	}
 
 	char str[MAXMSG];
-	sprintf(str, "%04Xh", crc);
+	snprintf(str, MAXMSG, "%04Xh", crc);
+	str[MAXMSG-1] = '\0';
 	strptr[0] = new char[strlen(str)+1];
 	strcpy(strptr[0], str);
 	SetCommandLabel(txtCRC, strptr[0], e24xxCmds);
 
-	sprintf(str, "%ld Byte", size);
+	snprintf(str, MAXMSG, "%ld Byte", size);
+	str[MAXMSG-1] = '\0';
 	strptr[1] = new char[strlen(str)+1];
 	strcpy(strptr[1], str);
 	SetCommandLabel(txtSize, strptr[1], e24xxCmds);
@@ -134,17 +145,20 @@ other_infoModalDialog::other_infoModalDialog(vBaseWindow* bw, long fsize, long e
     vModalDialog(bw, title)
 {
 	char str[MAXMSG];
-	sprintf(str, "%04Xh", crc);
+	snprintf(str, MAXMSG, "%04Xh", crc);
+	str[MAXMSG-1] = '\0';
 	strptr[0] = new char[strlen(str)+1];
 	strcpy(strptr[0], str);
 	SetCommandLabel(txtCRC, strptr[0], otherCmds);
 
-	sprintf(str, "%ld Byte", fsize);
+	snprintf(str, MAXMSG, "%ld Byte", fsize);
+	str[MAXMSG-1] = '\0';
 	strptr[1] = new char[strlen(str)+1];
 	strcpy(strptr[1], str);
 	SetCommandLabel(txtSize, strptr[1], otherCmds);
 
-	sprintf(str, "%ld Byte", esize);
+	snprintf(str, MAXMSG, "%ld Byte", esize);
+	str[MAXMSG-1] = '\0';
 	strptr[2] = new char[strlen(str)+1];
 	strcpy(strptr[2], str);
 	SetCommandLabel(txtSecurity, strptr[2], otherCmds);
@@ -286,15 +300,18 @@ editModalDialog::editModalDialog(vBaseWindow* bw, int curval, char* title) :
 
 	char str[MAXNUMDIGIT];
 
-	sprintf(str, "%02X", curval);
+	snprintf(str, MAXNUMDIGIT, "%02X", curval);
+	str[MAXNUMDIGIT-1] = '\0';
 	EditChar[5].title = new char[strlen(str)+1];
 	strcpy(EditChar[5].title, str);
 
-	sprintf(str, "%d", curval);
+	snprintf(str, MAXNUMDIGIT, "%d", curval);
+	str[MAXNUMDIGIT-1] = '\0';
 	EditChar[6].title = new char[strlen(str)+1];
 	strcpy(EditChar[6].title, str);
 
-	sprintf(str, "%c", curval);
+	snprintf(str, MAXNUMDIGIT, "%c", curval);
+	str[MAXNUMDIGIT-1] = '\0';
 	EditChar[7].title = new char[strlen(str)+1];
 	strcpy(EditChar[7].title, str);
 

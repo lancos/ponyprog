@@ -36,6 +36,15 @@
 #include <v/vnotice.h>
 #include <stdio.h>
 
+#ifdef	WIN32
+#  ifdef	__BORLANDC__
+#    define	strcasecmp stricmp
+#  else // _MICROSOFT_ VC++
+#    define strcasecmp	_stricmp
+#    define snprintf	_snprintf
+#  endif
+#endif
+
 //======================>>> e2AppWinInfo::e2AppWinInfo <<<=======================
 e2AppWinInfo::e2AppWinInfo(vCmdWindow* win, char* name, BusIO** busvptr, void* ptr)
 	:	vAppWinInfo(name),
@@ -1176,7 +1185,7 @@ char const *e2AppWinInfo::Dump(int line, int type)
 				tmpbuf[k] = isprint(buffer[idx+k]) ? buffer[idx+k] : '.';
 			tmpbuf[hex_per_line] = 0;
 
-			sprintf(linebuf, "  %06lX) %02X %02X %02X %02X %02X %02X %02X %02X - %02X %02X %02X %02X %02X %02X %02X %02X    %s\n",
+			snprintf(linebuf, LINEBUF_SIZE, "  %06lX) %02X %02X %02X %02X %02X %02X %02X %02X - %02X %02X %02X %02X %02X %02X %02X %02X    %s\n",
 					idx,
 					buffer[idx+0],
 					buffer[idx+1],
@@ -1202,12 +1211,12 @@ char const *e2AppWinInfo::Dump(int line, int type)
 		else
 		if (type == 1)
 		{
-			sprintf(linebuf, "  %06lX)",	idx);
+			snprintf(linebuf, LINEBUF_SIZE, "  %06lX)",	idx);
 		}
 		else
 		if (type == 2)
 		{
-			sprintf(linebuf, " %02X %02X %02X %02X %02X %02X %02X %02X - %02X %02X %02X %02X %02X %02X %02X %02X  ",
+			snprintf(linebuf, LINEBUF_SIZE, " %02X %02X %02X %02X %02X %02X %02X %02X - %02X %02X %02X %02X %02X %02X %02X %02X  ",
 					buffer[idx+0],
 					buffer[idx+1],
 					buffer[idx+2],
@@ -1234,8 +1243,10 @@ char const *e2AppWinInfo::Dump(int line, int type)
 				tmpbuf[k] = isprint(buffer[idx+k]) ? buffer[idx+k] : '.';
 			tmpbuf[hex_per_line] = 0;
 
-			sprintf(linebuf, "  %s\n", tmpbuf);
+			snprintf(linebuf, LINEBUF_SIZE, "  %s\n", tmpbuf);
 		}
+
+		linebuf[LINEBUF_SIZE-1] = '\0';
 	}
 
 	return linebuf;

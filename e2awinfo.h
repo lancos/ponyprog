@@ -89,6 +89,8 @@
 #define	STRINGID_SIZE	E2P_STRID_SIZE
 #define	COMMENT_SIZE	E2P_COMM_SIZE
 
+#define LINEBUF_SIZE	128
+
 class e2AppWinInfo : public vAppWinInfo
 {
   public:		//---------------------------------------- public
@@ -224,10 +226,10 @@ class e2AppWinInfo : public vAppWinInfo
 	long load_relocation;
 	long save_relocation;
 
-	UBYTE buffer[BUFFER_SIZE];	//buffer in cui risiede il contenuto dell'eeprom
-	char linebuf[128];			//buffer di appoggio per la visualizzazione
-	int buf_ok;					//indica se il contenuto del buffer e` valido
-	int buf_changed;			//indica se il contenuto del buffer e` stato modificato
+	UBYTE buffer[BUFFER_SIZE];	//device content buffer
+	char linebuf[LINEBUF_SIZE];	//print line buffer
+	int buf_ok;					//true if buffer is valid
+	int buf_changed;			//true if buffer changed/edited
 
 	int eep_type;				//indica il tipo di chip di eeprom
 	int eep_subtype;			//sottotipo (in pratica il numero di banchi)
@@ -248,7 +250,7 @@ class e2AppWinInfo : public vAppWinInfo
 	char eeprom_string[STRINGID_SIZE];	//eeprom string ID
 	char eeprom_comment[COMMENT_SIZE];	//eeprom comment
 
-	Device *eep;				//puntatore al tipo di eeprom su cui si lavora
+	Device *eep;						//current device pointer (can be any of the following list)
 	//AutoTag
 	//List of available device types
 	E24xx eep24xx;
@@ -271,8 +273,8 @@ class e2AppWinInfo : public vAppWinInfo
 	X2444 eep2444;
 	X2444 eep2430;
 
-	FileBuf *fbufp;				//puntatore al tipo di file su cui si lavora
-	FileBuf *fbufvet[NO_OF_FILETYPE];	//puntatori ai tipi di file conosciuti
+	FileBuf *fbufp;						//current filebuffer pointer
+	FileBuf *fbufvet[NO_OF_FILETYPE];	//filebuffer list
 	//List of available file types
 	e2pFileBuf e2pfbuf;
 	binFileBuf binfbuf;

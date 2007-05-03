@@ -36,6 +36,15 @@
 #include "filldlg.h"
 #include "string_table.h"
 
+#ifdef	WIN32
+#  ifdef	__BORLANDC__
+#    define	strcasecmp stricmp
+#  else // _MICROSOFT_ VC++
+#    define strcasecmp	_stricmp
+#    define snprintf	_snprintf
+#  endif
+#endif
+
 //@V@:BeginIDs
 enum {
 	lblFillMsg = 1000,
@@ -86,15 +95,18 @@ FillDialog::FillDialog(vBaseWindow* bw, long cfrom, long cto, int cval, char* ti
 	mTo = (cto < 0) ? 0xFFFFFF : cto;
 	mVal = (cval < 0) ? 0xFF : cval;
 
-	sprintf(str, "0x%04lX", mFrom);
+	snprintf(str, MAXNUMDIGIT, "0x%04lX", mFrom);
+	str[MAXNUMDIGIT-1] = '\0';
 	DefaultCmds[5].title = new char[strlen(str)+1];
 	strcpy(DefaultCmds[5].title, str);
 
-	sprintf(str, "0x%04lX", mTo);
+	snprintf(str, MAXNUMDIGIT, "0x%04lX", mTo);
+	str[MAXNUMDIGIT-1] = '\0';
 	DefaultCmds[6].title = new char[strlen(str)+1];
 	strcpy(DefaultCmds[6].title, str);
 
-	sprintf(str, "0x%02X", mVal);
+	snprintf(str, MAXNUMDIGIT, "0x%02X", mVal);
+	str[MAXNUMDIGIT-1] = '\0';
 	DefaultCmds[7].title = new char[strlen(str)+1];
 	strcpy(DefaultCmds[7].title, str);
 
