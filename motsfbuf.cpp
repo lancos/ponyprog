@@ -292,6 +292,8 @@ int MotorolaSFileBuf::Load(int loadtype, long relocation_offset)
 	if ( (fh = fopen(GetFileName(), "r")) == NULL )
 		return FILENOTFOUND;
 
+	valid_record_count = 0;
+
 	char riga[MAXLINE+1];
 	riga[MAXLINE] = '\0';
 	while ( fgets(riga, MAXLINE, fh) )
@@ -332,18 +334,20 @@ int MotorolaSFileBuf::Load(int loadtype, long relocation_offset)
 		}
 	}
 
-	int img_size = 1;	//Srec file with only header and end record, no data, should return success
+	int img_size;
+//	img_size = 1;	//Srec file with only header and end record, no data, should return success
+	img_size = valid_record_count ? 1 : 0;
 	if (highestPC)
 		img_size = highestPC + 1 - dp;
 	fclose(fh);
 
-//In questi formati di file "stupidi" la dimensione
-//deve rimanere quella della eeprom attualmente selezionata
+//This format doesn't contain information about the device size,
+// so keep the size of the selected eeprom
 
 	if (rval == OK)
 	{
 		SetComment("");
-		SetRollOver(0);		//2 (che significa NO) ??
+		SetRollOver(0);		//2 (that means NO) ??
 //		SetCRC( mcalc_crc(GetBufPtr(), img_size) );
 
 		rval = img_size;
@@ -425,7 +429,7 @@ int MotorolaSFileBuf::ParseRecord(char *lbufPC, BYTE *buf_startP, BYTE *buf_endP
 		}
 
 		if( ++cksmB )
-		return BADFILETYPE;      /* flag checksum error */
+			return BADFILETYPE;      /* flag checksum error */
 	}
 	else
 	{
@@ -471,6 +475,7 @@ int MotorolaSFileBuf::ParseRecord(char *lbufPC, BYTE *buf_startP, BYTE *buf_endP
 				highestPC = bufPC - 1;          /* track highest address loaded */
 		}
 	}
+	valid_record_count++;
 
 	return OK;                        /* Successful return */
 }

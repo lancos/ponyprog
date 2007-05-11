@@ -27,10 +27,10 @@
 //-------------------------------------------------------------------------//
 //=========================================================================//
 
+//Read/Write Motorola Srecord file format
+
 #ifndef _MOTOSFBUF_H
 #define _MOTOSFBUF_H
-
-// Include standard V files as needed
 
 #include "types.h"
 #include "filebuf.h"
@@ -55,5 +55,7 @@ class MotorolaSFileBuf : public FileBuf
 	BYTE *highestPC;
 	long highestAddr;
 	long lowestAddr;
+
+	int valid_record_count;		//incremented by ParseRecord for each valid record found
 };
 #endif
