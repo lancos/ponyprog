@@ -302,22 +302,22 @@ uninstall:
 
 .PHONY:	installv
 installv:
-	-mkdir /usr/local/v
-	-mkdir /usr/local/v/lib
-	-mkdir /usr/local/v/bin
-	-mkdir /usr/local/v/include
-	-mkdir /usr/local/v/include/v
-	-chmod 755 /usr/local/v 
-	-chmod 755 /usr/local/v/lib
-	-chmod 755 /usr/local/v/bin
-	-chmod 755 /usr/local/v/include
-	-chmod 755 /usr/local/v/include/v
-	cp includex/v/* /usr/local/v/include/v
-	cp $(LibDir)/*.a /usr/local/v/lib
-	cp $(Bin)/* /usr/local/v/bin
-	-chmod 644 /usr/local/v/include/v/*
-	-chmod 644 /usr/local/v/lib/*
-	-chmod 755 /usr/local/v/bin/*
+	-mkdir $(INSTALL_PREFIX)/v
+	-mkdir $(INSTALL_PREFIX)/v/lib
+	-mkdir $(INSTALL_PREFIX)/v/bin
+	-mkdir $(INSTALL_PREFIX)/v/include
+	-mkdir $(INSTALL_PREFIX)/v/include/v
+	-chmod 755 $(INSTALL_PREFIX)/v 
+	-chmod 755 $(INSTALL_PREFIX)/v/lib
+	-chmod 755 $(INSTALL_PREFIX)/v/bin
+	-chmod 755 $(INSTALL_PREFIX)/v/include
+	-chmod 755 $(INSTALL_PREFIX)/v/include/v
+	cp includex/v/* $(INSTALL_PREFIX)/v/include/v
+	cp $(LibDir)/*.a $(INSTALL_PREFIX)/v/lib
+	cp $(Bin)/* $(INSTALL_PREFIX)/v/bin
+	-chmod 644 $(INSTALL_PREFIX)/v/include/v/*
+	-chmod 644 $(INSTALL_PREFIX)/v/lib/*
+	-chmod 755 $(INSTALL_PREFIX)/v/bin/*
 
 .PHONY:	installgnuwin32
 installgnuwin32:
@@ -342,14 +342,14 @@ installVLinux:
 #	cp includex/v/* /usr/include/v
 ifeq ($(Arch),linuxelf)
 	chmod 644 $(LibDir)/*.so.$(VV)
-	cp $(LibDir)/*.so.$(VV) /usr/local/lib
-	rm -f /usr/local/lib/$(LIBNAME).so.1
-	ln -s /usr/local/lib/$(LIBNAME).so.$(VV) /usr/local/lib/$(LIBNAME).so.1
-	rm -f /usr/local/lib/$(LIBNAME).so
-	ln -s /usr/local/lib/$(LIBNAME).so.$(VV) /usr/local/lib/$(LIBNAME).so
+	cp $(LibDir)/*.so.$(VV) $(INSTALL_PREFIX)/lib
+	rm -f $(INSTALL_PREFIX)/lib/$(LIBNAME).so.1
+	ln -s $(INSTALL_PREFIX)/lib/$(LIBNAME).so.$(VV) $(INSTALL_PREFIX)/lib/$(LIBNAME).so.1
+	rm -f $(INSTALL_PREFIX)/lib/$(LIBNAME).so
+	ln -s $(INSTALL_PREFIX)/lib/$(LIBNAME).so.$(VV) $(INSTALL_PREFIX)/lib/$(LIBNAME).so
 else
 	-chmod 644 $(LibDir)/*.a
-	cp $(LibDir)/*.a /usr/local/lib
+	cp $(LibDir)/*.a $(INSTALL_PREFIX)/lib
 endif
 #	-chmod 755 $(Bin)/*
 #	cp $(Bin)/* /usr/$(Xdir11)/bin
@@ -359,12 +359,12 @@ uninstallVLinux:
 	@echo "You must run this as root"
 #	-rm  /usr/include/v/*
 ifeq ($(Arch),linuxelf)
-	rm -f /usr/local/lib/$(LIBNAME).so.1
-	rm -f /usr/local/lib/$(LIBNAME).so
-	rm -f /usr/local/lib/$(LIBNAME).so.$(VV)
+	rm -f $(INSTALL_PREFIX)/lib/$(LIBNAME).so.1
+	rm -f $(INSTALL_PREFIX)/lib/$(LIBNAME).so
+	rm -f $(INSTALL_PREFIX)/lib/$(LIBNAME).so.$(VV)
 else
-	rm -f /usr/local/lib/libV.a
-	rm -f /usr/local/lib/libVgl.a
+	rm -f $(INSTALL_PREFIX)/lib/libV.a
+	rm -f $(INSTALL_PREFIX)/lib/libVgl.a
 endif
 #	-rm /usr/$(Xdir11)/bin/viconed
 #	-rm /usr/$(Xdir11)/bin/b2v

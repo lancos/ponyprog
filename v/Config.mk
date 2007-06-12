@@ -31,6 +31,7 @@ VVW	=	125
 #HOMEV	=	..
 HOMEV	=	$(HOME)/Progetti/PonyProg_Sourceforge/v
 
+INSTALL_PREFIX = /usr/local
 
 #---------------------------------------------------------------------
 # Tools used in the makefile execution

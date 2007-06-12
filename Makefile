@@ -123,15 +123,15 @@ installLinuxElf:
 	$(MAKE)	ARCH=linuxelf install
 
 buildtar:
-	cp $(PROG) /usr/local/bin
-	cd /; $(TAR) cvfzP ponyprog-$(PONYVER).tar.gz /usr/local/bin/$(PROGNAME) /usr/local/lib/libVx.*
+	cp $(PROG) $(INSTALL_PREFIX)/bin
+	cd /; $(TAR) cvfzP ponyprog-$(PONYVER).tar.gz $(INSTALL_PREFIX)/bin/$(PROGNAME) $(INSTALL_PREFIX)/lib/libVx.*
 	mv /ponyprog-$(PONYVER).tar.gz .
 	chown lanconel.lanconel ponyprog-$(PONYVER).tar.gz
 
 install:	$(PROG)
 	chmod	755 $(PROG)
 #	chmod	+s $(PROG)
-	cp	$(PROG) /usr/local/bin
+	cp	$(PROG) $(INSTALL_PREFIX)/bin
 	cd v; $(MAKE) install
 
 distrib:
