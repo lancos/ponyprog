@@ -355,7 +355,7 @@ int At90sBus::WriteFuseBits(DWORD param, long model)
 	case ATmega164: case ATmega324: case ATmega644:
 	case AT90CAN32: case AT90CAN64: case AT90CAN128:
 	case ATmega640: case ATmega1280: case ATmega1281:
-//	case ATmega2560: case ATmega2561:
+	case ATmega2560: case ATmega2561:
 		val1 = WriteFuse0;
 		val2 = WriteFuse1b;
 		//
@@ -495,7 +495,7 @@ DWORD At90sBus::ReadFuseBits(long model)
 	case ATmega164: case ATmega324: case ATmega644:
 	case AT90CAN32: case AT90CAN64: case AT90CAN128:
 	case ATmega640: case ATmega1280: case ATmega1281:
-//	case ATmega2560: case ATmega2561:
+	case ATmega2560: case ATmega2561:
 		SendDataByte(ReadFuse0);
 		SendDataByte(ReadFuse1);
 		SendDataByte(0);
@@ -604,7 +604,7 @@ DWORD At90sBus::ReadLockBits(long model)
 	case ATmega164: case ATmega324: case ATmega644:
 	case AT90CAN32: case AT90CAN64: case AT90CAN128:
 	case ATmega640: case ATmega1280: case ATmega1281:
-//	case ATmega2560: case ATmega2561:
+	case ATmega2560: case ATmega2561:
 		SendDataByte(ReadLock0);
 		SendDataByte(ReadLock1);
 		SendDataByte(0);

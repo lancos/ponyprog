@@ -193,7 +193,7 @@ enum {
 	m_atmega48, m_atmega88, m_atmega168,
 	m_atmega164, m_atmega324, m_atmega644,
 	m_atmega640, m_atmega1280, m_atmega1281,
-//	m_atmega2560, m_atmega2561,
+	m_atmega2560, m_atmega2561,
 	m_at90can32, m_at90can64, m_at90can128,
 
 	m_at89s8252,
