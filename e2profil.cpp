@@ -319,42 +319,46 @@ char const *E2Profile::GetPrevFile(int &data)
 
 UBYTE E2Profile::GetPolarityControl()
 {
-  UBYTE res;
-  const char * rval;
+	UBYTE res;
+	const char *rval;
 
-  res = 0;
-  rval = GetParameter("ClockPolarity");
-  if (rval)
-    if (!strcasecmp(rval,"INV"))
-      res |=CLOCKINV;
-  rval = GetParameter("ResetPolarity");
-  if (rval)
-    if (!strcasecmp(rval,"INV"))
-      res |=RESETINV;
-  rval = GetParameter("DOutPolarity");
-  if (rval)
-    if (!strcasecmp(rval,"INV"))
-      res |=DOUTINV;
-  rval = GetParameter("DInPolarity");
-  if (rval)
-    if (!strcasecmp(rval,"INV"))
-      res |=DININV;
-  return res;
+	res = 0;
+	rval = GetParameter("ClockPolarity");
+	if (rval)
+		if (!strcasecmp(rval, "INV"))
+			res |= CLOCKINV;
+	rval = GetParameter("ResetPolarity");
+	if (rval)
+		if (!strcasecmp(rval,"INV"))
+			res |= RESETINV;
+	rval = GetParameter("DOutPolarity");
+	if (rval)
+		if (!strcasecmp(rval,"INV"))
+			res |= DOUTINV;
+	rval = GetParameter("DInPolarity");
+	if (rval)
+		if (!strcasecmp(rval,"INV"))
+			res |= DININV;
+	return res;
 }
 
 int E2Profile::SetPolarityControl(UBYTE polarity_control)
 {
-  int rval;
+	int rval = OK;
 
-  rval = (SetParameter("ResetPolarity",
-                     (THEAPP->GetPolarity() & RESETINV)?"INV":"TRUE"));
-  rval &=  (SetParameter("ClockPolarity",
-                        (THEAPP->GetPolarity() & CLOCKINV)?"INV":"TRUE"));
-  rval &=  (SetParameter("DOutPolarity",
-                        (THEAPP->GetPolarity() & DOUTINV)?"INV":"TRUE"));
-  rval &=  (SetParameter("DInPolarity",
-                        (THEAPP->GetPolarity() & DININV)?"INV":"TRUE"));
-  return rval;
+	if (rval == OK)
+		rval = SetParameter("ResetPolarity",
+						(polarity_control & RESETINV) ? "INV" : "TRUE");
+	if (rval == OK)
+		rval = SetParameter("ClockPolarity",
+						(polarity_control & CLOCKINV) ? "INV" : "TRUE");
+	if (rval == OK)
+		rval = SetParameter("DOutPolarity",
+						(polarity_control & DOUTINV) ? "INV" : "TRUE");
+	if (rval == OK)
+		rval = SetParameter("DInPolarity",
+						(polarity_control & DININV) ? "INV" : "TRUE");
+	return rval;
 }
 
 int E2Profile::GetI2CPageWrite()
