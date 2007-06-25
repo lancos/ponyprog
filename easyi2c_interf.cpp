@@ -112,7 +112,7 @@ void EasyI2CInterface::SetDataOut(int sda)
 
 	if (IsInstalled())
 	{
-		if (THEAPP->GetPolarity()&DOUTINV)
+		if ( (THEAPP->GetPolarity() & DOUTINV) != 0 )
 			sda = !sda;
 
 		//The EasyI2C interface is inverting by default
@@ -126,7 +126,7 @@ void EasyI2CInterface::SetClock(int scl)
 
 	if (IsInstalled())
 	{
-		if (THEAPP->GetPolarity()&CLOCKINV)
+		if ( (THEAPP->GetPolarity() & CLOCKINV) != 0 )
 			scl = !scl;
 
 		//The EasyI2C interface is inverting by default

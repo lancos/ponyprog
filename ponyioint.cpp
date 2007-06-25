@@ -179,7 +179,7 @@ void PonyIOInterface::SetDataOut(int sda)
 
 	if (IsInstalled())
 	{
-		if (THEAPP->GetPolarity()&DOUTINV) 
+		if ( (THEAPP->GetPolarity() & DOUTINV) )
 			sda = !sda;
 
 		if (sda)
@@ -195,7 +195,7 @@ void PonyIOInterface::SetClock(int scl)
 
 	if (IsInstalled())
 	{
-		if (THEAPP->GetPolarity()&CLOCKINV) 
+		if ( (THEAPP->GetPolarity() & CLOCKINV) )
 			scl = !scl;
 
 		if (scl)
