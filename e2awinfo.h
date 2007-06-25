@@ -76,8 +76,8 @@
 
 #include "e2phead.h"
 
-//At the moment the bigger device is ATmega (128Kb + 4Kb)
-#define	BUFFER_SIZE (1024 * 132)
+//At the moment the bigger device is ATmega2560 (256KiB + 4KiB)
+#define	BUFFER_SIZE (1024 * 260)
 
 #ifdef	_WINDOWS
 # ifndef WIN32
