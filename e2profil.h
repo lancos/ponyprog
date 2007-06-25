@@ -39,6 +39,17 @@
 #define DININV   (1<<2)
 #define DOUTINV  (1<<3)
 
+#define	RELOAD_idx		0
+#define	READFLASH_idx	1
+#define	READEEP_idx		2
+#define	BYTESWAP_idx	3
+#define	SETID_idx		4
+#define READOSCCAL_idx  5
+#define	ERASE_idx		6
+#define	FLASH_idx		7
+#define	EEPROM_idx		8
+#define	LOCK_idx		9
+
 #define	RELOAD_YES		(1<<RELOAD_idx)
 #define	READFLASH_YES	(1<<READFLASH_idx)
 #define	READEEP_YES		(1<<READEEP_idx)

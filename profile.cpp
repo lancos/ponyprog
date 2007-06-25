@@ -31,12 +31,16 @@
 #include <string.h>
 #include <ctype.h>
 #include "profile.h"
+#include "errcode.h"
 
 #ifndef	_LINUX_
 #  ifdef	__BORLANDC__
 #    define	strncasecmp strnicmp
+#    define	strcasecmp stricmp
 #  else // _MICROSOFT_ VC++
 #    define strncasecmp	_strnicmp
+#    define	strcasecmp _stricmp
+#    define snprintf _snprintf
 #  endif
 #endif
 
@@ -99,7 +103,7 @@ int Profile::WriteVet()
 {
 	FILE *fh = fopen(filename, "w");
 	if (fh == 0)
-		return -1;
+		return CREATEERROR;
 
 	//Lettura file con allocazione linea parametro e aggiunta al vettore
 	int rval = 0;
@@ -115,7 +119,7 @@ int Profile::WriteVet()
 			strcat(linebuffer, "\n");			//appende il new-line
 			if ( fputs(linebuffer, fh) == EOF )
 			{
-				rval = -2;
+				rval = WRITEERROR;
 				break;
 			}
 		}
@@ -144,7 +148,7 @@ int Profile::ReadVet()
 						//  cached andrebbe aggiornata!
 
 	//Lettura file con allocazione linea parametro e aggiunta al vettore
-	int rval = 0;
+	int rval = OK;
 	int k;
 	for (k = 0; k < MAXLINENUM && fgets(linebuffer, MAXLINESIZE, fh) != 0; k++)
 	{
@@ -154,7 +158,7 @@ int Profile::ReadVet()
 		sp = new char[strlen(linebuffer)+1];
 		if (sp == 0)
 		{
-			rval = -2;	//out of memory, sigh!!!
+			rval = OUTOFMEMORY;	//out of memory, sigh!!!
 			break;
 		}
 		profilevet[k] = sp;
@@ -209,7 +213,7 @@ char const *Profile::GetParameter(char const *id)
 int Profile::SetParameter(char const *id, char const *value)
 {
 	if ( id == 0 || strlen(id) == 0 || value == 0)
-		return -1;
+		return BADPARAM;
 
 	//Leggiamo i parametri dal file
 	int err = ReadVet();
@@ -244,7 +248,7 @@ int Profile::SetParameter(char const *id, char const *value)
 	if (!found)
 	{
 		if (j >= MAXLINENUM)	//Raggiunto il numero max di parametri, sigh!
-			return -3;
+			return BUFFEROVERFLOW;
 	}
 
 	//prepariamo la nuova stringa nel linebuffer
@@ -255,7 +259,7 @@ int Profile::SetParameter(char const *id, char const *value)
 	//allochiamo memoria e copiamo la nuova stringa
 	char *sp = new char[strlen(linebuffer)+1];
 	if (sp == 0)
-		return -2;		//Out of memory, Sigh!!
+		return OUTOFMEMORY;		//Out of memory, Sigh!!
 	strcpy(sp, linebuffer);
 
 	//liberiamo la memoria della eventuale stringa corrente e aggiorniamo il parametro
@@ -266,6 +270,49 @@ int Profile::SetParameter(char const *id, char const *value)
 	//infine salviamo il tutto su file (politica write through)
 	WriteVet();
 
-	return 0;
+	return OK;
 }
 
+int Profile::decnum2str(int value, char *str, int len)
+{
+	int ret = snprintf(str, len, "%d", value);
+	str[len - 1] = '\0';
+
+	if (ret > 0 && ret < len)
+		return OK;
+	else
+		return BADPARAM;
+}
+
+int Profile::decnum2str(unsigned long value, char *str, int len)
+{
+	int ret = snprintf(str, len, "%lu", value);
+	str[len - 1] = '\0';
+
+	if (ret > 0 && ret < len)
+		return OK;
+	else
+		return BADPARAM;
+}
+
+int Profile::hexnum2str(int value, char *str, int len)
+{
+	int ret = snprintf(str, len, "0x%02X", value);
+	str[len - 1] = '\0';
+
+	if (ret > 0 && ret < len)
+		return OK;
+	else
+		return BADPARAM;
+}
+
+int Profile::hexnum2str(unsigned long value, char *str, int len)
+{
+	int ret = snprintf(str, len, "0x%04lX", value);
+	str[len - 1] = '\0';
+
+	if (ret > 0 && ret < len)
+		return OK;
+	else
+		return BADPARAM;
+}

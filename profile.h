@@ -30,18 +30,6 @@
 #ifndef _PROFILE_H
 #define _PROFILE_H
 
-#define	RELOAD_idx		0
-#define	READFLASH_idx	1
-#define	READEEP_idx		2
-#define	BYTESWAP_idx	3
-#define	SETID_idx		4
-#define READOSCCAL_idx  5
-#define	ERASE_idx		6
-#define	FLASH_idx		7
-#define	EEPROM_idx		8
-#define	LOCK_idx		9
-
-
 #define	MAXFILENAME	512
 #define	MAXLINENUM	1024
 #define MAXLINESIZE	512
@@ -60,6 +48,10 @@ class Profile
   protected:	//--------------------------------------- protected
 
 	char *StripSpace(char const *sp);
+	int decnum2str(int value, char *str, int len);
+	int decnum2str(unsigned long value, char *str, int len);
+	int hexnum2str(int value, char *str, int len);
+	int hexnum2str(unsigned long value, char *str, int len);
 
   private:		//--------------------------------------- private
 

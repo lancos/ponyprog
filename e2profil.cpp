@@ -46,49 +46,6 @@
 #  endif
 #endif
 
-static int decnum2str(int value, char *str, int len)
-{
-	int ret = snprintf(str, len, "%d", value);
-	str[len - 1] = '\0';
-
-	if (ret > 0 && ret < len)
-		return OK;
-	else
-		return BADPARAM;
-}
-
-static int decnum2str(unsigned long value, char *str, int len)
-{
-	int ret = snprintf(str, len, "%lu", value);
-	str[len - 1] = '\0';
-
-	if (ret > 0 && ret < len)
-		return OK;
-	else
-		return BADPARAM;
-}
-
-static int hexnum2str(int value, char *str, int len)
-{
-	int ret = snprintf(str, len, "0x%02X", value);
-	str[len - 1] = '\0';
-
-	if (ret > 0 && ret < len)
-		return OK;
-	else
-		return BADPARAM;
-}
-
-static int hexnum2str(unsigned long value, char *str, int len)
-{
-	int ret = snprintf(str, len, "0x%04lX", value);
-	str[len - 1] = '\0';
-
-	if (ret > 0 && ret < len)
-		return OK;
-	else
-		return BADPARAM;
-}
 
 //=====>>> Costruttore <<<======
 E2Profile::E2Profile()	: Profile("e2p.ini")
