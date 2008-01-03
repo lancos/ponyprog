@@ -31,7 +31,9 @@ VVW	=	125
 #HOMEV	=	..
 HOMEV	=	$(HOME)/Progetti/PonyProg_Sourceforge/software/v
 
-INSTALL_PREFIX = /usr/local
+LINUX_HEADERS	=	/usr/src/linux-headers-2.6.22-14-generic/include
+
+INSTALL_PREFIX	=	/usr/local
 
 #---------------------------------------------------------------------
 # Tools used in the makefile execution
