@@ -29,15 +29,17 @@ VVW	=	125
 #---------------------------------------------------------------------
 #HOMEV	=	$(HOME)/v
 #HOMEV	=	..
-HOMEV	=	$(HOME)/Progetti/PonyProg_Sourceforge/v
+HOMEV	=	$(HOME)/Progetti/PonyProg_Sourceforge/software/v
 
 INSTALL_PREFIX = /usr/local
 
 #---------------------------------------------------------------------
 # Tools used in the makefile execution
 #---------------------------------------------------------------------
-CC	=	gcc
-CXX	=	g++
+#CC	=	gcc
+#CXX	=	g++
+CC	=	gcc-3.4
+CXX	=	g++-3.4
 
 #---------------------------------------------------------------------
 # VPATH for dependencies on header files
