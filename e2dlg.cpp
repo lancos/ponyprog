@@ -150,6 +150,8 @@ e2Dialog::e2Dialog(vBaseWindow* bw, char* title) :
 	_myCmdWin = (e2CmdWindow*) bw;
 
 	AddDialogCmds(DefaultCmds);		// add the predefined commands
+
+	UpdateCheckBoxes();
 }
 
 //======================>>> e2Dialog::~e2Dialog <<<======================
@@ -165,10 +167,20 @@ void e2Dialog::DialogDisplayed()
 	port_no = THEAPP->GetPort();
 
 	UpdateDialog(1);
-
 //	SetDialogPosition(300, 10);
-
 	vDialog::DialogDisplayed();
+}
+
+void e2Dialog::UpdateCheckBoxes()
+{
+	if (THEAPP->GetPolarity() & RESETINV)
+		SetValue(chkPol1,1,Checked);
+	if (THEAPP->GetPolarity() & CLOCKINV)
+		SetValue(chkPol2,1,Checked);
+	if (THEAPP->GetPolarity() & DININV)
+		SetValue(chkPol3,1,Checked);
+	if (THEAPP->GetPolarity() & DOUTINV)
+		SetValue(chkPol4,1,Checked);
 }
 
 #define	OPENONLY	1
@@ -185,15 +197,7 @@ void e2Dialog::UpdateDialog(int init, int type)
 		type = TypeToInterfVector(interf_type);
 
 	// care for the polarity control check boxes
-
-	if (THEAPP->GetPolarity() & RESETINV)
-		SetValue(chkPol1,1,Checked);
-	if (THEAPP->GetPolarity() & CLOCKINV)
-		SetValue(chkPol2,1,Checked);
-	if (THEAPP->GetPolarity() & DININV)
-		SetValue(chkPol3,1,Checked);
-	if (THEAPP->GetPolarity() & DOUTINV)
-		SetValue(chkPol4,1,Checked);
+	UpdateCheckBoxes();
 
 	if (type)
 	{
@@ -366,7 +370,7 @@ void e2Dialog::DialogCommand(ItemVal id, ItemVal retval, CmdType ctype)
 	  }
 
 	case M_Cancel:
-		CloseDialog();
+		CancelDialog();
 		break;
 
 	case M_OK:
@@ -410,9 +414,10 @@ void e2Dialog::DialogCommand(ItemVal id, ItemVal retval, CmdType ctype)
 		{
 		break;
 		}
+	default:
+		vDialog::DialogCommand(id,retval,ctype);
+		break;
 	}
-
-	vDialog::DialogCommand(id,retval,ctype);
 }
 
 

@@ -53,6 +53,7 @@ class e2Dialog : public vModalDialog
 
   private:		//--------------------------------------- private
 	void UpdateDialog(int init, int type = 0);
+	void UpdateCheckBoxes();
 
 	int Test(int p = 0, int open_only = 0) const;
 
