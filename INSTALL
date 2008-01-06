@@ -1,4 +1,23 @@
-edit the v/Config.mk file to update the HOMEV variable (make it point to your v absolute path)
+Edit the v/Config.mk to customize the following variables:
+
+HOMEV - should point to your v absolute path
+LINUX_HEADERS - should point to your current kernel headers
+INSTALL_PREFIX - where to install the executable
+
 then do:
-make
-sudo make install
+# make
+
+test the executable:
+# bin/ponyprog2000
+
+and install (optional):
+# sudo make install
+
+
+After you launched ponyprog it creates ~/.PonyProg2000rc file with all the settings.
+You may need to edit it and change
+ttyLockDir=/var/lock
+The directory where PonyProg creates the lock for serial ports (should be writeable)
+
+ttyDevName=ttyS
+Is the name of the serial port device without the trailing number
