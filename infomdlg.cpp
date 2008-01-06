@@ -35,6 +35,7 @@
 #include "globals.h"
 #include "infomdlg.h"
 #include "cmdenum.h"
+#include "modaldlg_utilities.h"
 
 #ifdef	WIN32
 #  ifdef	__BORLANDC__
@@ -97,11 +98,6 @@ static DialogCmd otherCmds[] =
 	{C_EndOfList,0,0,0,0,CA_None,0,0,0}
 };
 
-int SetCommandObject(const int id, const int val, CommandObject* CmdList);
-int SetCommandSensitive(const int id, const int val, CommandObject* CmdList);
-int SetCommandLabel(const int id, char *str, CommandObject* CmdList);
-int SetCommandHidden(const int id, const bool val, CommandObject* CmdList);
-int SetCommandArrayHidden(const int id, const int n, const bool val, CommandObject* CmdList);
 
 //======================>>> infoModalDialog::infoModalDialog <<<==================
 e24xx_infoModalDialog::e24xx_infoModalDialog(vBaseWindow* bw, int rlv, UWORD crc, long size, char* title) :

@@ -39,11 +39,7 @@
 
 #include "eeptypes.h"
 #include "e2app.h"
-
-extern int SetCommandObject(const int id, const int val, CommandObject* CmdList);
-extern int SetCommandSensitive(const int id, const int val, CommandObject* CmdList);
-extern int SetCommandLabel(const int id, char *str, CommandObject* CmdList);
-extern int GetCommandObject(const int id, CommandObject* CmdList);
+#include "modaldlg_utilities.h"
 
 //@V@:BeginIDs
 enum {
@@ -170,15 +166,5 @@ void progOptionDialog::DialogCommand(ItemVal id, ItemVal retval, CmdType ctype)
 {
 	UserDebug2(CmdEvents,"progOptionDialog::DialogCommand(id:%d, val:%d)\n",id, retval)
 
-//	switch (id)		// We will do some things depending on value
-//	{
-//	case btnProg:
-//		//Execute the command
-//		vModalDialog::DialogCommand(id,retval,ctype);
-//		progOptionDialog::DialogCommand(M_OK,1,ctype);
-//		break;
-//	default:
-		vModalDialog::DialogCommand(id,retval,ctype);
-//		break;
-//	}
+	vModalDialog::DialogCommand(id,retval,ctype);
 }

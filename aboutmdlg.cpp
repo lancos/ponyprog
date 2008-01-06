@@ -36,6 +36,7 @@
 #include "string_table.h"
 
 #include "e2app.h"
+#include "modaldlg_utilities.h"
 
 
 //@V@:About Dialog Commands
@@ -78,10 +79,6 @@ static DialogCmd AboutDlg[] = {
 	{C_EndOfList,0,0,0,0,CA_None,0,0,0}
 };
 
-extern int SetCommandObject(const int id, const int val, CommandObject* CmdList);
-extern int SetCommandSensitive(const int id, const int val, CommandObject* CmdList);
-extern int SetCommandLabel(const int id, char *str, CommandObject* CmdList);
-extern int SetCommandHidden(const int id, const bool val, CommandObject* CmdList);
 
 AboutModalDialog::AboutModalDialog(vBaseWindow* bw, char* title) :
     vModalDialog(bw, title)
