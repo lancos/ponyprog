@@ -6,8 +6,6 @@
 </head>
 
 <body bgcolor="#FFFFFF">
-
-<hr>
 <p align="center"> <strong><font size="5">PonyProg2000 documentation<br>
 </font><font size="2">by<br>
   </font></strong><a href="http://www.lancos.com"><img src="Lancos.jpg" alt="LancOS - Lanconelli Open Systems" WIDTH="460" HEIGHT="100" border="0"></a></p>
@@ -368,8 +366,8 @@
 <h2><a name="s1">1 Installing</a></h2>
 
 <p>Installing PonyProg depend on the system you have.<br>
-  With <b>Windows</b>95/98/ME or NT/2000 just run the Setup.exe and follow the 
-  instructions.</p>
+  With <b>Windows</b>95/98/ME or NT/2000/XP just run the Setup.exe and follow 
+  the instructions.</p>
 
 <p>With RedHat <b>Linux</b> 6.2/7.0 login as root and execute the command<br>
   <i># tar xvfzP ponyprog-X.XXX.tar.gz<br>
@@ -668,7 +666,8 @@
   memory and the second part for data memory. This command write only the program 
   memory to the device, and leave the data memory intact. The exception is the 
   AVR device: to write the program memory an erase is needed, so the data memory 
-  is erased too.</p>
+  is erased too. Some AVR devices have EESAVE fuse bit, when programmed the EEPROM 
+  is preserved during a flash erase.</p>
 <hr>
 <h2><a name="s2.4.7">2.4.7 Write Data (EEPROM)</a></h2>
 <p>This command is available only for splitted Program/Data devices. The buffer 
@@ -792,19 +791,26 @@ while the big endiand is 12 - 34.</p>
 <ul>
   <li><strong>SI-Prog interface</strong> select &quot;serial&quot; check-box and 
     choose &quot;SI-Prog API&quot; or&nbsp; &quot;SI-Prog I/O&quot; in the combo-box. 
-    Windows 95/98/ME and NT/2000 work either with &quot;PonyProg API&quot; and 
-    &quot;PonyProg I/O&quot;, but the latter is faster. To use the &quot;SI-Prog 
+    Windows 95/98/ME and NT/2000/XP work either with &quot;PonyProg API&quot; 
+    and &quot;PonyProg I/O&quot;, but the latter is faster. To use the &quot;SI-Prog 
     I/O&quot; with Linux you need to run PonyProg as root. Then select the COM 
     port you want to use, if some COM ports are disabled it means that they are 
-    used by other programs (usually by the mouse driver or modem), or not installed.</li>
+    used by other programs (usually by the mouse driver or modem), or not installed 
+    or access denied (may need root privileges). If you use added COM ports (PCI 
+    or PCMCIA cards) you must use &quot;SI-Prog API&quot;. Note that USB2RS232 
+    adapters often don't work or are very slow.<br>
+    To access COM ports from user mode in Linux you need the rights to write /dev/ttyS0,1,... 
+    devices and /var/lock directory and select SI-Prog API (this is the preferred 
+    way). </li>
   <li><strong>AVR ISP Parallel port interface</strong> select &quot;parallel&quot; 
     check-box and choose &quot;Avr ISP API&quot; or &quot;Avr ISP I/O&quot; in 
-    the combo-box. WindowsNT/2000 work only with &quot;Avr ISP I/O&quot;. To use 
-    the &quot;Avr ISP I/O&quot; with Linux you need to run PonyProg as root. Then 
-    select the LPT port you want to use. Note that if you want to program the 
-    AT89Sxx device you need to select the &quot;Invert Reset&quot; check-box. 
-    To use this interface with Linux you need a 2.4.x kernel and parport, parport_pc 
-    and ppdev kernel modules.<br>
+    the combo-box. WindowsNT/2000/XP work only with &quot;Avr ISP I/O&quot;. To 
+    use the &quot;Avr ISP I/O&quot; with Linux you need to run PonyProg as root. 
+    Then select the LPT port you want to use. Note that if you want to program 
+    the AT89Sxx device you need to select the &quot;Invert Reset&quot; check-box. 
+    To use this interface with Linux you need a 2.4.x or newer kernel and parport, 
+    parport_pc and ppdev kernel modules and you need the rights to write /dev/parport0,1,... 
+    devices.<br>
     You can use this interface to read/write the AVR micros and SPI eeproms.</li>
   <li><strong>Ludipipo/JDM interface</strong> select &quot;JDM API&quot; or &quot;JDM 
     I/O&quot;. Then select the COM port you use. All the considerations for &quot;SI-Prog&quot; 
@@ -815,9 +821,9 @@ while the big endiand is 12 - 34.</p>
   </li>
   <li><strong>Easy I²CBus interface</strong> select the &quot;parallel&quot; check-box, 
     then select the LPT port you want to use. All the considerations for &quot;Avr 
-    ISP&quot; abore are valid for &quot;EasyI2CBus&quot; too.</li>
-  <li><strong>DT-006 interface</strong>&nbsp;This are the simplest interface for AVR 
-    programming (you can find the board on Dontronics site). However I strongly 
+    ISP&quot; above are valid for &quot;EasyI2CBus&quot; too.</li>
+  <li><strong>DT-006 interface</strong>&nbsp;This are the simplest interface for 
+    AVR programming (you can find the board on Dontronics site). However I strongly 
     suggest to use the buffered and safer &quot;Avr ISP&quot; interface above, 
     especially for ISP, since the buffer go in Hi-Z state after programming.</li>
 </ul>
@@ -844,13 +850,19 @@ following parameters in the ponyprog.ini (.PonyProgrc under Linux) file:
   <li><strong>SDEBusSpeed</strong>=<em>NORMAL&nbsp;&nbsp;&nbsp; </em>affect SDE2506 eeprom</li>
 </ul>
 
-<p>Every parameter can be assigned the value <em>SLOW</em>, <em>NORMAL</em>, <em>FAST</em> 
-  or <em>TURBO.<br>
+<p>Every parameter can be assigned the value <em>ULTRASLOW, VERYSLOW, SLOW</em>, 
+  <em>NORMAL</em>, <em>FAST</em> or <em>TURBO.<br>
   </em>Avoid to use the TURBO value because it means &quot;no delay&quot;, and 
   probably it doesn't work on your PC, especially with the I/O driver.<br>
   Just for example my PC (Pentium MMX 200MHz) run I²CBus at about 80Khz with <em>NORMAL,</em> 
   and 110 Khz with <em>FAST.</em> Note that a lot of I²CBus devices don't work 
   at speed above the 100KHz.</p>
+<p>A special note for AVR devices. The AVR need a valid system clock to be programmed 
+  via SPI and the max frequency of the SPI bus depends on this system clock. So 
+  if you changed the fuse (even accidentally) to use low clocks like 1MHz or 32.768KHz 
+  you must change the SPIBusSpeed=VERYSLOW or ULTRASLOW to access the AVR anymore. 
+  If you have to use such low clocks I suggest to program the flash and eeprom 
+  first, and at last program the security and fuse bits.</p>
 
 <hr>
 <h2><a name="s3">3 Hardware interfaces</a></h2>
@@ -2067,18 +2079,35 @@ isp: $(TRG).hex $(TRG).eep
   <p>Description:<br>
     WRITE-FUSE write the fuse bits (device dependant).<br>
     WRITE-LOCK write the lock bits (device dependant).<br>
-    If the argument is specified it is the numeric value of the bits rapresentation 
-    (note that a 1 means programmed). If no argument is specified the current 
+    If the argument is specified it is the numeric value of the bits rapresentation, 
+    <b>note that a 1 means programmed</b>. If no argument is specified the current 
     value is programmed. Pay Attention to program the FUSE bits with the AVR, 
     you can specify a wrong bit combination that will prevent you to access the 
     AVR device in the future. Refer to the datasheets for the meaning of every 
     bit.</p>
+  <p> Some AVR devices have more than one byte for the fuse bits. In such cases 
+    the argument is a multibyte numer and least significant byte is the standard 
+    fuse byte. For example:</p>
+  <p>argument = 0x010203<br>
+    Standard fuse = 0x03<br>
+    High fuse = 0x02<br>
+    Extended fuse = 0x01<br>
+  </p>
   <p>Example:<br>
     SELECTDEVICE AT90S1200<br>
     #Lock: {X,X,X,X,X,&quot;Lock2 &quot;,&quot;Lock1 &quot;,X}<br>
     # 0 0 0 0 0 1 1 0<br>
     WRITE-LOCK 0x06</p>
-</blockquote>
+  <p>SELECTDEVICE ATTINY2313<br>
+    #Fuse: &quot;SPMEN &quot; -<br>
+    # &quot;DWEN &quot;,&quot;EESAVE &quot;,&quot;SPIEN &quot;,&quot;WDTON &quot;,&quot;BODLEVEL2 
+    &quot;,&quot;BODLEVEL1 &quot;,&quot;BODLEVEL0 &quot;,&quot;RSTDISBL &quot; 
+    -<br>
+    # &quot;CKDIV8 &quot;,&quot;CKOUT &quot;,&quot;SUT1 &quot;,&quot;SUT0 &quot;,&quot;CKSEL3 
+    &quot;,&quot;CKSEL2 &quot;,&quot;CKSEL1 &quot;,&quot;CKSEL0 &quot;<br>
+    # 0 - 0 0 0 0 0 1 0 0 - 0 0 0 0 0 0 1 0<br>
+    WRITE-FUSE 0x00402</p>
+  </blockquote>
 <hr>
 <p><a name="cmd_serialnumber"></a>SERIALNUMBER [value][start][size][mem][format][autoinc]</p>
 <blockquote>
@@ -2211,6 +2240,27 @@ Q: With Windows2000/XP I can't access the LPT ports without being administrator,
 A: You cannot load the DLPORTIO.SYS driver w/o being an administrator.
    As Administrator, Start the Computer Management console -&gt; Device Manager -&gt; View: show hidden devices.
    Then Expand Non-Plug and Play Drivers and find the driver in the list.
-   Then, for this driver -&gt; properties -&gt; driver startup. Set startup to boot. Reboot the system.</pre>
+   It may show up as DriverLINX Port I/O Driver.
+   Then, for this driver -&gt; properties -&gt; driver startup. Set startup to boot. Reboot the system.
+
+---------
+
+Q: My PC doesn't have any LPT/COM port, can I use a USB2COM or USB2LPT adapter?
+
+A: Some USB adapters don't work at all while other adapters are very slow. So I suggest to avoid USB adapter
+   and buy COM/LPT PCMCIA or PCI adapters that emulates 100% native LPT and COM ports.
+
+----------
+
+Q: I have a Windows2000/XP PC with an extra LPT card, but PonyProg can't select the added port, can I force it?
+
+A: First you have to select the AvrISP-I/O interface instead of the API version.
+   Then you have to edit ponyprog2000.ini file and disable port autodetection:
+   AutoDetectPorts=NO
+   then you have to discover the real address of the extra LPT port by looking at
+   Computer Management console -&gt; Device Manager -&gt; LPT ports -&gt; resources. For example if the extra LPT is LPT3
+   and the address is DF00 you need to enter the line
+   LPTPorts=378,278,DF00
+   Note that this fix works only in some version (use 2.06g and newer).</pre>
 </body>
 </html>
