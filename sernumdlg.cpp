@@ -33,6 +33,7 @@
 
 #include "types.h"
 #include "sernumdlg.h"
+#include "modaldlg_utilities.h"
 
 #ifdef	WIN32
 #  ifdef	__BORLANDC__
@@ -100,11 +101,6 @@ static DialogCmd DefaultCmds[] =
 };
 //@V@:EndDialogCmd
 
-extern int SetCommandObject(const int id, const int val, CommandObject* CmdList);
-extern int SetCommandSensitive(const int id, const int val, CommandObject* CmdList);
-extern int SetCommandLabel(const int id, char *str, CommandObject* CmdList);
-
-extern int GetCommandObject(const int id, CommandObject* CmdList);
 
 //=========================>>> SerNumDialog::SerNumDialog <<<====================
 SerNumDialog::SerNumDialog(vBaseWindow* bw, char* title) :
@@ -140,9 +136,15 @@ int SerNumDialog::SerNumAction(long &cLoc, bool &cMemType, bool &cAutoInc, FmtEn
 	SetCommandObject(chkAutoInc, cAutoInc, DefaultCmds);
 
 	if (cFmt == FMT_LITTLE_ENDIAN)
+	{
 		SetCommandObject(rdbLittleEnd, 1, DefaultCmds);
+		SetCommandObject(rdbBigEnd, 0, DefaultCmds);
+	}
 	else
+	{
+		SetCommandObject(rdbLittleEnd, 0, DefaultCmds);
 		SetCommandObject(rdbBigEnd, 1, DefaultCmds);
+	}
 
 	AddDialogCmds(DefaultCmds);		// add the predefined commands
 
@@ -199,11 +201,6 @@ static DialogCmd OscCalibCmds[] =
 };
 //@V@:EndDialogCmd
 
-extern int SetCommandObject(const int id, const int val, CommandObject* CmdList);
-extern int SetCommandSensitive(const int id, const int val, CommandObject* CmdList);
-extern int SetCommandLabel(const int id, char *str, CommandObject* CmdList);
-
-extern int GetCommandObject(const int id, CommandObject* CmdList);
 
 //=========================>>> OscCalibDialog::OscCalibDialog <<<====================
 OscCalibDialog::OscCalibDialog(vBaseWindow* bw, e2AppWinInfo* aw, char* title) :
