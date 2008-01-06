@@ -1144,14 +1144,55 @@ int E2Profile::SetLogFileName(char const *name)
 	return OK;
 }
 
+char const *E2Profile::GetLockDir()
+{
+	char const *sp = GetParameter("ttyLockDir");
+	if (sp == 0)
+		sp = "/var/lock";
+	return sp;
+}
+int E2Profile::SetLockDir(char const *name)
+{
+	if (name && strlen(name))
+		SetParameter("ttyLockDir", name);
+}
+
+char const *E2Profile::GetDevDir()
+{
+	char const *sp = GetParameter("ttyDevDir");
+	if (sp == 0)
+		sp = "/dev";
+	return sp;
+}
+int E2Profile::SetDevDir(char const *name)
+{
+	if (name && strlen(name))
+		SetParameter("ttyDevDir", name);
+}
+
+char const *E2Profile::GetDevName()
+{
+	char const *sp = GetParameter("ttyDevName");
+	if (sp == 0)
+#ifdef	_LINUX_
+		sp = "ttyS";
+#else
+		sp = "COM";
+#endif
+	return sp;
+}
+int E2Profile::SetDevName(char const *name)
+{
+	if (name && strlen(name))
+		SetParameter("ttyDevName", name);
+}
+
 char const *E2Profile::GetLanguageCode()
 {
 	char const *sp = GetParameter("LanguageCode");
 
 	if (sp == 0)
-	{
 		sp = "C";
-	}
 
 	return sp;
 }
@@ -1159,9 +1200,7 @@ char const *E2Profile::GetLanguageCode()
 int E2Profile::SetLanguageCode(char const *name)
 {
 	if (name && strlen(name))
-	{
 		SetParameter("LanguageCode", name);
-	}
 
 	return OK;
 }

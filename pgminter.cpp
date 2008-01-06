@@ -32,6 +32,7 @@
 #include "e2app.h"	//for GetPolarity
 
 SIProgInterface::SIProgInterface()
+		: RS232Interface(THEAPP)
 {
 	UserDebug(Constructor, "SIProgInterface::SIProgInterface() Constructor\n");
 

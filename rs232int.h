@@ -51,7 +51,7 @@ class RS232Interface
 {
   public:		//------------------------------- public
 
-	RS232Interface(int com_no = 0);
+	RS232Interface(E2Profile *prof, int com_no = 0);
 	virtual ~RS232Interface();
 
 	int OpenSerial(int no);
@@ -85,6 +85,7 @@ class RS232Interface
 	int actual_flowcontrol;
 	bool wait_endTX_mode;
 
+	E2Profile *profile;
 #ifdef	_WINDOWS
 	HANDLE hCom;
 

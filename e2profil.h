@@ -206,6 +206,13 @@ class E2Profile : public Profile
 	int GetLPTAddress(int &lpt1, int &lpt2, int &lpt3);
 	int SetLPTAddress(int lpt1, int lpt2, int lpt3);
 
+	char const *GetLockDir();
+	int SetLockDir(char const *name);
+	char const *GetDevDir();
+	int SetDevDir(char const *name);
+	char const *GetDevName();
+	int SetDevName(char const *name);
+
 	FileType GetDefaultFileType();
 	int SetDefaultFileType(FileType ft);
 

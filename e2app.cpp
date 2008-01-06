@@ -727,6 +727,11 @@ int AppMain(int argc, char** argv)
 	e2_App.SetClearBufBeforeRead( e2_App.GetClearBufBeforeRead() );
 	e2_App.SetAutoDetectPorts( e2_App.GetAutoDetectPorts() );
 
+	e2_App.SetDevName( e2_App.GetDevName() );
+#ifdef	__unix__
+	e2_App.SetLockDir( e2_App.GetLockDir() );
+	e2_App.SetDevDir( e2_App.GetDevDir() );
+#endif
 	e2_App.scriptMode = false;
 	e2_App.returnValue = 0;
 	e2_App.script_name[0] = '\0';

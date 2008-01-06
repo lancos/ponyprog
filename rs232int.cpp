@@ -41,9 +41,6 @@
 #include <sys/ioctl.h>
 
 #define	INVALID_HANDLE_VALUE	-1
-
-#define	LOCK_DIR	"/var/lock/uucp"
-#define	DEV_TTYS	"/dev/ttyS"
 #endif
 
 #ifdef	WIN32
@@ -55,9 +52,11 @@
 #  endif
 #endif
 
-RS232Interface::RS232Interface(int com_no)
+RS232Interface::RS232Interface(E2Profile *prof, int com_no)
 {
 	UserDebug(Constructor, "RS232Interface::RS232Interface() Constructor\n");
+
+	profile = prof;
 
 	//COM default settings
 	actual_speed = 9600;
@@ -104,10 +103,9 @@ int RS232Interface::OpenSerial(int no)
 	if (no >= 1 && no <= MAX_COMPORTS)
 	{
 #ifdef	_WINDOWS
-		char str[MAXNUMDIGIT];
+		char str[MAXPATH];
 
-		sprintf(str, "COM%d", no);
-
+		snprintf(str, MAXPATH, "%s%d", profile->GetDevName(), no);
 		hCom = CreateFile(str,
 			GENERIC_READ | GENERIC_WRITE,
 			0,		/* comm devices must be opened w/exclusive-access */
@@ -142,7 +140,7 @@ int RS232Interface::OpenSerial(int no)
 		no--;		//linux call ttyS0 --> COM1, ttyS1 --> COM2, etc..
 
 		// implement device locking in /var/lock/LCK..ttySx
-		snprintf(lockname, MAXPATH, LOCK_DIR "/LCK..ttyS%d", no);
+		snprintf(lockname, MAXPATH, "%s/LCK..%s%d", profile->GetLockDir(), profile->GetDevName(), no);
 		UserDebug1(UserApp2, "RS232Interface::OpenSerial() now lock the device %s\n", lockname);
 
 		fd = open ((const char *)lockname,O_RDWR|O_EXCL|O_CREAT);
@@ -165,7 +163,7 @@ int RS232Interface::OpenSerial(int no)
 		close(fd);
 		fd = INVALID_HANDLE_VALUE;
 
-		snprintf(devname, MAXPATH, DEV_TTYS "%d",no);
+		snprintf(devname, MAXPATH, "%s/%s%d", profile->GetDevDir(), profile->GetDevName(), no);
 		UserDebug1(UserApp2, "RS232Interface::OpenSerial() now open the device %s\n", devname);
 
 		fd = open ((const char *)devname, O_RDWR|O_NONBLOCK|O_EXCL);
