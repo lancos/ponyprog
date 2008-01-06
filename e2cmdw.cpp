@@ -733,14 +733,11 @@ static CommandObject ToolBar2[] =
 
 	{C_Frame,frmToolBar4,0,"",NoList,CA_None,isSens,NoFrame,0,0},
 
-#ifdef	_WINDOWS
 	{C_IconButton,icbEdit,0,"Edit Note",&editI,CA_None,isSens,frmToolBar4,0,0, 0,STR_TTEDITNOTE},
 	{C_Text,txtComment,0,"",(void *)"X                                                                 ",CA_None,isSens,frmToolBar4,icbEdit,0, 0,STR_MSGNOTE},
-#else
-	{C_Label, lblComment,0,STR_BTNNOTE,NoList,CA_None,isSens,frmToolBar4,0,0},
-	{C_Text,txtComment,0,"",(void *)"X                                                                 ",CA_None,isSens,frmToolBar4,lblComment,0, 0,STR_MSGNOTE},
-	{C_IconButton,icbEdit,0,"Edit Note",&editI,CA_None,isSens,frmToolBar4,txtComment,0, 0,STR_TTEDITNOTE},
-//	{C_Button,btnChange,0,STR_BTNEDIT,NoList,CA_None,isSens,frmToolBar4,txtComment,0, 0,STR_TTEDITNOTE},
+#ifndef	_WINDOWS
+	//Workaround for X11 to allocate space for C_Text
+	{C_Label,lblComment,0,STR_BTNNOTE "X                                                                 ",NoList,CA_Hidden,isSens,frmToolBar4,icbEdit,0},
 #endif
 	{C_EndOfList,0,0,0,0,CA_None,0,0,0}
 };
@@ -857,7 +854,6 @@ e2CmdWindow::e2CmdWindow(char* name, int width, int height) :
 //	_timer->TimerSet(1000);		// 1 second intervals
 
 	// Associated dialogs
-//	e2Dlg = new e2Dialog(this);
 	e2Prg = new e2ProgressDialog(this);
 
 	// Show Window
@@ -1312,13 +1308,8 @@ void e2CmdWindow::WindowCommand(ItemVal id, ItemVal val, CmdType cType)
 	case icbSetup:
 		if (THEAPP->IsAppReady())
 		{
-		//	if (!e2Dlg->IsDisplayed())
-		//		e2Dlg->ShowDialog(STR_DLGIOSETUP);
-
 			e2Dialog e2dlg(this, STR_DLGIOSETUP);
-			ItemVal rval;
-
-			e2dlg.ShowModalDialog(STR_DLGIOSETUP, rval);
+			e2dlg.DialogAction(STR_DLGIOSETUP);
 		}
 		break;
 
