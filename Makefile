@@ -18,7 +18,7 @@
 CONFIG=v/Config.mk
 include $(CONFIG)
 
-PONYVER = 2.07a
+PONYVER = 2.07c
 TAR = tar
 
 #xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -34,6 +34,7 @@ PROGNAME = ponyprog2000
 PROG = $(Bin)/$(PROGNAME)
 
 SRCS=\
+	modaldlg_utilities.cpp \
 	e2app.cpp \
 	e2dlg.cpp \
 	e2cnv.cpp \
