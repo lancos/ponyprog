@@ -37,6 +37,8 @@
 #include "i2cbus.h"
 
 #include "cmdenum.h"
+#include "modaldlg_utilities.h"
+
 
 //@V@:BeginIDs
 enum {
@@ -148,10 +150,6 @@ e2Dialog::e2Dialog(vBaseWindow* bw, char* title) :
 	UserDebug(Constructor,"e2Dialog::e2Dialog()\n")
 
 	_myCmdWin = (e2CmdWindow*) bw;
-
-	AddDialogCmds(DefaultCmds);		// add the predefined commands
-
-	UpdateCheckBoxes();
 }
 
 //======================>>> e2Dialog::~e2Dialog <<<======================
@@ -160,28 +158,74 @@ e2Dialog::~e2Dialog()
 	UserDebug(Destructor,"e2Dialog::~e2Dialog() destructor\n")
 }
 
+int e2Dialog::DialogAction(char *msg)
+{
+	UserDebug1(UserApp1, "e2Dialog::DialogAction() IN *** M_Cancel=%d\n", M_Cancel);
+
+	SetCommandObject(chkPol1, (THEAPP->GetPolarity() & RESETINV) ? 1 : 0, DefaultCmds);
+	SetCommandObject(chkPol2, (THEAPP->GetPolarity() & CLOCKINV) ? 1 : 0, DefaultCmds);
+	SetCommandObject(chkPol3, (THEAPP->GetPolarity() & DININV) ? 1 : 0, DefaultCmds);
+	SetCommandObject(chkPol4, (THEAPP->GetPolarity() & DOUTINV) ? 1 : 0, DefaultCmds);
+
+	AddDialogCmds(DefaultCmds);		// add the predefined commands
+
+	ItemVal ans, rval;
+	ans = ShowModalDialog(msg, rval);
+	if (ans == M_Cancel)
+		return 0;
+
+	// *** Add code to process dialog values here
+	if (GetValue(chkPol1))
+		THEAPP->SetPolarity(THEAPP->GetPolarity() | (UBYTE)RESETINV);
+	else
+		THEAPP->SetPolarity(THEAPP->GetPolarity() & (UBYTE)~RESETINV);
+
+	if (GetValue(chkPol2))
+		THEAPP->SetPolarity(THEAPP->GetPolarity() | (UBYTE)CLOCKINV);
+	else
+		THEAPP->SetPolarity(THEAPP->GetPolarity() & (UBYTE)~CLOCKINV);
+
+	if (GetValue(chkPol3))
+		THEAPP->SetPolarity(THEAPP->GetPolarity() | (UBYTE)DININV);
+	else
+		THEAPP->SetPolarity(THEAPP->GetPolarity() & (UBYTE)~DININV);
+
+	if (GetValue(chkPol4))
+		THEAPP->SetPolarity(THEAPP->GetPolarity() | (UBYTE)DOUTINV);
+	else
+		THEAPP->SetPolarity(THEAPP->GetPolarity() & (UBYTE)~DOUTINV);
+
+	bool set_port = false;
+	if (port_no != THEAPP->GetPort())
+		set_port = true;
+	if (interf_type != THEAPP->GetInterfaceType())
+	{
+		THEAPP->ClosePort();
+		THEAPP->SetInterfaceType(interf_type);
+		set_port = true;
+	}
+	if (set_port)
+		THEAPP->SetPort(port_no);
+
+	//Store values in the INI file
+	THEAPP->SetParInterfType(interf_type);
+	THEAPP->SetParPortNo(port_no);
+	THEAPP->SetPolarityControl(THEAPP->GetPolarity());
+
+	return ans == M_OK;
+}
+
 //======================>>> e2Dialog::DialogDisplayed <<<================
 void e2Dialog::DialogDisplayed()
 {
 	interf_type = THEAPP->GetInterfaceType();
 	port_no = THEAPP->GetPort();
-
 	UpdateDialog(1);
-//	SetDialogPosition(300, 10);
-	vDialog::DialogDisplayed();
+
+//	vDialog::DialogDisplayed();
+	vModalDialog::DialogDisplayed();
 }
 
-void e2Dialog::UpdateCheckBoxes()
-{
-	if (THEAPP->GetPolarity() & RESETINV)
-		SetValue(chkPol1,1,Checked);
-	if (THEAPP->GetPolarity() & CLOCKINV)
-		SetValue(chkPol2,1,Checked);
-	if (THEAPP->GetPolarity() & DININV)
-		SetValue(chkPol3,1,Checked);
-	if (THEAPP->GetPolarity() & DOUTINV)
-		SetValue(chkPol4,1,Checked);
-}
 
 #define	OPENONLY	1
 
@@ -195,9 +239,6 @@ void e2Dialog::UpdateDialog(int init, int type)
 
 	if (init)
 		type = TypeToInterfVector(interf_type);
-
-	// care for the polarity control check boxes
-	UpdateCheckBoxes();
 
 	if (type)
 	{
@@ -281,7 +322,7 @@ void e2Dialog::DialogCommand(ItemVal id, ItemVal retval, CmdType ctype)
 	
 	// Dialog commands to here
 
-	UserDebug2(CmdEvents,"e2Dialog::DialogCommand(id:%d, val:%d)\n",id, retval)
+	UserDebug2(CmdEvents,"e2Dialog::DialogCommand(id:%d, val:%d)\n", id, retval)
 
 	vNoticeDialog note(this);
 
@@ -322,39 +363,6 @@ void e2Dialog::DialogCommand(ItemVal id, ItemVal retval, CmdType ctype)
 		break;
 	  }
 
-	case chkPol1:
-	 {
-	        if (retval)
-	                THEAPP->SetPolarity(THEAPP->GetPolarity() | (UBYTE)RESETINV);
-	        else
-	                THEAPP->SetPolarity(THEAPP->GetPolarity() & (UBYTE)~RESETINV);
-	        break;
-	 }
-	case chkPol2:
-	 {
-	        if (retval)
-	                THEAPP->SetPolarity(THEAPP->GetPolarity() | (UBYTE)CLOCKINV);
-	        else
-	                THEAPP->SetPolarity(THEAPP->GetPolarity() & (UBYTE)~CLOCKINV);
-	        break;
-	 }
-	case chkPol3:
-	 {
-	        if (retval)
-	                THEAPP->SetPolarity(THEAPP->GetPolarity() | (UBYTE)DININV);
-	        else
-	                THEAPP->SetPolarity(THEAPP->GetPolarity() & (UBYTE)~DININV);
-	        break;
-	 }
-	case chkPol4:
-	 {
-	        if (retval)
-	                THEAPP->SetPolarity(THEAPP->GetPolarity() | (UBYTE)DOUTINV);
-	        else
-	                THEAPP->SetPolarity(THEAPP->GetPolarity() & (UBYTE)~DOUTINV);
-	        break;
-	 }
-
 	case cbxInterf:
 	  {
 		interf_type = VindexToInterfType(0, retval);
@@ -367,34 +375,6 @@ void e2Dialog::DialogCommand(ItemVal id, ItemVal retval, CmdType ctype)
 		interf_type = VindexToInterfType(1, retval);
 		UpdateDialog(0, 1);
 		break;
-	  }
-
-	case M_Cancel:
-		CancelDialog();
-		break;
-
-	case M_OK:
-	  {
-		int set_port = FALSE;
-
-		if (port_no != THEAPP->GetPort())
-			set_port = TRUE;
-		if (interf_type != THEAPP->GetInterfaceType())
-		{
-			THEAPP->ClosePort();
-			THEAPP->SetInterfaceType(interf_type);
-			set_port = TRUE;
-		}
-		if (set_port)
-			THEAPP->SetPort(port_no);
-
-		//Store values in the INI file
-		THEAPP->SetParInterfType(interf_type);
-		THEAPP->SetParPortNo(port_no);
-		THEAPP->SetPolarityControl(THEAPP->GetPolarity());
-
-		CloseDialog();
-	  	break;
 	  }
 
 	//@V@:Case: btnTestDlg
@@ -410,12 +390,12 @@ void e2Dialog::DialogCommand(ItemVal id, ItemVal retval, CmdType ctype)
 		note.Notice(str);
 		break;
 	  }	//@V@:EndCase
-	case btnCheckHw:
-		{
-		break;
-		}
+
+//	case btnCheckHw:
+//		break;
+
 	default:
-		vDialog::DialogCommand(id,retval,ctype);
+		vModalDialog::DialogCommand(id,retval,ctype);
 		break;
 	}
 }

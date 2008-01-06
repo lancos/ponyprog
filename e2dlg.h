@@ -44,17 +44,13 @@ class e2Dialog : public vModalDialog
 	e2Dialog(vBaseWindow* bw, char* title = STR_MSGINTSETUP);
 	virtual ~e2Dialog();		// Destructor
 	virtual void DialogCommand(ItemVal,ItemVal,CmdType); // action selected
-	void AddDefaultCmds();		// to add the defined commands
-
 	void DialogDisplayed();
-//	virtual void ShowDialog(char* msg);
+	int DialogAction(char *msg);
 
   protected:	//--------------------------------------- protected
 
   private:		//--------------------------------------- private
 	void UpdateDialog(int init, int type = 0);
-	void UpdateCheckBoxes();
-
 	int Test(int p = 0, int open_only = 0) const;
 
 	e2CmdWindow* _myCmdWin;
