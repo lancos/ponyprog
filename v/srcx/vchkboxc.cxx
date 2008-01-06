@@ -421,10 +421,6 @@ static unsigned char cboxx_bits[] =
 
   }
 
-void vCheckBoxCmd::SaveItemValue(void)
-{
-	_origVal = _retVal;
-}
 
 //================>>> vCheckBoxCmd::SetCmdStr <<<============================
   void vCheckBoxCmd::SetCmdStr(VCONST char* str)

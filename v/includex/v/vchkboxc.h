@@ -47,8 +47,6 @@ extern "C"		// wrap in "C"
 
 	virtual void SetCmdStr(VCONST char* str);
 
-	virtual void SaveItemValue(void);
-
       protected:	//--------------------------------------- protected
 
       private:		//--------------------------------------- private
