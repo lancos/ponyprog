@@ -186,12 +186,14 @@ class e2AppWinInfo : public vAppWinInfo
 	void SetLockBits(DWORD bits);
 	void SetFuseBits(DWORD bits);
 
-	int IsBufferValid() const
+	bool IsFuseValid() const
+		{ return fuse_ok; }
+	bool IsBufferValid() const
 		{ return buf_ok; }
 
-	void BufChanged(int val = 1)
+	void BufChanged(bool val = true)
 		{ buf_changed = val; }
-	int IsBufChanged() const
+	bool IsBufChanged() const
 		{ return buf_changed; }
 
 	int SetLoadType(int val);
@@ -228,8 +230,8 @@ class e2AppWinInfo : public vAppWinInfo
 
 	UBYTE buffer[BUFFER_SIZE];	//device content buffer
 	char linebuf[LINEBUF_SIZE];	//print line buffer
-	int buf_ok;					//true if buffer is valid
-	int buf_changed;			//true if buffer changed/edited
+	bool buf_ok;				//true if buffer is valid
+	bool buf_changed;			//true if buffer changed/edited
 
 	int eep_type;				//indica il tipo di chip di eeprom
 	int eep_subtype;			//sottotipo (in pratica il numero di banchi)
@@ -244,6 +246,7 @@ class e2AppWinInfo : public vAppWinInfo
 
 	DWORD fuse_bits;			//device dependent bits
 	DWORD lock_bits;			//device dependent lock (security) bits
+	bool fuse_ok;
 
 	UWORD crc;					//CRC del contenuto della eeprom
 

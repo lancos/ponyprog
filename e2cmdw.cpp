@@ -1495,7 +1495,7 @@ void e2CmdWindow::WindowCommand(ItemVal id, ItemVal val, CmdType cType)
 	case m_ReadSecurity:
 		if (THEAPP->IsAppReady())
 		{
-			CmdReadSecurity(1);
+			CmdReadSecurity(true);
 		}
 		break;
 
@@ -3570,6 +3570,10 @@ int e2CmdWindow::SpecialBits(int readonly)
 	int rval;
 	DWORD lock, fuse;
 
+	//If the current fuse settings is invalid try to read it from the device
+	if (!awip->IsFuseValid())
+		CmdReadSecurity(false);	//call with 'false' to avoid recursion!!!
+
 	int repeat;
 	do {
 		repeat = 0;
@@ -3583,7 +3587,7 @@ int e2CmdWindow::SpecialBits(int readonly)
 		{
 			if (rval == 3)	//Read
 			{
-				CmdReadSecurity(0);
+				CmdReadSecurity(false);
 				repeat = 1;
 			}
 			else
@@ -3678,7 +3682,7 @@ int e2CmdWindow::OscCalibOption()
 
 
 //====================>>> e2CmdWindow::CmdReadSecurity <<<====================
-int e2CmdWindow::CmdReadSecurity(int display_dialog)
+int e2CmdWindow::CmdReadSecurity(bool display_dialog)
 {
 	int result;
 
@@ -5100,7 +5104,7 @@ int e2CmdWindow::SaveFile(int force_select)
 	//If the Save is ok
 	if (err > 0)
 	{
-		awip->BufChanged(0);
+		awip->BufChanged(false);
 		UpdateStatusBar();
 		UpdateFileMenu();
 
@@ -5545,7 +5549,7 @@ void e2CmdWindow::Draw(int rows, int cols)
 	if (!rows)
 		rows = e2Canvas->GetRows();
 
-	rows--;				// per evitare lo scrolling
+	rows--;				// to avoid the scrolling
 
 	//Caso in cui non c'e` file o tutto il file sta nella finestra
 	if (no_line == 0 || rows >= no_line)

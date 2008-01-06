@@ -120,7 +120,7 @@ class e2CmdWindow : public vCmdWindow
 	int CmdWriteLock();
 	int CmdReadSpecial();
 	int CmdWriteSpecial();
-	int CmdReadSecurity(int display_dialog = 0);
+	int CmdReadSecurity(bool display_dialog);
 	int CmdWriteSecurity();
 	int CmdDoubleSize();
 	int CmdClearBuf();

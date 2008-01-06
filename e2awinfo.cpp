@@ -54,14 +54,15 @@ e2AppWinInfo::e2AppWinInfo(vCmdWindow* win, char* name, BusIO** busvptr, void* p
 		save_type(ALL_TYPE),
 		load_relocation(0),
 		save_relocation(0),
-		buf_ok(0),
-		buf_changed(0),
+		buf_ok(false),
+		buf_changed(false),
 		fname(0),
 		no_block(0),
 		splitted(0),
 		roll_over(0),
 		fuse_bits(0),
 		lock_bits(0),
+		fuse_ok(false),
 		crc(0)
 {
 	UserDebug(Constructor, "e2AppWinInfo::e2AppWinInfo()\n");
@@ -392,7 +393,7 @@ void e2AppWinInfo::SetEEProm(int type, int subtype)
 		eep = &eep24xx;		//20/07/99	-- to prevent crash
 		break;
 	}
-
+	fuse_ok = false;		//invalidate current fuse settings
 	SetSplittedInfo( GetEEPTypeSplit(type, eep_subtype) );
 
 	//Imposta la nuova dimensione della memoria in
@@ -445,8 +446,8 @@ int e2AppWinInfo::Read(int type, int raise_power, int leave_on)
 			UserDebug1(UserApp1, "e2AppWinInfo::Read() ** Read = %d\n", rval);
 
 			SetFileName(0);				//Questo per evitare che al prossimo save() si utilizzi il nome vecchio
-			buf_ok = 1;
-			buf_changed = 0;
+			buf_ok = true;
+			buf_changed = false;
 
 			//Aggiunto il 18/03/99 con la determinazione dei numeri di banchi nelle E24xx2,
 			// affinche` la dimensione rimanga quella impostata bisogna correggere la dimensione
@@ -648,8 +649,8 @@ int e2AppWinInfo::LoadFile()
 	int rval = fbufp->Load(load_type, load_relocation);
 	if (rval > 0)
 	{
-		buf_ok = 1;
-		buf_changed = 0;
+		buf_ok = true;
+		buf_changed = false;
 	}
 	RecalcCRC();
 
@@ -758,7 +759,7 @@ int e2AppWinInfo::Save()
 
 	rval = fbufp->Save(save_type, save_relocation);
 	if (rval > 0)
-		buf_changed = 0;
+		buf_changed = false;
 
 	//restore buffer
 	memcpy(GetBufPtr(), localbuf, GetBufSize());
@@ -845,6 +846,7 @@ void e2AppWinInfo::SetLockBits(DWORD bits)
 void e2AppWinInfo::SetFuseBits(DWORD bits)
 {
 	fuse_bits = bits;
+	fuse_ok = true;
 }
 
 //======================>>> e2AppWinInfo::GetSize <<<=======================
@@ -977,7 +979,7 @@ void e2AppWinInfo::FillBuffer(int init_pos, int ch, long len)
 
 	memset(GetBufPtr() + init_pos, ch, l);
 
-	buf_ok = 1;		//Validate buffer
+	buf_ok = true;		//Validate buffer
 
 	RecalcCRC();
 //	BufChanged();
@@ -1071,7 +1073,8 @@ int e2AppWinInfo::HighEnduranceRead(DWORD &block_no)
 	SleepBus();
 
 	if (rv == OK)
-		fuse_bits = block_no;
+		SetFuseBits(block_no);
+
 	return rv;
 }
 
@@ -1079,7 +1082,7 @@ int e2AppWinInfo::HighEnduranceWrite(DWORD block_no, bool no_param)
 {
 	int rv;
 	if (no_param)
-		block_no = fuse_bits;
+		block_no = GetFuseBits();
 
 	OpenBus();
 	rv = eep->HighEnduranceWrite(block_no);
@@ -1109,7 +1112,7 @@ int e2AppWinInfo::FusesRead(DWORD &bits)
 	SleepBus();
 
 	if (rv == OK)
-		fuse_bits = bits;
+		SetFuseBits(bits);
 
 	return rv;
 }
@@ -1119,7 +1122,7 @@ int e2AppWinInfo::FusesWrite(DWORD bits, bool no_param)
 	int rv;
 
 	if (no_param)
-		bits = fuse_bits;
+		bits = GetFuseBits();
 
 	OpenBus();
 	rv = eep->FusesWrite(bits);
