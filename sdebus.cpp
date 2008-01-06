@@ -79,6 +79,9 @@ void Sde2506Bus::SetDelay()
 	case VERYSLOW:
 		n = 100;
 		break;
+	case ULTRASLOW:
+		n = 1000;
+		break;
     default:
         n = 10;         //Default (< 100KHz)
         break;

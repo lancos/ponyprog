@@ -71,7 +71,8 @@ enum {
 	SLOW,
 	NORMAL,
 	FAST,
-	TURBO
+	TURBO,
+	ULTRASLOW
 };
 
 #define	STRBUFSIZE	256

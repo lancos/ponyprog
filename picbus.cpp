@@ -88,6 +88,9 @@ void PicBus::SetDelay()
 	case VERYSLOW:
 		n = 150;
 		break;
+	case ULTRASLOW:
+		n = 1000;
+		break;
     default:
         n = 6;         //Default (< 100KHz)
         break;

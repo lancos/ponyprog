@@ -415,6 +415,9 @@ int E2Profile::GetI2CSpeed()
 		else
 		if ( strcasecmp(sp,"VERYSLOW") == 0 )
 			rval = VERYSLOW;
+		else
+		if ( strcasecmp(sp,"ULTRASLOW") == 0 )
+			rval = ULTRASLOW;
 	}
 	return rval;
 }
@@ -437,6 +440,9 @@ int E2Profile::SetI2CSpeed(int speed)
 	else
 	if (speed == VERYSLOW)
 		rval = SetParameter("I2CBusSpeed", "VERYSLOW");
+	else
+	if (speed == ULTRASLOW)
+		rval = SetParameter("I2CBusSpeed", "ULTRASLOW");
 
 	return rval;
 }
@@ -586,6 +592,9 @@ int E2Profile::SetSPISpeed(int speed)
 	else
 	if (speed == VERYSLOW)
 		rval = SetParameter("SPIBusSpeed", "VERYSLOW");
+	else
+	if (speed == ULTRASLOW)
+		rval = SetParameter("SPIBusSpeed", "ULTRASLOW");
 
 	return rval;
 }
@@ -656,6 +665,9 @@ int E2Profile::SetMicroWireSpeed(int speed)
 	else
 	if (speed == VERYSLOW)
 		rval = SetParameter("MicroWireBusSpeed", "VERYSLOW");
+	else
+	if (speed == ULTRASLOW)
+		rval = SetParameter("MicroWireBusSpeed", "ULTRASLOW");
 
 	return rval;
 }
@@ -700,6 +712,9 @@ int E2Profile::SetPICSpeed(int speed)
 	else
 	if (speed == VERYSLOW)
 		rval = SetParameter("PICBusSpeed", "VERYSLOW");
+	else
+	if (speed == ULTRASLOW)
+		rval = SetParameter("PICBusSpeed", "ULTRASLOW");
 
 	return rval;
 }
@@ -744,6 +759,9 @@ int E2Profile::SetSDESpeed(int speed)
 	else
 	if (speed == VERYSLOW)
 		rval = SetParameter("SDEBusSpeed", "VERYSLOW");
+	else
+	if (speed == ULTRASLOW)
+		rval = SetParameter("SDEBusSpeed", "ULTRASLOW");
 
 	return rval;
 }
@@ -788,6 +806,9 @@ int E2Profile::SetIMBusSpeed(int speed)
 	else
 	if (speed == VERYSLOW)
 		rval = SetParameter("IMBusSpeed", "VERYSLOW");
+	else
+	if (speed == ULTRASLOW)
+		rval = SetParameter("IMBusSpeed", "ULTRASLOW");
 
 	return rval;
 }

@@ -288,6 +288,9 @@ void I2CBus::SetDelay()
 	case VERYSLOW:
 		n = 100;
 		break;
+	case ULTRASLOW:
+		n = 1000;
+		break;
 	default:
 		n = 5;		//Default (< 100KHz)
 		break;

@@ -79,6 +79,9 @@ void MicroWireBus::SetDelay()
 	case VERYSLOW:
 		n = 80;
 		break;
+	case ULTRASLOW:
+		n = 500;
+		break;
 	default:
 		n = 5;         //Default (< 100KHz)
 		break;

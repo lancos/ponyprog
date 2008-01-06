@@ -85,6 +85,9 @@ void At89sBus::SetDelay()
 	case VERYSLOW:
 		n = 100;
 		break;
+	case ULTRASLOW:
+		n = 1000;
+		break;
 	default:
 		n = 15;
 		break;

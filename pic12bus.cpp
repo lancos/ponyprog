@@ -97,6 +97,9 @@ void Pic12Bus::SetDelay()
     case VERYSLOW:
         n = 100;
         break;
+	case ULTRASLOW:
+		n = 1000;
+		break;
     default:
         n = 8;         //Default (< 100KHz)
         break;
