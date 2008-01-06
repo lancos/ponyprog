@@ -288,9 +288,9 @@ static DialogCmd FuseDialogCmds[] =
 
 	{C_Blank, blk2, 0, " ",NoList,CA_None,isSens,NoFrame,M_OK,blk1},
 
-	{C_Button,btn0,0,STR_BTNCLRALL,	NoList,CA_None,isSens,NoFrame,blk2,blk1,	0, STR_TTCLRALL},
-	{C_Button,btn1,0,STR_BTNSETALL,	NoList,CA_None,isSens,NoFrame,btn0,blk1,	0, STR_TTSETALL},
-	{C_Button,btnProg,0,STR_BTNWRITE, NoList,CA_None,isSens,NoFrame,btn1,blk1,	0, STR_TTWRITE},
+//	{C_Button,btn0,0,STR_BTNCLRALL,	NoList,CA_None,isSens,NoFrame,blk2,blk1,	0, STR_TTCLRALL},
+//	{C_Button,btn1,0,STR_BTNSETALL,	NoList,CA_None,isSens,NoFrame,btn0,blk1,	0, STR_TTSETALL},
+	{C_Button,btnProg,0,STR_BTNWRITE, NoList,CA_None,isSens,NoFrame,blk2,blk1,	0, STR_TTWRITE},
 	{C_Button,btnRead,0,STR_BTNREAD, NoList,CA_None,isSens,NoFrame,btnProg,blk1,	0, STR_TTREAD},
 
 	{C_EndOfList,0,0,0,0,CA_None,0,0,0}
@@ -578,8 +578,8 @@ int fuseModalDialog::fuseAction(char* msg, long type, DWORD &lock, DWORD &fuse, 
 	{
 		SetCommandSensitive(M_OK, 0, FuseDialogCmds);
 		SetCommandSensitive(btnProg, 0, FuseDialogCmds);
-		SetCommandSensitive(btn0, 0, FuseDialogCmds);
-		SetCommandSensitive(btn1, 0, FuseDialogCmds);
+	//	SetCommandSensitive(btn0, 0, FuseDialogCmds);
+	//	SetCommandSensitive(btn1, 0, FuseDialogCmds);
 
 		SetCommandSensitive(M_OK, 0, BlockDialogCmds);
 	}
@@ -587,8 +587,8 @@ int fuseModalDialog::fuseAction(char* msg, long type, DWORD &lock, DWORD &fuse, 
 	{
 		SetCommandSensitive(M_OK, 1, FuseDialogCmds);
 		SetCommandSensitive(btnProg, 1, FuseDialogCmds);
-		SetCommandSensitive(btn0, 1, FuseDialogCmds);
-		SetCommandSensitive(btn1, 1, FuseDialogCmds);
+	//	SetCommandSensitive(btn0, 1, FuseDialogCmds);
+	//	SetCommandSensitive(btn1, 1, FuseDialogCmds);
 
 		SetCommandSensitive(M_OK, 1, BlockDialogCmds);
 	}
@@ -661,40 +661,40 @@ void fuseModalDialog::DialogCommand(ItemVal id, ItemVal retval, CmdType ctype)
 
 	switch (id)		// We will do some things depending on value
 	{
-	case btn0:
-		{
-			int k;
-			for (k = 0; k < LOCKPACKSIZE; k++)
-			{
-				SetValue(chk7_L0+k, 0, Value);
-				SetValue(chk7_L1+k, 0, Value);
-				SetValue(chk7_L2+k, 0, Value);
-				SetValue(chk7_L3+k, 0, Value);
-
-				SetValue(chk7_F0+k, 0, Value);
-				SetValue(chk7_F1+k, 0, Value);
-				SetValue(chk7_F2+k, 0, Value);
-				SetValue(chk7_F3+k, 0, Value);
-			}
-		}
-		break;
-	case btn1:
-		{
-			int k;
-			for (k = 0; k < LOCKPACKSIZE; k++)
-			{
-				SetValue(chk7_L0+k, 1, Value);
-				SetValue(chk7_L1+k, 1, Value);
-				SetValue(chk7_L2+k, 1, Value);
-				SetValue(chk7_L3+k, 1, Value);
-
-				SetValue(chk7_F0+k, 1, Value);
-				SetValue(chk7_F1+k, 1, Value);
-				SetValue(chk7_F2+k, 1, Value);
-				SetValue(chk7_F3+k, 1, Value);
-			}
-		}
-		break;
+//	case btn0:
+//		{
+//			int k;
+//			for (k = 0; k < LOCKPACKSIZE; k++)
+//			{
+//				SetValue(chk7_L0+k, 0, Value);
+//				SetValue(chk7_L1+k, 0, Value);
+//				SetValue(chk7_L2+k, 0, Value);
+//				SetValue(chk7_L3+k, 0, Value);
+//
+//				SetValue(chk7_F0+k, 0, Value);
+//				SetValue(chk7_F1+k, 0, Value);
+//				SetValue(chk7_F2+k, 0, Value);
+//				SetValue(chk7_F3+k, 0, Value);
+//			}
+//		}
+//		break;
+//	case btn1:
+//		{
+//			int k;
+//			for (k = 0; k < LOCKPACKSIZE; k++)
+//			{
+//				SetValue(chk7_L0+k, 1, Value);
+//				SetValue(chk7_L1+k, 1, Value);
+//				SetValue(chk7_L2+k, 1, Value);
+//				SetValue(chk7_L3+k, 1, Value);
+//
+//				SetValue(chk7_F0+k, 1, Value);
+//				SetValue(chk7_F1+k, 1, Value);
+//				SetValue(chk7_F2+k, 1, Value);
+//				SetValue(chk7_F3+k, 1, Value);
+//			}
+//		}
+//		break;
 
 	case btnRead:
 		read = 1;
