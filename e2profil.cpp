@@ -1155,6 +1155,7 @@ int E2Profile::SetLockDir(char const *name)
 {
 	if (name && strlen(name))
 		SetParameter("ttyLockDir", name);
+	return OK;
 }
 
 char const *E2Profile::GetDevDir()
@@ -1168,6 +1169,7 @@ int E2Profile::SetDevDir(char const *name)
 {
 	if (name && strlen(name))
 		SetParameter("ttyDevDir", name);
+	return OK;
 }
 
 char const *E2Profile::GetDevName()
@@ -1185,6 +1187,7 @@ int E2Profile::SetDevName(char const *name)
 {
 	if (name && strlen(name))
 		SetParameter("ttyDevName", name);
+	return OK;
 }
 
 char const *E2Profile::GetLanguageCode()
