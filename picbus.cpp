@@ -34,7 +34,7 @@
 #include "e2app.h"
 
 #ifdef	_LINUX_
-#  include <asm/io.h>
+//#  include <asm/io.h>
 #  include <unistd.h>
 #else
 #  ifdef	__BORLANDC__

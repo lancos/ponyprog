@@ -26,7 +26,7 @@ TAR = tar
 
 Bin = ./bin
 
-CFLAGS	+= -D_LINUX_ -Wall -fpermissive -Wno-deprecated -I$(LINUX_HEADERS)
+CFLAGS	+= -D_LINUX_ -Wall -fpermissive -Wno-deprecated
 
 #xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 

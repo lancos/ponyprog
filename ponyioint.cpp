@@ -57,7 +57,7 @@
 # define RF_TEST (1 << RB_TEST)
 
 #ifdef	_LINUX_
-# include <asm/io.h>
+# include <sys/io.h>
 # include <unistd.h>
 #else
 # ifdef	__BORLANDC__

@@ -31,8 +31,6 @@ VVW	=	125
 #HOMEV	=	..
 HOMEV	=	$(HOME)/Progetti/PonyProg_Sourceforge/software/v
 
-LINUX_HEADERS	=	/usr/src/linux-headers-2.6.22-14-generic/include
-
 INSTALL_PREFIX	=	/usr/local
 
 #---------------------------------------------------------------------
