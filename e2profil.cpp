@@ -1190,6 +1190,20 @@ int E2Profile::SetDevName(char const *name)
 	return OK;
 }
 
+char const *E2Profile::GetHtmlBrowseApp()
+{
+	char const *sp = GetParameter("HtmlBrowseApp");
+	if (sp == 0)
+		sp = "konqueror";
+	return sp;
+}
+int E2Profile::SetHtmlBrowseApp(char const *name)
+{
+	if (name && strlen(name))
+		SetParameter("HtmlBrowseApp", name);
+	return OK;
+}
+
 char const *E2Profile::GetLanguageCode()
 {
 	char const *sp = GetParameter("LanguageCode");

@@ -2001,7 +2001,7 @@ int e2CmdWindow::CmdHelp()
 #endif
 #ifdef	_LINUX_
 	char str[MAXPATH];
-	strncpy(str, "netscape \"http://www.lancos.com/e2p/ponyprog2000.html\" &", MAXPATH);
+	snprintf(str, MAXPATH, "%s \"http://www.lancos.com/e2p/ponyprog2000.html\" &", THEAPP->GetHtmlBrowseApp());
 	str[MAXPATH-1] = '\0';
 	system(str);
 #endif

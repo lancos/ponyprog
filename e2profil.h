@@ -216,6 +216,9 @@ class E2Profile : public Profile
 	FileType GetDefaultFileType();
 	int SetDefaultFileType(FileType ft);
 
+	char const *GetHtmlBrowseApp();
+	int SetHtmlBrowseApp(char const *name);
+
   protected:	//--------------------------------------- protected
 
   private:		//--------------------------------------- private

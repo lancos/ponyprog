@@ -1,7 +1,6 @@
 Edit the v/Config.mk to customize the following variables:
 
 HOMEV - should point to your v absolute path
-LINUX_HEADERS - should point to your current kernel headers
 INSTALL_PREFIX - where to install the executable
 
 then do:
@@ -21,3 +20,6 @@ The directory where PonyProg creates the lock for serial ports (should be writea
 
 ttyDevName=ttyS
 Is the name of the serial port device without the trailing number
+
+HtmlBrowseApp=konqueror
+Is your html preferred browser (firefox, konqueror, netscape, ...)
