@@ -36,7 +36,7 @@
 class SPIBus : public BusIO
 {
  public:		//------------------------------- public
-	SPIBus(BusInterface *ptr = 0);
+	SPIBus(BusInterface *ptr = 0, bool cpha = false);
 	virtual ~SPIBus();
 
 	virtual int Reset();
@@ -74,6 +74,8 @@ class SPIBus : public BusIO
 
 	int getMISO() const
 		{ return busI->GetDataIn(); }
+
+	bool fall_edge_sample;
 };
 
 #endif

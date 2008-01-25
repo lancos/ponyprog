@@ -46,8 +46,9 @@
 #endif
 
 // Costruttore
-SPIBus::SPIBus(BusInterface *ptr)
-	: BusIO(ptr)
+SPIBus::SPIBus(BusInterface *ptr, bool cpha)
+	: BusIO(ptr), 
+		fall_edge_sample(cpha)
 {
 }
 
@@ -91,13 +92,23 @@ void SPIBus::SetDelay()
 
 int SPIBus::SendDataBit(int b)
 {
-	clearSCK();		//si assicura che SCK low
-	bitMOSI(b);
-	WaitUsec(shot_delay);
-	setSCK();		//AT90s latch data bit now!
-	WaitUsec(shot_delay);
-	clearSCK();
-
+	if (fall_edge_sample)
+	{
+		setSCK();		//be sure the SCK line is high
+		bitMOSI(b);
+		WaitUsec(shot_delay);
+		clearSCK();		//slave latches data bit now!
+		WaitUsec(shot_delay);
+	}
+	else
+	{
+		clearSCK();		//be sure the SCK line is low
+		bitMOSI(b);
+		WaitUsec(shot_delay);
+		setSCK();		//slave latches data bit now!
+		WaitUsec(shot_delay);
+		clearSCK();
+	}
 	return OK;
 }
 
@@ -106,13 +117,23 @@ int SPIBus::RecDataBit()
 {
 	register UBYTE b;
 
-	clearSCK();		//si assicura SCK low
-	WaitUsec(shot_delay);
-	setSCK();
-	WaitUsec(shot_delay);
-	b = getMISO();
-	clearSCK();
-
+	if (fall_edge_sample)
+	{
+		setSCK();		//be sure the SCK line is high
+		WaitUsec(shot_delay);
+		clearSCK();
+		b = getMISO();
+		WaitUsec(shot_delay);
+	}
+	else
+	{
+		clearSCK();		//be sure the SCK line is low
+		WaitUsec(shot_delay);
+		setSCK();
+		b = getMISO();
+		WaitUsec(shot_delay);
+		clearSCK();
+	}
 	return b;
 }
 
