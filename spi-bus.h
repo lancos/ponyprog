@@ -42,6 +42,8 @@ class SPIBus : public BusIO
 	virtual int Reset();
 
 	void SetDelay();
+	void SetFallingPhase(bool cpha)
+	{ fall_edge_sample = cpha; }
 
  protected:		//------------------------------- protected
 

@@ -143,7 +143,7 @@ int SPIBus::SendDataByte(int by)
 	int k;
 
 	clearSCK();
-	//Dal piu` significativo al meno significativo (7 to 0)
+	//MSbit (7) sent first
 	for (k = 7; k >= 0; k--)
 		SendDataBit(by & (1<<k));
 	setMOSI();
