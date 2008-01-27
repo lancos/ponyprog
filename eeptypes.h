@@ -163,7 +163,10 @@
 // Sub types
 #define	AT89S0000	0x0A0000
 #define	AT89S8252	0x0A0002
+#define AT89S8253	0x0A0003
 #define	AT89S53		0x0A0004
+#define AT89S52		0x0A0005
+#define AT89S51		0x0A0006
 
 #define	PIC168XX	0x0B
 // Sub types

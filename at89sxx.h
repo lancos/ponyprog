@@ -60,6 +60,8 @@ class At89sxx : public Device
 
   protected:	//--------------------------------------- protected
 
+	int QueryType(long &type);
+
   private:		//--------------------------------------- private
 
 };

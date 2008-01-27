@@ -476,23 +476,43 @@ char const *eepAt90str_vector[MAXEEPSUBTYPE] = {
 long eepAt89s_vector[MAXEEPSUBTYPE] = {
 //	AT89S0000,
 	AT89S8252,
-	AT89S53
+	AT89S8253,
+	AT89S51,
+	AT89S52,
+	AT89S53,
 };
 
 int eepAt89s_size[MAXEEPSUBTYPE] = {
 //	AUTOSIZE_ID,
 	KB(8)+KB(2),
+	KB(12)+KB(2),
+	KB(4),
+	KB(8),
 	KB(12)
 };
 int eepAt89s_split[MAXEEPSUBTYPE] = {
 //	0,
 	KB(8),
+	KB(12),
+	KB(4),
+	KB(8),
 	KB(12)
+};
+int eepAt89s_wpagesize[MAXEEPSUBTYPE] = {
+//	0,
+	0,
+	64,
+	256,
+	256,
+	0
 };
 
 char const *eepAt89str_vector[MAXEEPSUBTYPE] = {
 //	"AT89SXX Auto",
 	"AT89S8252",
+	"AT89S8253",
+	"AT89S51",
+	"AT89S52",
 	"AT89S53",
 	0
 };

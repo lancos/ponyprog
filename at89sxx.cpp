@@ -63,6 +63,48 @@ int At89sxx::FusesWrite(DWORD value)
 	return OK;
 }
 
+int At89sxx::QueryType(long &type)
+{
+	int rv;
+	int code[3];
+
+	code[0] = GetBus()->ReadDeviceCode(0x30);
+	code[1] = GetBus()->ReadDeviceCode(0x31);
+
+	UserDebug2(UserApp2, "At89sxx::ParseID(30) *** 0x%02X - 0x%02X\n", code[0], code[1]);
+
+	type = 0;
+	if (code[0] == 0x1E && code[1] == 0x73)
+	{
+		type = AT89S8253;
+		rv = OK;
+	}
+	else
+	{
+		code[0] = GetBus()->ReadDeviceCode(0x000);
+		code[1] = GetBus()->ReadDeviceCode(0x100);
+		code[2] = GetBus()->ReadDeviceCode(0x200);
+
+		UserDebug3(UserApp2, "At89sxx::ParseID(100) *** 0x%02X - 0x%02X - 0x%02X\n", code[0], code[1], code[2]);
+
+		if (code[0] == 0x1E && code[1] == 0x51 && code[2] == 0x06)
+		{
+			type = AT89S51;
+			rv = OK;
+		}
+		else
+		if (code[0] == 0x1E && code[1] == 0x52 && code[2] == 0x06)
+		{
+			type = AT89S52;
+			rv = OK;
+		}
+		else
+			rv = DEVICE_UNKNOWN;
+	}
+
+	return rv;
+}
+
 int At89sxx::Probe(int probe_size)
 {
 	return GetSize();
