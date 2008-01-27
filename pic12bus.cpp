@@ -389,7 +389,7 @@ int Pic12Bus::WriteProgWord(UWORD val, long rc_addr)
 		SendCmdCode(ReadProgCode);
 		if ( CompareSingleWord(RecvProgCode(), 0xffff, ProgMask) == 0 &&
 		     CompareSingleWord(val, 0x0C00, (ProgMask & 0xff00)) == 0 )
-       		{
+		{
 			THEAPP->SetLastProgrammedAddress(current_address << 1);
 
 			for (k = 1; k <= MAX_PROG_PULSES; k++)

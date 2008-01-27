@@ -91,7 +91,7 @@ void At90sBus::WriteEEPByte(long addr, int data)
 int At90sBus::ReadProgByte(long addr)
 {
 	int lsb = addr & 1;
-	addr >>= 1;		//L'indirizzo e` di Word, non di byte
+	addr >>= 1;		//convert to word address
 
 	//Se fosse little-endian sarebbe l'inverso
 #ifdef	_BIG_ENDIAN_
@@ -118,7 +118,7 @@ void At90sBus::WriteProgByte(long addr, int data)
 	THEAPP->SetLastProgrammedAddress(addr);
 
 	int lsb = addr & 1;
-	addr >>= 1;		//L'indirizzo e` di Word, non di byte
+	addr >>= 1;		//convert to word address
 
 	//Se fosse little-endian sarebbe l'inverso
 #ifdef	_BIG_ENDIAN_

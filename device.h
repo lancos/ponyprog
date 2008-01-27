@@ -83,10 +83,14 @@ class Device
 	int GetAddrSize() const;
 	virtual void DefaultBankSize()
 		{ bank_size = def_bank_size; }
-	int GetWritePageSize() const
-		{ return writepage_size; }
-	void SetWritePageSize(int pagesize)
-		{ writepage_size = pagesize; }
+	int GetProgPageSize() const
+		{ return progpage_size; }
+	void SetProgPageSize(int pagesize)
+		{ progpage_size = pagesize; }
+	int GetDataPageSize() const
+		{ return datapage_size; }
+	void SetDataPageSize(int pagesize)
+		{ datapage_size = pagesize; }
 
   protected:	//--------------------------------------- protected
 	void SetBankSize(int size)
@@ -119,6 +123,7 @@ class Device
 
 	int const def_bank_size;
 
-	int writepage_size;	//some devices write whole pages instead of bytes to speed up programming
+	int progpage_size;	//some devices write whole pages instead of bytes to speed up programming
+	int datapage_size;
 };
 #endif

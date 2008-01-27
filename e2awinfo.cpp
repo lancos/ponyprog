@@ -253,11 +253,11 @@ void e2AppWinInfo::SetEEProm(int type, int subtype)
 /** commentato il 02/06/98, introdotto l'autodeterminazione del dispositivo
 		if (eep_subtype == 0)
 		{
-			//Forza impstazione manuale
+			//Forza impostazione manuale
 			eep_subtype = GetE2PSubType(AT90S1200);
 		}
 **/
-		eep->SetWritePageSize( GetEEPTypeWPageSize(eep_type, eep_subtype) );
+		eep->SetProgPageSize( GetEEPTypeWPageSize(eep_type, eep_subtype) );
 
 		switch(xtype)
 		{
@@ -272,7 +272,7 @@ void e2AppWinInfo::SetEEProm(int type, int subtype)
 				if (b)
 				{
 					b->SetFlashPagePolling(false);
-					b->SetPageSize( eep->GetWritePageSize() );
+					b->SetPageSize( eep->GetProgPageSize() );
 				}
 				eep->SetBus(b);
 			}
@@ -283,7 +283,7 @@ void e2AppWinInfo::SetEEProm(int type, int subtype)
 				if (b)
 				{
 					b->SetFlashPagePolling(true);
-					b->SetPageSize( eep->GetWritePageSize() );
+					b->SetPageSize( eep->GetProgPageSize() );
 				}
 				eep->SetBus(b);
 			}
