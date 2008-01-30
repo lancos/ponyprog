@@ -184,7 +184,7 @@
 
 //###########################################################################
 // Utilities - these may be useful for others, too.
-
+/**
 //========================>>> SetCommandObject <<<==============================
   int SetCommandObject(const int id, const int val, CommandObject* CmdList)
   {
@@ -218,3 +218,4 @@
     return 0;
   }
 // --------------------------------------------------------------------- 
+**/
