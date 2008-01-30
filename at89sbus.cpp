@@ -163,9 +163,10 @@ void At89sBus::WriteProgByte(long addr, int data)
 	SendDataByte(data);
 }
 
-void At89sBus::WriteProgPage(long addr, UBYTE const *data, long page_size, long timeout)
+int At89sBus::WriteProgPage(long addr, UBYTE const *data, long page_size, long timeout)
 {
 	long k;
+	bool okflag;
 
 	//align addr to page boundary
 	addr &= ~(page_size - 1);	//0xFFFFFF00
@@ -183,20 +184,30 @@ void At89sBus::WriteProgPage(long addr, UBYTE const *data, long page_size, long 
 	{
 		long polling_loc = addr + page_size - 1;	//Read back last loaded byte
 		BYTE polling_data = data[page_size - 1];
+		WaitUsec(100);
 
+		okflag = false;
 		for (k = timeout; k > 0; k--)
 		{
-			if (ReadProgByte(polling_loc) != polling_data)
+			if (ReadProgByte(polling_loc) == polling_data)
+			{
+				okflag = true;
 				break;
+			}
 		}
 	}
 	else
+	{
+		okflag = true;
 		WaitMsec(twd_prog);
+	}
+	return okflag ? OK : -1;
 }
 
-void At89sBus::WriteDataPage(long addr, UBYTE const *data, long page_size, long timeout)
+int At89sBus::WriteDataPage(long addr, UBYTE const *data, long page_size, long timeout)
 {
 	long k;
+	bool okflag;
 
 	//align addr to page boundary
 	addr &= ~(page_size - 1);	//0xFFFFFF00
@@ -212,15 +223,24 @@ void At89sBus::WriteDataPage(long addr, UBYTE const *data, long page_size, long 
 	{
 		long polling_loc = addr + page_size - 1;	//Read back last loaded byte
 		BYTE polling_data = data[page_size - 1];
+		WaitUsec(100);
 
+		okflag = false;
 		for (k = timeout; k > 0; k--)
 		{
-			if (ReadDataByte(polling_loc) != polling_data)
+			if (ReadDataByte(polling_loc) == polling_data)
+			{
+				okflag = true;
 				break;
+			}
 		}
 	}
 	else
+	{
+		okflag = true;
 		WaitMsec(twd_prog);
+	}
+	return okflag ? OK : -1;
 }
 
 void At89sBus::ReadProgPage(long addr, UBYTE *data, long page_size, long timeout)
@@ -424,7 +444,7 @@ int At89sBus::Erase(int type)
 	WaitMsec(twd_erase);
 	Reset();
 
-	return OK;
+	return 1;
 }
 
 long At89sBus::Read(int addr, UBYTE *data, long length, int page_size)
@@ -529,7 +549,9 @@ long At89sBus::Write(int addr, UBYTE const *data, long length, int page_size)
 		{
 			for (addr = 0, len = 0; len < length; len += page_size, addr += page_size, data += page_size)
 			{
-				WriteDataPage(addr, data, page_size);
+				if (WriteDataPage(addr, data, page_size) != OK)
+					return E2ERR_WRITEFAILED;
+
 				if ( CheckAbort(len * 100 / length) )
 					break;
 			}
@@ -542,11 +564,17 @@ long At89sBus::Write(int addr, UBYTE const *data, long length, int page_size)
 
 				if (val != *data)
 				{
-					WriteDataByte(addr, *data);
+					if ((val & *data) != *data)
+						return E2ERR_BLANKCHECKFAILED;
+					else
+					{
+						WriteDataByte(addr, *data);
+						WaitUsec(100);
 
-					//Interrupt the writing and exit (device missing?)
-					if ( WaitReadyAfterWrite(1, addr, *data) != OK )
-						return 0;
+						//Interrupt the writing and exit (device missing?)
+						if ( WaitReadyAfterWrite(1, addr, *data) != OK )
+							return E2ERR_WRITEFAILED;
+					}
 				}
 
 				if ( CheckAbort(len * 100 / length) )
@@ -561,7 +589,9 @@ long At89sBus::Write(int addr, UBYTE const *data, long length, int page_size)
 		{
 			for (addr = 0, len = 0; len < length; len += page_size, addr += page_size, data += page_size)
 			{
-				WriteProgPage(addr, data, page_size);
+				if (WriteProgPage(addr, data, page_size) != OK)
+					return E2ERR_WRITEFAILED;
+
 				if ( CheckAbort(len * 100 / length) )
 					break;
 			}
@@ -574,11 +604,17 @@ long At89sBus::Write(int addr, UBYTE const *data, long length, int page_size)
 
 				if (val != *data)
 				{
-					WriteProgByte(addr, *data);
+					if ((val & *data) != *data)
+						return E2ERR_BLANKCHECKFAILED;
+					else
+					{
+						WriteProgByte(addr, *data);
+						WaitUsec(100);
 
-					//Interrupt the writing and exit (device missing?)
-					if ( WaitReadyAfterWrite(0, addr, *data) != OK )
-						return 0;
+						//Interrupt the writing and exit (device missing?)
+						if ( WaitReadyAfterWrite(0, addr, *data) != OK )
+							return E2ERR_WRITEFAILED;
+					}
 				}
 
 				if ( CheckAbort(len * 100 / length) )

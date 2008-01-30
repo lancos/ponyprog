@@ -86,8 +86,8 @@ class At89sBus : public SPIBus
 	void WriteDataByte(long addr, int data);
 	int ReadProgByte(long addr);
 	void WriteProgByte(long addr, int data);
-	void WriteProgPage(long addr, UBYTE const *data, long page_size, long timeout = 5000);
-	void WriteDataPage(long addr, UBYTE const *data, long page_size, long timeout = 5000);
+	int WriteProgPage(long addr, UBYTE const *data, long page_size, long timeout = 5000);
+	int WriteDataPage(long addr, UBYTE const *data, long page_size, long timeout = 5000);
 	void ReadProgPage(long addr, UBYTE *data, long page_size, long timeout = 5000);
 	void ReadDataPage(long addr, UBYTE *data, long page_size, long timeout = 5000);
 
