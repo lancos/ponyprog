@@ -223,7 +223,7 @@
 #define	STR_I2CTIMEOUT	"Timeout on the bus"
 #define	STR_I2CSTOPERR	"I2CBus Stop condition error (bad timing?)"
 #define	STR_WRITEERR	"Write error"
-#define	STR_BLANKCHECKERR "Blank check error"
+#define	STR_BLANKCHECKERR "Blank check error, need to erase"
 #define	STR_ERRNO	"Error n."
 #define	STR_SCRIPTERROR	"Script error"
 
