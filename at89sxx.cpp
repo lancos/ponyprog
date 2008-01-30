@@ -174,8 +174,6 @@ int At89sxx::Probe(int probe_size)
 	}
 	UserDebug1(UserApp2, "At89sxx::Probe() = %d **  OUT\n", rv);
 
-	rv = GetSize();
-
 	return rv;
 }
 
