@@ -38,8 +38,8 @@ class I2CBus : public BusIO
 	I2CBus(BusInterface *ptr = 0);
 	virtual ~I2CBus();
 
-	long Read(int slave, UBYTE *data, long length);
-	long Write(int slave, UBYTE const *data, long length);
+	long Read(int slave, UBYTE *data, long length, int page_size = 0);
+	long Write(int slave, UBYTE const *data, long length, int page_size = 0);
 
 	int Start(UBYTE slave);
 	int ReadByte(int ack, int lsb = 0);

@@ -38,8 +38,8 @@ class At93cBus : public MicroWireBus
 	At93cBus(BusInterface *ptr = 0);
 //	virtual ~At93cBus();
 
-	long Read(int addr, UBYTE *data, long length);
-	long Write(int addr, UBYTE const *data, long length);
+	long Read(int addr, UBYTE *data, long length, int page_size = 0);
+	long Write(int addr, UBYTE const *data, long length, int page_size = 0);
 
 	void SetOrganization(int org)
 	{

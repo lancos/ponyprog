@@ -371,7 +371,7 @@ int PicBus::Erase(int type)
 }
 
 
-long PicBus::Read(int addr, UBYTE *data, long length)
+long PicBus::Read(int addr, UBYTE *data, long length, int page_size)
 {
 	long len;
 
@@ -420,7 +420,7 @@ long PicBus::Read(int addr, UBYTE *data, long length)
 	return len;
 }
 
-long PicBus::Write(int addr, UBYTE const *data, long length)
+long PicBus::Write(int addr, UBYTE const *data, long length, int page_size)
 {
 	long len;
 

@@ -300,7 +300,7 @@ void I2CBus::SetDelay()
 	UserDebug1(UserApp2, "I2CBus::SetDelay() = %d\n", n);
 }
 
-long I2CBus::Read(int slave, UBYTE *data, long length)
+long I2CBus::Read(int slave, UBYTE *data, long length, int page_size)
 {
 	long len;
 
@@ -315,7 +315,7 @@ long I2CBus::Read(int slave, UBYTE *data, long length)
 	return len;
 }
 
-long I2CBus::Write(int slave, UBYTE const *data, long length)
+long I2CBus::Write(int slave, UBYTE const *data, long length, int page_size)
 {
 	long len;
 

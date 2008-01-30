@@ -144,7 +144,7 @@ int At250Bus::Reset(void)
 }
 
 
-long At250Bus::Read(int addr, UBYTE *data, long length)
+long At250Bus::Read(int addr, UBYTE *data, long length, int page_size)
 {
 	UserDebug3(UserApp2, "At250Bus::Read(%xh, %xh, %ld)\n", addr, (unsigned int)data, length);
 
@@ -165,7 +165,7 @@ long At250Bus::Read(int addr, UBYTE *data, long length)
 	return len;
 }
 
-long At250Bus::Write(int addr, UBYTE const *data, long length)
+long At250Bus::Write(int addr, UBYTE const *data, long length, int page_size)
 {
 	long len;
 

@@ -115,13 +115,13 @@ bool AtMegaBus::CheckBlankPage(UBYTE const *data, ULONG length)
 	return blank_page;
 }
 
-long AtMegaBus::Write(int addr, UBYTE const *data, long length)
+long AtMegaBus::Write(int addr, UBYTE const *data, long length, int page_size)
 {
 	long len;
 
 	if (addr || write_page_size <= 1)
 	{	//EEprom of flash without page write
-		len = At90sBus::Write(addr, data, length);		//Use standard routine
+		len = At90sBus::Write(addr, data, length, page_size);		//Use standard routine
 	}
 	else
 	{	//Flash Eprom with page write

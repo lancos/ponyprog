@@ -49,7 +49,7 @@ At250BigBus::At250BigBus(BusInterface *ptr)
 	UserDebug1(Constructor, "At250BigBus::At250BigBus(%xh)\n", (unsigned int)ptr);
 }
 
-long At250BigBus::Read(int addr, UBYTE *data, long length)
+long At250BigBus::Read(int addr, UBYTE *data, long length, int page_size)
 {
 	UserDebug3(UserApp2, "At250BigBus::Read(%xh, %xh, %ld)\n", addr, (unsigned int)data, length);
 
@@ -79,7 +79,7 @@ long At250BigBus::Read(int addr, UBYTE *data, long length)
 }
 
 
-long At250BigBus::Write(int addr, UBYTE const *data, long length)
+long At250BigBus::Write(int addr, UBYTE const *data, long length, int page_size)
 {
 	long len;
 

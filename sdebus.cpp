@@ -166,7 +166,7 @@ int Sde2506Bus::Reset(void)
 	return OK;
 }
 
-long Sde2506Bus::Read(int addr, UBYTE *data, long length)
+long Sde2506Bus::Read(int addr, UBYTE *data, long length, int page_size)
 {
 	UserDebug3(UserApp2, "Sde2506Bus::Read(%Xh, %Xh, %ld)\n", addr, (unsigned int)data, length);
 
@@ -198,7 +198,7 @@ long Sde2506Bus::Read(int addr, UBYTE *data, long length)
 	return len;
 }
 
-long Sde2506Bus::Write(int addr, UBYTE const *data, long length)
+long Sde2506Bus::Write(int addr, UBYTE const *data, long length, int page_size)
 {
 	long curaddr;
 

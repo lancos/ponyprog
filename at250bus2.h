@@ -37,8 +37,8 @@ class At250BigBus: public At250Bus
  public:		//------------------------------- public
 	At250BigBus(BusInterface *ptr = 0);
 
-	long Read(int addr, UBYTE *data, long length);
-	long Write(int addr, UBYTE const *data, long length);
+	long Read(int addr, UBYTE *data, long length, int page_size = 0);
+	long Write(int addr, UBYTE const *data, long length, int page_size = 0);
 	
 //	int Reset();
 

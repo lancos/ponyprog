@@ -286,7 +286,7 @@ long Pic12Bus::BlankCheck(long length)
 	return (len == length);
 }
 
-long Pic12Bus::Read(int addr, UBYTE *data, long length)
+long Pic12Bus::Read(int addr, UBYTE *data, long length, int page_size)
 {
 	long len;
 
@@ -327,7 +327,7 @@ long Pic12Bus::Read(int addr, UBYTE *data, long length)
 	return len;
 }
 
-long Pic12Bus::Write(int addr, UBYTE const *data, long length)
+long Pic12Bus::Write(int addr, UBYTE const *data, long length, int page_size)
 {
 	long len;
 	int rv = OK;

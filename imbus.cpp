@@ -250,7 +250,7 @@ int IMBus::Reset(void)
 	return OK;
 }
 
-long IMBus::Read(int addr, UBYTE *data, long length)
+long IMBus::Read(int addr, UBYTE *data, long length, int page_size)
 {
 	UserDebug3(UserApp2, "IMBus::Read(%Xh, %Xh, %ld)\n", addr, (unsigned int)data, length);
 
@@ -279,7 +279,7 @@ long IMBus::Read(int addr, UBYTE *data, long length)
 	return len;
 }
 
-long IMBus::Write(int addr, UBYTE const *data, long length)
+long IMBus::Write(int addr, UBYTE const *data, long length, int page_size)
 {
 	long len;
 	BYTE bval;

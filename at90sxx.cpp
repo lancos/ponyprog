@@ -314,7 +314,7 @@ int At90sxx::Probe(int probe_size)
 	{
 		if (rv == OK)
 		{
-			SetProgPageSize( GetEEPTypeWPageSize(AT90SXX, subtype) );
+			SetProgPageSize(GetEEPTypeWPageSize(AT90SXX, subtype), false);
 
 			switch(type)
 			{
@@ -328,7 +328,7 @@ int At90sxx::Probe(int probe_size)
 					if (b)
 					{
 						b->SetFlashPagePolling(false);
-						b->SetPageSize( GetProgPageSize() );
+						b->SetPageSize( GetProgPageSize(false) );
 					}
 					SetBus(b);
 				}
@@ -339,7 +339,7 @@ int At90sxx::Probe(int probe_size)
 					if (b)
 					{
 						b->SetFlashPagePolling(true);
-						b->SetPageSize( GetProgPageSize() );
+						b->SetPageSize( GetProgPageSize(false) );
 					}
 					SetBus(b);
 				}

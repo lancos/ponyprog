@@ -52,8 +52,8 @@ class BusIO : public Wait
 
 	virtual int Reset() = 0;
 
-	virtual long Read(int addr, UBYTE *data, long length) = 0;
-	virtual long Write(int addr,UBYTE const *data, long length) = 0;
+	virtual long Read(int addr, UBYTE *data, long length, int page_size = 0) = 0;
+	virtual long Write(int addr,UBYTE const *data, long length, int page_size = 0) = 0;
 	virtual int Erase(int type = 0)
 		{ return NOTSUPPORTED; }
 

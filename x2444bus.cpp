@@ -58,7 +58,7 @@ void X2444Bus::SendCmdAddr(int cmd, int addr)
 		SendDataWord(0x80 | ((addr & 0x07) << 4) | (cmd & 7), 8);
 }
 
-long X2444Bus::Read(int addr, UBYTE *data, long length)
+long X2444Bus::Read(int addr, UBYTE *data, long length, int page_size)
 {
 	UserDebug3(UserApp1, "X2444Bus::Read(%xh, %xh, %ld)\n", addr, (unsigned int)data, length);
 
@@ -123,7 +123,7 @@ long X2444Bus::Read(int addr, UBYTE *data, long length)
 	return len;
 }
 
-long X2444Bus::Write(int addr, UBYTE const *data, long length)
+long X2444Bus::Write(int addr, UBYTE const *data, long length, int page_size)
 {
 	long curaddr;
 

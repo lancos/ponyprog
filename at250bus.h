@@ -38,8 +38,8 @@ class At250Bus : public SPIBus
 	At250Bus(BusInterface *ptr = 0);
 //	virtual ~At250Bus();
 
-	long Read(int addr, UBYTE *data, long length);
-	long Write(int addr, UBYTE const *data, long length);
+	long Read(int addr, UBYTE *data, long length, int page_size = 0);
+	long Write(int addr, UBYTE const *data, long length, int page_size = 0);
 	
 	int Reset();
 

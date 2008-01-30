@@ -38,8 +38,8 @@ class At90sBus : public SPIBus
 	At90sBus(BusInterface *ptr = 0);
 //	virtual ~At90sBus();
 
-	long Read(int addr, UBYTE *data, long length);
-	long Write(int addr, UBYTE const *data, long length);
+	long Read(int addr, UBYTE *data, long length, int page_size = 0);
+	long Write(int addr, UBYTE const *data, long length, int page_size = 0);
 
 	virtual int Reset();
 	virtual int Erase(int type = 0);

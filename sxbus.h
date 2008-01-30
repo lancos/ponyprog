@@ -39,8 +39,8 @@ class SxBus : public BusIO
 	SxBus(BusInterface *ptr = 0);
 	virtual ~SxBus();
 
-	long Read(int addr, UBYTE *data, long length);
-	long Write(int addr, UBYTE const *data, long length);
+	long Read(int addr, UBYTE *data, long length, int page_size = 0);
+	long Write(int addr, UBYTE const *data, long length, int page_size = 0);
 	
 	int Reset();
 

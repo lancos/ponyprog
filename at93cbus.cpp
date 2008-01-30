@@ -121,7 +121,7 @@ int At93cBus::Erase(int type)
 
 //ATTENZIONE!!! Le 93CXX vengono lette e scritte una WORD per volta,
 // non a BYTE
-long At93cBus::Read(int addr, UBYTE *data, long length)
+long At93cBus::Read(int addr, UBYTE *data, long length, int page_size)
 {
 	UserDebug3(UserApp1, "At93cBus::Read(%xh, %xh, %ld)\n", addr, (unsigned int)data, length);
 
@@ -176,7 +176,7 @@ long At93cBus::Read(int addr, UBYTE *data, long length)
 	return len;
 }
 
-long At93cBus::Write(int addr, UBYTE const *data, long length)
+long At93cBus::Write(int addr, UBYTE const *data, long length, int page_size)
 {
 	long curaddr;
 

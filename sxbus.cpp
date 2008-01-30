@@ -164,7 +164,7 @@ int SxBus::Reset(void)
 }
 
 
-long SxBus::Read(int addr, UBYTE *data, long length)
+long SxBus::Read(int addr, UBYTE *data, long length, int page_size)
 {
 	long len = length;
 
@@ -190,7 +190,7 @@ long SxBus::Read(int addr, UBYTE *data, long length)
 	return len;
 }
 
-long SxBus::Write(int addr, UBYTE const *data, long length)
+long SxBus::Write(int addr, UBYTE const *data, long length, int page_size)
 {
 	long curaddr;
 

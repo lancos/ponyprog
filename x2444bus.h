@@ -37,8 +37,8 @@ class X2444Bus : public MicroWireBus
  public:		//------------------------------- public
 	X2444Bus(BusInterface *ptr = 0);
 
-	long Read(int addr, UBYTE *data, long length);
-	long Write(int addr, UBYTE const *data, long length);
+	long Read(int addr, UBYTE *data, long length, int page_size = 0);
+	long Write(int addr, UBYTE const *data, long length, int page_size = 0);
 
 	virtual void SetOrganization(int org)
 	{

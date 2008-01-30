@@ -638,7 +638,7 @@ long At90sBus::ReadCalibration(int addr)
 	return RecDataByte();
 }
 
-long At90sBus::Read(int addr, UBYTE *data, long length)
+long At90sBus::Read(int addr, UBYTE *data, long length, int page_size)
 {
 	long len;
 
@@ -764,7 +764,7 @@ int At90sBus::Erase(int type)
 	return OK;
 }
 
-long At90sBus::Write(int addr, UBYTE const *data, long length)
+long At90sBus::Write(int addr, UBYTE const *data, long length, int page_size)
 {
 	long len;
 

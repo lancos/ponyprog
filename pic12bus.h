@@ -40,8 +40,8 @@ class Pic12Bus : public BusIO
 	Pic12Bus(BusInterface *ptr = 0);
 	virtual ~Pic12Bus();
 
-	long Read(int addr, UBYTE *data, long length);
-	long Write(int addr, UBYTE const *data, long length);
+	long Read(int addr, UBYTE *data, long length, int page_size = 0);
+	long Write(int addr, UBYTE const *data, long length, int page_size = 0);
 
 //	int Erase(int type = ALL_TYPE);
 

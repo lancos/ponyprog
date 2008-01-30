@@ -37,7 +37,7 @@ class AtMegaBus : public At90sBus
  public:		//------------------------------- public
 	AtMegaBus(BusInterface *ptr = 0, int wpage_size = 256, bool page_poll = false);		//Default to ATmega103
 
-	long Write(int addr, UBYTE const *data, long length);
+	long Write(int addr, UBYTE const *data, long length, int page_size = 0);
 
 	void SetPageSize(int size);
 	int GetPageSize() const;
