@@ -46,6 +46,10 @@
 #include <v/vcolor.h>
 #include <v/vos.h>
 
+#ifdef vDEBUG
+#include <v/vdebug.h>
+#endif
+
 #include "e2app.h"
 #include "e2awinfo.h"
 #include "e2cmdw.h"		// our header
@@ -210,6 +214,9 @@ static Menu2Type index_menu_type[] = {
 	{m_at90can128, AT90CAN128},
 
 	{m_at89s8252, AT89S8252},
+	{m_at89s8253, AT89S8253},
+	{m_at89s51, AT89S51},
+	{m_at89s52, AT89S52},
 	{m_at89s53, AT89S53},
 
 	{m_9306, E9306},
@@ -419,6 +426,9 @@ static vMenu avrMenu[] = {
 
 static vMenu at89sMenu[] = {
 	{"", m_at89s8252, isSens, notChk, noKeyLbl, noKey, noSub},
+	{"", m_at89s8253, isSens, notChk, noKeyLbl, noKey, noSub},
+	{"", m_at89s51, isSens, notChk, noKeyLbl, noKey, noSub},
+	{"", m_at89s52, isSens, notChk, noKeyLbl, noKey, noSub},
 	{"", m_at89s53, isSens, notChk, noKeyLbl, noKey, noSub},
 	{NULL}
 };
@@ -1637,8 +1647,8 @@ void e2CmdWindow::WindowCommand(ItemVal id, ItemVal val, CmdType cType)
 	case m_atmega640: case m_atmega1280: case m_atmega1281:
 	case m_atmega2560: case m_atmega2561:
 	case m_at90can32: case m_at90can64: case m_at90can128:
-	case m_at89s8252:
-	case m_at89s53:
+	case m_at89s8252: case m_at89s8253:
+	case m_at89s51:	case m_at89s52:	case m_at89s53:
 	case m_pic12508:
 	case m_pic12509:
 	case m_pic12508A:
@@ -3783,14 +3793,20 @@ int e2CmdWindow::CmdWriteLock()
 			if (!e2Prg->IsDisplayed())
 				e2Prg->UpdateDialog(0, STR_MSGWRITINGSEC);
 
-	  		if ( (rval = awip->SecurityWrite(0, true)) == OK )
-	  		{
+			rval = awip->SecurityWrite(0, true);
+			if (rval == OK)
+			{
 				e2Prg->CloseDialog();
 
 			//	if (verbose == verboseAll)
 			//		note.Notice("Security bits write successful");
 
 			} // if ( (rval = ...
+			else
+			if (rval == NOTSUPPORTED)
+			{
+				e2Prg->CloseDialog();
+			}
 			else
 			{
 				e2Prg->CloseDialog();
@@ -3861,6 +3877,11 @@ int e2CmdWindow::CmdReadLock()
 		//	SpecialBits();
 		} // if ( (rval = ...
 		else
+		if (rval == NOTSUPPORTED)
+		{
+			e2Prg->CloseDialog();
+		}
+		else
 		{
 			e2Prg->CloseDialog();
 			THEAPP->CheckEvents();
@@ -3928,6 +3949,11 @@ int e2CmdWindow::CmdReadSpecial()
 
 		//	SpecialBits(1);
 		} // if ( (rval = ...
+		else
+		if (rval == NOTSUPPORTED)
+		{
+			e2Prg->CloseDialog();
+		}
 		else
 		{
 			e2Prg->CloseDialog();
@@ -4032,6 +4058,11 @@ int e2CmdWindow::CmdWriteSpecial()
 			//	if (verbose == verboseAll)
 			//		note.Notice("Special write successful");
 			} // if ( (rval = ...
+			else
+			if (rval == NOTSUPPORTED)
+			{
+				e2Prg->CloseDialog();
+			}
 			else
 			{
 				e2Prg->CloseDialog();
