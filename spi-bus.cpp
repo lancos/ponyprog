@@ -155,11 +155,11 @@ int SPIBus::RecDataByte()
 {
 	int k, val = 0;
 
+	setMOSI();
 	clearSCK();
 	for (k = 7; k >= 0; k--)
 		if ( RecDataBit() )
 			val |= 1 << k;
-	setMOSI();
 
 	return val;
 }

@@ -980,6 +980,7 @@ static void GetArrayPtrs(int pritype, long* &vp, int* &sp, int* &asp, int* &ssp,
 		asp = sp = eepAt89s_size;
 		vp = eepAt89s_vector;
 		rp = eepAt89str_vector;
+		wp = eepAt89s_wpagesize;
 		break;
 	case E93X6:
 		asp = eep93x6_addrsize;
@@ -1442,6 +1443,15 @@ const FuseBit eep_fusebits[] = {
 
 	{ AT89S8252,
 		0x00,{0}, 0x00,{0}, 0x00,{0}, 0xE0,{"LB1 ","LB2 ","LB3 ",0, 0,0,0,0},
+		0x00,{0}, 0x00,{0}, 0x00,{0}, 0x00,{0} },
+	{ AT89S8253,
+		0x00,{0}, 0x00,{0}, 0x00,{0}, 0x07,{0,0,0,0, 0,"LB1 ","LB2 ","LB3 "},
+		0x00,{0}, 0x00,{0}, 0x00,{0}, 0x0F,{0,0,0,0, "ClkSel ", "UserRow ", "x2Mode ", "SerProg "} },
+	{ AT89S51,
+		0x00,{0}, 0x00,{0}, 0x00,{0}, 0x1C,{0,0,0,"LB1 ", "LB2 ","LB3 ",0,0},
+		0x00,{0}, 0x00,{0}, 0x00,{0}, 0x00,{0} },
+	{ AT89S52,
+		0x00,{0}, 0x00,{0}, 0x00,{0}, 0x1C,{0,0,0,"LB1 ", "LB2 ","LB3 ",0,0},
 		0x00,{0}, 0x00,{0}, 0x00,{0}, 0x00,{0} },
 	{ AT89S53,
 		0x00,{0}, 0x00,{0}, 0x00,{0}, 0xE0,{"LB1 ","LB2 ","LB3 ",0, 0,0,0,0},

@@ -211,7 +211,6 @@ void e2AppWinInfo::SetEEProm(int type, int subtype)
 
 	eep_type = type;
 	eep_subtype = subtype;			//0 indica di usare GetNoOfBlock()
-	long xtype = GetEEPType();
 
 	switch(eep_type)
 	{
@@ -257,9 +256,9 @@ void e2AppWinInfo::SetEEProm(int type, int subtype)
 			eep_subtype = GetE2PSubType(AT90S1200);
 		}
 **/
-		eep->SetProgPageSize( GetEEPTypeWPageSize(eep_type, eep_subtype) );
+		eep->SetProgPageSize(GetEEPTypeWPageSize(eep_type, eep_subtype), false);
 
-		switch(xtype)
+		switch(GetEEPType())
 		{
 		case AT90S0000:		//The AT1200S bus have to work with all AVR device
 		case AT90S1200:
@@ -272,7 +271,7 @@ void e2AppWinInfo::SetEEProm(int type, int subtype)
 				if (b)
 				{
 					b->SetFlashPagePolling(false);
-					b->SetPageSize( eep->GetProgPageSize() );
+					b->SetPageSize( eep->GetProgPageSize(false) );
 				}
 				eep->SetBus(b);
 			}
@@ -283,7 +282,7 @@ void e2AppWinInfo::SetEEProm(int type, int subtype)
 				if (b)
 				{
 					b->SetFlashPagePolling(true);
-					b->SetPageSize( eep->GetProgPageSize() );
+					b->SetPageSize( eep->GetProgPageSize(false) );
 				}
 				eep->SetBus(b);
 			}
@@ -291,13 +290,25 @@ void e2AppWinInfo::SetEEProm(int type, int subtype)
 		}
 		break;
 	case AT89SXX:
+	{
 		eep = &eepAt89s;
 		if (eep_subtype == 0)
 		{
 			//Forza impstazione manuale
 			eep_subtype = GetE2PSubType(AT89S8252);
 		}
+		long xtype = GetEEPType();
+//		eep->SetProgPageSize(GetEEPTypeWPageSize(eep_type, eep_subtype), false);	//write prog page size
+//		eep->SetProgPageSize(GetEEPTypeWPageSize(eep_type, eep_subtype), true);		//read prog page size
+//		eep->SetDataPageSize(GetEEPTypeWPageSize(eep_type, eep_subtype)/2, false);	//write data page size
+//		eep->SetDataPageSize(GetEEPTypeWPageSize(eep_type, eep_subtype)/2, true);	//read data page size
+		At89sBus *b = (At89sBus *)eep->GetBus();
+		b->SetCompatibilityMode( (xtype == AT89S8252 || xtype == AT89S53) );
+	//	b->SetFallingPhase( (xtype == AT89S8253) );
+		b->SetPagePolling( true, (xtype == AT89S8253 || xtype == AT89S51 || xtype == AT89S52) );
+		b->SetPagePolling( false, (xtype == AT89S8253) );
 		break;
+	}
 	case E93X6:
 		eep = &eep93xx16;
 		if (eep_subtype == 0)

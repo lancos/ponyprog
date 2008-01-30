@@ -197,6 +197,9 @@ enum {
 	m_at90can32, m_at90can64, m_at90can128,
 
 	m_at89s8252,
+	m_at89s8253,
+	m_at89s51,
+	m_at89s52,
 	m_at89s53,
 
 	m_pic1683,
