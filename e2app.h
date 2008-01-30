@@ -31,10 +31,6 @@
 #define e2APP_H
 
 // Include standard V files as needed
-#ifdef vDEBUG
-#include <v/vdebug.h>
-#endif
-
 #include <v/vapp.h>
 #include <v/vawinfo.h>
 
@@ -145,12 +141,9 @@ class e2App : public vApp, public E2Profile
 	void SetAppBusy();
 	void SetAppReady();
 
-	int GetIgnoreFlag() const
-		{ return ignoreFlag; }
-	void SetIgnoreFlag()
-		{ ignoreFlag = 1; }
-	void ClearIgnoreFlag()
-		{ ignoreFlag = 0; }
+	int GetIgnoreFlag() const;
+	void SetIgnoreFlag();
+	void ClearIgnoreFlag();
 
 	long GetLastProgrammedAddress() const
 		{ return last_programmed_addr; }

@@ -28,6 +28,8 @@
 //=========================================================================//
 
 #include <stdio.h>
+#include <v/v_defs.h>	//to use UserDebug() stuffs
+
 #include "rs232int.h"
 #include "errcode.h"
 

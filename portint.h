@@ -32,9 +32,9 @@
 
 #include "types.h"
 
-//#ifdef	vDEBUG
-#include <v/vdebug.h>
-//#endif
+#ifdef	_WINDOWS
+#include <windows.h>
+#endif
 
 // Maximum number of printer ports that would be installed on a system
 #define	MAX_LPTPORTS	4

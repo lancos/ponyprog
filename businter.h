@@ -34,9 +34,7 @@
 //#include "portint.h"
 #include "errcode.h"
 
-//#ifdef	vDEBUG
-#include <v/vdebug.h>
-//#endif
+#include <v/v_defs.h>
 
 class BusInterface
 {

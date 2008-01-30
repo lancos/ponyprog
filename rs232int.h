@@ -30,10 +30,6 @@
 #ifndef	_RS232INTERFACE_H
 #define	_RS232INTERFACE_H
 
-//#ifdef	vDEBUG
-#include <v/vdebug.h>
-//#endif
-
 #ifdef	_LINUX_
 #include <termios.h>
 #endif

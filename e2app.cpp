@@ -618,6 +618,20 @@ void e2App::LookForBogoMips()
 #endif
 }
 
+int e2App::GetIgnoreFlag() const
+{
+	return ignoreFlag;
+}
+
+void e2App::SetIgnoreFlag()
+{
+	ignoreFlag = 1;
+}
+
+void e2App::ClearIgnoreFlag()
+{
+	ignoreFlag = 0;
+}
  
 int e2App::LoadDriver(int start)
 {
