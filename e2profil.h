@@ -186,6 +186,9 @@ class E2Profile : public Profile
 	bool GetClearBufBeforeRead();
 	int SetClearBufBeforeRead(bool val = false);
 
+	bool GetAt89PageOp();
+	int SetAt89PageOp(bool val = true);
+
 	char const *GetLanguageCode();
 	int SetLanguageCode(char const *code);
 

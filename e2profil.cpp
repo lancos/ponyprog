@@ -1282,6 +1282,26 @@ int E2Profile::SetClearBufBeforeRead(bool enabled)
 	return OK;
 }
 
+bool E2Profile::GetAt89PageOp()
+{
+	char const *sp = GetParameter("AT89SPageOpEnabled");
+
+	if (sp && strcasecmp(sp, "NO") == 0)
+		return false;
+	else
+		return true;
+}
+
+int E2Profile::SetAt89PageOp(bool enabled)
+{
+	if (enabled)
+		SetParameter("AT89SPageOpEnabled", "YES");
+	else
+		SetParameter("AT89SPageOpEnabled", "NO");
+
+	return OK;
+}
+
 bool E2Profile::GetSoundEnabled()
 {
 	char const *sp = GetParameter("SoundEnabled");

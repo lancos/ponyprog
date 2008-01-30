@@ -298,10 +298,13 @@ void e2AppWinInfo::SetEEProm(int type, int subtype)
 			eep_subtype = GetE2PSubType(AT89S8252);
 		}
 		long xtype = GetEEPType();
-//		eep->SetProgPageSize(GetEEPTypeWPageSize(eep_type, eep_subtype), false);	//write prog page size
-//		eep->SetProgPageSize(GetEEPTypeWPageSize(eep_type, eep_subtype), true);		//read prog page size
-//		eep->SetDataPageSize(GetEEPTypeWPageSize(eep_type, eep_subtype)/2, false);	//write data page size
-//		eep->SetDataPageSize(GetEEPTypeWPageSize(eep_type, eep_subtype)/2, true);	//read data page size
+		if (THEAPP->GetAt89PageOp())
+		{
+			eep->SetProgPageSize(GetEEPTypeWPageSize(eep_type, eep_subtype), false);	//write prog page size
+			eep->SetProgPageSize(GetEEPTypeWPageSize(eep_type, eep_subtype), true);		//read prog page size
+			eep->SetDataPageSize(GetEEPTypeWPageSize(eep_type, eep_subtype)/2, false);	//write data page size
+			eep->SetDataPageSize(GetEEPTypeWPageSize(eep_type, eep_subtype)/2, true);	//read data page size
+		}
 		At89sBus *b = (At89sBus *)eep->GetBus();
 		b->SetCompatibilityMode( (xtype == AT89S8252 || xtype == AT89S53) );
 	//	b->SetFallingPhase( (xtype == AT89S8253) );

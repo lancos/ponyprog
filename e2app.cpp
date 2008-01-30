@@ -740,6 +740,7 @@ int AppMain(int argc, char** argv)
 	e2_App.SetClearBufBeforeLoad( e2_App.GetClearBufBeforeLoad() );
 	e2_App.SetClearBufBeforeRead( e2_App.GetClearBufBeforeRead() );
 	e2_App.SetAutoDetectPorts( e2_App.GetAutoDetectPorts() );
+	e2_App.SetAt89PageOp( e2_App.GetAt89PageOp() );
 #ifdef	__unix__
 	e2_App.SetHtmlBrowseApp( e2_App.GetHtmlBrowseApp() );
 	e2_App.SetLockDir( e2_App.GetLockDir() );
