@@ -38,29 +38,19 @@ class At89sBus : public SPIBus
 	At89sBus(BusInterface *ptr = 0);
 //	virtual ~At89sBus();
 
-	long Read(int addr, UBYTE *data, long length);
-	long Write(int addr, UBYTE const *data, long length);
+	long Read(int addr, UBYTE *data, long length, int page_size = 0);
+	long Write(int addr, UBYTE const *data, long length, int page_size = 0);
 
 	virtual int Reset();
 	virtual int Erase(int type = 0);
 
 	int ReadDeviceCode(int addr);
-	int WriteLockBits(DWORD val, long model = 0);
-	int WriteFuseBits(DWORD val, long model = 0);
-	DWORD ReadLockBits(long model = 0);
-	DWORD ReadFuseBits(long model = 0);
-
+	int WriteLockBits(DWORD val, long model);
+	int WriteFuseBits(DWORD val, long model);
+	int ReadLockBits(DWORD &res, long model);
+	int ReadFuseBits(DWORD &res, long model);
 	void SetDelay();
 
-//	void SetPageSize(bool prog, int size)
-//	{
-//		if (prog)
-//			progpage_size = size;
-//		else
-//			datapage_size = size;
-//	}
-//	int GetPageSize(bool prog) const
-//	{ return prog ? progpage_size : datapage_size; }
 	void SetPagePolling(bool prog, bool val)
 	{
 		if (prog)
@@ -96,10 +86,10 @@ class At89sBus : public SPIBus
 	void WriteDataByte(long addr, int data);
 	int ReadProgByte(long addr);
 	void WriteProgByte(long addr, int data);
-	void WriteProgPage(long addr, UBYTE const *data, long page_size, long timeout);
-	void WriteDataPage(long addr, UBYTE const *data, long page_size, long timeout);
-	void ReadProgPage(long addr, UBYTE *data, long page_size, long timeout);
-	void ReadDataPage(long addr, UBYTE *data, long page_size, long timeout);
+	void WriteProgPage(long addr, UBYTE const *data, long page_size, long timeout = 5000);
+	void WriteDataPage(long addr, UBYTE const *data, long page_size, long timeout = 5000);
+	void ReadProgPage(long addr, UBYTE *data, long page_size, long timeout = 5000);
+	void ReadDataPage(long addr, UBYTE *data, long page_size, long timeout = 5000);
 
 	int WaitReadyAfterWrite(int type, long addr, int data, long timeout = 5000);
 	bool CheckBlankPage(UBYTE const *data, long length);
@@ -107,7 +97,6 @@ class At89sBus : public SPIBus
  private:		//------------------------------- private
 
 	bool enable_datapage_polling, enable_progpage_polling;
-//	int progpage_size, datapage_size;
 
 	//Erase and programming delays
 	int twd_erase;

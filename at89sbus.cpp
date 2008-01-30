@@ -255,8 +255,6 @@ void At89sBus::ReadDataPage(long addr, UBYTE *data, long page_size, long timeout
 
 int At89sBus::Reset()
 {
-	SetDelay();
-
 	if (oldmode)
 		twd_prog = 20;
 	else
@@ -286,13 +284,12 @@ int At89sBus::WriteLockBits(DWORD param, long model)
 		val1 = WriteLockBits0;
 		val2 = WriteLockBits1 | (~param & 0x07);
 		break;
-//	case AT89S51:
-//	case AT89S52:
+	case AT89S51:
+	case AT89S52:
 		//Translate from B1-B2 code to LB1-LB2-LB3
 		//...
-//		break;
+		break;
 	default:
-		oldmode = true;
 		val1 = WriteLockBits0;
 		val2 = OldWriteLockBits1;
 		val2 |= 0xff & ~param;
@@ -311,14 +308,16 @@ int At89sBus::WriteLockBits(DWORD param, long model)
 			SendDataByte(val4);
 			WaitMsec(twd_prog * 10);
 		}
+		return OK;
 	}
-	return OK;
+	else
+		return NOTSUPPORTED;
 }
 
-DWORD At89sBus::ReadLockBits(long model)
+int At89sBus::ReadLockBits(DWORD &res, long model)
 {
-	DWORD retval = 0;
-	int rv1;
+	int rval = OK;
+	DWORD rv1;
 
 	switch (model)
 	{
@@ -327,12 +326,22 @@ DWORD At89sBus::ReadLockBits(long model)
 		SendDataByte(ReadLockBits1);
 		SendDataByte(0);
 		rv1 = RecDataByte();
-		retval = ~rv1 & 0x07;
+		res = ~rv1 & 0x07;
+		break;
+	case AT89S51:
+	case AT89S52:
+		//NB.Different polarity from other devices: 1 mean programmed (should update message in the dialog)
+		SendDataByte(ReadLockBits0);
+		SendDataByte(ReadLockBits1);
+		SendDataByte(0);
+		rv1 = RecDataByte();
+		res = rv1 & 0x1C;
 		break;
 	default:
+		rval = NOTSUPPORTED;
 		break;
 	}
-	return retval;
+	return rval;
 }
 
 int At89sBus::WriteFuseBits(DWORD param, long model)
@@ -361,13 +370,15 @@ int At89sBus::WriteFuseBits(DWORD param, long model)
 		SendDataByte(val4);
 
 		WaitMsec(twd_prog * 10);
+		return OK;
 	}
-	return OK;
+	else
+		return NOTSUPPORTED;
 }
 
-DWORD At89sBus::ReadFuseBits(long model)
+int At89sBus::ReadFuseBits(DWORD &res, long model)
 {
-	DWORD retval = 0;
+	int rval = OK;
 	DWORD rv1;
 
 	switch (model)
@@ -377,13 +388,13 @@ DWORD At89sBus::ReadFuseBits(long model)
 		SendDataByte(ReadUserFuses1);
 		SendDataByte(0);
 		rv1 = RecDataByte();
-		retval = ~rv1 & 0x0f;
+		res = ~rv1 & 0x0f;
 		break;
-	default:
-		//No Fuses
+	default:	//No Fuses
+		rval = NOTSUPPORTED;
 		break;
 	}
-	return retval;
+	return rval;
 }
 
 int At89sBus::ReadDeviceCode(int addr)
@@ -416,31 +427,53 @@ int At89sBus::Erase(int type)
 	return OK;
 }
 
-long At89sBus::Read(int addr, UBYTE *data, long length)
+long At89sBus::Read(int addr, UBYTE *data, long length, int page_size)
 {
 	long len;
 
 	if (addr)
 	{	//Data
-		addr = 0;
-		for (len = 0; len < length; len++)
+		if (page_size > 1)
 		{
-			*data++ = (UBYTE)ReadDataByte(addr++);
+			for (addr = 0, len = 0; len < length; len += page_size, addr += page_size, data += page_size)
+			{
+				ReadDataPage(addr, data, page_size);
+				if ( CheckAbort(len * 100 / length) )
+					break;
+			}
+		}
+		else
+		{
+			for (addr = 0, len = 0; len < length; len++)
+			{
+				*data++ = (UBYTE)ReadDataByte(addr++);
 
-			if ( CheckAbort(len * 100 / length) )
-				break;
+				if ( CheckAbort(len * 100 / length) )
+					break;
+			}
 		}
 		CheckAbort(100);
 	}
 	else
 	{	//Prog
-		addr = 0;
-		for (len = 0; len < length; len++)
+		if (page_size > 1)
 		{
-			*data++ = (UBYTE)ReadProgByte(addr++);
+			for (addr = 0, len = 0; len < length; len += page_size, addr += page_size, data += page_size)
+			{
+				ReadProgPage(addr, data, page_size);
+				if ( CheckAbort(len * 100 / length) )
+					break;
+			}
+		}
+		else
+		{
+			for (addr = 0, len = 0; len < length; len++)
+			{
+				*data++ = (UBYTE)ReadProgByte(addr++);
 
-			if ( CheckAbort(len * 100 / length) )
-				break;
+				if ( CheckAbort(len * 100 / length) )
+					break;
+			}
 		}
 		CheckAbort(100);
 	}
@@ -486,47 +519,71 @@ bool At89sBus::CheckBlankPage(UBYTE const *data, long length)
 	return blank_page;
 }
 
-long At89sBus::Write(int addr, UBYTE const *data, long length)
+long At89sBus::Write(int addr, UBYTE const *data, long length, int page_size)
 {
 	long len;
 
 	if (addr)
 	{	//Data
-		for (addr = 0, len = 0; len < length; addr++, data++, len++)
+		if (page_size > 1)
 		{
-			int val = ReadDataByte(addr);
-
-			if (val != *data)
+			for (addr = 0, len = 0; len < length; len += page_size, addr += page_size, data += page_size)
 			{
-				WriteDataByte(addr, *data);
-
-				//Interrupt the writing and exit (device missing?)
-				if ( WaitReadyAfterWrite(1, addr, *data) != OK )
-					return 0;
+				WriteDataPage(addr, data, page_size);
+				if ( CheckAbort(len * 100 / length) )
+					break;
 			}
+		}
+		else
+		{
+			for (addr = 0, len = 0; len < length; addr++, data++, len++)
+			{
+				int val = ReadDataByte(addr);
 
-			if ( CheckAbort(len * 100 / length) )
-				break;
+				if (val != *data)
+				{
+					WriteDataByte(addr, *data);
+
+					//Interrupt the writing and exit (device missing?)
+					if ( WaitReadyAfterWrite(1, addr, *data) != OK )
+						return 0;
+				}
+
+				if ( CheckAbort(len * 100 / length) )
+					break;
+			}
 		}
 		CheckAbort(100);
 	}
 	else
 	{	//Prog
-		for (addr = 0, len = 0; len < length; addr++, data++, len++)
+		if (page_size > 1)
 		{
-			int val = ReadProgByte(addr);
-
-			if (val != *data)
+			for (addr = 0, len = 0; len < length; len += page_size, addr += page_size, data += page_size)
 			{
-				WriteProgByte(addr, *data);
-
-				//Interrupt the writing and exit (device missing?)
-				if ( WaitReadyAfterWrite(0, addr, *data) != OK )
-					return 0;
+				WriteProgPage(addr, data, page_size);
+				if ( CheckAbort(len * 100 / length) )
+					break;
 			}
+		}
+		else
+		{
+			for (addr = 0, len = 0; len < length; addr++, data++, len++)
+			{
+				int val = ReadProgByte(addr);
 
-			if ( CheckAbort(len * 100 / length) )
-				break;
+				if (val != *data)
+				{
+					WriteProgByte(addr, *data);
+
+					//Interrupt the writing and exit (device missing?)
+					if ( WaitReadyAfterWrite(0, addr, *data) != OK )
+						return 0;
+				}
+
+				if ( CheckAbort(len * 100 / length) )
+					break;
+			}
 		}
 		CheckAbort(100);
 	}
