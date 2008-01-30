@@ -47,7 +47,7 @@
 //#ifndef vDEBUG		// force DEBUG for now
 //#define vDEBUG
 //#endif
-#undef vDEBUG
+//#undef vDEBUG
 
 #ifdef WIN32
 #undef VWIN16
@@ -56,6 +56,7 @@
 #include <windows.h>
 #include <windowsx.h>
 #include <string.h>
+#include <stdio.h>
 
 #define V_VersMajor 1
 #define V_VersMinor 25
