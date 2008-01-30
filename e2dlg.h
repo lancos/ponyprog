@@ -29,7 +29,7 @@
 
 #ifndef e2DIALOG_H
 #define e2DIALOG_H
-#include <v/vdialog.h>
+#include <v/vmodald.h>
 
 #include "types.h"
 #include "globals.h"
