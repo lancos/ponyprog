@@ -37,10 +37,6 @@
 #include <v/vstatusp.h>	// For the status pane
 //#include <v/vtimer.h>	// Timer
 
-#ifdef vDEBUG
-#include <v/vdebug.h>
-#endif
-
 #include "device.h"
 
 #include "e2cnv.h"	// e2TextCanvasPane

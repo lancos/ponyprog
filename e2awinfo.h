@@ -31,11 +31,6 @@
 #define e2AWINFO_H
 
 // Include standard V files as needed
-
-#ifdef	vDEBUG
-#include <v/vdebug.h>
-#endif
-
 #include <v/vawinfo.h>
 
 #include "types.h"
