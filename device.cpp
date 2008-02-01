@@ -208,7 +208,11 @@ int Device::VerifyProg(unsigned char *localbuf)
 	memset(localbuf, 0xFF, size);
 
 	// read the current flash content and store it in localbuf
-	rval = GetBus()->Read(0, localbuf, v_len, (v_len % read_progpage_size) ? 0 : read_progpage_size);
+	if (read_progpage_size && (v_len % read_progpage_size) == 0)
+		rval = GetBus()->Read(0, localbuf, v_len, read_progpage_size);
+	else
+		rval = GetBus()->Read(0, localbuf, v_len, 0);
+
 	if ( rval != v_len )
 	{
 		if (rval > 0)
