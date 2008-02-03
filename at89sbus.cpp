@@ -168,6 +168,9 @@ int At89sBus::WriteProgPage(long addr, UBYTE const *data, long page_size, long t
 	long k;
 	bool okflag;
 
+	if (page_size <= 0 || data == NULL)
+		return BADPARAM;
+
 	//align addr to page boundary
 	addr &= ~(page_size - 1);	//0xFFFFFF00
 
@@ -201,7 +204,7 @@ int At89sBus::WriteProgPage(long addr, UBYTE const *data, long page_size, long t
 		okflag = true;
 		WaitMsec(twd_prog);
 	}
-	return okflag ? OK : -1;
+	return okflag ? OK : E2P_TIMEOUT;
 }
 
 int At89sBus::WriteDataPage(long addr, UBYTE const *data, long page_size, long timeout)
@@ -497,13 +500,12 @@ long At89sBus::Read(int addr, UBYTE *data, long length, int page_size)
 		}
 		CheckAbort(100);
 	}
-
 	return len;
 }
 
 int At89sBus::WaitReadyAfterWrite(int type, long addr, int data, long timeout)
 {
-	int rval = -1;
+	int rval = E2P_TIMEOUT;
 	int k;
 
 	for (k = 0; k < timeout; k++)
@@ -535,7 +537,6 @@ bool At89sBus::CheckBlankPage(UBYTE const *data, long length)
 			break;
 		}
 	}
-
 	return blank_page;
 }
 
@@ -589,8 +590,10 @@ long At89sBus::Write(int addr, UBYTE const *data, long length, int page_size)
 		{
 			for (addr = 0, len = 0; len < length; len += page_size, addr += page_size, data += page_size)
 			{
-				if (WriteProgPage(addr, data, page_size) != OK)
-					return E2ERR_WRITEFAILED;
+				//check for FF's page to skip blank pages
+				if ( !CheckBlankPage(data, page_size) )
+					if (WriteProgPage(addr, data, page_size) != OK)
+						return E2ERR_WRITEFAILED;
 
 				if ( CheckAbort(len * 100 / length) )
 					break;
@@ -623,6 +626,5 @@ long At89sBus::Write(int addr, UBYTE const *data, long length, int page_size)
 		}
 		CheckAbort(100);
 	}
-
 	return len;
 }
