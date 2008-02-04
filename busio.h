@@ -89,6 +89,18 @@ class BusIO : public Wait
 	int GetDelay() const
 		{ return shot_delay; }
 
+	long GetLastProgrammedAddress() const
+		{ return last_programmed_addr; }
+
+	void ClearLastProgrammedAddress()
+		{ last_programmed_addr = 0; }
+
+	void SetLastProgrammedAddress(long addr)
+	{
+		if (addr > last_programmed_addr)
+			last_programmed_addr = addr;
+	}
+
  protected:		//------------------------------- protected
 
 	int	err_no;			//error code
@@ -101,6 +113,8 @@ class BusIO : public Wait
  private:		//------------------------------- private
 
 	int old_progress;
+	long last_programmed_addr;	//record last programmed address for verify
+
 };
 
 #endif

@@ -368,7 +368,7 @@ long Pic12Bus::Write(int addr, UBYTE const *data, long length, int page_size)
 	if (len > 0)
 		len <<= 1;	//contatore da word a byte
 
-  	UserDebug2(UserApp2, "Pic12Bus::Write() = %ld ** %ld OUT\n", len, THEAPP->GetLastProgrammedAddress());
+  	UserDebug2(UserApp2, "Pic12Bus::Write() = %ld ** %ld OUT\n", len, GetLastProgrammedAddress());
 
 	return len;
 }
@@ -390,7 +390,7 @@ int Pic12Bus::WriteProgWord(UWORD val, long rc_addr)
 		if ( CompareSingleWord(RecvProgCode(), 0xffff, ProgMask) == 0 &&
 		     CompareSingleWord(val, 0x0C00, (ProgMask & 0xff00)) == 0 )
 		{
-			THEAPP->SetLastProgrammedAddress(current_address << 1);
+			SetLastProgrammedAddress(current_address << 1);
 
 			for (k = 1; k <= MAX_PROG_PULSES; k++)
 			{
@@ -427,7 +427,7 @@ int Pic12Bus::WriteProgWord(UWORD val, long rc_addr)
 			//Skip FFF words
 			if ( CompareSingleWord(val, 0xffff, ProgMask) != 0 )
 			{
-				THEAPP->SetLastProgrammedAddress(current_address << 1);
+				SetLastProgrammedAddress(current_address << 1);
 
 				for (k = 1; k <= MAX_PROG_PULSES; k++)
 				{

@@ -145,14 +145,6 @@ class e2App : public vApp, public E2Profile
 	void SetIgnoreFlag();
 	void ClearIgnoreFlag();
 
-	long GetLastProgrammedAddress() const
-		{ return last_programmed_addr; }
-
-	void ClearLastProgrammedAddress()
-		{ last_programmed_addr = 0; }
-
-	void SetLastProgrammedAddress(long addr);
-
 	int LoadDriver(int start);
 
 	bool scriptMode;	//Script Mode
@@ -176,8 +168,6 @@ class e2App : public vApp, public E2Profile
 
 	UBYTE polarity_control; //polarity for control lines
 	AppStatus app_status;		//tell if the App is busy (reading, writing, ...) or can react to user events
-
-	long last_programmed_addr;	//record last programmed address for verify
 
 	//AutoTag
 	//List of available interface types

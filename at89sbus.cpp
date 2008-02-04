@@ -148,7 +148,7 @@ int At89sBus::ReadProgByte(long addr)
 
 void At89sBus::WriteProgByte(long addr, int data)
 {
-	THEAPP->SetLastProgrammedAddress(addr);
+	SetLastProgrammedAddress(addr);
 
 	if (oldmode)
 	{
@@ -181,7 +181,7 @@ int At89sBus::WriteProgPage(long addr, UBYTE const *data, long page_size, long t
 	for (k = 0; k < page_size; k++)
 		SendDataByte(data[k]);
 
-	THEAPP->SetLastProgrammedAddress(addr + page_size - 1);
+	SetLastProgrammedAddress(addr + page_size - 1);
 
 	if (enable_progpage_polling)
 	{

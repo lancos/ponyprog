@@ -164,6 +164,7 @@ int Device::WriteProg()
 	int size = GetSplitted();
 	int base = 0;
 
+	GetBus()->ClearLastProgrammedAddress();
 	rv = GetBus()->Write(0, GetBufPtr()+base, size, write_progpage_size);
 	if ( rv != size )
 	{
@@ -199,10 +200,10 @@ int Device::VerifyProg(unsigned char *localbuf)
 
 	//Verify only programmed bytes (to save time in big devices)
 	long v_len = size;
-	if (THEAPP->GetLastProgrammedAddress() > 0 && THEAPP->GetLastProgrammedAddress() < size )
+	if ( GetBus()->GetLastProgrammedAddress() > 0 && GetBus()->GetLastProgrammedAddress() < size )
 	{
-		v_len = THEAPP->GetLastProgrammedAddress() + 1;
-		THEAPP->ClearLastProgrammedAddress();		//reset last_programmed_addr, so next verify not preceeded by write verify all the flash
+		v_len = GetBus()->GetLastProgrammedAddress() + 1;
+		GetBus()->ClearLastProgrammedAddress();	//reset last_programmed_addr, so next verify not preceeded by write verify all the flash
 	}
 	//Set blank locations to default 0xFF (erased)
 	memset(localbuf, 0xFF, size);
@@ -219,7 +220,7 @@ int Device::VerifyProg(unsigned char *localbuf)
 			rval = OP_ABORTED;
 	}
 	else
-		rval = GetBus()->CompareMultiWord(GetBufPtr()+base, localbuf+base, size, 0) == 0 ? OK : 1;
+		rval = GetBus()->CompareMultiWord(GetBufPtr()+base, localbuf+base, v_len, 0) == 0 ? OK : 1;
 
 	return rval;
 }

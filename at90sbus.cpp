@@ -116,7 +116,7 @@ int At90sBus::ReadProgByte(long addr)
 
 void At90sBus::WriteProgByte(long addr, int data)
 {
-	THEAPP->SetLastProgrammedAddress(addr);
+	SetLastProgrammedAddress(addr);
 
 	int lsb = addr & 1;
 	addr >>= 1;		//convert to word address
@@ -903,7 +903,7 @@ int At90sBus::WriteProgPage(long addr, UBYTE const *data, long page_size, long t
 	SendDataByte(addr >> 1);
 	SendDataByte(0);
 
-	THEAPP->SetLastProgrammedAddress(addr + page_size - 1);
+	SetLastProgrammedAddress(addr + page_size - 1);
 
 	if (enable_flashpage_polling)
 	{

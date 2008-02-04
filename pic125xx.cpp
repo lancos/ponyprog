@@ -207,10 +207,10 @@ int Pic125xx::VerifyProg(unsigned char *localbuf)
 	//Verify only programmed bytes (to save time in big devices)
 //	long v_len = size - 2;		//Don't verify RC Calibration location
 	long v_len = size;
-	if (THEAPP->GetLastProgrammedAddress() > 0 && THEAPP->GetLastProgrammedAddress() < size-1 )
+	if (GetBus()->GetLastProgrammedAddress() > 0 && GetBus()->GetLastProgrammedAddress() < size-1 )
 	{
-		v_len = THEAPP->GetLastProgrammedAddress() + 2;
-		THEAPP->ClearLastProgrammedAddress();		//reset last_programmed_addr, so next verify not preceeded by write verify all the flash
+		v_len = GetBus()->GetLastProgrammedAddress() + 2;
+		GetBus()->ClearLastProgrammedAddress();		//reset last_programmed_addr, so next verify not preceeded by write verify all the flash
 	}
 
 	//Set blank locations to default 0xFF (erased)

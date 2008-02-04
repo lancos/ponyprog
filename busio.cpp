@@ -32,10 +32,13 @@
 #include "e2app.h"
 
 BusIO::BusIO(BusInterface *p)
+	:	err_no(0),
+		last_addr(0),
+		shot_delay(5),
+		busI(p),
+		old_progress(0),
+		last_programmed_addr(0)
 {
-	err_no = last_addr = 0;
-	busI = p;
-	old_progress = 0;
 }
 
 int BusIO::CheckAbort(int progress)

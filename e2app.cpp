@@ -62,8 +62,7 @@ e2App::e2App(char* name, int w, int h)
 		port_number(3),		// uses COM3 by default
 		abortFlag(0),
 		ignoreFlag(0),
-		app_status(AppReady),
-		last_programmed_addr(0)
+		app_status(AppReady)
 {
 	// Constructor
 	UserDebug(Constructor, "e2App::e2App()\n");
@@ -366,13 +365,6 @@ int e2App::GetAbortFlag()
 void e2App::SetProgress(int progress)
 {
 	SendWindowCommandAll(pbrProgress,progress,C_Button);    // The horizontal bar
-}
-
-//==================>>> e2App::SetLastProgrammedAddress <<<====================
-void e2App::SetLastProgrammedAddress(long addr)
-{
-	if (addr > last_programmed_addr)
-		last_programmed_addr = addr;
 }
 
 //=====================>>> e2App::Calibration <<<==============================
