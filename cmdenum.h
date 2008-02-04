@@ -153,7 +153,7 @@ enum {
 	m_9376_8,
 	m_9386_8,
 
-	m_at90sXXXX,
+//	m_at90sXXXX,
 	m_at90s1200,
 	m_at90s2313,
 	m_at90s4414,

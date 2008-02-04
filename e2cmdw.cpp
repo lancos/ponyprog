@@ -157,7 +157,7 @@ static Menu2Type index_menu_type[] = {
 	{m_24256, E24256},
 	{m_24512, E24512},
 
-	{m_at90sXXXX, AT90S0000},
+//	{m_at90sXXXX, AT90S0000},
 	{m_at90s1200, AT90S1200},
 	{m_at90s2313, AT90S2313},
 	{m_at90s4414, AT90S4414},
@@ -369,7 +369,7 @@ static vMenu microwire8Menu[] = {
 };
 
 static vMenu avrMenu[] = {
-	{"", m_at90sXXXX, isSens, notChk, noKeyLbl, noKey, noSub},
+//	{"", m_at90sXXXX, isSens, notChk, noKeyLbl, noKey, noSub},
 	{"", m_at90s1200, isSens, notChk, noKeyLbl, noKey, noSub},
 	{"", m_at90s2313, isSens, notChk, noKeyLbl, noKey, noSub},
 	{"", m_at90s2323, isSens, notChk, noKeyLbl, noKey, noSub},
@@ -1607,7 +1607,7 @@ void e2CmdWindow::WindowCommand(ItemVal id, ItemVal val, CmdType cType)
 	case m_9366_8:
 	case m_9376_8:
 	case m_9386_8:
-	case m_at90sXXXX:
+//	case m_at90sXXXX:
 	case m_at90s1200:
 	case m_at90s2313:
 	case m_at90s4414:
@@ -2193,8 +2193,6 @@ int e2CmdWindow::CmdWrite(int type, bool verify)
 						if ( (old_type & CONFIG_TYPE) &&
 									!(awip->GetFuseBits() == 0 && awip->GetLockBits() == 0) )
 						{
-							UserDebug1(UserApp1, "CmdWindow->Write -- LastProgrammedAddress = %ld\n", THEAPP->GetLastProgrammedAddress());
-
 							rval = awip->Verify(type, FALSE, TRUE);
 							if (rval > 0)
 							{

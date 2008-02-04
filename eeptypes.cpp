@@ -179,7 +179,7 @@ char const *eep24xx5str_vector[MAXEEPSUBTYPE] = {
 
 //-----------------------------
 long eepAt90s_vector[MAXEEPSUBTYPE] = {
-	AT90S0000,
+//	AT90S0000,
 	AT90S1200,
 	AT90S2313,
 	AT90S2323,
@@ -238,7 +238,7 @@ long eepAt90s_vector[MAXEEPSUBTYPE] = {
 };
 
 int eepAt90s_size[MAXEEPSUBTYPE] = {
-	AUTOSIZE_ID,
+//	AUTOSIZE_ID,
 	KB(1)+64,
 	KB(2)+128,
 	KB(2)+128,
@@ -296,7 +296,7 @@ int eepAt90s_size[MAXEEPSUBTYPE] = {
 	KB(8)+512		//tiny861
 };
 int eepAt90s_split[MAXEEPSUBTYPE] = {
-	1,			//0,	12/10/1999
+//	1,			//0,	12/10/1999
 	KB(1),
 	KB(2),
 	KB(2),
@@ -354,7 +354,7 @@ int eepAt90s_split[MAXEEPSUBTYPE] = {
 	KB(8)		//tiny861
 };
 int eepAt90s_wpagesize[MAXEEPSUBTYPE] = {
-	0,
+//	0,
 	0,
 	0,
 	0,
@@ -413,7 +413,7 @@ int eepAt90s_wpagesize[MAXEEPSUBTYPE] = {
 };
 
 char const *eepAt90str_vector[MAXEEPSUBTYPE] = {
-	"AVR  Auto",
+//	"AVR  Auto",
 	"AT90S1200",
 	"AT90S2313",
 	"AT90S2323",
@@ -1267,9 +1267,9 @@ long GetEEPTypeFromString(char const *name)
 **/
 
 const FuseBit eep_fusebits[] = {
-	{ AT90S0000,
-		0x00,{0}, 0x00,{0}, 0x00,{0}, 0x06,{0,0,0,0,0,"Lock2 ","Lock1 ",0},
-		0x00,{0}, 0x00,{0}, 0x00,{0}, 0x00,{0} },
+//	{ AT90S0000,
+//		0x00,{0}, 0x00,{0}, 0x00,{0}, 0x06,{0,0,0,0,0,"Lock2 ","Lock1 ",0},
+//		0x00,{0}, 0x00,{0}, 0x00,{0}, 0x00,{0} },
 
 	{ AT90S1200,
 		0x00,{0}, 0x00,{0}, 0x00,{0}, 0x06,{0,0,0,0,0,"Lock2 ","Lock1 ",0},

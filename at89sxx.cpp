@@ -49,7 +49,7 @@ int At89sxx::SecurityRead(DWORD &bits)
 {
 	int rv = Probe();		//No size probe needed, just probe for presence
 
-	if (rv != DEVICE_UNKNOWN)
+	if (rv > 0)
 	{
 		rv = GetBus()->ReadLockBits(bits, GetAWInfo()->GetEEPType());
 	}
@@ -60,7 +60,7 @@ int At89sxx::SecurityWrite(DWORD bits)
 {
 	int rv = Probe();		//No size probe needed, just probe for presence
 
-	if (rv != DEVICE_UNKNOWN)
+	if (rv > 0)
 	{
 		rv = GetBus()->WriteLockBits(bits, GetAWInfo()->GetEEPType());
 	}
@@ -71,7 +71,7 @@ int At89sxx::FusesRead(DWORD &bits)
 {
 	int rv = Probe();		//No size probe needed, just probe for presence
 
-	if (rv != DEVICE_UNKNOWN)
+	if (rv > 0)
 	{
 		rv = GetBus()->ReadFuseBits(bits, GetAWInfo()->GetEEPType());
 	}
@@ -82,7 +82,7 @@ int At89sxx::FusesWrite(DWORD bits)
 {
 	int rv = Probe();		//No size probe needed, just probe for presence
 
-	if (rv != DEVICE_UNKNOWN)
+	if (rv > 0)
 	{
 		rv = GetBus()->WriteFuseBits(bits, GetAWInfo()->GetEEPType());
 	}

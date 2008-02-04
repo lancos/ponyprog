@@ -55,12 +55,11 @@ int At90sxx::SecurityRead(DWORD &bits)
 {
 	int rv = Probe();		//No size probe needed, just probe for presence
 
-	if (rv != DEVICE_UNKNOWN)
+	if (rv > 0)
 	{
 		bits = GetBus()->ReadLockBits( GetAWInfo()->GetEEPType() );
 		rv = OK;
 	}
-
 	return rv;
 }
 
@@ -68,11 +67,10 @@ int At90sxx::SecurityWrite(DWORD bits)
 {
 	int rv = Probe();		//No size probe needed, just probe for presence
 
-	if (rv != DEVICE_UNKNOWN)	//Try to write even with AutoXXX device setted
+	if (rv > 0)	//Try to write even with AutoXXX device setted
 	{
 		rv = GetBus()->WriteLockBits(bits,  GetAWInfo()->GetEEPType());
 	}
-
 	return rv;
 }
 
@@ -80,12 +78,11 @@ int At90sxx::FusesRead(DWORD &bits)
 {
 	int rv = Probe();		//No size probe needed, just probe for presence
 
-	if (rv != DEVICE_UNKNOWN)
+	if (rv > 0)
 	{
 		bits = GetBus()->ReadFuseBits( GetAWInfo()->GetEEPType() );
 		rv = OK;
 	}
-
 	return rv;
 }
 
@@ -93,11 +90,10 @@ int At90sxx::FusesWrite(DWORD bits)
 {
 	int rv = Probe();		//No size probe needed, just probe for presence
 
-	if (rv != DEVICE_UNKNOWN)
+	if (rv > 0)
 	{
 		rv = GetBus()->WriteFuseBits(bits, GetAWInfo()->GetEEPType());
 	}
-
 	return rv;
 }
 
@@ -302,46 +298,27 @@ int At90sxx::QueryType(long &type)
 //---
 int At90sxx::Probe(int probe_size)
 {
-	int rv = 0;
+	int rv;
 
 	UserDebug1(UserApp2, "At90sxx::Probe(%d) IN\n", probe_size);
 
-	long type;
-	rv = QueryType(type);
-	int subtype = GetE2PSubType(type);
-
-	if (probe_size)
+	if ( THEAPP->GetIgnoreFlag() )
 	{
-		if (rv == OK)
-		{
-			SetProgPageSize(GetEEPTypeWPageSize(AT90SXX, subtype), false);
-			At90sBus *b = (At90sBus *)GetBus();
-			b->SetFlashPagePolling( (type != ATmega603) && (type != ATmega103) );
-			b->SetOld1200Mode( (type == AT90S1200) );
-
-			SetNoOfBank( GetEEPTypeSize(AT90SXX, subtype) );
-			SetSplitted( GetEEPTypeSplit(AT90SXX, subtype) );
-			rv = GetSize();
-		}
+		rv = GetSize();
 	}
 	else
 	{
-		if ( THEAPP->GetIgnoreFlag() )
+		long type;
+		rv = QueryType(type);
+		int subtype = GetE2PSubType(type);
+		if (rv == OK)
 		{
-			rv = GetSize();
-		}
-		else
-		{
-			if (rv == OK)
-			{
-				if ( GetAWInfo()->GetEEPSubType() == subtype )
-					rv = GetSize();
-				else
-					rv = DEVICE_BADTYPE;
-			}
+			if ( GetAWInfo()->GetEEPSubType() == subtype )
+				rv = GetSize();
+			else
+				rv = DEVICE_BADTYPE;
 		}
 	}
-
 	UserDebug1(UserApp2, "At90sxx::Probe() = %d **  OUT\n", rv);
 
 	return rv;
