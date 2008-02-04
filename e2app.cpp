@@ -84,8 +84,8 @@ e2App::e2App(char* name, int w, int h)
 	//Initialize Bus Pointers vector
 	busvetp[I2C-1] = &iicB;
 	busvetp[AT90S-1] = &at90sB;
-	busvetp[ATMEGAB-1] = &atMegaB;
-	busvetp[AT1200S-1] = &at1200B;
+//	busvetp[ATMEGAB-1] = &atMegaB;
+//	busvetp[AT1200S-1] = &at1200B;
 	busvetp[AT89S-1] = &at89sB;
 	busvetp[AT93C-1] = &at93cB;
 	busvetp[AT250-1] = &at250B;

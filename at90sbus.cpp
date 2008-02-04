@@ -60,7 +60,8 @@ At90sBus::At90sBus(BusInterface *ptr)
 		WriteFuseExt0(0xAC), WriteFuseExt1(0xA4),
 		ReadCalib0(0x38), ReadCalib1(0),
 		p1_a(0x80), p2_a(0x7F), pflash_a(0x7F),
-		p1_b(0x00), p2_b(0xFF), pflash_b(0xFF)
+		p1_b(0x00), p2_b(0xFF), pflash_b(0xFF),
+		old1200mode(false)
 {
 	UserDebug(Constructor, "At90sBus::At90sBus()\n");
 
@@ -141,43 +142,65 @@ void At90sBus::WriteProgByte(long addr, int data)
 
 int At90sBus::Reset()
 {
-	UserDebug(UserApp2, "At90sBus::Reset() I\n");
+	bool success_flag = false;
 
-	int success_flag = 0;
+	UserDebug(UserApp2, "At90sBus::Reset() I\n");
 
 	RefreshParameters();
 
-	int j;
-	for (j = 0; j < 4 && !success_flag; j++)
+	if (old1200mode)
 	{
-		int val = 0;
-
-		SPIBus::Reset();
-
-		WaitMsec( THEAPP->GetAVRDelayAfterReset() );	// At least 20msec (AVR datasheets)
-
 		int k;
-		for (k = 0; k < 32 && !success_flag; k++)
+		for (k = 0; k < 4 && !success_flag; k++)
 		{
-			UserDebug(UserApp2, "At90sBus::Reset() ** SendEnableProg\n");
+			SPIBus::Reset();
+
+			WaitMsec( THEAPP->GetAVRDelayAfterReset() );	// At least 20msec (AVR datasheets)
+
+			UserDebug(UserApp2, "Avr1200Bus::Reset() ** SendDataByte\n");
 
 			SendDataByte(EnableProg0);
 			SendDataByte(EnableProg1);
-			val = RecDataByte();
+			RecDataByte();
 			SendDataByte(0);
 
-			if (val != EnableProg1)		//Echo expected
+			if ( ReadDeviceCode(0) == 0x1E )
+				success_flag = true;
+		}
+	}
+	else
+	{
+		int j;
+		for (j = 0; j < 4 && !success_flag; j++)
+		{
+			int val = 0;
+
+			SPIBus::Reset();
+
+			WaitMsec( THEAPP->GetAVRDelayAfterReset() );	// At least 20msec (AVR datasheets)
+
+			int k;
+			for (k = 0; k < 32 && !success_flag; k++)
 			{
-				RecDataBit();		//Give a pulse on SCK (as AVR datasheets suggest)
-			}
-			else
-			{
-				success_flag = 1;
+				UserDebug(UserApp2, "At90sBus::Reset() ** SendEnableProg\n");
+
+				SendDataByte(EnableProg0);
+				SendDataByte(EnableProg1);
+				val = RecDataByte();
+				SendDataByte(0);
+
+				if (val != EnableProg1)		//Echo expected
+				{
+					RecDataBit();		//Give a pulse on SCK (as AVR datasheets suggest)
+				}
+				else
+				{
+					success_flag = true;
+				}
 			}
 		}
 	}
-
-	return success_flag;
+	return success_flag ? 1 : 0;
 }
 
 int At90sBus::WriteLockBits(DWORD param, long model)
@@ -680,58 +703,65 @@ int At90sBus::WaitReadyAfterWrite(int type, long addr, int data, long timeout)
 {
 	int rval;
 
-	if (type)
-	{	//EEprom
-		if (data == p1_a || data == p2_a ||
-			data == p1_b || data == p2_b)
-		{
-			rval = OK;
-			WaitMsec(twd_prog);
-		}
-		else
-		{
-			rval = E2P_TIMEOUT;
-
-			int k;
-			for (k = 0; k < timeout; k++)
-			{
-				int val = ReadEEPByte(addr);
-
-				if (val == data)
-				{
-					rval = OK;
-					break;
-				}
-			}
-		}
-
+	if (old1200mode)
+	{
+		rval = OK;
+		WaitMsec(twd_prog);
 	}
 	else
-	{	//Flash
-		if (data == pflash_a ||
-			data == pflash_b)
-		{
-			rval = OK;
-			WaitMsec(twd_prog);
+	{
+		if (type)
+		{	//EEprom
+			if (data == p1_a || data == p2_a ||
+				data == p1_b || data == p2_b)
+			{
+				rval = OK;
+				WaitMsec(twd_prog);
+			}
+			else
+			{
+				rval = E2P_TIMEOUT;
+
+				int k;
+				for (k = 0; k < timeout; k++)
+				{
+					int val = ReadEEPByte(addr);
+
+					if (val == data)
+					{
+						rval = OK;
+						break;
+					}
+				}
+			}
+
 		}
 		else
-		{
-			rval = E2P_TIMEOUT;
-
-			int k;
-			for (k = 0; k < timeout; k++)
+		{	//Flash
+			if (data == pflash_a ||
+				data == pflash_b)
 			{
-				int val = ReadProgByte(addr);
+				rval = OK;
+				WaitMsec(twd_prog);
+			}
+			else
+			{
+				rval = E2P_TIMEOUT;
 
-				if (val == data)
+				int k;
+				for (k = 0; k < timeout; k++)
 				{
-					rval = OK;
-					break;
+					int val = ReadProgByte(addr);
+
+					if (val == data)
+					{
+						rval = OK;
+						break;
+					}
 				}
 			}
 		}
 	}
-
 	return rval;
 }
 
@@ -793,21 +823,38 @@ long At90sBus::Write(int addr, UBYTE const *data, long length, int page_size)
 	}
 	else
 	{	//Flash Eprom
-		for(addr = 0, len = 0; len < length; addr++, data++, len++)
+		if (page_size > 1)
 		{
-			//09/10/98 -- program only locations not equal to FF (erase set all FF)
-			if (*data != 0xFF)
+			//Flash Eprom with page write
+			for (addr = 0, len = 0; len < length; addr += page_size, data += page_size, len += page_size)
 			{
-				WriteProgByte(addr, *data);
+				//check for FF's page to skip blank pages
+				if ( !CheckBlankPage(data, page_size) )
+					if (WriteProgPage(addr, data, page_size) != OK)
+						return E2ERR_WRITEFAILED;
 
-				WaitUsec(100);
-
-				if ( WaitReadyAfterWrite(0, addr, *data, 2000) != OK )
-					return E2ERR_WRITEFAILED;
+				if ( CheckAbort(len * 100 / length) )
+					break;
 			}
+		}
+		else
+		{
+			for(addr = 0, len = 0; len < length; addr++, data++, len++)
+			{
+				//09/10/98 -- program only locations not equal to FF (erase set all FF)
+				if (*data != 0xFF)
+				{
+					WriteProgByte(addr, *data);
 
-			if ( CheckAbort(len * 100 / length) )
-				break;
+					WaitUsec(100);
+
+					if ( WaitReadyAfterWrite(0, addr, *data, 2000) != OK )
+						return E2ERR_WRITEFAILED;
+				}
+
+				if ( CheckAbort(len * 100 / length) )
+					break;
+			}
 		}
 		CheckAbort(100);
 	}
@@ -819,4 +866,78 @@ void At90sBus::RefreshParameters()
 {
 	twd_prog = THEAPP->GetAVRProgDelay();
 	twd_erase = THEAPP->GetAVREraseDelay();
+}
+
+bool At90sBus::GetFlashPagePolling() const
+{
+	return enable_flashpage_polling;
+}
+
+void At90sBus::SetFlashPagePolling(bool val)
+{
+	enable_flashpage_polling = val;
+}
+
+int At90sBus::WriteProgPage(long addr, UBYTE const *data, long page_size, long timeout)
+{
+	long k;
+	bool okflag;
+	long first_loc = -1;		//first location different from 0xFF
+
+	if (page_size <= 0 || data == NULL)
+		return BADPARAM;
+
+	//align addr to page boundary
+	addr &= ~(page_size - 1);	//0xFFFFFF00
+
+	for (k = 0; k < page_size; k++, data++)
+	{
+		if (first_loc < 0 && *data != 0xFF)
+			first_loc = addr + k;
+
+		WriteProgByte(k, *data);
+	}
+
+	SendDataByte(WriteProgPageMem);
+	SendDataByte(addr >> 9);		//send word address
+	SendDataByte(addr >> 1);
+	SendDataByte(0);
+
+	THEAPP->SetLastProgrammedAddress(addr + page_size - 1);
+
+	if (enable_flashpage_polling)
+	{
+		WaitUsec(100);
+		okflag = false;
+		for (k = timeout; k > 0; k--)
+		{
+			if ( ReadProgByte(first_loc) != 0xFF )
+			{
+				okflag = true;
+				break;
+			}
+		}
+	}
+	else
+	{
+		okflag = true;
+		WaitMsec( THEAPP->GetMegaPageDelay() );
+	}
+	return okflag ? OK : E2P_TIMEOUT;
+}
+
+bool At90sBus::CheckBlankPage(UBYTE const *data, ULONG length)
+{
+	bool blank_page = true;
+
+	while (length--)
+	{
+		if (*data++ != 0xFF)
+		{
+			blank_page = false;
+			break;
+		}
+	}
+
+	return blank_page;
 }

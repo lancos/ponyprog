@@ -51,6 +51,11 @@ class At90sBus : public SPIBus
 	virtual DWORD ReadFuseBits(long model = 0);
 	virtual long ReadCalibration(int addr = 0);
 
+	void SetFlashPagePolling(bool val);
+	bool GetFlashPagePolling() const;
+	void SetOld1200Mode(bool val)
+	{ old1200mode = val; }
+
  protected:		//------------------------------- protected
 
 	//Programming commands
@@ -78,10 +83,11 @@ class At90sBus : public SPIBus
 	void WriteEEPByte(long addr, int data);
 	int ReadProgByte(long addr);
 	void WriteProgByte(long addr, int data);
+	int WriteProgPage(long addr, UBYTE const *data, long page_size, long timeout = 10000);
 
+	int WaitReadyAfterWrite(int type, long addr, int data, long timeout = 10000);
+	bool CheckBlankPage(UBYTE const *data, ULONG length);
 	void RefreshParameters();
-
-	virtual int WaitReadyAfterWrite(int type, long addr, int data, long timeout = 20000);
 
 	//Polling codes
 	const BYTE p1_a, p2_a, pflash_a;
@@ -91,8 +97,11 @@ class At90sBus : public SPIBus
 	int twd_erase;
 	int twd_prog;
 
+	bool old1200mode;
+
  private:		//------------------------------- private
 
+	bool enable_flashpage_polling;
 };
 
 #endif

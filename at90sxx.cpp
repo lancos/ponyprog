@@ -315,36 +315,9 @@ int At90sxx::Probe(int probe_size)
 		if (rv == OK)
 		{
 			SetProgPageSize(GetEEPTypeWPageSize(AT90SXX, subtype), false);
-
-			switch(type)
-			{
-			case AT90S1200:
-				SetBus(THEAPP->GetBusVectorPtr()[AT1200S-1]);
-				break;
-			case ATmega603:		//Old mega don't support page polling
-			case ATmega103:
-				{
-					AtMegaBus *b = (AtMegaBus *)THEAPP->GetBusVectorPtr()[ATMEGAB-1];
-					if (b)
-					{
-						b->SetFlashPagePolling(false);
-						b->SetPageSize( GetProgPageSize(false) );
-					}
-					SetBus(b);
-				}
-				break;
-			default:
-				{
-					AtMegaBus *b = (AtMegaBus *)THEAPP->GetBusVectorPtr()[ATMEGAB-1];
-					if (b)
-					{
-						b->SetFlashPagePolling(true);
-						b->SetPageSize( GetProgPageSize(false) );
-					}
-					SetBus(b);
-				}
-				break;
-			}
+			At90sBus *b = (At90sBus *)GetBus();
+			b->SetFlashPagePolling( (type != ATmega603) && (type != ATmega103) );
+			b->SetOld1200Mode( (type == AT90S1200) );
 
 			SetNoOfBank( GetEEPTypeSize(AT90SXX, subtype) );
 			SetSplitted( GetEEPTypeSplit(AT90SXX, subtype) );
@@ -376,8 +349,6 @@ int At90sxx::Probe(int probe_size)
 
 int At90sxx::Erase(int probe, int type)
 {
-	BusIO *old_bus = GetBus();
-
 	int rv = OK;
 
 	if ( (type & PROG_TYPE) && (type & DATA_TYPE) )
@@ -388,18 +359,11 @@ int At90sxx::Erase(int probe, int type)
 	else
 		rv = NOTSUPPORTED;
 
-	SetBus(old_bus);
-
 	return rv;
 }
 
 int At90sxx::Read(int probe, int type)
 {
-	//Save Bus, so the AutoXXX can change the bus according
-	// to the device with Probe(). After the read we restore
-	// the original bus so the next operation still work.
-	BusIO *old_bus = GetBus();
-
 	int rv = Probe( probe || GetNoOfBank() == 0 );
 
 	if (rv > 0)
@@ -427,18 +391,11 @@ int At90sxx::Read(int probe, int type)
 			}
 		}
 	}
-	SetBus(old_bus);
-
 	return rv;
 }
 
 int At90sxx::Write(int probe, int type)
 {
-	//Save Bus, so the AutoXXX can change the bus according
-	// to the device with Probe(). After the write we restore
-	// the original bus so the next operation still work.
-	BusIO *old_bus = GetBus();
-
 //	if ( (type & PROG_TYPE) && (type & DATA_TYPE) )
 	if ( (type & PROG_TYPE) )		//Because to write the flash we must erase ALL the device (a msg may alert that doing so the DATA may be erased too)
 		GetBus()->Erase();
@@ -486,8 +443,6 @@ int At90sxx::Write(int probe, int type)
 			}
 		}
 	}
-	SetBus(old_bus);
-
 	return rv;
 }
 

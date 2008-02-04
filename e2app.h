@@ -47,8 +47,8 @@
 #include "sxbus.h"
 #include "sdebus.h"
 #include "at89sbus.h"
-#include "atmegabus.h"
-#include "avr1200bus.h"
+//#include "atmegabus.h"
+//#include "avr1200bus.h"
 #include "picbusnew.h"
 #include "imbus.h"
 #include "x2444bus.h"
@@ -206,8 +206,8 @@ class e2App : public vApp, public E2Profile
 	SxBus sxB;
 	Sde2506Bus sdeB;
 	At89sBus at89sB;
-	AtMegaBus atMegaB;
-	Avr1200Bus at1200B;
+//	AtMegaBus atMegaB;
+//	Avr1200Bus at1200B;
 	PicBusNew picNewB;
 	IMBus imB;
 	X2444Bus x2444B;

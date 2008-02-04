@@ -85,8 +85,8 @@ enum BusType {
 	//Bus Type Identification
 	I2C = 1,
 	AT90S,
-	ATMEGAB,
-	AT1200S,
+//	ATMEGAB,
+//	AT1200S,
 	AT89S,
 	AT93C,
 	AT250,
