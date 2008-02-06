@@ -18,7 +18,7 @@
 CONFIG=v/Config.mk
 include $(CONFIG)
 
-PONYVER = 2.07c
+PONYVER = 2.07d
 TAR = tar
 
 #xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -69,7 +69,6 @@ SRCS=\
 	motsfbuf.cpp \
 	spi-bus.cpp \
 	at90sbus.cpp \
-	atmegabus.cpp \
 	at90sxx.cpp \
 	at89sbus.cpp \
 	at89sxx.cpp \
@@ -91,7 +90,6 @@ SRCS=\
 	pic125xx.cpp \
 	sde2506.cpp \
 	sdebus.cpp \
-	avr1200bus.cpp \
 	filldlg.cpp \
 	retrymdlg.cpp \
 	fusemdlg.cpp \
