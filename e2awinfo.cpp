@@ -280,7 +280,7 @@ void e2AppWinInfo::SetEEProm(int type, int subtype)
 		}
 		At89sBus *b = (At89sBus *)eep->GetBus();
 		b->SetCompatibilityMode( (xtype == AT89S8252 || xtype == AT89S53) );
-	//	b->SetFallingPhase( (xtype == AT89S8253) );
+		b->SetFallingPhase( (xtype == AT89S8253) && THEAPP->Get8253FallEdge() );
 		b->SetPagePolling( true, (xtype == AT89S8253 || xtype == AT89S51 || xtype == AT89S52) );
 		b->SetPagePolling( false, (xtype == AT89S8253) );
 		break;

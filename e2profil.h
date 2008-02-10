@@ -189,6 +189,9 @@ class E2Profile : public Profile
 	bool GetAt89PageOp();
 	int SetAt89PageOp(bool val = true);
 
+	bool Get8253FallEdge();
+	int Set8253FallEdge(bool falledge);
+
 	char const *GetLanguageCode();
 	int SetLanguageCode(char const *code);
 

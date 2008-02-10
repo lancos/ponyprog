@@ -719,6 +719,8 @@ int AppMain(int argc, char** argv)
 	e2_App.SetMegaPageDelay( e2_App.GetMegaPageDelay() );
 	e2_App.SetAVRProgDelay( e2_App.GetAVRProgDelay() );
 	e2_App.SetAVREraseDelay( e2_App.GetAVREraseDelay() );
+	e2_App.SetAT89DelayAfterReset( e2_App.GetAT89DelayAfterReset() );
+	e2_App.SetAVRDelayAfterReset( e2_App.GetAVRDelayAfterReset() );
 
 	e2_App.SetI2CSpeed( e2_App.GetI2CSpeed() );
 	e2_App.SetSPISpeed( e2_App.GetSPISpeed() );
@@ -733,6 +735,7 @@ int AppMain(int argc, char** argv)
 	e2_App.SetClearBufBeforeRead( e2_App.GetClearBufBeforeRead() );
 	e2_App.SetAutoDetectPorts( e2_App.GetAutoDetectPorts() );
 	e2_App.SetAt89PageOp( e2_App.GetAt89PageOp() );
+	e2_App.Set8253FallEdge( e2_App.Get8253FallEdge() );
 #ifdef	__unix__
 	e2_App.SetHtmlBrowseApp( e2_App.GetHtmlBrowseApp() );
 	e2_App.SetLockDir( e2_App.GetLockDir() );

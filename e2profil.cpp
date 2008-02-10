@@ -1302,6 +1302,26 @@ int E2Profile::SetAt89PageOp(bool enabled)
 	return OK;
 }
 
+bool E2Profile::Get8253FallEdge()
+{
+	char const *sp = GetParameter("AT89S8253FallEdgeSampling");
+
+	if (sp && strcasecmp(sp, "NO") == 0)
+		return false;
+	else
+		return true;
+}
+
+int E2Profile::Set8253FallEdge(bool enabled)
+{
+	if (enabled)
+		SetParameter("AT89S8253FallEdgeSampling", "YES");
+	else
+		SetParameter("AT89S8253FallEdgeSampling", "NO");
+
+	return OK;
+}
+
 bool E2Profile::GetSoundEnabled()
 {
 	char const *sp = GetParameter("SoundEnabled");
