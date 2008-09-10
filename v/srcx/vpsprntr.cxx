@@ -103,7 +103,7 @@ static unsigned char prompt_bits[] = {
     _height = PaperHeights[_paperType];
     _portrait = 1;
     _useColor = 0;
-    _pstream = 0;
+    vPSPrinter::_pstream = 0;
 
     ++_instances;		// bump reference counter
   }

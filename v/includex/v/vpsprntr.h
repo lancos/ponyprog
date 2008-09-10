@@ -14,7 +14,7 @@
 
 #include <v/v_defs.h>
 #include <v/vmodald.h>
-#include <fstream.h>
+#include <fstream>
 
 #define vPaperLetter 0
 #define vPaperLegal 1
@@ -30,6 +30,8 @@
 #define vPaperFolio 11
 #define vPaperQuarto 12
 #define vPaper10x14 13
+
+using namespace std;
 
 #define vPaperDefault vPaperLetter		// Index to default paper
 

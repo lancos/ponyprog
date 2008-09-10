@@ -14,7 +14,9 @@
 
 #include <v/vdc.h>
 #include <v/vprinter.h>
-#include <fstream.h>
+#include <fstream>
+
+using namespace std;
 
     class vPostScriptDC : public vDC
       {
