@@ -570,6 +570,9 @@ int E2Profile::GetSPISpeed()
 		else
 		if ( strcasecmp(sp,"VERYSLOW") == 0 )
 			rval = VERYSLOW;
+		else
+		if ( strcasecmp(sp,"ULTRASLOW") == 0 )
+			rval = ULTRASLOW;
 	}
 	return rval;
 }
@@ -643,6 +646,9 @@ int E2Profile::GetMicroWireSpeed()
 		else
 		if ( strcasecmp(sp,"VERYSLOW") == 0 )
 			rval = VERYSLOW;
+		else
+		if ( strcasecmp(sp,"ULTRASLOW") == 0 )
+			rval = ULTRASLOW;
 	}
 	return rval;
 }
@@ -690,6 +696,9 @@ int E2Profile::GetPICSpeed()
 		else
 		if ( strcasecmp(sp,"VERYSLOW") == 0 )
 			rval = VERYSLOW;
+		else
+		if ( strcasecmp(sp,"ULTRASLOW") == 0 )
+			rval = ULTRASLOW;
 	}
 	return rval;
 }
@@ -737,6 +746,9 @@ int E2Profile::GetSDESpeed()
 		else
 		if ( strcasecmp(sp,"VERYSLOW") == 0 )
 			rval = VERYSLOW;
+		else
+		if ( strcasecmp(sp,"ULTRASLOW") == 0 )
+			rval = ULTRASLOW;
 	}
 	return rval;
 }
@@ -784,6 +796,9 @@ int E2Profile::GetIMBusSpeed()
 		else
 		if ( strcasecmp(sp,"VERYSLOW") == 0 )
 			rval = VERYSLOW;
+		else
+		if ( strcasecmp(sp,"ULTRASLOW") == 0 )
+			rval = ULTRASLOW;
 	}
 	return rval;
 }
