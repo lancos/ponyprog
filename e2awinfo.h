@@ -164,6 +164,7 @@ class e2AppWinInfo : public vAppWinInfo
 	void DoubleSize();
 	void SwapBytes();
 	void FillBuffer(int first_pos = 0, int ch = 0xFF, long len = -1);
+	void ClearBuffer(int type = ALL_TYPE);
 
 	int SecurityRead(DWORD &bits);
 	int SecurityWrite(DWORD bits, bool no_param = false);
@@ -200,6 +201,8 @@ class e2AppWinInfo : public vAppWinInfo
 	long GetLoadRelocation() const;
 	void SetSaveRelocation(long val);
 	long GetSaveRelocation() const;
+	bool GetLoadAutoClearBuf() { return clear_buffer_before_load; }
+	void SetLoadAutoClearBuf(bool val) { clear_buffer_before_load = val; }
 
   protected:	//--------------------------------------- protected
 	e2CmdWindow* cmdWin;
@@ -211,7 +214,6 @@ class e2AppWinInfo : public vAppWinInfo
 		{ THEAPP->SleepBus(); }
 	void SetBlockSize(int blk)
 		{ block_size = blk; }
-	void ClearBuffer(int type = ALL_TYPE);
 	int LoadFile();
 
 	int const hex_per_line;
@@ -222,6 +224,9 @@ class e2AppWinInfo : public vAppWinInfo
 
 	long load_relocation;
 	long save_relocation;
+
+	bool clear_buffer_before_load;          //flag, clear buffer before load a file
+//	bool clear_buffer_before_read;          //flag, clear buffer before read from device
 
 	UBYTE buffer[BUFFER_SIZE];	//device content buffer
 	char linebuf[LINEBUF_SIZE];	//print line buffer

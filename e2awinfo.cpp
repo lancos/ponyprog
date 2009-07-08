@@ -138,6 +138,8 @@ e2AppWinInfo::e2AppWinInfo(vCmdWindow* win, char* name, BusIO** busvptr, void* p
 	SetEEProm( GetE2PPriType(THEAPP->GetLastDevType()), GetE2PSubType(THEAPP->GetLastDevType()) );
 	SetFileBuf(THEAPP->GetDefaultFileType());	//	SetFileBuf(E2P);
 
+	SetLoadAutoClearBuf( THEAPP->GetClearBufBeforeLoad() );
+
 	// Test and initialize the hardware
 	if (THEAPP->GetCounter() == 1)
 	{
@@ -614,7 +616,7 @@ int e2AppWinInfo::Load()
 //======================>>> e2AppWinInfo::LoadFile <<<=======================
 int e2AppWinInfo::LoadFile()
 {
-	if ( THEAPP->GetClearBufBeforeLoad() )
+	if (clear_buffer_before_load)
 	{
 		if (load_type == ALL_TYPE)
 		{
@@ -922,6 +924,7 @@ void e2AppWinInfo::ClearBuffer(int type)
 	if (type == ALL_TYPE)
 	{
 		memset(GetBufPtr(), 0xFF, GetBufSize());
+		buf_ok = true;		//Validate buffer
 	}
 	else
 	if (type == PROG_TYPE)
@@ -941,6 +944,7 @@ void e2AppWinInfo::ClearBuffer(int type)
 
 		memset(GetBufPtr() + s, 0xFF, GetSize() - s);
 	}
+	RecalcCRC();
 }
 
 void e2AppWinInfo::FillBuffer(int init_pos, int ch, long len)
@@ -966,10 +970,8 @@ void e2AppWinInfo::FillBuffer(int init_pos, int ch, long len)
 
 	memset(GetBufPtr() + init_pos, ch, l);
 
-	buf_ok = true;		//Validate buffer
-
 	RecalcCRC();
-//	BufChanged();
+	BufChanged();
 }
 
 void e2AppWinInfo::SwapBytes()
