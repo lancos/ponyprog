@@ -115,6 +115,8 @@ PRPS = $(SRCS:.cpp=.i)
 
 default: vlib $(PROG)
 
+all: vlib $(PROG)
+
 vlib:
 	cd v; $(MAKE) vlib
 
