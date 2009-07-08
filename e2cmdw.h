@@ -99,7 +99,7 @@ class e2CmdWindow : public vCmdWindow
 		{ return e2Prg; }
 
 	//All commands
-	int CmdOpen(int type = ALL_TYPE, char *file = 0, long relocation = 0);
+	int CmdOpen(int type = ALL_TYPE, char *file = 0, long relocation = 0, int clear_buffer = -1);
 	int CmdSave(int type = ALL_TYPE, char *file = 0, long relocation = 0);
 	int CmdSaveAs(int type = ALL_TYPE, long relocation = 0);
 	int CmdLastFile1();
@@ -119,7 +119,7 @@ class e2CmdWindow : public vCmdWindow
 	int CmdReadSecurity(bool display_dialog);
 	int CmdWriteSecurity();
 	int CmdDoubleSize();
-	int CmdClearBuf();
+	int CmdClearBuf(int type = ALL_TYPE);
 	int CmdFillBuf();
 	int CmdByteSwap();
 	int CmdCalibration();

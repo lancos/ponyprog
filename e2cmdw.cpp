@@ -1864,8 +1864,9 @@ int e2CmdWindow::CmdLastFile1()
 	if ( s != 0 )
 	{
 		awip->SetLoadType(data_type);
-		result = OpenFile(s);
+		awip->SetLoadAutoClearBuf( THEAPP->GetClearBufBeforeLoad() );
 
+		result = OpenFile(s);
 //		UpdateChipType();
 		UpdateMenuType();
 		UpdateStatusBar();
@@ -1896,6 +1897,8 @@ int e2CmdWindow::CmdLastFile2()
 	if ( s != 0 )
 	{
 		awip->SetLoadType(data_type);
+		awip->SetLoadAutoClearBuf( THEAPP->GetClearBufBeforeLoad() );
+
 		result = OpenFile(s);
 //		UpdateChipType();
 		UpdateMenuType();
@@ -2773,7 +2776,7 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 					else
 					{
 						if (!test_mode)
-							result = CmdOpen(ALL_TYPE, arg[1], reloc_off);
+							result = CmdOpen(ALL_TYPE, arg[1], reloc_off, 0);		//Don't clear buffer before load on script
 					}
 				}
 				else
@@ -2798,7 +2801,7 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 					else
 					{
 						if (!test_mode)
-							result = CmdOpen(PROG_TYPE, arg[1], reloc_off);
+							result = CmdOpen(PROG_TYPE, arg[1], reloc_off, 0);		//Don't clear buffer before load on script
 					}
 				}
 				else
@@ -2823,7 +2826,7 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 					else
 					{
 						if (!test_mode)
-							result = CmdOpen(DATA_TYPE, arg[1], reloc_off);
+							result = CmdOpen(DATA_TYPE, arg[1], reloc_off, 0);		//Don't clear buffer before load on script
 					}
 				}
 				else
@@ -3058,6 +3061,24 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 				}
 			}
 			else
+			if (strcasecmp(cmdbuf, "SET-FUSE") == 0)
+			{
+				if (n >= 2 && arg[1])
+				{
+					if (!test_mode)
+					{
+						int fuse;
+						fuse = strtol(arg[1], NULL, 0);
+						awip->SetFuseBits(fuse);
+						result = OK;
+					}
+				}
+				else	//Argument missing
+				{
+					result = ScriptError(linecounter, 1, arg[1]);
+				}
+			}
+			else
 			if (strcasecmp(cmdbuf, "WRITE-LOCK") == 0)
 			{
 				if (n >= 2 && arg[1])
@@ -3075,6 +3096,23 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 				{
 					if (!test_mode)
 						result = CmdWriteLock();
+				}
+			}
+			else
+			if (strcasecmp(cmdbuf, "SET-LOCK") == 0)
+			{
+				if (n >= 2 && arg[1])
+				{
+					if (!test_mode)
+					{
+						int lock;
+						lock = strtol(arg[1], NULL, 0);
+						awip->SetLockBits(lock);
+					}
+				}
+				else	//Argument missing
+				{
+					result = ScriptError(linecounter, 1, arg[1]);
 				}
 			}
 			else
@@ -3205,10 +3243,22 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 					result = CmdReset();
 			}
 			else
-			if (strcasecmp(cmdbuf, "CLEARBUFFER") == 0)
+			if (strcasecmp(cmdbuf, "CLEARBUFFER") == 0 || strcasecmp(cmdbuf, "CLEARBUF-ALL") == 0)
 			{
 				if (!test_mode)
-					result = CmdClearBuf();
+					result = CmdClearBuf(ALL_TYPE);
+			}
+			else
+			if (strcasecmp(cmdbuf, "CLEARBUF-PROG") == 0)
+			{
+				if (!test_mode)
+					result = CmdClearBuf(PROG_TYPE);
+			}
+			else
+			if (strcasecmp(cmdbuf, "CLEARBUF-DATA") == 0)
+			{
+				if (!test_mode)
+					result = CmdClearBuf(DATA_TYPE);
 			}
 			else
 			if (strcasecmp(cmdbuf, "FILLBUFFER") == 0)
@@ -3498,7 +3548,7 @@ int e2CmdWindow::CmdSetDeviceSubType(ItemVal val)
 }
 
 //====================>>> e2CmdWindow::CmdOpen <<<====================
-int e2CmdWindow::CmdOpen(int type, char *file, long relocation)
+int e2CmdWindow::CmdOpen(int type, char *file, long relocation, int clear_buffer)
 {
 	int result = OK;
 
@@ -3514,6 +3564,8 @@ int e2CmdWindow::CmdOpen(int type, char *file, long relocation)
 
 	awip->SetLoadType(type);
 	awip->SetLoadRelocation(relocation);
+	if (clear_buffer != -1)
+		awip->SetLoadAutoClearBuf( (clear_buffer == 0) ? false : true );
 
 	result = OpenFile(file);
 //	UpdateChipType();
@@ -3524,9 +3576,10 @@ int e2CmdWindow::CmdOpen(int type, char *file, long relocation)
 }
 
 //====================>>> e2CmdWindow::CmdClearBuf <<<====================
-int e2CmdWindow::CmdClearBuf()
+int e2CmdWindow::CmdClearBuf(int type)
 {
-	awip->FillBuffer();
+//	awip->FillBuffer();
+	awip->ClearBuffer(type);
 	Draw();
 	UpdateStatusBar();
 
@@ -3549,7 +3602,7 @@ int e2CmdWindow::CmdFillBuf()
 			val = e2Fill.GetValue();
 
 			awip->FillBuffer(from, val, to - from + 1);
-			awip->BufChanged();
+		//	awip->BufChanged();		moved into awip->FillBuffer()
 			Draw();
 			UpdateStatusBar();
 		}
