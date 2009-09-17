@@ -172,7 +172,7 @@ void Wait::WaitUsec(int usec)
 	}
 	else
 	{
-		int k = usec * GetBogoKips() / 1000;
+		volatile int k = usec * GetBogoKips() / 1000;
 
 		while (k--)
 			;
