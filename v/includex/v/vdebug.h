@@ -14,24 +14,24 @@
 
 #include <v/vmodald.h>
 
-    class vApp;
-    class vDebugDialog : public vModalDialog
-      {
-      public:		//---------------------------------------- public
-	vDebugDialog(vBaseWindow* bw,char* title = "Debugging Options") : 
+	class vApp;
+	class vDebugDialog : public vModalDialog
+	  {
+	  public:		//---------------------------------------- public
+	vDebugDialog(vBaseWindow* bw,char* title = "Debugging Options") :
 		vModalDialog(bw,title) {  _cmdsAdded = 0; };
-	vDebugDialog(vApp* aw,char* title = "Debugging Options") : 
+	vDebugDialog(vApp* aw,char* title = "Debugging Options") :
 		vModalDialog(aw,title) {  _cmdsAdded = 0; };
 
 	~vDebugDialog() {};
 
-  	void vDebugDialog::SetDebug();
+	void SetDebug();
 
 	virtual void DialogCommand(ItemVal id, ItemVal val, CmdType ctype);
-	
-      protected:	//--------------------------------------- protected
 
-      private:		//--------------------------------------- private
+	  protected:	//--------------------------------------- protected
+
+	  private:		//--------------------------------------- private
 	int _cmdsAdded;
-      };
+	  };
 #endif

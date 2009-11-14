@@ -95,33 +95,33 @@ void IMBus::SetProgDelay(int val)
 
 void IMBus::SetDelay()
 {
-    int val = THEAPP->GetIMBusSpeed();
-    int n;
+	int val = THEAPP->GetIMBusSpeed();
+	int n;
 
-    switch(val)
-    {
-    case TURBO:
-        n = 1;         // as fast as your PC can
-        break;
-    case FAST:
-        n = 3;
-        break;
-    case SLOW:
-        n = 18;
-        break;
+	switch(val)
+	{
+	case TURBO:
+		n = 1;         // as fast as your PC can
+		break;
+	case FAST:
+		n = 3;
+		break;
+	case SLOW:
+		n = 18;
+		break;
 	case VERYSLOW:
 		n = 80;
 		break;
 	case ULTRASLOW:
 		n = 500;
 		break;
-    default:
-        n = 5;         //Default (< 100KHz)
-        break;
-    }
-    BusIO::SetDelay(n);
+	default:
+		n = 5;         //Default (< 100KHz)
+		break;
+	}
+	BusIO::SetDelay(n);
 
-    UserDebug1(UserApp2, "IMBus::SetDelay() = %d\n", n);
+	UserDebug1(UserApp2, "IMBus::SetDelay() = %d\n", n);
 }
 
 int IMBus::SendDataBit(int b)
@@ -252,7 +252,7 @@ int IMBus::Reset(void)
 
 long IMBus::Read(int addr, UBYTE *data, long length, int page_size)
 {
-	UserDebug3(UserApp2, "IMBus::Read(%Xh, %Xh, %ld)\n", addr, (unsigned int)data, length);
+	UserDebug3(UserApp2, "IMBus::Read(%Xh, %ph, %ld)\n", addr, data, length);
 
 	long len;
 

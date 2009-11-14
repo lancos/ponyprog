@@ -39,23 +39,23 @@
 
 // Header dei file
 struct e2pHeader {
-	char fileID[E2P_ID_SIZE] PACK;
-	UBYTE e2pFuseBits PACK;
-	UBYTE e2pLockBits PACK;
-	ULONG e2pType PACK;
-	long e2pSize PACK;
-	UBYTE flags PACK;		//rollOver, splitted
-	UWORD e2pExtFuseBits PACK;
-	UWORD e2pExtLockBits PACK;
-	UBYTE fversion PACK;	//file version
-	UWORD split_size_Low PACK;	//used by splitted devices
-	char e2pStringID[E2P_STRID_SIZE] PACK;
-	ULONG e2pProgBits PACK;
-	char e2pComment[E2P_COMM_SIZE] PACK;
-	UWORD split_size_High PACK;
-	UWORD pad PACK;
-	UWORD e2pCrc PACK;
-	UWORD headCrc PACK;
-};
+	char fileID[E2P_ID_SIZE];
+	UBYTE e2pFuseBits;
+	UBYTE e2pLockBits;
+	ULONG e2pType;
+	long e2pSize;
+	UBYTE flags;		//rollOver, splitted
+	UWORD e2pExtFuseBits;
+	UWORD e2pExtLockBits;
+	UBYTE fversion;	//file version
+	UWORD split_size_Low;	//used by splitted devices
+	char e2pStringID[E2P_STRID_SIZE];
+	ULONG e2pProgBits;
+	char e2pComment[E2P_COMM_SIZE];
+	UWORD split_size_High;
+	UWORD pad;
+	UWORD e2pCrc;
+	UWORD headCrc;
+} PACK;
 
 #endif

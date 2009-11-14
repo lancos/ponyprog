@@ -123,7 +123,7 @@ int At93cBus::Erase(int type)
 // non a BYTE
 long At93cBus::Read(int addr, UBYTE *data, long length, int page_size)
 {
-	UserDebug3(UserApp1, "At93cBus::Read(%xh, %xh, %ld)\n", addr, (unsigned int)data, length);
+	UserDebug3(UserApp1, "At93cBus::Read(%xh, %ph, %ld)\n", addr, data, length);
 
 	long len;
 

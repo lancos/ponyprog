@@ -60,7 +60,7 @@ void X2444Bus::SendCmdAddr(int cmd, int addr)
 
 long X2444Bus::Read(int addr, UBYTE *data, long length, int page_size)
 {
-	UserDebug3(UserApp1, "X2444Bus::Read(%xh, %xh, %ld)\n", addr, (unsigned int)data, length);
+	UserDebug3(UserApp1, "X2444Bus::Read(%xh, %ph, %ld)\n", addr, data, length);
 
 	long len;
 

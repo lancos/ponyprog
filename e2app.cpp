@@ -127,7 +127,7 @@ vWindow* e2App::NewAppWin(vWindow* win, char* name,
 	{
 		appname = "No Name";		// Default name
 	}
-	
+
 	UserDebug1(Build,"e2App::NewAppWin(%s)\n",appname);
 
 	// Create the first window using provided CmdWindow
@@ -219,7 +219,7 @@ int e2App::CloseAppWin(vWindow* win)
 		SetAbortFlag();
 		SendWindowCommandAll(idCloseAllDialog, 0, C_Button);
 		CheckEvents();
-		
+
 	//	SetAppReady();
 	}
 
@@ -235,29 +235,29 @@ int e2App::CloseAppWin(vWindow* win)
 		if ( !exit_ok && ((e2CmdWindow *)win)->IsBufChanged() )
 		{
 			vYNReplyDialog yn(this);
-	  		if ( yn.AskYN(STR_MSGCLOSEWINSAVE) > 0 )
-	  		{
-	  			((e2CmdWindow *)win)->CmdSave();
-	  		}
-	  	}
+			if ( yn.AskYN(STR_MSGCLOSEWINSAVE) > 0 )
+			{
+				((e2CmdWindow *)win)->CmdSave();
+			}
+		}
 
-	  	if (winCounter > 1 || exit_ok)
-	  		really_close = 1;
-	  	else
-	  	{
-	  		if ( yn.AskYN(STR_MSGCLOSEWINEXIT) > 0 )
-	  		{
-	  			really_close = 1;
-	  		}
-	  	}
+		if (winCounter > 1 || exit_ok)
+			really_close = 1;
+		else
+		{
+			if ( yn.AskYN(STR_MSGCLOSEWINEXIT) > 0 )
+			{
+				really_close = 1;
+			}
+		}
 
-	  	if (really_close)
-	  	{
-	  		winCounter--;				//decrementa il numero di finestre
-	  		return vApp::CloseAppWin(win);
-	  	}
-	  	else
-	  		return 0;
+		if (really_close)
+		{
+			winCounter--;				//decrementa il numero di finestre
+			return vApp::CloseAppWin(win);
+		}
+		else
+			return 0;
 	}
 	else
 		return 0;
@@ -290,7 +290,7 @@ int e2App::OpenPort(int port)
 //=====================>>> e2App::ClosePort <<<==============================
 void e2App::ClosePort()
 {
-	UserDebug1(UserApp1,"e2App::ClosePort() iniBus=%xh\n",(unsigned int)iniBus);
+	UserDebug1(UserApp1,"e2App::ClosePort() iniBus=%p\n",iniBus);
 	iniBus->Close();
 }
 
@@ -311,7 +311,7 @@ int e2App::TestPort(int port, int open_only)
 //=====================>>> e2App::OpenBus <<<==============================
 int e2App::OpenBus(BusIO *p)
 {
-	UserDebug1(UserApp1,"e2App::OpenBus(%xh)\n", (unsigned int)p);
+	UserDebug1(UserApp1,"e2App::OpenBus(%p)\n", p);
 
 	iniBus->Close();
 
@@ -343,7 +343,7 @@ int e2App::OpenBus(BusIO *p)
 //=====================>>> e2App::SleepBus <<<==============================
 void e2App::SleepBus()
 {
-	UserDebug1(UserApp2,"e2App::CloseBus() iniBus=%xh\n", (unsigned int)iniBus);
+	UserDebug1(UserApp2,"e2App::CloseBus() iniBus=%p\n", iniBus);
 
 	iniBus->WaitMsec(5);	// 08/04/98 -- hold time dell'alimentazione
 	busIntp->SetPower(0);
@@ -624,7 +624,7 @@ void e2App::ClearIgnoreFlag()
 {
 	ignoreFlag = 0;
 }
- 
+
 int e2App::LoadDriver(int start)
 {
 #ifdef  _WINDOWS

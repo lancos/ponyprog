@@ -62,33 +62,33 @@ Sde2506Bus::~Sde2506Bus()
 
 void Sde2506Bus::SetDelay()
 {
-    int val = THEAPP->GetSDESpeed();
-    int n;
+	int val = THEAPP->GetSDESpeed();
+	int n;
 
-    switch(val)
-    {
-    case TURBO:
-        n = 1;         // as fast as your PC can
-        break;
-    case FAST:
-        n = 5;
-        break;
-    case SLOW:
-        n = 30;
-        break;
+	switch(val)
+	{
+	case TURBO:
+		n = 1;         // as fast as your PC can
+		break;
+	case FAST:
+		n = 5;
+		break;
+	case SLOW:
+		n = 30;
+		break;
 	case VERYSLOW:
 		n = 100;
 		break;
 	case ULTRASLOW:
 		n = 1000;
 		break;
-    default:
-        n = 10;         //Default (< 100KHz)
-        break;
-    }
-    BusIO::SetDelay(n);
+	default:
+		n = 10;         //Default (< 100KHz)
+		break;
+	}
+	BusIO::SetDelay(n);
 
-    UserDebug1(UserApp2, "Sde2506Bus::SetDelay() = %d\n", n);
+	UserDebug1(UserApp2, "Sde2506Bus::SetDelay() = %d\n", n);
 }
 
 int Sde2506Bus::SendDataBit(int b)
@@ -168,7 +168,7 @@ int Sde2506Bus::Reset(void)
 
 long Sde2506Bus::Read(int addr, UBYTE *data, long length, int page_size)
 {
-	UserDebug3(UserApp2, "Sde2506Bus::Read(%Xh, %Xh, %ld)\n", addr, (unsigned int)data, length);
+	UserDebug3(UserApp2, "Sde2506Bus::Read(%Xh, %ph, %ld)\n", addr, data, length);
 
 	long len;
 

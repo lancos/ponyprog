@@ -26,7 +26,7 @@ TAR = tar
 
 Bin = ./bin
 
-CFLAGS	+= -D_LINUX_ -Wall -fpermissive -Wno-deprecated
+CFLAGS	+= -D_LINUX_ -Wall -fpermissive -Wno-deprecated -Wno-write-strings
 
 #xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
@@ -302,7 +302,7 @@ distrib:
 clean:
 	cd v; $(MAKE) clean
 	-rm -f $(CLEANEXTS)
-	-rm -f dep.file
+#	-rm -f dep.file
 
 cleanobj:
 	-rm -f $(OBJS)

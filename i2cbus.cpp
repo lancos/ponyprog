@@ -88,7 +88,7 @@ int I2CBus::SendStart()
 			return IICERR_SCLCONFLICT;
 	}
 #else
- 	WaitUsec(shot_delay/2);
+	WaitUsec(shot_delay/2);
 #endif
 	if ( (err = CheckBusy()) )
 		return err;
@@ -304,7 +304,7 @@ long I2CBus::Read(int slave, UBYTE *data, long length, int page_size)
 {
 	long len;
 
-	UserDebug3(UserApp2, "I2CBus::Read(%d, %x, %ld) - IN\n", slave, (unsigned int)data, length);
+	UserDebug3(UserApp2, "I2CBus::Read(%d, %ph, %ld) - IN\n", slave, data, length);
 	len = StartRead(slave, data, length);
 	if (len == length)
 		if ( err_no || Stop() )
@@ -319,7 +319,7 @@ long I2CBus::Write(int slave, UBYTE const *data, long length, int page_size)
 {
 	long len;
 
-	UserDebug3(UserApp2, "I2CBus::Write(%d, %x, %ld) - IN\n", slave, (unsigned int)data, length);
+	UserDebug3(UserApp2, "I2CBus::Write(%d, %ph, %ld) - IN\n", slave, data, length);
 
 	len = StartWrite(slave, data, length);
 	if (len == length)
@@ -378,7 +378,7 @@ ULONG I2CBus::StartRead(UBYTE slave, UBYTE *data, ULONG length)
 	int temp;
 	ULONG len = length;
 
-	UserDebug3(UserApp2, "I2CBus::StartRead(%d, %x, %ld) - IN\n", slave, (unsigned int)data, length);
+	UserDebug3(UserApp2, "I2CBus::StartRead(%d, %ph, %ld) - IN\n", slave, data, length);
 
 	if (len > 0)
 	{
@@ -429,7 +429,7 @@ ULONG I2CBus::StartWrite(UBYTE slave, UBYTE const *data, ULONG length)
 	int error;
 	ULONG len = length;
 
-	UserDebug3(UserApp2, "I2CBus::StartWrite(%d, %x, %ld) - IN\n", slave, (unsigned int)data, length);
+	UserDebug3(UserApp2, "I2CBus::StartWrite(%d, %ph, %ld) - IN\n", slave, data, length);
 
 	if (len == 0)
 		return 0;
@@ -491,7 +491,7 @@ int I2CBus::Reset(void)
 
 void I2CBus::Close(void)
 {
-	UserDebug1(UserApp1, "I2CBus::Close() busI=%xh\n", (unsigned int)busI);
+	UserDebug1(UserApp1, "I2CBus::Close() busI=%ph\n", busI);
 
 	setSCLSDA();
 	BusIO::Close();
