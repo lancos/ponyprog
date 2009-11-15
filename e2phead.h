@@ -31,7 +31,7 @@
 #ifndef	_E2PHEAD_H
 #define	_EP2HEAD_H
 
-#include <stdint.h>
+#include "types.h"
 
 #define	E2P_ID_SIZE	8
 #define	E2P_STRID_SIZE	28

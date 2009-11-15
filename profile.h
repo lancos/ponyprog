@@ -30,8 +30,6 @@
 #ifndef _PROFILE_H
 #define _PROFILE_H
 
-#include <stdint.h>
-
 #define	MAXFILENAME	512
 #define	MAXLINENUM	1024
 #define MAXLINESIZE	512
