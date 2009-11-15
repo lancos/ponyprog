@@ -378,7 +378,7 @@ ULONG I2CBus::StartRead(UBYTE slave, UBYTE *data, ULONG length)
 	int temp;
 	ULONG len = length;
 
-	UserDebug3(UserApp2, "I2CBus::StartRead(%d, %ph, %ld) - IN\n", slave, data, length);
+	UserDebug3(UserApp2, "I2CBus::StartRead(%d, %ph, %lu) - IN\n", slave, data, (unsigned long)length);
 
 	if (len > 0)
 	{
@@ -419,7 +419,7 @@ ULONG I2CBus::StartRead(UBYTE slave, UBYTE *data, ULONG length)
 	err_no = 0;
 
 fineR:
-	UserDebug2(UserApp2, "I2CBus::StartRead() = %ld, err_no = %d - OUT\n", length-len, err_no);
+	UserDebug2(UserApp2, "I2CBus::StartRead() = %ld, err_no = %d - OUT\n", (long)(length-len), err_no);
 
 	return length-len;
 }
@@ -429,7 +429,7 @@ ULONG I2CBus::StartWrite(UBYTE slave, UBYTE const *data, ULONG length)
 	int error;
 	ULONG len = length;
 
-	UserDebug3(UserApp2, "I2CBus::StartWrite(%d, %ph, %ld) - IN\n", slave, data, length);
+	UserDebug3(UserApp2, "I2CBus::StartWrite(%d, %ph, %lu) - IN\n", slave, data, (unsigned long)length);
 
 	if (len == 0)
 		return 0;
@@ -457,7 +457,7 @@ ULONG I2CBus::StartWrite(UBYTE slave, UBYTE const *data, ULONG length)
 	}
 
 fineW:
-	UserDebug2(UserApp2, "I2CBus::StartWrite() = %ld, err_no = %d - OUT\n", length-len, err_no);
+	UserDebug2(UserApp2, "I2CBus::StartWrite() = %ld, err_no = %d - OUT\n", (long)(length-len), err_no);
 
 	return length-len;
 }

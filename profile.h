@@ -30,6 +30,8 @@
 #ifndef _PROFILE_H
 #define _PROFILE_H
 
+#include <stdint.h>
+
 #define	MAXFILENAME	512
 #define	MAXLINENUM	1024
 #define MAXLINESIZE	512
@@ -61,8 +63,8 @@ class Profile
 
 	char filename[MAXFILENAME];		//name of .INI file
 	char *profilevet[MAXLINENUM];	//elenco di parametri (in pratica linee del file)
-    char linebuffer[MAXLINESIZE+1];	//buffer temporaneo di linea
+	char linebuffer[MAXLINESIZE+1];	//buffer temporaneo di linea
 	char strbuf[MAXLINESIZE];
-    int cached;						//indica se il file e` gia` in memoria
+	int cached;						//indica se il file e` gia` in memoria
 };
 #endif

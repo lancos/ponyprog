@@ -127,7 +127,7 @@ int SerNumDialog::SerNumAction(long &cLoc, bool &cMemType, bool &cAutoInc, FmtEn
 
 	snprintf(str1, MAXNUMDIGIT, "0x%04lX", cLoc);
 	snprintf(str2, MAXNUMDIGIT, "%d", cLen);
-	snprintf(str3, MAXNUMDIGIT, "%ld", cVal);
+	snprintf(str3, MAXNUMDIGIT, "%lu", (unsigned long)cVal);
 	SetCommandLabel(txiLoc, str1, DefaultCmds);
 	SetCommandLabel(txiLen, str2, DefaultCmds);
 	SetCommandLabel(txiVal, str3, DefaultCmds);

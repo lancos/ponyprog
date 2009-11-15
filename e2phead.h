@@ -31,6 +31,8 @@
 #ifndef	_E2PHEAD_H
 #define	_EP2HEAD_H
 
+#include <stdint.h>
+
 #define	E2P_ID_SIZE	8
 #define	E2P_STRID_SIZE	28
 #define	E2P_COMM_SIZE	86
@@ -40,22 +42,22 @@
 // Header dei file
 struct e2pHeader {
 	char fileID[E2P_ID_SIZE];
-	UBYTE e2pFuseBits;
-	UBYTE e2pLockBits;
-	ULONG e2pType;
-	long e2pSize;
-	UBYTE flags;		//rollOver, splitted
-	UWORD e2pExtFuseBits;
-	UWORD e2pExtLockBits;
-	UBYTE fversion;	//file version
-	UWORD split_size_Low;	//used by splitted devices
+	uint8_t e2pFuseBits;
+	uint8_t e2pLockBits;
+	uint32_t e2pType;
+	int32_t e2pSize;
+	uint8_t flags;		//rollOver, splitted
+	uint16_t e2pExtFuseBits;
+	uint16_t e2pExtLockBits;
+	uint8_t fversion;	//file version
+	uint16_t split_size_Low;	//used by splitted devices
 	char e2pStringID[E2P_STRID_SIZE];
-	ULONG e2pProgBits;
+	uint32_t e2pProgBits;
 	char e2pComment[E2P_COMM_SIZE];
-	UWORD split_size_High;
-	UWORD pad;
-	UWORD e2pCrc;
-	UWORD headCrc;
+	uint16_t split_size_High;
+	uint16_t pad;
+	uint16_t e2pCrc;
+	uint16_t headCrc;
 } PACK;
 
 #endif

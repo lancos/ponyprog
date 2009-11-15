@@ -70,7 +70,7 @@ char *Profile::StripSpace(char const *sp)
 	char *p = strbuf;
 	while( *p )
 		p++;
-	//toglie 
+	//toglie
 	while( isspace(*--p) )
 		*p = '\0';
 	return strbuf;
@@ -124,7 +124,7 @@ int Profile::WriteVet()
 			}
 		}
 	}
-	
+
 	cached = 1;		//ripensare attentamente se e` giusto forzarla qui
 	fclose(fh);
 	return rval;
@@ -198,7 +198,7 @@ char const *Profile::GetParameter(char const *id)
 				sp++;
 			if (*sp == '=')
 			{
-				//Solo ora siamo sicuri di avere trovato esattamente cio` che 
+				//Solo ora siamo sicuri di avere trovato esattamente cio` che
 				//  cercavamo (vedi caso ricerca "maia" e trovato "maiale")
 				while (isspace(*++sp))
 					;
@@ -236,7 +236,7 @@ int Profile::SetParameter(char const *id, char const *value)
 				sp++;
 			if (*sp == '=')
 			{
-				//Solo ora siamo sicuri di avere trovato esattamente cio` che 
+				//Solo ora siamo sicuri di avere trovato esattamente cio` che
 				//  cercavamo (vedi caso ricerca "maia" e trovato "maiale")
 				found = 1;
 				break;		//usciamo dal ciclo for()

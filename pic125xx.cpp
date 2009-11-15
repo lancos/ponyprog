@@ -106,12 +106,12 @@ int Pic125xx::Read(int probe, int type)
 		else
 		{	//Skip configuration word
 			GetBus()->IncAddress(1);
-   		}
+		}
 
 		if ( type & PROG_TYPE )
 		{
 			rv = ReadProg();
-   		}
+		}
 	}
 
 	return rv;
@@ -169,7 +169,7 @@ int Pic125xx::Verify(int type)
 			DWORD f;
 			SecurityRead(f);
 
-		  	UserDebug2(UserApp2, "Pic125xx::Verify() ** %lu <-> %lu\n", f, GetAWInfo()->GetLockBits());
+			UserDebug2(UserApp2, "Pic125xx::Verify() ** %lu <-> %lu\n", (unsigned long)f, (unsigned long)GetAWInfo()->GetLockBits());
 
 			if (GetAWInfo()->GetLockBits() == f)
 			{
@@ -178,17 +178,17 @@ int Pic125xx::Verify(int type)
 			else
 			{
 				v_config = 1;
-    			}
+				}
 		}
 		else
 		{	//Skip configuration word
 			GetBus()->IncAddress(1);
-   		}
+		}
 
 		if ( type & PROG_TYPE )
 		{
 			v_prog = VerifyProg(localbuf);
-   		}
+		}
 
 		rval = (v_prog == OK && v_config == OK) ? 1 : 0;
 

@@ -962,7 +962,7 @@ ULONG E2Profile::GetSerialNumVal()
 	return rval;
 }
 
-int E2Profile::SetSerialNumVal(ULONG val)
+int E2Profile::SetSerialNumVal(unsigned long val)
 {
 	int rval = BADPARAM;
 
@@ -1000,14 +1000,14 @@ int E2Profile::GetSerialNumAddress(long &start, int &size, bool &mtype)
 	return OK;
 }
 
-int E2Profile::SetSerialNumAddress(long start, int size, bool mtype)
+int E2Profile::SetSerialNumAddress(unsigned long start, int size, bool mtype)
 {
 	int rval = BADPARAM;
 	char str[MAXNUMDIGIT];
 
 	if (start >= 0)
 	{
-		if ( hexnum2str((unsigned long)start, str, MAXNUMDIGIT) == OK )
+		if ( hexnum2str(start, str, MAXNUMDIGIT) == OK )
 			rval = SetParameter("SerialNumberAddr", str);
 	}
 	if (size >= 1)
@@ -1070,44 +1070,44 @@ UWORD E2Profile::GetProgramOptions()
   res = 0;
   rval = GetParameter("ReloadOption");
   if (rval)
-    if (strcasecmp(rval,"NO") != 0)
-      res |=RELOAD_YES;
+	if (strcasecmp(rval,"NO") != 0)
+	  res |=RELOAD_YES;
   rval = GetParameter("ReadFlashOption");
   if (rval)
-    if (strcasecmp(rval,"NO") != 0)
-      res |=READFLASH_YES;
+	if (strcasecmp(rval,"NO") != 0)
+	  res |=READFLASH_YES;
   rval = GetParameter("ReadEEpromOption");
   if (rval)
-    if (strcasecmp(rval,"NO") != 0)
-      res |=READEEP_YES;
+	if (strcasecmp(rval,"NO") != 0)
+	  res |=READEEP_YES;
   rval = GetParameter("ByteSwapOption");
   if (rval)
-    if (strcasecmp(rval,"NO") != 0)
-      res |=BYTESWAP_YES;
+	if (strcasecmp(rval,"NO") != 0)
+	  res |=BYTESWAP_YES;
   rval = GetParameter("SetIDkeyOption");
   if (rval)
-    if (strcasecmp(rval,"NO") != 0)
-      res |=SETID_YES;
+	if (strcasecmp(rval,"NO") != 0)
+	  res |=SETID_YES;
   rval = GetParameter("ReadOscCalibration");
   if (rval)
-    if (strcasecmp(rval,"NO") != 0)
-      res |=READOSCAL_YES;
+	if (strcasecmp(rval,"NO") != 0)
+	  res |=READOSCAL_YES;
   rval = GetParameter("EraseOption");
   if (rval)
-    if (strcasecmp(rval,"NO") != 0)
-      res |=ERASE_YES;
+	if (strcasecmp(rval,"NO") != 0)
+	  res |=ERASE_YES;
   rval = GetParameter("WriteFlashOption");
   if (rval)
-    if (strcasecmp(rval,"NO") != 0)
-      res |=FLASH_YES;
+	if (strcasecmp(rval,"NO") != 0)
+	  res |=FLASH_YES;
   rval = GetParameter("WriteEEpromOption");
   if (rval)
-    if (strcasecmp(rval,"NO") != 0)
-      res |=EEPROM_YES;
+	if (strcasecmp(rval,"NO") != 0)
+	  res |=EEPROM_YES;
   rval = GetParameter("WriteSecurityOption");
   if (rval)
-    if (strcasecmp(rval,"NO") != 0)
-      res |=LOCK_YES;
+	if (strcasecmp(rval,"NO") != 0)
+	  res |=LOCK_YES;
   return res;
 }
 
@@ -1116,25 +1116,25 @@ int E2Profile::SetProgramOptions(UWORD prog_option)
   int rval;
 
   rval =   (SetParameter("ReloadOption",
-                        (prog_option & RELOAD_YES)?"YES":"NO"));
+						(prog_option & RELOAD_YES)?"YES":"NO"));
   rval &=  (SetParameter("ReadFlashOption",
-                        (prog_option & READFLASH_YES)?"YES":"NO"));
+						(prog_option & READFLASH_YES)?"YES":"NO"));
   rval &=  (SetParameter("ReadEEpromOption",
-                        (prog_option & READEEP_YES)?"YES":"NO"));
+						(prog_option & READEEP_YES)?"YES":"NO"));
   rval &=  (SetParameter("ByteSwapOption",
-                        (prog_option & BYTESWAP_YES)?"YES":"NO"));
+						(prog_option & BYTESWAP_YES)?"YES":"NO"));
   rval &=  (SetParameter("SetIDkeyOption",
-                        (prog_option & SETID_YES)?"YES":"NO"));
+						(prog_option & SETID_YES)?"YES":"NO"));
   rval &=  (SetParameter("ReadOscCalibration",
-                        (prog_option & READOSCAL_YES)?"YES":"NO"));
+						(prog_option & READOSCAL_YES)?"YES":"NO"));
   rval &=  (SetParameter("EraseOption",
-                        (prog_option & ERASE_YES)?"YES":"NO"));
+						(prog_option & ERASE_YES)?"YES":"NO"));
   rval &=  (SetParameter("WriteFlashOption",
-                        (prog_option & FLASH_YES)?"YES":"NO"));
+						(prog_option & FLASH_YES)?"YES":"NO"));
   rval &=  (SetParameter("WriteEEpromOption",
-                        (prog_option & EEPROM_YES)?"YES":"NO"));
+						(prog_option & EEPROM_YES)?"YES":"NO"));
   rval &=  (SetParameter("WriteSecurityOption",
-                        (prog_option & LOCK_YES)?"YES":"NO"));
+						(prog_option & LOCK_YES)?"YES":"NO"));
   return rval;
 }
 
@@ -1381,14 +1381,14 @@ int E2Profile::GetCalibrationAddress(long &start, int &size, bool &mtype)
 	return OK;
 }
 
-int E2Profile::SetCalibrationAddress(long start, int size, bool mtype)
+int E2Profile::SetCalibrationAddress(unsigned long start, int size, bool mtype)
 {
 	int rval = BADPARAM;
 	char str[MAXNUMDIGIT];
 
 	if (start >= 0)
 	{
-		if ( hexnum2str((unsigned long)start, str, MAXNUMDIGIT) == OK )
+		if ( hexnum2str(start, str, MAXNUMDIGIT) == OK )
 			rval = SetParameter("OscCalibrationAddr", str);
 	}
 	if (size >= 1)

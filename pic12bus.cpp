@@ -80,33 +80,33 @@ Pic12Bus::~Pic12Bus()
 
 void Pic12Bus::SetDelay()
 {
-    int val = THEAPP->GetPICSpeed();
-    int n;
+	int val = THEAPP->GetPICSpeed();
+	int n;
 
-    switch(val)
-    {
-    case TURBO:
-        n = 1;
-        break;
-    case FAST:
-        n = 3;
-        break;
-    case SLOW:
-        n = 20;
-        break;
-    case VERYSLOW:
-        n = 100;
-        break;
+	switch(val)
+	{
+	case TURBO:
+		n = 1;
+		break;
+	case FAST:
+		n = 3;
+		break;
+	case SLOW:
+		n = 20;
+		break;
+	case VERYSLOW:
+		n = 100;
+		break;
 	case ULTRASLOW:
 		n = 1000;
 		break;
-    default:
-        n = 8;         //Default (< 100KHz)
-        break;
-    }
-    BusIO::SetDelay(n);
+	default:
+		n = 8;         //Default (< 100KHz)
+		break;
+	}
+	BusIO::SetDelay(n);
 
-    UserDebug1(UserApp2, "PIC12Bus::SetDelay() = %d\n", n);
+	UserDebug1(UserApp2, "PIC12Bus::SetDelay() = %d\n", n);
 }
 
 int Pic12Bus::SendDataBit(int b)
@@ -212,7 +212,7 @@ long Pic12Bus::ReadConfig(UWORD &data)
 
 	UBYTE *bp = (UBYTE *)&data;
 
- 	//Read Program Code
+	//Read Program Code
 	SendCmdCode(ReadProgCode);
 	UWORD val = RecvProgCode();
 
@@ -228,7 +228,7 @@ long Pic12Bus::ReadConfig(UWORD &data)
 #endif
 	IncAddress(1);
 
- 	UserDebug1(UserApp2, "Pic12Bus::ReadConfig(%x) OUT\n", data);
+	UserDebug1(UserApp2, "Pic12Bus::ReadConfig(%x) OUT\n", data);
 
 	return OK;
 }
@@ -256,7 +256,7 @@ long Pic12Bus::WriteConfig(UWORD data)
 
 	IncAddress(1);
 
- 	UserDebug1(UserApp2, "Pic12Bus::WriteConfig(%x) OUT\n", data);
+	UserDebug1(UserApp2, "Pic12Bus::WriteConfig(%x) OUT\n", data);
 
 	return OK;
 }
@@ -265,7 +265,7 @@ long Pic12Bus::BlankCheck(long length)
 {
 	length >>= 1;	//contatore da byte a word
 
-   	//Point to first location
+	//Point to first location
 //	SendCmdCode(IncAddressCode);
 
 	long len;
@@ -279,7 +279,7 @@ long Pic12Bus::BlankCheck(long length)
 		if ( CheckAbort(len * 100 / length) )
 			break;
 
-   		IncAddress(1);
+		IncAddress(1);
 	}
 	CheckAbort(100);
 
@@ -290,11 +290,11 @@ long Pic12Bus::Read(int addr, UBYTE *data, long length, int page_size)
 {
 	long len;
 
- 	UserDebug3(UserApp2, "Pic12Bus::Read(%d, %lx, %ld) IN\n", addr, (DWORD)data, length);
+	UserDebug3(UserApp2, "Pic12Bus::Read(%d, %ph, %ld) IN\n", addr, data, length);
 
 	length >>= 1;	//contatore da byte a word
 
-  	//Point to first location
+	//Point to first location
 //	SendCmdCode(IncAddressCode);
 
 	for (len = 0; len < length; len++)
@@ -322,7 +322,7 @@ long Pic12Bus::Read(int addr, UBYTE *data, long length, int page_size)
 
 	len <<= 1;	//contatore da word a byte
 
-  	UserDebug1(UserApp2, "Pic12Bus::Read() = %ld OUT\n", len);
+	UserDebug1(UserApp2, "Pic12Bus::Read() = %ld OUT\n", len);
 
 	return len;
 }
@@ -332,7 +332,7 @@ long Pic12Bus::Write(int addr, UBYTE const *data, long length, int page_size)
 	long len;
 	int rv = OK;
 
- 	UserDebug3(UserApp2, "Pic12Bus::Write(%d, %lx, %ld) IN\n", addr, (DWORD)data, length);
+	UserDebug3(UserApp2, "Pic12Bus::Write(%d, %ph, %ld) IN\n", addr, data, length);
 
 	length >>= 1;	//contatore da byte a word
 
@@ -358,7 +358,7 @@ long Pic12Bus::Write(int addr, UBYTE const *data, long length, int page_size)
 		{
 			len = rv;
 			break;
-   		}
+		}
 
 		if ( CheckAbort(len * 100 / length) )
 			break;
@@ -368,7 +368,7 @@ long Pic12Bus::Write(int addr, UBYTE const *data, long length, int page_size)
 	if (len > 0)
 		len <<= 1;	//contatore da word a byte
 
-  	UserDebug2(UserApp2, "Pic12Bus::Write() = %ld ** %ld OUT\n", len, GetLastProgrammedAddress());
+	UserDebug2(UserApp2, "Pic12Bus::Write() = %ld ** %ld OUT\n", len, GetLastProgrammedAddress());
 
 	return len;
 }
@@ -378,7 +378,7 @@ int Pic12Bus::WriteProgWord(UWORD val, long rc_addr)
 	int k;
 	int rval = OK;
 
-  	UserDebug2(UserApp2, "Pic12Bus::WriteProgWord(%x, %ld) IN\n", val, current_address);
+	UserDebug2(UserApp2, "Pic12Bus::WriteProgWord(%x, %ld) IN\n", val, current_address);
 
 	//Check for RC calibration location
 	if (current_address == rc_addr)
@@ -388,7 +388,7 @@ int Pic12Bus::WriteProgWord(UWORD val, long rc_addr)
 		// e il valore da pgrogrammare corrisponde ad una MOVLW xx (0x0Cxx)
 		SendCmdCode(ReadProgCode);
 		if ( CompareSingleWord(RecvProgCode(), 0xffff, ProgMask) == 0 &&
-		     CompareSingleWord(val, 0x0C00, (ProgMask & 0xff00)) == 0 )
+			 CompareSingleWord(val, 0x0C00, (ProgMask & 0xff00)) == 0 )
 		{
 			SetLastProgrammedAddress(current_address << 1);
 
@@ -410,7 +410,7 @@ int Pic12Bus::WriteProgWord(UWORD val, long rc_addr)
 				while (k--)
 					ProgramPulse(val, 0);	//Program pulse without test
 			}
- 		}
+		}
 
 		IncAddress(1);
 	}
@@ -451,16 +451,16 @@ int Pic12Bus::WriteProgWord(UWORD val, long rc_addr)
 
 			IncAddress(1);
 		}
-  	}
+	}
 
-  	UserDebug1(UserApp2, "Pic12Bus::WriteProgWord() = %d OUT\n", rval);
+	UserDebug1(UserApp2, "Pic12Bus::WriteProgWord() = %d OUT\n", rval);
 
 	return rval;
 }
 
 void Pic12Bus::IncAddress(int n)
 {
-  	UserDebug1(UserApp3, "Pic12Bus::IncAddress(%d) IN\n", n);
+	UserDebug1(UserApp3, "Pic12Bus::IncAddress(%d) IN\n", n);
 
 	while (n--)
 	{
@@ -475,7 +475,7 @@ int Pic12Bus::ProgramPulse(UWORD val, int verify, int width)
 {
 	int rval = OK;
 
-  	UserDebug3(UserApp3, "Pic12Bus::ProgramPulse(%x, %d, %d) IN\n", val, verify, width);
+	UserDebug3(UserApp3, "Pic12Bus::ProgramPulse(%x, %d, %d) IN\n", val, verify, width);
 
 	SendCmdCode(LoadProgCode);
 	SendProgCode(val);
@@ -491,9 +491,9 @@ int Pic12Bus::ProgramPulse(UWORD val, int verify, int width)
 	{
 		SendCmdCode(ReadProgCode);
 		rval = CompareSingleWord(val, RecvProgCode(), ProgMask);
-  	}
+	}
 
-  	UserDebug1(UserApp3, "Pic12Bus::ProgramPulse() = %d OUT\n", rval);
+	UserDebug1(UserApp3, "Pic12Bus::ProgramPulse() = %d OUT\n", rval);
 
 	return rval;
 }
