@@ -45,7 +45,7 @@ At89sxx::At89sxx(e2AppWinInfo *wininfo, BusIO *busp)
 	UserDebug(Constructor, "At89sxx::At89sxx()\n");
 }
 
-int At89sxx::SecurityRead(DWORD &bits)
+int At89sxx::SecurityRead(uint32_t &bits)
 {
 	int rv = Probe();		//No size probe needed, just probe for presence
 
@@ -56,7 +56,7 @@ int At89sxx::SecurityRead(DWORD &bits)
 	return rv;
 }
 
-int At89sxx::SecurityWrite(DWORD bits)
+int At89sxx::SecurityWrite(uint32_t bits)
 {
 	int rv = Probe();		//No size probe needed, just probe for presence
 
@@ -67,7 +67,7 @@ int At89sxx::SecurityWrite(DWORD bits)
 	return rv;
 }
 
-int At89sxx::FusesRead(DWORD &bits)
+int At89sxx::FusesRead(uint32_t &bits)
 {
 	int rv = Probe();		//No size probe needed, just probe for presence
 
@@ -78,7 +78,7 @@ int At89sxx::FusesRead(DWORD &bits)
 	return rv;
 }
 
-int At89sxx::FusesWrite(DWORD bits)
+int At89sxx::FusesWrite(uint32_t bits)
 {
 	int rv = Probe();		//No size probe needed, just probe for presence
 
@@ -195,7 +195,7 @@ int At89sxx::Read(int probe, int type)
 			if (rv > 0 && (type & CONFIG_TYPE))
 			{
 				// read the fuses
-				DWORD f = 0;
+				uint32_t f = 0;
 				if ( GetBus()->ReadFuseBits(f, GetAWInfo()->GetEEPType()) == OK )
 					GetAWInfo()->SetFuseBits(f);
 				f = 0;
@@ -226,7 +226,7 @@ int At89sxx::Write(int probe, int type)
 			if (rv > 0 && (type & CONFIG_TYPE))
 			{
 				//write the fuses
-				DWORD f = GetAWInfo()->GetFuseBits();
+				uint32_t f = GetAWInfo()->GetFuseBits();
 				GetBus()->WriteFuseBits(f, GetAWInfo()->GetEEPType());
 
 				//write the locks
@@ -259,7 +259,7 @@ int At89sxx::Verify(int type)
 			v_data = VerifyData(localbuf);
 		if (type & CONFIG_TYPE)
 		{
-			DWORD fval, lval;
+			uint32_t fval, lval;
 			int fret, lret;
 
 			// read the fuses & locks

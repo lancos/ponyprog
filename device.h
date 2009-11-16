@@ -55,17 +55,17 @@ class Device
 	virtual int BankRollOverDetect(int force)
 		{ return 4; }	//4 means no need to know Bank Rollover for this device
 
-	virtual int SecurityRead(DWORD &bits)
+	virtual int SecurityRead(uint32_t &bits)
 		{ bits = 0; return 0; }
-	virtual int SecurityWrite(DWORD bits)
+	virtual int SecurityWrite(uint32_t bits)
 		{ return 0; }
-	virtual int FusesRead(DWORD &bits)
+	virtual int FusesRead(uint32_t &bits)
 		{ bits = 0; return 0; }
-	virtual int FusesWrite(DWORD bits)
+	virtual int FusesWrite(uint32_t bits)
 		{ return 0; }
-	virtual int HighEnduranceRead(DWORD &block_no)
+	virtual int HighEnduranceRead(uint32_t &block_no)
 		{ return 0; }
-	virtual int HighEnduranceWrite(DWORD block_no)
+	virtual int HighEnduranceWrite(uint32_t block_no)
 		{ return 0; }
 
 	virtual int ReadCalibration(int addr = 0);
@@ -92,7 +92,7 @@ class Device
   protected:	//--------------------------------------- protected
 	void SetBankSize(int size)
 		{ if (size > 0) bank_size = size; }
-	BYTE *GetBufPtr() const;
+	uint8_t *GetBufPtr() const;
 	int GetBufSize() const;
 	void SetSplitted(int split);
 	int GetSplitted() const;

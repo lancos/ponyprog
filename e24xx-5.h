@@ -46,8 +46,8 @@ class E24xx5 : public E24xx
 
   protected:	//--------------------------------------- protected
 
-//	int bank_out(BYTE const *copy_buf, int bank_no, long size = -1);
-//	int bank_in(BYTE *copy_buf, int bank_no, long size = -1);
+//	int bank_out(uint8_t const *copy_buf, int bank_no, long size = -1);
+//	int bank_in(uint8_t *copy_buf, int bank_no, long size = -1);
 
   private:		//--------------------------------------- private
 

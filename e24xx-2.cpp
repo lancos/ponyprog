@@ -90,8 +90,8 @@ int E24xx2::Write(int probe, int type)
 		{
 			memcpy(localbuf+2, GetBufPtr()+j, writepage_size);
 
-			localbuf[0] = (BYTE)((j >> 8) & 0xFF);
-			localbuf[1] = (BYTE)( j & 0xFF );
+			localbuf[0] = (uint8_t)((j >> 8) & 0xFF);
+			localbuf[1] = (uint8_t)( j & 0xFF );
 			if ( GetBus()->Write(eeprom_addr[0], localbuf, 2+writepage_size) != (2+writepage_size) )
 			{
 				rval = GetBus()->Error();
@@ -136,7 +136,7 @@ int E24xx2::Read(int probe, int type)
 
 	if (type & PROG_TYPE)
 	{
-		BYTE index[2];
+		uint8_t index[2];
 		long readpage_size = 256;
 		long k;
 		long size = GetSize();
@@ -144,8 +144,8 @@ int E24xx2::Read(int probe, int type)
 		{
 			//Scrive l'indice del sottoindirizzamento
 			// partiamo sempre da 0.
-			index[0] = (BYTE)((k >> 8) & 0xFF);
-			index[1] = (BYTE)( k & 0xFF );
+			index[0] = (uint8_t)((k >> 8) & 0xFF);
+			index[1] = (uint8_t)( k & 0xFF );
 
 			if (GetBus()->StartWrite(eeprom_addr[0], index, 2) != 2)
 			{
@@ -192,15 +192,15 @@ int E24xx2::Verify(int type)
 
 	if (type & PROG_TYPE)
 	{
-		BYTE index[2];
+		uint8_t index[2];
 		long k;
 		long size = GetSize();
 		for (k = 0; k < size; k += readpage_size)
 		{
 			//Scrive l'indice del sottoindirizzamento
 			// partiamo sempre da 0.
-			index[0] = (BYTE)((k >> 8) & 0xFF);
-			index[1] = (BYTE)( k & 0xFF );
+			index[0] = (uint8_t)((k >> 8) & 0xFF);
+			index[1] = (uint8_t)( k & 0xFF );
 
 			if (GetBus()->StartWrite(eeprom_addr[0], index, 2) != 2)
 			{
@@ -234,13 +234,13 @@ int E24xx2::Verify(int type)
 }
 
 
-int E24xx2::SecurityRead(DWORD &blocks)
+int E24xx2::SecurityRead(uint32_t &blocks)
 {
 	int rv = Probe();	//Determina gli indirizzi I2C
 
 	if (rv > 0)
 	{
-		BYTE buf[4];
+		uint8_t buf[4];
 
 		buf[0] = 0xFF;
 		buf[1] = 0xFF;
@@ -267,13 +267,13 @@ int E24xx2::SecurityRead(DWORD &blocks)
 	return rv;
 }
 
-int E24xx2::SecurityWrite(DWORD blocks)
+int E24xx2::SecurityWrite(uint32_t blocks)
 {
 	int rv = Probe();	//Determina gli indirizzi I2C
 
 	if (rv > 0)
 	{
-		BYTE buf[4];
+		uint8_t buf[4];
 
 		int start_block = (blocks >> 4) & 0x0F;
 		int no_of_block = blocks & 0x0F;
@@ -292,13 +292,13 @@ int E24xx2::SecurityWrite(DWORD blocks)
 	return rv;
 }
 
-int E24xx2::HighEnduranceRead(DWORD &block_no)
+int E24xx2::HighEnduranceRead(uint32_t &block_no)
 {
 	int rv = Probe();	//Determina gli indirizzi I2C
 
 	if (rv > 0)
 	{
-		BYTE buf[4];
+		uint8_t buf[4];
 
 		buf[0] = 0xFF;
 		buf[1] = 0xFF;
@@ -321,15 +321,15 @@ int E24xx2::HighEnduranceRead(DWORD &block_no)
 	return rv;
 }
 
-int E24xx2::HighEnduranceWrite(DWORD block_no)
+int E24xx2::HighEnduranceWrite(uint32_t block_no)
 {
 	int rv = Probe();	//Determina gli indirizzi I2C
 
 	if (rv > 0)
 	{
-		BYTE buf[4];
+		uint8_t buf[4];
 
-		buf[0] = 0x80 | (BYTE)(block_no << 1);
+		buf[0] = 0x80 | (uint8_t)(block_no << 1);
 		buf[1] = 0xFF;
 		buf[2] = HEnduranceWriteCode;
 		if (GetBus()->Write(eeprom_addr[0], buf, 3) != 3)

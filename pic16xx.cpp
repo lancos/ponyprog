@@ -37,7 +37,7 @@
 #undef	BANK_SIZE
 #define	BANK_SIZE	1
 
-#define	CONFIG_SIZE	( 8 * sizeof(WORD) )
+#define	CONFIG_SIZE	( 8 * sizeof(uint16_t) )
 
 //=====>>> Costruttore <<<======
 Pic16xx::Pic16xx(e2AppWinInfo *wininfo, BusIO *busp)
@@ -53,7 +53,7 @@ Pic16xx::~Pic16xx()
 {
 }
 
-int Pic16xx::CodeProtectAdjust(WORD &config, int read)
+int Pic16xx::CodeProtectAdjust(uint16_t &config, int read)
 {
 	if (!read)
 	{
@@ -68,13 +68,13 @@ int Pic16xx::CodeProtectAdjust(WORD &config, int read)
 	return OK;
 }
 
-int Pic16xx::SecurityRead(DWORD &bits)
+int Pic16xx::SecurityRead(uint32_t &bits)
 {
 	int rv = GetBus()->ReadConfig(id_locations);
 
 	if (rv == OK)
 	{
-		WORD config = id_locations[7];
+		uint16_t config = id_locations[7];
 
 		CodeProtectAdjust(config, 1);
 
@@ -84,9 +84,9 @@ int Pic16xx::SecurityRead(DWORD &bits)
 	return rv;
 }
 
-int Pic16xx::SecurityWrite(DWORD bits)
+int Pic16xx::SecurityWrite(uint32_t bits)
 {
-	WORD config = (WORD)bits;
+	uint16_t config = (uint16_t)bits;
 
 	CodeProtectAdjust(config, 0);
 
@@ -120,7 +120,7 @@ int Pic16xx::Read(int probe, int type)
 		{
 			// read the config locations
 			// this must be the LAST operation (to exit from config mode we have to clear Vpp)
-			DWORD f;
+			uint32_t f;
 			SecurityRead(f);
 		//	GetAWInfo()->SetFuseBits(f0);
 			GetAWInfo()->SetLockBits(f);
@@ -156,7 +156,7 @@ int Pic16xx::Write(int probe, int type)
 			{
 				// write the config locations
 				// this must be the LAST operation (to exit from config mode we have to clear Vpp)
-				DWORD f;
+				uint32_t f;
 				f = GetAWInfo()->GetLockBits();
 				SecurityWrite(f);
 			}
@@ -192,7 +192,7 @@ int Pic16xx::Verify(int type)
 			v_data = VerifyData(localbuf);
 		if (type & CONFIG_TYPE)
 		{
-			DWORD f;
+			uint32_t f;
 			SecurityRead(f);
 			if (GetAWInfo()->GetLockBits() == f)
 			{

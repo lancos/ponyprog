@@ -42,8 +42,8 @@ class MicroWireBus : public BusIO
 	MicroWireBus(BusInterface *ptr = 0);
 	virtual ~MicroWireBus();
 
-//	ULONG Read(int addr, uint8_t *data, ULONG length);
-//	ULONG Write(int addr, uint8_t const *data, ULONG length);
+//	long Read(int addr, uint8_t *data, long length);
+//	long Write(int addr, uint8_t const *data, long length);
 	
 	int Reset();
 

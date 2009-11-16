@@ -46,13 +46,13 @@ class PicBus : public BusIO
 
 	int Reset();
 
-	long ReadConfig(UWORD *data);
-	long WriteConfig(UWORD *data);
+	long ReadConfig(uint16_t *data);
+	long WriteConfig(uint16_t *data);
 
 	void DisableCodeProtect();
 
-	int CompareSingleWord(UWORD data1, UWORD data2, UWORD mask);
-	int CompareMultiWord(uint8_t *data1, uint8_t *data2, ULONG length, int split);
+	int CompareSingleWord(uint16_t data1, uint16_t data2, uint16_t mask);
+	int CompareMultiWord(uint8_t *data1, uint8_t *data2, long length, int split);
 
 	void SetDelay();
 
@@ -63,18 +63,18 @@ class PicBus : public BusIO
 	int WaitReadyAfterWrite(long timeout = 5000);
 
 	int SendCmdCode(int opcode);
-	int SendProgCode(UWORD data);
-	UWORD RecvProgCode();
-	int SendDataCode(UWORD data);
-	UWORD RecvDataCode();
+	int SendProgCode(uint16_t data);
+	uint16_t RecvProgCode();
+	int SendDataCode(uint16_t data);
+	uint16_t RecvDataCode();
 
 	void SetMCLR()
 		{ busI->SetControlLine(1); }
 	void ClearMCLR()
 		{ busI->SetControlLine(0); }
 
-	const UWORD DataMask;
-	const UWORD ProgMask;
+	const uint16_t DataMask;
+	const uint16_t ProgMask;
 
 	//Command Opcode
 	const uint8_t ReadProgCode;

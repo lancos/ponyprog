@@ -59,19 +59,19 @@ class BusIO : public Wait
 
 	virtual int ReadDeviceCode(int addr)
 		{ return OK; }
-	virtual int WriteLockBits(DWORD val, long model = 0)
+	virtual int WriteLockBits(uint32_t val, long model = 0)
 		{ return OK; }
-	virtual int WriteFuseBits(DWORD val, long model = 0)
+	virtual int WriteFuseBits(uint32_t val, long model = 0)
 		{ return OK; }
-	virtual DWORD ReadLockBits(long model = 0)
+	virtual uint32_t ReadLockBits(long model = 0)
 		{ return 0; }
-	virtual DWORD ReadFuseBits(long model = 0)
+	virtual uint32_t ReadFuseBits(long model = 0)
 		{ return 0; }
 
 	virtual long ReadCalibration(int addr = 0)
 		{ return -1; }			//No calibration value available
 
-	virtual int CompareMultiWord(uint8_t *data1, uint8_t *data2, ULONG length, int split)
+	virtual int CompareMultiWord(uint8_t *data1, uint8_t *data2, long length, int split)
 		{ return memcmp(data1, data2, length); }
 
 	int GetErrNo()

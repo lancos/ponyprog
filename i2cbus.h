@@ -44,8 +44,8 @@ class I2CBus : public BusIO
 	int Start(uint8_t slave);
 	int ReadByte(int ack, int lsb = 0);
 	int WriteByte(int by, int lsb = 0);
-	ULONG StartRead(uint8_t slave, uint8_t *data, ULONG length);
-	ULONG StartWrite(uint8_t slave, uint8_t const *data, ULONG length);
+	long StartRead(uint8_t slave, uint8_t *data, long length);
+	long StartWrite(uint8_t slave, uint8_t const *data, long length);
 	int Stop();
 	int Reset();
 

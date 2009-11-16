@@ -45,10 +45,10 @@ class At89sBus : public SPIBus
 	virtual int Erase(int type = 0);
 
 	int ReadDeviceCode(int addr);
-	int WriteLockBits(DWORD val, long model);
-	int WriteFuseBits(DWORD val, long model);
-	int ReadLockBits(DWORD &res, long model);
-	int ReadFuseBits(DWORD &res, long model);
+	int WriteLockBits(uint32_t val, long model);
+	int WriteFuseBits(uint32_t val, long model);
+	int ReadLockBits(uint32_t &res, long model);
+	int ReadFuseBits(uint32_t &res, long model);
 	void SetDelay();
 
 	void SetPagePolling(bool prog, bool val)
@@ -66,21 +66,21 @@ class At89sBus : public SPIBus
  protected:		//------------------------------- protected
 
 	//Programming commands
-	const BYTE EnableProg0, EnableProg1;
-	const BYTE ChipErase0, ChipErase1, OldChipErase1;
-	const BYTE ReadProgByteMem, OldReadProgMem;
-	const BYTE WriteProgByteMem, OldWriteProgMem;
-	const BYTE ReadProgPageMem;
-	const BYTE WriteProgPageMem;
-	const BYTE ReadDataByteMem, OldReadDataMem;
-	const BYTE WriteDataByteMem, OldWriteDataMem;
-	const BYTE ReadDataPageMem;
-	const BYTE WriteDataPageMem;
-	const BYTE ReadUserFuses0, ReadUserFuses1;
-	const BYTE WriteUserFuses0, WriteUserFuses1;
-	const BYTE ReadLockBits0, ReadLockBits1;
-	const BYTE WriteLockBits0, WriteLockBits1, OldWriteLockBits1;
-	const BYTE ReadSignatureByte;
+	const uint8_t EnableProg0, EnableProg1;
+	const uint8_t ChipErase0, ChipErase1, OldChipErase1;
+	const uint8_t ReadProgByteMem, OldReadProgMem;
+	const uint8_t WriteProgByteMem, OldWriteProgMem;
+	const uint8_t ReadProgPageMem;
+	const uint8_t WriteProgPageMem;
+	const uint8_t ReadDataByteMem, OldReadDataMem;
+	const uint8_t WriteDataByteMem, OldWriteDataMem;
+	const uint8_t ReadDataPageMem;
+	const uint8_t WriteDataPageMem;
+	const uint8_t ReadUserFuses0, ReadUserFuses1;
+	const uint8_t WriteUserFuses0, WriteUserFuses1;
+	const uint8_t ReadLockBits0, ReadLockBits1;
+	const uint8_t WriteLockBits0, WriteLockBits1, OldWriteLockBits1;
+	const uint8_t ReadSignatureByte;
 
 	int ReadDataByte(long addr);
 	void WriteDataByte(long addr, int data);

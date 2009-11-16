@@ -169,8 +169,8 @@ class E2Profile : public Profile
 	bool GetSerialNumAutoInc();
 	int SetSerialNumAutoInc(bool val = true);
 
-	uint16_t GetProgramOptions();
-	int SetProgramOptions(uint16_t prog_option);
+	long GetProgramOptions();
+	int SetProgramOptions(long prog_option);
 
 	int GetCalibrationAddress(long &start, int &size, bool &mtype);
 	int SetCalibrationAddress(unsigned long start, int size, bool mtype);

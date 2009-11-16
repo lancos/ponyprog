@@ -91,7 +91,7 @@ long X2444Bus::Read(int addr, uint8_t *data, long length, int page_size)
 
 		//Il primo bit dopo il comando di lettura e` piu` "corto"
 		// cosi` non possiamo utilizzare la normale routine di lettura word
-		UWORD val = RecDataWordShort(organization, 1);
+		uint16_t val = RecDataWordShort(organization, 1);
 
 		if (organization == ORG16)
 		{
@@ -150,16 +150,16 @@ long X2444Bus::Write(int addr, uint8_t const *data, long length, int page_size)
 
 	for (curaddr = 0; curaddr < length; curaddr++)
 	{
-		UWORD val;
+		uint16_t val;
 
 		if (organization == ORG16)
 		{
 #ifdef	_BIG_ENDIAN_
-			val  = (UWORD)(*data++) << 8;
-			val |= (UWORD)(*data++);
+			val  = (uint16_t)(*data++) << 8;
+			val |= (uint16_t)(*data++);
 #else
-			val  = (UWORD)(*data++);
-			val |= (UWORD)(*data++) << 8;
+			val  = (uint16_t)(*data++);
+			val |= (uint16_t)(*data++) << 8;
 #endif
 		}
 		else

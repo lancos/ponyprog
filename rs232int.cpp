@@ -378,7 +378,7 @@ void RS232Interface::WaitForTxEmpty()
 #endif
 }
 
-long RS232Interface::ReadSerial(BYTE *buffer, DWORD len)
+long RS232Interface::ReadSerial(uint8_t *buffer, long len)
 {
 	long retval = E2ERR_OPENFAILED;
 
@@ -394,7 +394,7 @@ long RS232Interface::ReadSerial(BYTE *buffer, DWORD len)
 	if ( fd != INVALID_HANDLE_VALUE )
 	{
 		long nread, nleft;
-		BYTE *ptr;
+		uint8_t *ptr;
 
 		nleft = len;
 		ptr = buffer;
@@ -450,7 +450,7 @@ long RS232Interface::ReadSerial(BYTE *buffer, DWORD len)
 	return retval;
 }
 
-long RS232Interface::WriteSerial(BYTE *buffer, DWORD len)
+long RS232Interface::WriteSerial(uint8_t *buffer, long len)
 {
 	long retval = E2ERR_OPENFAILED;
 
@@ -466,7 +466,7 @@ long RS232Interface::WriteSerial(BYTE *buffer, DWORD len)
 	if ( fd != INVALID_HANDLE_VALUE )
 	{
 		long nleft, nwritten;
-		BYTE *ptr;
+		uint8_t *ptr;
 
 		ptr = buffer;
 		nleft = len;

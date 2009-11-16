@@ -71,9 +71,9 @@ void Device::SetNoOfBank(int no)
 		awi->SetNoOfBlock(no);
 }
 
-BYTE *Device::GetBufPtr() const
+uint8_t *Device::GetBufPtr() const
 {
-	return (BYTE *)awi->GetBufPtr();
+	return (uint8_t *)awi->GetBufPtr();
 }
 
 int Device::GetBufSize() const

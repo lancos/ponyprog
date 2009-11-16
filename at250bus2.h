@@ -50,17 +50,17 @@ class At250BigBus: public At250Bus
  private:		//------------------------------- private
 
 	//Programming commands
-//	const BYTE WriteEnable;
-//	const BYTE WriteDisable;
-//	const BYTE ReadStatus;
-//	const BYTE WriteStatus;
-//	const BYTE ReadData;
-//	const BYTE WriteData;
+//	const uint8_t WriteEnable;
+//	const uint8_t WriteDisable;
+//	const uint8_t ReadStatus;
+//	const uint8_t WriteStatus;
+//	const uint8_t ReadData;
+//	const uint8_t WriteData;
 
 	//Status flags
-//	const BYTE NotReadyFlag;
-//	const BYTE WenFlag;
-//	const BYTE BPFlags;
+//	const uint8_t NotReadyFlag;
+//	const uint8_t WenFlag;
+//	const uint8_t BPFlags;
 
 //	const loop_timeout;
 };

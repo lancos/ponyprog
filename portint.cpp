@@ -587,7 +587,7 @@ void PortInterface::DetectPorts9x()
          char HardwareSubKey[MAX_PATH];
                // Data from the "Hardware" sub-key
 
-         BYTE *Data = new BYTE[DataSize];
+         uint8_t *Data = new uint8_t[DataSize];
                // Data from "Problem" sub-key
 
          // Read the data from the "Problem" sub-key
@@ -608,7 +608,7 @@ void PortInterface::DetectPorts9x()
          // Now try and read the Hardware sub-key
          DataSize = MAX_PATH;
          RegQueryValueEx(
-            CurKey, HARDWARE_KEY, NULL, &DataType, (BYTE *)HardwareSubKey, &DataSize
+            CurKey, HARDWARE_KEY, NULL, &DataType, (uint8_t *)HardwareSubKey, &DataSize
                          );
          if (DataType != REG_SZ)
             HasProblem = TRUE; // No good
@@ -630,7 +630,7 @@ void PortInterface::DetectPorts9x()
             char PortName[MAX_PATH];
             DataSize = MAX_PATH;
             RegQueryValueEx(
-               CurKey, PORTNAME, NULL, &DataType, (BYTE *)PortName, &DataSize
+               CurKey, PORTNAME, NULL, &DataType, (uint8_t *)PortName, &DataSize
                             );
             if (DataType != REG_SZ)
                strcpy(PortName, ""); // No good
@@ -829,7 +829,7 @@ void PortInterface::DetectLPTPortsNT()
 			int n = KeyName[0] - '0';
 
 			LPTPortList[n] = new char[DataSize + strlen(ENUM_KEY) + 1];
-			BYTE *Data = new BYTE[DataSize];
+			uint8_t *Data = new uint8_t[DataSize];
 			RegQueryValueEx(CurKey, KeyName, NULL, &ValueType, Data, &DataSize);
 			strcpy(LPTPortList[n], ENUM_KEY);
 			strcat(LPTPortList[n], (const char *)Data);
@@ -840,7 +840,7 @@ void PortInterface::DetectLPTPortsNT()
 		if ( ValueType == REG_DWORD && strcmp(KeyName, COUNT) == 0 && DataSize == 4)
 		{
 			DWORD Data;
-			RegQueryValueEx(CurKey, KeyName, NULL, &ValueType, (BYTE *)&Data, &DataSize);
+			RegQueryValueEx(CurKey, KeyName, NULL, &ValueType, (uint8_t *)&Data, &DataSize);
 
 			LPTCount = Data;
 		}
@@ -883,7 +883,7 @@ void PortInterface::DetectLPTPortsNT()
 				RegQueryValueEx(CurKey, KeyName, NULL, &ValueType, NULL, &DataSize);
 				if ( ValueType == REG_SZ && strcmp(KeyName, PORTNAME) == 0 )
 				{
-					BYTE *Data = new BYTE[DataSize];
+					uint8_t *Data = new uint8_t[DataSize];
 					RegQueryValueEx(CurKey, KeyName, NULL, &ValueType, Data, &DataSize);
 
 					if (strlen((const char *)Data) == 4 && strncmp("LPT", (const char *)Data, 3) == 0)
@@ -926,7 +926,7 @@ void PortInterface::DetectLPTPortsNT()
 				/** Ulteriore controllo: serve? **
 				if ( ValueType == REG_SZ && strcmp(KeyName, ACTIVESERVICE) == 0 )
 				{
-					BYTE *Data = new BYTE[DataSize];
+					uint8_t *Data = new uint8_t[DataSize];
 					RegQueryValueEx(CurKey, KeyName, NULL, &ValueType, Data, &DataSize);
 					if ( strcmp((char *)Data, "Parport") == 0)
 					{
@@ -940,7 +940,7 @@ void PortInterface::DetectLPTPortsNT()
 					int found = 0;
 					DWORD k;
 					WORD *Data = new WORD[DataSize/2+1];
-					RegQueryValueEx(CurKey, KeyName, NULL, &ValueType, (BYTE *)Data, &DataSize);
+					RegQueryValueEx(CurKey, KeyName, NULL, &ValueType, (uint8_t *)Data, &DataSize);
 					for (k = 0; k < DataSize/2; k++)
 					{
 						if (Data[k] == 0x3BC || Data[k] == 0x378 || Data[k] == 0x278)
@@ -1036,7 +1036,7 @@ void PortInterface::DetectCOMPortsNT()
 			int n = KeyName[0] - '0';
 
 			COMPortList[n] = new char[DataSize + strlen(ENUM_KEY) + 1];
-			BYTE *Data = new BYTE[DataSize];
+			uint8_t *Data = new uint8_t[DataSize];
 			RegQueryValueEx(CurKey, KeyName, NULL, &ValueType, Data, &DataSize);
 			strcpy(COMPortList[n], ENUM_KEY);
 			strcat(COMPortList[n], (const char *)Data);
@@ -1047,7 +1047,7 @@ void PortInterface::DetectCOMPortsNT()
 		if ( ValueType == REG_DWORD && strcmp(KeyName, COUNT) == 0 && DataSize == 4)
 		{
 			DWORD Data;
-			RegQueryValueEx(CurKey, KeyName, NULL, &ValueType, (BYTE *)&Data, &DataSize);
+			RegQueryValueEx(CurKey, KeyName, NULL, &ValueType, (uint8_t *)&Data, &DataSize);
 
 			COMCount = Data;
 		}
@@ -1090,7 +1090,7 @@ void PortInterface::DetectCOMPortsNT()
 				RegQueryValueEx(CurKey, KeyName, NULL, &ValueType, NULL, &DataSize);
 				if ( ValueType == REG_SZ && strcmp(KeyName, PORTNAME) == 0 )
 				{
-					BYTE *Data = new BYTE[DataSize];
+					uint8_t *Data = new uint8_t[DataSize];
 					RegQueryValueEx(CurKey, KeyName, NULL, &ValueType, Data, &DataSize);
 
 					if (strlen((const char *)Data) == 4 && strncmp("COM", (const char *)Data, 3) == 0)
@@ -1133,7 +1133,7 @@ void PortInterface::DetectCOMPortsNT()
 				/** Ulteriore controllo: serve? **
 				if ( ValueType == REG_SZ && strcmp(KeyName, ACTIVESERVICE) == 0 )
 				{
-					BYTE *Data = new BYTE[DataSize];
+					uint8_t *Data = new uint8_t[DataSize];
 					RegQueryValueEx(CurKey, KeyName, NULL, &ValueType, Data, &DataSize);
 					if ( strcmp((char *)Data, "Parport") == 0)
 					{
@@ -1147,7 +1147,7 @@ void PortInterface::DetectCOMPortsNT()
 					int found = 0;
 					DWORD k;
 					WORD *Data = new WORD[DataSize/2+1];
-					RegQueryValueEx(CurKey, KeyName, NULL, &ValueType, (BYTE *)Data, &DataSize);
+					RegQueryValueEx(CurKey, KeyName, NULL, &ValueType, (uint8_t *)Data, &DataSize);
 					for (k = 0; k < DataSize/2; k++)
 					{
 						if (Data[k] == 0x3F8 || Data[k] == 0x2F8 || Data[k] == 0x3E8 || Data[k] == 0x2E8)

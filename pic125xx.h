@@ -48,20 +48,20 @@ class Pic125xx : public Device
 	int Verify(int type = ALL_TYPE);
 
 	//Write lock bits
-	int SecurityRead(DWORD &bits);
-	int SecurityWrite(DWORD bits);
+	int SecurityRead(uint32_t &bits);
+	int SecurityWrite(uint32_t bits);
 
   protected:	//--------------------------------------- protected
 
 	Pic12Bus *GetBus()
 		{ return (Pic12Bus *)Device::GetBus(); }
 
-	virtual int CodeProtectAdjust(WORD &config, int read = 0);
+	virtual int CodeProtectAdjust(uint16_t &config, int read = 0);
 //	virtual int WriteProg();
 	virtual int VerifyProg(unsigned char *localbuf);
 
   private:		//--------------------------------------- private
 
-  	UWORD config_word;
+  	uint16_t config_word;
 };
 #endif

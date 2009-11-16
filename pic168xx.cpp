@@ -46,7 +46,7 @@ Pic168xx::~Pic168xx()
 {
 }
 
-int Pic168xx::CodeProtectAdjust(WORD &config, int read)
+int Pic168xx::CodeProtectAdjust(uint16_t &config, int read)
 {
 	long type = 0;
 	Pic168xx::QueryType(type);
@@ -183,7 +183,7 @@ int Pic168xx::Write(int probe, int type)
 			{
 				// write the config locations
 				// this must be the LAST operation (to exit from config mode we have to clear Vpp)
-				DWORD f;
+				uint32_t f;
 				f = GetAWInfo()->GetLockBits();
 				SecurityWrite(f);
 			}

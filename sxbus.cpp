@@ -174,8 +174,8 @@ long SxBus::Read(int addr, uint8_t *data, long length, int page_size)
 		//Send command opcode
 //		SendCmdCode(addr ? ReadDataCode : ReadProgCode);
 
-//		UWORD val = RecvDataCode();
-		UWORD val = 0;
+//		uint16_t val = RecvDataCode();
+		uint16_t val = 0;
 
 #ifdef	_BIG_ENDIAN_
 		*data++ = (uint8_t)(val >> 8);
@@ -197,17 +197,17 @@ long SxBus::Write(int addr, uint8_t const *data, long length, int page_size)
 	length >>= 1;	//contatore da byte a word
 	for (curaddr = 0; curaddr < length; curaddr++)
 	{
-		UWORD val;
+		uint16_t val;
 
 		//Send command opcode
 //		SendCmdCode(addr ? LoadDataCode : LoadProgCode);
 
 #ifdef	_BIG_ENDIAN_
-		val  = (UWORD)(*data++) << 8;
-		val |= (UWORD)(*data++);
+		val  = (uint16_t)(*data++) << 8;
+		val |= (uint16_t)(*data++);
 #else
-		val  = (UWORD)(*data++);
-		val |= (UWORD)(*data++) << 8;
+		val  = (uint16_t)(*data++);
+		val |= (uint16_t)(*data++) << 8;
 #endif
 //		SendDataCode(val);
 //		SendCmdCode(BeginProgCode);

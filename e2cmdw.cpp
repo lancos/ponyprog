@@ -777,7 +777,7 @@ void e2CmdWindow::About()
 
 	char volname[32];
 	char fsname[64];
-	DWORD volsn, volmaxlen, volfsflag;
+	uint32_t volsn, volmaxlen, volfsflag;
 	if (
 		GetVolumeInformation(
 			"C:\\",
@@ -3421,7 +3421,7 @@ int e2CmdWindow::CmdGetInfo()
 	int pritype = awip->GetEEPPriType();
 	if (pritype == E24XX || pritype == E24XX2 || pritype == E24XX5)
 	{
-	//	DWORD hblock, secbits;
+	//	uint32_t hblock, secbits;
 		int rlv;
 
 		if (pritype != E24XX)
@@ -3620,7 +3620,7 @@ int e2CmdWindow::CmdFillBuf()
 int e2CmdWindow::SpecialBits(int readonly)
 {
 	int rval;
-	DWORD lock, fuse;
+	uint32_t lock, fuse;
 
 	//If the current fuse settings is invalid try to read it from the device
 	if (!awip->IsFuseValid())
@@ -3688,7 +3688,7 @@ int e2CmdWindow::ProgramOptions()
 int e2CmdWindow::SerialNumberOptions()
 {
 	long loc = 0;
-	DWORD val = 0;
+	uint32_t val = 0;
 	bool memtype = false;
 	bool autoinc = false;
 	int size = 1;
@@ -3716,7 +3716,7 @@ int e2CmdWindow::SerialNumberOptions()
 int e2CmdWindow::OscCalibOption()
 {
 	long loc = 0;
-	BYTE val = 0;
+	uint8_t val = 0;
 	bool memtype = false;
 	int size = 1;
 
@@ -3898,7 +3898,7 @@ int e2CmdWindow::CmdWriteLock()
 int e2CmdWindow::CmdReadLock()
 {
 	int result = OK;
-	DWORD bits;
+	uint32_t bits;
 
 	THEAPP->ClearIgnoreFlag();
 
@@ -3971,7 +3971,7 @@ int e2CmdWindow::CmdReadLock()
 int e2CmdWindow::CmdReadSpecial()
 {
 	int result = OK;
-	DWORD bits;
+	uint32_t bits;
 
 	THEAPP->ClearIgnoreFlag();
 
@@ -4238,7 +4238,7 @@ int e2CmdWindow::CmdSetSerialNumber()
 {
 	long loc = 0;
 	int size = 1;
-	DWORD val = 0;
+	uint32_t val = 0;
 	bool memtype = false;
 
 	val = THEAPP->GetSerialNumVal();

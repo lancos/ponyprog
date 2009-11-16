@@ -29,6 +29,7 @@
 
 #include <stdio.h>
 #include <string.h>
+//#include <stddef.h>
 
 #include "e2pfbuf.h"		// Header file
 #include "crc.h"
@@ -53,6 +54,34 @@ e2pFileBuf::e2pFileBuf(e2AppWinInfo *wininfo)
 e2pFileBuf::~e2pFileBuf()
 {
 }
+
+/***
+void e2pFileBuf::check_offsets()
+{
+	printf("fileID: %lu\n", offsetof(e2pHeader, fileID));
+	printf("e2pFuseBits: %lu\n", offsetof(e2pHeader, e2pFuseBits));
+	printf("e2pLockBits: %lu\n", offsetof(e2pHeader, e2pLockBits));
+	printf("e2pType: %lu\n", offsetof(e2pHeader, e2pType));
+	printf("e2pSize: %lu\n", offsetof(e2pHeader, e2pSize));
+	printf("flags: %lu\n", offsetof(e2pHeader, flags));
+	printf("e2pExtFuseBits: %lu\n", offsetof(e2pHeader, e2pExtFuseBits));
+	printf("e2pExtLockBits: %lu\n", offsetof(e2pHeader, e2pExtLockBits));
+	printf("fversion: %lu\n", offsetof(e2pHeader, fversion));
+	printf("split_size_Low: %lu\n", offsetof(e2pHeader, split_size_Low));
+	printf("e2pStringID: %lu\n", offsetof(e2pHeader, e2pStringID));
+	printf("e2pProgBits: %lu\n", offsetof(e2pHeader, e2pProgBits));
+	printf("e2pComment: %lu\n", offsetof(e2pHeader, e2pComment));
+	printf("split_size_High: %lu\n", offsetof(e2pHeader, split_size_High));
+	printf("pad: %lu\n", offsetof(e2pHeader, pad));
+	printf("e2pCrc: %lu\n", offsetof(e2pHeader, e2pCrc));
+	printf("headCrc: %lu\n", offsetof(e2pHeader, headCrc));
+
+	if (sizeof(struct e2pHeader) != 152)
+		printf("Bad E2P Header size: %lu\n", sizeof(struct e2pHeader));
+	else
+		printf("E2P Header size OK (%lu)\n", sizeof(struct e2pHeader));
+}
+***/
 
 //======================>>> e2pFileBuf::Load <<<=======================
 int e2pFileBuf::Load(int loadtype, long relocation_offset)
@@ -88,8 +117,8 @@ int e2pFileBuf::Load(int loadtype, long relocation_offset)
 
 				if (hdr.fversion > 0)
 				{
-					SetLockBits( ((DWORD)hdr.e2pExtLockBits << 8) | hdr.e2pLockBits );
-					SetFuseBits( ((DWORD)hdr.e2pExtFuseBits << 8) | hdr.e2pFuseBits );
+					SetLockBits( ((uint32_t)hdr.e2pExtLockBits << 8) | hdr.e2pLockBits );
+					SetFuseBits( ((uint32_t)hdr.e2pExtFuseBits << 8) | hdr.e2pFuseBits );
 				}
 				else
 				{	//Old file version
@@ -97,7 +126,7 @@ int e2pFileBuf::Load(int loadtype, long relocation_offset)
 						GetE2PPriType(hdr.e2pType) == PIC168XX ||
 						GetE2PPriType(hdr.e2pType) == PIC125XX )
 					{
-						SetLockBits( ((DWORD)hdr.e2pLockBits << 8) | hdr.e2pFuseBits );
+						SetLockBits( ((uint32_t)hdr.e2pLockBits << 8) | hdr.e2pFuseBits );
 					}
 					else
 					{
@@ -109,7 +138,7 @@ int e2pFileBuf::Load(int loadtype, long relocation_offset)
 
 				if (hdr.fversion > 1)
 				{
-					SetSplitted( ((DWORD)hdr.split_size_High << 16) | hdr.split_size_Low );
+					SetSplitted( ((uint32_t)hdr.split_size_High << 16) | hdr.split_size_Low );
 				}
 				else
 				{

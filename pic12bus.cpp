@@ -204,7 +204,7 @@ int Pic12Bus::Reset(void)
 	return OK;
 }
 
-long Pic12Bus::ReadConfig(UWORD &data)
+long Pic12Bus::ReadConfig(uint16_t &data)
 {
 	UserDebug1(UserApp2, "Pic12Bus::ReadConfig(%x) IN\n", data);
 
@@ -214,7 +214,7 @@ long Pic12Bus::ReadConfig(UWORD &data)
 
 	//Read Program Code
 	SendCmdCode(ReadProgCode);
-	UWORD val = RecvProgCode();
+	uint16_t val = RecvProgCode();
 
 	if (val == ProgMask)
 		val = 0xffff;
@@ -233,22 +233,22 @@ long Pic12Bus::ReadConfig(UWORD &data)
 	return OK;
 }
 
-long Pic12Bus::WriteConfig(UWORD data)
+long Pic12Bus::WriteConfig(uint16_t data)
 {
 	UserDebug1(UserApp2, "Pic12Bus::WriteConfig(%x) IN\n", data);
 
 //  	Reset();
 
 	uint8_t *bp = (uint8_t *)&data;
-	UWORD val;
+	uint16_t val;
 
 	//Write Program code
 #ifdef	_BIG_ENDIAN_
-	val  = (UWORD)(*bp++) << 8;
-	val |= (UWORD)(*bp++);
+	val  = (uint16_t)(*bp++) << 8;
+	val |= (uint16_t)(*bp++);
 #else
-	val  = (UWORD)(*bp++);
-	val |= (UWORD)(*bp++) << 8;
+	val  = (uint16_t)(*bp++);
+	val |= (uint16_t)(*bp++) << 8;
 #endif
 	int k;
 	for (k = 100; k > 0; k--)
@@ -301,7 +301,7 @@ long Pic12Bus::Read(int addr, uint8_t *data, long length, int page_size)
 	{
 		//Read Program Code
 		SendCmdCode(ReadProgCode);
-		UWORD val = RecvProgCode();
+		uint16_t val = RecvProgCode();
 
 		if (val == ProgMask)
 			val = 0xffff;
@@ -342,15 +342,15 @@ long Pic12Bus::Write(int addr, uint8_t const *data, long length, int page_size)
 	//Program cycle
 	for (len = 0; len < length; len++)
 	{
-		UWORD val;
+		uint16_t val;
 
 		//Write Program code
 #ifdef	_BIG_ENDIAN_
-		val  = (UWORD)(*data++) << 8;
-		val |= (UWORD)(*data++);
+		val  = (uint16_t)(*data++) << 8;
+		val |= (uint16_t)(*data++);
 #else
-		val  = (UWORD)(*data++);
-		val |= (UWORD)(*data++) << 8;
+		val  = (uint16_t)(*data++);
+		val |= (uint16_t)(*data++) << 8;
 #endif
 		rv = WriteProgWord(val, length-1);
 
@@ -373,7 +373,7 @@ long Pic12Bus::Write(int addr, uint8_t const *data, long length, int page_size)
 	return len;
 }
 
-int Pic12Bus::WriteProgWord(UWORD val, long rc_addr)
+int Pic12Bus::WriteProgWord(uint16_t val, long rc_addr)
 {
 	int k;
 	int rval = OK;
@@ -471,7 +471,7 @@ void Pic12Bus::IncAddress(int n)
 	UserDebug1(UserApp3, "Pic12Bus::IncAddress() OUT ** cur_addr = %ld\n", current_address);
 }
 
-int Pic12Bus::ProgramPulse(UWORD val, int verify, int width)
+int Pic12Bus::ProgramPulse(uint16_t val, int verify, int width)
 {
 	int rval = OK;
 
@@ -498,12 +498,12 @@ int Pic12Bus::ProgramPulse(UWORD val, int verify, int width)
 	return rval;
 }
 
-int Pic12Bus::CompareSingleWord(UWORD data1, UWORD data2, UWORD mask)
+int Pic12Bus::CompareSingleWord(uint16_t data1, uint16_t data2, uint16_t mask)
 {
 	return (data1 & mask) != (data2 & mask);
 }
 
-int Pic12Bus::CompareMultiWord(uint8_t *data1, uint8_t *data2, ULONG length, int split)
+int Pic12Bus::CompareMultiWord(uint8_t *data1, uint8_t *data2, long length, int split)
 {
 	int retval = 0;
 
@@ -512,23 +512,23 @@ int Pic12Bus::CompareMultiWord(uint8_t *data1, uint8_t *data2, ULONG length, int
 
 	if (!split)
 	{
-		ULONG k;
+		long k;
 		for (k = 0; k < length; k += 2)
 		{
-			UWORD val1, val2;
+			uint16_t val1, val2;
 
 #ifdef	_BIG_ENDIAN_
-			val1  = (UWORD)(*data1++) << 8;
-			val1 |= (UWORD)(*data1++);
+			val1  = (uint16_t)(*data1++) << 8;
+			val1 |= (uint16_t)(*data1++);
 
-			val2  = (UWORD)(*data2++) << 8;
-			val2 |= (UWORD)(*data2++);
+			val2  = (uint16_t)(*data2++) << 8;
+			val2 |= (uint16_t)(*data2++);
 #else
-			val1  = (UWORD)(*data1++);
-			val1 |= (UWORD)(*data1++) << 8;
+			val1  = (uint16_t)(*data1++);
+			val1 |= (uint16_t)(*data1++) << 8;
 
-			val2  = (UWORD)(*data2++);
-			val2 |= (UWORD)(*data2++) << 8;
+			val2  = (uint16_t)(*data2++);
+			val2 |= (uint16_t)(*data2++) << 8;
 #endif
 			if ( (retval = CompareSingleWord(val1, val2, ProgMask)) )
 				break;		//Stop if a difference

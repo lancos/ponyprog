@@ -950,10 +950,10 @@ int E2Profile::SetNVMProgDelay(int delay)
 		return BADPARAM;
 }
 
-ULONG E2Profile::GetSerialNumVal()
+unsigned long E2Profile::GetSerialNumVal()
 {
 	char const *sp = GetParameter("SerialNumberVal");
-	ULONG rval = 0;		//Default 0
+	unsigned long rval = 0;		//Default 0
 
 	if (sp)
 	{
@@ -1062,9 +1062,9 @@ int E2Profile::SetSerialNumAutoInc(bool val)
 	return OK;
 }
 
-UWORD E2Profile::GetProgramOptions()
+long E2Profile::GetProgramOptions()
 {
-  UWORD res;
+  long res;
   const char * rval;
 
   res = 0;
@@ -1111,7 +1111,7 @@ UWORD E2Profile::GetProgramOptions()
   return res;
 }
 
-int E2Profile::SetProgramOptions(UWORD prog_option)
+int E2Profile::SetProgramOptions(long prog_option)
 {
   int rval;
 

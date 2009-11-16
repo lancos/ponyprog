@@ -100,7 +100,7 @@ static DialogCmd otherCmds[] =
 
 
 //======================>>> infoModalDialog::infoModalDialog <<<==================
-e24xx_infoModalDialog::e24xx_infoModalDialog(vBaseWindow* bw, int rlv, UWORD crc, long size, char* title) :
+e24xx_infoModalDialog::e24xx_infoModalDialog(vBaseWindow* bw, int rlv, uint16_t crc, long size, char* title) :
     vModalDialog(bw, title)
 {
 	if (rlv == 1)
@@ -137,7 +137,7 @@ e24xx_infoModalDialog::e24xx_infoModalDialog(vBaseWindow* bw, int rlv, UWORD crc
 }
 
 //======================>>> infoModalDialog::infoModalDialog <<<==================
-other_infoModalDialog::other_infoModalDialog(vBaseWindow* bw, long fsize, long esize, UWORD crc, char* title) :
+other_infoModalDialog::other_infoModalDialog(vBaseWindow* bw, long fsize, long esize, uint16_t crc, char* title) :
     vModalDialog(bw, title)
 {
 	char str[MAXMSG];

@@ -45,10 +45,10 @@ class At90sBus : public SPIBus
 	virtual int Erase(int type = 0);
 
 	virtual int ReadDeviceCode(int addr);
-	virtual int WriteLockBits(DWORD byte, long model = 0);
-	virtual int WriteFuseBits(DWORD byte, long model = 0);
-	virtual DWORD ReadLockBits(long model = 0);
-	virtual DWORD ReadFuseBits(long model = 0);
+	virtual int WriteLockBits(uint32_t byte, long model = 0);
+	virtual int WriteFuseBits(uint32_t byte, long model = 0);
+	virtual uint32_t ReadLockBits(long model = 0);
+	virtual uint32_t ReadFuseBits(long model = 0);
 	virtual long ReadCalibration(int addr = 0);
 
 	void SetFlashPagePolling(bool val);
@@ -59,25 +59,25 @@ class At90sBus : public SPIBus
  protected:		//------------------------------- protected
 
 	//Programming commands
-	const BYTE EnableProg0, EnableProg1;
-	const BYTE ChipErase0, ChipErase1;
-	const BYTE ReadProgMemH0, ReadProgMemH1;
-	const BYTE ReadProgMemL0, ReadProgMemL1;
-	const BYTE WriteProgMemH0, WriteProgMemH1;
-	const BYTE WriteProgMemL0, WriteProgMemL1;
-	const BYTE WriteProgPageMem;
-	const BYTE ReadEEPMem0, ReadEEPMem1;
-	const BYTE WriteEEPMem0, WriteEEPMem1;
-	const BYTE ReadDevCode0, ReadDevCode1;
-	const BYTE ReadLock0, ReadLock1;
-	const BYTE WriteLock0, WriteLock1;
-	const BYTE ReadFuse0, ReadFuse1;
-	const BYTE WriteFuse0, WriteFuse1a, WriteFuse1b;
-	const BYTE ReadFuseHigh0, ReadFuseHigh1;
-	const BYTE WriteFuseHigh0, WriteFuseHigh1;
-	const BYTE ReadFuseExt0, ReadFuseExt1;
-	const BYTE WriteFuseExt0, WriteFuseExt1;
-	const BYTE ReadCalib0, ReadCalib1;
+	const uint8_t EnableProg0, EnableProg1;
+	const uint8_t ChipErase0, ChipErase1;
+	const uint8_t ReadProgMemH0, ReadProgMemH1;
+	const uint8_t ReadProgMemL0, ReadProgMemL1;
+	const uint8_t WriteProgMemH0, WriteProgMemH1;
+	const uint8_t WriteProgMemL0, WriteProgMemL1;
+	const uint8_t WriteProgPageMem;
+	const uint8_t ReadEEPMem0, ReadEEPMem1;
+	const uint8_t WriteEEPMem0, WriteEEPMem1;
+	const uint8_t ReadDevCode0, ReadDevCode1;
+	const uint8_t ReadLock0, ReadLock1;
+	const uint8_t WriteLock0, WriteLock1;
+	const uint8_t ReadFuse0, ReadFuse1;
+	const uint8_t WriteFuse0, WriteFuse1a, WriteFuse1b;
+	const uint8_t ReadFuseHigh0, ReadFuseHigh1;
+	const uint8_t WriteFuseHigh0, WriteFuseHigh1;
+	const uint8_t ReadFuseExt0, ReadFuseExt1;
+	const uint8_t WriteFuseExt0, WriteFuseExt1;
+	const uint8_t ReadCalib0, ReadCalib1;
 
 	int ReadEEPByte(long addr);
 	void WriteEEPByte(long addr, int data);
@@ -86,12 +86,12 @@ class At90sBus : public SPIBus
 	int WriteProgPage(long addr, uint8_t const *data, long page_size, long timeout = 10000);
 
 	int WaitReadyAfterWrite(int type, long addr, int data, long timeout = 10000);
-	bool CheckBlankPage(uint8_t const *data, ULONG length);
+	bool CheckBlankPage(uint8_t const *data, long length);
 	void RefreshParameters();
 
 	//Polling codes
-	const BYTE p1_a, p2_a, pflash_a;
-	const BYTE p1_b, p2_b, pflash_b;
+	const uint8_t p1_a, p2_a, pflash_a;
+	const uint8_t p1_b, p2_b, pflash_b;
 
 	//Erase and programming delays
 	int twd_erase;

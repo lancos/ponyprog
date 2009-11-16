@@ -51,7 +51,7 @@ class Pic168xx : public Pic16xx
 		{ return (PicBusNew *)Device::GetBus(); }
 
 	int QueryType(long &type);
-	int CodeProtectAdjust(WORD &config, int read = 0);
+	int CodeProtectAdjust(uint16_t &config, int read = 0);
 
   private:		//--------------------------------------- private
 

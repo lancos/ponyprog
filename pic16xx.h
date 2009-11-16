@@ -50,15 +50,15 @@ class Pic16xx : public Device
 	int Erase(int probe = 1, int type = ALL_TYPE);
 
 	//Write lock bits
-	int SecurityRead(DWORD &bits);
-	int SecurityWrite(DWORD bits);
+	int SecurityRead(uint32_t &bits);
+	int SecurityWrite(uint32_t bits);
 
   protected:	//--------------------------------------- protected
 
 	PicBus *GetBus()
 		{ return (PicBus *)Device::GetBus(); }
 
-	WORD id_locations[8];
+	uint16_t id_locations[8];
 /**
 	int ReadProg();
 	int ReadData();
@@ -67,7 +67,7 @@ class Pic16xx : public Device
 	int VerifyProg(unsigned char *localbuf);
 	int VerifyData(unsigned char *localbuf);
 **/
-	virtual int CodeProtectAdjust(WORD &config, int read = 0);
+	virtual int CodeProtectAdjust(uint16_t &config, int read = 0);
 
   private:		//--------------------------------------- private
 

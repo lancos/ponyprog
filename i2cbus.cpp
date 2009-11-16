@@ -373,10 +373,10 @@ int I2CBus::Start(uint8_t slave)
  * trasmissione. In questo caso data deve puntare ad un buffer di (almeno)
  * un byte.
  */
-ULONG I2CBus::StartRead(uint8_t slave, uint8_t *data, ULONG length)
+long I2CBus::StartRead(uint8_t slave, uint8_t *data, long length)
 {
 	int temp;
-	ULONG len = length;
+	long len = length;
 
 	UserDebug3(UserApp2, "I2CBus::StartRead(%d, %ph, %lu) - IN\n", slave, data, (unsigned long)length);
 
@@ -424,10 +424,10 @@ fineR:
 	return length-len;
 }
 
-ULONG I2CBus::StartWrite(uint8_t slave, uint8_t const *data, ULONG length)
+long I2CBus::StartWrite(uint8_t slave, uint8_t const *data, long length)
 {
 	int error;
-	ULONG len = length;
+	long len = length;
 
 	UserDebug3(UserApp2, "I2CBus::StartWrite(%d, %ph, %lu) - IN\n", slave, data, (unsigned long)length);
 
@@ -479,7 +479,7 @@ int I2CBus::Reset(void)
 
 	SetDelay();
 
-	BYTE c;
+	uint8_t c;
 	Read(0x00, &c, 0);
 	setSCLSDA();
 	WaitMsec(100);		//tolto il commento il 25/01/1999 e raddoppiato per permettere il funzionamento della 2402 non Cmos

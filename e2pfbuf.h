@@ -48,6 +48,6 @@ class e2pFileBuf : public FileBuf
   protected:	//--------------------------------------- protected
 
   private:		//--------------------------------------- private
-
+//	void check_offsets();
 };
 #endif

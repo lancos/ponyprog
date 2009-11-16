@@ -51,7 +51,7 @@ At90sxx::~At90sxx()
 	UserDebug(Destructor, "At90sxx::~At90sxx()\n");
 }
 
-int At90sxx::SecurityRead(DWORD &bits)
+int At90sxx::SecurityRead(uint32_t &bits)
 {
 	int rv = Probe();		//No size probe needed, just probe for presence
 
@@ -63,7 +63,7 @@ int At90sxx::SecurityRead(DWORD &bits)
 	return rv;
 }
 
-int At90sxx::SecurityWrite(DWORD bits)
+int At90sxx::SecurityWrite(uint32_t bits)
 {
 	int rv = Probe();		//No size probe needed, just probe for presence
 
@@ -74,7 +74,7 @@ int At90sxx::SecurityWrite(DWORD bits)
 	return rv;
 }
 
-int At90sxx::FusesRead(DWORD &bits)
+int At90sxx::FusesRead(uint32_t &bits)
 {
 	int rv = Probe();		//No size probe needed, just probe for presence
 
@@ -86,7 +86,7 @@ int At90sxx::FusesRead(DWORD &bits)
 	return rv;
 }
 
-int At90sxx::FusesWrite(DWORD bits)
+int At90sxx::FusesWrite(uint32_t bits)
 {
 	int rv = Probe();		//No size probe needed, just probe for presence
 
@@ -359,7 +359,7 @@ int At90sxx::Read(int probe, int type)
 				if (type & CONFIG_TYPE)
 				{
 					// read the fuses
-					DWORD f = GetBus()->ReadFuseBits( GetAWInfo()->GetEEPType() );
+					uint32_t f = GetBus()->ReadFuseBits( GetAWInfo()->GetEEPType() );
 					GetAWInfo()->SetFuseBits(f);
 
 					f = GetBus()->ReadLockBits( GetAWInfo()->GetEEPType() );
@@ -397,7 +397,7 @@ int At90sxx::Write(int probe, int type)
 					if ( GetAWInfo()->GetEEPType() == AT90S4433 || GetAWInfo()->GetEEPType() == AT90S2333 )
 					{
 						//write the locks
-						DWORD f = GetAWInfo()->GetLockBits();
+						uint32_t f = GetAWInfo()->GetLockBits();
 						GetBus()->WriteLockBits(f,  GetAWInfo()->GetEEPType());
 
 						GetBus()->WaitMsec(100);
@@ -409,7 +409,7 @@ int At90sxx::Write(int probe, int type)
 					else
 					{
 						//write the fuses
-						DWORD f = GetAWInfo()->GetFuseBits();
+						uint32_t f = GetAWInfo()->GetFuseBits();
 						GetBus()->WriteFuseBits(f, GetAWInfo()->GetEEPType());
 
 						//write the locks
@@ -445,8 +445,8 @@ int At90sxx::Verify(int type)
 		if (type & CONFIG_TYPE)
 		{
 			// read the fuses & locks
-			DWORD f = GetBus()->ReadFuseBits( GetAWInfo()->GetEEPType() );
-			DWORD l = GetBus()->ReadLockBits( GetAWInfo()->GetEEPType() );
+			uint32_t f = GetBus()->ReadFuseBits( GetAWInfo()->GetEEPType() );
+			uint32_t l = GetBus()->ReadLockBits( GetAWInfo()->GetEEPType() );
 
 			if ( GetAWInfo()->GetLockBits() == l && GetAWInfo()->GetFuseBits() == f )
 			{

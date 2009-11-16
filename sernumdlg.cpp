@@ -115,7 +115,7 @@ SerNumDialog::~SerNumDialog()
 	UserDebug(Destructor,"SerNumDialog::~SerNumDialog() destructor\n")
 }
 
-int SerNumDialog::SerNumAction(long &cLoc, bool &cMemType, bool &cAutoInc, FmtEndian &cFmt, int &cLen, DWORD &cVal)
+int SerNumDialog::SerNumAction(long &cLoc, bool &cMemType, bool &cAutoInc, FmtEndian &cFmt, int &cLen, uint32_t &cVal)
 {
 	cLoc = (cLoc < 0) ? 0 : cLoc;
 	cLen = (cLen < 0 || cLen > 4) ? 4 : cLen;
@@ -218,7 +218,7 @@ OscCalibDialog::~OscCalibDialog()
 }
 
 //======================>>> OscCalibDialog::OscCalibAction <<<======================
-int OscCalibDialog::OscCalibAction(long &cLoc, bool &cMemType, BYTE &cVal)
+int OscCalibDialog::OscCalibAction(long &cLoc, bool &cMemType, uint8_t &cVal)
 {
 	cLoc = (cLoc < 0) ? 0 : cLoc;
 
@@ -244,7 +244,7 @@ int OscCalibDialog::OscCalibAction(long &cLoc, bool &cMemType, BYTE &cVal)
 	cLoc = strtol(str,NULL,0);
 
 	GetTextIn(txiVal, str, 10);
-	cVal = (BYTE)strtol(str,NULL,0);
+	cVal = (uint8_t)strtol(str,NULL,0);
 
 	cMemType = GetValue(chkMemOffset) ? true : false;
 

@@ -37,7 +37,7 @@
 #undef	BANK_SIZE
 #define	BANK_SIZE	1
 
-#define	CONFIG_SIZE	( 8 * sizeof(WORD) )
+#define	CONFIG_SIZE	( 8 * sizeof(uint16_t) )
 
 //=====>>> Costruttore <<<======
 Pic125xx::Pic125xx(e2AppWinInfo *wininfo, BusIO *busp)
@@ -51,20 +51,20 @@ Pic125xx::~Pic125xx()
 {
 }
 
-int Pic125xx::CodeProtectAdjust(WORD &config, int read)
+int Pic125xx::CodeProtectAdjust(uint16_t &config, int read)
 {
 	config = ~config & 0x0fff;
 
 	return OK;
 }
 
-int Pic125xx::SecurityRead(DWORD &bits)
+int Pic125xx::SecurityRead(uint32_t &bits)
 {
 	int rv = GetBus()->ReadConfig(config_word);
 
 	if (rv == OK)
 	{
-		UWORD config = config_word;
+		uint16_t config = config_word;
 		CodeProtectAdjust(config, 1);
 
 		bits = config;
@@ -73,9 +73,9 @@ int Pic125xx::SecurityRead(DWORD &bits)
 	return rv;
 }
 
-int Pic125xx::SecurityWrite(DWORD bits)
+int Pic125xx::SecurityWrite(uint32_t bits)
 {
-	WORD config = (WORD)bits;
+	uint16_t config = (uint16_t)bits;
 
 	CodeProtectAdjust(config, 0);
 
@@ -99,7 +99,7 @@ int Pic125xx::Read(int probe, int type)
 		{
 			// read the config locations
 			// this must be the FIRST operation (just after reset)
-			DWORD f;
+			uint32_t f;
 			SecurityRead(f);
 			GetAWInfo()->SetLockBits(f);
 		}
@@ -132,7 +132,7 @@ int Pic125xx::Write(int probe, int type)
 		{
 			// write the config locations
 			// this must be the FIRST operation (just after reset)
-			DWORD f;
+			uint32_t f;
 
 			GetBus()->Reset();
 
@@ -166,7 +166,7 @@ int Pic125xx::Verify(int type)
 
 		if ( type & CONFIG_TYPE )
 		{
-			DWORD f;
+			uint32_t f;
 			SecurityRead(f);
 
 			UserDebug2(UserApp2, "Pic125xx::Verify() ** %lu <-> %lu\n", (unsigned long)f, (unsigned long)GetAWInfo()->GetLockBits());

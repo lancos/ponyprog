@@ -405,7 +405,7 @@ int IntelFileBuf::Load(int loadtype, long relocation_offset)
 		//	ScanHex(&s, 8);
 			while (bcount--)
 			{
-				data = (BYTE)ScanHex(&s, 2);
+				data = (uint8_t)ScanHex(&s, 2);
 				checksum += data;
 			}
 		}
@@ -473,7 +473,7 @@ int IntelFileBuf::Load(int loadtype, long relocation_offset)
 
 /*Passandogli un indirizzo di stringa, converte le prime <len> cifre di tale
 * stringa in Hesadecimali, incrementa il puntatore, e restituisce il numero.
-* Attenzione! Poiche` il numero restituito e` ULONG (4Byte), il numero max
+* Attenzione! Poiche` il numero restituito e` uint32_t (4Byte), il numero max
 * di <len> e` 8 (8 cifre esadecimali 0xABCDEF12).
 */
 int IntelFileBuf::ScanHex(char **sp, int len, uint32_t &result)

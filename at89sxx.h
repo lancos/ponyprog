@@ -49,11 +49,11 @@ class At89sxx : public Device
 
 //	int Erase(int probe = 1, int type = ALL_TYPE);
 
-	int SecurityRead(DWORD &bits);
-	int SecurityWrite(DWORD bits);
+	int SecurityRead(uint32_t &bits);
+	int SecurityWrite(uint32_t bits);
 
-	int FusesRead(DWORD &bits);
-	int FusesWrite(DWORD bits);
+	int FusesRead(uint32_t &bits);
+	int FusesWrite(uint32_t bits);
 
 	At89sBus *GetBus()
 		{ return (At89sBus *)Device::GetBus(); }

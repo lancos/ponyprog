@@ -186,7 +186,7 @@ int At89sBus::WriteProgPage(long addr, uint8_t const *data, long page_size, long
 	if (enable_progpage_polling)
 	{
 		long polling_loc = addr + page_size - 1;	//Read back last loaded byte
-		BYTE polling_data = data[page_size - 1];
+		uint8_t polling_data = data[page_size - 1];
 		WaitUsec(100);
 
 		okflag = false;
@@ -225,7 +225,7 @@ int At89sBus::WriteDataPage(long addr, uint8_t const *data, long page_size, long
 	if (enable_datapage_polling)
 	{
 		long polling_loc = addr + page_size - 1;	//Read back last loaded byte
-		BYTE polling_data = data[page_size - 1];
+		uint8_t polling_data = data[page_size - 1];
 		WaitUsec(100);
 
 		okflag = false;
@@ -294,7 +294,7 @@ int At89sBus::Reset()
 	return OK;
 }
 
-int At89sBus::WriteLockBits(DWORD param, long model)
+int At89sBus::WriteLockBits(uint32_t param, long model)
 {
 	int val1, val2, val3, val4;
 
@@ -337,10 +337,10 @@ int At89sBus::WriteLockBits(DWORD param, long model)
 		return NOTSUPPORTED;
 }
 
-int At89sBus::ReadLockBits(DWORD &res, long model)
+int At89sBus::ReadLockBits(uint32_t &res, long model)
 {
 	int rval = OK;
-	DWORD rv1;
+	uint32_t rv1;
 
 	switch (model)
 	{
@@ -367,7 +367,7 @@ int At89sBus::ReadLockBits(DWORD &res, long model)
 	return rval;
 }
 
-int At89sBus::WriteFuseBits(DWORD param, long model)
+int At89sBus::WriteFuseBits(uint32_t param, long model)
 {
 	int val1, val2, val3, val4;
 
@@ -399,10 +399,10 @@ int At89sBus::WriteFuseBits(DWORD param, long model)
 		return NOTSUPPORTED;
 }
 
-int At89sBus::ReadFuseBits(DWORD &res, long model)
+int At89sBus::ReadFuseBits(uint32_t &res, long model)
 {
 	int rval = OK;
-	DWORD rv1;
+	uint32_t rv1;
 
 	switch (model)
 	{

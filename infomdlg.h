@@ -38,7 +38,7 @@
 class e24xx_infoModalDialog : public vModalDialog
 {
   public:		//---------------------------------------- public
-	e24xx_infoModalDialog(vBaseWindow* bw, int rlv, UWORD crc, long size, char* title = STR_MSGDEVINFO);
+	e24xx_infoModalDialog(vBaseWindow* bw, int rlv, uint16_t crc, long size, char* title = STR_MSGDEVINFO);
 	virtual ~e24xx_infoModalDialog();		// Destructor
 	virtual int infoAction(char* msg = "Device Info");
 
@@ -51,7 +51,7 @@ class e24xx_infoModalDialog : public vModalDialog
 class other_infoModalDialog : public vModalDialog
 {
   public:		//---------------------------------------- public
-	other_infoModalDialog(vBaseWindow* bw, long fsize, long esize, UWORD crc, char* title = STR_MSGDEVINFO);
+	other_infoModalDialog(vBaseWindow* bw, long fsize, long esize, uint16_t crc, char* title = STR_MSGDEVINFO);
 	virtual ~other_infoModalDialog();		// Destructor
 	virtual int infoAction(char* msg = "Device Info");
 

@@ -150,11 +150,11 @@ class e2AppWinInfo : public vAppWinInfo
 	void SetSplittedInfo(long spl = 0)
 		{ splitted = spl; }
 
-	UWORD GetCRC() const
+	uint16_t GetCRC() const
 		{ return crc; }
 	void SetCRC(int c = 0)
 		{ crc = c; }
-	UWORD RecalcCRC();
+	uint16_t RecalcCRC();
 
 	uint8_t *GetBufPtr() const
 		{ return (uint8_t *)buffer; }
@@ -166,21 +166,21 @@ class e2AppWinInfo : public vAppWinInfo
 	void FillBuffer(int first_pos = 0, int ch = 0xFF, long len = -1);
 	void ClearBuffer(int type = ALL_TYPE);
 
-	int SecurityRead(DWORD &bits);
-	int SecurityWrite(DWORD bits, bool no_param = false);
-	int FusesRead(DWORD &bits);
-	int FusesWrite(DWORD bits, bool no_param = false);
-	int HighEnduranceRead(DWORD &block_no);
-	int HighEnduranceWrite(DWORD block_no, bool no_param = false);
+	int SecurityRead(uint32_t &bits);
+	int SecurityWrite(uint32_t bits, bool no_param = false);
+	int FusesRead(uint32_t &bits);
+	int FusesWrite(uint32_t bits, bool no_param = false);
+	int HighEnduranceRead(uint32_t &block_no);
+	int HighEnduranceWrite(uint32_t block_no, bool no_param = false);
 
 	int ReadOscCalibration(int addr = 0);
 
-	DWORD GetLockBits() const
+	uint32_t GetLockBits() const
 		{ return lock_bits; }
-	DWORD GetFuseBits() const
+	uint32_t GetFuseBits() const
 		{ return fuse_bits; }
-	void SetLockBits(DWORD bits);
-	void SetFuseBits(DWORD bits);
+	void SetLockBits(uint32_t bits);
+	void SetFuseBits(uint32_t bits);
 
 	bool IsFuseValid() const
 		{ return fuse_ok; }
@@ -244,11 +244,11 @@ class e2AppWinInfo : public vAppWinInfo
 	int splitted;				//indica se la EEPROM e` divisa in due parti distinte (EEPROM - FLASH)
 	int roll_over;				//indica se e`presente una features della eeprom
 
-	DWORD fuse_bits;			//device dependent bits
-	DWORD lock_bits;			//device dependent lock (security) bits
+	uint32_t fuse_bits;			//device dependent bits
+	uint32_t lock_bits;			//device dependent lock (security) bits
 	bool fuse_ok;
 
-	UWORD crc;					//CRC del contenuto della eeprom
+	uint16_t crc;					//CRC del contenuto della eeprom
 
 	char eeprom_string[STRINGID_SIZE];	//eeprom string ID
 	char eeprom_comment[COMMENT_SIZE];	//eeprom comment

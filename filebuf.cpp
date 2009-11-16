@@ -119,12 +119,12 @@ int FileBuf::GetRollOver() const
 	return awi->GetBankRollOver();
 }
 
-DWORD FileBuf::GetLockBits() const
+uint32_t FileBuf::GetLockBits() const
 {
 	return awi->GetLockBits();
 }
 
-DWORD FileBuf::GetFuseBits() const
+uint32_t FileBuf::GetFuseBits() const
 {
 	return awi->GetFuseBits();
 }
@@ -144,17 +144,17 @@ void FileBuf::SetSplitted(long spl)
 	awi->SetSplittedInfo(spl);
 }
 
-void FileBuf::SetLockBits(DWORD bits)
+void FileBuf::SetLockBits(uint32_t bits)
 {
 	awi->SetLockBits(bits);
 }
 
-void FileBuf::SetFuseBits(DWORD bits)
+void FileBuf::SetFuseBits(uint32_t bits)
 {
 	awi->SetFuseBits(bits);
 }
 
-void FileBuf::SetCRC(UWORD c)
+void FileBuf::SetCRC(uint16_t c)
 {
 	awi->SetCRC(c);
 }

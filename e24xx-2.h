@@ -46,10 +46,10 @@ class E24xx2 : public E24xx
 
 //	int BankRollOverDetect(int force);
 
-	int SecurityRead(DWORD &blocks);
-	int SecurityWrite(DWORD blocks);
-	int HighEnduranceRead(DWORD &block_no);
-	int HighEnduranceWrite(DWORD block_no);
+	int SecurityRead(uint32_t &blocks);
+	int SecurityWrite(uint32_t blocks);
+	int HighEnduranceRead(uint32_t &block_no);
+	int HighEnduranceWrite(uint32_t block_no);
 
   protected:	//--------------------------------------- protected
 

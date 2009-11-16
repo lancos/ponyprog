@@ -203,7 +203,7 @@ int At90sBus::Reset()
 	return success_flag ? 1 : 0;
 }
 
-int At90sBus::WriteLockBits(DWORD param, long model)
+int At90sBus::WriteLockBits(uint32_t param, long model)
 {
 	int val1, val2, val3, val4;
 	int val5, val6, val7, val8;
@@ -298,7 +298,7 @@ int At90sBus::WriteLockBits(DWORD param, long model)
 	return OK;
 }
 
-int At90sBus::WriteFuseBits(DWORD param, long model)
+int At90sBus::WriteFuseBits(uint32_t param, long model)
 {
 	int val1, val2, val3, val4;
 	int val5, val6, val7, val8;
@@ -440,10 +440,10 @@ int At90sBus::WriteFuseBits(DWORD param, long model)
 	return OK;
 }
 
-DWORD At90sBus::ReadFuseBits(long model)
+uint32_t At90sBus::ReadFuseBits(long model)
 {
-	DWORD retval = 0;
-	DWORD rv1, rv2, rv3;
+	uint32_t retval = 0;
+	uint32_t rv1, rv2, rv3;
 
 	switch (model)
 	{
@@ -553,9 +553,9 @@ DWORD At90sBus::ReadFuseBits(long model)
 	return retval;
 }
 
-DWORD At90sBus::ReadLockBits(long model)
+uint32_t At90sBus::ReadLockBits(long model)
 {
-	DWORD retval = 0;
+	uint32_t retval = 0;
 	int rv1, rv2;
 
 	switch (model)
@@ -926,7 +926,7 @@ int At90sBus::WriteProgPage(long addr, uint8_t const *data, long page_size, long
 	return okflag ? OK : E2P_TIMEOUT;
 }
 
-bool At90sBus::CheckBlankPage(uint8_t const *data, ULONG length)
+bool At90sBus::CheckBlankPage(uint8_t const *data, long length)
 {
 	bool blank_page = true;
 

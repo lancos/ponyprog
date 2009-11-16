@@ -66,7 +66,7 @@ E24xx::~E24xx()
 int E24xx::Probe(int probe_size)
 {
 	int addr, error, k;
-	BYTE ch;
+	uint8_t ch;
 
 	UserDebug1(UserApp1, "E24xx::Probe(%d) - IN\n", probe_size);
 
@@ -211,10 +211,10 @@ int E24xx::Verify(int type)
 
 // questa routine si aspetta che in ingresso i 256 bytes da programmare l'eeprom
 // siano memorizzati nel iicbuffer nelle locazioni da 1 (non da 0!) a 256
-int E24xx::bank_out(BYTE const *copy_buf, int bank, long size, long idx)
+int E24xx::bank_out(uint8_t const *copy_buf, int bank, long size, long idx)
 {
 	int k,j;
-	BYTE buffer[BANK_SIZE+1];
+	uint8_t buffer[BANK_SIZE+1];
 
 	if (copy_buf == 0 || bank >= GetNoOfBank())
 		return BADPARAM;
@@ -252,9 +252,9 @@ int E24xx::bank_out(BYTE const *copy_buf, int bank, long size, long idx)
 	return OK;
 }
 
-int E24xx::bank_in(BYTE *copy_buf, int bank, long size, long idx)
+int E24xx::bank_in(uint8_t *copy_buf, int bank, long size, long idx)
 {
-	BYTE ch;
+	uint8_t ch;
 
 	if (copy_buf == 0) // || bank >= GetNoOfBank())
 		return BADPARAM;
@@ -262,7 +262,7 @@ int E24xx::bank_in(BYTE *copy_buf, int bank, long size, long idx)
 	if (size <= 0)
 		size = GetBankSize();
 
-	ch = (BYTE)idx;
+	ch = (uint8_t)idx;
 	if (GetBus()->StartWrite(eeprom_addr[bank], &ch, 1) != 1)
 		return GetBus()->Error();
 
@@ -277,7 +277,7 @@ int E24xx::bank_in(BYTE *copy_buf, int bank, long size, long idx)
 
 		for (k = 0; k < size; k++)
 		{
-			ch = (BYTE)(k+idx);
+			ch = (uint8_t)(k+idx);
 			if (GetBus()->StartWrite(eeprom_addr[bank], &ch, 1) != 1)
 				return GetBus()->Error();
 			if (GetBus()->Read(eeprom_addr[bank], copy_buf+k, 1) != 1)
@@ -297,8 +297,8 @@ int E24xx::BankRollOverDetect(int force)
 
 	if (GetNoOfBank() > 1)
 	{
-		BYTE index;
-		BYTE buf[CMP_LEN+1], buf1[CMP_LEN], buf2[CMP_LEN];
+		uint8_t index;
+		uint8_t buf[CMP_LEN+1], buf1[CMP_LEN], buf2[CMP_LEN];
 #if 0
 		//Lettura dal primo banco
 		index = 0;

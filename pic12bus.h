@@ -47,13 +47,13 @@ class Pic12Bus : public BusIO
 
 	int Reset();
 
-	long ReadConfig(UWORD &data);
-	long WriteConfig(UWORD data);
+	long ReadConfig(uint16_t &data);
+	long WriteConfig(uint16_t data);
 
 	void DisableCodeProtect();
 
-	int CompareSingleWord(UWORD data1, UWORD data2, UWORD mask);
-	int CompareMultiWord(uint8_t *data1, uint8_t *data2, ULONG length, int split);
+	int CompareSingleWord(uint16_t data1, uint16_t data2, uint16_t mask);
+	int CompareMultiWord(uint8_t *data1, uint8_t *data2, long length, int split);
 
 	void SetDelay();
 
@@ -66,33 +66,33 @@ class Pic12Bus : public BusIO
 	long RecDataWord(int wlen = 16);
 	int WaitReadyAfterWrite(long timeout = 5000);
 
-	int WriteProgWord(UWORD val, long rc_addr);
-	int ProgramPulse(UWORD val, int verify = 0, int width = 100);	//100uSec default pulse width
+	int WriteProgWord(uint16_t val, long rc_addr);
+	int ProgramPulse(uint16_t val, int verify = 0, int width = 100);	//100uSec default pulse width
 
 	int SendCmdCode(int opcode)
 		{ return SendDataWord(opcode, 6); }
-	int SendProgCode(UWORD data)
+	int SendProgCode(uint16_t data)
 	{
 		//the code is 14 bit data with leading and trailing 0's
 		data &= ProgMask;
 		data <<= 1;
 		return SendDataWord(data);
 	}
-	UWORD RecvProgCode()
+	uint16_t RecvProgCode()
 	{
-		return (UWORD)(RecDataWord() >> 1) & ProgMask;
+		return (uint16_t)(RecDataWord() >> 1) & ProgMask;
 	}
  /**
-	int SendDataCode(UWORD data)
+	int SendDataCode(uint16_t data)
 	{
 		//the code is 8 bit data with leading and trailing 0's
 		data &= DataMask;
 		data <<= 1;
 		return SendDataWord(data);
 	}
-	UWORD RecvDataCode()
+	uint16_t RecvDataCode()
 	{
-		return (UWORD)(RecDataWord() >> 1) & DataMask;
+		return (uint16_t)(RecDataWord() >> 1) & DataMask;
 	}
  **/
 
@@ -106,8 +106,8 @@ class Pic12Bus : public BusIO
 	int OverProgrammingMult;
 	int OverProgrammingAdd;
 
-//	const UWORD DataMask;
-	const UWORD ProgMask;
+//	const uint16_t DataMask;
+	const uint16_t ProgMask;
 
 	//Command Opcode
 	const uint8_t ReadProgCode;

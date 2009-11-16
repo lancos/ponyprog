@@ -45,8 +45,8 @@ class At17xxx : public E24xx
 
   protected:	//--------------------------------------- protected
 
-	int WritePage(long addr, int addr_bytes, BYTE *buf, int len);
-	int ReadPage(long addr, int addr_bytes, BYTE *buf, int len);
+	int WritePage(long addr, int addr_bytes, uint8_t *buf, int len);
+	int ReadPage(long addr, int addr_bytes, uint8_t *buf, int len);
 
   private:		//--------------------------------------- private
 

@@ -30,11 +30,6 @@ typedef signed char int8_t;
 #define	HIDDEN	static
 #endif
 
-/* Windows conventions */
-typedef	uint32_t	DWORD;		/* unsigned 32-bit quantity */
-//typedef	uint16_t	WORD;		/* unsigned 16-bit quantity */
-//typedef	uint8_t		BYTE;		/* unsigned  8-bit quantity */
-
 #ifdef	__GNUC__
 #define	PACK	__attribute__ ((packed))
 #else

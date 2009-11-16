@@ -329,7 +329,7 @@ fuseModalDialog::~fuseModalDialog()
 }
 
 //====================>>> fuseModalDialog::fuseAction <<<====================
-int fuseModalDialog::fuseAction(char* msg, long type, DWORD &lock, DWORD &fuse, int readonly)
+int fuseModalDialog::fuseAction(char* msg, long type, uint32_t &lock, uint32_t &fuse, int readonly)
 {
 	char str1[MAXNUMDIGIT], str2[MAXNUMDIGIT], str3[MAXNUMDIGIT];
 

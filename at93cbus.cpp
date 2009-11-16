@@ -148,7 +148,7 @@ long At93cBus::Read(int addr, uint8_t *data, long length, int page_size)
 		SendCmdOpcode(ReadCode);
 		SendAddress(addr++, address_len);
 
-		UWORD val = RecDataWord(organization);
+		uint16_t val = RecDataWord(organization);
 
 		if (organization == ORG16)
 		{
@@ -197,16 +197,16 @@ long At93cBus::Write(int addr, uint8_t const *data, long length, int page_size)
 
 	for (curaddr = 0; curaddr < length; curaddr++)
 	{
-		UWORD val;
+		uint16_t val;
 
 		if (organization == ORG16)
 		{
 #ifdef	_BIG_ENDIAN_
-			val  = (UWORD)(*data++) << 8;
-			val |= (UWORD)(*data++);
+			val  = (uint16_t)(*data++) << 8;
+			val |= (uint16_t)(*data++);
 #else
-			val  = (UWORD)(*data++);
-			val |= (UWORD)(*data++) << 8;
+			val  = (uint16_t)(*data++);
+			val |= (uint16_t)(*data++) << 8;
 #endif
 		}
 		else

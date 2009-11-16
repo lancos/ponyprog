@@ -41,7 +41,7 @@ class fuseModalDialog : public vModalDialog
 	fuseModalDialog(vBaseWindow* bw, char* title = STR_MSGFUSEDLG);
 	virtual ~fuseModalDialog();		// Destructor
 	virtual void DialogCommand(ItemVal,ItemVal,CmdType); // action selected
-	virtual int fuseAction(char* msg, long type, DWORD &lock, DWORD &fuse, int readonly = 0);
+	virtual int fuseAction(char* msg, long type, uint32_t &lock, uint32_t &fuse, int readonly = 0);
 
   protected:	//--------------------------------------- protected
 

@@ -76,12 +76,12 @@ class FileBuf
 	long GetSplitted() const;
 	void SetSplitted(long spl);
 
-	DWORD GetLockBits() const;
-	void SetLockBits(DWORD bits);
-	DWORD GetFuseBits() const;
-	void SetFuseBits(DWORD bits);
+	uint32_t GetLockBits() const;
+	void SetLockBits(uint32_t bits);
+	uint32_t GetFuseBits() const;
+	void SetFuseBits(uint32_t bits);
 
-//	UWORD GetCRC() const
+//	uint16_t GetCRC() const
 //		{ return awi->GetCRC(); }
 	void SetCRC(uint16_t c);
 

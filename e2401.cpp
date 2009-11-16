@@ -48,7 +48,7 @@ mE2401::mE2401(e2AppWinInfo *wininfo, BusIO *busp, int def_banksize)
 int mE2401::Probe(int probe_size)
 {
 	int retval = 1;
-	BYTE ch;
+	uint8_t ch;
 
 	UserDebug1(UserApp1, "mE2401::Probe(%d) - IN\n", probe_size);
 
@@ -113,7 +113,7 @@ int mE2401::Write(int probe, int type)
 	if (type & PROG_TYPE)
 	{
 		int j;
-		BYTE ch;
+		uint8_t ch;
 		for (j = 0; j < size; j += writepage_size)
 		{
 			if ( GetBus()->Write(j, GetBufPtr() + j, writepage_size) != writepage_size)

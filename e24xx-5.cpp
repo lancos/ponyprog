@@ -58,7 +58,7 @@ int E24xx5::Write(int probe, int type)
 	if (type & PROG_TYPE)
 	{
 		//Enable writing
-		BYTE buffer[4];
+		uint8_t buffer[4];
 
 		buffer[0] = 0xFF;	//last address (Write protect register)
 		buffer[1] = 0x02;	//set WEL bit

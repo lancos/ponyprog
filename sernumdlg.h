@@ -43,7 +43,7 @@ class SerNumDialog : public vModalDialog
   public:		//---------------------------------------- public
 	SerNumDialog(vBaseWindow* bw, char* title = STR_MSGSERNUMCFG);
 	virtual ~SerNumDialog();		// Destructor
-	virtual int SerNumAction(long &cLoc, bool &cMemType, bool &cAutoInc, FmtEndian &cFmt, int &cLen, DWORD &cVal);
+	virtual int SerNumAction(long &cLoc, bool &cMemType, bool &cAutoInc, FmtEndian &cFmt, int &cLen, uint32_t &cVal);
 
   protected:	//--------------------------------------- protected
 
@@ -57,7 +57,7 @@ class OscCalibDialog : public vModalDialog
 	OscCalibDialog(vBaseWindow* bw, e2AppWinInfo* aw, char* title = STR_MSGOSCCALIBCFG);
 	virtual ~OscCalibDialog();		// Destructor
 	virtual void DialogCommand(ItemVal,ItemVal,CmdType); // action selected
-	virtual int OscCalibAction(long &cLoc, bool &cMemType, BYTE &cVal);
+	virtual int OscCalibAction(long &cLoc, bool &cMemType, uint8_t &cVal);
 
   protected:	//--------------------------------------- protected
 
