@@ -52,8 +52,8 @@ class BusIO : public Wait
 
 	virtual int Reset() = 0;
 
-	virtual long Read(int addr, UBYTE *data, long length, int page_size = 0) = 0;
-	virtual long Write(int addr,UBYTE const *data, long length, int page_size = 0) = 0;
+	virtual long Read(int addr, uint8_t *data, long length, int page_size = 0) = 0;
+	virtual long Write(int addr,uint8_t const *data, long length, int page_size = 0) = 0;
 	virtual int Erase(int type = 0)
 		{ return NOTSUPPORTED; }
 
@@ -71,7 +71,7 @@ class BusIO : public Wait
 	virtual long ReadCalibration(int addr = 0)
 		{ return -1; }			//No calibration value available
 
-	virtual int CompareMultiWord(UBYTE *data1, UBYTE *data2, ULONG length, int split)
+	virtual int CompareMultiWord(uint8_t *data1, uint8_t *data2, ULONG length, int split)
 		{ return memcmp(data1, data2, length); }
 
 	int GetErrNo()

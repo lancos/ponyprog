@@ -39,11 +39,14 @@
 
 static char const *id_string = "E2P!Lanc";
 
+#define BUILD_BUG_ON(condition) ((void)sizeof(char[1 - 2 * !!(condition)]))
+
 //======================>>> e2pFileBuf::e2pFileBuf <<<=======================
 e2pFileBuf::e2pFileBuf(e2AppWinInfo *wininfo)
 		: FileBuf(wininfo)
 {
 	file_type = E2P;
+	BUILD_BUG_ON(sizeof(struct e2pHeader) != 152);
 }
 
 //======================>>> e2pFileBuf::~e2pFileBuf <<<=======================
@@ -232,17 +235,17 @@ int e2pFileBuf::Save(int savetype, long relocation_offset)
 
 		hdr.fversion = E2P_FVERSION;
 
-		hdr.e2pLockBits = (BYTE)(GetLockBits() & 0xFF);
-		hdr.e2pExtLockBits = (WORD)(GetLockBits() >> 8);
-		hdr.e2pFuseBits = (BYTE)(GetFuseBits() & 0xFF);
-		hdr.e2pExtFuseBits = (WORD)(GetFuseBits() >> 8);
+		hdr.e2pLockBits = (uint8_t)(GetLockBits() & 0xFF);
+		hdr.e2pExtLockBits = (uint16_t)(GetLockBits() >> 8);
+		hdr.e2pFuseBits = (uint8_t)(GetFuseBits() & 0xFF);
+		hdr.e2pExtFuseBits = (uint16_t)(GetFuseBits() >> 8);
 
 		hdr.e2pType = GetEEpromType();
 		GetStringID(hdr.e2pStringID);
 		GetComment(hdr.e2pComment);
 		hdr.flags = GetRollOver() & 7;
-		hdr.split_size_Low = (UWORD)GetSplitted();
-		hdr.split_size_High = (UWORD)(GetSplitted() >> 16);
+		hdr.split_size_Low = (uint16_t)GetSplitted();
+		hdr.split_size_High = (uint16_t)(GetSplitted() >> 16);
 		hdr.e2pCrc = mcalc_crc(localbuf, hdr.e2pSize);
 		hdr.headCrc = mcalc_crc(&hdr, sizeof(hdr)-sizeof(hdr.headCrc));
 

@@ -169,7 +169,7 @@ int I2CBus::SendBitMast(int b)
 // returns a negative number if there's an error, 0 or 1 otherwise
 int I2CBus::RecBitMast()
 {
-	register UBYTE b;
+	register uint8_t b;
 
 	setSDA();		// to receive data SDA must be high
 	WaitUsec(shot_delay/2+1);	// tSU;DAT = 250 nsec (tLOW / 2 = 2 usec)
@@ -300,7 +300,7 @@ void I2CBus::SetDelay()
 	UserDebug1(UserApp2, "I2CBus::SetDelay() = %d\n", n);
 }
 
-long I2CBus::Read(int slave, UBYTE *data, long length, int page_size)
+long I2CBus::Read(int slave, uint8_t *data, long length, int page_size)
 {
 	long len;
 
@@ -315,7 +315,7 @@ long I2CBus::Read(int slave, UBYTE *data, long length, int page_size)
 	return len;
 }
 
-long I2CBus::Write(int slave, UBYTE const *data, long length, int page_size)
+long I2CBus::Write(int slave, uint8_t const *data, long length, int page_size)
 {
 	long len;
 
@@ -347,7 +347,7 @@ int I2CBus::WriteByte(int by, int lsb)
 		return SendByteMast(by);
 }
 
-int I2CBus::Start(UBYTE slave)
+int I2CBus::Start(uint8_t slave)
 {
 	int temp;
 
@@ -373,7 +373,7 @@ int I2CBus::Start(UBYTE slave)
  * trasmissione. In questo caso data deve puntare ad un buffer di (almeno)
  * un byte.
  */
-ULONG I2CBus::StartRead(UBYTE slave, UBYTE *data, ULONG length)
+ULONG I2CBus::StartRead(uint8_t slave, uint8_t *data, ULONG length)
 {
 	int temp;
 	ULONG len = length;
@@ -403,7 +403,7 @@ ULONG I2CBus::StartRead(UBYTE slave, UBYTE *data, ULONG length)
 				err_no = temp;
 				goto fineR;
 			}
-			*data++ = (UBYTE)temp;
+			*data++ = (uint8_t)temp;
 			len--;
 		}
 	}
@@ -415,7 +415,7 @@ ULONG I2CBus::StartRead(UBYTE slave, UBYTE *data, ULONG length)
 	}
 	len--;
 
-	*data = (UBYTE)temp;
+	*data = (uint8_t)temp;
 	err_no = 0;
 
 fineR:
@@ -424,7 +424,7 @@ fineR:
 	return length-len;
 }
 
-ULONG I2CBus::StartWrite(UBYTE slave, UBYTE const *data, ULONG length)
+ULONG I2CBus::StartWrite(uint8_t slave, uint8_t const *data, ULONG length)
 {
 	int error;
 	ULONG len = length;

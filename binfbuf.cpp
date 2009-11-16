@@ -62,7 +62,7 @@ int binFileBuf::Load(int loadtype, long relocation_offset)
 //In questi formati di file "stupidi" la dimensione
 //deve rimanere quella della eeprom attualmente selezionata
 	long buf_size = GetBufSize();
-	BYTE *ptr = GetBufPtr();
+	uint8_t *ptr = GetBufPtr();
 
 	if (loadtype == DATA_TYPE)
 	{
@@ -127,7 +127,7 @@ int binFileBuf::Save(int savetype, long relocation_offset)
 		return CREATEERROR;
 
 	long buf_size = FileBuf::GetBlockSize() * FileBuf::GetNoOfBlock();
-	BYTE *ptr = FileBuf::GetBufPtr();
+	uint8_t *ptr = FileBuf::GetBufPtr();
 
 	if (savetype == PROG_TYPE)
 	{

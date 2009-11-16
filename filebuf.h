@@ -83,11 +83,11 @@ class FileBuf
 
 //	UWORD GetCRC() const
 //		{ return awi->GetCRC(); }
-	void SetCRC(UWORD c);
+	void SetCRC(uint16_t c);
 
   protected:	//--------------------------------------- protected
 	
-	UBYTE *GetBufPtr() const;
+	uint8_t *GetBufPtr() const;
 	long GetBufSize() const;
 	e2AppWinInfo *GetAWInfo();
 	long GetFileSize(FILE *fh);

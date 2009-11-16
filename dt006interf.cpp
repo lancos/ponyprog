@@ -164,7 +164,7 @@ void Dt006Interface::SetClockData()
 	if (IsInstalled())
 	{
 		int control	= THEAPP->GetPolarity();
-		UBYTE cpreg = GetLastData();
+		uint8_t cpreg = GetLastData();
 
 		if (control & CLOCKINV)
 			cpreg &= ~WF_SCK;
@@ -186,7 +186,7 @@ void Dt006Interface::ClearClockData()
 	if (IsInstalled())
 	{
 		int control = THEAPP->GetPolarity();
-		UBYTE cpreg = GetLastData();
+		uint8_t cpreg = GetLastData();
 
 		if (control & CLOCKINV)
 			cpreg |= WF_SCK;

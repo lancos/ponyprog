@@ -246,7 +246,7 @@ void AvrISPInterface::SetClockData()
 	if (IsInstalled())
 	{
 		int control	= THEAPP->GetPolarity();
-		UBYTE cpreg = GetLastData();
+		uint8_t cpreg = GetLastData();
 
 		if (control & CLOCKINV)
 			cpreg &= ~WF_SCK;
@@ -270,7 +270,7 @@ void AvrISPInterface::ClearClockData()
 	if (IsInstalled())
 	{
 		int control = THEAPP->GetPolarity(); 
-		UBYTE cpreg = GetLastData();
+		uint8_t cpreg = GetLastData();
 
 		if (control & CLOCKINV)
 			cpreg |= WF_SCK;

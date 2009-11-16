@@ -156,8 +156,8 @@ class e2AppWinInfo : public vAppWinInfo
 		{ crc = c; }
 	UWORD RecalcCRC();
 
-	UBYTE *GetBufPtr() const
-		{ return (UBYTE *)buffer; }
+	uint8_t *GetBufPtr() const
+		{ return (uint8_t *)buffer; }
 	int GetBufSize() const
 		{ return buffer_size; }
 
@@ -228,7 +228,7 @@ class e2AppWinInfo : public vAppWinInfo
 	bool clear_buffer_before_load;          //flag, clear buffer before load a file
 //	bool clear_buffer_before_read;          //flag, clear buffer before read from device
 
-	UBYTE buffer[BUFFER_SIZE];	//device content buffer
+	uint8_t buffer[BUFFER_SIZE];	//device content buffer
 	char linebuf[LINEBUF_SIZE];	//print line buffer
 	bool buf_ok;				//true if buffer is valid
 	bool buf_changed;			//true if buffer changed/edited

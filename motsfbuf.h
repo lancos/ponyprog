@@ -49,10 +49,10 @@ class MotorolaSFileBuf : public FileBuf
 
   private:		//--------------------------------------- private
 
-	int WriteRecord(FILE *fh, BYTE *bptr, long curaddr, long recsize, int fmt);
-	int ParseRecord(char *lbufPC, BYTE *buf_startP, BYTE *buf_endP, long offset, int nocopy);
+	int WriteRecord(FILE *fh, uint8_t *bptr, long curaddr, long recsize, int fmt);
+	int ParseRecord(char *lbufPC, uint8_t *buf_startP, uint8_t *buf_endP, long offset, int nocopy);
 
-	BYTE *highestPC;
+	uint8_t *highestPC;
 	long highestAddr;
 	long lowestAddr;
 

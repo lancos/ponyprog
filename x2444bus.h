@@ -37,8 +37,8 @@ class X2444Bus : public MicroWireBus
  public:		//------------------------------- public
 	X2444Bus(BusInterface *ptr = 0);
 
-	long Read(int addr, UBYTE *data, long length, int page_size = 0);
-	long Write(int addr, UBYTE const *data, long length, int page_size = 0);
+	long Read(int addr, uint8_t *data, long length, int page_size = 0);
+	long Write(int addr, uint8_t const *data, long length, int page_size = 0);
 
 	virtual void SetOrganization(int org)
 	{
@@ -59,12 +59,12 @@ class X2444Bus : public MicroWireBus
  private:		//------------------------------- private
 
 	//Command Opcode
-	const UBYTE ReadCode;
-	const UBYTE WriteCode;
-	const UBYTE WriteEnableCode;
-	const UBYTE WriteDisableCode;
-	const UBYTE RecallCode;
-	const UBYTE StoreCode;
+	const uint8_t ReadCode;
+	const uint8_t WriteCode;
+	const uint8_t WriteEnableCode;
+	const uint8_t WriteDisableCode;
+	const uint8_t RecallCode;
+	const uint8_t StoreCode;
 
 	const long loop_timeout;
 

@@ -138,7 +138,7 @@ int IMBus::SendDataBit(int b)
 // ritorna un numero negativo se c'e` un errore, altrimenti 0 o 1
 int IMBus::RecDataBit()
 {
-	register UBYTE b;
+	register uint8_t b;
 
 	clearCLK();				//the eeprom set data now
 	WaitUsec(shot_delay);
@@ -250,7 +250,7 @@ int IMBus::Reset(void)
 	return OK;
 }
 
-long IMBus::Read(int addr, UBYTE *data, long length, int page_size)
+long IMBus::Read(int addr, uint8_t *data, long length, int page_size)
 {
 	UserDebug3(UserApp2, "IMBus::Read(%Xh, %ph, %ld)\n", addr, data, length);
 
@@ -279,7 +279,7 @@ long IMBus::Read(int addr, UBYTE *data, long length, int page_size)
 	return len;
 }
 
-long IMBus::Write(int addr, UBYTE const *data, long length, int page_size)
+long IMBus::Write(int addr, uint8_t const *data, long length, int page_size)
 {
 	long len;
 	BYTE bval;

@@ -38,14 +38,14 @@ class I2CBus : public BusIO
 	I2CBus(BusInterface *ptr = 0);
 	virtual ~I2CBus();
 
-	long Read(int slave, UBYTE *data, long length, int page_size = 0);
-	long Write(int slave, UBYTE const *data, long length, int page_size = 0);
+	long Read(int slave, uint8_t *data, long length, int page_size = 0);
+	long Write(int slave, uint8_t const *data, long length, int page_size = 0);
 
-	int Start(UBYTE slave);
+	int Start(uint8_t slave);
 	int ReadByte(int ack, int lsb = 0);
 	int WriteByte(int by, int lsb = 0);
-	ULONG StartRead(UBYTE slave, UBYTE *data, ULONG length);
-	ULONG StartWrite(UBYTE slave, UBYTE const *data, ULONG length);
+	ULONG StartRead(uint8_t slave, uint8_t *data, ULONG length);
+	ULONG StartWrite(uint8_t slave, uint8_t const *data, ULONG length);
 	int Stop();
 	int Reset();
 

@@ -126,7 +126,7 @@ int csmFileBuf::Load(int loadtype, long relocation_offfset)
 				if (loadtype == ALL_TYPE)
 				{
 					if ( addr < FileBuf::GetBufSize() )
-						FileBuf::GetBufPtr()[addr] = (BYTE)value;
+						FileBuf::GetBufPtr()[addr] = (uint8_t)value;
 				}
 				else
 				if (loadtype == PROG_TYPE)
@@ -136,7 +136,7 @@ int csmFileBuf::Load(int loadtype, long relocation_offfset)
 						s = FileBuf::GetBufSize();
 
 					if ( addr < s )
-						FileBuf::GetBufPtr()[addr] = (BYTE)value;
+						FileBuf::GetBufPtr()[addr] = (uint8_t)value;
 				}
 				else
 				if (loadtype == DATA_TYPE)
@@ -146,7 +146,7 @@ int csmFileBuf::Load(int loadtype, long relocation_offfset)
 						s = 0;
 
 					if ( addr < FileBuf::GetBufSize() - s )
-						FileBuf::GetBufPtr()[addr + s] = (BYTE)value;
+						FileBuf::GetBufPtr()[addr + s] = (uint8_t)value;
 				}
 			}
 		}
@@ -186,7 +186,7 @@ int csmFileBuf::Save(int savetype, long relocation_offfset)
 	int rval = 0;
 
 	long size = FileBuf::GetBlockSize() * FileBuf::GetNoOfBlock();
-	BYTE *ptr = FileBuf::GetBufPtr();
+	uint8_t *ptr = FileBuf::GetBufPtr();
 
 	if (savetype == PROG_TYPE)
 	{

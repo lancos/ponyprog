@@ -129,9 +129,9 @@ class e2App : public vApp, public E2Profile
 
 	void SetProgress(int progress = 0);
 
-	UBYTE GetPolarity() const 
+	uint8_t GetPolarity() const 
 		{ return polarity_control;} 
-	void SetPolarity(UBYTE val) 
+	void SetPolarity(uint8_t val) 
 		{ polarity_control = val;} 
 
 	int IsAppBusy()
@@ -166,7 +166,7 @@ class e2App : public vApp, public E2Profile
 	HInterfaceType iType;	//current interface type
 	BusInterface *busIntp;	//pointer to current interface type
 
-	UBYTE polarity_control; //polarity for control lines
+	uint8_t polarity_control; //polarity for control lines
 	AppStatus app_status;		//tell if the App is busy (reading, writing, ...) or can react to user events
 
 	//AutoTag

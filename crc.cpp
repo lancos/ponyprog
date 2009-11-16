@@ -4,9 +4,9 @@
 /* Calcola il CRC in un file a partire da ini_ofs per un numero di bytes
    dato da len. Se len e` zero prosegue fino alla fine del file, il file
    deve essere aperto in modo da permettere la lettura (r, r+, w+) */
-UWORD fcalc_crc(FILE *fh, long ini_ofs, ULONG len)
+uint16_t fcalc_crc(FILE *fh, long ini_ofs, long len)
 {
-	UWORD crc16 = 0;
+	uint16_t crc16 = 0;
 	int ch;
 	long old_pos;
 
@@ -34,10 +34,10 @@ UWORD fcalc_crc(FILE *fh, long ini_ofs, ULONG len)
 
 /* Calcola il CRC in una zona di memoria a partire da ini_addr per un numero
    di bytes dato da len */
-UWORD mcalc_crc(void *ini_addr, ULONG len)
+uint16_t mcalc_crc(void *ini_addr, long len)
 {
-	UWORD crc16;
-	UBYTE *bp = (UBYTE *)ini_addr;
+	uint16_t crc16;
+	uint8_t *bp = (uint8_t *)ini_addr;
 
 	if (len == 0)
 		return 0;
@@ -53,7 +53,7 @@ UWORD mcalc_crc(void *ini_addr, ULONG len)
 #define M16	0xA001		/* crc-16 mask */
 
 /* tables */
-static UWORD crc16tab[256] =
+static uint16_t crc16tab[256] =
 {
 	0x0000, 0xC0C1, 0xC181, 0x0140, 0xC301, 0x03C0, 0x0280, 0xC241,
 	0xC601, 0x06C0, 0x0780, 0xC741, 0x0500, 0xC5C1, 0xC481, 0x0440,
@@ -90,11 +90,11 @@ static UWORD crc16tab[256] =
 };
 
 /* update crc reverse */
-UWORD updcrcr(UWORD crc, UWORD c)
+uint16_t updcrcr(uint16_t crc, uint16_t c)
 {
-	register int tmp;
+	int tmp;
 
-	tmp = (UBYTE)(crc ^ c);
+	tmp = (uint8_t)(crc ^ c);
 	crc = (crc >> 8) ^ crc16tab[tmp];
 	return crc;
 }

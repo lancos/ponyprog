@@ -63,7 +63,7 @@ int PicBusNew::Reset(void)
 	return PicBus::Reset();
 }
 
-long PicBusNew::Write(int addr, UBYTE const *data, long length, int page_size)
+long PicBusNew::Write(int addr, uint8_t const *data, long length, int page_size)
 {
 	long len;
 

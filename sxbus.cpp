@@ -90,7 +90,7 @@ int SxBus::SendDataBit(int b)
 // returns a negative number in case of error, 0 or 1 otherwise
 int SxBus::RecDataBit()
 {
-	register UBYTE b;
+	register uint8_t b;
 
 	setCLK();		//set SCK high (Pic output data now)
 	SHOT_DELAY();
@@ -164,7 +164,7 @@ int SxBus::Reset(void)
 }
 
 
-long SxBus::Read(int addr, UBYTE *data, long length, int page_size)
+long SxBus::Read(int addr, uint8_t *data, long length, int page_size)
 {
 	long len = length;
 
@@ -178,11 +178,11 @@ long SxBus::Read(int addr, UBYTE *data, long length, int page_size)
 		UWORD val = 0;
 
 #ifdef	_BIG_ENDIAN_
-		*data++ = (UBYTE)(val >> 8);
-		*data++ = (UBYTE)(val & 0xFF);
+		*data++ = (uint8_t)(val >> 8);
+		*data++ = (uint8_t)(val & 0xFF);
 #else
-		*data++ = (UBYTE)(val & 0xFF);
-		*data++ = (UBYTE)(val >> 8);
+		*data++ = (uint8_t)(val & 0xFF);
+		*data++ = (uint8_t)(val >> 8);
 #endif
 //		SendCmdCode(IncAddressCode);
 	}
@@ -190,7 +190,7 @@ long SxBus::Read(int addr, UBYTE *data, long length, int page_size)
 	return len;
 }
 
-long SxBus::Write(int addr, UBYTE const *data, long length, int page_size)
+long SxBus::Write(int addr, uint8_t const *data, long length, int page_size)
 {
 	long curaddr;
 

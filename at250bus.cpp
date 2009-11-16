@@ -144,7 +144,7 @@ int At250Bus::Reset(void)
 }
 
 
-long At250Bus::Read(int addr, UBYTE *data, long length, int page_size)
+long At250Bus::Read(int addr, uint8_t *data, long length, int page_size)
 {
 	UserDebug3(UserApp2, "At250Bus::Read(%xh, %ph, %ld)\n", addr, data, length);
 
@@ -152,7 +152,7 @@ long At250Bus::Read(int addr, UBYTE *data, long length, int page_size)
 
 	for (len = 0; len < length; len++)
 	{
-		*data++ = (UBYTE)ReadEEPByte(addr++);
+		*data++ = (uint8_t)ReadEEPByte(addr++);
 
 		if ( (len % 10) == 0 )
 			if ( CheckAbort(len * 100 / length) )
@@ -165,7 +165,7 @@ long At250Bus::Read(int addr, UBYTE *data, long length, int page_size)
 	return len;
 }
 
-long At250Bus::Write(int addr, UBYTE const *data, long length, int page_size)
+long At250Bus::Write(int addr, uint8_t const *data, long length, int page_size)
 {
 	long len;
 

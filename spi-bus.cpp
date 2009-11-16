@@ -115,7 +115,7 @@ int SPIBus::SendDataBit(int b)
 // ritorna un numero negativo se c'e` un errore, altrimenti 0 o 1
 int SPIBus::RecDataBit()
 {
-	register UBYTE b;
+	register uint8_t b;
 
 	if (fall_edge_sample)
 	{

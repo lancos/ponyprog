@@ -176,24 +176,24 @@ int e2Dialog::DialogAction(char *msg)
 
 	// *** Add code to process dialog values here
 	if (GetValue(chkPol1))
-		THEAPP->SetPolarity(THEAPP->GetPolarity() | (UBYTE)RESETINV);
+		THEAPP->SetPolarity(THEAPP->GetPolarity() | (uint8_t)RESETINV);
 	else
-		THEAPP->SetPolarity(THEAPP->GetPolarity() & (UBYTE)~RESETINV);
+		THEAPP->SetPolarity(THEAPP->GetPolarity() & (uint8_t)~RESETINV);
 
 	if (GetValue(chkPol2))
-		THEAPP->SetPolarity(THEAPP->GetPolarity() | (UBYTE)CLOCKINV);
+		THEAPP->SetPolarity(THEAPP->GetPolarity() | (uint8_t)CLOCKINV);
 	else
-		THEAPP->SetPolarity(THEAPP->GetPolarity() & (UBYTE)~CLOCKINV);
+		THEAPP->SetPolarity(THEAPP->GetPolarity() & (uint8_t)~CLOCKINV);
 
 	if (GetValue(chkPol3))
-		THEAPP->SetPolarity(THEAPP->GetPolarity() | (UBYTE)DININV);
+		THEAPP->SetPolarity(THEAPP->GetPolarity() | (uint8_t)DININV);
 	else
-		THEAPP->SetPolarity(THEAPP->GetPolarity() & (UBYTE)~DININV);
+		THEAPP->SetPolarity(THEAPP->GetPolarity() & (uint8_t)~DININV);
 
 	if (GetValue(chkPol4))
-		THEAPP->SetPolarity(THEAPP->GetPolarity() | (UBYTE)DOUTINV);
+		THEAPP->SetPolarity(THEAPP->GetPolarity() | (uint8_t)DOUTINV);
 	else
-		THEAPP->SetPolarity(THEAPP->GetPolarity() & (UBYTE)~DOUTINV);
+		THEAPP->SetPolarity(THEAPP->GetPolarity() & (uint8_t)~DOUTINV);
 
 	bool set_port = false;
 	if (port_no != THEAPP->GetPort())

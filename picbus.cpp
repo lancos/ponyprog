@@ -117,7 +117,7 @@ int PicBus::SendDataBit(int b)
 // returns a negative number in case of error, 0 or 1 otherwise
 int PicBus::RecDataBit()
 {
-	register UBYTE b;
+	register uint8_t b;
 
 	setCLK();		//set SCK high (Pic output data now)
 
@@ -269,7 +269,7 @@ long PicBus::ReadConfig(UWORD *data)
 	int k;
 	for (k = 0; k < 8; k++, data++)
 	{
-		UBYTE *bp = (UBYTE *)data;
+		uint8_t *bp = (uint8_t *)data;
 		UWORD val;
 
 		SendCmdCode(ReadProgCode);
@@ -280,11 +280,11 @@ long PicBus::ReadConfig(UWORD *data)
 			val = 0xffff;
 
 #ifdef	_BIG_ENDIAN_
-		*bp++ = (UBYTE)(val >> 8);
-		*bp++ = (UBYTE)(val & 0xFF);
+		*bp++ = (uint8_t)(val >> 8);
+		*bp++ = (uint8_t)(val & 0xFF);
 #else
-		*bp++ = (UBYTE)(val & 0xFF);
-		*bp++ = (UBYTE)(val >> 8);
+		*bp++ = (uint8_t)(val & 0xFF);
+		*bp++ = (uint8_t)(val >> 8);
 #endif
 		SendCmdCode(IncAddressCode);
 	}
@@ -307,7 +307,7 @@ long PicBus::WriteConfig(UWORD *data)
 	{
 		if (*data != 0xffff)
 		{
-			UBYTE *bp = (UBYTE *)data;
+			uint8_t *bp = (uint8_t *)data;
 			UWORD val;
 
 			//Write Data code
@@ -371,7 +371,7 @@ int PicBus::Erase(int type)
 }
 
 
-long PicBus::Read(int addr, UBYTE *data, long length, int page_size)
+long PicBus::Read(int addr, uint8_t *data, long length, int page_size)
 {
 	long len;
 
@@ -386,7 +386,7 @@ long PicBus::Read(int addr, UBYTE *data, long length, int page_size)
 		{
 			//Read DataCode
 			SendCmdCode(ReadDataCode);
-			*data++ = (UBYTE)RecvDataCode();
+			*data++ = (uint8_t)RecvDataCode();
 
 			SendCmdCode(IncAddressCode);
 		}
@@ -400,11 +400,11 @@ long PicBus::Read(int addr, UBYTE *data, long length, int page_size)
 				val = 0xffff;
 
 #ifdef	_BIG_ENDIAN_
-			*data++ = (UBYTE)(val >> 8);
-			*data++ = (UBYTE)(val & 0xFF);
+			*data++ = (uint8_t)(val >> 8);
+			*data++ = (uint8_t)(val & 0xFF);
 #else
-			*data++ = (UBYTE)(val & 0xFF);
-			*data++ = (UBYTE)(val >> 8);
+			*data++ = (uint8_t)(val & 0xFF);
+			*data++ = (uint8_t)(val >> 8);
 #endif
 			SendCmdCode(IncAddressCode);
 		}
@@ -420,7 +420,7 @@ long PicBus::Read(int addr, UBYTE *data, long length, int page_size)
 	return len;
 }
 
-long PicBus::Write(int addr, UBYTE const *data, long length, int page_size)
+long PicBus::Write(int addr, uint8_t const *data, long length, int page_size)
 {
 	long len;
 
@@ -492,7 +492,7 @@ int PicBus::CompareSingleWord(UWORD data1, UWORD data2, UWORD mask)
 	return (data1 & mask) != (data2 & mask);
 }
 
-int PicBus::CompareMultiWord(UBYTE *data1, UBYTE *data2, ULONG length, int split)
+int PicBus::CompareMultiWord(uint8_t *data1, uint8_t *data2, ULONG length, int split)
 {
 	int retval = 0;
 

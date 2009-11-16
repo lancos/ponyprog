@@ -49,10 +49,10 @@ class IntelFileBuf : public FileBuf
 
   private:		//--------------------------------------- private
 
-	int WriteRecord(FILE *fh, BYTE *bptr, long curaddr, long recsize, int fmt);
+	int WriteRecord(FILE *fh, uint8_t *bptr, long curaddr, long recsize, int fmt);
 	int WriteAddressRecord(FILE *fh, long curaddr, bool linear_address = false);
 
-	int ScanHex(char **sp, int len, DWORD &result);
-	int ScanHex(char **sp, int len, WORD &result);
+	int ScanHex(char **sp, int len, uint32_t &result);
+	int ScanHex(char **sp, int len, uint16_t &result);
 };
 #endif

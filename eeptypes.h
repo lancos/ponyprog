@@ -282,22 +282,22 @@ extern int GetEEPTypeWPageSize(int pritype, int subtype);
 typedef struct {
 	long type;
 
-	BYTE lockenable3;
+	uint8_t lockenable3;
 	char *locklabel3[LOCKPACKSIZE];
-	BYTE lockenable2;
+	uint8_t lockenable2;
 	char *locklabel2[LOCKPACKSIZE];
-	BYTE lockenable1;
+	uint8_t lockenable1;
 	char *locklabel1[LOCKPACKSIZE];
-	BYTE lockenable0;
+	uint8_t lockenable0;
 	char *locklabel0[LOCKPACKSIZE];
 
-	WORD fuseenable3;
+	uint16_t fuseenable3;
 	char *fuselabel3[FUSEPACKSIZE];
-	WORD fuseenable2;
+	uint16_t fuseenable2;
 	char *fuselabel2[FUSEPACKSIZE];
-	WORD fuseenable1;
+	uint16_t fuseenable1;
 	char *fuselabel1[FUSEPACKSIZE];
-	WORD fuseenable0;
+	uint16_t fuseenable0;
 	char *fuselabel0[FUSEPACKSIZE];
 } FuseBit;
 

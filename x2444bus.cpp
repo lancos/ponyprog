@@ -58,7 +58,7 @@ void X2444Bus::SendCmdAddr(int cmd, int addr)
 		SendDataWord(0x80 | ((addr & 0x07) << 4) | (cmd & 7), 8);
 }
 
-long X2444Bus::Read(int addr, UBYTE *data, long length, int page_size)
+long X2444Bus::Read(int addr, uint8_t *data, long length, int page_size)
 {
 	UserDebug3(UserApp1, "X2444Bus::Read(%xh, %ph, %ld)\n", addr, data, length);
 
@@ -96,16 +96,16 @@ long X2444Bus::Read(int addr, UBYTE *data, long length, int page_size)
 		if (organization == ORG16)
 		{
 #ifdef	_BIG_ENDIAN_
-			*data++ = (UBYTE)(val >> 8);
-			*data++ = (UBYTE)(val & 0xFF);
+			*data++ = (uint8_t)(val >> 8);
+			*data++ = (uint8_t)(val & 0xFF);
 #else
-			*data++ = (UBYTE)(val & 0xFF);
-			*data++ = (UBYTE)(val >> 8);
+			*data++ = (uint8_t)(val & 0xFF);
+			*data++ = (uint8_t)(val >> 8);
 #endif
 		}
 		else
 		{
-			*data++ = (UBYTE)(val & 0xFF);
+			*data++ = (uint8_t)(val & 0xFF);
 		}
 
 		WaitUsec(1);
@@ -123,7 +123,7 @@ long X2444Bus::Read(int addr, UBYTE *data, long length, int page_size)
 	return len;
 }
 
-long X2444Bus::Write(int addr, UBYTE const *data, long length, int page_size)
+long X2444Bus::Write(int addr, uint8_t const *data, long length, int page_size)
 {
 	long curaddr;
 

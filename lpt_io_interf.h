@@ -62,7 +62,7 @@ class LPTIOInterface : public PortInterface
  private:		//------------------------------- private
  
 	int lpt_port;
-	UBYTE last_ctrl, last_data;
+	uint8_t last_ctrl, last_data;
 };
 
 #endif

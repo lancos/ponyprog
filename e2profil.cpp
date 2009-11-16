@@ -274,9 +274,9 @@ char const *E2Profile::GetPrevFile(int &data)
 	return sp;
 }
 
-UBYTE E2Profile::GetPolarityControl()
+uint8_t E2Profile::GetPolarityControl()
 {
-	UBYTE res;
+	uint8_t res;
 	const char *rval;
 
 	res = 0;
@@ -299,7 +299,7 @@ UBYTE E2Profile::GetPolarityControl()
 	return res;
 }
 
-int E2Profile::SetPolarityControl(UBYTE polarity_control)
+int E2Profile::SetPolarityControl(uint8_t polarity_control)
 {
 	int rval = OK;
 

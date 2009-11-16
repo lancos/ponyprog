@@ -978,7 +978,7 @@ void e2AppWinInfo::SwapBytes()
 {
 	long size = GetNoOfBlock() * GetBlockSize();
 	long k;
-	UBYTE tmp;
+	uint8_t tmp;
 
 	for (k = 0; k < size; k += 2)
 	{

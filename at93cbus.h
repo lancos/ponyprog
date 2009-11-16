@@ -38,8 +38,8 @@ class At93cBus : public MicroWireBus
 	At93cBus(BusInterface *ptr = 0);
 //	virtual ~At93cBus();
 
-	long Read(int addr, UBYTE *data, long length, int page_size = 0);
-	long Write(int addr, UBYTE const *data, long length, int page_size = 0);
+	long Read(int addr, uint8_t *data, long length, int page_size = 0);
+	long Write(int addr, uint8_t const *data, long length, int page_size = 0);
 
 	void SetOrganization(int org)
 	{
@@ -67,11 +67,11 @@ class At93cBus : public MicroWireBus
  private:		//------------------------------- private
 
 	//Command Opcode
-	const UBYTE ReadCode;
-	const UBYTE WriteCode;
-	const UBYTE WriteEnableCode;
-	const UBYTE EraseAllCode;
-	const UBYTE PrClearCode;
+	const uint8_t ReadCode;
+	const uint8_t WriteCode;
+	const uint8_t WriteEnableCode;
+	const uint8_t EraseAllCode;
+	const uint8_t PrClearCode;
 
 	const long loop_timeout;
 	

@@ -61,7 +61,7 @@ IntelFileBuf::~IntelFileBuf()
 }
 
 
-int IntelFileBuf::WriteRecord(FILE *fh, BYTE *bptr, long curaddr, long recsize, int fmt)
+int IntelFileBuf::WriteRecord(FILE *fh, uint8_t *bptr, long curaddr, long recsize, int fmt)
 {
 	int rval = 1;
 
@@ -176,7 +176,7 @@ int IntelFileBuf::Save(int savetype, long relocation_offset)
 
 	long dsize = FileBuf::GetBlockSize() * FileBuf::GetNoOfBlock();
 	long size = FileBuf::GetBufSize();
-	BYTE *ptr = FileBuf::GetBufPtr();
+	uint8_t *ptr = FileBuf::GetBufPtr();
 
 	//Remove FF's tail
 	while ( ptr[size-1] == 0xFF )
@@ -249,8 +249,8 @@ int IntelFileBuf::Load(int loadtype, long relocation_offset)
 	int rval = OK;
 	int okline_counter = 0;
 
-	BYTE *endp = GetBufPtr() + GetBufSize();
-	BYTE *dp = GetBufPtr();
+	uint8_t *endp = GetBufPtr() + GetBufSize();
+	uint8_t *dp = GetBufPtr();
 	if ( loadtype == DATA_TYPE)
 	{
 		if ( GetSplitted() >= 0 && GetSplitted() < GetBufSize() )
@@ -265,7 +265,7 @@ int IntelFileBuf::Load(int loadtype, long relocation_offset)
 	else
 		dp += relocation_offset;
 
-	DWORD laddr = 0;
+	uint32_t laddr = 0;
 
 	FILE *fh;
 	if ( (fh = fopen(GetFileName(), "r")) == NULL )
@@ -285,39 +285,39 @@ int IntelFileBuf::Load(int loadtype, long relocation_offset)
 			s++;
 
 		//Byte Count
-		WORD bcount;
+		uint16_t bcount;
 		if ( ScanHex(&s, 2, bcount) != OK )
 		{
 			rval = BADFILETYPE;
 			break;
 		}
-		BYTE checksum = (BYTE)bcount;
+		uint8_t checksum = (uint8_t)bcount;
 
 		//Address
-		WORD addr;
+		uint16_t addr;
 		if ( ScanHex(&s, 4, addr) != OK )
 		{
 			rval = BADFILETYPE;
 			break;
 		}
-		checksum += (BYTE)(addr >> 8);
-		checksum += (BYTE)addr;
+		checksum += (uint8_t)(addr >> 8);
+		checksum += (uint8_t)addr;
 
 		//affect only low 16 bits of address
 		laddr &= 0xFFFF0000;
 		laddr |= addr;
 
 		//Record Type
-		WORD rectype;
+		uint16_t rectype;
 		if ( ScanHex(&s, 2, rectype) != OK )
 		{
 			rval = BADFILETYPE;
 			break;
 		}
-		checksum += (BYTE)rectype;
+		checksum += (uint8_t)rectype;
 
 		//Data Byte
-		WORD data;
+		uint16_t data;
 
 		if (rectype == DATA_RECORD)
 		{
@@ -329,14 +329,14 @@ int IntelFileBuf::Load(int loadtype, long relocation_offset)
 			}
 
 			bool ok = true;
-			BYTE *p;
+			uint8_t *p;
 			for (k = 0, p = dp+laddr; k < bcount && ok; k++)
 			{
 				if ( ScanHex(&s, 2, data) != OK )
 					ok = false;
 
-				checksum += (BYTE)data;
-				*p++ = (BYTE)data;
+				checksum += (uint8_t)data;
+				*p++ = (uint8_t)data;
 			}
 			if (!ok)	//salta alla riga successiva
 			{
@@ -355,16 +355,16 @@ int IntelFileBuf::Load(int loadtype, long relocation_offset)
 			else
 			{
 				//Address
-				WORD addr;
+				uint16_t addr;
 				if ( ScanHex(&s, 4, addr) != OK )
 				{
 					rval = BADFILETYPE;
 					break;
 				}
-				checksum += (BYTE)(addr >> 8);
-				checksum += (BYTE)addr;
+				checksum += (uint8_t)(addr >> 8);
+				checksum += (uint8_t)addr;
 
-				laddr = (DWORD)addr << 4;
+				laddr = (uint32_t)addr << 4;
 			}
 		}
 		else if (rectype == LIN_ADDR_RECORD)
@@ -377,16 +377,16 @@ int IntelFileBuf::Load(int loadtype, long relocation_offset)
 			else
 			{
 				//Address
-				WORD addr;
+				uint16_t addr;
 				if ( ScanHex(&s, 4, addr) != OK )
 				{
 					rval = BADFILETYPE;
 					break;
 				}
-				checksum += (BYTE)(addr >> 8);
-				checksum += (BYTE)addr;
+				checksum += (uint8_t)(addr >> 8);
+				checksum += (uint8_t)addr;
 
-				laddr = (DWORD)addr << 16;
+				laddr = (uint32_t)addr << 16;
 			}
 		}
 	/**	just ignored
@@ -417,7 +417,7 @@ int IntelFileBuf::Load(int loadtype, long relocation_offset)
 			{
 				if ( ScanHex(&s, 2, data) != OK )
 					ok = false;
-				checksum += (BYTE)data;
+				checksum += (uint8_t)data;
 			}
 			if (!ok)
 			{
@@ -431,7 +431,7 @@ int IntelFileBuf::Load(int loadtype, long relocation_offset)
 			rval = BADFILETYPE;
 			break;
 		}
-		if ( (BYTE)data != (BYTE)(~checksum + 1) )
+		if ( (uint8_t)data != (uint8_t)(~checksum + 1) )
 		{
 			rval = BADFILETYPE;
 			break;
@@ -476,7 +476,7 @@ int IntelFileBuf::Load(int loadtype, long relocation_offset)
 * Attenzione! Poiche` il numero restituito e` ULONG (4Byte), il numero max
 * di <len> e` 8 (8 cifre esadecimali 0xABCDEF12).
 */
-int IntelFileBuf::ScanHex(char **sp, int len, DWORD &result)
+int IntelFileBuf::ScanHex(char **sp, int len, uint32_t &result)
 {
 	char cifra[20];
 	int j;
@@ -495,11 +495,11 @@ int IntelFileBuf::ScanHex(char **sp, int len, DWORD &result)
 	return 0;
 }
 
-int IntelFileBuf::ScanHex(char **sp, int len, WORD &result)
+int IntelFileBuf::ScanHex(char **sp, int len, uint16_t &result)
 {
-	DWORD res;
+	uint32_t res;
 	int rval = ScanHex(sp, len, res);
-	result = (WORD)res;
+	result = (uint16_t)res;
 
 	return rval;
 }

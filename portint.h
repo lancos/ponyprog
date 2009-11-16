@@ -66,7 +66,7 @@ class PortInterface
 	virtual int OutPortMask(int mask, int val);
 
  protected:		//------------------------------- protected
-	UBYTE GetCPWReg()
+	uint8_t GetCPWReg()
 		{ return cpwreg; }
 
 #ifdef	_WINDOWS
@@ -75,7 +75,7 @@ class PortInterface
 
 	int		write_port,		// Number of output port (write I/O port address)
 			read_port;		// Number of input port (read I/O port address)
-	UBYTE	cpwreg;			// write register image in memory (the content is the same of the hardware register)
+	uint8_t	cpwreg;			// write register image in memory (the content is the same of the hardware register)
 
  private:		//------------------------------- private
 	int IOperm(int a, int b, int c);

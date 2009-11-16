@@ -212,7 +212,7 @@ void PonyIOInterface::SetClockData()
 	if (IsInstalled())
 	{
 		int control	= THEAPP->GetPolarity();
-		UBYTE cpreg = GetCPWReg();
+		uint8_t cpreg = GetCPWReg();
 
 		if (control & CLOCKINV)
 			cpreg &= ~WF_SCL;
@@ -236,7 +236,7 @@ void PonyIOInterface::ClearClockData()
 	if (IsInstalled())
 	{
 		int control = THEAPP->GetPolarity(); 
-		UBYTE cpreg = GetCPWReg();
+		uint8_t cpreg = GetCPWReg();
 
 		if (control & CLOCKINV)
 			cpreg |= WF_SCL;

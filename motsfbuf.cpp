@@ -66,7 +66,7 @@ MotorolaSFileBuf::~MotorolaSFileBuf()
 }
 
 
-int MotorolaSFileBuf::WriteRecord(FILE *fh, BYTE *bptr, long curaddr, long recsize, int fmt)
+int MotorolaSFileBuf::WriteRecord(FILE *fh, uint8_t *bptr, long curaddr, long recsize, int fmt)
 {
 	int rval = 1;
 	int len = 0;
@@ -188,7 +188,7 @@ int MotorolaSFileBuf::Save(int savetype, long relocation_offset)
 
 	long dsize = FileBuf::GetBlockSize() * FileBuf::GetNoOfBlock();
 	long size = FileBuf::GetBufSize();
-	BYTE *ptr = FileBuf::GetBufPtr();
+	uint8_t *ptr = FileBuf::GetBufPtr();
 
 	//Remove FF's tail
 	while ( ptr[size-1] == 0xFF )
@@ -268,8 +268,8 @@ int MotorolaSFileBuf::Load(int loadtype, long relocation_offset)
 	int rval = OK;
 	int nocopy_mode = 0;
 
-	BYTE *endp = GetBufPtr() + GetBufSize();
-	BYTE *dp = GetBufPtr();
+	uint8_t *endp = GetBufPtr() + GetBufSize();
+	uint8_t *dp = GetBufPtr();
 	if (loadtype == DATA_TYPE)
 	{
 		if ( GetSplitted() >= 0 && GetSplitted() < GetBufSize() )
@@ -364,10 +364,10 @@ int MotorolaSFileBuf::Load(int loadtype, long relocation_offset)
 ** Args:        pointer to character buffer for null terminated line
 ** Returns:     int result code: 0 = success, else failure
 */
-int MotorolaSFileBuf::ParseRecord(char *lbufPC, BYTE *buf_startP, BYTE *buf_endP, long offset, int nocopy)
+int MotorolaSFileBuf::ParseRecord(char *lbufPC, uint8_t *buf_startP, uint8_t *buf_endP, long offset, int nocopy)
 {
 	long addrL;
-	BYTE cksmB,              // checksum of addr, count, & data length
+	uint8_t cksmB,              // checksum of addr, count, & data length
 		*bufPC = 0;      // Pointer into memory array
 	int i, countN,           // Number of bytes represented in record
 		oheadN = 0,      // Number of overhead (addr + chksum) bytes
@@ -425,7 +425,7 @@ int MotorolaSFileBuf::ParseRecord(char *lbufPC, BYTE *buf_startP, BYTE *buf_endP
 		for( i = 1; i <= countN; i++ )
 		{
 			sscanf( lbufPC + i*2, "%2X", &tvalN );  /* Scan a 2 hex digit byte  */
-			cksmB += (BYTE)tvalN;
+			cksmB += (uint8_t)tvalN;
 		}
 
 		if( ++cksmB )
@@ -452,7 +452,7 @@ int MotorolaSFileBuf::ParseRecord(char *lbufPC, BYTE *buf_startP, BYTE *buf_endP
 		for( i = 1; i <= countN; i++ )
 		{
 			sscanf( lbufPC + i*2, "%2X", &tvalN );  /* Scan a 2 hex digit byte  */
-			cksmB += (BYTE)tvalN;
+			cksmB += (uint8_t)tvalN;
 			if( ( i > oheadN ) && ( i < countN ) )  /* If scanned a data byte */
 			{
 				if (!nocopy)
@@ -461,7 +461,7 @@ int MotorolaSFileBuf::ParseRecord(char *lbufPC, BYTE *buf_startP, BYTE *buf_endP
 					if (bufPC >= buf_endP)
 						return BUFFEROVERFLOW;
 
-					*bufPC++ = (BYTE) tvalN;   // write it to the buffer
+					*bufPC++ = (uint8_t) tvalN;   // write it to the buffer
 				}
 			}
 		}

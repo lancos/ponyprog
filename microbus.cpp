@@ -111,7 +111,7 @@ int MicroWireBus::SendDataBit(int b)
 // ritorna un numero negativo se c'e` un errore, altrimenti 0 o 1
 int MicroWireBus::RecDataBit()
 {
-	register UBYTE b;
+	register uint8_t b;
 
 	clearCLK();		//si assicura che SCK low
 

@@ -39,8 +39,8 @@ class PicBus : public BusIO
 	PicBus(BusInterface *ptr = 0);
 	virtual ~PicBus();
 
-	long Read(int addr, UBYTE *data, long length, int page_size = 0);
-	long Write(int addr, UBYTE const *data, long length, int page_size = 0);
+	long Read(int addr, uint8_t *data, long length, int page_size = 0);
+	long Write(int addr, uint8_t const *data, long length, int page_size = 0);
 	
 	int Erase(int type = ALL_TYPE);
 
@@ -52,7 +52,7 @@ class PicBus : public BusIO
 	void DisableCodeProtect();
 
 	int CompareSingleWord(UWORD data1, UWORD data2, UWORD mask);
-	int CompareMultiWord(UBYTE *data1, UBYTE *data2, ULONG length, int split);
+	int CompareMultiWord(uint8_t *data1, uint8_t *data2, ULONG length, int split);
 
 	void SetDelay();
 
@@ -77,16 +77,16 @@ class PicBus : public BusIO
 	const UWORD ProgMask;
 
 	//Command Opcode
-	const UBYTE ReadProgCode;
-	const UBYTE LoadProgCode;
-	const UBYTE ReadDataCode;
-	const UBYTE LoadDataCode;
-	const UBYTE LoadConfigCode;
-	const UBYTE IncAddressCode;
-	const UBYTE EraseProgMem;
-	const UBYTE EraseDataMem;
-	const UBYTE BeginEraseProgCode;
-	const UBYTE BeginProgOnlyCode;
+	const uint8_t ReadProgCode;
+	const uint8_t LoadProgCode;
+	const uint8_t ReadDataCode;
+	const uint8_t LoadDataCode;
+	const uint8_t LoadConfigCode;
+	const uint8_t IncAddressCode;
+	const uint8_t EraseProgMem;
+	const uint8_t EraseDataMem;
+	const uint8_t BeginEraseProgCode;
+	const uint8_t BeginProgOnlyCode;
 
  private:		//------------------------------- private
 

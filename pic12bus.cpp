@@ -126,7 +126,7 @@ int Pic12Bus::SendDataBit(int b)
 // returns a negative number in case of error, 0 or 1 otherwise
 int Pic12Bus::RecDataBit()
 {
-	register UBYTE b;
+	register uint8_t b;
 
 	setCLK();		//set SCK high (Pic output data now)
 
@@ -210,7 +210,7 @@ long Pic12Bus::ReadConfig(UWORD &data)
 
 //	Reset();
 
-	UBYTE *bp = (UBYTE *)&data;
+	uint8_t *bp = (uint8_t *)&data;
 
 	//Read Program Code
 	SendCmdCode(ReadProgCode);
@@ -220,11 +220,11 @@ long Pic12Bus::ReadConfig(UWORD &data)
 		val = 0xffff;
 
 #ifdef	_BIG_ENDIAN_
-	*bp++ = (UBYTE)(val >> 8);
-	*bp++ = (UBYTE)(val & 0xFF);
+	*bp++ = (uint8_t)(val >> 8);
+	*bp++ = (uint8_t)(val & 0xFF);
 #else
-	*bp++ = (UBYTE)(val & 0xFF);
-	*bp++ = (UBYTE)(val >> 8);
+	*bp++ = (uint8_t)(val & 0xFF);
+	*bp++ = (uint8_t)(val >> 8);
 #endif
 	IncAddress(1);
 
@@ -239,7 +239,7 @@ long Pic12Bus::WriteConfig(UWORD data)
 
 //  	Reset();
 
-	UBYTE *bp = (UBYTE *)&data;
+	uint8_t *bp = (uint8_t *)&data;
 	UWORD val;
 
 	//Write Program code
@@ -286,7 +286,7 @@ long Pic12Bus::BlankCheck(long length)
 	return (len == length);
 }
 
-long Pic12Bus::Read(int addr, UBYTE *data, long length, int page_size)
+long Pic12Bus::Read(int addr, uint8_t *data, long length, int page_size)
 {
 	long len;
 
@@ -307,11 +307,11 @@ long Pic12Bus::Read(int addr, UBYTE *data, long length, int page_size)
 			val = 0xffff;
 
 #ifdef	_BIG_ENDIAN_
-		*data++ = (UBYTE)(val >> 8);
-		*data++ = (UBYTE)(val & 0xFF);
+		*data++ = (uint8_t)(val >> 8);
+		*data++ = (uint8_t)(val & 0xFF);
 #else
-		*data++ = (UBYTE)(val & 0xFF);
-		*data++ = (UBYTE)(val >> 8);
+		*data++ = (uint8_t)(val & 0xFF);
+		*data++ = (uint8_t)(val >> 8);
 #endif
 		IncAddress(1);
 
@@ -327,7 +327,7 @@ long Pic12Bus::Read(int addr, UBYTE *data, long length, int page_size)
 	return len;
 }
 
-long Pic12Bus::Write(int addr, UBYTE const *data, long length, int page_size)
+long Pic12Bus::Write(int addr, uint8_t const *data, long length, int page_size)
 {
 	long len;
 	int rv = OK;
@@ -503,7 +503,7 @@ int Pic12Bus::CompareSingleWord(UWORD data1, UWORD data2, UWORD mask)
 	return (data1 & mask) != (data2 & mask);
 }
 
-int Pic12Bus::CompareMultiWord(UBYTE *data1, UBYTE *data2, ULONG length, int split)
+int Pic12Bus::CompareMultiWord(uint8_t *data1, uint8_t *data2, ULONG length, int split)
 {
 	int retval = 0;
 

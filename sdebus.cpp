@@ -106,7 +106,7 @@ int Sde2506Bus::SendDataBit(int b)
 // ritorna un numero negativo se c'e` un errore, altrimenti 0 o 1
 int Sde2506Bus::RecDataBit()
 {
-	register UBYTE b;
+	register uint8_t b;
 
 	clearCLK();		//the eeprom set data now
 	WaitUsec(shot_delay);
@@ -166,7 +166,7 @@ int Sde2506Bus::Reset(void)
 	return OK;
 }
 
-long Sde2506Bus::Read(int addr, UBYTE *data, long length, int page_size)
+long Sde2506Bus::Read(int addr, uint8_t *data, long length, int page_size)
 {
 	UserDebug3(UserApp2, "Sde2506Bus::Read(%Xh, %ph, %ld)\n", addr, data, length);
 
@@ -198,7 +198,7 @@ long Sde2506Bus::Read(int addr, UBYTE *data, long length, int page_size)
 	return len;
 }
 
-long Sde2506Bus::Write(int addr, UBYTE const *data, long length, int page_size)
+long Sde2506Bus::Write(int addr, uint8_t const *data, long length, int page_size)
 {
 	long curaddr;
 

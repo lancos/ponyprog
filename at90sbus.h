@@ -38,8 +38,8 @@ class At90sBus : public SPIBus
 	At90sBus(BusInterface *ptr = 0);
 //	virtual ~At90sBus();
 
-	long Read(int addr, UBYTE *data, long length, int page_size = 0);
-	long Write(int addr, UBYTE const *data, long length, int page_size = 0);
+	long Read(int addr, uint8_t *data, long length, int page_size = 0);
+	long Write(int addr, uint8_t const *data, long length, int page_size = 0);
 
 	virtual int Reset();
 	virtual int Erase(int type = 0);
@@ -83,10 +83,10 @@ class At90sBus : public SPIBus
 	void WriteEEPByte(long addr, int data);
 	int ReadProgByte(long addr);
 	void WriteProgByte(long addr, int data);
-	int WriteProgPage(long addr, UBYTE const *data, long page_size, long timeout = 10000);
+	int WriteProgPage(long addr, uint8_t const *data, long page_size, long timeout = 10000);
 
 	int WaitReadyAfterWrite(int type, long addr, int data, long timeout = 10000);
-	bool CheckBlankPage(UBYTE const *data, ULONG length);
+	bool CheckBlankPage(uint8_t const *data, ULONG length);
 	void RefreshParameters();
 
 	//Polling codes

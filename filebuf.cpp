@@ -57,9 +57,9 @@ e2AppWinInfo *FileBuf::GetAWInfo()
 	return awi;
 }
 
-UBYTE *FileBuf::GetBufPtr() const
+uint8_t *FileBuf::GetBufPtr() const
 {
-	return (UBYTE *)awi->GetBufPtr();
+	return (uint8_t *)awi->GetBufPtr();
 }
 
 long FileBuf::GetBufSize() const

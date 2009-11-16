@@ -2319,9 +2319,9 @@ int e2CmdWindow::CmdReadCalibration(int idx)
 					(loc + size <= awip->GetBufSize())
 				)
 			{
-				UBYTE *bp = awip->GetBufPtr() + loc;
+				uint8_t *bp = awip->GetBufPtr() + loc;
 
-				*bp = (UBYTE)rval;
+				*bp = (uint8_t)rval;
 
 				awip->RecalcCRC();
 			//	awip->BufChanged();
@@ -4251,29 +4251,29 @@ int e2CmdWindow::CmdSetSerialNumber()
 			(loc + size <= awip->GetBufSize())
 		)
 	{
-		UBYTE *bp = awip->GetBufPtr() + loc;
+		uint8_t *bp = awip->GetBufPtr() + loc;
 
 		if (THEAPP->GetSerialNumFormat() == FMT_BIG_ENDIAN)
 		{
 			if (size > 3)
-				*bp++ = (UBYTE)((val >> 24) & 0xff);
+				*bp++ = (uint8_t)((val >> 24) & 0xff);
 			if (size > 2)
-				*bp++ = (UBYTE)((val >> 16) & 0xff);
+				*bp++ = (uint8_t)((val >> 16) & 0xff);
 			if (size > 1)
-				*bp++ = (UBYTE)((val >> 8) & 0xff);
+				*bp++ = (uint8_t)((val >> 8) & 0xff);
 			if (size > 0)
-				*bp++ = (UBYTE)(val & 0xff);
+				*bp++ = (uint8_t)(val & 0xff);
 		}
 		else
 		{
 			if (size > 0)
-				*bp++ = (UBYTE)(val & 0xff);
+				*bp++ = (uint8_t)(val & 0xff);
 			if (size > 1)
-				*bp++ = (UBYTE)((val >> 8) & 0xff);
+				*bp++ = (uint8_t)((val >> 8) & 0xff);
 			if (size > 2)
-				*bp++ = (UBYTE)((val >> 16) & 0xff);
+				*bp++ = (uint8_t)((val >> 16) & 0xff);
 			if (size > 3)
-				*bp++ = (UBYTE)((val >> 24) & 0xff);
+				*bp++ = (uint8_t)((val >> 24) & 0xff);
 		}
 
 		awip->RecalcCRC();

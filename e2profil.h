@@ -101,8 +101,8 @@ class E2Profile : public Profile
 	char const *GetLastScript();
 	int SetLastScript(char const *name);
 
-	UBYTE GetPolarityControl();
-	int SetPolarityControl(UBYTE polarity_control);
+	uint8_t GetPolarityControl();
+	int SetPolarityControl(uint8_t polarity_control);
 
 	int GetSPIPageWrite();
 	int SetSPIPageWrite(int page_write = 1);
@@ -160,7 +160,7 @@ class E2Profile : public Profile
 	int GetNVMProgDelay();
 	int SetNVMProgDelay(int delay = 30);
 
-	ULONG GetSerialNumVal();
+	unsigned long GetSerialNumVal();
 	int SetSerialNumVal(unsigned long val = 0);
 	int GetSerialNumAddress(long &start, int &size, bool &mtype);
 	int SetSerialNumAddress(unsigned long start, int size, bool mtype);
@@ -169,8 +169,8 @@ class E2Profile : public Profile
 	bool GetSerialNumAutoInc();
 	int SetSerialNumAutoInc(bool val = true);
 
-	UWORD GetProgramOptions();
-	int SetProgramOptions(UWORD prog_option);
+	uint16_t GetProgramOptions();
+	int SetProgramOptions(uint16_t prog_option);
 
 	int GetCalibrationAddress(long &start, int &size, bool &mtype);
 	int SetCalibrationAddress(unsigned long start, int size, bool mtype);

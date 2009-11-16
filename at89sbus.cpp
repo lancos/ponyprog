@@ -163,7 +163,7 @@ void At89sBus::WriteProgByte(long addr, int data)
 	SendDataByte(data);
 }
 
-int At89sBus::WriteProgPage(long addr, UBYTE const *data, long page_size, long timeout)
+int At89sBus::WriteProgPage(long addr, uint8_t const *data, long page_size, long timeout)
 {
 	long k;
 	bool okflag;
@@ -207,7 +207,7 @@ int At89sBus::WriteProgPage(long addr, UBYTE const *data, long page_size, long t
 	return okflag ? OK : E2P_TIMEOUT;
 }
 
-int At89sBus::WriteDataPage(long addr, UBYTE const *data, long page_size, long timeout)
+int At89sBus::WriteDataPage(long addr, uint8_t const *data, long page_size, long timeout)
 {
 	long k;
 	bool okflag;
@@ -246,7 +246,7 @@ int At89sBus::WriteDataPage(long addr, UBYTE const *data, long page_size, long t
 	return okflag ? OK : -1;
 }
 
-void At89sBus::ReadProgPage(long addr, UBYTE *data, long page_size, long timeout)
+void At89sBus::ReadProgPage(long addr, uint8_t *data, long page_size, long timeout)
 {
 	long k;
 
@@ -261,7 +261,7 @@ void At89sBus::ReadProgPage(long addr, UBYTE *data, long page_size, long timeout
 		data[k] = RecDataByte();
 }
 
-void At89sBus::ReadDataPage(long addr, UBYTE *data, long page_size, long timeout)
+void At89sBus::ReadDataPage(long addr, uint8_t *data, long page_size, long timeout)
 {
 	long k;
 
@@ -450,7 +450,7 @@ int At89sBus::Erase(int type)
 	return 1;
 }
 
-long At89sBus::Read(int addr, UBYTE *data, long length, int page_size)
+long At89sBus::Read(int addr, uint8_t *data, long length, int page_size)
 {
 	long len;
 
@@ -469,7 +469,7 @@ long At89sBus::Read(int addr, UBYTE *data, long length, int page_size)
 		{
 			for (addr = 0, len = 0; len < length; len++)
 			{
-				*data++ = (UBYTE)ReadDataByte(addr++);
+				*data++ = (uint8_t)ReadDataByte(addr++);
 
 				if ( CheckAbort(len * 100 / length) )
 					break;
@@ -492,7 +492,7 @@ long At89sBus::Read(int addr, UBYTE *data, long length, int page_size)
 		{
 			for (addr = 0, len = 0; len < length; len++)
 			{
-				*data++ = (UBYTE)ReadProgByte(addr++);
+				*data++ = (uint8_t)ReadProgByte(addr++);
 
 				if ( CheckAbort(len * 100 / length) )
 					break;
@@ -525,7 +525,7 @@ int At89sBus::WaitReadyAfterWrite(int type, long addr, int data, long timeout)
 	return rval;
 }
 
-bool At89sBus::CheckBlankPage(UBYTE const *data, long length)
+bool At89sBus::CheckBlankPage(uint8_t const *data, long length)
 {
 	bool blank_page = true;
 
@@ -540,7 +540,7 @@ bool At89sBus::CheckBlankPage(UBYTE const *data, long length)
 	return blank_page;
 }
 
-long At89sBus::Write(int addr, UBYTE const *data, long length, int page_size)
+long At89sBus::Write(int addr, uint8_t const *data, long length, int page_size)
 {
 	long len;
 

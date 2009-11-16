@@ -661,7 +661,7 @@ long At90sBus::ReadCalibration(int addr)
 	return RecDataByte();
 }
 
-long At90sBus::Read(int addr, UBYTE *data, long length, int page_size)
+long At90sBus::Read(int addr, uint8_t *data, long length, int page_size)
 {
 	long len;
 
@@ -676,7 +676,7 @@ long At90sBus::Read(int addr, UBYTE *data, long length, int page_size)
 		addr = 0;
 		for (len = 0; len < length; len++)
 		{
-			*data++ = (UBYTE)ReadEEPByte(addr++);
+			*data++ = (uint8_t)ReadEEPByte(addr++);
 
 			if ( CheckAbort(len * 100 / length) )
 				break;
@@ -688,7 +688,7 @@ long At90sBus::Read(int addr, UBYTE *data, long length, int page_size)
 		addr = 0;
 		for (len = 0; len < length; len++)
 		{
-			*data++ = (UBYTE)ReadProgByte(addr++);
+			*data++ = (uint8_t)ReadProgByte(addr++);
 
 			if ( CheckAbort(len * 100 / length) )
 				break;
@@ -794,7 +794,7 @@ int At90sBus::Erase(int type)
 	return OK;
 }
 
-long At90sBus::Write(int addr, UBYTE const *data, long length, int page_size)
+long At90sBus::Write(int addr, uint8_t const *data, long length, int page_size)
 {
 	long len;
 
@@ -878,7 +878,7 @@ void At90sBus::SetFlashPagePolling(bool val)
 	enable_flashpage_polling = val;
 }
 
-int At90sBus::WriteProgPage(long addr, UBYTE const *data, long page_size, long timeout)
+int At90sBus::WriteProgPage(long addr, uint8_t const *data, long page_size, long timeout)
 {
 	long k;
 	bool okflag;
@@ -926,7 +926,7 @@ int At90sBus::WriteProgPage(long addr, UBYTE const *data, long page_size, long t
 	return okflag ? OK : E2P_TIMEOUT;
 }
 
-bool At90sBus::CheckBlankPage(UBYTE const *data, ULONG length)
+bool At90sBus::CheckBlankPage(uint8_t const *data, ULONG length)
 {
 	bool blank_page = true;
 

@@ -178,7 +178,7 @@ int LPTInterface::InDataPort(int port_no)
 		if ( port_no >= 1 && port_no <= MAX_LPTPORTS )
 			lpt_control.LPPort = port_no;
 
-		UBYTE value;
+		uint8_t value;
 		if ( !DeviceIoControl(hLPTCONVxD, LPTCON_READ,
 					&lpt_control, sizeof(LPTCONDATA),
 					&value, sizeof(value), NULL, 0) )
@@ -247,7 +247,7 @@ int LPTInterface::OutDataPort(int val, int port_no)
 	{
 		if ( port_no >= 1 && port_no <= MAX_LPTPORTS )
 			lpt_control.LPPort = port_no;
-		lpt_control.LPByte = last_data = (UBYTE)val;
+		lpt_control.LPByte = last_data = (uint8_t)val;
 
 		ret_val = DeviceIoControl(hLPTCONVxD, LPTCON_WRITE_DATA,
 					&lpt_control, sizeof(LPTCONDATA),
@@ -278,7 +278,7 @@ int LPTInterface::OutDataPort(int val, int port_no)
 
 	if ( hLpt != INVALID_HANDLE_VALUE )
 	{
-		lpt_control.LPByte = last_data = (UBYTE)val;
+		lpt_control.LPByte = last_data = (uint8_t)val;
 		if ( ioctl(hLpt, PPWDATA, &lpt_control.LPByte) )
 		{
 			ret_val = E2ERR_ACCESSDENIED;
@@ -315,7 +315,7 @@ int LPTInterface::OutControlPort(int val, int port_no)
 	{
 		if ( port_no >= 1 && port_no <= MAX_LPTPORTS )
 			lpt_control.LPPort = port_no;
-		lpt_control.LPByte = last_ctrl = (UBYTE)val & 0x0F;
+		lpt_control.LPByte = last_ctrl = (uint8_t)val & 0x0F;
 
 		ret_val = DeviceIoControl(hLPTCONVxD, LPTCON_WRITE_CONTROL,
 					&lpt_control, sizeof(LPTCONDATA),
@@ -346,7 +346,7 @@ int LPTInterface::OutControlPort(int val, int port_no)
 
 	if ( hLpt != INVALID_HANDLE_VALUE )
 	{
-		lpt_control.LPByte = last_ctrl = (UBYTE)val & 0x0F;
+		lpt_control.LPByte = last_ctrl = (uint8_t)val & 0x0F;
 		if ( ioctl(hLpt, PPWCONTROL, &lpt_control.LPByte) )
 		{
 			ret_val = E2ERR_ACCESSDENIED;
