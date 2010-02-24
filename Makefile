@@ -331,7 +331,7 @@ objs:	$(OBJS)
 
 prps:	$(PRPS)
 
-$(PROG):	$(OBJS)
+$(PROG):	$(OBJS) v/lib/libVx.a
 	$(CXX) -o $@ $(OBJS) $(LDFLAGS)
 
 %.o: %.cpp
