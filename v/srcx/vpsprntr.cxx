@@ -69,7 +69,7 @@ static unsigned char prompt_bits[] = {
 	{C_Label, 12, 0, "PostScript Print To",
 		 NoList, CA_None, isSens, 11, 0,0},
 	{C_RadioButton,13, 1, "File",NoList,CA_None,isSens,11,12,0},
-	{C_RadioButton,14, 0, "Printer",NoList,CA_None,isSens,11,13,0},
+//	{C_RadioButton,14, 0, "Printer",NoList,CA_None,isSens,11,13,0},
 
 	{C_Label, 20, 0, "Print to: ",NoList, CA_None,isSens,NoFrame,0,10},
 	{C_TextIn,21, 0, "",NoList,CA_None, isSens,NoFrame,20,10},
@@ -165,14 +165,15 @@ static unsigned char prompt_bits[] = {
   {
     if (!_name)
       {
-	char *name = "|lpr";
+//	char *name = "|lpr";
+	char *name = "test.ps";
 	_name = new char[strlen(name)+1];
 	strcpy(_name, name);
       }
 
     if (_pstream)
 	_pstream->close();
-
+/**
     if (_name[0]=='|')			// see if a pipe or lpr - treat same
       {
 	char *cmdname = (char *)&_name[1];
@@ -279,7 +280,8 @@ static unsigned char prompt_bits[] = {
       {
 	_pstream = new ofstream(_name);	// open output stream
       }
-//    _pstream = new ofstream(_name);	// open output stream
+**/
+    _pstream = new ofstream(_name);	// open output stream
     return _pstream;
   }
  
@@ -314,9 +316,10 @@ static unsigned char prompt_bits[] = {
       }
     else
       {
-	SetString(21, "|lpr");		// pipe to lpr by default
-	SetValue(13,0,Value);		// turn File off
-	SetValue(14,1,Value);		// turn Printer on
+//	SetString(21, "|lpr");		// pipe to lpr by default
+	SetString(21, "test.ps");		// pipe to lpr by default
+	SetValue(13,1,Value);		// turn File on
+//	SetValue(14,0,Value);		// turn Printer off
       }
 
     id = ShowModalDialog("Printer Setup", val);     // show and wait
@@ -339,9 +342,11 @@ static unsigned char prompt_bits[] = {
 	  }
 
         case M_Cancel:
-	    if (_name)
-		delete [] _name;
+	    if (_name) {
+			delete [] _name;
+			_name = 0;
             return 0;
+		}
       };
     return 0;
   }
@@ -386,22 +391,22 @@ static unsigned char prompt_bits[] = {
 	      }
 	    break;
 
-	case 14:	// Printer
-	    if (val)
-	      {
-		if (_name)		// had a previous name
-		  {
-		    if (strlen(_name) < 254)
-			strcpy(prevname,_name);
-		    else
-			prevname[0] = 0;
-		    delete [] _name;
-		  }
-		_name = new char[6];  // allocate new
-		strcpy(_name,"|lpr");	// copy it
-		SetString(21, _name);
-	      }
-	    break;
+//	case 14:	// Printer
+//	    if (val)
+//	      {
+//		if (_name)		// had a previous name
+//		  {
+//		    if (strlen(_name) < 254)
+//			strcpy(prevname,_name);
+//		    else
+//			prevname[0] = 0;
+//		    delete [] _name;
+//		  }
+//		_name = new char[6];  // allocate new
+//		strcpy(_name,"|lpr");	// copy it
+//		SetString(21, _name);
+//	      }
+//	    break;
 
 	case 30:	// portrait
 	    _portrait = val;

@@ -5693,7 +5693,14 @@ void e2CmdWindow::Print()
     vPrintDC pdc;               // create a vPrintDC object
     vPrinter printer;           // and a printer to set attributes
 
-    printer.Setup("test.prn");   // setup the printer
+#ifdef __unix__	   // setup the printer
+	char *def_print_name = "ponyprog.ps";
+#else
+	char *def_print_name = "ponyprog.prn";
+#endif
+	if (!printer.Setup(def_print_name))
+		return;
+
     pdc.SetPrinter(printer);    // change to the printer we setup
 
     if (!pdc.BeginPrinting())   // call BeginPrinting first
