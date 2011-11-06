@@ -145,22 +145,22 @@ int RS232Interface::OpenSerial(int no)
 		snprintf(lockname, MAXPATH, "%s/LCK..%s%d", profile->GetLockDir(), profile->GetDevName(), no);
 		UserDebug1(UserApp2, "RS232Interface::OpenSerial() now lock the device %s\n", lockname);
 
-		fd = open ((const char *)lockname,O_RDWR|O_EXCL|O_CREAT);
+		fd = open((const char *)lockname, O_RDWR|O_EXCL|O_CREAT, S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH);
 		if (fd < 0)
 		{
-			fd = open ((const char *)lockname,O_RDONLY);
+			fd = open((const char *)lockname, O_RDONLY);
 			lockname[0]=0;
 			UserDebug1(UserApp2, "RS232Interface::OpenSerial Can't lock port %d\n", no);
 			if (fd < 0)
 				return ret_val;
-			chars_read = read(fd,devname,MAXLINESIZE-1);
-			devname[chars_read]=0;
-			UserDebug1(UserApp2, "RS232Interface::OpenSeriial locked by %s\n", devname);
+			chars_read = read(fd, devname, MAXLINESIZE - 1);
+			devname[chars_read] = 0;
+			UserDebug1(UserApp2, "RS232Interface::OpenSerial locked by %s\n", devname);
 			close(fd);
 			return ret_val;
 		}
 
-		snprintf(devname, MAXPATH, "%10d\n", (int) getpid() );
+		snprintf(devname, MAXPATH, "%10d\n", (int)getpid());
 		write(fd, devname, strlen(devname));
 		close(fd);
 		fd = INVALID_HANDLE_VALUE;
@@ -182,7 +182,7 @@ int RS232Interface::OpenSerial(int no)
 		// Check for the needed IOCTLS
 #if defined(TIOCSBRK) && defined(TIOCCBRK) //check if available for compilation
 		// Check if available during runtime
-		if ((ioctl(fd,TIOCSBRK,0) == -1) || (ioctl(fd,TIOCCBRK,0) == -1))
+		if ((ioctl(fd, TIOCSBRK, 0) == -1) || (ioctl(fd, TIOCCBRK, 0) == -1))
 		{
 			UserDebug(UserApp2, "RS232Interface::OpenPort IOCTL not available\n");
 			return ret_val;
@@ -232,7 +232,7 @@ int RS232Interface::OpenSerial(int no)
 		}
 
 		UserDebug(UserApp2, "RS232Interface::OpenPort SetTimeouts && Params\n");
-		if ( SetSerialTimeouts() != OK )
+		if (SetSerialTimeouts() != OK)
 		{
 			UserDebug(UserApp2, "RS232Interface::OpenPort SetSerialTimeouts() failed\n");
 			close(fd);
@@ -240,7 +240,7 @@ int RS232Interface::OpenSerial(int no)
 			unlink(lockname);
 		}
 		else
-		if ( SetSerialParams() != OK )
+		if (SetSerialParams() != OK)
 		{
 			UserDebug(UserApp2, "RS232Interface::OpenPort SetSerialParams() failed\n");
 			close(fd);
@@ -267,7 +267,7 @@ void RS232Interface::CloseSerial()
 	UserDebug(UserApp1, "RS232Interface::CloseSerial()\n");
 
 #ifdef	_WINDOWS
-	if ( hCom != INVALID_HANDLE_VALUE )
+	if (hCom != INVALID_HANDLE_VALUE)
 	{
 //		SetCommState(hCom, &old_dcb);		//This can raise the RTS line, so invalidating the PowerOff
 		SetCommTimeouts(hCom, &old_timeout);
@@ -279,7 +279,7 @@ void RS232Interface::CloseSerial()
 	}
 #else
 #ifdef	_LINUX_
-	if ( fd != INVALID_HANDLE_VALUE )
+	if (fd != INVALID_HANDLE_VALUE)
 	{
 	//	tcsetattr(fd, TCSAFLUSH, &old_termios);		//This can raise the RTS line, so invalidating the PowerOff
 
