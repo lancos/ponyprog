@@ -38,7 +38,7 @@
 #define COPYRIGHTYEAR	"1997-2008"
 #define	APPNAME_EXT	STR_APPNAME_EXT
 
-#define	APPVERSION	"2.08a Beta"
+#define	APPVERSION	"2.08b Beta"
 
 #define	THEAPP	((e2App*)theApp)
 

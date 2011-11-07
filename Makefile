@@ -18,7 +18,7 @@
 CONFIG=v/Config.mk
 include $(CONFIG)
 
-PONYVER = 2.08a
+PONYVER = 2.08b
 TAR = tar
 
 #xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
