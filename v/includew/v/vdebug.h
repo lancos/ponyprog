@@ -21,7 +21,7 @@
 
 	~vDebugDialog() {};
 
-  	void vDebugDialog::SetDebug();
+  	void SetDebug();
 
 	virtual void DialogCommand(ItemVal id, ItemVal val, CmdType ctype);
 	
