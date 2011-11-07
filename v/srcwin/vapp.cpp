@@ -58,7 +58,7 @@
     // This forces the GNU Linker to include vstartup.o in the executable
     // Only needed here for the static library, for DLL use it must be
     // in one of the Applications object files -> see vApp.h
-    int (*gnuw32dummy)(HINSTANCE,HINSTANCE,LPSTR,int)=WinMain;
+    int (*gnuw32dummy)(HINSTANCE,HINSTANCE,LPSTR,int) = WinMain;
 #endif
 #endif
 
