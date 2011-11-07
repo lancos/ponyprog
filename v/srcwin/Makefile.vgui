@@ -5,7 +5,8 @@
 #=======================================================================
 
 # Standard defines:
-CC  	=	g++
+#CC  	=	g++
+CC  	=	i586-mingw32msvc-g++
 
 WRES	=	windres
 
@@ -18,7 +19,7 @@ libDirs	=
 incDirs	=	-I../includew
 
 LIBS	=	
-C_FLAGS	=	-O
+C_FLAGS	=	-O2 -fpermissive -Wno-write-strings
 
 SRCS	=\
 	$(Src)/vapp.cpp\
