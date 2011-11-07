@@ -49,7 +49,8 @@ const int maxCursors = 13;
 
     class V_EXPORT vCanvasPane : public vPane
       {
-        friend vWindow;
+        friend class vWindow;
+
       public:		//---------------------------------------- public
 
 	vCanvasPane(PaneType pt = P_Canvas);
