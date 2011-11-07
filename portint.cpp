@@ -37,8 +37,7 @@
 #include "e2app.h"
 
 #ifdef	_LINUX_
-//#include <asm/io.h>
-#include <sys/io.h>		//#include <linux/ioport.h>
+#include <sys/io.h>
 #include <unistd.h>
 
 	int PortInterface::IOperm(int a, int b, int c)
@@ -764,6 +763,7 @@ void PortInterface::DetectPorts9x()
    delete KeyList;
 }
 
+#include <ctype.h>
 
 //---------------------------------------------------------------------------
 // DetectPorts() Win2K / NT version
