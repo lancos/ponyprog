@@ -4,14 +4,14 @@
 #    new name if you hand edit, or it will be overwritten.
 #=======================================================================
 
-CONFIG=../Configwin.mk
+CONFIG=Configwin.mk
 include $(CONFIG)
 
-oDir	=	../objw
-Bin	=	../lib
-Src	=	.
+oDir	=	objwin
+Bin	=	lib
+Src	=	srcwin
 libDirs	=
-incDirs	=	-I../includew
+incDirs	=	-Iincludew
 
 LIBS	=
 C_FLAGS	=	-O2 -fpermissive -Wno-write-strings
@@ -164,170 +164,174 @@ $(Bin)/libV.a: $(EXOBJS)
 	ar cr $(Bin)/libV.a $(EXOBJS)
 	$(RANLIB) $(Bin)/libV.a
 
-$(oDir)/vapp.o: vapp.cpp
+$(oDir)/vapp.o: $(Src)/vapp.cpp
 	$(CXX) $(C_FLAGS) $(incDirs) -c -o $@ $<
 
-$(oDir)/vawinfo.o: vawinfo.cpp
+$(oDir)/vawinfo.o: $(Src)/vawinfo.cpp
 	$(CXX) $(C_FLAGS) $(incDirs) -c -o $@ $<
 
-$(oDir)/vbaseitm.o: vbaseitm.cpp
+$(oDir)/vbaseitm.o: $(Src)/vbaseitm.cpp
 	$(CXX) $(C_FLAGS) $(incDirs) -c -o $@ $<
 
-$(oDir)/vbasewin.o: vbasewin.cpp
+$(oDir)/vbasewin.o: $(Src)/vbasewin.cpp
 	$(CXX) $(C_FLAGS) $(incDirs) -c -o $@ $<
 
-$(oDir)/vbglcnv.o: vbglcnv.cpp
+$(oDir)/vbglcnv.o: $(Src)/vbglcnv.cpp
 	$(CXX) $(C_FLAGS) $(incDirs) -c -o $@ $<
 
-$(oDir)/vboxlblc.o: vboxlblc.cpp
+$(oDir)/vboxlblc.o: $(Src)/vboxlblc.cpp
 	$(CXX) $(C_FLAGS) $(incDirs) -c -o $@ $<
 
-$(oDir)/vbrush.o: vbrush.cpp
+$(oDir)/vbrush.o: $(Src)/vbrush.cpp
 	$(CXX) $(C_FLAGS) $(incDirs) -c -o $@ $<
 
-$(oDir)/vbtncmd.o: vbtncmd.cpp
+$(oDir)/vbtncmd.o: $(Src)/vbtncmd.cpp
 	$(CXX) $(C_FLAGS) $(incDirs) -c -o $@ $<
 
-$(oDir)/vcanvas.o: vcanvas.cpp
+$(oDir)/vcanvas.o: $(Src)/vcanvas.cpp
 	$(CXX) $(C_FLAGS) $(incDirs) -c -o $@ $<
 
-$(oDir)/vcbtncmd.o: vcbtncmd.cpp
+$(oDir)/vcbtncmd.o: $(Src)/vcbtncmd.cpp
 	$(CXX) $(C_FLAGS) $(incDirs) -c -o $@ $<
 
-$(oDir)/vchkboxc.o: vchkboxc.cpp
+$(oDir)/vchkboxc.o: $(Src)/vchkboxc.cpp
 	$(CXX) $(C_FLAGS) $(incDirs) -c -o $@ $<
 
-$(oDir)/vclabelc.o: vclabelc.cpp
+$(oDir)/vclabelc.o: $(Src)/vclabelc.cpp
 	$(CXX) $(C_FLAGS) $(incDirs) -c -o $@ $<
 
-$(oDir)/vcmd.o: vcmd.cpp
+$(oDir)/vcmd.o: $(Src)/vcmd.cpp
 	$(CXX) $(C_FLAGS) $(incDirs) -c -o $@ $<
 
-$(oDir)/vcmdpane.o: vcmdpane.cpp
+$(oDir)/vcmdpane.o: $(Src)/vcmdpane.cpp
 	$(CXX) $(C_FLAGS) $(incDirs) -c -o $@ $<
 
-$(oDir)/vcmdprnt.o: vcmdprnt.cpp
+$(oDir)/vcmdprnt.o: $(Src)/vcmdprnt.cpp
 	$(CXX) $(C_FLAGS) $(incDirs) -c -o $@ $<
 
-$(oDir)/vcmdwin.o: vcmdwin.cpp
+$(oDir)/vcmdwin.o: $(Src)/vcmdwin.cpp
 	$(CXX) $(C_FLAGS) $(incDirs) -c -o $@ $<
 
-$(oDir)/vcolor.o: vcolor.cpp
+$(oDir)/vcolor.o: $(Src)/vcolor.cpp
 	$(CXX) $(C_FLAGS) $(incDirs) -c -o $@ $<
 
-$(oDir)/vcomboc.o: vcomboc.cpp
+$(oDir)/vcomboc.o: $(Src)/vcomboc.cpp
 	$(CXX) $(C_FLAGS) $(incDirs) -c -o $@ $<
 
-$(oDir)/vcpdc.o: vcpdc.cpp
+$(oDir)/vcpdc.o: $(Src)/vcpdc.cpp
 	$(CXX) $(C_FLAGS) $(incDirs) -c -o $@ $<
 
-$(oDir)/vdebug.o: vdebug.cpp
+$(oDir)/vdebug.o: $(Src)/vdebug.cpp
 	$(CXX) $(C_FLAGS) $(incDirs) -c -o $@ $<
 
-$(oDir)/vdialog.o: vdialog.cpp
+$(oDir)/vdialog.o: $(Src)/vdialog.cpp
 	$(CXX) $(C_FLAGS) $(incDirs) -c -o $@ $<
 
-$(oDir)/vfilesel.o: vfilesel.cpp
+$(oDir)/vfilesel.o: $(Src)/vfilesel.cpp
 	$(CXX) $(C_FLAGS) $(incDirs) -c -o $@ $<
 
-$(oDir)/vfinddlg.o: vfinddlg.cpp
+$(oDir)/vfinddlg.o: $(Src)/vfinddlg.cpp
 	$(CXX) $(C_FLAGS) $(incDirs) -c -o $@ $<
 
-$(oDir)/vfont.o: vfont.cpp
+$(oDir)/vfont.o: $(Src)/vfont.cpp
 	$(CXX) $(C_FLAGS) $(incDirs) -c -o $@ $<
 
-$(oDir)/vfontsel.o: vfontsel.cpp
+$(oDir)/vfontsel.o: $(Src)/vfontsel.cpp
 	$(CXX) $(C_FLAGS) $(incDirs) -c -o $@ $<
 
-$(oDir)/vframec.o: vframec.cpp
+$(oDir)/vframec.o: $(Src)/vframec.cpp
 	$(CXX) $(C_FLAGS) $(incDirs) -c -o $@ $<
 
-$(oDir)/vicon.o: vicon.cpp
+$(oDir)/vicon.o: $(Src)/vicon.cpp
 	$(CXX) $(C_FLAGS) $(incDirs) -c -o $@ $<
 
-$(oDir)/vlabelc.o: vlabelc.cpp
+$(oDir)/vlabelc.o: $(Src)/vlabelc.cpp
 	$(CXX) $(C_FLAGS) $(incDirs) -c -o $@ $<
 
-$(oDir)/vlistc.o: vlistc.cpp
+$(oDir)/vlistc.o: $(Src)/vlistc.cpp
 	$(CXX) $(C_FLAGS) $(incDirs) -c -o $@ $<
 
-$(oDir)/vmemdc.o: vmemdc.cpp
+$(oDir)/vmemdc.o: $(Src)/vmemdc.cpp
 	$(CXX) $(C_FLAGS) $(incDirs) -c -o $@ $<
 
-$(oDir)/vmenu.o: vmenu.cpp
+$(oDir)/vmenu.o: $(Src)/vmenu.cpp
 	$(CXX) $(C_FLAGS) $(incDirs) -c -o $@ $<
 
-$(oDir)/vmodald.o: vmodald.cpp
+$(oDir)/vmodald.o: $(Src)/vmodald.cpp
 	$(CXX) $(C_FLAGS) $(incDirs) -c -o $@ $<
 
-$(oDir)/vnotice.o: vnotice.cpp
+$(oDir)/vnotice.o: $(Src)/vnotice.cpp
 	$(CXX) $(C_FLAGS) $(incDirs) -c -o $@ $<
 
-$(oDir)/vos.o: vos.cpp
+$(oDir)/vos.o: $(Src)/vos.cpp
 	$(CXX) $(C_FLAGS) $(incDirs) -c -o $@ $<
 
-$(oDir)/vpen.o: vpen.cpp
+$(oDir)/vpen.o: $(Src)/vpen.cpp
 	$(CXX) $(C_FLAGS) $(incDirs) -c -o $@ $<
 
-$(oDir)/vpopmenu.o: vpopmenu.cpp
+$(oDir)/vpopmenu.o: $(Src)/vpopmenu.cpp
 	$(CXX) $(C_FLAGS) $(incDirs) -c -o $@ $<
 
-$(oDir)/vprogrsc.o: vprogrsc.cpp
+$(oDir)/vprogrsc.o: $(Src)/vprogrsc.cpp
 	$(CXX) $(C_FLAGS) $(incDirs) -c -o $@ $<
 
-$(oDir)/vradioc.o: vradioc.cpp
+$(oDir)/vradioc.o: $(Src)/vradioc.cpp
 	$(CXX) $(C_FLAGS) $(incDirs) -c -o $@ $<
 
-$(oDir)/vrepldlg.o: vrepldlg.cpp
+$(oDir)/vrepldlg.o: $(Src)/vrepldlg.cpp
 	$(CXX) $(C_FLAGS) $(incDirs) -c -o $@ $<
 
-$(oDir)/vreply.o: vreply.cpp
+$(oDir)/vreply.o: $(Src)/vreply.cpp
 	$(CXX) $(C_FLAGS) $(incDirs) -c -o $@ $<
 
-$(oDir)/vsliderc.o: vsliderc.cpp
+$(oDir)/vsliderc.o: $(Src)/vsliderc.cpp
 	$(CXX) $(C_FLAGS) $(incDirs) -c -o $@ $<
 
-$(oDir)/vslist.o: vslist.cpp
+$(oDir)/vslist.o: $(Src)/vslist.cpp
 	$(CXX) $(C_FLAGS) $(incDirs) -c -o $@ $<
 
-$(oDir)/vspinc.o: vspinc.cpp
+$(oDir)/vspinc.o: $(Src)/vspinc.cpp
 	$(CXX) $(C_FLAGS) $(incDirs) -c -o $@ $<
 
-$(oDir)/vstartup.o: vstartup.cpp
+$(oDir)/vstartup.o: $(Src)/vstartup.cpp
 	$(CXX) $(C_FLAGS) $(incDirs) -c -o $@ $<
 
-$(oDir)/vtextc.o: vtextc.cpp
+$(oDir)/vtextc.o: $(Src)/vtextc.cpp
 	$(CXX) $(C_FLAGS) $(incDirs) -c -o $@ $<
 
-$(oDir)/vtextcnv.o: vtextcnv.cpp
+$(oDir)/vtextcnv.o: $(Src)/vtextcnv.cpp
 	$(CXX) $(C_FLAGS) $(incDirs) -c -o $@ $<
 
-$(oDir)/vtexted.o: vtexted.cpp
+$(oDir)/vtexted.o: $(Src)/vtexted.cpp
 	$(CXX) $(C_FLAGS) $(incDirs) -c -o $@ $<
 
-$(oDir)/vtextinc.o: vtextinc.cpp
+$(oDir)/vtextinc.o: $(Src)/vtextinc.cpp
 	$(CXX) $(C_FLAGS) $(incDirs) -c -o $@ $<
 
-$(oDir)/vthislst.o: vthislst.cpp
+$(oDir)/vthislst.o: $(Src)/vthislst.cpp
 	$(CXX) $(C_FLAGS) $(incDirs) -c -o $@ $<
 
-$(oDir)/vtimer.o: vtimer.cpp
+$(oDir)/vtimer.o: $(Src)/vtimer.cpp
 	$(CXX) $(C_FLAGS) $(incDirs) -c -o $@ $<
 
-$(oDir)/vwindc.o: vwindc.cpp
+$(oDir)/vwindc.o: $(Src)/vwindc.cpp
 	$(CXX) $(C_FLAGS) $(incDirs) -c -o $@ $<
 
-$(oDir)/vutil.o: vutil.cpp
+$(oDir)/vutil.o: $(Src)/vutil.cpp
 	$(CXX) $(C_FLAGS) $(incDirs) -c -o $@ $<
 
-$(oDir)/vwindow.o: vwindow.cpp
+$(oDir)/vwindow.o: $(Src)/vwindow.cpp
 	$(CXX) $(C_FLAGS) $(incDirs) -c -o $@ $<
 
-$(oDir)/vwinprdc.o: vwinprdc.cpp
+$(oDir)/vwinprdc.o: $(Src)/vwinprdc.cpp
 	$(CXX) $(C_FLAGS) $(incDirs) -c -o $@ $<
 
-$(oDir)/vwinprtr.o: vwinprtr.cpp
+$(oDir)/vwinprtr.o: $(Src)/vwinprtr.cpp
 	$(CXX) $(C_FLAGS) $(incDirs) -c -o $@ $<
 
-$(oDir)/vynreply.o: vynreply.cpp
+$(oDir)/vynreply.o: $(Src)/vynreply.cpp
 	$(CXX) $(C_FLAGS) $(incDirs) -c -o $@ $<
+
+$(shell mkdir -p $(oDir) 2>/dev/null)
+$(shell mkdir -p $(Bin) 2>/dev/null)
+
