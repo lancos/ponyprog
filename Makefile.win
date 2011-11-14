@@ -160,7 +160,7 @@ objs:	$(OBJS)
 #prps:	$(PRPS)
 
 libdlportio.a: dlportio.def
-	rm dlportio.dll
+	rm -f dlportio.dll
 	ln -s SETUP/DLPORTIO.dll dlportio.dll
 	$(TOOLCHAINPREFIX)dlltool -D dlportio.dll -d dlportio.def -l $@
 
