@@ -26,6 +26,9 @@
  *  $Revision$
  *  <nl>
  *  $Log$
+ *  Revision 1.4  2011/11/15 11:38:30  lancos
+ *  with _stdcall just don't link with mingw
+ *
  *  Revision 1.3  2004/11/30 17:46:48  lancos
  *  Commit PonyProg2000 2.06e
  *
@@ -60,7 +63,8 @@ extern "C" {
   #define IN
 #endif
 
-#define DLPORT_API _stdcall
+//#define DLPORT_API _stdcall
+#define DLPORT_API
 
 UCHAR DLPORT_API
 DlPortReadPortUchar(
