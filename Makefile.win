@@ -19,6 +19,7 @@ CONFIG=v/Configwin.mk
 include $(CONFIG)
 
 INCDIR	= -I./v/includew
+PROGNAME = ponyprog2000.exe
 
 #xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 #Local configuration (changed from V Config)
@@ -42,7 +43,6 @@ LDFLAGS	+= $(LIBS)
 
 #xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
-PROGNAME = ponyprog2000
 PROG = $(BinDir)/$(PROGNAME)
 
 SRCS	= \
@@ -138,13 +138,13 @@ default: $(PROG)
 all: vlib $(PROG)
 
 vlib:
-	cd v/srcwin; $(MAKE) -f Makefile.vgui
+	cd v; $(MAKE) -f Makefile.win
 
 v/lib/libV.a:
-	cd v/srcwin; $(MAKE) -f Makefile.vgui
+	cd v; $(MAKE) -f Makefile.win
 
 cleanlib:
-	cd v/srcwin; $(MAKE) -f Makefile.vgui clean
+	cd v; $(MAKE) -f Makefile.win clean
 
 clean:
 	-rm -f $(OBJS)
