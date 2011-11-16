@@ -4,7 +4,11 @@
 #DEBUG	= yes
 DEBUG	= no
 
+ifeq ($(OSTYPE),"msys")
+TOOLCHAINPREFIX = 
+else
 TOOLCHAINPREFIX = i586-mingw32msvc-
+endif
 
 CC	= $(TOOLCHAINPREFIX)gcc
 CXX	= $(TOOLCHAINPREFIX)g++
