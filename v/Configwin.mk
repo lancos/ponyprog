@@ -4,7 +4,9 @@
 #DEBUG	= yes
 DEBUG	= no
 
-ifeq ($(OSTYPE),"msys")
+OSNAME := $(shell uname | cut -c 1-5)
+
+ifeq ($(OSNAME),MINGW)
 TOOLCHAINPREFIX = 
 else
 TOOLCHAINPREFIX = i586-mingw32msvc-
