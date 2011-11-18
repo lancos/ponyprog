@@ -147,7 +147,7 @@ cleanlib:
 	cd v; $(MAKE) -f Makefile.win clean
 
 clean:
-	-rm -f $(OBJS)
+	-rm -f $(oDir)/*.o
 	-rm -f libdlportio.a
 	-rm -f .dep/*.d
 
