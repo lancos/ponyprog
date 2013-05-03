@@ -32,7 +32,7 @@
 #include "errcode.h"
 
 #include "globals.h"
-#include "dlportio.h"
+#include "inpout32.h"
 
 #include "e2app.h"
 
@@ -42,10 +42,13 @@
 
 	int PortInterface::IOperm(int a, int b, int c)
 	{
-		int retval;
+		int retval = -1;
+
 		UserDebug3(UserApp3, "PortInterface::IOPerm(%x, %x, %x)\n", a, b, c);
-		retval = ioperm(a, b, c);
+		if (a + b <= 0x400)     //access to other ports needs iopl(3)
+			retval = ioperm(a, b, c);
 		UserDebug1(UserApp3, "PortInterface::IOPerm() %d\n", retval);
+
 		return retval;
 	}
 #else
@@ -95,13 +98,13 @@ PortInterface::PortInterface()
 	int k;
 	for (k = 0; k < MAX_COMPORTS; k++)
 	{
-		ser_ports_base[k] = 0;
-		ser_ports_len[k] = 8;
+		ser_ports[k].base = 0;
+		ser_ports[k].len = 8;
 	}
 	for (k = 0; k < MAX_LPTPORTS; k++)
 	{
-		par_ports_base[k] = 0;
-		par_ports_len[k] = 8;
+		par_ports[k].base = 0;
+		par_ports[k].len = 8;
 	}
 
 //	ser_ports_base[0] = 0x3F8;
@@ -167,7 +170,7 @@ int PortInterface::OutPortMask(int mask, int val)
 	UserDebug2(UserApp3, "PortInterface::OutPortMask(%d, %d)\n", mask, val);
 
 	if (write_port == 0)
-		return E2ERR_NOTINSTALLED;;
+		return E2ERR_NOTINSTALLED;
 
 	if (val == 0)	//clear the bit 1's in the mask (other bits unchanged)
 	{
@@ -190,23 +193,23 @@ int PortInterface::OutPortMask(int mask, int val)
 	return OK;
 }
 
-int PortInterface::OpenPort(int from_port, int len)
+int PortInterface::OpenPort(const base_len *ports)
 {
-	UserDebug2(UserApp3, "PortInterface::OpenPort(%xh, %d) I\n", from_port, len);
+	UserDebug2(UserApp3, "PortInterface::OpenPort(%xh, %d) I\n", ports->base, ports->len);
 
 	int ret_val = E2ERR_OPENFAILED;
 
 	// PC ISA ports have only 10 bit addresses
 	// check for the access to ports is granted
-	if (from_port >= 0x100 && /* from_port + len <= 0x400 && */ len > 0)
+	if (ports->base >= 0x100 && ports->len > 0)
 	{
 		// request the access to I/O ports
-		if ( IOperm(from_port, len, 1) == 0  )
+		if (IOperm(ports->base, ports->len, 1) == 0)
 		{
 			ClosePort();	 // close any opened port
-			first_port = from_port;
-			last_port = from_port + len - 1;
-			no_ports = len;
+			first_port = ports->base;
+			last_port = ports->base + ports->len - 1;
+			no_ports = ports->len;
 
 			ret_val = OK;
 		}
@@ -243,11 +246,11 @@ int PortInterface::OpenSerial(int no)
 
 	if (no >= 1 && no <= MAX_COMPORTS)
 	{
-		if (ser_ports_base[no-1] == 0)
+		if (ser_ports[no-1].base == 0)
 			DetectPorts();
 
 		//Test if port exist
-		if (ser_ports_base[no-1] > 0)
+		if (ser_ports[no-1].base > 0)
 		{
 #ifdef	_WINDOWS
 			char str[MAXNUMDIGIT];
@@ -268,7 +271,7 @@ int PortInterface::OpenSerial(int no)
 				GetCommMask(hCom, &old_mask);
 				SetCommMask(hCom, 0);
 
-				ret_val = OpenPort(ser_ports_base[no-1], ser_ports_len[no-1]);
+				ret_val = OpenPort(&ser_ports[no-1]);
 				if (ret_val == OK)
 				{
 					write_port = GetFirstPort() + mcrOfst;
@@ -279,7 +282,7 @@ int PortInterface::OpenSerial(int no)
 					CloseSerial();
 			}
 #else	//Linux
-			ret_val = OpenPort(ser_ports_base[no-1], ser_ports_len[no-1]);
+			ret_val = OpenPort(&ser_ports[no-1]);
 
 			if (ret_val == OK)
 			{
@@ -331,11 +334,11 @@ int PortInterface::OpenParallel(int no)
 
 	if (no >= 1 && no <= MAX_LPTPORTS)
 	{
-		if (par_ports_base[no-1] == 0)
+		if (!par_ports[no-1].base)
 			DetectPorts();
 
 		//Test if port exist
-		if (par_ports_base[no-1] > 0)
+		if (par_ports[no-1].base)
 		{
 #ifdef	_WINDOWS
 			char str[MAXNUMDIGIT];
@@ -352,7 +355,7 @@ int PortInterface::OpenParallel(int no)
 
 			if ( hCom != INVALID_HANDLE_VALUE )
 			{
-				ret_val = OpenPort(par_ports_base[no-1], par_ports_len[no-1]);
+				ret_val = OpenPort(&par_ports[no-1]);
 				if (ret_val == OK)
 				{
 					write_port = GetFirstPort() + dataOfst;
@@ -363,7 +366,7 @@ int PortInterface::OpenParallel(int no)
 					CloseParallel();
 			}
 #else		//Linux
-			ret_val = OpenPort(par_ports_base[no-1], par_ports_len[no-1]);
+			ret_val = OpenPort(&par_ports[no-1]);
 
 			if (ret_val == OK)
 			{
@@ -398,10 +401,10 @@ int PortInterface::GetSerBasePort(int no)
 {
 	if (no >= 1 && no <= MAX_COMPORTS)
 	{
-		if (ser_ports_base[no-1] == 0)
+		if (!ser_ports[no-1].base)
 			DetectPorts();
 
-		return ser_ports_base[no-1];
+		return ser_ports[no-1].base;
 	}
 	else
 		return 0;
@@ -411,21 +414,60 @@ int PortInterface::GetParBasePort(int no)
 {
 	if (no >= 1 && no <= MAX_LPTPORTS)
 	{
-		if (par_ports_base[no-1] == 0)
+		if (!par_ports[no-1].base)
 			DetectPorts();
 
-		return par_ports_base[no-1];
+		return par_ports[no-1].base;
 	}
 	else
 		return 0;
 }
 
-#ifdef	_WINDOWS
+#ifdef WIN32
 
 #include <windows.h>
 
 #define	TRUE	1
 #define	FALSE	0
+
+static int winSystemVersion()
+{
+#if 0
+	if ((long)GetVersion() >= 0)
+		return 2;
+#else
+	OSVERSIONINFOEX osvi;
+	BOOL bOsVersionInfoEx;
+
+	ZeroMemory(&osvi, sizeof(OSVERSIONINFOEX));
+	osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
+
+	if( !(bOsVersionInfoEx = GetVersionEx((OSVERSIONINFO *)&osvi)) )
+	{
+		osvi.dwOSVersionInfoSize = sizeof (OSVERSIONINFO);
+
+		if ( !GetVersionEx((OSVERSIONINFO *)&osvi) )
+			return 0;
+	}
+
+	switch (osvi.dwPlatformId)
+	{
+	case VER_PLATFORM_WIN32_NT:
+
+		return 2;		//WINNT
+
+		break;
+
+	case VER_PLATFORM_WIN32_WINDOWS:
+
+		return 1;		//WIN9X
+
+		break;
+
+	}
+#endif
+	return 0;
+}
 
 #endif
 
@@ -434,8 +476,8 @@ int PortInterface::GetParBasePort(int no)
 //---------------------------------------------------------------------------
 void PortInterface::DetectPorts()
 {
-	THEAPP->GetCOMAddress(ser_ports_base[0], ser_ports_base[1], ser_ports_base[2], ser_ports_base[3]);
-	THEAPP->GetLPTAddress(par_ports_base[0], par_ports_base[1], par_ports_base[2]);
+	THEAPP->GetCOMAddress(ser_ports[0].base, ser_ports[1].base, ser_ports[2].base, ser_ports[3].base);
+	THEAPP->GetLPTAddress(par_ports[0].base, par_ports[1].base, par_ports[2].base);
 
 #ifdef	_WINDOWS
 	if (THEAPP->GetAutoDetectPorts())
@@ -444,17 +486,10 @@ void PortInterface::DetectPorts()
 		COMCount = 0;		// No serial ports counted
 
 		// Detect the LPT and COM ports available
-		int RunningWinNT;
 
 		// Are we running Windows NT?
-		OSVERSIONINFO os;
-		memset(&os, NULL, sizeof(OSVERSIONINFO));
-		os.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-		GetVersionEx(&os);
-		RunningWinNT=(os.dwPlatformId==VER_PLATFORM_WIN32_NT);
-
 		// Detect the printer ports available
-		if (RunningWinNT)
+		if (winSystemVersion() == 2)
 		{
 			DetectLPTPortsNT(); // Win2K / NT version
 			DetectCOMPortsNT(); // Win2K / NT version
@@ -473,12 +508,77 @@ void PortInterface::DetectPorts()
 	hCom = INVALID_HANDLE_VALUE;
 #endif
 
-	THEAPP->SetCOMAddress(ser_ports_base[0], ser_ports_base[1], ser_ports_base[2], ser_ports_base[3]);
-	THEAPP->SetLPTAddress(par_ports_base[0], par_ports_base[1], par_ports_base[2]);
+	THEAPP->SetCOMAddress(ser_ports[0].base, ser_ports[1].base, ser_ports[2].base, ser_ports[3].base);
+	THEAPP->SetLPTAddress(par_ports[0].base, par_ports[1].base, par_ports[2].base);
 }
 
 
 #ifdef	_WINDOWS
+
+#if 0	// Not needed, PonyProg should run on Win95 and NT4, or not?
+/********************************************************
+ * TODO: These routines should be avoided completely,	*
+ * it's much better resolved inside (my) inpout32.dll	*
+ ********************************************************/
+#include <setupapi.h>
+extern "C" {
+#include <cfgmgr32.h>
+}
+#include <devguid.h>
+
+void PortInterface::DetectPorts2k() {
+ memset(ser_ports,0,sizeof(base_len));
+ memset(par_ports,0,sizeof(base_len));
+ LPTCount=0;
+ COMCount=0;
+ HDEVINFO devs=SetupDiGetClassDevs((GUID*)&GUID_DEVCLASS_PORTS,NULL,0,DIGCF_PRESENT);
+ if (devs!=INVALID_HANDLE_VALUE) {
+  SP_DEVINFO_DATA devInfo;
+  devInfo.cbSize=sizeof(devInfo);
+  for (int i=0; SetupDiEnumDeviceInfo(devs,i,&devInfo); i++) {
+   HKEY hKey;
+   if (CM_Open_DevNode_Key(devInfo.DevInst,KEY_QUERY_VALUE,0,
+     RegDisposition_OpenExisting,&hKey,CM_REGISTRY_HARDWARE)) continue;
+   char s[16];
+   DWORD slen=sizeof(s);
+   *s=0;
+   if (!RegQueryValueEx(hKey,"PortName",NULL,NULL,(LPBYTE)s,&slen)) {
+    LOG_CONF Config;
+    if (!CM_Get_First_Log_Conf(&Config,devInfo.DevInst,ALLOC_LOG_CONF)) {
+     RES_DES resDes=0;
+     RESOURCEID resId;
+     if (!CM_Get_Next_Res_Des(&resDes,Config,ResType_IO,&resId,0)) {
+      IO_RESOURCE ior;
+      CM_Get_Res_Des_Data(resDes,&ior,sizeof(ior),0);
+      CM_Free_Res_Des_Handle(resDes);
+      unsigned n;
+      char msg[80];
+      _snprintf(msg,sizeof(msg),"PonyProg:DetectPorts2k(): Detected %s @ 0x%X\n",s,(int)ior.IO_Header.IOD_Alloc_Base);
+      OutputDebugString(msg);
+      if (sscanf(s,"COM%d",&n)==1) {
+// sorry, this program cannot handle COM ports above COM4
+       if (--n<MAX_COMPORTS) {
+        ser_ports[n].base = (int)ior.IO_Header.IOD_Alloc_Base;
+        ser_ports[n].len  = (int)ior.IO_Header.IOD_Alloc_End+1-ser_ports[n].base;
+        COMCount++;
+       }
+      }else if (sscanf(s,"LPT%d",&n)==1) {
+// sorry, this program cannot handle LPT ports above LPT4
+       if (--n<MAX_LPTPORTS) {
+        par_ports[n].base = (int)ior.IO_Header.IOD_Alloc_Base;
+        par_ports[n].len  = (int)ior.IO_Header.IOD_Alloc_End+1-par_ports[n].base;
+        LPTCount++;
+       }
+      }
+     }
+    }
+    RegCloseKey(hKey);
+   }
+  }
+ }
+ SetupDiDestroyDeviceInfoList(devs);
+}
+#endif
 
 //---------------------------------------------------------------------------
 // DetectPorts9x()
@@ -507,18 +607,9 @@ void PortInterface::DetectPorts9x()
 	COMCount = 0;
 
 	// Clear the LPT port array
-	for (index=0; index<=MAX_LPTPORTS; index++)
-	{
-		par_ports_base[index] = 0;
-		par_ports_len[index] = 0;
-	}
-
+	memset(par_ports, 0, sizeof(base_len));
 	// Clear the COM port array
-	for (index=0; index<=MAX_COMPORTS; index++)
-	{
-		ser_ports_base[index] = 0;
-		ser_ports_len[index] = 0;
-	}
+	memset(ser_ports, 0, sizeof(base_len));
 
    // Open the registry
    RegOpenKeyEx(HKEY_DYN_DATA, BASE_KEY, 0, KEY_PERMISSIONS, &CurKey);
@@ -682,9 +773,9 @@ void PortInterface::DetectPorts9x()
 					//	if (Allocation[pos+2] > 0 && Allocation[pos+2] >= Allocation[pos+1])
 					//		ser_ports_len[COMCount] = Allocation[pos+2] - Allocation[pos+1] + 1;
 
-						ser_ports_base[PortNumber-1] = Allocation[pos+1];
+						ser_ports[PortNumber-1].base = Allocation[pos+1];
 						if (Allocation[pos+2] > 0 && Allocation[pos+2] >= Allocation[pos+1])
-							ser_ports_len[PortNumber-1] = Allocation[pos+2] - Allocation[pos+1] + 1;
+							ser_ports[PortNumber-1].len = Allocation[pos+2] - Allocation[pos+1] + 1;
 
 						COMCount++;
                         break;
@@ -737,9 +828,9 @@ void PortInterface::DetectPorts9x()
                          PortNumber<=MAX_LPTPORTS)
                      {
                         // Found a port; add it to the list
-						par_ports_base[PortNumber-1] = Allocation[pos+1];
+						par_ports[PortNumber-1].base = Allocation[pos+1];
 						if (Allocation[pos+2] > 0 && Allocation[pos+2] >= Allocation[pos+1])
-							par_ports_len[PortNumber-1] = Allocation[pos+2] - Allocation[pos+1] + 1;
+							par_ports[PortNumber-1].len = Allocation[pos+2] - Allocation[pos+1] + 1;
 
 					//	par_ports_base[LPTCount] = Allocation[pos+1];
 					//	if (Allocation[pos+2] > 0 && Allocation[pos+2] >= Allocation[pos+1])
@@ -770,417 +861,76 @@ void PortInterface::DetectPorts9x()
 //---------------------------------------------------------------------------
 void PortInterface::DetectLPTPortsNT()
 {
-	const char *BASE_KEY = "SYSTEM\\CurrentControlSet\\Services\\Parport\\Enum";
-	const char *ENUM_KEY = "SYSTEM\\CurrentControlSet\\Enum\\";
-
-	const char *DEVICEPARAM = "Device Parameters";
-	const char *PORTNAME = "PortName";
-	const char *COUNT = "Count";
-	const char *CONTROL = "Control";
-	const char *ACTIVESERVICE = "ActiveService";
-	const char *ALLOCCONFIG = "AllocConfig";
-
-	const REGSAM KEY_PERMISSIONS = KEY_ENUMERATE_SUB_KEYS |	KEY_QUERY_VALUE;
-
-	HKEY CurKey;               // Current key when using the registry
-	char KeyName[MAX_PATH];    // A key name when using the registry
-
-	char *LPTPortList[10];
-
-	DWORD index;
-
-	// Clear the port count
-	LPTCount = 0;
-
-	// Clear the LPT port array
-	for (index = 0; index <= MAX_LPTPORTS; index++)
-	{
-		par_ports_base[index] = 0;
-		par_ports_len[index] = 0;
-	}
-
-	for (index = 0; index < 10; index++)
-		LPTPortList[index] = 0;
-
-	// Open the registry
-	if ( RegOpenKeyEx(HKEY_LOCAL_MACHINE, BASE_KEY, 0, KEY_PERMISSIONS, &CurKey) != ERROR_SUCCESS )
-		return; // Can't do anything without this BASE_KEY
-
-	// Grab all the value names under HKEY_LOCAL_MACHINE
-	//
-	// Do this by first counting the number of value names,
-	// then creating an array big enough to hold them
-	// using the ValueList pointer.
-
-	DWORD ValueType, DataSize;
-	DWORD DummyLength = MAX_PATH;
-	DWORD ValueCount;          // Count of the number of value names in ValueList
-	ValueCount = 0;
-	while (RegEnumValue(
-			CurKey, ValueCount, KeyName, &DummyLength,
-			NULL, &ValueType, NULL, NULL
-					   ) != ERROR_NO_MORE_ITEMS)
-	{
-		DummyLength = MAX_PATH;
-
-		RegQueryValueEx(CurKey, KeyName, NULL, &ValueType, NULL, &DataSize);
-		if ( ValueType == REG_SZ && isdigit(KeyName[0]) )
-		{
-			int n = KeyName[0] - '0';
-
-			LPTPortList[n] = new char[DataSize + strlen(ENUM_KEY) + 1];
-			uint8_t *Data = new uint8_t[DataSize];
-			RegQueryValueEx(CurKey, KeyName, NULL, &ValueType, Data, &DataSize);
-			strcpy(LPTPortList[n], ENUM_KEY);
-			strcat(LPTPortList[n], (const char *)Data);
-
-			delete[] Data;
-		}
-		else
-		if ( ValueType == REG_DWORD && strcmp(KeyName, COUNT) == 0 && DataSize == 4)
-		{
-			DWORD Data;
-			RegQueryValueEx(CurKey, KeyName, NULL, &ValueType, (uint8_t *)&Data, &DataSize);
-
-			LPTCount = Data;
-		}
-		ValueCount++;
-	}
-
-	// Close the key
-	RegCloseKey(CurKey);
-
-	for (DWORD pIndex = 0; pIndex < 10; pIndex++)
-	{
-		if (LPTPortList[pIndex] != 0)
-		{
-			char *str = 0;
-			int LPTIndex = -1;
-
-			str = new char[strlen(LPTPortList[pIndex]) + 20];
-			strcpy(str, LPTPortList[pIndex]);
-			strcat(str, "\\");
-			strcat(str, DEVICEPARAM);
-
-			if ( RegOpenKeyEx(HKEY_LOCAL_MACHINE, str, 0, KEY_PERMISSIONS, &CurKey) != ERROR_SUCCESS )
-			{
-				delete str;
-				continue;
-			}
-			else
-			{
-				delete str;
-				str = 0;
-			}
-
-			ValueCount = 0;
-			DummyLength = MAX_PATH;
-			while ( RegEnumValue(CurKey, ValueCount, KeyName, &DummyLength,	NULL,
-						&ValueType, NULL, NULL) != ERROR_NO_MORE_ITEMS )
-			{
-				DummyLength = MAX_PATH;
-
-				RegQueryValueEx(CurKey, KeyName, NULL, &ValueType, NULL, &DataSize);
-				if ( ValueType == REG_SZ && strcmp(KeyName, PORTNAME) == 0 )
-				{
-					uint8_t *Data = new uint8_t[DataSize];
-					RegQueryValueEx(CurKey, KeyName, NULL, &ValueType, Data, &DataSize);
-
-					if (strlen((const char *)Data) == 4 && strncmp("LPT", (const char *)Data, 3) == 0)
-					{
-						LPTIndex = Data[3] - '0';
-					}
-
-					delete[] Data;
-				}
-
-				ValueCount++;
-			}
-
-			RegCloseKey(CurKey);
-
-			str = new char[strlen(LPTPortList[pIndex]) + 20];
-			strcpy(str, LPTPortList[pIndex]);
-			strcat(str, "\\");
-			strcat(str, CONTROL);
-
-			if ( RegOpenKeyEx(HKEY_LOCAL_MACHINE, str, 0, KEY_PERMISSIONS, &CurKey) != ERROR_SUCCESS )
-			{
-				delete str;
-				continue;
-			}
-			else
-			{
-				delete str;
-				str = 0;
-			}
-
-			ValueCount = 0;
-			DummyLength = MAX_PATH;
-			while ( RegEnumValue(CurKey, ValueCount, KeyName, &DummyLength,	NULL,
-						&ValueType, NULL, NULL) != ERROR_NO_MORE_ITEMS )
-			{
-				DummyLength = MAX_PATH;
-
-				RegQueryValueEx(CurKey, KeyName, NULL, &ValueType, NULL, &DataSize);
-				/** Ulteriore controllo: serve? **
-				if ( ValueType == REG_SZ && strcmp(KeyName, ACTIVESERVICE) == 0 )
-				{
-					uint8_t *Data = new uint8_t[DataSize];
-					RegQueryValueEx(CurKey, KeyName, NULL, &ValueType, Data, &DataSize);
-					if ( strcmp((char *)Data, "Parport") == 0)
-					{
-					}
-					delete[] Data;
-				}
-				else
-				**/
-				if ( ValueType == REG_RESOURCE_LIST && strcmp(KeyName, ALLOCCONFIG) == 0 )
-				{
-					int found = 0;
-					DWORD k;
-					WORD *Data = new WORD[DataSize/2+1];
-					RegQueryValueEx(CurKey, KeyName, NULL, &ValueType, (uint8_t *)Data, &DataSize);
-					for (k = 0; k < DataSize/2; k++)
-					{
-						if (Data[k] == 0x3BC || Data[k] == 0x378 || Data[k] == 0x278)
-						{
-							found = 1;
-							break;
-						}
-					}
-					if (LPTIndex > 0 && LPTIndex <= MAX_LPTPORTS && found)
-					{
-						par_ports_base[LPTIndex - 1] = Data[k];
-						par_ports_len[LPTIndex - 1] = 8;
-					}
-					delete[] Data;
-				}
-
-				ValueCount++;
-			}
-
-			RegCloseKey(CurKey);
-		}
-	}
-
-	//Destroy KeyList
-	for (index = 0; index < 10; index++)
-	{
-		if (LPTPortList[index] != 0)
-		{
-			delete LPTPortList[index];
-			LPTPortList[index] = 0;
-		}
-	}
+	LPTCount = DetectPortsNT("Parport","LPT%d",par_ports,MAX_LPTPORTS);
 }
 
 void PortInterface::DetectCOMPortsNT()
 {
-	const char *BASE_KEY = "SYSTEM\\CurrentControlSet\\Services\\Serial\\Enum";
-	const char *ENUM_KEY = "SYSTEM\\CurrentControlSet\\Enum\\";
-
-	const char *DEVICEPARAM = "Device Parameters";
-	const char *PORTNAME = "PortName";
-	const char *COUNT = "Count";
-	const char *CONTROL = "Control";
-	const char *ACTIVESERVICE = "ActiveService";
-	const char *ALLOCCONFIG = "AllocConfig";
-
-	const REGSAM KEY_PERMISSIONS = KEY_ENUMERATE_SUB_KEYS |	KEY_QUERY_VALUE;
-
-	HKEY CurKey;               // Current key when using the registry
-	char KeyName[MAX_PATH];    // A key name when using the registry
-
-	char *COMPortList[10];
-
-	DWORD index;
-
-	// Clear the port count
-	COMCount = 0;
-
-	// Clear the LPT port array
-	for (index = 0; index <= MAX_COMPORTS; index++)
-	{
-		ser_ports_base[index] = 0;
-		ser_ports_len[index] = 0;
-	}
-
-	for (index = 0; index < 10; index++)
-		COMPortList[index] = 0;
-
-	// Open the registry
-	if ( RegOpenKeyEx(HKEY_LOCAL_MACHINE, BASE_KEY, 0, KEY_PERMISSIONS, &CurKey) != ERROR_SUCCESS )
-		return; // Can't do anything without this BASE_KEY
-
-	// Grab all the value names under HKEY_LOCAL_MACHINE
-	//
-	// Do this by first counting the number of value names,
-	// then creating an array big enough to hold them
-	// using the ValueList pointer.
-
-	DWORD ValueType, DataSize;
-	DWORD DummyLength = MAX_PATH;
-	DWORD ValueCount;          // Count of the number of value names in ValueList
-	ValueCount = 0;
-	while (RegEnumValue(
-			CurKey, ValueCount, KeyName, &DummyLength,
-			NULL, &ValueType, NULL, NULL
-					   ) != ERROR_NO_MORE_ITEMS)
-	{
-		DummyLength = MAX_PATH;
-
-		RegQueryValueEx(CurKey, KeyName, NULL, &ValueType, NULL, &DataSize);
-		if ( ValueType == REG_SZ && isdigit(KeyName[0]) )
-		{
-			int n = KeyName[0] - '0';
-
-			COMPortList[n] = new char[DataSize + strlen(ENUM_KEY) + 1];
-			uint8_t *Data = new uint8_t[DataSize];
-			RegQueryValueEx(CurKey, KeyName, NULL, &ValueType, Data, &DataSize);
-			strcpy(COMPortList[n], ENUM_KEY);
-			strcat(COMPortList[n], (const char *)Data);
-
-			delete[] Data;
-		}
-		else
-		if ( ValueType == REG_DWORD && strcmp(KeyName, COUNT) == 0 && DataSize == 4)
-		{
-			DWORD Data;
-			RegQueryValueEx(CurKey, KeyName, NULL, &ValueType, (uint8_t *)&Data, &DataSize);
-
-			COMCount = Data;
-		}
-		ValueCount++;
-	}
-
-	// Close the key
-	RegCloseKey(CurKey);
-
-	for (DWORD pIndex = 0; pIndex < 10; pIndex++)
-	{
-		if (COMPortList[pIndex] != 0)
-		{
-			char *str = 0;
-			int COMIndex = -1;
-
-			str = new char[strlen(COMPortList[pIndex]) + 20];
-			strcpy(str, COMPortList[pIndex]);
-			strcat(str, "\\");
-			strcat(str, DEVICEPARAM);
-
-			if ( RegOpenKeyEx(HKEY_LOCAL_MACHINE, str, 0, KEY_PERMISSIONS, &CurKey) != ERROR_SUCCESS )
-			{
-				delete str;
-				continue;
-			}
-			else
-			{
-				delete str;
-				str = 0;
-			}
-
-			ValueCount = 0;
-			DummyLength = MAX_PATH;
-			while ( RegEnumValue(CurKey, ValueCount, KeyName, &DummyLength,	NULL,
-						&ValueType, NULL, NULL) != ERROR_NO_MORE_ITEMS )
-			{
-				DummyLength = MAX_PATH;
-
-				RegQueryValueEx(CurKey, KeyName, NULL, &ValueType, NULL, &DataSize);
-				if ( ValueType == REG_SZ && strcmp(KeyName, PORTNAME) == 0 )
-				{
-					uint8_t *Data = new uint8_t[DataSize];
-					RegQueryValueEx(CurKey, KeyName, NULL, &ValueType, Data, &DataSize);
-
-					if (strlen((const char *)Data) == 4 && strncmp("COM", (const char *)Data, 3) == 0)
-					{
-						COMIndex = Data[3] - '0';
-					}
-
-					delete[] Data;
-				}
-
-				ValueCount++;
-			}
-
-			RegCloseKey(CurKey);
-
-			str = new char[strlen(COMPortList[pIndex]) + 20];
-			strcpy(str, COMPortList[pIndex]);
-			strcat(str, "\\");
-			strcat(str, CONTROL);
-
-			if ( RegOpenKeyEx(HKEY_LOCAL_MACHINE, str, 0, KEY_PERMISSIONS, &CurKey) != ERROR_SUCCESS )
-			{
-				delete str;
-				continue;
-			}
-			else
-			{
-				delete str;
-				str = 0;
-			}
-
-			ValueCount = 0;
-			DummyLength = MAX_PATH;
-			while ( RegEnumValue(CurKey, ValueCount, KeyName, &DummyLength,	NULL,
-						&ValueType, NULL, NULL) != ERROR_NO_MORE_ITEMS )
-			{
-				DummyLength = MAX_PATH;
-
-				RegQueryValueEx(CurKey, KeyName, NULL, &ValueType, NULL, &DataSize);
-				/** Ulteriore controllo: serve? **
-				if ( ValueType == REG_SZ && strcmp(KeyName, ACTIVESERVICE) == 0 )
-				{
-					uint8_t *Data = new uint8_t[DataSize];
-					RegQueryValueEx(CurKey, KeyName, NULL, &ValueType, Data, &DataSize);
-					if ( strcmp((char *)Data, "Parport") == 0)
-					{
-					}
-					delete[] Data;
-				}
-				else
-				**/
-				if ( ValueType == REG_RESOURCE_LIST && strcmp(KeyName, ALLOCCONFIG) == 0 )
-				{
-					int found = 0;
-					DWORD k;
-					WORD *Data = new WORD[DataSize/2+1];
-					RegQueryValueEx(CurKey, KeyName, NULL, &ValueType, (uint8_t *)Data, &DataSize);
-					for (k = 0; k < DataSize/2; k++)
-					{
-						if (Data[k] == 0x3F8 || Data[k] == 0x2F8 || Data[k] == 0x3E8 || Data[k] == 0x2E8)
-						{
-							found = 1;
-							break;
-						}
-					}
-					if (COMIndex > 0 && COMIndex <= MAX_COMPORTS && found)
-					{
-						ser_ports_base[COMIndex - 1] = Data[k];
-						ser_ports_len[COMIndex - 1] = 8;
-					}
-					delete[] Data;
-				}
-
-				ValueCount++;
-			}
-
-			RegCloseKey(CurKey);
-		}
-	}
-
-	//Destroy KeyList
-	for (index = 0; index < 10; index++)
-	{
-		if (COMPortList[index] != 0)
-		{
-			delete COMPortList[index];
-			COMPortList[index] = 0;
-		}
-	}
+	COMCount = DetectPortsNT("Serial","COM%d",ser_ports,MAX_COMPORTS);
 }
 
+// Static member function
+// See the two possible usage examples above!
+int PortInterface::DetectPortsNT(const char *ServiceName, const char *PortFormat, base_len *ports, int nports) {
+// This revised code keeps some registry keys open, rather than collecting intermediate strings.
+// No silly key enumeration at all!
+// This compact code shows USEFULNESS of indent == 1.
+ const REGSAM KEY_PERMISSIONS = KEY_ENUMERATE_SUB_KEYS|KEY_QUERY_VALUE;
+ char buf[MAX_PATH];	// handy stack-allocated multi-purpose buffer
+ int Count=0;		// return value (can be greater than nports)
+
+ memset(ports,0,nports*sizeof(base_len));	// Clear port array
+ HKEY hCCS;		// Open the registry (first stage)
+ if (!RegOpenKeyEx(HKEY_LOCAL_MACHINE,"SYSTEM\\CurrentControlSet",0,KEY_PERMISSIONS,&hCCS)) {
+  HKEY hSvcEnum;
+  _snprintf(buf,sizeof(buf),"Services\\%s\\Enum",ServiceName);
+  if (!RegOpenKeyEx(hCCS,buf,0,KEY_PERMISSIONS,&hSvcEnum)) {
+   DWORD Length = sizeof Count;		// Count gets the number of ports in the system
+   RegQueryValueEx(hSvcEnum,"Count",NULL,NULL,(PBYTE)&Count,&Length);
+   for (int i=0; i<Count; i++) {
+    _snprintf(buf,sizeof(buf),"%d",i);	// A simple number
+    char PnpPath[MAX_PATH];		// Another buffer (small changes in code would avoid even this)
+    Length = sizeof PnpPath;
+    if (!RegQueryValueEx(hSvcEnum,buf,NULL,NULL,(PBYTE)PnpPath,&Length)) {
+     HKEY hParams;
+     _snprintf(buf,sizeof(buf),"Enum\\%s\\Device Parameters",PnpPath);
+     if (!RegOpenKeyEx(hCCS,buf,0,KEY_PERMISSIONS,&hParams)) {
+      int Index;
+      Length=sizeof buf;
+      if (!RegQueryValueEx(hParams,"PortName",NULL,NULL,(PBYTE)buf,&Length)
+      && sscanf(buf,PortFormat,&Index)==1
+      && (unsigned)--Index<(unsigned)nports) {	// Use zero-based index from here, avoid negative values
+       HKEY hControl;
+       _snprintf(buf,sizeof(buf),"Enum\\%s\\Control",PnpPath);
+       if (!RegOpenKeyEx(hCCS,buf,0,KEY_PERMISSIONS,&hControl)) {
+        Length=sizeof buf;
+        if (!RegQueryValueEx(hControl,"AllocConfig",NULL,NULL,(PBYTE)buf,&Length)) {
+// This undocumented AllocConfig structure is checked against Win2k and Win8/64.
+// In both cases, the ResType entry was at byte offset 16.
+         DWORD *p=(DWORD*)buf;
+         for (int k=0; k<(int)Length/4-5; k++,p++) {
+          if (p[0]==2			// have ResType_IO
+          && !HIWORD(p[2])		// port address less than 64K
+          && !p[3]			// no high DWORD part
+          && p[4]<16) {			// length limited to 16
+           ports[Index].base=p[2];	// We got one
+           ports[Index].len =p[4];	// (NO check for typical ISA addresses anymore!!)
+           break;
+          }
+         }
+        }
+        RegCloseKey(hControl);
+       }
+      }
+      RegCloseKey(hParams);
+     }
+    }
+   }/*for*/
+   RegCloseKey(hSvcEnum);
+  }
+  RegCloseKey(hCCS);
+ }
+ return Count;
+}
 
 #endif
