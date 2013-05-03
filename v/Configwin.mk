@@ -4,7 +4,7 @@
 #DEBUG	= yes
 DEBUG	= no
 
-OSNAME := $(shell uname | cut -c 1-5)
+OSNAME := $(shell uname -s | cut -c 1-5)
 
 ifeq ($(OSNAME),MINGW)
 TOOLCHAINPREFIX = 
