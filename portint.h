@@ -40,13 +40,17 @@
 #define	MAX_LPTPORTS	4
 #define	MAX_COMPORTS	4
 
+struct base_len {
+	int base, len;
+};
+
 class PortInterface
 {
  public:		//------------------------------- public
 	PortInterface();
 	virtual ~PortInterface();
 
-	int OpenPort(int from_port, int len = 8);
+	int OpenPort(const base_len *ports);
 	void ClosePort();
 	int OpenSerial(int no);
 	void CloseSerial();
@@ -83,6 +87,8 @@ class PortInterface
 	void DetectPorts();
 
 #ifdef	_WINDOWS
+	void DetectPorts2k();	// SetupDi version, works on Win98+ and Win2k+, heha, 130406
+	static int DetectPortsNT(const char *ServiceName, const char *PortFormat, base_len *ports, int nports);
 	void DetectPorts9x();	// Win9x version
 	void DetectLPTPortsNT();	// WinNT/2000 version
 	void DetectCOMPortsNT();	// WinNT/2000 version
@@ -100,10 +106,8 @@ class PortInterface
 	int last_port;
 	int no_ports;
 
-	int ser_ports_base[MAX_COMPORTS+1];
-	int ser_ports_len [MAX_COMPORTS+1];
-	int par_ports_base[MAX_LPTPORTS+1];
-	int par_ports_len [MAX_LPTPORTS+1];
+	base_len ser_ports[MAX_COMPORTS];
+	base_len par_ports[MAX_LPTPORTS];
 };
 
 #endif
