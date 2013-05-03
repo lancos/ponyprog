@@ -94,7 +94,9 @@ RS232Interface::~RS232Interface()
 	CloseSerial();
 }
 
+#ifdef	_LINUX_
 static int fd_clear_flag(int fd, int flags);
+#endif
 
 int RS232Interface::OpenSerial(int no)
 {
@@ -861,10 +863,10 @@ int RS232Interface::GetSerialCTS() const
 	return result;
 }
 
+#ifdef	_LINUX_
 static int fd_clear_flag(int fd, int flags)
 {
-#ifdef	__unix__
-	int val;
+    int val;
 
 	if ( (val = fcntl(fd, F_GETFL, 0)) < 0 )
 		return val;
@@ -873,7 +875,7 @@ static int fd_clear_flag(int fd, int flags)
 
 	if ( fcntl(fd, F_SETFL, val) < 0 )
 		return -1;
-#endif
-	return 0;
+    return 0;
 }
+#endif
 
