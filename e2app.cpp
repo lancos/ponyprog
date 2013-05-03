@@ -32,12 +32,13 @@
 
 #include "cmdenum.h"
 #include "string_table.h"
-#include "loaddrv.h"
 
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
 #include <locale.h>
+
+#include "inpout32.h"
 
 #ifdef	_LINUX_
 #include <sys/time.h>
@@ -98,9 +99,6 @@ e2App::e2App(char* name, int w, int h)
 	busvetp[X2444B-1] = &x2444B;
 	busvetp[S2430B-1] = &s2430B;
 
-#ifdef	WIN32
-	InitDrvLoader();
-#endif
 	SetInterfaceType();	//Set default interface
 }
 
@@ -119,6 +117,20 @@ e2App::~e2App()
 vWindow* e2App::NewAppWin(vWindow* win, char* name,
 		int w, int h, vAppWinInfo* winInfo)
 {
+#ifdef WIN32		// Yes it's a dirty hack here but clean in Windows sense, heha 130406
+	HKEY key;	// But I wouldn't change the very incomplete V-lib source.
+	if (!RegOpenKeyEx(HKEY_CURRENT_USER,"Software\\h#s\\PonyProg",0,KEY_QUERY_VALUE,&key)) {
+	 WINDOWPLACEMENT wp;
+	 wp.length=sizeof wp;
+	 HWND w=theApp->winHwnd();
+	 if (GetWindowPlacement(w,&wp)) {
+	  DWORD size=sizeof wp.rcNormalPosition;
+	  if (!RegQueryValueEx(key,"WinPos",NULL,NULL,(LPBYTE)&wp.rcNormalPosition,&size)
+	  && size==sizeof wp.rcNormalPosition) SetWindowPlacement(w,&wp);
+	 }
+	 RegCloseKey(key);
+	}
+#endif
 	vWindow* thisWin = win;			//local copy to use
 	vAppWinInfo* awinfo = winInfo;
 	char *appname = name;
@@ -253,6 +265,17 @@ int e2App::CloseAppWin(vWindow* win)
 
 		if (really_close)
 		{
+#ifdef WIN32				// Yes it's a dirty hack here but clean in Windows sense, heha 130406
+			HKEY key;	// Save window position to Win7-safe, roaming hive of registry
+			if (!RegCreateKeyEx(HKEY_CURRENT_USER,"Software\\h#s\\PonyProg",
+			  0,NULL,REG_OPTION_NON_VOLATILE,KEY_SET_VALUE,NULL,&key,NULL)) {
+			 WINDOWPLACEMENT wp;
+			 wp.length=sizeof wp;
+			 if (GetWindowPlacement(theApp->winHwnd(),&wp))
+			   RegSetValueEx(key,"WinPos",0,REG_BINARY,(LPBYTE)&wp.rcNormalPosition,sizeof wp.rcNormalPosition);
+			 RegCloseKey(key);
+			}
+#endif
 			winCounter--;				//decrementa il numero di finestre
 			return vApp::CloseAppWin(win);
 		}
@@ -467,12 +490,14 @@ void e2App::SetInterfaceType(HInterfaceType type)
 		busvetp[k]->SetBusInterface(busIntp);
 }
 
+#ifdef	__unix__
 static volatile int alarm_caught;
 
 static void alarm(int i)
 {
 	alarm_caught = 1;
 }
+#endif
 
 #define N_SAMPLE	4
 #define	N_CICLI	8000
@@ -547,7 +572,7 @@ void e2App::LookForBogoMips()
 		count = GetTickCount() - t0;
 
 		if (fh)
-			fprintf(fh, "bogo = %d, count = %d\n", GetBogoMips(), count);
+            fprintf(fh, "bogo = %d, count = %lu\n", GetBogoMips(), count);
 	} while (count <= MSLICE/11);
 
 	t0 = GetTickCount();
@@ -556,7 +581,7 @@ void e2App::LookForBogoMips()
 	count = GetTickCount() - t0;
 
 	if (fh)
-		fprintf(fh, "1) count = %d ** mslice = %f *** bogo = %d\n", count, MSLICE, GetBogoMips());
+        fprintf(fh, "1) count = %lu ** mslice = %f *** bogo = %d\n", count, MSLICE, GetBogoMips());
 
 	int j;
 
@@ -575,7 +600,7 @@ void e2App::LookForBogoMips()
 		count = GetTickCount() - t0;
 
 		if (fh)
-			fprintf(fh, "2) count = %d ** mslice = %f *** bogo = %d\n", count, MSLICE, GetBogoMips());
+            fprintf(fh, "2) count = %lu ** mslice = %f *** bogo = %d\n", count, MSLICE, GetBogoMips());
 	}
 
 	//Fine correction
@@ -593,7 +618,7 @@ void e2App::LookForBogoMips()
 		count = GetTickCount() - t0;
 
 		if (fh)
-			fprintf(fh, "3) count = %d ** mslice = %f *** bogo = %d\n", count, MSLICE, GetBogoMips());
+            fprintf(fh, "3) count = %lu ** mslice = %f *** bogo = %d\n", count, MSLICE, GetBogoMips());
 	}
 
 	w.CheckHwTimer();	//Check to enable again Hw timer
@@ -627,18 +652,19 @@ void e2App::ClearIgnoreFlag()
 
 int e2App::LoadDriver(int start)
 {
-#ifdef  _WINDOWS
+	int rv = OK;
+
+#ifdef WIN32
 	if (start)
 	{
-		OpenDriver();
+		if (!IsInpOutDriverOpen())
+			rv = E2ERR_OPENFAILED;
 	}
-	else
-	{
-		CloseDriver();
-	}
+#else
+	(void)start;
 #endif
 
-	return OK;
+	return rv;
 }
 
 //###########################################################################
