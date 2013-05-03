@@ -116,7 +116,7 @@ SRCS	= \
 	x2444.cpp \
 	x2444bus.cpp \
 	dt006interf.cpp \
-	loaddrv.cpp
+
 
 #xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
@@ -148,7 +148,7 @@ cleanlib:
 
 clean:
 	-rm -f $(oDir)/*.o
-	-rm -f libdlportio.a
+	-rm -f libinpout32.a
 	-rm -f .dep/*.d
 
 cleanall: cleanlib clean
@@ -159,13 +159,13 @@ objs:	$(OBJS)
 
 #prps:	$(PRPS)
 
-libdlportio.a: dlportio.def
-	rm -f dlportio.dll
-	ln -s SETUP/DLPORTIO.dll dlportio.dll
-	$(TOOLCHAINPREFIX)dlltool -D dlportio.dll -d dlportio.def -l $@
+libinpout32.a: inpout32.def
+	rm -f inpout32.dll
+	ln -s InpOutLib/Win32/inpout32.dll inpout32.dll
+	$(TOOLCHAINPREFIX)dlltool -D inpout32.dll -d inpout32.def -l $@
 
-$(PROG): $(OBJS) v/lib/libV.a libdlportio.a
-	$(CXX) -o $@ $(OBJS) v/lib/libV.a libdlportio.a $(LDFLAGS)
+$(PROG): $(OBJS) v/lib/libV.a libinpout32.a
+	$(CXX) -o $@ $(OBJS) v/lib/libV.a libinpout32.a $(LDFLAGS)
 
 # Compile: create object files from C source files.
 define COMPILE_C_TEMPLATE
