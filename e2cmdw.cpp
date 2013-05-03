@@ -867,7 +867,11 @@ e2CmdWindow::e2CmdWindow(char* name, int width, int height) :
 	e2Prg = new e2ProgressDialog(this);
 
 	// Show Window
+#ifdef WIN32	// fill out client area (no useful reason not to do so) - heha 130406
+	::ShowWindow(winHwnd(),SW_MAXIMIZE);
+#else
 	ShowWindow();
+#endif
 
 	type_index = -1;
 	//Initialize Type controls in Tool Bars
