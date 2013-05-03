@@ -3,7 +3,10 @@ Edit the v/Config.mk to customize the following variables:
 HOMEV - should point to your v absolute path
 INSTALL_PREFIX - where to install the executable
 
-then do:
+---------------
+BUILD for Linux
+---------------
+# make clean
 # make
 
 test the executable:
@@ -23,3 +26,20 @@ Is the name of the serial port device without the trailing number
 
 HtmlBrowseApp=konqueror
 Is your html preferred browser (firefox, konqueror, netscape, ...)
+
+-----------------------------
+BUILD for Windows using mingw
+-----------------------------
+You can cross-build from Linux or build from Windows with mingw package installed.
+
+# make -f Makefile.win clean
+# make -f Makefile.win
+
+You will find ponyprog2000.exe in bin/win
+
+-----------------------------
+BUILD for Windows using MSVC
+-----------------------------
+This is no tested recently, so it may need some tweaks.
+Unzip msvc6.zip or msvc8.zip depending on your MSVC version.
+Open the solution and build.
