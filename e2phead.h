@@ -39,6 +39,9 @@
 
 #define	E2P_FVERSION	0x02
 
+#ifdef WIN32
+#pragma pack(push,1)
+#endif
 // Header dei file
 struct e2pHeader {
 	char fileID[E2P_ID_SIZE];
@@ -59,5 +62,8 @@ struct e2pHeader {
 	uint16_t e2pCrc;
 	uint16_t headCrc;
 } PACK;
+#ifdef WIN32
+#pragma pack(pop)
+#endif
 
 #endif
