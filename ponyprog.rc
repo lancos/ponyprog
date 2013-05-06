@@ -1,0 +1,34 @@
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+VWINDOWICON             ICON    "icon1.ico"
+VAPPICON                ICON    "ponyprog.ico"
+
+1 VERSIONINFO
+FILEVERSION     2,0,8,3
+PRODUCTVERSION  2,0,8,3
+BEGIN
+  BLOCK "StringFileInfo"
+  BEGIN
+    BLOCK "040904E4"
+    BEGIN
+      VALUE "CompanyName", "www.LancOS.com"
+      VALUE "FileDescription", "Serial Device Programmer"
+      VALUE "FileVersion", "2.08c"
+      VALUE "InternalName", "PonyProg"
+      VALUE "LegalCopyright", "Claudio Lanconelli"
+      VALUE "OriginalFilename", "ponyprog2000.exe"
+      VALUE "ProductName", "PonyProg"
+      VALUE "ProductVersion", "2.08c"
+    END
+  END
+
+  BLOCK "VarFileInfo"
+  BEGIN
+    VALUE "Translation", 0x409, 1252
+  END
+END

@@ -1,6 +1,6 @@
 #=======================================================================
-#  Makefile for PonyProg (based on V lib makefile)
-#  Copyright (C) 1997-2001 Claudio Lanconelli
+#  Makefile for PonyProg for Windows Mingw
+#  Copyright (C) 1997-2013 Claudio Lanconelli
 #
 #  This program is part of PonyProg
 #
@@ -39,7 +39,7 @@ CFLAGS	+= $(INCDIR)
 
 LIBS	= -lmingw32 -lwinmm -mwindows -lcomctl32
 
-LDFLAGS	+= $(LIBS)
+LDFLAGS	+= -static-libgcc -static-libstdc++ $(LIBS)
 
 #xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
@@ -159,13 +159,17 @@ objs:	$(OBJS)
 
 #prps:	$(PRPS)
 
+ponyprog.res: ponyprog.rc
+	@echo "Generating resource $@"
+	$(WINDRES) $< -O coff -o $@
+	
 libinpout32.a: inpout32.def
 	rm -f inpout32.dll
 	ln -s InpOutLib/Win32/inpout32.dll inpout32.dll
 	$(TOOLCHAINPREFIX)dlltool -D inpout32.dll -d inpout32.def -l $@
 
-$(PROG): $(OBJS) v/lib/libV.a libinpout32.a
-	$(CXX) -o $@ $(OBJS) v/lib/libV.a libinpout32.a $(LDFLAGS)
+$(PROG): $(OBJS) v/lib/libV.a libinpout32.a ponyprog.res
+	$(CXX) -o $@ $(OBJS) ponyprog.res v/lib/libV.a libinpout32.a $(LDFLAGS)
 
 # Compile: create object files from C source files.
 define COMPILE_C_TEMPLATE
