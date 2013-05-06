@@ -29,7 +29,7 @@ LANGUAGE LANG_ITALIAN, SUBLANG_ITALIAN
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
 VWINDOWICON             ICON    DISCARDABLE     "icon1.ico"
-VAPPICON                ICON    DISCARDABLE     "PonyProg.ico"
+VAPPICON                ICON    DISCARDABLE     "ponyprog.ico"
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
