@@ -143,10 +143,15 @@ e2AppWinInfo::e2AppWinInfo(vCmdWindow* win, char* name, BusIO** busvptr, void* p
 	// Test and initialize the hardware
 	if (THEAPP->GetCounter() == 1)
 	{
+		int err;
+		vNoticeDialog note(win);
+
 		if ( !THEAPP->scriptMode )
 			cmdWin->About();
 
-		THEAPP->LoadDriver(1);
+		err = THEAPP->LoadDriver(1);
+		if (err != OK)
+			note.Notice("Load I/O driver failed.");
 
 		//imposta il bus iniziale (relativo al tipo di eeprom)
 		THEAPP->SetInitialBus( eep->GetBus() );
@@ -159,11 +164,9 @@ e2AppWinInfo::e2AppWinInfo(vCmdWindow* win, char* name, BusIO** busvptr, void* p
 		}
 		else
 		{
-			int err = THEAPP->OpenPort();
-
+			err = THEAPP->OpenPort();
 			if (err == E2ERR_ACCESSDENIED)
 			{
-				vNoticeDialog note(win);
 #ifdef	_WINDOWS
 				note.Notice("I/O access denied. Driver not found, try to install the software again");
 #else
