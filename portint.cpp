@@ -61,9 +61,9 @@
 
 #ifdef	_WINDOWS
 
-//Use the DLPortIO instead of direct I/O
-#define	outb(val, id)	DlPortWritePortUchar(id, val)
-#define	inb(id)			DlPortReadPortUchar(id)
+//Use InpOut32 intead of direct I/O
+#define	outb(val, id)	Out32(id, val)
+#define	inb(id)			Inp32(id)
 
 #ifdef	__BORLANDC__
 # define	__inline__
