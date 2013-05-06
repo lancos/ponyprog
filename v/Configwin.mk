@@ -9,14 +9,14 @@ OSNAME := $(shell uname -s | cut -c 1-5)
 ifeq ($(OSNAME),MINGW)
 TOOLCHAINPREFIX = 
 else
-TOOLCHAINPREFIX = i586-mingw32msvc-
+#TOOLCHAINPREFIX = i586-mingw32msvc-
+TOOLCHAINPREFIX = i686-w64-mingw32-
 endif
 
 CC	= $(TOOLCHAINPREFIX)gcc
 CXX	= $(TOOLCHAINPREFIX)g++
 RANLIB	= $(TOOLCHAINPREFIX)ranlib
-
-PONYVER = 2.08b
+WINDRES = $(TOOLCHAINPREFIX)windres
 
 #---------------------------------------------------------------------
 # Define filename extensions that are targeted by cleanup's
