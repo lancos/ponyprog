@@ -515,7 +515,7 @@
   {
     // Called when the font is changed.
 
-    SysDebug1(WindowEvents,"vCanvasPane::FontChanged(%d)\n",vf)
+    SysDebug(WindowEvents,"vCanvasPane::FontChanged()\n")
   }
 
 //=====================>>> vCanvasPane::LeaveFocus <<<=======================
