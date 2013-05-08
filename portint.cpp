@@ -246,11 +246,11 @@ int PortInterface::OpenSerial(int no)
 
 	if (no >= 1 && no <= MAX_COMPORTS)
 	{
-		if (ser_ports[no-1].base == 0)
+		if (ser_ports[no - 1].base == 0)
 			DetectPorts();
 
 		//Test if port exist
-		if (ser_ports[no-1].base > 0)
+		if (ser_ports[no - 1].base > 0)
 		{
 #ifdef	_WINDOWS
 			char str[MAXNUMDIGIT];
@@ -258,20 +258,20 @@ int PortInterface::OpenSerial(int no)
 			//Test if port is already in use
 			sprintf(str, "COM%d", no);
 			hCom = CreateFile(str,
-				GENERIC_READ | GENERIC_WRITE,
-				0,		/* comm devices must be opened w/exclusive-access */
-				NULL,	/* no security attrs */
-				OPEN_EXISTING, /* comm devices must use OPEN_EXISTING */
-				0,		/* not overlapped I/O */
-				NULL	/* hTemplate must be NULL for comm devices */
-			);
+							  GENERIC_READ | GENERIC_WRITE,
+							  0,		/* comm devices must be opened w/exclusive-access */
+							  NULL,	/* no security attrs */
+							  OPEN_EXISTING, /* comm devices must use OPEN_EXISTING */
+							  0,		/* not overlapped I/O */
+							  NULL	/* hTemplate must be NULL for comm devices */
+							 );
 
-			if ( hCom != INVALID_HANDLE_VALUE )
+			if (hCom != INVALID_HANDLE_VALUE)
 			{
 				GetCommMask(hCom, &old_mask);
 				SetCommMask(hCom, 0);
 
-				ret_val = OpenPort(&ser_ports[no-1]);
+				ret_val = OpenPort(&ser_ports[no - 1]);
 				if (ret_val == OK)
 				{
 					write_port = GetFirstPort() + mcrOfst;
@@ -282,7 +282,7 @@ int PortInterface::OpenSerial(int no)
 					CloseSerial();
 			}
 #else	//Linux
-			ret_val = OpenPort(&ser_ports[no-1]);
+			ret_val = OpenPort(&ser_ports[no - 1]);
 
 			if (ret_val == OK)
 			{
@@ -307,7 +307,7 @@ int PortInterface::OpenSerial(int no)
 void PortInterface::CloseSerial()
 {
 #ifdef	_WINDOWS
-	if ( hCom != INVALID_HANDLE_VALUE )
+	if (hCom != INVALID_HANDLE_VALUE)
 	{
 		SetCommMask(hCom, old_mask);
 		CloseHandle(hCom);
@@ -334,28 +334,28 @@ int PortInterface::OpenParallel(int no)
 
 	if (no >= 1 && no <= MAX_LPTPORTS)
 	{
-		if (!par_ports[no-1].base)
+		if (!par_ports[no - 1].base)
 			DetectPorts();
 
 		//Test if port exist
-		if (par_ports[no-1].base)
+		if (par_ports[no - 1].base)
 		{
 #ifdef	_WINDOWS
 			char str[MAXNUMDIGIT];
 
 			sprintf(str, "LPT%d", no);
 			hCom = CreateFile(str,
-				GENERIC_READ | GENERIC_WRITE,
-				0,		/* comm devices must be opened w/exclusive-access */
-				NULL,	/* no security attrs */
-				OPEN_EXISTING, /* comm devices must use OPEN_EXISTING */
-				0,		/* not overlapped I/O */
-				NULL	/* hTemplate must be NULL for comm devices */
-			);
+							  GENERIC_READ | GENERIC_WRITE,
+							  0,		/* comm devices must be opened w/exclusive-access */
+							  NULL,	/* no security attrs */
+							  OPEN_EXISTING, /* comm devices must use OPEN_EXISTING */
+							  0,		/* not overlapped I/O */
+							  NULL	/* hTemplate must be NULL for comm devices */
+							 );
 
-			if ( hCom != INVALID_HANDLE_VALUE )
+			if (hCom != INVALID_HANDLE_VALUE)
 			{
-				ret_val = OpenPort(&par_ports[no-1]);
+				ret_val = OpenPort(&par_ports[no - 1]);
 				if (ret_val == OK)
 				{
 					write_port = GetFirstPort() + dataOfst;
@@ -366,7 +366,7 @@ int PortInterface::OpenParallel(int no)
 					CloseParallel();
 			}
 #else		//Linux
-			ret_val = OpenPort(&par_ports[no-1]);
+			ret_val = OpenPort(&par_ports[no - 1]);
 
 			if (ret_val == OK)
 			{
@@ -384,7 +384,7 @@ int PortInterface::OpenParallel(int no)
 void PortInterface::CloseParallel()
 {
 #ifdef	_WINDOWS
-	if ( hCom != INVALID_HANDLE_VALUE )
+	if (hCom != INVALID_HANDLE_VALUE)
 	{
 		CloseHandle(hCom);
 		hCom = INVALID_HANDLE_VALUE;
@@ -401,10 +401,10 @@ int PortInterface::GetSerBasePort(int no)
 {
 	if (no >= 1 && no <= MAX_COMPORTS)
 	{
-		if (!ser_ports[no-1].base)
+		if (!ser_ports[no - 1].base)
 			DetectPorts();
 
-		return ser_ports[no-1].base;
+		return ser_ports[no - 1].base;
 	}
 	else
 		return 0;
@@ -414,10 +414,10 @@ int PortInterface::GetParBasePort(int no)
 {
 	if (no >= 1 && no <= MAX_LPTPORTS)
 	{
-		if (!par_ports[no-1].base)
+		if (!par_ports[no - 1].base)
 			DetectPorts();
 
-		return par_ports[no-1].base;
+		return par_ports[no - 1].base;
 	}
 	else
 		return 0;
@@ -442,28 +442,23 @@ static int winSystemVersion()
 	ZeroMemory(&osvi, sizeof(OSVERSIONINFOEX));
 	osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
 
-	if( !(bOsVersionInfoEx = GetVersionEx((OSVERSIONINFO *)&osvi)) )
+	if (!(bOsVersionInfoEx = GetVersionEx((OSVERSIONINFO *)&osvi)))
 	{
-		osvi.dwOSVersionInfoSize = sizeof (OSVERSIONINFO);
+		osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
 
-		if ( !GetVersionEx((OSVERSIONINFO *)&osvi) )
+		if (!GetVersionEx((OSVERSIONINFO *)&osvi))
 			return 0;
 	}
 
 	switch (osvi.dwPlatformId)
 	{
 	case VER_PLATFORM_WIN32_NT:
-
 		return 2;		//WINNT
-
 		break;
 
 	case VER_PLATFORM_WIN32_WINDOWS:
-
 		return 1;		//WIN9X
-
 		break;
-
 	}
 #endif
 	return 0;
@@ -526,57 +521,68 @@ extern "C" {
 }
 #include <devguid.h>
 
-void PortInterface::DetectPorts2k() {
- memset(ser_ports,0,sizeof(base_len));
- memset(par_ports,0,sizeof(base_len));
- LPTCount=0;
- COMCount=0;
- HDEVINFO devs=SetupDiGetClassDevs((GUID*)&GUID_DEVCLASS_PORTS,NULL,0,DIGCF_PRESENT);
- if (devs!=INVALID_HANDLE_VALUE) {
-  SP_DEVINFO_DATA devInfo;
-  devInfo.cbSize=sizeof(devInfo);
-  for (int i=0; SetupDiEnumDeviceInfo(devs,i,&devInfo); i++) {
-   HKEY hKey;
-   if (CM_Open_DevNode_Key(devInfo.DevInst,KEY_QUERY_VALUE,0,
-     RegDisposition_OpenExisting,&hKey,CM_REGISTRY_HARDWARE)) continue;
-   char s[16];
-   DWORD slen=sizeof(s);
-   *s=0;
-   if (!RegQueryValueEx(hKey,"PortName",NULL,NULL,(LPBYTE)s,&slen)) {
-    LOG_CONF Config;
-    if (!CM_Get_First_Log_Conf(&Config,devInfo.DevInst,ALLOC_LOG_CONF)) {
-     RES_DES resDes=0;
-     RESOURCEID resId;
-     if (!CM_Get_Next_Res_Des(&resDes,Config,ResType_IO,&resId,0)) {
-      IO_RESOURCE ior;
-      CM_Get_Res_Des_Data(resDes,&ior,sizeof(ior),0);
-      CM_Free_Res_Des_Handle(resDes);
-      unsigned n;
-      char msg[80];
-      _snprintf(msg,sizeof(msg),"PonyProg:DetectPorts2k(): Detected %s @ 0x%X\n",s,(int)ior.IO_Header.IOD_Alloc_Base);
-      OutputDebugString(msg);
-      if (sscanf(s,"COM%d",&n)==1) {
+void PortInterface::DetectPorts2k()
+{
+	memset(ser_ports, 0, sizeof(base_len));
+	memset(par_ports, 0, sizeof(base_len));
+	LPTCount = 0;
+	COMCount = 0;
+	HDEVINFO devs = SetupDiGetClassDevs((GUID *)&GUID_DEVCLASS_PORTS, NULL, 0, DIGCF_PRESENT);
+	if (devs != INVALID_HANDLE_VALUE)
+	{
+		SP_DEVINFO_DATA devInfo;
+		devInfo.cbSize = sizeof(devInfo);
+		for (int i = 0; SetupDiEnumDeviceInfo(devs, i, &devInfo); i++)
+		{
+			HKEY hKey;
+			if (CM_Open_DevNode_Key(devInfo.DevInst, KEY_QUERY_VALUE, 0,
+									RegDisposition_OpenExisting, &hKey, CM_REGISTRY_HARDWARE)) continue;
+			char s[16];
+			DWORD slen = sizeof(s);
+			*s = 0;
+			if (!RegQueryValueEx(hKey, "PortName", NULL, NULL, (LPBYTE)s, &slen))
+			{
+				LOG_CONF Config;
+				if (!CM_Get_First_Log_Conf(&Config, devInfo.DevInst, ALLOC_LOG_CONF))
+				{
+					RES_DES resDes = 0;
+					RESOURCEID resId;
+					if (!CM_Get_Next_Res_Des(&resDes, Config, ResType_IO, &resId, 0))
+					{
+						IO_RESOURCE ior;
+						CM_Get_Res_Des_Data(resDes, &ior, sizeof(ior), 0);
+						CM_Free_Res_Des_Handle(resDes);
+						unsigned n;
+						char msg[80];
+						_snprintf(msg, sizeof(msg), "PonyProg:DetectPorts2k(): Detected %s @ 0x%X\n", s, (int)ior.IO_Header.IOD_Alloc_Base);
+						OutputDebugString(msg);
+						if (sscanf(s, "COM%d", &n) == 1)
+						{
 // sorry, this program cannot handle COM ports above COM4
-       if (--n<MAX_COMPORTS) {
-        ser_ports[n].base = (int)ior.IO_Header.IOD_Alloc_Base;
-        ser_ports[n].len  = (int)ior.IO_Header.IOD_Alloc_End+1-ser_ports[n].base;
-        COMCount++;
-       }
-      }else if (sscanf(s,"LPT%d",&n)==1) {
+							if (--n < MAX_COMPORTS)
+							{
+								ser_ports[n].base = (int)ior.IO_Header.IOD_Alloc_Base;
+								ser_ports[n].len  = (int)ior.IO_Header.IOD_Alloc_End + 1 - ser_ports[n].base;
+								COMCount++;
+							}
+						}
+						else if (sscanf(s, "LPT%d", &n) == 1)
+						{
 // sorry, this program cannot handle LPT ports above LPT4
-       if (--n<MAX_LPTPORTS) {
-        par_ports[n].base = (int)ior.IO_Header.IOD_Alloc_Base;
-        par_ports[n].len  = (int)ior.IO_Header.IOD_Alloc_End+1-par_ports[n].base;
-        LPTCount++;
-       }
-      }
-     }
-    }
-    RegCloseKey(hKey);
-   }
-  }
- }
- SetupDiDestroyDeviceInfoList(devs);
+							if (--n < MAX_LPTPORTS)
+							{
+								par_ports[n].base = (int)ior.IO_Header.IOD_Alloc_Base;
+								par_ports[n].len  = (int)ior.IO_Header.IOD_Alloc_End + 1 - par_ports[n].base;
+								LPTCount++;
+							}
+						}
+					}
+				}
+				RegCloseKey(hKey);
+			}
+		}
+	}
+	SetupDiDestroyDeviceInfoList(devs);
 }
 #endif
 
@@ -592,7 +598,7 @@ void PortInterface::DetectPorts9x()
 	const char *HARDWARE_KEY = "HardwareKey";
 
 	const REGSAM KEY_PERMISSIONS = KEY_ENUMERATE_SUB_KEYS |
-								  KEY_QUERY_VALUE;
+								   KEY_QUERY_VALUE;
 
 	HKEY CurKey;               // Current key when using the registry
 	char KeyName[MAX_PATH];    // A key name when using the registry
@@ -611,247 +617,247 @@ void PortInterface::DetectPorts9x()
 	// Clear the COM port array
 	memset(ser_ports, 0, sizeof(base_len));
 
-   // Open the registry
-   RegOpenKeyEx(HKEY_DYN_DATA, BASE_KEY, 0, KEY_PERMISSIONS, &CurKey);
+	// Open the registry
+	RegOpenKeyEx(HKEY_DYN_DATA, BASE_KEY, 0, KEY_PERMISSIONS, &CurKey);
 
-   // Grab all the key names under HKEY_DYN_DATA
-   //
-   // Do this by first counting the number of keys,
-   // then creating an array big enough to hold them
-   // using the KeyList pointer.
+	// Grab all the key names under HKEY_DYN_DATA
+	//
+	// Do this by first counting the number of keys,
+	// then creating an array big enough to hold them
+	// using the KeyList pointer.
 
-   FILETIME DummyFileTime;
-   DWORD DummyLength = MAX_PATH;
-   KeyCount = 0;
-   while (RegEnumKeyEx(
-            CurKey, KeyCount++, KeyName, &DummyLength,
-            NULL, NULL, NULL, &DummyFileTime
-                       ) != ERROR_NO_MORE_ITEMS)
-   {
-      DummyLength = MAX_PATH;
-   }
+	FILETIME DummyFileTime;
+	DWORD DummyLength = MAX_PATH;
+	KeyCount = 0;
+	while (RegEnumKeyEx(
+				CurKey, KeyCount++, KeyName, &DummyLength,
+				NULL, NULL, NULL, &DummyFileTime
+			) != ERROR_NO_MORE_ITEMS)
+	{
+		DummyLength = MAX_PATH;
+	}
 
-   KeyList = new char*[KeyCount];
+	KeyList = new char*[KeyCount];
 
-   KeyCount = 0;
-   DummyLength = MAX_PATH;
-   while (RegEnumKeyEx(
-            CurKey, KeyCount, KeyName, &DummyLength,
-            NULL, NULL, NULL, &DummyFileTime
-                       ) != ERROR_NO_MORE_ITEMS)
-   {
-      KeyList[KeyCount] = new char[DummyLength+1];
-      strcpy(KeyList[KeyCount], KeyName);
-      DummyLength = MAX_PATH;
-      KeyCount++;
-   }
+	KeyCount = 0;
+	DummyLength = MAX_PATH;
+	while (RegEnumKeyEx(
+				CurKey, KeyCount, KeyName, &DummyLength,
+				NULL, NULL, NULL, &DummyFileTime
+			) != ERROR_NO_MORE_ITEMS)
+	{
+		KeyList[KeyCount] = new char[DummyLength + 1];
+		strcpy(KeyList[KeyCount], KeyName);
+		DummyLength = MAX_PATH;
+		KeyCount++;
+	}
 
-   // Close the key
-   RegCloseKey(CurKey);
+	// Close the key
+	RegCloseKey(CurKey);
 
-   // Cycle through all keys; looking for a string valued subkey called
-   // 'HardWareKey' which is not NULL, and another subkey called 'Problem'
-   // whose fields are all valued 0.
-   for (DWORD KeyIndex=0; KeyIndex<KeyCount; KeyIndex++)
-   {
-      int HasProblem = FALSE; // Is 'Problem' non-zero? Assume it is Ok
+	// Cycle through all keys; looking for a string valued subkey called
+	// 'HardWareKey' which is not NULL, and another subkey called 'Problem'
+	// whose fields are all valued 0.
+	for (DWORD KeyIndex = 0; KeyIndex < KeyCount; KeyIndex++)
+	{
+		int HasProblem = FALSE; // Is 'Problem' non-zero? Assume it is Ok
 
-      // Open the key
-      strcpy(KeyName, BASE_KEY);
-      strcat(KeyName, "\\");
-      strcat(KeyName, KeyList[KeyIndex]);
-      if (RegOpenKeyEx(
-            HKEY_DYN_DATA, KeyName, 0, KEY_PERMISSIONS, &CurKey
-                        ) != ERROR_SUCCESS)
-         continue;
+		// Open the key
+		strcpy(KeyName, BASE_KEY);
+		strcat(KeyName, "\\");
+		strcat(KeyName, KeyList[KeyIndex]);
+		if (RegOpenKeyEx(
+					HKEY_DYN_DATA, KeyName, 0, KEY_PERMISSIONS, &CurKey
+				) != ERROR_SUCCESS)
+			continue;
 
-      // Test for a 0 valued Problem sub-key,
-      // which must only consist of raw data
-      DWORD DataType, DataSize;
-      RegQueryValueEx(CurKey, PROBLEM, NULL, &DataType, NULL, &DataSize);
-      if (DataType == REG_BINARY)
-      {
-         // We have a valid, binary "Problem" sub-key
-         // Test to see if the fields are zero
+		// Test for a 0 valued Problem sub-key,
+		// which must only consist of raw data
+		DWORD DataType, DataSize;
+		RegQueryValueEx(CurKey, PROBLEM, NULL, &DataType, NULL, &DataSize);
+		if (DataType == REG_BINARY)
+		{
+			// We have a valid, binary "Problem" sub-key
+			// Test to see if the fields are zero
 
-         char HardwareSubKey[MAX_PATH];
-               // Data from the "Hardware" sub-key
+			char HardwareSubKey[MAX_PATH];
+			// Data from the "Hardware" sub-key
 
-         uint8_t *Data = new uint8_t[DataSize];
-               // Data from "Problem" sub-key
+			uint8_t *Data = new uint8_t[DataSize];
+			// Data from "Problem" sub-key
 
-         // Read the data from the "Problem" sub-key
-         if (RegQueryValueEx(
-                  CurKey, PROBLEM, NULL,
-                  NULL, Data, &DataSize
-                             ) == ERROR_SUCCESS)
-         {
-            // See if it has any problems
-            for (DWORD index=0; index<DataSize; index++)
-               HasProblem |= Data[index];
-         }
-         else
-            HasProblem = TRUE; // No good
-
-         delete[] Data;
-
-         // Now try and read the Hardware sub-key
-         DataSize = MAX_PATH;
-         RegQueryValueEx(
-            CurKey, HARDWARE_KEY, NULL, &DataType, (uint8_t *)HardwareSubKey, &DataSize
-                         );
-         if (DataType != REG_SZ)
-            HasProblem = TRUE; // No good
-
-         // Do we have no problem, and a non-null Hardware sub-key?
-         if (!HasProblem && strlen(HardwareSubKey) > 0)
-         {
-            // Now open the key which is "pointed at" by HardwareSubKey
-            RegCloseKey(CurKey);
-
-            strcpy(KeyName, "Enum\\");
-            strcat(KeyName, HardwareSubKey);
-            if (RegOpenKeyEx(
-                  HKEY_LOCAL_MACHINE, KeyName, 0, KEY_PERMISSIONS, &CurKey
-                              ) != ERROR_SUCCESS)
-               continue;
-
-            // Now read in the PortName and obtain the LPT number from it
-            char PortName[MAX_PATH];
-            DataSize = MAX_PATH;
-            RegQueryValueEx(
-               CurKey, PORTNAME, NULL, &DataType, (uint8_t *)PortName, &DataSize
-                            );
-            if (DataType != REG_SZ)
-               strcpy(PortName, ""); // No good
-
-			//------- Search for COM ports
-			if (strstr(PortName, "COM") != NULL)
+			// Read the data from the "Problem" sub-key
+			if (RegQueryValueEx(
+						CurKey, PROBLEM, NULL,
+						NULL, Data, &DataSize
+					) == ERROR_SUCCESS)
 			{
-               int PortNumber;
-                     // The nubmer of the port
-               char PortNumberStr[MAX_PATH];
-                     // Holds the number of the port as a string
-
-               WORD Allocation[64];
-                     // Holds the registry data for the port address allocation
-
-               memset(PortNumberStr, '\0', MAX_PATH);
-               strncpy(PortNumberStr,
-                       strstr(PortName, "COM")+3,
-                       strlen(PortName)-(strstr(PortName, "COM")-PortName)-2);
-
-               // Find the port number
-               PortNumber = atoi(PortNumberStr);
-
-               // Find the address
-               RegCloseKey(CurKey);
-
-               strcpy(KeyName, BASE_KEY);
-               strcat(KeyName, "\\");
-               strcat(KeyName, KeyList[KeyIndex]);
-               RegOpenKeyEx(HKEY_DYN_DATA, KeyName, 0, KEY_PERMISSIONS, &CurKey);
-
-               DataSize = sizeof(Allocation);
-               RegQueryValueEx(
-                  CurKey, ALLOCATION, NULL, &DataType,
-                  (unsigned char*)Allocation, &DataSize
-                               );
-               if (DataType == REG_BINARY)
-               {
-                  // Decode the Allocation data: the port address is present
-                  // directly after a 0x000C entry (which doesn't have 0x0000
-                  // after it).
-                  for (int pos=0; pos<63; pos++)
-				  {
-					if (Allocation[pos] == 0x000C &&
-						Allocation[pos+1] != 0x0000 &&
-						PortNumber<=MAX_COMPORTS)
-                     {
-                        // Found a port; add it to the list
-					//	ser_ports_base[COMCount] = Allocation[pos+1];
-					//	if (Allocation[pos+2] > 0 && Allocation[pos+2] >= Allocation[pos+1])
-					//		ser_ports_len[COMCount] = Allocation[pos+2] - Allocation[pos+1] + 1;
-
-						ser_ports[PortNumber-1].base = Allocation[pos+1];
-						if (Allocation[pos+2] > 0 && Allocation[pos+2] >= Allocation[pos+1])
-							ser_ports[PortNumber-1].len = Allocation[pos+2] - Allocation[pos+1] + 1;
-
-						COMCount++;
-                        break;
-                     }
-				  }
-               }
+				// See if it has any problems
+				for (DWORD index = 0; index < DataSize; index++)
+					HasProblem |= Data[index];
 			}
+			else
+				HasProblem = TRUE; // No good
 
-			//------- Search for LPT ports
-            // Make sure it has LPT in it
-            if (strstr(PortName, "LPT") != NULL)
-            {
-               int PortNumber;
-                     // The nubmer of the port
-               char PortNumberStr[MAX_PATH];
-                     // Holds the number of the port as a string
+			delete[] Data;
 
-               WORD Allocation[64];
-                     // Holds the registry data for the port address allocation
+			// Now try and read the Hardware sub-key
+			DataSize = MAX_PATH;
+			RegQueryValueEx(
+				CurKey, HARDWARE_KEY, NULL, &DataType, (uint8_t *)HardwareSubKey, &DataSize
+			);
+			if (DataType != REG_SZ)
+				HasProblem = TRUE; // No good
 
-               memset(PortNumberStr, '\0', MAX_PATH);
-               strncpy(PortNumberStr,
-                       strstr(PortName, "LPT")+3,
-                       strlen(PortName)-(strstr(PortName, "LPT")-PortName)-2);
+			// Do we have no problem, and a non-null Hardware sub-key?
+			if (!HasProblem && strlen(HardwareSubKey) > 0)
+			{
+				// Now open the key which is "pointed at" by HardwareSubKey
+				RegCloseKey(CurKey);
 
-               // Find the port number
-               PortNumber = atoi(PortNumberStr);
+				strcpy(KeyName, "Enum\\");
+				strcat(KeyName, HardwareSubKey);
+				if (RegOpenKeyEx(
+							HKEY_LOCAL_MACHINE, KeyName, 0, KEY_PERMISSIONS, &CurKey
+						) != ERROR_SUCCESS)
+					continue;
 
-               // Find the address
-               RegCloseKey(CurKey);
+				// Now read in the PortName and obtain the LPT number from it
+				char PortName[MAX_PATH];
+				DataSize = MAX_PATH;
+				RegQueryValueEx(
+					CurKey, PORTNAME, NULL, &DataType, (uint8_t *)PortName, &DataSize
+				);
+				if (DataType != REG_SZ)
+					strcpy(PortName, ""); // No good
 
-               strcpy(KeyName, BASE_KEY);
-               strcat(KeyName, "\\");
-               strcat(KeyName, KeyList[KeyIndex]);
-               RegOpenKeyEx(HKEY_DYN_DATA, KeyName, 0, KEY_PERMISSIONS, &CurKey);
+				//------- Search for COM ports
+				if (strstr(PortName, "COM") != NULL)
+				{
+					int PortNumber;
+					// The nubmer of the port
+					char PortNumberStr[MAX_PATH];
+					// Holds the number of the port as a string
 
-               DataSize = sizeof(Allocation);
-               RegQueryValueEx(
-                  CurKey, ALLOCATION, NULL, &DataType,
-                  (unsigned char*)Allocation, &DataSize
-                               );
-               if (DataType == REG_BINARY)
-               {
-                  // Decode the Allocation data: the port address is present
-                  // directly after a 0x000C entry (which doesn't have 0x0000
-                  // after it).
-                  for (int pos=0; pos<63; pos++)
-                     if (Allocation[pos] == 0x000C &&
-                         Allocation[pos+1] != 0x0000 &&
-                         PortNumber<=MAX_LPTPORTS)
-                     {
-                        // Found a port; add it to the list
-						par_ports[PortNumber-1].base = Allocation[pos+1];
-						if (Allocation[pos+2] > 0 && Allocation[pos+2] >= Allocation[pos+1])
-							par_ports[PortNumber-1].len = Allocation[pos+2] - Allocation[pos+1] + 1;
+					WORD Allocation[64];
+					// Holds the registry data for the port address allocation
 
-					//	par_ports_base[LPTCount] = Allocation[pos+1];
-					//	if (Allocation[pos+2] > 0 && Allocation[pos+2] >= Allocation[pos+1])
-					//		par_ports_len[LPTCount] = Allocation[pos+2] - Allocation[pos+1] + 1;
+					memset(PortNumberStr, '\0', MAX_PATH);
+					strncpy(PortNumberStr,
+							strstr(PortName, "COM") + 3,
+							strlen(PortName) - (strstr(PortName, "COM") - PortName) - 2);
 
-						LPTCount++;
-                        break;
-                     }
+					// Find the port number
+					PortNumber = atoi(PortNumberStr);
 
-               }
-            }
-         }
-      }
+					// Find the address
+					RegCloseKey(CurKey);
 
-      RegCloseKey(CurKey);
-   }
+					strcpy(KeyName, BASE_KEY);
+					strcat(KeyName, "\\");
+					strcat(KeyName, KeyList[KeyIndex]);
+					RegOpenKeyEx(HKEY_DYN_DATA, KeyName, 0, KEY_PERMISSIONS, &CurKey);
 
-   // Destroy our key list
-   for (index=0; index<KeyCount; index++)
-      delete[] KeyList[index];
-   delete KeyList;
+					DataSize = sizeof(Allocation);
+					RegQueryValueEx(
+						CurKey, ALLOCATION, NULL, &DataType,
+						(unsigned char *)Allocation, &DataSize
+					);
+					if (DataType == REG_BINARY)
+					{
+						// Decode the Allocation data: the port address is present
+						// directly after a 0x000C entry (which doesn't have 0x0000
+						// after it).
+						for (int pos = 0; pos < 63; pos++)
+						{
+							if (Allocation[pos] == 0x000C &&
+									Allocation[pos + 1] != 0x0000 &&
+									PortNumber <= MAX_COMPORTS)
+							{
+								// Found a port; add it to the list
+								//	ser_ports_base[COMCount] = Allocation[pos+1];
+								//	if (Allocation[pos+2] > 0 && Allocation[pos+2] >= Allocation[pos+1])
+								//		ser_ports_len[COMCount] = Allocation[pos+2] - Allocation[pos+1] + 1;
+
+								ser_ports[PortNumber - 1].base = Allocation[pos + 1];
+								if (Allocation[pos + 2] > 0 && Allocation[pos + 2] >= Allocation[pos + 1])
+									ser_ports[PortNumber - 1].len = Allocation[pos + 2] - Allocation[pos + 1] + 1;
+
+								COMCount++;
+								break;
+							}
+						}
+					}
+				}
+
+				//------- Search for LPT ports
+				// Make sure it has LPT in it
+				if (strstr(PortName, "LPT") != NULL)
+				{
+					int PortNumber;
+					// The nubmer of the port
+					char PortNumberStr[MAX_PATH];
+					// Holds the number of the port as a string
+
+					WORD Allocation[64];
+					// Holds the registry data for the port address allocation
+
+					memset(PortNumberStr, '\0', MAX_PATH);
+					strncpy(PortNumberStr,
+							strstr(PortName, "LPT") + 3,
+							strlen(PortName) - (strstr(PortName, "LPT") - PortName) - 2);
+
+					// Find the port number
+					PortNumber = atoi(PortNumberStr);
+
+					// Find the address
+					RegCloseKey(CurKey);
+
+					strcpy(KeyName, BASE_KEY);
+					strcat(KeyName, "\\");
+					strcat(KeyName, KeyList[KeyIndex]);
+					RegOpenKeyEx(HKEY_DYN_DATA, KeyName, 0, KEY_PERMISSIONS, &CurKey);
+
+					DataSize = sizeof(Allocation);
+					RegQueryValueEx(
+						CurKey, ALLOCATION, NULL, &DataType,
+						(unsigned char *)Allocation, &DataSize
+					);
+					if (DataType == REG_BINARY)
+					{
+						// Decode the Allocation data: the port address is present
+						// directly after a 0x000C entry (which doesn't have 0x0000
+						// after it).
+						for (int pos = 0; pos < 63; pos++)
+							if (Allocation[pos] == 0x000C &&
+									Allocation[pos + 1] != 0x0000 &&
+									PortNumber <= MAX_LPTPORTS)
+							{
+								// Found a port; add it to the list
+								par_ports[PortNumber - 1].base = Allocation[pos + 1];
+								if (Allocation[pos + 2] > 0 && Allocation[pos + 2] >= Allocation[pos + 1])
+									par_ports[PortNumber - 1].len = Allocation[pos + 2] - Allocation[pos + 1] + 1;
+
+								//	par_ports_base[LPTCount] = Allocation[pos+1];
+								//	if (Allocation[pos+2] > 0 && Allocation[pos+2] >= Allocation[pos+1])
+								//		par_ports_len[LPTCount] = Allocation[pos+2] - Allocation[pos+1] + 1;
+
+								LPTCount++;
+								break;
+							}
+
+					}
+				}
+			}
+		}
+
+		RegCloseKey(CurKey);
+	}
+
+	// Destroy our key list
+	for (index = 0; index < KeyCount; index++)
+		delete[] KeyList[index];
+	delete KeyList;
 }
 
 #include <ctype.h>
@@ -861,76 +867,87 @@ void PortInterface::DetectPorts9x()
 //---------------------------------------------------------------------------
 void PortInterface::DetectLPTPortsNT()
 {
-	LPTCount = DetectPortsNT("Parport","LPT%d",par_ports,MAX_LPTPORTS);
+	LPTCount = DetectPortsNT("Parport", "LPT%d", par_ports, MAX_LPTPORTS);
 }
 
 void PortInterface::DetectCOMPortsNT()
 {
-	COMCount = DetectPortsNT("Serial","COM%d",ser_ports,MAX_COMPORTS);
+	COMCount = DetectPortsNT("Serial", "COM%d", ser_ports, MAX_COMPORTS);
 }
 
 // Static member function
 // See the two possible usage examples above!
-int PortInterface::DetectPortsNT(const char *ServiceName, const char *PortFormat, base_len *ports, int nports) {
+int PortInterface::DetectPortsNT(const char *ServiceName, const char *PortFormat, base_len *ports, int nports)
+{
 // This revised code keeps some registry keys open, rather than collecting intermediate strings.
 // No silly key enumeration at all!
 // This compact code shows USEFULNESS of indent == 1.
- const REGSAM KEY_PERMISSIONS = KEY_ENUMERATE_SUB_KEYS|KEY_QUERY_VALUE;
- char buf[MAX_PATH];	// handy stack-allocated multi-purpose buffer
- int Count=0;		// return value (can be greater than nports)
+	const REGSAM KEY_PERMISSIONS = KEY_ENUMERATE_SUB_KEYS | KEY_QUERY_VALUE;
+	char buf[MAX_PATH];	// handy stack-allocated multi-purpose buffer
+	int Count = 0;		// return value (can be greater than nports)
 
- memset(ports,0,nports*sizeof(base_len));	// Clear port array
- HKEY hCCS;		// Open the registry (first stage)
- if (!RegOpenKeyEx(HKEY_LOCAL_MACHINE,"SYSTEM\\CurrentControlSet",0,KEY_PERMISSIONS,&hCCS)) {
-  HKEY hSvcEnum;
-  _snprintf(buf,sizeof(buf),"Services\\%s\\Enum",ServiceName);
-  if (!RegOpenKeyEx(hCCS,buf,0,KEY_PERMISSIONS,&hSvcEnum)) {
-   DWORD Length = sizeof Count;		// Count gets the number of ports in the system
-   RegQueryValueEx(hSvcEnum,"Count",NULL,NULL,(PBYTE)&Count,&Length);
-   for (int i=0; i<Count; i++) {
-    _snprintf(buf,sizeof(buf),"%d",i);	// A simple number
-    char PnpPath[MAX_PATH];		// Another buffer (small changes in code would avoid even this)
-    Length = sizeof PnpPath;
-    if (!RegQueryValueEx(hSvcEnum,buf,NULL,NULL,(PBYTE)PnpPath,&Length)) {
-     HKEY hParams;
-     _snprintf(buf,sizeof(buf),"Enum\\%s\\Device Parameters",PnpPath);
-     if (!RegOpenKeyEx(hCCS,buf,0,KEY_PERMISSIONS,&hParams)) {
-      int Index;
-      Length=sizeof buf;
-      if (!RegQueryValueEx(hParams,"PortName",NULL,NULL,(PBYTE)buf,&Length)
-      && sscanf(buf,PortFormat,&Index)==1
-      && (unsigned)--Index<(unsigned)nports) {	// Use zero-based index from here, avoid negative values
-       HKEY hControl;
-       _snprintf(buf,sizeof(buf),"Enum\\%s\\Control",PnpPath);
-       if (!RegOpenKeyEx(hCCS,buf,0,KEY_PERMISSIONS,&hControl)) {
-        Length=sizeof buf;
-        if (!RegQueryValueEx(hControl,"AllocConfig",NULL,NULL,(PBYTE)buf,&Length)) {
+	memset(ports, 0, nports * sizeof(base_len));	// Clear port array
+	HKEY hCCS;		// Open the registry (first stage)
+	if (!RegOpenKeyEx(HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet", 0, KEY_PERMISSIONS, &hCCS))
+	{
+		HKEY hSvcEnum;
+		_snprintf(buf, sizeof(buf), "Services\\%s\\Enum", ServiceName);
+		if (!RegOpenKeyEx(hCCS, buf, 0, KEY_PERMISSIONS, &hSvcEnum))
+		{
+			DWORD Length = sizeof Count;		// Count gets the number of ports in the system
+			RegQueryValueEx(hSvcEnum, "Count", NULL, NULL, (PBYTE)&Count, &Length);
+			for (int i = 0; i < Count; i++)
+			{
+				_snprintf(buf, sizeof(buf), "%d", i);	// A simple number
+				char PnpPath[MAX_PATH];		// Another buffer (small changes in code would avoid even this)
+				Length = sizeof PnpPath;
+				if (!RegQueryValueEx(hSvcEnum, buf, NULL, NULL, (PBYTE)PnpPath, &Length))
+				{
+					HKEY hParams;
+					_snprintf(buf, sizeof(buf), "Enum\\%s\\Device Parameters", PnpPath);
+					if (!RegOpenKeyEx(hCCS, buf, 0, KEY_PERMISSIONS, &hParams))
+					{
+						int Index;
+						Length = sizeof buf;
+						if (!RegQueryValueEx(hParams, "PortName", NULL, NULL, (PBYTE)buf, &Length)
+								&& sscanf(buf, PortFormat, &Index) == 1
+								&& (unsigned)--Index < (unsigned)nports)  	// Use zero-based index from here, avoid negative values
+						{
+							HKEY hControl;
+							_snprintf(buf, sizeof(buf), "Enum\\%s\\Control", PnpPath);
+							if (!RegOpenKeyEx(hCCS, buf, 0, KEY_PERMISSIONS, &hControl))
+							{
+								Length = sizeof buf;
+								if (!RegQueryValueEx(hControl, "AllocConfig", NULL, NULL, (PBYTE)buf, &Length))
+								{
 // This undocumented AllocConfig structure is checked against Win2k and Win8/64.
 // In both cases, the ResType entry was at byte offset 16.
-         DWORD *p=(DWORD*)buf;
-         for (int k=0; k<(int)Length/4-5; k++,p++) {
-          if (p[0]==2			// have ResType_IO
-          && !HIWORD(p[2])		// port address less than 64K
-          && !p[3]			// no high DWORD part
-          && p[4]<16) {			// length limited to 16
-           ports[Index].base=p[2];	// We got one
-           ports[Index].len =p[4];	// (NO check for typical ISA addresses anymore!!)
-           break;
-          }
-         }
-        }
-        RegCloseKey(hControl);
-       }
-      }
-      RegCloseKey(hParams);
-     }
-    }
-   }/*for*/
-   RegCloseKey(hSvcEnum);
-  }
-  RegCloseKey(hCCS);
- }
- return Count;
+									DWORD *p = (DWORD *)buf;
+									for (int k = 0; k < (int)Length / 4 - 5; k++, p++)
+									{
+										if (p[0] == 2			// have ResType_IO
+												&& !HIWORD(p[2])		// port address less than 64K
+												&& !p[3]			// no high DWORD part
+												&& p[4] < 16)  			// length limited to 16
+										{
+											ports[Index].base = p[2];	// We got one
+											ports[Index].len = p[4];	// (NO check for typical ISA addresses anymore!!)
+											break;
+										}
+									}
+								}
+								RegCloseKey(hControl);
+							}
+						}
+						RegCloseKey(hParams);
+					}
+				}
+			}/*for*/
+			RegCloseKey(hSvcEnum);
+		}
+		RegCloseKey(hCCS);
+	}
+	return Count;
 }
 
 #endif
