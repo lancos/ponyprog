@@ -37,8 +37,8 @@
 #include "e2app.h"
 
 #ifdef	_LINUX_
-#include <sys/io.h>
-#include <unistd.h>
+# include <sys/io.h>
+# include <unistd.h>
 
 	int PortInterface::IOperm(int a, int b, int c)
 	{
@@ -64,13 +64,6 @@
 //Use InpOut32 intead of direct I/O
 #define	outb(val, id)	Out32(id, val)
 #define	inb(id)			Inp32(id)
-
-#ifdef	__BORLANDC__
-# define	__inline__
-#else // MICROSOFT VC++
-# define	__inline__ __inline
-# define	_export
-#endif
 
 #endif
 
@@ -259,11 +252,11 @@ int PortInterface::OpenSerial(int no)
 			sprintf(str, "COM%d", no);
 			hCom = CreateFile(str,
 							  GENERIC_READ | GENERIC_WRITE,
-							  0,		/* comm devices must be opened w/exclusive-access */
-							  NULL,	/* no security attrs */
-							  OPEN_EXISTING, /* comm devices must use OPEN_EXISTING */
-							  0,		/* not overlapped I/O */
-							  NULL	/* hTemplate must be NULL for comm devices */
+							  0,			// comm devices must be opened w/exclusive-access
+							  NULL,			// no security attrs
+							  OPEN_EXISTING,// comm devices must use OPEN_EXISTING
+							  0,			// not overlapped I/O
+							  NULL			// hTemplate must be NULL for comm devices
 							 );
 
 			if (hCom != INVALID_HANDLE_VALUE)
@@ -346,11 +339,11 @@ int PortInterface::OpenParallel(int no)
 			sprintf(str, "LPT%d", no);
 			hCom = CreateFile(str,
 							  GENERIC_READ | GENERIC_WRITE,
-							  0,		/* comm devices must be opened w/exclusive-access */
-							  NULL,	/* no security attrs */
-							  OPEN_EXISTING, /* comm devices must use OPEN_EXISTING */
-							  0,		/* not overlapped I/O */
-							  NULL	/* hTemplate must be NULL for comm devices */
+							  0,			// comm devices must be opened w/exclusive-access
+							  NULL,			// no security attrs
+							  OPEN_EXISTING,// comm devices must use OPEN_EXISTING
+							  0,			// not overlapped I/O
+							  NULL			// hTemplate must be NULL for comm devices
 							 );
 
 			if (hCom != INVALID_HANDLE_VALUE)
@@ -523,8 +516,8 @@ extern "C" {
 
 void PortInterface::DetectPorts2k()
 {
-	memset(ser_ports, 0, sizeof(base_len));
-	memset(par_ports, 0, sizeof(base_len));
+	memset(ser_ports, 0, sizeof(ser_ports));
+	memset(par_ports, 0, sizeof(par_ports));
 	LPTCount = 0;
 	COMCount = 0;
 	HDEVINFO devs = SetupDiGetClassDevs((GUID *)&GUID_DEVCLASS_PORTS, NULL, 0, DIGCF_PRESENT);
@@ -558,7 +551,7 @@ void PortInterface::DetectPorts2k()
 						OutputDebugString(msg);
 						if (sscanf(s, "COM%d", &n) == 1)
 						{
-// sorry, this program cannot handle COM ports above COM4
+							// sorry, this program cannot handle COM ports above COM4
 							if (--n < MAX_COMPORTS)
 							{
 								ser_ports[n].base = (int)ior.IO_Header.IOD_Alloc_Base;
@@ -568,7 +561,7 @@ void PortInterface::DetectPorts2k()
 						}
 						else if (sscanf(s, "LPT%d", &n) == 1)
 						{
-// sorry, this program cannot handle LPT ports above LPT4
+							// sorry, this program cannot handle LPT ports above LPT4
 							if (--n < MAX_LPTPORTS)
 							{
 								par_ports[n].base = (int)ior.IO_Header.IOD_Alloc_Base;
@@ -613,9 +606,9 @@ void PortInterface::DetectPorts9x()
 	COMCount = 0;
 
 	// Clear the LPT port array
-	memset(par_ports, 0, sizeof(base_len));
+	memset(par_ports, 0, sizeof(par_ports));
 	// Clear the COM port array
-	memset(ser_ports, 0, sizeof(base_len));
+	memset(ser_ports, 0, sizeof(ser_ports));
 
 	// Open the registry
 	RegOpenKeyEx(HKEY_DYN_DATA, BASE_KEY, 0, KEY_PERMISSIONS, &CurKey);
@@ -829,6 +822,7 @@ void PortInterface::DetectPorts9x()
 						// directly after a 0x000C entry (which doesn't have 0x0000
 						// after it).
 						for (int pos = 0; pos < 63; pos++)
+						{
 							if (Allocation[pos] == 0x000C &&
 									Allocation[pos + 1] != 0x0000 &&
 									PortNumber <= MAX_LPTPORTS)
@@ -845,7 +839,7 @@ void PortInterface::DetectPorts9x()
 								LPTCount++;
 								break;
 							}
-
+						}
 					}
 				}
 			}
@@ -879,73 +873,123 @@ void PortInterface::DetectCOMPortsNT()
 // See the two possible usage examples above!
 int PortInterface::DetectPortsNT(const char *ServiceName, const char *PortFormat, base_len *ports, int nports)
 {
-// This revised code keeps some registry keys open, rather than collecting intermediate strings.
-// No silly key enumeration at all!
-// This compact code shows USEFULNESS of indent == 1.
+	FILE *fh;
+	LONG retval;
+	// This revised code keeps some registry keys open, rather than collecting intermediate strings.
+	// No silly key enumeration at all!
 	const REGSAM KEY_PERMISSIONS = KEY_ENUMERATE_SUB_KEYS | KEY_QUERY_VALUE;
 	char buf[MAX_PATH];	// handy stack-allocated multi-purpose buffer
 	int Count = 0;		// return value (can be greater than nports)
 
+	fh = fopen("detect_ports_NT.log", "a");
+	if (fh) fprintf(fh, "Enter DetectPortsNT(%s, %s, %p, %d)\n", ServiceName, PortFormat, ports, nports);
+
 	memset(ports, 0, nports * sizeof(base_len));	// Clear port array
 	HKEY hCCS;		// Open the registry (first stage)
-	if (!RegOpenKeyEx(HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet", 0, KEY_PERMISSIONS, &hCCS))
+	retval = RegOpenKeyEx(HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet", 0, KEY_PERMISSIONS, &hCCS);
+	if (retval == ERROR_SUCCESS)
 	{
 		HKEY hSvcEnum;
 		_snprintf(buf, sizeof(buf), "Services\\%s\\Enum", ServiceName);
-		if (!RegOpenKeyEx(hCCS, buf, 0, KEY_PERMISSIONS, &hSvcEnum))
+		retval = RegOpenKeyEx(hCCS, buf, 0, KEY_PERMISSIONS, &hSvcEnum);
+		if (retval == ERROR_SUCCESS)
 		{
 			DWORD Length = sizeof Count;		// Count gets the number of ports in the system
-			RegQueryValueEx(hSvcEnum, "Count", NULL, NULL, (PBYTE)&Count, &Length);
-			for (int i = 0; i < Count; i++)
+			retval = RegQueryValueEx(hSvcEnum, "Count", NULL, NULL, (PBYTE)&Count, &Length);
+			if (retval == ERROR_SUCCESS)
 			{
-				_snprintf(buf, sizeof(buf), "%d", i);	// A simple number
-				char PnpPath[MAX_PATH];		// Another buffer (small changes in code would avoid even this)
-				Length = sizeof PnpPath;
-				if (!RegQueryValueEx(hSvcEnum, buf, NULL, NULL, (PBYTE)PnpPath, &Length))
+				for (int i = 0; i < Count; i++)
 				{
-					HKEY hParams;
-					_snprintf(buf, sizeof(buf), "Enum\\%s\\Device Parameters", PnpPath);
-					if (!RegOpenKeyEx(hCCS, buf, 0, KEY_PERMISSIONS, &hParams))
+					_snprintf(buf, sizeof(buf), "%d", i);	// A simple number
+					char PnpPath[MAX_PATH];		// Another buffer (small changes in code would avoid even this)
+					Length = sizeof(PnpPath);
+					retval = RegQueryValueEx(hSvcEnum, buf, NULL, NULL, (PBYTE)PnpPath, &Length);
+					if (retval == ERROR_SUCCESS)
 					{
-						int Index;
-						Length = sizeof buf;
-						if (!RegQueryValueEx(hParams, "PortName", NULL, NULL, (PBYTE)buf, &Length)
-								&& sscanf(buf, PortFormat, &Index) == 1
-								&& (unsigned)--Index < (unsigned)nports)  	// Use zero-based index from here, avoid negative values
+						HKEY hParams;
+
+						if (fh) fprintf(fh, "Cycle: %d, PNPPath: %s\n", i, PnpPath);
+
+						_snprintf(buf, sizeof(buf), "Enum\\%s\\Device Parameters", PnpPath);
+						retval = RegOpenKeyEx(hCCS, buf, 0, KEY_PERMISSIONS, &hParams);
+						if (retval == ERROR_SUCCESS)
 						{
-							HKEY hControl;
-							_snprintf(buf, sizeof(buf), "Enum\\%s\\Control", PnpPath);
-							if (!RegOpenKeyEx(hCCS, buf, 0, KEY_PERMISSIONS, &hControl))
+							int Index;
+							Length = sizeof(buf);
+							retval = RegQueryValueEx(hParams, "PortName", NULL, NULL, (PBYTE)buf, &Length);
+							if (retval == ERROR_SUCCESS
+									&& sscanf(buf, PortFormat, &Index) == 1
+									&& (unsigned)--Index < (unsigned)nports)  	// Use zero-based index from here, avoid negative values
 							{
-								Length = sizeof buf;
-								if (!RegQueryValueEx(hControl, "AllocConfig", NULL, NULL, (PBYTE)buf, &Length))
+								HKEY hControl;
+								_snprintf(buf, sizeof(buf), "Enum\\%s\\Control", PnpPath);
+								retval = RegOpenKeyEx(hCCS, buf, 0, KEY_PERMISSIONS, &hControl);
+								if (retval == ERROR_SUCCESS)
 								{
-// This undocumented AllocConfig structure is checked against Win2k and Win8/64.
-// In both cases, the ResType entry was at byte offset 16.
-									DWORD *p = (DWORD *)buf;
-									for (int k = 0; k < (int)Length / 4 - 5; k++, p++)
+									Length = sizeof(buf);
+									retval = RegQueryValueEx(hControl, "AllocConfig", NULL, NULL, (PBYTE)buf, &Length);
+									if (retval == ERROR_SUCCESS)
 									{
-										if (p[0] == 2			// have ResType_IO
-												&& !HIWORD(p[2])		// port address less than 64K
-												&& !p[3]			// no high DWORD part
-												&& p[4] < 16)  			// length limited to 16
+										// This undocumented AllocConfig structure is checked against Win2k and Win8/64.
+										// In both cases, the ResType entry was at byte offset 16.
+										DWORD *p = (DWORD *)buf;
+
+										if (fh) fprintf(fh, "Index=%d, p=%p [0]=%lu, [1]=%lu, [2]=%lxh, [3]=%lu, [4]=%lu\n",
+														Index, (void *)p, p[0], p[1], p[2], p[3], p[4]);
+
+										for (int k = 0; k < (int)Length / 4 - 5; k++, p++)
 										{
-											ports[Index].base = p[2];	// We got one
-											ports[Index].len = p[4];	// (NO check for typical ISA addresses anymore!!)
-											break;
-										}
+											if (p[0] == 2			// have ResType_IO
+													&& !HIWORD(p[2])		// port address less than 64K
+													&& !p[3]			// no high DWORD part
+													&& p[4] < 16)  			// length limited to 16
+											{
+												ports[Index].base = p[2];	// We got one
+												ports[Index].len = p[4];	// (NO check for typical ISA addresses anymore!!)
+												break;
+											}
+										} //for
 									}
+									else
+									{
+										if (fh) fprintf(fh, "RegQueryValueEx(AllocConfig) Failed with code %ld\n", retval);
+									}
+									RegCloseKey(hControl);
 								}
-								RegCloseKey(hControl);
+								else
+								{
+									if (fh) fprintf(fh, "RegOpenKeyEx(%s) Failed with code %ld\n", buf, retval);
+								}
 							}
+							RegCloseKey(hParams);
 						}
-						RegCloseKey(hParams);
+						else
+						{
+							if (fh) fprintf(fh, "RegOpenKeyEx(%s) Failed with code %ld\n", buf, retval);
+						}
 					}
-				}
-			}/*for*/
+				} //for
+			}
+			else
+			{
+				if (fh) fprintf(fh, "RegQueryValueEx(Count) Failed with code %ld\n", retval);
+			}
 			RegCloseKey(hSvcEnum);
 		}
+		else
+		{
+			if (fh) fprintf(fh, "RegOpenKeyEx(%s) Failed with code %ld\n", buf, retval);
+		}
 		RegCloseKey(hCCS);
+	}
+	else
+	{
+		if (fh) fprintf(fh, "RegOpenKeyEx(HKEY_LOCAL_MACHINE, SYSTEM\\CurrentControlSet) Failed with code %ld\n", retval);
+	}
+	if (fh)
+	{
+		fprintf(fh, "Enter DetectPortsNT() *** Count = %d\n", Count);
+		fclose(fh);
 	}
 	return Count;
 }
