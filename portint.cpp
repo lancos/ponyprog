@@ -61,9 +61,13 @@
 
 #ifdef	_WINDOWS
 
+//Use the DLPortIO instead of direct I/O
+#define	outb(val, id)	DlPortWritePortUchar(id, val)
+#define	inb(id)			DlPortReadPortUchar(id)
+
 //Use InpOut32 intead of direct I/O
-#define	outb(val, id)	Out32(id, val)
-#define	inb(id)			Inp32(id)
+//#define	outb(val, id)	Out32(id, val)
+//#define	inb(id)			Inp32(id)
 
 #endif
 
@@ -126,6 +130,8 @@ PortInterface::~PortInterface()
 
 int PortInterface::InPort(int nport) const
 {
+	UserDebug2(UserApp3, "PortInterface::OutPort() ** %xh, %xh\n", first_port, nport);
+
 	if (first_port == 0)
 		return  E2ERR_NOTINSTALLED;;
 
@@ -327,7 +333,7 @@ int PortInterface::OpenParallel(int no)
 
 	if (no >= 1 && no <= MAX_LPTPORTS)
 	{
-		if (!par_ports[no - 1].base)
+		if (par_ports[no - 1].base == 0)
 			DetectPorts();
 
 		//Test if port exist
@@ -394,7 +400,7 @@ int PortInterface::GetSerBasePort(int no)
 {
 	if (no >= 1 && no <= MAX_COMPORTS)
 	{
-		if (!ser_ports[no - 1].base)
+		if (ser_ports[no - 1].base == 0)
 			DetectPorts();
 
 		return ser_ports[no - 1].base;
@@ -407,7 +413,7 @@ int PortInterface::GetParBasePort(int no)
 {
 	if (no >= 1 && no <= MAX_LPTPORTS)
 	{
-		if (!par_ports[no - 1].base)
+		if (par_ports[no - 1].base == 0)
 			DetectPorts();
 
 		return par_ports[no - 1].base;
@@ -854,7 +860,7 @@ void PortInterface::DetectPorts9x()
 	delete KeyList;
 }
 
-#include <ctype.h>
+static int DetectPortsNT(const char *ServiceName, const char *PortFormat, base_len *ports, int nports);
 
 //---------------------------------------------------------------------------
 // DetectPorts() Win2K / NT version
@@ -871,7 +877,7 @@ void PortInterface::DetectCOMPortsNT()
 
 // Static member function
 // See the two possible usage examples above!
-int PortInterface::DetectPortsNT(const char *ServiceName, const char *PortFormat, base_len *ports, int nports)
+static int DetectPortsNT(const char *ServiceName, const char *PortFormat, base_len *ports, int nports)
 {
 	FILE *fh;
 	LONG retval;
@@ -894,10 +900,12 @@ int PortInterface::DetectPortsNT(const char *ServiceName, const char *PortFormat
 		retval = RegOpenKeyEx(hCCS, buf, 0, KEY_PERMISSIONS, &hSvcEnum);
 		if (retval == ERROR_SUCCESS)
 		{
-			DWORD Length = sizeof Count;		// Count gets the number of ports in the system
+			DWORD Length = sizeof(Count);		// Count gets the number of ports in the system
 			retval = RegQueryValueEx(hSvcEnum, "Count", NULL, NULL, (PBYTE)&Count, &Length);
 			if (retval == ERROR_SUCCESS)
 			{
+				if (fh) fprintf(fh, "Port count: %d)\n", Count);
+
 				for (int i = 0; i < Count; i++)
 				{
 					_snprintf(buf, sizeof(buf), "%d", i);	// A simple number
@@ -932,23 +940,18 @@ int PortInterface::DetectPortsNT(const char *ServiceName, const char *PortFormat
 									{
 										// This undocumented AllocConfig structure is checked against Win2k and Win8/64.
 										// In both cases, the ResType entry was at byte offset 16.
-										DWORD *p = (DWORD *)buf;
-
-										if (fh) fprintf(fh, "Index=%d, p=%p [0]=%lu, [1]=%lu, [2]=%lxh, [3]=%lu, [4]=%lu\n",
-														Index, (void *)p, p[0], p[1], p[2], p[3], p[4]);
-
-										for (int k = 0; k < (int)Length / 4 - 5; k++, p++)
+										DWORD *p = (DWORD *)buf + 4;
+										if ((p[0] == 2 || p[0] == 4 || p[0] == 5)   // have ResType_IO
+												&& !HIWORD(p[2]) && p[2] > 0x100	// port address less than 64K and more than 0x100
+												&& !p[3]							// no high DWORD part
+												&& p[4] >= 8 && p[4] < 16)  		// length limited to 16
 										{
-											if (p[0] == 2			// have ResType_IO
-													&& !HIWORD(p[2])		// port address less than 64K
-													&& !p[3]			// no high DWORD part
-													&& p[4] < 16)  			// length limited to 16
-											{
-												ports[Index].base = p[2];	// We got one
-												ports[Index].len = p[4];	// (NO check for typical ISA addresses anymore!!)
-												break;
-											}
-										} //for
+											if (fh) fprintf(fh, "p=%p [0]=%lu, [1]=%lu, [2]=%lxh, [3]=%lxh, [4]=%lu\n",
+															(void *)p, p[0], p[1], p[2], p[3], p[4]);
+
+											ports[Index].base = p[2];	// We got one
+											ports[Index].len = p[4];	// (NO check for typical ISA addresses anymore!!)
+										}
 									}
 									else
 									{
@@ -991,7 +994,7 @@ int PortInterface::DetectPortsNT(const char *ServiceName, const char *PortFormat
 		fprintf(fh, "Enter DetectPortsNT() *** Count = %d\n", Count);
 		fclose(fh);
 	}
-	return Count;
+	return (Count < nports) ? Count : nports;
 }
 
 #endif

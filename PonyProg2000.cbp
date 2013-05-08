@@ -12,7 +12,6 @@
 				<Option type="0" />
 				<Option compiler="gcc" />
 				<Compiler>
-					<Add option="-O" />
 					<Add option="-g" />
 				</Compiler>
 			</Target>

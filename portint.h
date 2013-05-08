@@ -87,8 +87,6 @@ class PortInterface
 	void DetectPorts();
 
 #ifdef	_WINDOWS
-//	void DetectPorts2k();	// SetupDi version, works on Win98+ and Win2k+, heha, 130406
-	static int DetectPortsNT(const char *ServiceName, const char *PortFormat, base_len *ports, int nports);
 	void DetectPorts9x();	// Win9x version
 	void DetectLPTPortsNT();	// WinNT/2000 version
 	void DetectCOMPortsNT();	// WinNT/2000 version
