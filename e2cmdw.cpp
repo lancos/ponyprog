@@ -1467,7 +1467,7 @@ void e2CmdWindow::WindowCommand(ItemVal id, ItemVal val, CmdType cType)
 			CmdReset();
 		}
 		break;
- 
+
 	case m_DoubleSize:
 		if (THEAPP->IsAppReady())
 		{
@@ -1935,7 +1935,7 @@ int e2CmdWindow::CmdReload()
 	//  entrambi i file in sequenza, in caso contrario ricarica solo
 	//  l'ultimo.
 	int data_type;
-	if ( THEAPP->GetPrevFile(data_type) && FileExist(THEAPP->GetPrevFile(data_type)) 
+	if ( THEAPP->GetPrevFile(data_type) && FileExist(THEAPP->GetPrevFile(data_type))
 		 && CmpExtension(THEAPP->GetLastFile(data_type), ".eep") == 0
 		 && CmpExtension(THEAPP->GetPrevFile(data_type), ".hex") == 0 )
 **/
@@ -1948,7 +1948,7 @@ int e2CmdWindow::CmdReload()
 		sp = THEAPP->GetPrevFile(dt2);
 
 		/*
-		 * We reload both files only if PrevFile is not E2P and last file is 
+		 * We reload both files only if PrevFile is not E2P and last file is
 		 * not ALL_TYPE
 		 * because we don't want PrevFile change the selected device. In
 		 * case of LastFile is ALL_TYPE there's no need to reload even

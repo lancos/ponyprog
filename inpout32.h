@@ -8,8 +8,11 @@
 extern "C" {
 #endif
 
-//#define DLPORT_API _stdcall
+#ifdef _MSC_VER
+#define DLPORT_API _stdcall
+#else
 #define DLPORT_API
+#endif
 
 //Functions exported from DLL.
 //For easy inclusion is user projects.
