@@ -37,7 +37,7 @@
 #  ifdef	__BORLANDC__
 #    define	strncasecmp strnicmp
 #    define	strcasecmp stricmp
-#  else // _MICROSOFT_ VC++
+#  elif defined(_MSC_VER) // _MICROSOFT_ VC++
 #    define	strncasecmp strnicmp
 #    define	strcasecmp stricmp
 #  endif
