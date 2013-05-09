@@ -6,25 +6,25 @@ AppName=PonyProg2000
 AppPublisher=LancOS 
 AppPublisherURL=http://www.LancOS.com/
 AppUpdatesURL=http://ponyprog.sourceforge.net
-AppVersion=2.07c
-AppVerName=PonyProg2000 v2.07c
-AppCopyright=Copyright © 1997-2008 by Claudio Lanconelli
+AppVersion=2.08c
+AppVerName=PonyProg2000 v2.08c
+AppCopyright=Copyright © 1997-2013 by Claudio Lanconelli
 DefaultDirName={pf}\PonyProg2000
 DefaultGroupName=PonyProg
 Compression=lzma/max
-SolidCompression=yes
+SolidCompression=no
 LicenseFile=license.txt
 ChangesAssociations=yes
 PrivilegesRequired=admin
 ;run in 32bit mode only due to dlportio.sys
-ArchitecturesAllowed=x86
+;ArchitecturesAllowed=x86
 
 ;I never tested with WinNT 3.51, may be we need to replace 3.51 with 4.00
-MinVersion=4,4
+MinVersion=0,5.0
 
 [Files]
 Source: "PONYPROG2000.EXE"; DestDir: "{app}"
-Source: "PONYPROG2000.INI"; DestDir: "{app}"
+Source: "PONYPROG2000.INI"; DestDir: "{app}"; Permissions: users-modify
 Source: "PONYPROG2000.HTML"; DestDir: "{app}"
 Source: "OKSOUND.WAV"; DestDir: "{app}"
 Source: "LANCOS.JPG"; DestDir: "{app}"
@@ -42,15 +42,9 @@ Source: "PROG-SETUP.JPG"; DestDir: "{app}"
 Source: "RDPROGRESS.JPG"; DestDir: "{app}"
 Source: "SERNUMDLG.JPG"; DestDir: "{app}"
 Source: "README.TXT"; DestDir: "{app}"; Flags: isreadme
-Source: "LOADDRIVER.EXE"; DestDir: "{app}"
-Source: "DLPORTIO.DLL"; DestDir: "{sys}"; Flags: sharedfile onlyifdoesntexist
+Source: "INSTALLDRIVER.EXE"; DestDir: "{app}"
+Source: "INPOUT32.DLL"; DestDir: "{sys}"; Flags: sharedfile promptifolder
 Source: "PonyProg.url"; DestDir: "{app}"
-
-;Files that need to be installed only under WinNT/Win2000
-Source: "DLPORTIO.SYS"; DestDir: "{sys}\DRIVERS"; Flags: sharedfile onlyifdoesntexist; MinVersion: 0, 1
-
-;Files that need to be installed only under Windows95/98
-Source: "LPTCON.VXD"; DestDir: "{sys}"; Flags: sharedfile onlyifdoesntexist; MinVersion: 1, 0
 
 [UninstallDelete] 
 Type: files; Name: "{app}\BOGOMIPS.OUT"
@@ -59,14 +53,12 @@ Type: files; Name: "{app}\BOGOMIPS.OUT"
 Name: "{group}\PonyProg2000"; Filename: "{app}\PONYPROG2000.EXE"; WorkingDir: "{app}"
 Name: "{group}\Visit LancOS PonyProg Web Site"; Filename: "{app}\PonyProg.url"
 
-
-;Program that need to be executed only under WinNT/Win2000
 [Run] 
-Filename: "{app}\LOADDRIVER.EXE"; Parameters: "install"; MinVersion: 0, 1
+Filename: "{app}\INSTALLDRIVER.EXE"; Parameters: "install"
 
 ;Program that need to be executed only under WinNT/Win2000
 [UninstallRun] 
-Filename: "{app}\LOADDRIVER.EXE"; Parameters: "remove"; MinVersion: 0, 1
+;Filename: "{app}\LOADDRIVER.EXE"; Parameters: "remove"
 
 [Registry]
 Root: HKCR; Subkey: ".e2p"; ValueType: string; ValueName: ""; ValueData: "PonyProgFile"; Flags: uninsdeletevalue
