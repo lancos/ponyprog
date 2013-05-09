@@ -150,6 +150,7 @@ cleanlib:
 
 clean:
 	-rm -f $(oDir)/*.o
+	-rm -f ponyprog.res
 	-rm -f libinpout32.a
 	-rm -f .dep/*.d
 
