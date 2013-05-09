@@ -38,8 +38,6 @@
 #include <stdlib.h>
 #include <locale.h>
 
-#include "inpout32.h"
-
 #ifdef	_LINUX_
 #include <sys/time.h>
 #include <unistd.h>
@@ -654,15 +652,7 @@ int e2App::LoadDriver(int start)
 {
 	int rv = OK;
 
-#ifdef WIN32
-	if (start)
-	{
-		if (!IsInpOutDriverOpen())
-			rv = E2ERR_OPENFAILED;
-	}
-#else
 	(void)start;
-#endif
 
 	return rv;
 }

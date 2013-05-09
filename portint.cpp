@@ -32,7 +32,6 @@
 #include "errcode.h"
 
 #include "globals.h"
-#include "inpout32.h"
 
 #include "e2app.h"
 
@@ -59,18 +58,6 @@
 	}
 #endif
 
-#ifdef	_WINDOWS
-
-//Use the DLPortIO instead of direct I/O
-#define	outb(val, id)	DlPortWritePortUchar(id, val)
-#define	inb(id)			DlPortReadPortUchar(id)
-
-//Use InpOut32 intead of direct I/O
-//#define	outb(val, id)	Out32(id, val)
-//#define	inb(id)			Inp32(id)
-
-#endif
-
 enum LptRegs {
 	dataOfst,
 	statOfst,
@@ -90,7 +77,7 @@ enum UartRegs {
 
 PortInterface::PortInterface()
 {
-	UserDebug(Constructor, "PortInterface::PortInterface() Constructor\n");
+	UserDebug(Constructor, "PortInterface::PortInterface() Constructor I\n");
 
 	int k;
 	for (k = 0; k < MAX_COMPORTS; k++)
@@ -117,6 +104,36 @@ PortInterface::PortInterface()
 	lcr_copy = ier_copy = -1;
 #endif
 
+#ifdef	_WINDOWS
+	gfpOut32 = NULL;
+	gfpInp32 = NULL;
+	gfpIsInpOutDriverOpen = NULL;
+	gfpIsXP64Bit = NULL;
+
+	//Dynamically load the DLL at runtime (not linked at compile time)
+	hInpOutDll = LoadLibrary("inpout32.dll");		//The 32bit DLL. If we are building x64 C++
+													//application then use InpOutx64.dll
+	if (hInpOutDll != NULL)
+	{
+		gfpOut32 = (lpOut32)GetProcAddress(hInpOutDll, "Out32");
+		gfpInp32 = (lpInp32)GetProcAddress(hInpOutDll, "Inp32");
+		gfpIsInpOutDriverOpen = (lpIsInpOutDriverOpen)GetProcAddress(hInpOutDll, "IsInpOutDriverOpen");
+		gfpIsXP64Bit = (lpIsXP64Bit)GetProcAddress(hInpOutDll, "IsXP64Bit");
+
+		if (!gfpIsInpOutDriverOpen())
+		{
+			UserDebug(Constructor, "Unable to open InpOut32 Driver!\n");
+			//All done
+			FreeLibrary(hInpOutDll);
+			hInpOutDll = NULL;
+		}
+	}
+	else
+	{
+		UserDebug(Constructor, "Unable to load InpOut32 DLL!\n");
+	}
+#endif
+
 	cpwreg = read_port = write_port = 0;
 	first_port = last_port = no_ports = 0;
 
@@ -126,27 +143,48 @@ PortInterface::PortInterface()
 PortInterface::~PortInterface()
 {
 	UserDebug(Destructor, "PortInterface::~PortInterface() Destructor\n");
+
+#ifdef	_WINDOWS
+	if (hInpOutDll != NULL)
+	{
+		//All done
+		FreeLibrary(hInpOutDll);
+		hInpOutDll = NULL;
+	}
+#endif
 }
 
 int PortInterface::InPort(int nport) const
 {
 	UserDebug2(UserApp3, "PortInterface::OutPort() ** %xh, %xh\n", first_port, nport);
 
+#ifdef	_WINDOWS
+	if (gfpInp32 == NULL)
+		return E2ERR_OPENFAILED;
+#endif
 	if (first_port == 0)
-		return  E2ERR_NOTINSTALLED;;
+		return  E2ERR_NOTINSTALLED;
 
 	if (nport < 0 || nport >= no_ports)		//use default read port
 		nport = read_port;
 	else
 		nport += first_port;
 
+#ifdef	_WINDOWS
+	return gfpInp32(nport);
+#else
 	return inb(nport);
+#endif
 }
 
 int PortInterface::OutPort(int val, int nport)
 {
 	UserDebug2(UserApp3, "PortInterface::OutPort() ** %xh, %xh\n", first_port, last_port);
 
+#ifdef	_WINDOWS
+	if (gfpOut32 == NULL)
+		return E2ERR_OPENFAILED;
+#endif
 	if (first_port == 0)
 		return	E2ERR_NOTINSTALLED;
 
@@ -159,8 +197,11 @@ int PortInterface::OutPort(int val, int nport)
 		cpwreg = val;
 
 	UserDebug2(UserApp3, "PortInterface::outb(%xh, %xh)\n", val, nport);
+#ifdef	_WINDOWS
+	gfpOut32(nport, val);
+#else
 	outb(val, nport);
-
+#endif
 	return OK;
 }
 
@@ -168,6 +209,10 @@ int PortInterface::OutPortMask(int mask, int val)
 {
 	UserDebug2(UserApp3, "PortInterface::OutPortMask(%d, %d)\n", mask, val);
 
+#ifdef	_WINDOWS
+	if (gfpOut32 == NULL)
+		return E2ERR_OPENFAILED;
+#endif
 	if (write_port == 0)
 		return E2ERR_NOTINSTALLED;
 
@@ -187,8 +232,11 @@ int PortInterface::OutPortMask(int mask, int val)
 
 	UserDebug2(UserApp3, "PortInterface::outb(%xh, %xh)\n", cpwreg, write_port);
 
+#ifdef	_WINDOWS
+	gfpOut32(write_port, cpwreg);
+#else
 	outb(cpwreg, write_port);
-
+#endif
 	return OK;
 }
 
@@ -484,13 +532,13 @@ void PortInterface::DetectPorts()
 		// Are we running Windows NT?
 		// Detect the printer ports available
 		if (winSystemVersion() == 2)
-		{
-			DetectLPTPortsNT(); // Win2K / NT version
-			DetectCOMPortsNT(); // Win2K / NT version
+		{	// Win2K / NT version
+			DetectLPTPortsNT();
+			DetectCOMPortsNT();
 		}
 		else
-		{
-			DetectPorts9x(); // Win9x version
+		{	// Win9x version
+			DetectPorts9x();
 		}
 	}
 	else

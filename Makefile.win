@@ -168,8 +168,8 @@ libinpout32.a: inpout32.def
 	ln -s InpOutLib/Win32/inpout32.dll inpout32.dll
 	$(TOOLCHAINPREFIX)dlltool -D inpout32.dll -d inpout32.def -l $@
 
-$(PROG): $(OBJS) v/lib/libV.a libinpout32.a ponyprog.res
-	$(CXX) -o $@ $(OBJS) ponyprog.res v/lib/libV.a libinpout32.a $(LDFLAGS)
+$(PROG): $(OBJS) v/lib/libV.a ponyprog.res
+	$(CXX) -o $@ $(OBJS) ponyprog.res v/lib/libV.a $(LDFLAGS)
 
 # Compile: create object files from C source files.
 define COMPILE_C_TEMPLATE

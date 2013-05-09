@@ -34,6 +34,12 @@
 
 #ifdef	_WINDOWS
 #include <windows.h>
+
+typedef void	(__stdcall *lpOut32)(short, short);
+typedef short	(__stdcall *lpInp32)(short);
+typedef BOOL	(__stdcall *lpIsInpOutDriverOpen)(void);
+typedef BOOL	(__stdcall *lpIsXP64Bit)(void);
+
 #endif
 
 // Maximum number of printer ports that would be installed on a system
@@ -95,6 +101,14 @@ class PortInterface
 	int COMCount;			//Number of COM ports on the system
 
 	DWORD	old_mask;
+
+	HINSTANCE hInpOutDll;
+
+	//Some global function pointers (messy but fine for an example)
+	lpOut32 gfpOut32;
+	lpInp32 gfpInp32;
+	lpIsInpOutDriverOpen gfpIsInpOutDriverOpen;
+	lpIsXP64Bit gfpIsXP64Bit;
 #else
 	int lcr_copy;
 	int ier_copy;
