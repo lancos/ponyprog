@@ -941,7 +941,7 @@ static int DetectPortsNT(const char *ServiceName, const char *PortFormat, base_l
 										// This undocumented AllocConfig structure is checked against Win2k and Win8/64.
 										// In both cases, the ResType entry was at byte offset 16.
 										DWORD *p = (DWORD *)buf + 4;
-										if ((p[0] == 2 || p[0] == 4 || p[0] == 5)   // have ResType_IO
+										if ((p[0] == 2 || p[0] == 3 || p[0] == 4 || p[0] == 5)   // have ResType_IO
 												&& !HIWORD(p[2]) && p[2] > 0x100	// port address less than 64K and more than 0x100
 												&& !p[3]							// no high DWORD part
 												&& p[4] >= 8 && p[4] < 16)  		// length limited to 16
