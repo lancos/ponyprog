@@ -29,8 +29,10 @@ oDir	= ./obj/win
 
 ifeq ($(DEBUG),no)
 CFLAGS	= -O2 -DNDEBUG
+LDFLAGS	= -s
 else
 CFLAGS	= -g
+LDFLAGS	=
 endif
 
 CFLAGS	+= -Wall -fpermissive -Wno-deprecated -Wno-write-strings
