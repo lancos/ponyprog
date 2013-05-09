@@ -115,10 +115,10 @@ const int maxFileNameSize = 262;
 // Define some macros to make adding debugging stuff easy
 
 #ifdef vDEBUG
-#define UserDebug(u,v) if (DebugState.u && DebugState.User) fprintf(stderr,v);
-#define UserDebug1(u,v,w) if (DebugState.u && DebugState.User) fprintf(stderr,v,w);
-#define UserDebug2(u,v,w,x) if (DebugState.u && DebugState.User) fprintf(stderr,v,w,x);
-#define UserDebug3(u,v,w,x,z) if (DebugState.u && DebugState.User) fprintf(stderr,v,w,x,z);
+#define UserDebug(u,v) if (DebugState.u && DebugState.User) { FILE *fh=fopen("vdebug.log", "a"); fprintf(fh,v); fclose(fh); }
+#define UserDebug1(u,v,w) if (DebugState.u && DebugState.User) { FILE *fh=fopen("vdebug.log", "a"); fprintf(fh,v,w); fclose(fh); }
+#define UserDebug2(u,v,w,x) if (DebugState.u && DebugState.User) { FILE *fh=fopen("vdebug.log", "a"); fprintf(fh,v,w,x); fclose(fh); }
+#define UserDebug3(u,v,w,x,z) if (DebugState.u && DebugState.User) { FILE *fh=fopen("vdebug.log", "a"); fprintf(fh,v,w,x,z); fclose(fh); }
 
 #define SysDebug(u,v) if (DebugState.u && DebugState.System) fprintf(stderr,v);
 #define SysDebug1(u,v,w) if (DebugState.u && DebugState.System) fprintf(stderr,v,w);
@@ -175,7 +175,7 @@ const int maxFileNameSize = 262;
 	C_TextIn,			// Text input field
 	C_Text,				// wrapping text out
         C_ToggleButton, 	      	// A toggle button
-	C_ToggleFrame,			// A toggle frame 
+	C_ToggleFrame,			// A toggle frame
         C_ToggleIconButton, 	      	// A toggle icon button
 	C_ZZZ				// make my life easy
       };
@@ -215,7 +215,7 @@ const int maxFileNameSize = 262;
     const CmdAttribute CA_PerControl = 0x1000;	// Specific to different controls
     const CmdAttribute CA_Percent = 0x1000;	// Show % for ProgressCmd
     const CmdAttribute CA_Size = 0x1000;	// size specified in size element
- 
+
     // New attributes - require 32 bit, so CmdAttribute is now a long!
     const CmdAttribute CA_Flat = 0x10000;		// flat icon buttons
 
@@ -381,7 +381,7 @@ const ItemVal M_WindowsReserved5 = 32174;
     typedef struct vLine
       {
 	int x,y,xend,yend;
-      } vLine;       
+      } vLine;
 
 // for brushes and pens
 
