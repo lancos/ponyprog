@@ -34,7 +34,7 @@
 #define	APPNAME		"PonyProg2000"
 #define	AUTHORNAME	"Claudio Lanconelli"
 #define	AUTHORMAIL	"PonyProg2000@gmail.com"
-#define	AUTHORWEB	"http://ponyprog.sourceforge.net"
+#define	AUTHORWEB	"http://www.LancOS.com"
 #define COPYRIGHTYEAR	"1997-2013"
 #define	APPNAME_EXT	STR_APPNAME_EXT
 

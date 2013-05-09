@@ -8,7 +8,7 @@
 #define	MSG_TRANSLATORNAME		""
 
 #define	STR_APPNAME_EXT		"Serial Device Programmer"
-#define	STR_APPDOWNLOAD1	"Download last version of"
+#define	STR_APPDOWNLOAD1	"You can find last version of"
 #define	STR_APPDOWNLOAD2	"at the address:"
 
 #define	STR_NONAME		"No Name"
@@ -106,7 +106,7 @@
 //Menu entries
 
 //Main Menu
-#define	STR_MENUFILE		"&File"	
+#define	STR_MENUFILE		"&File"
 #define	STR_MENUEDIT		"&Edit"
 #define	STR_MENUDEVICE		"&Device"
 #define	STR_MENUCMD			"&Command"
