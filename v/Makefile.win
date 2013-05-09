@@ -13,8 +13,16 @@ Src	=	srcwin
 libDirs	=
 incDirs	=	-Iincludew
 
+C_FLAGS	=	-D_WINDOWS
+ifeq ($(DEBUG),no)
+	C_FLAGS	+=	-O2
+else
+	C_FLAGS +=	-DvDEBUG
+	C_FLAGS	+=	-O0 -g
+endif
+
 LIBS	=
-C_FLAGS	=	-O2 -fpermissive -Wno-write-strings
+C_FLAGS	+=	-fpermissive -Wno-write-strings
 
 SRCS	=\
 	$(Src)/vapp.cpp\
