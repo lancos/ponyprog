@@ -59,9 +59,9 @@
 //#define VCONST const
 //#define VMUTABLE mutable
 
-#ifndef vDEBUG		// force DEBUG for now
-#define vDEBUG
-#endif
+//#ifndef vDEBUG		// force DEBUG for now
+//#define vDEBUG
+//#endif
 
 #define Motif		// Motif by default!
 
