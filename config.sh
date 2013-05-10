@@ -8,6 +8,11 @@ if [ ! -d "v" ]; then
 	exit 1
 fi
 
+if [ ! -f "v/Config.mk" ]; then
+	echo "File v/Config.mk not found. You must run $0 from PonyProg source dir."
+	exit 1
+fi
+
 if [ -z "$1" ]; then
 	echo "No parameter: default INSTALL_PREFIX (/usr/local)"
 else
