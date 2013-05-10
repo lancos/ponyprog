@@ -302,7 +302,7 @@ distrib:
 clean:
 	cd v; $(MAKE) clean
 	-rm -f $(CLEANEXTS)
-#	-rm -f dep.file
+	-rm -f dep.file
 
 cleanobj:
 	-rm -f $(OBJS)
