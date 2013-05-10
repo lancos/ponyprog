@@ -1,7 +1,10 @@
-Edit the v/Config.mk to customize the following variables:
+-----------------
+PREPARE FOR BUILD
+-----------------
+# ./config.sh [install_prefix]
 
-HOMEV - should point to your v absolute path
-INSTALL_PREFIX - where to install the executable
+for example:
+# ./config.sh $HOME
 
 ---------------
 BUILD for Linux
@@ -15,8 +18,10 @@ test the executable:
 and install (optional):
 # sudo make install
 
+the sudo command is not needed if you install in $HOME
 
-After you launched ponyprog it creates ~/.PonyProg2000rc file with all the settings.
+
+After launching ponyprog it creates ~/.PonyProg2000rc file with all the settings.
 You may need to edit it and change
 ttyLockDir=/var/lock
 The directory where PonyProg creates the lock for serial ports (should be writeable)
@@ -30,7 +35,7 @@ Is your html preferred browser (firefox, konqueror, netscape, ...)
 -----------------------------
 BUILD for Windows using mingw
 -----------------------------
-You can cross-build from Linux or build from Windows with mingw package installed.
+You can cross-build from Linux (tested on Ubuntu 12.04) or build from Windows with mingw package installed
 
 # make -f Makefile.win clean
 # make -f Makefile.win
@@ -40,6 +45,4 @@ You will find ponyprog2000.exe in bin/win
 -----------------------------
 BUILD for Windows using MSVC
 -----------------------------
-This is no tested recently, so it may need some tweaks.
-Unzip msvc6.zip or msvc8.zip depending on your MSVC version.
-Open the solution and build.
+This is not supported anymore.
