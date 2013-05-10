@@ -133,7 +133,7 @@ install:	$(PROG)
 	chmod	755 $(PROG)
 #	chmod	+s $(PROG)
 	cp	$(PROG) $(INSTALL_PREFIX)/bin
-	cd v; $(MAKE) install
+#	cd v; $(MAKE) install
 
 distrib:
 	rm -f *.gz
