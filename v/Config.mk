@@ -27,11 +27,10 @@ VVW	=	125
 #---------------------------------------------------------------------
 # HOMEV info
 #---------------------------------------------------------------------
-#HOMEV	=	$(HOME)/v
-#HOMEV	=	$your_ponyprog_path/software/v
-HOMEV	=	$(HOME)/Progetti/PonyProg_Sourceforge/software/v
+HOMEV = your_ponyprog_path/software/v
+#HOMEV	=	$(HOME)/Progetti/PonyProg_Sourceforge/software/v
 
-INSTALL_PREFIX	=	/usr/local
+INSTALL_PREFIX = /usr/local
 
 #---------------------------------------------------------------------
 # Tools used in the makefile execution
