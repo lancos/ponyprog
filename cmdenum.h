@@ -190,7 +190,7 @@ enum {
 	m_attiny2313,
 	m_attiny25, m_attiny45, m_attiny85,
 	m_attiny261, m_attiny461, m_attiny861,
-	m_atmega48, m_atmega88, m_atmega168,
+	m_atmega48, m_atmega88, m_atmega168, m_atmega328, // new ATmega328 (RG 22.06.2012)
 	m_atmega164, m_atmega324, m_atmega644,
 	m_atmega640, m_atmega1280, m_atmega1281,
 	m_atmega2560, m_atmega2561,

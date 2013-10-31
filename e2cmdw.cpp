@@ -203,6 +203,7 @@ static Menu2Type index_menu_type[] = {
 	{m_atmega168, ATmega168},
 	{m_atmega164, ATmega164},
 	{m_atmega324, ATmega324},
+	{m_atmega328, ATmega328}, // new Atmega328 (RG 22.06.2012)
 	{m_atmega644, ATmega644},
 	{m_atmega640, ATmega640},
 	{m_atmega1280, ATmega1280},
@@ -413,6 +414,7 @@ static vMenu avrMenu[] = {
 	{"", m_atmega32, isSens, notChk, noKeyLbl, noKey, noSub},
 	{"", m_atmega323, isSens, notChk, noKeyLbl, noKey, noSub},
 	{"", m_atmega324, isSens, notChk, noKeyLbl, noKey, noSub},
+	{"", m_atmega328, isSens, notChk, noKeyLbl, noKey, noSub}, // new Atmega328 (RG 22.06.2012)
 	{"", m_atmega64, isSens, notChk, noKeyLbl, noKey, noSub},
 	{"", m_atmega640, isSens, notChk, noKeyLbl, noKey, noSub},
 	{"", m_atmega644, isSens, notChk, noKeyLbl, noKey, noSub},
@@ -1646,7 +1648,7 @@ void e2CmdWindow::WindowCommand(ItemVal id, ItemVal val, CmdType cType)
 //	case m_attiny28:
 	case m_attiny25: case m_attiny45: case m_attiny85:
 	case m_attiny261: case m_attiny461: case m_attiny861:
-	case m_atmega48: case m_atmega88: case m_atmega168:
+	case m_atmega48: case m_atmega88: case m_atmega168: case m_atmega328: // new Atmega328 (RG 22.06.2012)
 	case m_atmega164: case m_atmega324: case m_atmega644:
 	case m_atmega640: case m_atmega1280: case m_atmega1281:
 	case m_atmega2560: case m_atmega2561:

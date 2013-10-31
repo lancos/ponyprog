@@ -211,6 +211,7 @@ long eepAt90s_vector[MAXEEPSUBTYPE] = {
 	ATmega32,
 	ATmega323,
 	ATmega324,
+	ATmega328, //new (RG 22.06.2012)
 	ATmega603,
 	ATmega103,
 	ATmega64,
@@ -270,6 +271,7 @@ int eepAt90s_size[MAXEEPSUBTYPE] = {
 	KB(32)+KB(1),	//mega32
 	KB(32)+KB(1),	//mega323
 	KB(32)+KB(1),	//mega324
+	KB(32)+KB(1),	//mega328 new (RG 22.06.2012)
 	KB(64)+KB(2),	//mega603
 	KB(128)+KB(4),	//mega103
 	KB(64)+KB(2),	//mega64
@@ -328,6 +330,7 @@ int eepAt90s_split[MAXEEPSUBTYPE] = {
 	KB(32),		//mega32
 	KB(32),		//mega323
 	KB(32),		//mega324
+	KB(32),		//mega328 new (RG 22.06.2012)
 	KB(64),		//mega603
 	KB(128),	//mega103
 	KB(64),		//mega64
@@ -386,6 +389,7 @@ int eepAt90s_wpagesize[MAXEEPSUBTYPE] = {
 	128,		//mega32
 	128,		//mega323
 	128,		//mega324
+	128,		//mega328 new (RG 22.06.2012)
 	256,		//mega603
 	256,		//mega103
 	256,		//mega64
@@ -445,6 +449,7 @@ char const *eepAt90str_vector[MAXEEPSUBTYPE] = {
 	"ATmega32",
 	"ATmega323",
 	"ATmega324",
+	"ATmega328", // new (RG 22.06.2012)
 	"ATmega603",
 	"ATmega103",
 	"ATmega64",
@@ -1362,6 +1367,9 @@ const FuseBit eep_fusebits[] = {
 		0x00,{0}, 0x00,{0}, 0x00,{0}, 0x3F,{0,0,"BootLock12 ","BootLock11 ","BootLock02 ","BootLock01 ","Lock2 ","Lock1 "},
 		0x00,{0}, 0x07,{0,0,0,0, 0,"BOOTSZ1 ","BOOTSZ0 ","BOOTRST "}, 0x5F,{"RSTDISBL ","DWEN ","SPIEN ","WDTON ","EESAVE ","BODLEVEL2 ","BODLEVEL1 ","BODLEVEL0 "}, 0xFF,{"CKDIV8 ","CKOUT ","SUT1 ","SUT0 ","CKSEL3 ","CKSEL2 ","CKSEL1 ","CKSEL0 "} },
 	{ ATmega168,
+		0x00,{0}, 0x00,{0}, 0x00,{0}, 0x3F,{0,0,"BootLock12 ","BootLock11 ","BootLock02 ","BootLock01 ","Lock2 ","Lock1 "},
+		0x00,{0}, 0x07,{0,0,0,0, 0,"BOOTSZ1 ","BOOTSZ0 ","BOOTRST "}, 0x5F,{"RSTDISBL ","DWEN ","SPIEN ","WDTON ","EESAVE ","BODLEVEL2 ","BODLEVEL1 ","BODLEVEL0 "}, 0xFF,{"CKDIV8 ","CKOUT ","SUT1 ","SUT0 ","CKSEL3 ","CKSEL2 ","CKSEL1 ","CKSEL0 "} },
+	{ ATmega328, // new (RG 22.06.2012)
 		0x00,{0}, 0x00,{0}, 0x00,{0}, 0x3F,{0,0,"BootLock12 ","BootLock11 ","BootLock02 ","BootLock01 ","Lock2 ","Lock1 "},
 		0x00,{0}, 0x07,{0,0,0,0, 0,"BOOTSZ1 ","BOOTSZ0 ","BOOTRST "}, 0x5F,{"RSTDISBL ","DWEN ","SPIEN ","WDTON ","EESAVE ","BODLEVEL2 ","BODLEVEL1 ","BODLEVEL0 "}, 0xFF,{"CKDIV8 ","CKOUT ","SUT1 ","SUT0 ","CKSEL3 ","CKSEL2 ","CKSEL1 ","CKSEL0 "} },
 	{ ATmega164,
