@@ -58,7 +58,7 @@
 e2App::e2App(char* name, int w, int h)
 	: vApp(name, 0, w, h),
 		winCounter(0),
-		port_number(3),		// uses COM3 by default
+		port_number(1),		// uses COM1 by default
 		abortFlag(0),
 		ignoreFlag(0),
 		app_status(AppReady)
