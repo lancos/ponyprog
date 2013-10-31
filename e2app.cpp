@@ -746,6 +746,7 @@ int AppMain(int argc, char** argv)
 
 	e2_App.SetLogEnabled( e2_App.GetLogEnabled() );
 	e2_App.SetSoundEnabled( e2_App.GetSoundEnabled() );
+	e2_App.SetSkipStartupDialog( e2_App.GetSkipStartupDialog() );
 	e2_App.SetVerifyAfterWrite( e2_App.GetVerifyAfterWrite() );
 	e2_App.SetClearBufBeforeLoad( e2_App.GetClearBufBeforeLoad() );
 	e2_App.SetClearBufBeforeRead( e2_App.GetClearBufBeforeRead() );

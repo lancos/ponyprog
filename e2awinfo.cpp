@@ -146,8 +146,9 @@ e2AppWinInfo::e2AppWinInfo(vCmdWindow* win, char* name, BusIO** busvptr, void* p
 		int err;
 		vNoticeDialog note(win);
 
-		if ( !THEAPP->scriptMode )
-			cmdWin->About();
+		if (!THEAPP->GetSkipStartupDialog())
+			if ( !THEAPP->scriptMode )
+				cmdWin->About();
 
 		err = THEAPP->LoadDriver(1);
 		if (err != OK)

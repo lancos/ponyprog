@@ -1257,6 +1257,26 @@ int E2Profile::SetLogEnabled(bool enabled)
 	return OK;
 }
 
+bool E2Profile::GetSkipStartupDialog()
+{
+	char const *sp = GetParameter("SkipStartupDialog");
+
+	if (sp && strcasecmp(sp, "YES") == 0)
+		return true;
+	else
+		return false;
+}
+
+int E2Profile::SetSkipStartupDialog(bool skip)
+{
+	if (skip)
+		SetParameter("SkipStartupDialog", "YES");
+	else
+		SetParameter("SkipStartupDialog", "NO");
+
+	return OK;
+}
+
 bool E2Profile::GetClearBufBeforeLoad()
 {
 	char const *sp = GetParameter("ClearBufferBeforeLoad");

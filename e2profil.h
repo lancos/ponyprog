@@ -181,6 +181,9 @@ class E2Profile : public Profile
 	bool GetLogEnabled();
 	int SetLogEnabled(bool enabled = false);
 
+	bool GetSkipStartupDialog();
+	int SetSkipStartupDialog(bool skip = false);
+
 	bool GetClearBufBeforeLoad();
 	int SetClearBufBeforeLoad(bool val = false);
 	bool GetClearBufBeforeRead();
