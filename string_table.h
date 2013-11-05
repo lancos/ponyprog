@@ -433,6 +433,8 @@
 //----About dialog
 #define	STR_LBLNOSOUND		"Disable sound"
 
+#define STR_LBLSKIPMSG		"Don't show this window on startup"
+
 
 //---- Oscillator Calibration Byte
 #define	STR_MSGOSCCALIBCFG	"Oscillator Calibration Byte"

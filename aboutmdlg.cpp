@@ -75,6 +75,9 @@ static DialogCmd AboutDlg[] = {
 #ifdef	WIN32
 	{C_Blank,blkBlank,0,"      ",NoList,CA_None,isSens,NoFrame,btnAboutVgui,frmAbout1},
 	{C_CheckBox,chkSound,0,STR_LBLNOSOUND,NoList,CA_None,isSens,NoFrame,blkBlank,frmAbout1},
+	{C_CheckBox,chkSkipMsg,0,STR_LBLSKIPMSG,NoList,CA_None,isSens,NoFrame,chkSound,frmAbout1},
+#else
+	{C_CheckBox,chkSkipMsg,0,STR_LBLSKIPMSG,NoList,CA_None,isSens,NoFrame,btnAboutVgui,frmAbout1},
 #endif
 	{C_EndOfList,0,0,0,0,CA_None,0,0,0}
 };
@@ -92,6 +95,11 @@ AboutModalDialog::AboutModalDialog(vBaseWindow* bw, char* title) :
 		SetCommandObject(chkSound, 0, AboutDlg);
 	else
 		SetCommandObject(chkSound, 1, AboutDlg);
+
+	if ( THEAPP->GetSkipStartupDialog() )
+		SetCommandObject(chkSkipMsg, 1, AboutDlg);
+	else
+		SetCommandObject(chkSkipMsg, 0, AboutDlg);
 
 	if (strlen(MSG_TRANSLATORNAME) == 0)
 		SetCommandHidden(lblAbout2, true, AboutDlg);
@@ -145,6 +153,12 @@ void AboutModalDialog::DialogCommand(ItemVal id, ItemVal retval, CmdType ctype)
 
 		vModalDialog::DialogCommand(id,retval,ctype);
 		AboutModalDialog::DialogCommand(M_OK,1,ctype);
+		break;
+	case chkSkipMsg:
+		if (retval)
+			THEAPP->SetSkipStartupDialog(true);
+		else
+			THEAPP->SetSkipStartupDialog(false);
 		break;
 	case chkSound:
 		if (retval)

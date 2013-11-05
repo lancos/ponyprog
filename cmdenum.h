@@ -320,6 +320,7 @@ enum {
 	btnAboutHelp,
 	btnAboutVgui,
 	chkSound,
+	chkSkipMsg,
 
 	//Notes Modal dialog
 	lblMainMsg,
