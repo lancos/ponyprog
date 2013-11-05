@@ -1,5 +1,5 @@
 -------------------------------------------
-PonyProg - Serial Device Programmer  v2.08c
+PonyProg - Serial Device Programmer  v2.08d
 
 PonyProg is the universal programmer for many serial devices.
 If you want to know more about PonyProg or just download

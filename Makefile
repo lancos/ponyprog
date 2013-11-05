@@ -18,9 +18,6 @@
 CONFIG=v/Config.mk
 include $(CONFIG)
 
-PONYVER = 2.08b
-TAR = tar
-
 #xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 #Local configuration (changed from V Config)
 
@@ -123,17 +120,9 @@ vlib:
 installLinuxElf:
 	$(MAKE)	ARCH=linuxelf install
 
-buildtar:
-	cp $(PROG) $(INSTALL_PREFIX)/bin
-	cd /; $(TAR) cvfzP ponyprog-$(PONYVER).tar.gz $(INSTALL_PREFIX)/bin/$(PROGNAME) $(INSTALL_PREFIX)/lib/libVx.*
-	mv /ponyprog-$(PONYVER).tar.gz .
-	chown lanconel.lanconel ponyprog-$(PONYVER).tar.gz
-
 install:	$(PROG)
 	chmod	755 $(PROG)
-#	chmod	+s $(PROG)
 	cp	$(PROG) $(INSTALL_PREFIX)/bin
-#	cd v; $(MAKE) install
 
 distrib:
 	rm -f *.gz
@@ -319,13 +308,6 @@ backup:
 	chmod 640 ../ponyprog.tar.gz
 	cd ..; mv ponyprog.tar.gz backups/ponyprog_`date +%d%h%y`.tar.gz
 	cd ..; ln -s backups/ponyprog_`date +%d%h%y`.tar.gz ponyprog.tar.gz
-
-backuplink:
-	rm -f ../ponyproglink.tar.gz
-	cd ..; tar cvfz ponyproglink.tar.gz ponyprog/*.cpp ponyprog/*.h ponyprog/Makefile ponyprog/Config.mk ponyprog/icons
-	chmod 640 ../ponyproglink.tar.gz
-	cd ..; mv ponyproglink.tar.gz backups/ponyproglink_`date +%d%h%y`.tar.gz
-	cd ..; ln -s backups/ponyproglink_`date +%d%h%y`.tar.gz ponyproglink.tar.gz
 
 objs:	$(OBJS)
 
