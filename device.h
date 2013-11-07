@@ -88,6 +88,10 @@ class Device
 	void SetProgPageSize(int pagesize, bool rnw);
 	int GetDataPageSize(bool rnw) const;
 	void SetDataPageSize(int pagesize, bool rnw);
+	long GetDetectedType() const
+		{ return detected_type; }
+	char const *GetDetectedSignatureStr() const
+		{ return detected_signature; }
 
   protected:	//--------------------------------------- protected
 	void SetBankSize(int size)
@@ -111,6 +115,9 @@ class Device
 
 	e2AppWinInfo *GetAWInfo() const
 		{ return awi; }
+
+	long detected_type;
+	char detected_signature[MAXMSG];
 
   private:		//--------------------------------------- private
 

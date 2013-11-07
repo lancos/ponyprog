@@ -983,7 +983,12 @@ int e2CmdWindow::OnError(int err_no, char const *msgerr)
 	}
 	case DEVICE_BADTYPE:
 	{
-		snprintf(msg, MAXMSG, STR_DEVBADTYPE " (%d)", err_no);
+		const char *str = awip ? awip->GetDetectedTypeStr() : 0;
+
+		if (str && strlen(str) > 0)
+			snprintf(msg, MAXMSG, STR_DEVBADTYPE " (%d)\nDetected type: %s", err_no, str);
+		else
+			snprintf(msg, MAXMSG, STR_DEVBADTYPE " (%d)", err_no);
 		msg[MAXMSG-1] = '\0';
 		retryModalDialog re(this, msg);
 		rv = re.retryAction();
@@ -991,7 +996,12 @@ int e2CmdWindow::OnError(int err_no, char const *msgerr)
 	}
 	case DEVICE_UNKNOWN:
 	{
-		snprintf(msg, MAXMSG, STR_DEVUNKNOWN " (%d)", err_no);
+		const char *str = awip ? awip->GetDetectedSignatureStr() : 0;
+
+		if (str && strlen(str) > 0)
+			snprintf(msg, MAXMSG, STR_DEVUNKNOWN " (%d)\nDetected signature: %s", err_no, str);
+		else
+			snprintf(msg, MAXMSG, STR_DEVUNKNOWN " (%d)", err_no);
 		msg[MAXMSG-1] = '\0';
 		retryModalDialog re(this,msg);
 		rv = re.retryAction();

@@ -203,6 +203,12 @@ class e2AppWinInfo : public vAppWinInfo
 	long GetSaveRelocation() const;
 	bool GetLoadAutoClearBuf() { return clear_buffer_before_load; }
 	void SetLoadAutoClearBuf(bool val) { clear_buffer_before_load = val; }
+	long GetDetectedType() const
+		{ return eep ? eep->GetDetectedType() : 0; }
+	char const *GetDetectedTypeStr() const
+		{ return GetEEPTypeString(GetDetectedType()); }
+	char const *GetDetectedSignatureStr() const
+		{ return eep ? eep->GetDetectedSignatureStr() : 0; }
 
   protected:	//--------------------------------------- protected
 	e2CmdWindow* cmdWin;

@@ -260,7 +260,8 @@ int At90sxx::QueryType(long &type)
 
 	UserDebug3(UserApp2, "At90sxx::ParseID() *** 0x%02X - 0x%02X - 0x%02X\n", code[0], code[1], code[2]);
 
-	type = 0;
+	detected_type = type = 0;
+	detected_signature[0] = '\0';
 	if (code[0] == 0x00 && code[1] == 0x01 && code[2] == 0x02)
 	{
 		//device is locked
@@ -279,6 +280,9 @@ int At90sxx::QueryType(long &type)
 				break;
 			}
 		}
+		if (type)
+			detected_type = type;
+		snprintf(detected_signature, MAXMSG, "%02X-%02X-%02X", code[0], code[1], code[2]);
 
 		rv = type ? OK : DEVICE_UNKNOWN;
 	}
