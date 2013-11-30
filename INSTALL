@@ -9,6 +9,9 @@ for example:
 ---------------
 BUILD for Linux
 ---------------
+On Debian systems you need the following packages installed to build:
+# sudo apt-get install build-essential libx11-dev libxt-dev libxext-dev libxaw7-dev
+
 # make clean
 # make
 
