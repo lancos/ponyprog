@@ -33,14 +33,14 @@
 
 //=====>>> Costruttore <<<======
 Device::Device(e2AppWinInfo *wininfo, BusIO *busp, int b_size)
-	:	awi(wininfo),
+	:	detected_type(0),
+        awi(wininfo),
 		bus(busp),
 		def_bank_size(b_size),
 		write_progpage_size(0),
 		read_progpage_size(0),
 		write_datapage_size(0),
-		read_datapage_size(0),
-		detected_type(0)
+		read_datapage_size(0)
 {
 	detected_signature[0] = '\0';
 	DefaultBankSize();
