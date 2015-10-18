@@ -1,3 +1,4 @@
 *.o
 dep.file
 .dep
+.directory
