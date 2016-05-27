@@ -26,90 +26,43 @@
 //                                                                         //
 //-------------------------------------------------------------------------//
 //=========================================================================//
-// Some global ID and #defines
 
-#ifndef	_GLOBALS_H
-#define	_GLOBALS_H
+#ifndef	_LINUXSYSFSINTERFACE_H
+#define	_LINUXSYSFSINTERFACE_H
 
-#define	APPNAME		"PonyProg2000"
-#define	AUTHORNAME	"Claudio Lanconelli"
-#define	AUTHORMAIL	"PonyProg2000@gmail.com"
-#define	AUTHORWEB	"http://www.LancOS.com"
-#define COPYRIGHTYEAR	"1997-2013"
-#define	APPNAME_EXT	STR_APPNAME_EXT
+#include "businter.h"
+//#include "portint.h"
 
-#define	APPVERSION	"2.08d Beta"
+class LinuxSysFsInterface : public BusInterface
+{
+ public:		//------------------------------- public
+	LinuxSysFsInterface();
+	virtual ~LinuxSysFsInterface();
 
-#define	THEAPP	((e2App*)theApp)
+	virtual int Open(int com_no);
+	virtual void Close();
 
-#ifdef	MAX_PATH
-#define	MAXPATH	MAX_PATH
-#else
-#define	MAXPATH	1024
-#endif
+	virtual void SetDataOut(int sda = 1);
+	virtual void SetClock(int scl = 1);
+	virtual int GetDataIn();
+	virtual int GetClock();
+	virtual void SetClockData();
+	virtual void ClearClockData();
+	virtual int IsClockDataUP();
+	virtual int IsClockDataDOWN();
 
-#define	MAXMSG	256
-#define	MAXFNAMEMSG	40
-#define	MAXNUMDIGIT	64
+//	virtual int TestPort(int port);
 
-#define	NO_OF_FILETYPE	LAST_FT
-enum FileType {
-	E2P,
-	INTEL,
-	MOTOS,
-	BIN,
-	CSM,
-	LAST_FT
+	int SetPower(int onoff);
+	void SetControlLine(int res = 1);
+
+ protected:		//------------------------------- protected
+//	int GetPresence() const;
+
+ private:		//------------------------------- private
+	int InitPins();
+	void DeInitPins();
+
 };
-
-#define	NO_OF_INTERFACETYPE	(LAST_HT-1)
-enum HInterfaceType {
-	//AutoTag
-	//Interface Identification
-	SIPROG_API = 1,
-	SIPROG_IO,
-	EASYI2C_API,
-	EASYI2C_IO,
-	AVRISP,
-	AVRISP_IO,
-	DT006_API,
-	DT006_IO,
-	JDM_API,
-//	JDM_IO,
-	LINUXSYSFS_IO,
-	LAST_HT
-};
-
-#define NO_OF_BUSTYPE (LAST_BT-1)
-enum BusType {
-	//AutoTag
-	//Bus Type Identification
-	I2C = 1,
-	AT90S,
-//	ATMEGAB,
-//	AT1200S,
-	AT89S,
-	AT93C,
-	AT250,
-	AT250BIG,
-	PICB,
-	SXB,
-	SDEB,
-	PICNEWB,
-	IMBUS,
-	PIC12B,
-	X2444B,
-	S2430B,
-	LAST_BT
-};
-
-#define	AUTOSIZE_ID	64768
-
-
-#define	PROG_TYPE	1
-#define	DATA_TYPE	2
-#define	CONFIG_TYPE	4
-
-#define	ALL_TYPE	(PROG_TYPE|DATA_TYPE|CONFIG_TYPE)
 
 #endif

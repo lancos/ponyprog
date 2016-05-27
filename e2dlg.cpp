@@ -62,13 +62,13 @@ enum {
 	rdbLpt2,
 	rdbLpt3,
 
-	frmPolsep, 
+	frmPolsep,
 	frmPolsel,
-	lblPol1, 
-	chkPol1, 
-	chkPol2, 
-	chkPol3, 
-	chkPol4, 
+	lblPol1,
+	chkPol1,
+	chkPol2,
+	chkPol3,
+	chkPol4,
 
 	btnTestDlg,		// add your id's here
 	btnCheckHw
@@ -91,6 +91,7 @@ static char *interfListL[] = {
 	" DT-006 I/O  ",
 	" EasyI2C API ",
 	" EasyI2C I/O ",
+	" SysFs I/O   ",
 	0
 };
 
@@ -130,7 +131,7 @@ static DialogCmd DefaultCmds[] =
 	{C_CheckBox,chkPol3,0,STR_LBLINVDATAIN,NoList,CA_None,isSens,frmPolsel,chkPol1,lblPol1},
 	{C_CheckBox,chkPol4,0,STR_LBLINVDATAOUT,NoList,CA_None,isSens,frmPolsel,chkPol1,chkPol1},
 
-	{C_Button,M_Cancel,0,STR_BTNCANC, NoList,CA_None,isSens,NoFrame,0,frmPolsel}, 
+	{C_Button,M_Cancel,0,STR_BTNCANC, NoList,CA_None,isSens,NoFrame,0,frmPolsel},
 	{C_Button,M_OK,0,STR_BTNOK,	NoList,CA_DefaultButton,isSens,NoFrame,M_Cancel,frmPolsel},
 
 	{C_Button,btnTestDlg,0,STR_BTNPROBE,NoList,CA_None,isSens,NoFrame,M_OK,frmPolsel},

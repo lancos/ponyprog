@@ -477,6 +477,10 @@ void e2App::SetInterfaceType(HInterfaceType type)
 		dt006_ioI.SetIOmode(true);
 		dt006_ioI.Close();
 		break;
+	case LINUXSYSFS_IO:
+		iType = LINUXSYSFS_IO;
+		busIntp = &linuxsysfs_ioI;
+		break;
 	default:
 		iType = SIPROG_API;		//20/07/99 -- to prevent crash
 		busIntp = &siprog_apiI;

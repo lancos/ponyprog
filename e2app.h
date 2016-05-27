@@ -61,6 +61,7 @@
 #include "jdminter.h"
 //#include "jdmiointer.h"
 #include "dt006interf.h"
+#include "linuxsysfsint.h"
 
 enum AppStatus {
 	AppReady,
@@ -129,10 +130,10 @@ class e2App : public vApp, public E2Profile
 
 	void SetProgress(int progress = 0);
 
-	uint8_t GetPolarity() const 
-		{ return polarity_control;} 
-	void SetPolarity(uint8_t val) 
-		{ polarity_control = val;} 
+	uint8_t GetPolarity() const
+		{ return polarity_control;}
+	void SetPolarity(uint8_t val)
+		{ polarity_control = val;}
 
 	int IsAppBusy()
 		{ return (app_status == AppBusy); }
@@ -181,6 +182,7 @@ class e2App : public vApp, public E2Profile
 	Dt006Interface dt006_ioI;
 	JdmInterface jdm_apiI;
 //	JdmIOInterface jdm_ioI;
+	LinuxSysFsInterface linuxsysfs_ioI;
 
 	BusIO *iniBus;					//pointer to current Bus
 	BusIO *busvetp[NO_OF_BUSTYPE];	//array of pointers to available Bus

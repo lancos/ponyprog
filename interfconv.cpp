@@ -58,6 +58,7 @@ static Interf2Index index_interface[] = {
 	{1,3,"DT-006-I/O",DT006_IO},
 	{1,4,"EasyI2C-API",EASYI2C_API},
 	{1,5,"EasyI2C-I/O",EASYI2C_IO},
+	{1,6,"Linux SysFs GPIO",LINUXSYSFS_IO},
 	{0,0,0,LAST_HT}
 };
 
