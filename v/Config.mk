@@ -287,6 +287,7 @@ CFLAGS	+=	-O2
 endif
 ifeq ($(DEBUG),yes)
 CFLAGS	+=	-g
+CFLAGS	+=	-DvDEBUG
 endif
 ifeq ($(TOOLKIT),Athena)
 CFLAGS	+=	-DAthena
