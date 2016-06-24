@@ -101,7 +101,8 @@ SRCS=\
 	x2444.cpp \
 	x2444bus.cpp \
 	dt006interf.cpp \
-	linuxsysfsint.cpp
+	linuxsysfsint.cpp \
+
 
 OBJS = $(SRCS:.cpp=.o)
 PRPS = $(SRCS:.cpp=.i)
