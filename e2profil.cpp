@@ -1639,11 +1639,11 @@ int E2Profile::SetDefaultFileType(FileType ft)
 	return OK;
 }
 
-#define GPIO_PIN(port, pin)	((port) * 32 + (pin))
-#define DEF_GPIO_CTRL			(GPIO_PIN(0,5))
-#define DEF_GPIO_DATAIN			(GPIO_PIN(1,17))
-#define DEF_GPIO_DATAOUT		(GPIO_PIN(1,19))
-#define DEF_GPIO_CLOCK			(GPIO_PIN(1,18))
+//#define GPIO_PIN(port, pin)	((port) * 32 + (pin))
+#define DEF_GPIO_CTRL			27  //(GPIO_PIN(0,5))
+#define DEF_GPIO_DATAIN			22  //(GPIO_PIN(1,17))
+#define DEF_GPIO_DATAOUT		23  //(GPIO_PIN(1,19))
+#define DEF_GPIO_CLOCK			24  //(GPIO_PIN(1,18))
 
 int E2Profile::GetGpioPinCtrl()
 {
