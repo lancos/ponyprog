@@ -228,6 +228,16 @@ class E2Profile : public Profile
 	char const *GetHtmlBrowseApp();
 	int SetHtmlBrowseApp(char const *name);
 
+	int GetGpioPinCtrl();
+	int GetGpioPinClock();
+	int GetGpioPinDataIn();
+	int GetGpioPinDataOut();
+
+	int SetGpioPinCtrl(int pin);
+	int SetGpioPinClock(int pin);
+	int SetGpioPinDataIn(int pin);
+	int SetGpioPinDataOut(int pin);
+
   protected:	//--------------------------------------- protected
 
   private:		//--------------------------------------- private

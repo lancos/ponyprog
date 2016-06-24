@@ -762,6 +762,12 @@ int AppMain(int argc, char** argv)
 	e2_App.SetLockDir( e2_App.GetLockDir() );
 	e2_App.SetDevDir( e2_App.GetDevDir() );
 #endif
+#ifdef	_LINUX_
+	e2_App.SetGpioPinClock( e2_App.GetGpioPinClock() );
+	e2_App.SetGpioPinCtrl( e2_App.GetGpioPinCtrl() );
+	e2_App.SetGpioPinDataIn( e2_App.GetGpioPinDataIn() );
+	e2_App.SetGpioPinDataOut( e2_App.GetGpioPinDataOut() );
+#endif
 	e2_App.SetDevName( e2_App.GetDevName() );
 	e2_App.scriptMode = false;
 	e2_App.returnValue = 0;

@@ -2,7 +2,7 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2016   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
@@ -63,6 +63,10 @@ class LinuxSysFsInterface : public BusInterface
 	int InitPins();
 	void DeInitPins();
 
+	int pin_ctrl;
+	int pin_datain;
+	int pin_dataout;
+	int pin_clock;
 };
 
 #endif

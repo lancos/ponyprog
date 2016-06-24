@@ -2,7 +2,7 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2016   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
@@ -32,13 +32,8 @@
 #include "errcode.h"
 #include "e2app.h"
 
-#define GPIO_PIN(port, pin)	((port)*32+(pin))
-#define GPIO_CTRL			(GPIO_PIN(0,5))
-#define GPIO_DATAIN			(GPIO_PIN(1,17))
-#define GPIO_DATAOUT		(GPIO_PIN(1,19))
-#define GPIO_CLOCK			(GPIO_PIN(1,18))
-#define GPIO_OUT			(1)
-#define GPIO_IN				(0)
+#define GPIO_OUT			1
+#define GPIO_IN				0
 
 #define SYSFS_GPIO_DIR "/sys/class/gpio"
 #define MAX_BUF 64
@@ -198,29 +193,6 @@ static int gpio_get_value(unsigned int gpio, unsigned int *value)
 }
 #endif
 
-// Per l'AVR e` la linea di RESET
-void LinuxSysFsInterface::SetControlLine(int res)
-{
-	UserDebug2(UserApp3, "LinuxSysFsInterface::SetControlLine(%d) *** Inst=%d\n", res, IsInstalled());
-
-	if (IsInstalled())
-	{
-		UserDebug(UserApp3, "LinuxSysFsInterface::SetControlLine() XX\n");
-
-		if (THEAPP->GetPolarity() & RESETINV)
-			res = !res;
-
-		UserDebug(UserApp3, "LinuxSysFsInterface::SetControlLine() \n");
-
-#ifdef	_LINUX_
-		if (res)
-			gpio_set_value(GPIO_CTRL, 1);
-		else
-			gpio_set_value(GPIO_CTRL, 0);
-#endif
-	}
-}
-
 int LinuxSysFsInterface::SetPower(int onoff)
 {
 	UserDebug1(UserApp3, "LinuxSysFsInterface::SetPower(%d)\n", onoff);
@@ -229,29 +201,37 @@ int LinuxSysFsInterface::SetPower(int onoff)
 
 int LinuxSysFsInterface::InitPins()
 {
+	pin_ctrl = THEAPP->GetGpioPinCtrl();
+	pin_datain = THEAPP->GetGpioPinDataIn();
+	pin_dataout = THEAPP->GetGpioPinDataOut();
+	pin_clock = THEAPP->GetGpioPinClock();
+
+	UserDebug2(UserApp2, "LinuxSysFsInterface::InitPins Ctrl=%d, Clock=%d ", pin_ctrl, pin_clock);
+	UserDebug2(UserApp2, "DataIn=%d, DataOut=%d\n", pin_datain, pin_dataout);
+
 #ifdef	_LINUX_
-	if (gpio_export(GPIO_CTRL) < 0)
+    if (gpio_export(pin_ctrl) < 0)
 		return E2ERR_OPENFAILED;
 
-	if (gpio_set_dir(GPIO_CTRL, GPIO_OUT) < 0)
+    if (gpio_set_dir(pin_ctrl, GPIO_OUT) < 0)
 		return E2ERR_OPENFAILED;
 
-	if (gpio_export(GPIO_CLOCK) < 0)
+    if (gpio_export(pin_clock) < 0)
 		return E2ERR_OPENFAILED;
 
-	if (gpio_set_dir(GPIO_CLOCK, GPIO_OUT) < 0)
+    if (gpio_set_dir(pin_clock, GPIO_OUT) < 0)
 		return E2ERR_OPENFAILED;
 
-	if (gpio_export(GPIO_DATAIN) < 0)
+    if (gpio_export(pin_datain) < 0)
 		return E2ERR_OPENFAILED;
 
-	if (gpio_set_dir(GPIO_DATAIN, GPIO_IN) < 0)
+    if (gpio_set_dir(pin_datain, GPIO_IN) < 0)
 		return E2ERR_OPENFAILED;
 
-	if (gpio_export(GPIO_DATAOUT) < 0)
+    if (gpio_export(pin_dataout) < 0)
 		return E2ERR_OPENFAILED;
 
-	if (gpio_set_dir(GPIO_DATAOUT, GPIO_OUT) < 0)
+    if (gpio_set_dir(pin_dataout, GPIO_OUT) < 0)
 		return E2ERR_OPENFAILED;
 #endif
 	return OK;
@@ -260,10 +240,10 @@ int LinuxSysFsInterface::InitPins()
 void LinuxSysFsInterface::DeInitPins()
 {
 #ifdef	_LINUX_
-	gpio_unexport(GPIO_CTRL);
-	gpio_unexport(GPIO_CLOCK);
-	gpio_unexport(GPIO_DATAIN);
-	gpio_unexport(GPIO_DATAOUT);
+	gpio_unexport(pin_ctrl);
+	gpio_unexport(pin_clock);
+	gpio_unexport(pin_datain);
+	gpio_unexport(pin_dataout);
 #endif
 }
 
@@ -298,6 +278,29 @@ void LinuxSysFsInterface::Close()
 	UserDebug(UserApp2, "LinuxSysFsInterface::Close() OUT\n");
 }
 
+// Per l'AVR e` la linea di RESET
+void LinuxSysFsInterface::SetControlLine(int res)
+{
+	UserDebug2(UserApp3, "LinuxSysFsInterface::SetControlLine(%d) *** Inst=%d\n", res, IsInstalled());
+
+	if (IsInstalled())
+	{
+		UserDebug(UserApp3, "LinuxSysFsInterface::SetControlLine() XX\n");
+
+		if (THEAPP->GetPolarity() & RESETINV)
+			res = !res;
+
+		UserDebug(UserApp3, "LinuxSysFsInterface::SetControlLine() \n");
+
+#ifdef	_LINUX_
+		if (res)
+			gpio_set_value(pin_ctrl, 1);
+		else
+			gpio_set_value(pin_ctrl, 0);
+#endif
+	}
+}
+
 void LinuxSysFsInterface::SetDataOut(int sda)
 {
 	UserDebug2(UserApp3, "LinuxSysFsInterface::SetDataOut(%d) *** Inst=%d\n", sda, IsInstalled());
@@ -309,9 +312,9 @@ void LinuxSysFsInterface::SetDataOut(int sda)
 
 #ifdef	_LINUX_
 		if (sda)
-			gpio_set_value(GPIO_DATAOUT, 1);
+			gpio_set_value(pin_dataout, 1);
 		else
-			gpio_set_value(GPIO_DATAOUT, 0);
+			gpio_set_value(pin_dataout, 0);
 #endif
 	}
 }
@@ -327,9 +330,9 @@ void LinuxSysFsInterface::SetClock(int scl)
 
 #ifdef	_LINUX_
 		if (scl)
-			gpio_set_value(GPIO_CLOCK, 1);
+			gpio_set_value(pin_clock, 1);
 		else
-			gpio_set_value(GPIO_CLOCK, 0);
+			gpio_set_value(pin_clock, 0);
 #endif
 	}
 }
@@ -364,7 +367,9 @@ int LinuxSysFsInterface::GetDataIn()
 	if (IsInstalled())
 	{
 		unsigned int val = 0;
-		gpio_get_value(GPIO_DATAIN, &val);
+#ifdef	_LINUX_
+        gpio_get_value(pin_datain, &val);
+#endif
 
 		if (THEAPP->GetPolarity() & DININV)
 			return !val;

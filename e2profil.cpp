@@ -1638,3 +1638,109 @@ int E2Profile::SetDefaultFileType(FileType ft)
 
 	return OK;
 }
+
+#define GPIO_PIN(port, pin)	((port) * 32 + (pin))
+#define DEF_GPIO_CTRL			(GPIO_PIN(0,5))
+#define DEF_GPIO_DATAIN			(GPIO_PIN(1,17))
+#define DEF_GPIO_DATAOUT		(GPIO_PIN(1,19))
+#define DEF_GPIO_CLOCK			(GPIO_PIN(1,18))
+
+int E2Profile::GetGpioPinCtrl()
+{
+	char const *sp;
+	int rval = DEF_GPIO_CTRL;		//Default pin number
+
+	sp = GetParameter("GpioPinCtrl");
+	if (sp)
+	{
+		rval = atoi(sp);
+	}
+
+	return rval;
+}
+
+int E2Profile::SetGpioPinCtrl(int pin)
+{
+	int rval = BADPARAM;
+	char str[MAXNUMDIGIT];
+
+	if (decnum2str(pin, str, MAXNUMDIGIT) == OK)
+		rval = SetParameter("GpioPinCtrl", str);
+
+	return rval;
+}
+
+int E2Profile::GetGpioPinClock()
+{
+	char const *sp;
+	int rval = DEF_GPIO_CLOCK;		//Default pin number
+
+	sp = GetParameter("GpioPinClock");
+	if (sp)
+	{
+		rval = atoi(sp);
+	}
+
+	return rval;
+}
+
+int E2Profile::SetGpioPinClock(int pin)
+{
+	int rval = BADPARAM;
+	char str[MAXNUMDIGIT];
+
+	if (decnum2str(pin, str, MAXNUMDIGIT) == OK)
+		rval = SetParameter("GpioPinClock", str);
+
+	return rval;
+}
+
+int E2Profile::GetGpioPinDataIn()
+{
+	char const *sp;
+	int rval = DEF_GPIO_DATAIN;		//Default pin number
+
+	sp = GetParameter("GpioPinDataIn");
+	if (sp)
+	{
+		rval = atoi(sp);
+	}
+
+	return rval;
+}
+
+int E2Profile::SetGpioPinDataIn(int pin)
+{
+	int rval = BADPARAM;
+	char str[MAXNUMDIGIT];
+
+	if (decnum2str(pin, str, MAXNUMDIGIT) == OK)
+		rval = SetParameter("GpioPinDataIn", str);
+
+	return rval;
+}
+
+int E2Profile::GetGpioPinDataOut()
+{
+	char const *sp;
+	int rval = DEF_GPIO_DATAOUT;	//Default pin number
+
+	sp = GetParameter("GpioPinDataOut");
+	if (sp)
+	{
+		rval = atoi(sp);
+	}
+
+	return rval;
+}
+
+int E2Profile::SetGpioPinDataOut(int pin)
+{
+	int rval = BADPARAM;
+	char str[MAXNUMDIGIT];
+
+	if (decnum2str(pin, str, MAXNUMDIGIT) == OK)
+		rval = SetParameter("GpioPinDataOut", str);
+
+	return rval;
+}
