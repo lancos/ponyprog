@@ -142,7 +142,7 @@ CMDS	=\
 	vprogrsc.h vsliderc.h vtextinc.h vlistc.h vcomboc.h vtextc.h \
 	vcolor.h vpen.h vclabelc.h vspinc.h
 
-	cd iconed ; $(MAKE) ARCH=$@ ; cd ..
+#	cd iconed ; $(MAKE) ARCH=$@ ; cd ..
 
 
 #xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
