@@ -430,3 +430,5 @@ x2444.h
 x2444bus.cpp
 x2444bus.h
 inpout32.h
+linuxsysfsint.cpp
+linuxsysfsint.h
