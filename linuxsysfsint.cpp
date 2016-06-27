@@ -127,7 +127,7 @@ static int gpio_open(unsigned int gpio, bool out_dir)
 		int fd;
 
 		snprintf(buf, sizeof(buf), SYSFS_GPIO_DIR "/gpio%d/value", gpio);
-		fd = open(buf, O_WRONLY);
+		fd = open(buf, out_dir ? O_WRONLY : O_RDONLY);
 		if (fd < 0)
 		{
 			fprintf(stderr, "Unable to open GPIO set-value interface: %s\n", strerror(errno));
@@ -254,7 +254,7 @@ void LinuxSysFsInterface::Close()
 // Per l'AVR e` la linea di RESET
 void LinuxSysFsInterface::SetControlLine(int res)
 {
-	UserDebug2(UserApp3, "LinuxSysFsInterface::SetControlLine(%d) *** Inst=%d\n", res, IsInstalled());
+	UserDebug3(UserApp3, "LinuxSysFsInterface::SetControlLine(%d) *** Inst=%d, fd=%d\n", res, IsInstalled(), fd_ctrl);
 
 	if (IsInstalled())
 	{
@@ -262,17 +262,25 @@ void LinuxSysFsInterface::SetControlLine(int res)
 			res = !res;
 
 #ifdef	_LINUX_
+		int ret;
+
 		if (res)
-            write(fd_ctrl, "1", 2);
-        else
-            write(fd_ctrl, "0", 2);
+			ret = write(fd_ctrl, "1", 2);
+		else
+			ret = write(fd_ctrl, "0", 2);
+
+		if (ret != 2)
+		{
+			fprintf(stderr, "LinuxSysFsInterface::SetControlLine() write failed (%d)\n", ret);
+			exit(1);
+		}
 #endif
 	}
 }
 
 void LinuxSysFsInterface::SetDataOut(int sda)
 {
-	UserDebug2(UserApp3, "LinuxSysFsInterface::SetDataOut(%d) *** Inst=%d\n", sda, IsInstalled());
+	UserDebug3(UserApp3, "LinuxSysFsInterface::SetDataOut(%d) *** Inst=%d, fd=%d\n", sda, IsInstalled(), fd_dataout);
 
 	if (IsInstalled())
 	{
@@ -280,17 +288,25 @@ void LinuxSysFsInterface::SetDataOut(int sda)
 			sda = !sda;
 
 #ifdef	_LINUX_
+		int ret;
+
 		if (sda)
-            write(fd_dataout, "1", 2);
-        else
-            write(fd_dataout, "0", 2);
+			ret = write(fd_dataout, "1", 2);
+		else
+			ret = write(fd_dataout, "0", 2);
+
+		if (ret != 2)
+		{
+			fprintf(stderr, "LinuxSysFsInterface::SetDataOut() write failed (%d)\n", ret);
+			exit(1);
+		}
 #endif
 	}
 }
 
 void LinuxSysFsInterface::SetClock(int scl)
 {
-	UserDebug2(UserApp3, "LinuxSysFsInterface::SetClock(%d) *** Inst=%d\n", scl, IsInstalled());
+	UserDebug3(UserApp3, "LinuxSysFsInterface::SetClock(%d) *** Inst=%d, fd=%d\n", scl, IsInstalled(), fd_clock);
 
 	if (IsInstalled())
 	{
@@ -298,10 +314,18 @@ void LinuxSysFsInterface::SetClock(int scl)
 			scl = !scl;
 
 #ifdef	_LINUX_
+		int ret;
+
 		if (scl)
-            write(fd_clock, "1", 2);
-        else
-            write(fd_clock, "0", 2);
+			ret = write(fd_clock, "1", 2);
+		else
+			ret = write(fd_clock, "0", 2);
+
+		if (ret != 2)
+		{
+			fprintf(stderr, "LinuxSysFsInterface::SetClock() write failed (%d)\n", ret);
+			exit(1);
+		}
 #endif
 	}
 }
@@ -331,17 +355,25 @@ void LinuxSysFsInterface::ClearClockData()
 
 int LinuxSysFsInterface::GetDataIn()
 {
-	UserDebug1(UserApp3, "LinuxSysFsInterface::GetDataIn() *** Inst=%d\n", IsInstalled());
-
 	if (IsInstalled())
 	{
 		unsigned int val = 0;
 #ifdef	_LINUX_
-        char ch;
+		int ret;
+		char ch;
 
-        read(fd_datain, &ch, 1);
-        val = (ch == '0') ? 0 : 1;
+		lseek(fd_datain, 0L, SEEK_SET);
+		ret = read(fd_datain, &ch, 1);
+		val = (ch == '0') ? 0 : 1;
+
+		if (ret < 1)
+		{
+			fprintf(stderr, "LinuxSysFsInterface::GetDataIn() read failed (%d)\n", ret);
+			exit(1);
+		}
 #endif
+		UserDebug2(UserApp3, "LinuxSysFsInterface::GetDataIn()=%u, fd=%d\n", val, fd_datain);
+
 		if (THEAPP->GetPolarity() & DININV)
 			return !val;
 		else
