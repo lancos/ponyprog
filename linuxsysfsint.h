@@ -67,6 +67,11 @@ class LinuxSysFsInterface : public BusInterface
 	int pin_datain;
 	int pin_dataout;
 	int pin_clock;
+
+    int fd_ctrl;
+    int fd_datain;
+    int fd_dataout;
+    int fd_clock;
 };
 
 #endif

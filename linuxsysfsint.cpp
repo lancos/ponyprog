@@ -56,6 +56,7 @@ LinuxSysFsInterface::LinuxSysFsInterface()
 
 	Install(0);
 	old_portno = 0;
+    fd_ctrl = fd_clock = fd_datain = fd_dataout = -1;
 }
 
 LinuxSysFsInterface::~LinuxSysFsInterface()
@@ -68,7 +69,7 @@ LinuxSysFsInterface::~LinuxSysFsInterface()
 #define SYSFS_GPIO_DIR "/sys/class/gpio"
 #define MAX_BUF 64
 
-static int gpio_export(unsigned int gpio, bool out_dir)
+static int gpio_open(unsigned int gpio, bool out_dir)
 {
 	char buf[MAX_BUF];
 	int rval;
@@ -83,7 +84,7 @@ static int gpio_export(unsigned int gpio, bool out_dir)
 		fd = open(SYSFS_GPIO_DIR "/export", O_WRONLY);
 		if (fd < 0)
 		{
-			fprintf (stderr, "Unable to open GPIO export interface: %s\n", strerror(errno));
+			fprintf(stderr, "Unable to open GPIO export interface: %s\n", strerror(errno));
 			rval = -1;
 		}
 		else
@@ -102,7 +103,7 @@ static int gpio_export(unsigned int gpio, bool out_dir)
 			fd = open(buf, O_WRONLY);
 			if (fd < 0)
 			{
-				fprintf (stderr, "Unable to open GPIO direction interface: %s\n", strerror(errno));
+				fprintf(stderr, "Unable to open GPIO direction interface: %s\n", strerror(errno));
 				rval = -1;
 			}
 			else
@@ -119,23 +120,43 @@ static int gpio_export(unsigned int gpio, bool out_dir)
 			}
 		}
 	}
-	UserDebug3(UserApp2, "gpio_export(%u, %s) rval = %d\n", gpio, out_dir ? "out" : "in", rval);
 
-    return rval;
+	//open the value interace
+	if (rval == 0)
+	{
+		int fd;
+
+		snprintf(buf, sizeof(buf), SYSFS_GPIO_DIR "/gpio%d/value", gpio);
+		fd = open(buf, O_WRONLY);
+		if (fd < 0)
+		{
+			fprintf(stderr, "Unable to open GPIO set-value interface: %s\n", strerror(errno));
+			rval = -1;
+		}
+		else
+		{
+			rval = fd;
+		}
+	}
+	UserDebug3(UserApp2, "gpio_open(%u, %s) rval = %d\n", gpio, out_dir ? "out" : "in", rval);
+
+	return rval;
 }
 
-static int gpio_unexport(unsigned int gpio)
+static int gpio_close(unsigned int gpio, int fd)
 {
 	char buf[MAX_BUF];
 	int rval = 0;
+
+	//close value interface
+	if (fd > 0)
+		close(fd);
 
 	//trying with gpio command (you need wiringPi installed)
 	snprintf(buf, sizeof(buf), "gpio unexport %u", gpio);
 	rval = system(buf);
 	if (rval != 0)
 	{
-		int fd;
-
 		fd = open(SYSFS_GPIO_DIR "/unexport", O_WRONLY);
 		if (fd < 0)
 		{
@@ -152,71 +173,7 @@ static int gpio_unexport(unsigned int gpio)
 			rval = (ret == len) ? 0 : -1;
 		}
 	}
-	UserDebug2(UserApp2, "gpio_unexport(%u) rval = %d\n", gpio, rval);
-
-	return rval;
-}
-
-static int gpio_set_value(unsigned int gpio, unsigned int value)
-{
-	int fd;
-	char buf[MAX_BUF];
-	int rval = 0;
-
-	snprintf(buf, sizeof(buf), SYSFS_GPIO_DIR "/gpio%d/value", gpio);
-
-	fd = open(buf, O_WRONLY);
-	if (fd < 0)
-	{
-		fprintf (stderr, "Unable to open GPIO set-value interface: %s\n", strerror(errno));
-		rval = -1;
-	}
-	else
-	{
-		int ret;
-
-		if (value)
-			ret = write(fd, "1", 2);
-		else
-			ret = write(fd, "0", 2);
-
-		close(fd);
-		rval = (ret == 2) ? 0 : -1;
-	}
-	UserDebug3(UserApp3, "gpio_set_value(%u, %u) rval = %d\n", gpio, value, rval);
-
-	return rval;
-}
-
-static int gpio_get_value(unsigned int gpio, unsigned int *value)
-{
-	int fd;
-	char buf[MAX_BUF];
-	int rval = 0;
-
-	snprintf(buf, sizeof(buf), SYSFS_GPIO_DIR "/gpio%d/value", gpio);
-
-	fd = open(buf, O_RDONLY);
-	if (fd < 0)
-	{
-		fprintf (stderr, "Unable to open GPIO get-value interface: %s\n", strerror(errno));
-		rval = -1;
-	}
-	else
-	{
-		char ch;
-		int ret;
-
-		ret = read(fd, &ch, 1);
-		if (ch == '0')
-			*value = 0;
-		else
-			*value = 1;
-
-		close(fd);
-		rval = (ret == 1) ? 0 : -1;
-	}
-	UserDebug3(UserApp3, "gpio_get_value(%u)=%u, rval = %d\n", gpio, *value, rval);
+	UserDebug2(UserApp2, "gpio_close(%u) rval = %d\n", gpio, rval);
 
 	return rval;
 }
@@ -239,17 +196,15 @@ int LinuxSysFsInterface::InitPins()
 	UserDebug2(UserApp2, "DataIn=%d, DataOut=%d\n", pin_datain, pin_dataout);
 
 #ifdef	_LINUX_
-    if (gpio_export(pin_ctrl, GPIO_OUT) < 0)
+	fd_ctrl = gpio_open(pin_ctrl, GPIO_OUT);
+	fd_clock = gpio_open(pin_clock, GPIO_OUT);
+	fd_datain = gpio_open(pin_datain, GPIO_IN);
+	fd_dataout = gpio_open(pin_dataout, GPIO_OUT);
+	if (fd_ctrl < 0 || fd_clock < 0 || fd_datain < 0 || fd_dataout < 0)
+	{
+		DeInitPins();
 		return E2ERR_OPENFAILED;
-
-    if (gpio_export(pin_clock, GPIO_OUT) < 0)
-		return E2ERR_OPENFAILED;
-
-    if (gpio_export(pin_datain, GPIO_IN) < 0)
-		return E2ERR_OPENFAILED;
-
-    if (gpio_export(pin_dataout, GPIO_OUT) < 0)
-		return E2ERR_OPENFAILED;
+	}
 #endif
 	return OK;
 }
@@ -257,10 +212,11 @@ int LinuxSysFsInterface::InitPins()
 void LinuxSysFsInterface::DeInitPins()
 {
 #ifdef	_LINUX_
-	gpio_unexport(pin_ctrl);
-	gpio_unexport(pin_clock);
-	gpio_unexport(pin_datain);
-	gpio_unexport(pin_dataout);
+	gpio_close(pin_ctrl, fd_ctrl);
+	gpio_close(pin_clock, fd_clock);
+	gpio_close(pin_datain, fd_datain);
+	gpio_close(pin_dataout, fd_dataout);
+	fd_ctrl = fd_clock = fd_datain = fd_dataout = -1;
 #endif
 }
 
@@ -302,18 +258,14 @@ void LinuxSysFsInterface::SetControlLine(int res)
 
 	if (IsInstalled())
 	{
-		UserDebug(UserApp3, "LinuxSysFsInterface::SetControlLine() XX\n");
-
 		if (THEAPP->GetPolarity() & RESETINV)
 			res = !res;
 
-		UserDebug(UserApp3, "LinuxSysFsInterface::SetControlLine() \n");
-
 #ifdef	_LINUX_
 		if (res)
-			gpio_set_value(pin_ctrl, 1);
-		else
-			gpio_set_value(pin_ctrl, 0);
+            write(fd_ctrl, "1", 2);
+        else
+            write(fd_ctrl, "0", 2);
 #endif
 	}
 }
@@ -329,9 +281,9 @@ void LinuxSysFsInterface::SetDataOut(int sda)
 
 #ifdef	_LINUX_
 		if (sda)
-			gpio_set_value(pin_dataout, 1);
-		else
-			gpio_set_value(pin_dataout, 0);
+            write(fd_dataout, "1", 2);
+        else
+            write(fd_dataout, "0", 2);
 #endif
 	}
 }
@@ -347,9 +299,9 @@ void LinuxSysFsInterface::SetClock(int scl)
 
 #ifdef	_LINUX_
 		if (scl)
-			gpio_set_value(pin_clock, 1);
-		else
-			gpio_set_value(pin_clock, 0);
+            write(fd_clock, "1", 2);
+        else
+            write(fd_clock, "0", 2);
 #endif
 	}
 }
@@ -385,9 +337,11 @@ int LinuxSysFsInterface::GetDataIn()
 	{
 		unsigned int val = 0;
 #ifdef	_LINUX_
-        gpio_get_value(pin_datain, &val);
-#endif
+        char ch;
 
+        read(fd_datain, &ch, 1);
+        val = (ch == '0') ? 0 : 1;
+#endif
 		if (THEAPP->GetPolarity() & DININV)
 			return !val;
 		else
