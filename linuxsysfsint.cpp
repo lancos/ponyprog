@@ -32,18 +32,15 @@
 #include "errcode.h"
 #include "e2app.h"
 
-#define GPIO_OUT			1
-#define GPIO_IN				0
-
-#define SYSFS_GPIO_DIR "/sys/class/gpio"
-#define MAX_BUF 64
+#define GPIO_OUT			true
+#define GPIO_IN				false
 
 #ifdef	_LINUX_
 # include <stdio.h>
+# include <stdlib.h>
 # include <errno.h>
 # include <unistd.h>
 # include <fcntl.h>
-# include <poll.h>
 #else
 # ifdef	__BORLANDC__
 #   define	__inline__
@@ -67,129 +64,161 @@ LinuxSysFsInterface::~LinuxSysFsInterface()
 }
 
 #ifdef	_LINUX_
-/****************************************************************
- * gpio_export
- ****************************************************************/
-static int gpio_export(unsigned int gpio)
+
+#define SYSFS_GPIO_DIR "/sys/class/gpio"
+#define MAX_BUF 64
+
+static int gpio_export(unsigned int gpio, bool out_dir)
 {
-	int fd, len;
 	char buf[MAX_BUF];
 	int rval;
 
-	fd = open(SYSFS_GPIO_DIR "/export", O_WRONLY);
-	if (fd < 0) {
-		perror("gpio/export");
-		return fd;
+	//trying with gpio command (you need wiringPi installed)
+	snprintf(buf, sizeof(buf), "gpio export %u %s", gpio, out_dir ? "out" : "in");
+	rval = system(buf);
+	if (rval != 0)
+	{
+		int fd;
+
+		fd = open(SYSFS_GPIO_DIR "/export", O_WRONLY);
+		if (fd < 0)
+		{
+			fprintf (stderr, "Unable to open GPIO export interface: %s\n", strerror(errno));
+			rval = -1;
+		}
+		else
+		{
+			int ret, len;
+
+			len = snprintf(buf, sizeof(buf), "%d", gpio);
+			ret = write(fd, buf, len);
+			close(fd);
+			rval = (ret == len) ? 0 : -1;
+		}
+
+		if (rval == 0)
+		{
+			snprintf(buf, sizeof(buf), SYSFS_GPIO_DIR  "/gpio%d/direction", gpio);
+			fd = open(buf, O_WRONLY);
+			if (fd < 0)
+			{
+				fprintf (stderr, "Unable to open GPIO direction interface: %s\n", strerror(errno));
+				rval = -1;
+			}
+			else
+			{
+				int ret, len;
+
+				if (out_dir)
+					len = snprintf(buf, sizeof(buf), "out");
+				else
+					len = snprintf(buf, sizeof(buf), "in");
+				ret = write(fd, buf, len);
+				close(fd);
+				rval = (ret == len) ? 0 : -1;
+			}
+		}
 	}
+	UserDebug3(UserApp2, "gpio_export(%u, %s) rval = %d\n", gpio, out_dir ? "out" : "in", rval);
 
-	len = snprintf(buf, sizeof(buf), "%d", gpio);
-	rval = write(fd, buf, len);
-	close(fd);
-
-	return rval == len ? 0 : -1;
+    return rval;
 }
 
-/****************************************************************
- * gpio_unexport
- ****************************************************************/
 static int gpio_unexport(unsigned int gpio)
 {
-	int fd, len;
 	char buf[MAX_BUF];
-	int rval;
+	int rval = 0;
 
-	fd = open(SYSFS_GPIO_DIR "/unexport", O_WRONLY);
-	if (fd < 0) {
-		perror("gpio/export");
-		return fd;
+	//trying with gpio command (you need wiringPi installed)
+	snprintf(buf, sizeof(buf), "gpio unexport %u", gpio);
+	rval = system(buf);
+	if (rval != 0)
+	{
+		int fd;
+
+		fd = open(SYSFS_GPIO_DIR "/unexport", O_WRONLY);
+		if (fd < 0)
+		{
+			fprintf (stderr, "Unable to open GPIO unexport interface: %s\n", strerror(errno));
+			rval = -1;
+		}
+		else
+		{
+			int ret, len;
+
+			len = snprintf(buf, sizeof(buf), "%d", gpio);
+			ret = write(fd, buf, len);
+			close(fd);
+			rval = (ret == len) ? 0 : -1;
+		}
 	}
+	UserDebug2(UserApp2, "gpio_unexport(%u) rval = %d\n", gpio, rval);
 
-	len = snprintf(buf, sizeof(buf), "%d", gpio);
-	rval = write(fd, buf, len);
-	close(fd);
-	return rval == len ? 0 : -1;
-}
-
-/****************************************************************
- * gpio_set_dir
- ****************************************************************/
-static int gpio_set_dir(unsigned int gpio, unsigned int out_flag)
-{
-	int fd, len;
-	char buf[MAX_BUF];
-	int rval;
-
-	len = snprintf(buf, sizeof(buf), SYSFS_GPIO_DIR  "/gpio%d/direction", gpio);
-	len = len;
-
-	fd = open(buf, O_WRONLY);
-	if (fd < 0) {
-		perror("gpio/direction");
-		return fd;
-	}
-
-	if (out_flag)
-		rval = write(fd, "out", 4);
-	else
-		rval = write(fd, "in", 3);
-
-	close(fd);
-	return (rval == 3 || rval == 4) ? 0 : -1;
+	return rval;
 }
 
 static int gpio_set_value(unsigned int gpio, unsigned int value)
 {
-	int fd, len;
+	int fd;
 	char buf[MAX_BUF];
-	int rval;
+	int rval = 0;
 
-	len = snprintf(buf, sizeof(buf), SYSFS_GPIO_DIR "/gpio%d/value", gpio);
-	len = len;
+	snprintf(buf, sizeof(buf), SYSFS_GPIO_DIR "/gpio%d/value", gpio);
 
 	fd = open(buf, O_WRONLY);
-	if (fd < 0) {
-		perror("gpio/set-value");
-		return fd;
+	if (fd < 0)
+	{
+		fprintf (stderr, "Unable to open GPIO set-value interface: %s\n", strerror(errno));
+		rval = -1;
 	}
-
-	if (value)
-		rval = write(fd, "1", 2);
 	else
-		rval = write(fd, "0", 2);
+	{
+		int ret;
 
-	close(fd);
-	return rval == 2 ? 0 : -1;
+		if (value)
+			ret = write(fd, "1", 2);
+		else
+			ret = write(fd, "0", 2);
+
+		close(fd);
+		rval = (ret == 2) ? 0 : -1;
+	}
+	UserDebug3(UserApp3, "gpio_set_value(%u, %u) rval = %d\n", gpio, value, rval);
+
+	return rval;
 }
 
-/****************************************************************
- * gpio_get_value
- ****************************************************************/
 static int gpio_get_value(unsigned int gpio, unsigned int *value)
 {
-	int fd, len;
+	int fd;
 	char buf[MAX_BUF];
-	char ch;
-	int rval;
+	int rval = 0;
 
-	len = snprintf(buf, sizeof(buf), SYSFS_GPIO_DIR "/gpio%d/value", gpio);
-	len = len;
+	snprintf(buf, sizeof(buf), SYSFS_GPIO_DIR "/gpio%d/value", gpio);
 
 	fd = open(buf, O_RDONLY);
-	if (fd < 0) {
-		perror("gpio/get-value");
-		return fd;
+	if (fd < 0)
+	{
+		fprintf (stderr, "Unable to open GPIO get-value interface: %s\n", strerror(errno));
+		rval = -1;
 	}
+	else
+	{
+		char ch;
+		int ret;
 
-	rval = read(fd, &ch, 1);
+		ret = read(fd, &ch, 1);
+		if (ch == '0')
+			*value = 0;
+		else
+			*value = 1;
 
-	if (ch != '0') {
-		*value = 1;
-	} else {
-		*value = 0;
+		close(fd);
+		rval = (ret == 1) ? 0 : -1;
 	}
+	UserDebug3(UserApp3, "gpio_get_value(%u)=%u, rval = %d\n", gpio, *value, rval);
 
-	close(fd);
-	return rval == 1 ? 0 : -1;
+	return rval;
 }
 #endif
 
@@ -210,28 +239,16 @@ int LinuxSysFsInterface::InitPins()
 	UserDebug2(UserApp2, "DataIn=%d, DataOut=%d\n", pin_datain, pin_dataout);
 
 #ifdef	_LINUX_
-    if (gpio_export(pin_ctrl) < 0)
+    if (gpio_export(pin_ctrl, GPIO_OUT) < 0)
 		return E2ERR_OPENFAILED;
 
-    if (gpio_set_dir(pin_ctrl, GPIO_OUT) < 0)
+    if (gpio_export(pin_clock, GPIO_OUT) < 0)
 		return E2ERR_OPENFAILED;
 
-    if (gpio_export(pin_clock) < 0)
+    if (gpio_export(pin_datain, GPIO_IN) < 0)
 		return E2ERR_OPENFAILED;
 
-    if (gpio_set_dir(pin_clock, GPIO_OUT) < 0)
-		return E2ERR_OPENFAILED;
-
-    if (gpio_export(pin_datain) < 0)
-		return E2ERR_OPENFAILED;
-
-    if (gpio_set_dir(pin_datain, GPIO_IN) < 0)
-		return E2ERR_OPENFAILED;
-
-    if (gpio_export(pin_dataout) < 0)
-		return E2ERR_OPENFAILED;
-
-    if (gpio_set_dir(pin_dataout, GPIO_OUT) < 0)
+    if (gpio_export(pin_dataout, GPIO_OUT) < 0)
 		return E2ERR_OPENFAILED;
 #endif
 	return OK;
