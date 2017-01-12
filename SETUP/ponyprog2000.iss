@@ -8,10 +8,10 @@ AppPublisherURL=http://www.LancOS.com/
 AppUpdatesURL=http://ponyprog.sourceforge.net
 AppVersion=2.08d
 AppVerName=PonyProg2000 v2.08d
-AppCopyright=Copyright © 1997-2013 by Claudio Lanconelli
+AppCopyright=Copyright ï¿½ 1997-2013 by Claudio Lanconelli
 DefaultDirName={pf}\PonyProg2000
 DefaultGroupName=PonyProg
-Compression=lzma/max
+Compression=lzma2/max
 SolidCompression=no
 LicenseFile=license.txt
 ChangesAssociations=yes
@@ -20,7 +20,7 @@ PrivilegesRequired=admin
 ;ArchitecturesAllowed=x86
 
 ;I never tested with WinNT 3.51, may be we need to replace 3.51 with 4.00
-MinVersion=0,5.0
+MinVersion=5.0
 
 [Files]
 Source: "PONYPROG2000.EXE"; DestDir: "{app}"
@@ -43,7 +43,8 @@ Source: "RDPROGRESS.JPG"; DestDir: "{app}"
 Source: "SERNUMDLG.JPG"; DestDir: "{app}"
 Source: "README.TXT"; DestDir: "{app}"; Flags: isreadme
 Source: "INSTALLDRIVER.EXE"; DestDir: "{app}"
-Source: "INPOUT32.DLL"; DestDir: "{sys}"; Flags: sharedfile promptifolder
+Source: "INPOUT32.DLL"; DestDir: "{sys}"; Flags: 32bit sharedfile promptifolder
+Source: "INPOUTx64.DLL"; DestDir: "{sys}"; Flags: 64bit sharedfile promptifolder
 Source: "PonyProg.url"; DestDir: "{app}"
 
 [UninstallDelete] 
