@@ -29,7 +29,7 @@ oDir	= ./obj/win
 
 ifeq ($(DEBUG),no)
 CFLAGS	= -O2 -DNDEBUG
-LDFLAGS	= -s
+LDFLAGS	= -s -static
 else
 CFLAGS	= -g
 LDFLAGS	=
