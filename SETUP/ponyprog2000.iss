@@ -43,8 +43,7 @@ Source: "RDPROGRESS.JPG"; DestDir: "{app}"
 Source: "SERNUMDLG.JPG"; DestDir: "{app}"
 Source: "README.TXT"; DestDir: "{app}"; Flags: isreadme
 Source: "INSTALLDRIVER.EXE"; DestDir: "{app}"
-Source: "INPOUT32.DLL"; DestDir: "{sys}"; Flags: 32bit sharedfile promptifolder
-Source: "INPOUTx64.DLL"; DestDir: "{sys}"; Flags: 64bit sharedfile promptifolder
+Source: "INPOUT32.DLL"; DestDir: "{sys}"; Flags: sharedfile promptifolder
 Source: "PonyProg.url"; DestDir: "{app}"
 
 [UninstallDelete] 
@@ -55,7 +54,7 @@ Name: "{group}\PonyProg2000"; Filename: "{app}\PONYPROG2000.EXE"; WorkingDir: "{
 Name: "{group}\Visit LancOS PonyProg Web Site"; Filename: "{app}\PonyProg.url"
 
 [Run] 
-Filename: "{app}\INSTALLDRIVER.EXE"; Parameters: "install"
+Filename: "{app}\INSTALLDRIVER.EXE"; Parameters: "install"; StatusMsg: "Installing I/O driver..."
 
 ;Program that need to be executed only under WinNT/Win2000
 [UninstallRun] 
