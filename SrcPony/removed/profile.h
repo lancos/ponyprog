@@ -7,7 +7,7 @@
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: profile.h,v 1.6 2009/11/15 14:45:00 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -27,37 +27,45 @@
 //-------------------------------------------------------------------------//
 //=========================================================================//
 
-#ifndef e2TCNV_H
-#define e2TCNV_H
+#ifndef _PROFILE_H
+#define _PROFILE_H
 
-#include <v/vtextcnv.h>
+#include <QString>
+#include <QVector>
 
-class e2CmdWindow;
+// #define MAXFILENAME     512
+// #define MAXLINENUM      1024
+// #define MAXLINESIZE     512
 
-class e2TextCanvasPane : public vTextCanvasPane
+class Profile
 {
-  public:		//---------------------------------------- public
-	e2TextCanvasPane(e2CmdWindow* win);
-	virtual ~e2TextCanvasPane();
+public:               //---------------------------------------- public
 
-	// Scrolling
-	virtual void HPage(int, int);
-	virtual void VPage(int, int);
+	Profile(const QString &name = 0);
+	virtual ~Profile();
 
-	virtual void HScroll(int);
-	virtual void VScroll(int);
+	QString GetParameter(const QString &id);
+	int SetParameter(const QString &id, const QString &value = "");
+	void SetFileName(const QString &name = "");
 
-	// Events
-	virtual void FontChanged(vFont& newFont);
-	virtual void ResizeText(const int rows, const int cols);
-	virtual void Redraw(int x, int y, int w , int h);
-	virtual void TextMouseDown(int row, int col, int button);
-	virtual void TextMouseUp(int row, int col, int button);
-	virtual void TextMouseMove(int row, int col, int button);
+protected:    //--------------------------------------- protected
 
-  protected:	//--------------------------------------- protected
-  private:		//--------------------------------------- private
-	e2CmdWindow* cmdWin;
+	QString StripSpace(const QString &sp);
+	//      int decnum2str(int value, char *str, int len);
+	//      int decnum2str(unsigned long value, char *str, int len);
+	//      int hexnum2str(int value, char *str, int len);
+	//      int hexnum2str(unsigned long value, char *str, int len);
+
+private:              //--------------------------------------- private
+
+	void FlushVet(int force = 0);
+	int ReadVet();
+	int WriteVet();
+
+	QString filename; //[MAXFILENAME];             //name of .INI file
+	QVector<QString> profilevet; //[MAXLINENUM];   //elenco di parametri (in pratica linee del file)
+	QString linebuffer; //[MAXLINESIZE + 1]; //buffer temporaneo di linea
+	QString strbuf; //[MAXLINESIZE];
+	int cached;                                             //indica se il file e` gia` in memoria
 };
 #endif
-

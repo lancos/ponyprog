@@ -7,7 +7,7 @@
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: e2cnv.h,v 1.2 2007/04/20 10:58:23 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -27,27 +27,37 @@
 //-------------------------------------------------------------------------//
 //=========================================================================//
 
-#ifndef retryMDLG_H
-#define retryMDLG_H
+#ifndef e2TCNV_H
+#define e2TCNV_H
 
-#include "types.h"
-#include <v/vmodald.h>
+// #include <v/vtextcnv.h>
 
-#include "string_table.h"
+class e2CmdWindow;
 
-class retryModalDialog : public vModalDialog
+class e2TextCanvasPane : public vTextCanvasPane
 {
-  public:		//---------------------------------------- public
-	retryModalDialog(vBaseWindow* bw, char* msg, char* title = STR_MSGALERT);
-	virtual ~retryModalDialog();		// Destructor
-	virtual void DialogCommand(ItemVal,ItemVal,CmdType); // action selected
-	virtual int retryAction();
+public:               //---------------------------------------- public
+	e2TextCanvasPane(e2CmdWindow* win);
+	virtual ~e2TextCanvasPane();
 
-  protected:	//--------------------------------------- protected
+	// Scrolling
+	virtual void HPage(int, int);
+	virtual void VPage(int, int);
 
-  private:		//--------------------------------------- private
+	virtual void HScroll(int);
+	virtual void VScroll(int);
 
+	// Events
+	virtual void FontChanged(vFont& newFont);
+	virtual void ResizeText(const int rows, const int cols);
+	virtual void Redraw(int x, int y, int w , int h);
+	virtual void TextMouseDown(int row, int col, int button);
+	virtual void TextMouseUp(int row, int col, int button);
+	virtual void TextMouseMove(int row, int col, int button);
+
+protected:    //--------------------------------------- protected
+private:              //--------------------------------------- private
+	e2CmdWindow* cmdWin;
 };
-
 #endif
 

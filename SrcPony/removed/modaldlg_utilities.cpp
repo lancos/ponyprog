@@ -7,7 +7,7 @@
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: modaldlg_utilities.cpp,v 1.1 2008/01/06 17:36:22 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -27,8 +27,8 @@
 //-------------------------------------------------------------------------//
 //=========================================================================//
 
-#include <v/vnotice.h>
-#include "modaldlg_utilities.h"
+// #include <v/vnotice.h>
+// #include "modaldlg_utilities.h"
 
 //========================>>> SetCommandObject <<<==============================
 int SetCommandObject(const int id, const int val, CommandObject* CmdList)
@@ -42,7 +42,7 @@ int SetCommandObject(const int id, const int val, CommandObject* CmdList)
 		}
 	}
 
-	SysDebug1(BadVals,"SetCommandObject(id:%d...) - No match in list\n",id)
+	SysDebug1(BadVals, "SetCommandObject(id:%d...) - No match in list\n", id)
 
 	return 0;
 }
@@ -51,7 +51,8 @@ int SetCommandObject(const int id, const int val, CommandObject* CmdList)
 int SetCBelow(const int id, const ItemVal val, CommandObject* CmdList)
 {
 	int rval = 0;
-#ifdef	_WINDOWS
+#ifdef  _WINDOWS
+
 	for (CommandObject* cur = CmdList ; cur->cmdType != C_EndOfList ; ++cur)
 	{
 		if (cur->cmdId == id)
@@ -65,8 +66,9 @@ int SetCBelow(const int id, const ItemVal val, CommandObject* CmdList)
 
 	if (rval == 0)
 	{
-		SysDebug1(BadVals,"ClearCBelow(id:%d...) - No match in list\n",id)
+		SysDebug1(BadVals, "ClearCBelow(id:%d...) - No match in list\n", id)
 	}
+
 #endif
 	return rval;
 }
@@ -81,9 +83,13 @@ int SetCommandHidden(const int id, const bool val, CommandObject* CmdList)
 		if (cur->cmdId == id)
 		{
 			if (val)
+			{
 				cur->attrs |= CA_Hidden;
+			}
 			else
+			{
 				cur->attrs &= ~CA_Hidden;
+			}
 
 
 			rval = 1;
@@ -93,7 +99,7 @@ int SetCommandHidden(const int id, const bool val, CommandObject* CmdList)
 
 	if (rval == 0)
 	{
-		SysDebug1(BadVals,"SetCommandHidden(id:%d...) - No match in list\n",id)
+		SysDebug1(BadVals, "SetCommandHidden(id:%d...) - No match in list\n", id)
 	}
 
 	return rval;
@@ -109,12 +115,16 @@ int SetCommandArrayHidden(const int id, const int n, const bool val, CommandObje
 	{
 		for (CommandObject* cur = CmdList ; cur->cmdType != C_EndOfList ; ++cur)
 		{
-			if (cur->cmdId == id+k)
+			if (cur->cmdId == id + k)
 			{
 				if (val)
+				{
 					cur->attrs |= CA_Hidden;
+				}
 				else
+				{
 					cur->attrs &= ~CA_Hidden;
+				}
 
 				rval = 1;
 				break;
@@ -123,7 +133,7 @@ int SetCommandArrayHidden(const int id, const int n, const bool val, CommandObje
 
 		if (rval == 0)
 		{
-			SysDebug1(BadVals,"SetCommandArrayHidden(id:%d...) - No match in list\n",id+k)
+			SysDebug1(BadVals, "SetCommandArrayHidden(id:%d...) - No match in list\n", id + k)
 		}
 	}
 
@@ -142,7 +152,7 @@ int SetCommandSensitive(const int id, const int val, CommandObject* CmdList)
 		}
 	}
 
-	SysDebug1(BadVals,"SetCommandObject(id:%d...) - No match in list\n",id)
+	SysDebug1(BadVals, "SetCommandObject(id:%d...) - No match in list\n", id)
 
 	return 0;
 }
@@ -159,7 +169,7 @@ int SetCommandLabel(const int id, char *str, CommandObject* CmdList)
 		}
 	}
 
-	SysDebug1(BadVals,"SetCommandObject(id:%d...) - No match in list\n",id)
+	SysDebug1(BadVals, "SetCommandObject(id:%d...) - No match in list\n", id)
 
 	return 0;
 }
@@ -175,7 +185,7 @@ int GetCommandObject(const int id, CommandObject* CmdList)
 		}
 	}
 
-	SysDebug1(BadVals,"GetCommandObject(id:%d...) - No match in list\n",id)
+	SysDebug1(BadVals, "GetCommandObject(id:%d...) - No match in list\n", id)
 
 	return 0;
 }

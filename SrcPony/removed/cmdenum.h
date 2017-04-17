@@ -7,7 +7,7 @@
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: cmdenum.h,v 1.11 2013/11/05 13:23:01 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -27,20 +27,21 @@
 //-------------------------------------------------------------------------//
 //=========================================================================//
 
-#ifndef	_CMDENUM_H
-#define	_CMDENUM_H
+#ifndef _CMDENUM_H
+#define _CMDENUM_H
 
 //@V@:BeginIDs
-enum {
+enum
+{
 	idAskToSave = 100, // Dummy Command
 	idCloseAllDialog,
 	idEnableToolBar,
 
-	m_Options,		// Options menu
+	m_Options,              // Options menu
 	m_Log,
-	m_Setup,		// Setup menu
+	m_Setup,                // Setup menu
 	m_InterfSetup,
-	m_Calibration,	// Calibration menu
+	m_Calibration,  // Calibration menu
 	m_Device,
 	m_Command,
 	m_Read,
@@ -49,8 +50,8 @@ enum {
 	m_Info,
 	m_Erase,
 	m_Reset,
-	m_Help,			// Help menu
-	m_About,		// About
+	m_Help,                 // Help menu
+	m_About,                // About
 	m_HIndex,
 	m_Note,
 	m_EditBuf,
@@ -153,7 +154,7 @@ enum {
 	m_9376_8,
 	m_9386_8,
 
-//	m_at90sXXXX,
+	//      m_at90sXXXX,
 	m_at90s1200,
 	m_at90s2313,
 	m_at90s4414,
@@ -179,14 +180,14 @@ enum {
 	m_at90s4434,
 	m_at90s8534,
 	m_at90s8535,
-//	m_attiny10,
-//	m_attiny11,
+	//      m_attiny10,
+	//      m_attiny11,
 	m_attiny12,
 	m_attiny13,
 	m_attiny15,
 	m_attiny22,
 	m_attiny26,
-//	m_attiny28,
+	//      m_attiny28,
 	m_attiny2313,
 	m_attiny25, m_attiny45, m_attiny85,
 	m_attiny261, m_attiny461, m_attiny861,
@@ -255,7 +256,7 @@ enum {
 	m_s2430,
 	m_x2444,
 	m_x2445,
-
+#if 0
 	btnHelp,
 
 	frmToolBar,
@@ -263,7 +264,7 @@ enum {
 	frmToolBar3,
 	frmToolBar4,
 
-	icbRead,		// Tool Bar Read
+	icbRead,                // Tool Bar Read
 	icbReadEep,
 	icbReadFlash,
 	icbWrite,
@@ -283,7 +284,7 @@ enum {
 	icbReload,
 	icbPrint,
 	icbEdit,
-	icbHelp,		// Tool Bar Help
+	icbHelp,                // Tool Bar Help
 
 	icbNew,
 	icbScript,
@@ -294,17 +295,17 @@ enum {
 	icoChip,
 
 	lblEEPType,
-	cbxEEPType,		// EEPROM type
+	cbxEEPType,             // EEPROM type
 	lblEEPSubType,
 	cbxEEPSubType,
 	btnChange,
 	lblStringID,
-	txtStringID,	// Identificativo della EEPROM
+	txtStringID,    // Identificativo della EEPROM
 	lblComment,
-	txtComment,		// Commento
-	lblTestStat,	// Status Bar test
-	lblCurTime,		// Date/Time field
-	lblEEPInfo,		// EEPROM Info
+	txtComment,             // Commento
+	lblTestStat,    // Status Bar test
+	lblCurTime,             // Date/Time field
+	lblEEPInfo,             // EEPROM Info
 	lblLegend,
 
 	//About Modal dialog
@@ -365,8 +366,9 @@ enum {
 	txiEditText,
 
 	pbrProgress,
+#endif
 
-	blkLast			// Last item
+	blkLast                 // Last item
 };
 //@V@:EndIDs
 

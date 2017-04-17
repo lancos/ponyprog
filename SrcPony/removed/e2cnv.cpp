@@ -7,7 +7,7 @@
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: e2cnv.cpp,v 1.2 2007/04/20 10:58:23 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -65,9 +65,13 @@ void e2TextCanvasPane::HScroll(int step)
 void e2TextCanvasPane::VScroll(int step)
 {
 	if (step > 0)
+	{
 		cmdWin->NextLine();
+	}
 	else
+	{
 		cmdWin->PrevLine();
+	}
 
 	vTextCanvasPane::VScroll(step);
 }
@@ -85,27 +89,28 @@ void e2TextCanvasPane::TextMouseDown(int row, int col, int button)
 	{
 		cmdWin->CharEdit(row, col);
 	}
-	vTextCanvasPane::TextMouseDown(row,col,button);
+
+	vTextCanvasPane::TextMouseDown(row, col, button);
 }
 
 //======================>>> e2TextCanvasPane::TextMouseUp <<<==================
 void e2TextCanvasPane::TextMouseUp(int row, int col, int button)
 {
-	vTextCanvasPane::TextMouseUp(row,col,button);
+	vTextCanvasPane::TextMouseUp(row, col, button);
 }
 
 //======================>>> e2TextCanvasPane::TextMouseMove <<<=================
 void e2TextCanvasPane::TextMouseMove(int row, int col, int button)
 {
-	vTextCanvasPane::TextMouseMove(row,col,button);
+	vTextCanvasPane::TextMouseMove(row, col, button);
 }
 
 //=========================>>> e2TextCanvasPane::Redraw <<<======================
 void e2TextCanvasPane::Redraw(int x, int y, int w, int h)
 {
-	cmdWin->Draw();		//???
+	cmdWin->Draw();         //???
 
-	vTextCanvasPane::Redraw(x,y,w,h);
+	vTextCanvasPane::Redraw(x, y, w, h);
 }
 
 //======================>>> e2TextCanvasPane::ResizeText <<<======================
@@ -113,6 +118,6 @@ void e2TextCanvasPane::ResizeText(const int rows, const int cols)
 {
 	cmdWin->Draw(rows, cols);
 
-	vTextCanvasPane::ResizeText(rows,cols);
+	vTextCanvasPane::ResizeText(rows, cols);
 }
 

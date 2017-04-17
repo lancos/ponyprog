@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: retrymdlg.h,v 1.3 2007/04/20 10:58:23 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -27,73 +27,29 @@
 //-------------------------------------------------------------------------//
 //=========================================================================//
 
-#include <stdio.h>
-#include "retrymdlg.h"
-#include <v/vnotice.h>
+#ifndef retryMDLG_H
+#define retryMDLG_H
 
-#include "cmdenum.h"
+#include "types.h"
 
-//@V@:BeginDialogCmd DefaultCmds
-static DialogCmd DefaultCmds[] =
+#include <QDialog>
+
+
+#include "string_table.h"
+
+class retryModalDialog : public QDialog
 {
-//#ifdef	_LINUX_
-//	{C_Label,lblMainMsg,0,"X",NoList,CA_MainMsg,isSens,NoFrame,0,0},
-//#else
-	{C_Label,lblMainMsg,0," ",NoList,CA_None,isSens,NoFrame,0,0},
-//#endif
+public:               //---------------------------------------- public
+	retryModalDialog(QWidget* bw, char* msg, char* title = STR_MSGALERT);
+	virtual ~retryModalDialog();            // Destructor
+	virtual void DialogCommand(ItemVal, ItemVal, CmdType); // action selected
+	virtual int retryAction();
 
-	{C_Button, M_Cancel, 0, STR_BTNABORT, NoList,CA_DefaultButton, isSens,NoFrame, 0, lblMainMsg},
-	{C_Button, M_OK, 0, STR_BTNRETRY, NoList, CA_None, isSens, NoFrame, M_Cancel, lblMainMsg},
-	{C_Button, btnIgnore, 0, STR_BTNIGNORE, NoList, CA_None, isSens, NoFrame, M_OK, lblMainMsg},
+protected:    //--------------------------------------- protected
 
-	{C_EndOfList,0,0,0,0,CA_None,0,0,0}
+private:              //--------------------------------------- private
+
 };
-//@V@:EndDialogCmd
 
+#endif
 
-//======================>>> retryModalDialog::retryModalDialog <<<==================
-retryModalDialog::retryModalDialog(vBaseWindow* bw, char* msg, char* title) :
-    vModalDialog(bw, title)
-{
-	UserDebug(Constructor,"retryModalDialog::retryModalDialog() constructor\n")
-
-	DefaultCmds[0].title = new char[strlen(msg)+1];
-	strcpy(DefaultCmds[0].title, msg);
-
-	AddDialogCmds(DefaultCmds);		// add the predefined commands
-}
-
-//===================>>> retryModalDialog::~retryModalDialog <<<====================
-retryModalDialog::~retryModalDialog()
-{
-	delete DefaultCmds[0].title;
-
-	UserDebug(Destructor,"retryModalDialog::~retryModalDialog() destructor\n")
-}
-
-//====================>>> retryModalDialog::infoAction <<<====================
-int retryModalDialog::retryAction()
-{
-	ItemVal ans,rval;
-
-	ans = ShowModalDialog("",rval);
-	if (ans == M_Cancel)
-		return 0;		//Abort
-	else
-	if (ans == M_OK)
-		return 1;		//Retry
-	else
-		return 2;		//Ignore
-}
-
-//====================>>> retryModalDialog::DialogCommand <<<====================
-void retryModalDialog::DialogCommand(ItemVal id, ItemVal retval, CmdType ctype)
-{
-	UserDebug2(CmdEvents,"retryModalDialog::DialogCommand(id:%d, val:%d)\n",id, retval)
-
-	if (id == btnIgnore)
-	{
-		CloseDialog();
-	}
-	vModalDialog::DialogCommand(id,retval,ctype);
-}

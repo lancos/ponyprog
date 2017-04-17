@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: e2app.h,v 1.12 2016/05/27 11:22:51 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -27,42 +27,31 @@
 //-------------------------------------------------------------------------//
 //=========================================================================//
 
-#ifndef _PROFILE_H
-#define _PROFILE_H
+#include <QApplication>
+#include <QTextCodec>
+#include <QIcon>
+#include <QString>
+#include <QDebug>
 
-#define	MAXFILENAME	512
-#define	MAXLINENUM	1024
-#define MAXLINESIZE	512
+#include "e2cmdw.h"
 
-class Profile
+
+int main(int argc, char **argv)
 {
-  public:		//---------------------------------------- public
+	QApplication app(argc, argv);
 
-	Profile(char const *name = 0);
-	virtual ~Profile();
+	Q_INIT_RESOURCE(ponyprog);
 
-	char const *GetParameter(char const *id);
-	int SetParameter(char const *id, char const *value = "");
-	void SetFileName(char const *name);
+	app.setApplicationName("PonyProg");
+	app.setOrganizationName("PonyProg");
+	app.setWindowIcon(QIcon(":/icons/ponyprog-small.png"));
 
-  protected:	//--------------------------------------- protected
+	// Identify locale and load translation if available
+	//     QString locale = QLocale::system().name();
 
-	char *StripSpace(char const *sp);
-	int decnum2str(int value, char *str, int len);
-	int decnum2str(unsigned long value, char *str, int len);
-	int hexnum2str(int value, char *str, int len);
-	int hexnum2str(unsigned long value, char *str, int len);
+	e2CmdWindow mainWin;
 
-  private:		//--------------------------------------- private
+	mainWin.show();
 
-   void FlushVet(int force = 0);
-   int ReadVet();
-   int WriteVet();
-
-	char filename[MAXFILENAME];		//name of .INI file
-	char *profilevet[MAXLINENUM];	//elenco di parametri (in pratica linee del file)
-	char linebuffer[MAXLINESIZE+1];	//buffer temporaneo di linea
-	char strbuf[MAXLINESIZE];
-	int cached;						//indica se il file e` gia` in memoria
+	return app.exec();
 };
-#endif
