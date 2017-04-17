@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: ispinterf.h,v 1.5 2007/04/20 10:58:22 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -27,14 +27,14 @@
 //-------------------------------------------------------------------------//
 //=========================================================================//
 
-#ifndef	_AVRISPINTERFACE_H
-#define	_AVRISPINTERFACE_H
+#ifndef _AVRISPINTERFACE_H
+#define _AVRISPINTERFACE_H
 
 #include "lpt_ext_interf.h"
 
 class AvrISPInterface : public LptExtInterface
 {
- public:		//------------------------------- public
+public:                //------------------------------- public
 	AvrISPInterface(bool use_io = false);
 
 	virtual int Open(int com_no);
@@ -54,9 +54,9 @@ class AvrISPInterface : public LptExtInterface
 	int SetPower(int onoff);
 	void SetControlLine(int res = 1);
 
- protected:		//------------------------------- protected
+protected:             //------------------------------- protected
 
- private:		//------------------------------- private
+private:               //------------------------------- private
 	int GetPresence();
 };
 

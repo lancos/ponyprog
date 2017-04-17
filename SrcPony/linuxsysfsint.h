@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2016   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: linuxsysfsint.h,v 1.3 2016/06/27 14:58:02 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -27,15 +27,15 @@
 //-------------------------------------------------------------------------//
 //=========================================================================//
 
-#ifndef	_LINUXSYSFSINTERFACE_H
-#define	_LINUXSYSFSINTERFACE_H
+#ifndef _LINUXSYSFSINTERFACE_H
+#define _LINUXSYSFSINTERFACE_H
 
 #include "businter.h"
-//#include "portint.h"
+
 
 class LinuxSysFsInterface : public BusInterface
 {
- public:		//------------------------------- public
+public:                //------------------------------- public
 	LinuxSysFsInterface();
 	virtual ~LinuxSysFsInterface();
 
@@ -51,15 +51,15 @@ class LinuxSysFsInterface : public BusInterface
 	virtual int IsClockDataUP();
 	virtual int IsClockDataDOWN();
 
-//	virtual int TestPort(int port);
+	//      virtual int TestPort(int port);
 
 	int SetPower(int onoff);
 	void SetControlLine(int res = 1);
 
- protected:		//------------------------------- protected
-//	int GetPresence() const;
+protected:             //------------------------------- protected
+	//      int GetPresence() const;
 
- private:		//------------------------------- private
+private:               //------------------------------- private
 	int InitPins();
 	void DeInitPins();
 
@@ -68,10 +68,10 @@ class LinuxSysFsInterface : public BusInterface
 	int pin_dataout;
 	int pin_clock;
 
-    int fd_ctrl;
-    int fd_datain;
-    int fd_dataout;
-    int fd_clock;
+	int fd_ctrl;
+	int fd_datain;
+	int fd_dataout;
+	int fd_clock;
 };
 
 #endif

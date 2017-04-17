@@ -11,7 +11,9 @@ uint16_t fcalc_crc(FILE *fh, long ini_ofs, long len)
 	long old_pos;
 
 	if (!fh)
+	{
 		return 0;
+	}
 
 	old_pos = ftell(fh);
 	fseek(fh, ini_ofs, SEEK_SET);
@@ -19,13 +21,18 @@ uint16_t fcalc_crc(FILE *fh, long ini_ofs, long len)
 	if (len)
 	{
 		for (; len && (ch = getc(fh)) != EOF; len--)
+		{
 			crc16 = updcrcr(crc16, ch);
+		}
 	}
 	else
 	{
 		while( (ch = getc(fh)) != EOF )
+		{
 			crc16 = updcrcr(crc16, ch);
+		}
 	}
+
 	fseek(fh, old_pos, SEEK_SET);
 
 	return crc16;
@@ -40,17 +47,21 @@ uint16_t mcalc_crc(void *ini_addr, long len)
 	uint8_t *bp = (uint8_t *)ini_addr;
 
 	if (len == 0)
+	{
 		return 0;
+	}
 
 	for (crc16 = 0; len; len--)
+	{
 		crc16 = updcrcr(crc16, *bp++);
+	}
 
 	return crc16;
 }
 
 ///////////////////////////////////////////////////////////////////
 
-#define M16	0xA001		/* crc-16 mask */
+#define M16     0xA001          /* crc-16 mask */
 
 /* tables */
 static uint16_t crc16tab[256] =

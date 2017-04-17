@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: lpt_ext_interf.h,v 1.2 2007/04/20 10:58:22 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -27,8 +27,8 @@
 //-------------------------------------------------------------------------//
 //=========================================================================//
 
-#ifndef	_LPT_EXT_INTERFACE_H
-#define	_LPT_EXT_INTERFACE_H
+#ifndef _LPT_EXT_INTERFACE_H
+#define _LPT_EXT_INTERFACE_H
 
 #include "businter.h"
 #include "lptinterf.h"
@@ -36,19 +36,26 @@
 
 class LptExtInterface : public BusInterface
 {
- public:		//------------------------------- public
+public:                //------------------------------- public
 	LptExtInterface(bool use_io = false)
-		{ io_mode = use_io; }
+	{
+		io_mode = use_io;
+	}
 	virtual ~LptExtInterface()
-		{ }
+	{ }
 
 	void Close()
-		{ lptio.Close(); lpt.Close(); }
+	{
+		lptio.Close();
+		lpt.Close();
+	}
 
 	void SetIOmode(bool use_io)
-		{ io_mode = use_io; }
+	{
+		io_mode = use_io;
+	}
 
- protected:		//------------------------------- protected
+protected:             //------------------------------- protected
 
 	int InDataPort(int port_no = 0)
 	{
@@ -85,7 +92,7 @@ class LptExtInterface : public BusInterface
 		return io_mode ? lptio.GetLastCtrl() : lpt.GetLastCtrl();
 	}
 
- private:		//------------------------------- private
+private:               //------------------------------- private
 
 	static LPTInterface lpt;
 	static LPTIOInterface lptio;

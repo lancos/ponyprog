@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: interfconv.cpp,v 1.6 2016/05/27 11:22:51 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -27,90 +27,118 @@
 //-------------------------------------------------------------------------//
 //=========================================================================//
 
-#include <string.h>
+#include <QString>
+#include <QDebug>
+
 #include "types.h"
 #include "globals.h"
 
-#ifndef	_LINUX_
-#  ifdef	__BORLANDC__
-#    define	strcasecmp stricmp
-#  else // _MICROSOFT_ VC++
-#    define strcasecmp	_stricmp
-#  endif
-#endif
-
-struct Interf2Index {
+struct Interf2Index
+{
 	int vector;
 	int index;
-	const char *name;
+	QString name;
 	HInterfaceType type;
 };
 
-static Interf2Index index_interface[] = {
+static QVector<Interf2Index> index_interface =
+{
 	//AutoTag
 	//Interfaces vector
-	{0,0,"SI-ProgAPI",SIPROG_API},
-	{0,1,"SI-ProgI/O",SIPROG_IO},
-	{0,2,"JDM-API",JDM_API},
-	{1,0,"AvrISP-API",AVRISP},
-	{1,1,"AvrISP-I/O",AVRISP_IO},
-	{1,2,"DT-006-API",DT006_API},
-	{1,3,"DT-006-I/O",DT006_IO},
-	{1,4,"EasyI2C-API",EASYI2C_API},
-	{1,5,"EasyI2C-I/O",EASYI2C_IO},
-	{1,6,"Linux SysFs GPIO",LINUXSYSFS_IO},
-	{0,0,0,LAST_HT}
+	{0, 0, "SI-ProgAPI", SIPROG_API},
+	{0, 1, "SI-ProgI/O", SIPROG_IO},
+	{0, 2, "JDM-API", JDM_API},
+	{1, 0, "AvrISP-API", AVRISP},
+	{1, 1, "AvrISP-I/O", AVRISP_IO},
+	{1, 2, "DT-006-API", DT006_API},
+	{1, 3, "DT-006-I/O", DT006_IO},
+	{1, 4, "EasyI2C-API", EASYI2C_API},
+	{1, 5, "EasyI2C-I/O", EASYI2C_IO},
+	{1, 6, "Linux SysFs GPIO", LINUXSYSFS_IO},
+	{0, 0, "", LAST_HT}
 };
 
-HInterfaceType NameToInterfType(const char *name)
-{
-	int k = 0;
 
-	if (name)
+// EK 2017
+HInterfaceType NameToInterfType(const QString &name)
+{
+	if (name.length())
 	{
-		for (k = 0; index_interface[k].name != 0; k++)
-			if ( strcasecmp(index_interface[k].name, name) == 0 )
-				break;
+		QString n = name;
+		n.remove(QChar('-'));
+		n.remove(QChar(' '));
+		n.remove(QChar('/'));
+
+		for (int k = 0; k < index_interface.count(); k++)
+		{
+			QString v = index_interface.at(k).name;
+			v.remove(QChar('-'));
+			v.remove(QChar(' '));
+			v.remove(QChar('/'));
+
+			if ( v.indexOf( n ) >= 0)
+			{
+				return index_interface.at(k).type;
+			}
+		}
 	}
 
-	return index_interface[k].type;
+	return LAST_HT;
 }
 
-const char *TypeToInterfName(HInterfaceType type)
+
+QString TypeToInterfName(HInterfaceType type)
 {
-	int k;
-	for (k = 0; index_interface[k].name != 0; k++)
-		if (index_interface[k].type == type)
-			break;
-	return index_interface[k].name;
+	for (int k = 0; k < index_interface.count(); k++)
+	{
+		if (index_interface.at(k).type == type)
+		{
+			return index_interface.at(k).name;
+		}
+	}
+
+	return "";
 }
+
 
 int TypeToInterfVector(HInterfaceType type)
 {
-	int k;
-	for (k = 0; index_interface[k].name != 0; k++)
-		if (index_interface[k].type == type)
-			break;
-	return index_interface[k].vector;
+	for (int k = 0; k < index_interface.count(); k++)
+	{
+		if (index_interface.at(k).type == type)
+		{
+			return index_interface.at(k).vector;
+		}
+	}
+
+	return -1;
 }
+
 
 int TypeToInterfIndex(HInterfaceType type)
 {
-	int k;
-	for (k = 0; index_interface[k].name != 0; k++)
-		if (index_interface[k].type == type)
-			break;
-	return index_interface[k].index;
+	for (int k = 0; k < index_interface.count(); k++)
+	{
+		if (index_interface.at(k).type == type)
+		{
+			return index_interface.at(k).index;
+		}
+	}
+
+	return -1;
 }
+
 
 HInterfaceType VindexToInterfType(int vector, int index)
 {
-	int k;
-	for (k = 0; index_interface[k].name != 0; k++)
+	for (int k = 0; k < index_interface.count(); k++)
 	{
-		if (index_interface[k].vector == vector &&
-			index_interface[k].index == index)
-			break;
+		if (index_interface.at(k).vector == vector &&
+		                index_interface.at(k).index == index)
+		{
+			return index_interface.at(k).type;
+		}
 	}
-	return index_interface[k].type;
+
+	return LAST_HT;
 }

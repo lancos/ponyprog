@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: errcode.h,v 1.4 2007/04/20 10:58:21 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -27,57 +27,58 @@
 //-------------------------------------------------------------------------//
 //=========================================================================//
 
-#ifndef	_ERRCODE_H
-#define	_ERRCODE_H
+#ifndef _ERRCODE_H
+#define _ERRCODE_H
 
-#define	OK				0
-#define	BADPARAM		-2			// Parametri alla funzione errati
+#define OK                       0
+#define NOT_READY               -1
+#define BADPARAM                -2                      // Parametri alla funzione errati
 
-#define	FILENOTFOUND	-3			// File non aperto in lettura
-#define	CREATEERROR		-4			// File non aperto in scrittura
-#define	BADFILETYPE		-5			// File di tipo errato
-#define	READERROR		-6			// Errore in lettura dal file
-#define	WRITEERROR		-7			// Errore in scrittura da file
-#define	NOTHINGTOSAVE	-8			// Nessun contenuto da salvare
-#define NOTSUPPORTED	-9			// Funzionalita` non supportata (ancora)
+#define FILENOTFOUND            -3                      // File non aperto in lettura
+#define CREATEERROR             -4                      // File non aperto in scrittura
+#define BADFILETYPE             -5                      // File di tipo errato
+#define READERROR               -6                      // Errore in lettura dal file
+#define WRITEERROR              -7                      // Errore in scrittura da file
+#define NOTHINGTOSAVE   -8                      // Nessun contenuto da salvare
+#define NOTSUPPORTED    -9                      // Funzionalita` non supportata (ancora)
 
-#define	E2P_TIMEOUT		-10
+#define E2P_TIMEOUT             -10
 
-//#define IICERR_NOERR		OK
-#define IICERR_BUSBUSY		-11
-#define IICERR_NOTACK		-12
-#define IICERR_NOADDRACK	-13
-#define IICERR_SDACONFLICT	-14
-#define	IICERR_SCLCONFLICT	-15
-#define	E2ERR_OPENFAILED	-16
-#define	E2ERR_ACCESSDENIED	-17
-#define E2ERR_NOTINSTALLED	-18
-#define IICERR_TIMEOUT		-19
-#define	IICERR_STOP			-20
+//#define IICERR_NOERR          OK
+#define IICERR_BUSBUSY          -11
+#define IICERR_NOTACK           -12
+#define IICERR_NOADDRACK        -13
+#define IICERR_SDACONFLICT      -14
+#define IICERR_SCLCONFLICT      -15
+#define E2ERR_OPENFAILED        -16
+#define E2ERR_ACCESSDENIED      -17
+#define E2ERR_NOTINSTALLED      -18
+#define IICERR_TIMEOUT          -19
+#define IICERR_STOP                     -20
 
-#define	E2ERR_WRITEFAILED	-21
-#define E2ERR_BLANKCHECKFAILED	-22
+#define E2ERR_WRITEFAILED       -21
+#define E2ERR_BLANKCHECKFAILED  -22
 
-#define	DEVICE_BADTYPE		-23
-#define	DEVICE_UNKNOWN		-24
-#define	DEVICE_LOCKED		-25
-#define	OP_ABORTED			-26
+#define DEVICE_BADTYPE          -23
+#define DEVICE_UNKNOWN          -24
+#define DEVICE_LOCKED           -25
+#define OP_ABORTED                      -26
 
-#define	BUFFEROVERFLOW		-30
-#define	OUTOFMEMORY			-31
-#define BUFFERUNDERFLOW		-32
+#define BUFFEROVERFLOW          -30
+#define OUTOFMEMORY                     -31
+#define BUFFERUNDERFLOW         -32
 
 //Codici di errore restituiti dall'interprete di comandi a menu
-#define	CMD_BUFFEREMPTY		-39
-#define CMD_NOTHINGTOWRITE	-40
-#define	CMD_NOTHINGTOVERIFY	-41
-#define	CMD_NOTHINGTOLOAD	-42
-#define	CMD_NOTHINGTOSAVE	-43
-#define	CMD_WRITEFAILED		-44
-#define	CMD_VERIFYFAILED	-45
-#define	CMD_ROLLOVERFAILED	-46
+#define CMD_BUFFEREMPTY         -39
+#define CMD_NOTHINGTOWRITE      -40
+#define CMD_NOTHINGTOVERIFY     -41
+#define CMD_NOTHINGTOLOAD       -42
+#define CMD_NOTHINGTOSAVE       -43
+#define CMD_WRITEFAILED         -44
+#define CMD_VERIFYFAILED        -45
+#define CMD_ROLLOVERFAILED      -46
 
-#define	CMD_SCRIPTERROR		-50
+#define CMD_SCRIPTERROR         -50
 
 #endif
 

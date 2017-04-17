@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: binfbuf.h,v 1.2 2007/04/20 10:58:22 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -35,9 +35,10 @@
 #include "types.h"
 #include "filebuf.h"
 
+
 class binFileBuf : public FileBuf
 {
-  public:		//---------------------------------------- public
+public:               //---------------------------------------- public
 
 	binFileBuf(e2AppWinInfo *wininfo = 0);
 	virtual ~binFileBuf();
@@ -45,9 +46,9 @@ class binFileBuf : public FileBuf
 	virtual int Load(int loadtype = ALL_TYPE, long relocation_offset = 0);
 	virtual int Save(int savetype = ALL_TYPE, long relocation_offset = 0);
 
-  protected:	//--------------------------------------- protected
+protected:    //--------------------------------------- protected
 
-  private:		//--------------------------------------- private
+private:              //--------------------------------------- private
 
 };
 #endif

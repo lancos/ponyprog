@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: sdebus.h,v 1.5 2009/11/16 22:29:18 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -27,63 +27,84 @@
 //-------------------------------------------------------------------------//
 //=========================================================================//
 
-#ifndef	_SDE2506BUS_H
-#define	_SDE2506BUS_H
+#ifndef _SDE2506BUS_H
+#define _SDE2506BUS_H
 
 #include "busio.h"
 #include "pgminter.h"
 
 class Sde2506Bus : public BusIO
 {
- public:		//------------------------------- public
+public:                //------------------------------- public
 	Sde2506Bus(BusInterface *ptr = 0);
 	virtual ~Sde2506Bus();
 
 	long Read(int addr, uint8_t *data, long length, int page_size = 0);
 	long Write(int addr, uint8_t const *data, long length, int page_size = 0);
-	
+
 	int Reset();
 
 	void SetDelay();
 
- protected:		//------------------------------- protected
+protected:             //------------------------------- protected
 
 	int SendDataWord(int wo, int wlen = 8);
 	int RecDataWord(int wlen = 8);
 	int WaitReadyAfterWrite(long timeout = 5000);
 
 	int SendControlBit(int opcode)
-		{ return SendDataWord(opcode, 1); WaitUsec(5); }
+	{
+		return SendDataWord(opcode, 1);
+		WaitUsec(5);
+	}
 	int SendAddress(int addr)
-		{ return SendDataWord(addr, 7); }
+	{
+		return SendDataWord(addr, 7);
+	}
 
 	void setCE()
-		{ busI->SetControlLine(0); }
+	{
+		busI->SetControlLine(0);
+	}
 	void clearCE()
-		{ busI->SetControlLine(1); }
+	{
+		busI->SetControlLine(1);
+	}
 
- private:		//------------------------------- private
+private:               //------------------------------- private
 
 	int SendDataBit(int b);
 	int RecDataBit();
 
 	void bitDI(int b)
-		{ busI->SetDataOut(b); }
+	{
+		busI->SetDataOut(b);
+	}
 
 	void setDI()
-		{ busI->SetDataOut(1); }
+	{
+		busI->SetDataOut(1);
+	}
 
 	void clearDI()
-		{ busI->SetDataOut(0); }
+	{
+		busI->SetDataOut(0);
+	}
 
 	void setCLK()
-		{ busI->SetClock(1); }
+	{
+		busI->SetClock(1);
+	}
 
 	void clearCLK()
-		{ busI->SetClock(0); }
+	{
+		busI->SetClock(0);
+	}
 
 	int getDO() const
-		{ return busI->GetDataIn(); }
+	{
+		return busI->GetDataIn();
+	}
 };
 
 #endif

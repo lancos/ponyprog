@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: motsfbuf.h,v 1.6 2009/11/16 22:29:18 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -35,9 +35,10 @@
 #include "types.h"
 #include "filebuf.h"
 
+
 class MotorolaSFileBuf : public FileBuf
 {
-  public:		//---------------------------------------- public
+public:               //---------------------------------------- public
 
 	MotorolaSFileBuf(e2AppWinInfo *wininfo = 0);
 	virtual ~MotorolaSFileBuf();
@@ -45,9 +46,9 @@ class MotorolaSFileBuf : public FileBuf
 	virtual int Load(int loadtype = ALL_TYPE, long relocation_offset = 0);
 	virtual int Save(int savetype = ALL_TYPE, long relocation_offset = 0);
 
-  protected:	//--------------------------------------- protected
+protected:    //--------------------------------------- protected
 
-  private:		//--------------------------------------- private
+private:              //--------------------------------------- private
 
 	int WriteRecord(FILE *fh, uint8_t *bptr, long curaddr, long recsize, int fmt);
 	int ParseRecord(char *lbufPC, uint8_t *buf_startP, uint8_t *buf_endP, long offset, int nocopy);
@@ -56,6 +57,6 @@ class MotorolaSFileBuf : public FileBuf
 	long highestAddr;
 	long lowestAddr;
 
-	int valid_record_count;		//incremented by ParseRecord for each valid record found
+	int valid_record_count;         //incremented by ParseRecord for each valid record found
 };
 #endif

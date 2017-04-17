@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: at25xxx.cpp,v 1.3 2007/04/20 10:58:22 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -28,15 +28,15 @@
 //=========================================================================//
 
 #include "types.h"
-#include "at25xxx.h"		// Header file
+#include "at25xxx.h"            // Header file
 #include "errcode.h"
 #include "eeptypes.h"
 
-//#define	BANK_SIZE	1
+//#define       BANK_SIZE       1
 
 //=====>>> Costruttore <<<======
 At25xxx::At25xxx(e2AppWinInfo *wininfo, BusIO *busp)
-	:	At250xx(wininfo, busp)
+	:       At250xx(wininfo, busp)
 {
 }
 

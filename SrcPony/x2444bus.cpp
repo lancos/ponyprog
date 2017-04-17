@@ -7,7 +7,7 @@
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: x2444bus.cpp,v 1.6 2009/11/16 23:40:43 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -31,46 +31,57 @@
 #include "x2444bus.h"
 #include "errcode.h"
 
-#include "e2app.h"
+#include <QDebug>
 
-#define	_BIG_ENDIAN_
+#include "e2cmdw.h"
+
+#define _BIG_ENDIAN_
 
 // Costruttore
 X2444Bus::X2444Bus(BusInterface *ptr)
 	: MicroWireBus(ptr),
-		ReadCode(06),
-		WriteCode(03),
-		WriteEnableCode(04),
-		WriteDisableCode(00),
-		RecallCode(05),
-		StoreCode(01),
-		loop_timeout(8000),
-		organization(ORG16)
+	  ReadCode(06),
+	  WriteCode(03),
+	  WriteEnableCode(04),
+	  WriteDisableCode(00),
+	  RecallCode(05),
+	  StoreCode(01),
+	  loop_timeout(8000),
+	  organization(ORG16)
 {
-	UserDebug(Constructor, "X2444Bus::X2444Bus()\n");
+	qDebug() << "X2444Bus::X2444Bus()";
 }
 
 void X2444Bus::SendCmdAddr(int cmd, int addr)
 {
 	if (organization == ORG16)
+	{
 		SendDataWord(0x80 | ((addr & 0x0f) << 3) | (cmd & 7), 8);
+	}
 	else
+	{
 		SendDataWord(0x80 | ((addr & 0x07) << 4) | (cmd & 7), 8);
+	}
 }
 
 long X2444Bus::Read(int addr, uint8_t *data, long length, int page_size)
 {
-	UserDebug3(UserApp1, "X2444Bus::Read(%xh, %ph, %ld)\n", addr, data, length);
+	qDebug() << "X2444Bus::Read(" << (hex) << addr << ", " << data << ", " << (dec) << length << ")";
 
 	long len;
 
 	addr = 0;
 
 	int inc;
+
 	if (organization == ORG16)
+	{
 		inc = 2;
+	}
 	else
+	{
 		inc = 1;
+	}
 
 	//Prima assicuriamoci una recall
 	clearCS();
@@ -81,7 +92,8 @@ long X2444Bus::Read(int addr, uint8_t *data, long length, int page_size)
 
 	//Dal piu` significativo al meno significativo
 	for (len = 0; len < length; len += inc)
-	{	//17/08/98 -- now repeat the command every word
+	{
+		//17/08/98 -- now repeat the command every word
 		clearCS();
 		WaitUsec(shot_delay);
 		setCS();
@@ -95,7 +107,7 @@ long X2444Bus::Read(int addr, uint8_t *data, long length, int page_size)
 
 		if (organization == ORG16)
 		{
-#ifdef	_BIG_ENDIAN_
+#ifdef  _BIG_ENDIAN_
 			*data++ = (uint8_t)(val >> 8);
 			*data++ = (uint8_t)(val & 0xFF);
 #else
@@ -112,13 +124,16 @@ long X2444Bus::Read(int addr, uint8_t *data, long length, int page_size)
 
 		if ( (len & 1) )
 			if ( CheckAbort(len * 100 / length) )
+			{
 				break;
+			}
 	}
+
 	CheckAbort(100);
 
 	clearCS();
 
-	UserDebug1(UserApp1, "X2444Bus::Read() = %ld\n", len);
+	qDebug() << "X2444Bus::Read() = " << len;
 
 	return len;
 }
@@ -127,7 +142,7 @@ long X2444Bus::Write(int addr, uint8_t const *data, long length, int page_size)
 {
 	long curaddr;
 
-	clearCS();			//17/08/98 -- may be it's not needed
+	clearCS();                      //17/08/98 -- may be it's not needed
 	WaitUsec(shot_delay);
 	setCS();
 
@@ -146,7 +161,9 @@ long X2444Bus::Write(int addr, uint8_t const *data, long length, int page_size)
 	setCS();
 
 	if (organization == ORG16)
-		length >>= 1;	//byte to word  counter
+	{
+		length >>= 1;        //byte to word  counter
+	}
 
 	for (curaddr = 0; curaddr < length; curaddr++)
 	{
@@ -154,7 +171,7 @@ long X2444Bus::Write(int addr, uint8_t const *data, long length, int page_size)
 
 		if (organization == ORG16)
 		{
-#ifdef	_BIG_ENDIAN_
+#ifdef  _BIG_ENDIAN_
 			val  = (uint16_t)(*data++) << 8;
 			val |= (uint16_t)(*data++);
 #else
@@ -179,7 +196,9 @@ long X2444Bus::Write(int addr, uint8_t const *data, long length, int page_size)
 
 		if ( (curaddr & 1) )
 			if ( CheckAbort(curaddr * 100 / length) )
+			{
 				break;
+			}
 	}
 
 	SendCmdAddr(StoreCode, 0xff);
@@ -189,7 +208,9 @@ long X2444Bus::Write(int addr, uint8_t const *data, long length, int page_size)
 	CheckAbort(100);
 
 	if (organization == ORG16)
-		curaddr <<= 1;		//word to byte counter
+	{
+		curaddr <<= 1;        //word to byte counter
+	}
 
 	return curaddr;
 }

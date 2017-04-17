@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: at89sbus.cpp,v 1.14 2009/11/16 23:40:43 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -27,21 +27,26 @@
 //-------------------------------------------------------------------------//
 //=========================================================================//
 
+
 #include "types.h"
 #include "at89sbus.h"
 #include "errcode.h"
 #include "eeptypes.h"
+#include "e2profil.h"
 
-#include "e2app.h"
+#include "e2cmdw.h"
+
+
+#include <QDebug>
 
 /*Attenzione!! il format Intel Hex e` Little Endian */
-#undef	_BIG_ENDIAN_
+#undef  _BIG_ENDIAN_
 
-#ifndef	_LINUX_
-#  ifdef	__BORLANDC__
-#    define	__inline__
+#ifndef __linux__
+#  ifdef        __BORLANDC__
+#    define     __inline__
 #  else // _MICROSOFT_ VC++
-#    define	__inline__ __inline
+#    define     __inline__ __inline
 #    define _export
 #  endif
 #endif
@@ -49,29 +54,29 @@
 // Costruttore
 At89sBus::At89sBus(BusInterface *ptr)
 	: SPIBus(ptr),
-		EnableProg0(0xAC), EnableProg1(0x53),
-		ChipErase0(0xAC), ChipErase1(0x80), OldChipErase1(0x04),
-		ReadProgByteMem(0x20), OldReadProgMem(0x01),
-		WriteProgByteMem(0x40), OldWriteProgMem(0x02),
-		ReadProgPageMem(0x30),
-		WriteProgPageMem(0x50),
-		ReadDataByteMem(0xA0), OldReadDataMem(0x05),
-		WriteDataByteMem(0xC0), OldWriteDataMem(0x06),
-		ReadDataPageMem(0xB0),
-		WriteDataPageMem(0xD0),
-		ReadUserFuses0(0x21), ReadUserFuses1(0x00),
-		WriteUserFuses0(0xAC), WriteUserFuses1(0x10),
-		ReadLockBits0(0x24), ReadLockBits1(0x00),
-		WriteLockBits0(0xAC), WriteLockBits1(0xE0), OldWriteLockBits1(0x07),
-		ReadSignatureByte(0x28),
-		twd_erase(50),
-		oldmode(true)
+	  EnableProg0(0xAC), EnableProg1(0x53),
+	  ChipErase0(0xAC), ChipErase1(0x80), OldChipErase1(0x04),
+	  ReadProgByteMem(0x20), OldReadProgMem(0x01),
+	  WriteProgByteMem(0x40), OldWriteProgMem(0x02),
+	  ReadProgPageMem(0x30),
+	  WriteProgPageMem(0x50),
+	  ReadDataByteMem(0xA0), OldReadDataMem(0x05),
+	  WriteDataByteMem(0xC0), OldWriteDataMem(0x06),
+	  ReadDataPageMem(0xB0),
+	  WriteDataPageMem(0xD0),
+	  ReadUserFuses0(0x21), ReadUserFuses1(0x00),
+	  WriteUserFuses0(0xAC), WriteUserFuses1(0x10),
+	  ReadLockBits0(0x24), ReadLockBits1(0x00),
+	  WriteLockBits0(0xAC), WriteLockBits1(0xE0), OldWriteLockBits1(0x07),
+	  ReadSignatureByte(0x28),
+	  twd_erase(50),
+	  oldmode(true)
 {
 }
 
 void At89sBus::SetDelay()
 {
-	int val = THEAPP->GetSPISpeed();
+	int val = E2Profile::GetSPISpeed();
 	int n;
 
 	switch(val)
@@ -79,25 +84,31 @@ void At89sBus::SetDelay()
 	case TURBO:
 		n = 1;
 		break;
+
 	case FAST:
 		n = 5;
 		break;
+
 	case SLOW:
 		n = 30;
 		break;
+
 	case VERYSLOW:
 		n = 100;
 		break;
+
 	case ULTRASLOW:
 		n = 1000;
 		break;
+
 	default:
 		n = 15;
 		break;
 	}
+
 	BusIO::SetDelay(n);
 
-	UserDebug1(UserApp2, "At89sBus::SetDelay() = %d\n", n);
+	qDebug() << "At89sBus::SetDelay() = " << n;
 }
 
 int At89sBus::ReadDataByte(long addr)
@@ -111,6 +122,7 @@ int At89sBus::ReadDataByte(long addr)
 		SendDataByte(ReadDataByteMem);
 		SendDataByte(addr >> 8);
 	}
+
 	SendDataByte(addr & 0xFF);
 	return RecDataByte();
 }
@@ -126,6 +138,7 @@ void At89sBus::WriteDataByte(long addr, int data)
 		SendDataByte(WriteDataByteMem);
 		SendDataByte(addr >> 8);
 	}
+
 	SendDataByte(addr & 0xFF);
 	SendDataByte(data);
 }
@@ -142,6 +155,7 @@ int At89sBus::ReadProgByte(long addr)
 		SendDataByte(ReadProgByteMem);
 		SendDataByte(addr >> 8);
 	}
+
 	SendDataByte(addr & 0xFF);
 	return RecDataByte();
 }
@@ -159,6 +173,7 @@ void At89sBus::WriteProgByte(long addr, int data)
 		SendDataByte(WriteProgByteMem);
 		SendDataByte(addr >> 8);
 	}
+
 	SendDataByte(addr & 0xFF);
 	SendDataByte(data);
 }
@@ -169,27 +184,32 @@ int At89sBus::WriteProgPage(long addr, uint8_t const *data, long page_size, long
 	bool okflag;
 
 	if (page_size <= 0 || data == NULL)
+	{
 		return BADPARAM;
+	}
 
 	//align addr to page boundary
-	addr &= ~(page_size - 1);	//0xFFFFFF00
+	addr &= ~(page_size - 1);       //0xFFFFFF00
 
 	SendDataByte(WriteProgPageMem);
 	SendDataByte(addr >> 8);
 	SendDataByte(addr & 0xff);
 
 	for (k = 0; k < page_size; k++)
+	{
 		SendDataByte(data[k]);
+	}
 
 	SetLastProgrammedAddress(addr + page_size - 1);
 
 	if (enable_progpage_polling)
 	{
-		long polling_loc = addr + page_size - 1;	//Read back last loaded byte
+		long polling_loc = addr + page_size - 1;        //Read back last loaded byte
 		uint8_t polling_data = data[page_size - 1];
 		WaitUsec(100);
 
 		okflag = false;
+
 		for (k = timeout; k > 0; k--)
 		{
 			if (ReadProgByte(polling_loc) == polling_data)
@@ -204,6 +224,7 @@ int At89sBus::WriteProgPage(long addr, uint8_t const *data, long page_size, long
 		okflag = true;
 		WaitMsec(twd_prog);
 	}
+
 	return okflag ? OK : E2P_TIMEOUT;
 }
 
@@ -213,22 +234,25 @@ int At89sBus::WriteDataPage(long addr, uint8_t const *data, long page_size, long
 	bool okflag;
 
 	//align addr to page boundary
-	addr &= ~(page_size - 1);	//0xFFFFFF00
+	addr &= ~(page_size - 1);       //0xFFFFFF00
 
 	SendDataByte(WriteDataPageMem);
 	SendDataByte(addr >> 8);
 	SendDataByte(addr & 0xff);
 
 	for (k = 0; k < page_size; k++)
+	{
 		SendDataByte(data[k]);
+	}
 
 	if (enable_datapage_polling)
 	{
-		long polling_loc = addr + page_size - 1;	//Read back last loaded byte
+		long polling_loc = addr + page_size - 1;        //Read back last loaded byte
 		uint8_t polling_data = data[page_size - 1];
 		WaitUsec(100);
 
 		okflag = false;
+
 		for (k = timeout; k > 0; k--)
 		{
 			if (ReadDataByte(polling_loc) == polling_data)
@@ -243,6 +267,7 @@ int At89sBus::WriteDataPage(long addr, uint8_t const *data, long page_size, long
 		okflag = true;
 		WaitMsec(twd_prog);
 	}
+
 	return okflag ? OK : -1;
 }
 
@@ -251,14 +276,16 @@ void At89sBus::ReadProgPage(long addr, uint8_t *data, long page_size, long timeo
 	long k;
 
 	//align addr to page boundary
-	addr &= ~(page_size - 1);	//0xFFFFFF00
+	addr &= ~(page_size - 1);       //0xFFFFFF00
 
 	SendDataByte(ReadProgPageMem);
 	SendDataByte(addr >> 8);
 	SendDataByte(addr & 0xff);
 
 	for (k = 0; k < page_size; k++)
+	{
 		data[k] = RecDataByte();
+	}
 }
 
 void At89sBus::ReadDataPage(long addr, uint8_t *data, long page_size, long timeout)
@@ -266,31 +293,41 @@ void At89sBus::ReadDataPage(long addr, uint8_t *data, long page_size, long timeo
 	long k;
 
 	//align addr to page boundary
-	addr &= ~(page_size - 1);	//0xFFFFFF00
+	addr &= ~(page_size - 1);       //0xFFFFFF00
 
 	SendDataByte(ReadDataPageMem);
 	SendDataByte(addr >> 8);
 	SendDataByte(addr & 0xff);
 
 	for (k = 0; k < page_size; k++)
+	{
 		data[k] = RecDataByte();
+	}
 }
 
 int At89sBus::Reset()
 {
 	if (oldmode)
+	{
 		twd_prog = 20;
+	}
 	else
+	{
 		twd_prog = 5;
+	}
 
 	SPIBus::Reset();
-	WaitMsec( THEAPP->GetAT89DelayAfterReset() );	// Almeno 20msec dai datasheet AVR atmel
+	WaitMsec( E2Profile::GetAT89DelayAfterReset() );   // Almeno 20msec dai datasheet AVR atmel
 
 	SendDataByte(EnableProg0);
 	SendDataByte(EnableProg1);
 	SendDataByte(0);
+
 	if (!oldmode)
+	{
 		SendDataByte(0);
+	}
+
 	return OK;
 }
 
@@ -307,11 +344,13 @@ int At89sBus::WriteLockBits(uint32_t param, long model)
 		val1 = WriteLockBits0;
 		val2 = WriteLockBits1 | (~param & 0x07);
 		break;
+
 	case AT89S51:
 	case AT89S52:
 		//Translate from B1-B2 code to LB1-LB2-LB3
 		//...
 		break;
+
 	default:
 		val1 = WriteLockBits0;
 		val2 = OldWriteLockBits1;
@@ -324,17 +363,23 @@ int At89sBus::WriteLockBits(uint32_t param, long model)
 		SendDataByte(val1);
 		SendDataByte(val2);
 		SendDataByte(val3);
+
 		if (oldmode)
+		{
 			WaitMsec(twd_prog * 5);
+		}
 		else
 		{
 			SendDataByte(val4);
 			WaitMsec(twd_prog * 10);
 		}
+
 		return OK;
 	}
 	else
+	{
 		return NOTSUPPORTED;
+	}
 }
 
 int At89sBus::ReadLockBits(uint32_t &res, long model)
@@ -351,6 +396,7 @@ int At89sBus::ReadLockBits(uint32_t &res, long model)
 		rv1 = RecDataByte();
 		res = ~rv1 & 0x07;
 		break;
+
 	case AT89S51:
 	case AT89S52:
 		//NB.Different polarity from other devices: 1 mean programmed (should update message in the dialog)
@@ -360,10 +406,12 @@ int At89sBus::ReadLockBits(uint32_t &res, long model)
 		rv1 = RecDataByte();
 		res = rv1 & 0x1C;
 		break;
+
 	default:
 		rval = NOTSUPPORTED;
 		break;
 	}
+
 	return rval;
 }
 
@@ -380,6 +428,7 @@ int At89sBus::WriteFuseBits(uint32_t param, long model)
 		val1 = WriteUserFuses0;
 		val2 = WriteUserFuses1 | (~param & 0x0f);
 		break;
+
 	default:
 		//No Fuses
 		break;
@@ -396,7 +445,9 @@ int At89sBus::WriteFuseBits(uint32_t param, long model)
 		return OK;
 	}
 	else
+	{
 		return NOTSUPPORTED;
+	}
 }
 
 int At89sBus::ReadFuseBits(uint32_t &res, long model)
@@ -413,10 +464,12 @@ int At89sBus::ReadFuseBits(uint32_t &res, long model)
 		rv1 = RecDataByte();
 		res = ~rv1 & 0x0f;
 		break;
-	default:	//No Fuses
+
+	default:        //No Fuses
 		rval = NOTSUPPORTED;
 		break;
 	}
+
 	return rval;
 }
 
@@ -433,6 +486,7 @@ int At89sBus::Erase(int type)
 {
 	//Erase command
 	SendDataByte(ChipErase0);
+
 	if (oldmode)
 	{
 		SendDataByte(OldChipErase1);
@@ -444,6 +498,7 @@ int At89sBus::Erase(int type)
 		SendDataByte(0);
 		SendDataByte(0);
 	}
+
 	WaitMsec(twd_erase);
 	Reset();
 
@@ -455,14 +510,18 @@ long At89sBus::Read(int addr, uint8_t *data, long length, int page_size)
 	long len;
 
 	if (addr)
-	{	//Data
+	{
+		//Data
 		if (page_size > 1)
 		{
 			for (addr = 0, len = 0; len < length; len += page_size, addr += page_size, data += page_size)
 			{
 				ReadDataPage(addr, data, page_size);
+
 				if ( CheckAbort(len * 100 / length) )
+				{
 					break;
+				}
 			}
 		}
 		else
@@ -472,20 +531,27 @@ long At89sBus::Read(int addr, uint8_t *data, long length, int page_size)
 				*data++ = (uint8_t)ReadDataByte(addr++);
 
 				if ( CheckAbort(len * 100 / length) )
+				{
 					break;
+				}
 			}
 		}
+
 		CheckAbort(100);
 	}
 	else
-	{	//Prog
+	{
+		//Prog
 		if (page_size > 1)
 		{
 			for (addr = 0, len = 0; len < length; len += page_size, addr += page_size, data += page_size)
 			{
 				ReadProgPage(addr, data, page_size);
+
 				if ( CheckAbort(len * 100 / length) )
+				{
 					break;
+				}
 			}
 		}
 		else
@@ -495,11 +561,15 @@ long At89sBus::Read(int addr, uint8_t *data, long length, int page_size)
 				*data++ = (uint8_t)ReadProgByte(addr++);
 
 				if ( CheckAbort(len * 100 / length) )
+				{
 					break;
+				}
 			}
 		}
+
 		CheckAbort(100);
 	}
+
 	return len;
 }
 
@@ -511,10 +581,15 @@ int At89sBus::WaitReadyAfterWrite(int type, long addr, int data, long timeout)
 	for (k = 0; k < timeout; k++)
 	{
 		int val;
+
 		if (type)
+		{
 			val = ReadDataByte(addr);
+		}
 		else
+		{
 			val = ReadProgByte(addr);
+		}
 
 		if (val == data)
 		{
@@ -522,6 +597,7 @@ int At89sBus::WaitReadyAfterWrite(int type, long addr, int data, long timeout)
 			break;
 		}
 	}
+
 	return rval;
 }
 
@@ -537,6 +613,7 @@ bool At89sBus::CheckBlankPage(uint8_t const *data, long length)
 			break;
 		}
 	}
+
 	return blank_page;
 }
 
@@ -545,16 +622,21 @@ long At89sBus::Write(int addr, uint8_t const *data, long length, int page_size)
 	long len;
 
 	if (addr)
-	{	//Data
+	{
+		//Data
 		if (page_size > 1)
 		{
 			for (addr = 0, len = 0; len < length; len += page_size, addr += page_size, data += page_size)
 			{
 				if (WriteDataPage(addr, data, page_size) != OK)
+				{
 					return E2ERR_WRITEFAILED;
+				}
 
 				if ( CheckAbort(len * 100 / length) )
+				{
 					break;
+				}
 			}
 		}
 		else
@@ -566,7 +648,9 @@ long At89sBus::Write(int addr, uint8_t const *data, long length, int page_size)
 				if (val != *data)
 				{
 					if ((val & *data) != *data)
+					{
 						return E2ERR_BLANKCHECKFAILED;
+					}
 					else
 					{
 						WriteDataByte(addr, *data);
@@ -574,18 +658,24 @@ long At89sBus::Write(int addr, uint8_t const *data, long length, int page_size)
 
 						//Interrupt the writing and exit (device missing?)
 						if ( WaitReadyAfterWrite(1, addr, *data) != OK )
+						{
 							return E2ERR_WRITEFAILED;
+						}
 					}
 				}
 
 				if ( CheckAbort(len * 100 / length) )
+				{
 					break;
+				}
 			}
 		}
+
 		CheckAbort(100);
 	}
 	else
-	{	//Prog
+	{
+		//Prog
 		if (page_size > 1)
 		{
 			for (addr = 0, len = 0; len < length; len += page_size, addr += page_size, data += page_size)
@@ -593,10 +683,14 @@ long At89sBus::Write(int addr, uint8_t const *data, long length, int page_size)
 				//check for FF's page to skip blank pages
 				if ( !CheckBlankPage(data, page_size) )
 					if (WriteProgPage(addr, data, page_size) != OK)
+					{
 						return E2ERR_WRITEFAILED;
+					}
 
 				if ( CheckAbort(len * 100 / length) )
+				{
 					break;
+				}
 			}
 		}
 		else
@@ -608,7 +702,9 @@ long At89sBus::Write(int addr, uint8_t const *data, long length, int page_size)
 				if (val != *data)
 				{
 					if ((val & *data) != *data)
+					{
 						return E2ERR_BLANKCHECKFAILED;
+					}
 					else
 					{
 						WriteProgByte(addr, *data);
@@ -616,15 +712,21 @@ long At89sBus::Write(int addr, uint8_t const *data, long length, int page_size)
 
 						//Interrupt the writing and exit (device missing?)
 						if ( WaitReadyAfterWrite(0, addr, *data) != OK )
+						{
 							return E2ERR_WRITEFAILED;
+						}
 					}
 				}
 
 				if ( CheckAbort(len * 100 / length) )
+				{
 					break;
+				}
 			}
 		}
+
 		CheckAbort(100);
 	}
+
 	return len;
 }

@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: spi-bus.cpp,v 1.8 2009/11/16 22:29:18 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -28,39 +28,45 @@
 //=========================================================================//
 
 #include "types.h"
+#include "globals.h"
+
 #include "spi-bus.h"
 #include "errcode.h"
 
-#include "e2app.h"
 
-#ifdef	_LINUX_
+#include "e2cmdw.h"
+
+#include <QDebug>
+
+
+#ifdef  __linux__
 //#  include <asm/io.h>
 #  include <unistd.h>
 #else
-#  ifdef	__BORLANDC__
-#    define	__inline__
+#  ifdef        __BORLANDC__
+#    define     __inline__
 #  else // _MICROSOFT_ VC++
-#    define	__inline__ __inline
+#    define     __inline__ __inline
 #    define _export
 #  endif
 #endif
 
 // Costruttore
 SPIBus::SPIBus(BusInterface *ptr, bool cpha)
-	: BusIO(ptr), 
-		fall_edge_sample(cpha)
+	: BusIO(ptr),
+	  fall_edge_sample(cpha)
 {
 }
 
 // Distruttore
 SPIBus::~SPIBus()
 {
-//	Close();
+	//      Close();
 }
 
 void SPIBus::SetDelay()
 {
-	int val = THEAPP->GetSPISpeed();
+	int val = E2Profile::GetSPISpeed();
 	int n;
 
 	switch(val)
@@ -68,25 +74,31 @@ void SPIBus::SetDelay()
 	case TURBO:
 		n = 0;         // as fast as your PC can
 		break;
+
 	case FAST:
 		n = 1;
 		break;
+
 	case SLOW:
 		n = 10;
 		break;
+
 	case VERYSLOW:
 		n = 80;
 		break;
+
 	case ULTRASLOW:
 		n = 1000;
 		break;
+
 	default:
 		n = 5;         //Default (< 100KHz)
 		break;
 	}
+
 	BusIO::SetDelay(n);
 
-	UserDebug1(UserApp2, "SPIBus::SetDelay() = %d\n", n);
+	qDebug() << "SPIBus::SetDelay() = " << n;
 }
 
 
@@ -94,21 +106,22 @@ int SPIBus::SendDataBit(int b)
 {
 	if (fall_edge_sample)
 	{
-		setSCK();		//be sure the SCK line is high
+		setSCK();               //be sure the SCK line is high
 		bitMOSI(b);
 		WaitUsec(shot_delay);
-		clearSCK();		//slave latches data bit now!
+		clearSCK();             //slave latches data bit now!
 		WaitUsec(shot_delay);
 	}
 	else
 	{
-		clearSCK();		//be sure the SCK line is low
+		clearSCK();             //be sure the SCK line is low
 		bitMOSI(b);
 		WaitUsec(shot_delay);
-		setSCK();		//slave latches data bit now!
+		setSCK();               //slave latches data bit now!
 		WaitUsec(shot_delay);
 		clearSCK();
 	}
+
 	return OK;
 }
 
@@ -119,7 +132,7 @@ int SPIBus::RecDataBit()
 
 	if (fall_edge_sample)
 	{
-		setSCK();		//be sure the SCK line is high
+		setSCK();               //be sure the SCK line is high
 		WaitUsec(shot_delay);
 		clearSCK();
 		b = getMISO();
@@ -127,13 +140,14 @@ int SPIBus::RecDataBit()
 	}
 	else
 	{
-		clearSCK();		//be sure the SCK line is low
+		clearSCK();             //be sure the SCK line is low
 		WaitUsec(shot_delay);
 		setSCK();
 		b = getMISO();
 		WaitUsec(shot_delay);
 		clearSCK();
 	}
+
 	return b;
 }
 
@@ -143,9 +157,13 @@ int SPIBus::SendDataByte(int by)
 	int k;
 
 	clearSCK();
+
 	//MSbit (7) sent first
 	for (k = 7; k >= 0; k--)
-		SendDataBit(by & (1<<k));
+	{
+		SendDataBit(by & (1 << k));
+	}
+
 	setMOSI();
 
 	return OK;
@@ -157,9 +175,12 @@ int SPIBus::RecDataByte()
 
 	setMOSI();
 	clearSCK();
+
 	for (k = 7; k >= 0; k--)
 		if ( RecDataBit() )
+		{
 			val |= 1 << k;
+		}
 
 	return val;
 }
@@ -167,21 +188,21 @@ int SPIBus::RecDataByte()
 
 int SPIBus::Reset(void)
 {
-	UserDebug(UserApp2, "SPIBus::Reset() I\n");
+	qDebug() << "SPIBus::Reset() I";
 
 	SetDelay();
 
-	clearSCK();		// Dal datasheet AVR
-	setMOSI();		// the datasheet don't specify, but we need to provide power from at least one line (MOSI while SCK and RESET are low)
+	clearSCK();             // Dal datasheet AVR
+	setMOSI();              // the datasheet don't specify, but we need to provide power from at least one line (MOSI while SCK and RESET are low)
 
 	WaitMsec(20);
-	ClearReset();	//One pulse on the reset (datasheet AVR)
-	WaitMsec( THEAPP->GetSPIResetPulse() );	//AppNote AVR910 suggest >100 msec
+	ClearReset();   //One pulse on the reset (datasheet AVR)
+	WaitMsec( E2Profile::GetSPIResetPulse() ); //AppNote AVR910 suggest >100 msec
 	SetReset();
 
-	WaitMsec( THEAPP->GetSPIDelayAfterReset() );
+	WaitMsec( E2Profile::GetSPIDelayAfterReset() );
 
-	UserDebug(UserApp2, "SPIBus::Reset() O\n");
+	qDebug() << "SPIBus::Reset() O";
 
 	return OK;
 }

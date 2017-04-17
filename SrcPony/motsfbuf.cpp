@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: motsfbuf.cpp,v 1.9 2009/11/16 22:29:18 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -28,7 +28,8 @@
 //=========================================================================//
 
 #include <stdio.h>
-#include <string.h>
+#include <QString>
+
 #include <stdlib.h>
 
 #define MAXLINE 520
@@ -45,13 +46,15 @@
 #define END_RECORD16    '9'             //ending record for S1 records
 
 #include "types.h"
-#include "motsfbuf.h"		// Header file
+#include "motsfbuf.h"           // Header file
 #include "errcode.h"
 #include "crc.h"
 
+// #include "e2awinfo.h"
+
 //======================>>> MotorolaSFileBuf::MotorolaSFileBuf <<<=======================
 MotorolaSFileBuf::MotorolaSFileBuf(e2AppWinInfo *wininfo)
-		: FileBuf(wininfo)
+	: FileBuf(wininfo)
 {
 	file_type = MOTOS;
 
@@ -78,6 +81,7 @@ int MotorolaSFileBuf::WriteRecord(FILE *fh, uint8_t *bptr, long curaddr, long re
 	if (fmt == DATA_RECORD16 || fmt == DATA_RECORD24 || fmt == DATA_RECORD32)
 	{
 		discard = 1;
+
 		for (j = 0; j < recsize; j++)
 		{
 			if ( bptr[curaddr + j] != 0xFF )
@@ -88,43 +92,57 @@ int MotorolaSFileBuf::WriteRecord(FILE *fh, uint8_t *bptr, long curaddr, long re
 		}
 	}
 	else
+	{
 		discard = 0;
+	}
 
 	if (discard)
+	{
 		return rval;
+	}
 
 	switch(fmt)
 	{
 	case START_RECORD:              //starting record (optional)
 		len = recsize + 2 + 1;  //2 byte address + 1 byte checksum
 		break;
+
 	case DATA_RECORD16:             //16 bit address data record
 		len = recsize + 2 + 1;  //2 byte address + 1 byte checksum
 		break;
+
 	case DATA_RECORD24:             //24 bit address data record
 		len = recsize + 3 + 1;  //3 byte address + 1 byte checksum
 		break;
+
 	case DATA_RECORD32:             //32 bit address data record
 		len = recsize + 4 + 1;  //4 byte address + 1 byte checksum
 		break;
+
 	case SYMBOL_RECORD:             //symbol record (LSI extension)
 		len = recsize + 2 + 1;  //2 byte address + 1 byte checksum
 		break;
+
 	case NBLOCK_RECORD:             //number of data records in preceeding block
 		len = recsize + 2 + 1;  //2 byte address + 1 byte checksum
 		break;
+
 	case UNUSED_RECORD:             //unused
 		len = recsize + 2 + 1;  //2 byte address + 1 byte checksum
 		break;
+
 	case END_RECORD32:              //ending record for S3 records
 		len = recsize + 4 + 1;  //4 byte address + 1 byte checksum
 		break;
+
 	case END_RECORD24:              //ending record for S2 records
 		len = recsize + 3 + 1;  //3 byte address + 1 byte checksum
 		break;
+
 	case END_RECORD16:              //ending record for S1 records
 		len = recsize + 2 + 1;  //2 byte address + 1 byte checksum
 		break;
+
 	default:
 		rval = 0;
 		break;
@@ -149,8 +167,7 @@ int MotorolaSFileBuf::WriteRecord(FILE *fh, uint8_t *bptr, long curaddr, long re
 			checksum += (curaddr >> 8) & 0xFF;
 			checksum += curaddr & 0xFF;
 		}
-		else
-		if (fmt == DATA_RECORD32 || fmt == END_RECORD32)
+		else if (fmt == DATA_RECORD32 || fmt == END_RECORD32)
 		{
 			fprintf(fh, "%08lX", curaddr);
 			checksum += (curaddr >> 24) & 0xFF;
@@ -158,7 +175,7 @@ int MotorolaSFileBuf::WriteRecord(FILE *fh, uint8_t *bptr, long curaddr, long re
 			checksum += (curaddr >> 8) & 0xFF;
 			checksum += curaddr & 0xFF;
 		}
-		 else        //all other have a 16 bit address field
+		else        //all other have a 16 bit address field
 		{
 			fprintf(fh, "%04lX", curaddr & 0xFFFF);
 			checksum += (curaddr >> 8) & 0xFF;
@@ -170,12 +187,14 @@ int MotorolaSFileBuf::WriteRecord(FILE *fh, uint8_t *bptr, long curaddr, long re
 			fprintf(fh, "%02X", bptr[curaddr + j]);
 			checksum += bptr[curaddr + j];
 		}
+
 		fprintf(fh, "%02X\n", ~checksum & 0xFF);
 	}
+
 	return rval;
 }
 
-#define min(a,b)	( (a < b) ? a : b )
+#define min(a,b)        ( (a < b) ? a : b )
 
 //======================>>> MotorolaSFileBuf::Save <<<=======================
 int MotorolaSFileBuf::Save(int savetype, long relocation_offset)
@@ -183,29 +202,34 @@ int MotorolaSFileBuf::Save(int savetype, long relocation_offset)
 	FILE *fh;
 	int rval = OK;
 
-	if ( (fh = fopen(FileBuf::GetFileName(), "w")) == NULL )
+	if ( (fh = fopen(FileBuf::GetFileName().toLatin1(), "w")) == NULL )
+	{
 		return CREATEERROR;
+	}
 
 	long dsize = FileBuf::GetBlockSize() * FileBuf::GetNoOfBlock();
 	long size = FileBuf::GetBufSize();
 	uint8_t *ptr = FileBuf::GetBufPtr();
 
 	//Remove FF's tail
-	while ( ptr[size-1] == 0xFF )
+	while ( ptr[size - 1] == 0xFF )
+	{
 		size--;
+	}
 
 	if (savetype == PROG_TYPE)
 	{
 		if (GetSplitted() > 0 && GetSplitted() <= dsize)
+		{
 			size = GetSplitted();
+		}
 		else
 		{
 			fclose(fh);
 			return 0;
 		}
 	}
-	else
-	if (savetype == DATA_TYPE)
+	else if (savetype == DATA_TYPE)
 	{
 		if (GetSplitted() >= 0 && GetSplitted() < dsize)
 		{
@@ -225,36 +249,52 @@ int MotorolaSFileBuf::Save(int savetype, long relocation_offset)
 		long curaddr = 0;
 
 		WriteRecord(fh, ptr, 0, 0, START_RECORD);
+
 		while (curaddr < size)
 		{
 			int recsize = min( (size - curaddr), 16 );
 
 			rectype = DATA_RECORD16;
+
 			if (size > 0xffff)
+			{
 				rectype = DATA_RECORD24;
+			}
+
 			if (size > 0xffffff)
+			{
 				rectype = DATA_RECORD32;
+			}
 
 			if ( !WriteRecord(fh, ptr, curaddr, recsize, rectype) )
 			{
 				rval = WRITEERROR;
 				break;
 			}
+
 			curaddr += recsize;
 		}
 
 		rectype = END_RECORD16;
+
 		if (size > 0xffff)
+		{
 			rectype = END_RECORD24;
+		}
+
 		if (size > 0xffffff)
+		{
 			rectype = END_RECORD32;
+		}
 
 		WriteRecord(fh, ptr, 0, 0, rectype);
 
 		rval = curaddr;
 	}
 	else
+	{
 		rval = NOTHINGTOSAVE;
+	}
 
 	fclose(fh);
 
@@ -270,32 +310,45 @@ int MotorolaSFileBuf::Load(int loadtype, long relocation_offset)
 
 	uint8_t *endp = GetBufPtr() + GetBufSize();
 	uint8_t *dp = GetBufPtr();
+
 	if (loadtype == DATA_TYPE)
 	{
 		if ( GetSplitted() >= 0 && GetSplitted() < GetBufSize() )
+		{
 			dp += GetSplitted();
+		}
 		else
+		{
 			return 0;
+		}
 	}
 
 	//Relocation check
 	if (dp + relocation_offset > endp)
+	{
 		return BADPARAM;
+	}
 	else
+	{
 		dp += relocation_offset;
+	}
 
 	highestPC = NULL;
 	highestAddr = 0;
 	lowestAddr = 0x7fffffff;
 
 	FILE *fh;
-	if ( (fh = fopen(GetFileName(), "r")) == NULL )
+
+	if ( (fh = fopen(GetFileName().toLatin1(), "r")) == NULL )
+	{
 		return FILENOTFOUND;
+	}
 
 	valid_record_count = 0;
 
-	char riga[MAXLINE+1];
+	char riga[MAXLINE + 1];
 	riga[MAXLINE] = '\0';
+
 	while ( fgets(riga, MAXLINE, fh) )
 	{
 		if ( (rval = ParseRecord(riga, dp, endp, 0, nocopy_mode)) != OK )
@@ -305,14 +358,18 @@ int MotorolaSFileBuf::Load(int loadtype, long relocation_offset)
 				nocopy_mode = 1;
 			}
 			else
+			{
 				break;
+			}
 		}
 	}
 
 	if (nocopy_mode)
 	{
 		if ( (highestAddr - lowestAddr) > GetBufSize() )
+		{
 			rval = BUFFEROVERFLOW;
+		}
 		else
 		{
 			long l_offset = lowestAddr;
@@ -326,29 +383,36 @@ int MotorolaSFileBuf::Load(int loadtype, long relocation_offset)
 			rewind(fh);
 
 			riga[MAXLINE] = '\0';
+
 			while ( fgets(riga, MAXLINE, fh) )
 			{
 				if ( (rval = ParseRecord(riga, dp, endp, l_offset, nocopy_mode)) != OK )
+				{
 					break;
+				}
 			}
 		}
 	}
 
 	int img_size;
-//	img_size = 1;	//Srec file with only header and end record, no data, should return success
+	//      img_size = 1;   //Srec file with only header and end record, no data, should return success
 	img_size = valid_record_count ? 1 : 0;
+
 	if (highestPC)
+	{
 		img_size = highestPC + 1 - dp;
+	}
+
 	fclose(fh);
 
-//This format doesn't contain information about the device size,
-// so keep the size of the selected eeprom
+	//This format doesn't contain information about the device size,
+	// so keep the size of the selected eeprom
 
 	if (rval == OK)
 	{
 		SetComment("");
-		SetRollOver(0);		//2 (that means NO) ??
-//		SetCRC( mcalc_crc(GetBufPtr(), img_size) );
+		SetRollOver(0);         //2 (that means NO) ??
+		//              SetCRC( mcalc_crc(GetBufPtr(), img_size) );
 
 		rval = img_size;
 	}
@@ -368,36 +432,49 @@ int MotorolaSFileBuf::ParseRecord(char *lbufPC, uint8_t *buf_startP, uint8_t *bu
 {
 	long addrL;
 	uint8_t cksmB,              // checksum of addr, count, & data length
-		*bufPC = 0;      // Pointer into memory array
+	        *bufPC = 0;      // Pointer into memory array
 	int i, countN,           // Number of bytes represented in record
-		oheadN = 0,      // Number of overhead (addr + chksum) bytes
-		tvalN;           // Temp for check checksum
+	    oheadN = 0,      // Number of overhead (addr + chksum) bytes
+	    tvalN;           // Temp for check checksum
 	int unknow_rec = 0;
 
 	if (lbufPC[0] == '\n' || lbufPC[0] == '\r')
-		return OK;       // discard empty lines
+	{
+		return OK;        // discard empty lines
+	}
 
 	if (lbufPC[0] != 'S')
-		return BADFILETYPE;
-
-	switch( lbufPC[1] )				/* examine 2nd character on the line */
 	{
-	case DATA_RECORD16:				/* 16 bit address field */
+		return BADFILETYPE;
+	}
+
+	switch( lbufPC[1] )                             /* examine 2nd character on the line */
+	{
+	case DATA_RECORD16:                             /* 16 bit address field */
 		if( sscanf(lbufPC, "S1%2X%4lX", &countN, &addrL ) != 2 )
-			return BADFILETYPE;		/* Flag error in S1 record */
-		oheadN = 2 + 1;				/* 2 address + 1 checksum */
+		{
+			return BADFILETYPE;        /* Flag error in S1 record */
+		}
+
+		oheadN = 2 + 1;                         /* 2 address + 1 checksum */
 		break;
 
-	case DATA_RECORD24:				/* 24 bit address field */
+	case DATA_RECORD24:                             /* 24 bit address field */
 		if( sscanf(lbufPC, "S2%2X%6lX", &countN, &addrL ) != 2 )
-			return BADFILETYPE;		/* Flag error in S2 record */
-		oheadN = 3 + 1;				/* 3 address + 1 checksum */
+		{
+			return BADFILETYPE;        /* Flag error in S2 record */
+		}
+
+		oheadN = 3 + 1;                         /* 3 address + 1 checksum */
 		break;
 
-	case DATA_RECORD32:				/* 32 bit address field */
+	case DATA_RECORD32:                             /* 32 bit address field */
 		if( sscanf(lbufPC, "S3%2X%8lX", &countN, &addrL ) != 2 )
-			return BADFILETYPE;		/* Flag error in S3 record */
-		oheadN = 4 + 1;				/* 4 address + 1 checksum */
+		{
+			return BADFILETYPE;        /* Flag error in S3 record */
+		}
+
+		oheadN = 4 + 1;                         /* 4 address + 1 checksum */
 		break;
 
 	/* ignore all but S1,2,3 records. */
@@ -408,13 +485,17 @@ int MotorolaSFileBuf::ParseRecord(char *lbufPC, uint8_t *buf_startP, uint8_t *bu
 	case END_RECORD32:      //ending record for S3 records
 	case END_RECORD24:      //ending record for S2 records
 	case END_RECORD16:      //ending record for S1 records
-							//check only for correct checksum
-		if( sscanf(lbufPC+2, "%2X", &countN ) != 1 )
-			return BADFILETYPE;       /* Flag error in SX record */
+
+		//check only for correct checksum
+		if( sscanf(lbufPC + 2, "%2X", &countN ) != 1 )
+		{
+			return BADFILETYPE;        /* Flag error in SX record */
+		}
+
 		unknow_rec = 1;
 		break;
 
-	default:				// bad record
+	default:                                // bad record
 		return BADFILETYPE;
 	}
 
@@ -422,44 +503,60 @@ int MotorolaSFileBuf::ParseRecord(char *lbufPC, uint8_t *buf_startP, uint8_t *bu
 	{
 		cksmB = 0;
 		countN++;                   /* Bump counter to read final checksum too */
+
 		for( i = 1; i <= countN; i++ )
 		{
-			sscanf( lbufPC + i*2, "%2X", &tvalN );  /* Scan a 2 hex digit byte  */
+			sscanf( lbufPC + i * 2, "%2X", &tvalN ); /* Scan a 2 hex digit byte  */
 			cksmB += (uint8_t)tvalN;
 		}
 
 		if( ++cksmB )
-			return BADFILETYPE;      /* flag checksum error */
+		{
+			return BADFILETYPE;        /* flag checksum error */
+		}
 	}
 	else
 	{
 		if ( addrL > highestAddr)
+		{
 			highestAddr = addrL;
+		}
+
 		if ( addrL < lowestAddr)
+		{
 			lowestAddr = addrL;
+		}
 
 		if (addrL < offset)
+		{
 			return BUFFERUNDERFLOW;
+		}
 
 		addrL -= offset;
 
 		if (!nocopy)
-			bufPC = buf_startP + addrL;      // point to right spot in buffer
+		{
+			bufPC = buf_startP + addrL;        // point to right spot in buffer
+		}
 
 		/* OK now see if checksum is OK, while reading data to buffer */
 		cksmB = 0;
 		countN++;                   /* Bump counter to read final checksum too */
+
 		for( i = 1; i <= countN; i++ )
 		{
-			sscanf( lbufPC + i*2, "%2X", &tvalN );  /* Scan a 2 hex digit byte  */
+			sscanf( lbufPC + i * 2, "%2X", &tvalN ); /* Scan a 2 hex digit byte  */
 			cksmB += (uint8_t)tvalN;
-			if( ( i > oheadN ) && ( i < countN ) )  /* If scanned a data byte */
+
+			if( ( i > oheadN ) && ( i < countN ) )   /* If scanned a data byte */
 			{
 				if (!nocopy)
 				{
 					//Check for buffer overflow
 					if (bufPC >= buf_endP)
+					{
 						return BUFFEROVERFLOW;
+					}
 
 					*bufPC++ = (uint8_t) tvalN;   // write it to the buffer
 				}
@@ -467,14 +564,19 @@ int MotorolaSFileBuf::ParseRecord(char *lbufPC, uint8_t *buf_startP, uint8_t *bu
 		}
 
 		if( ++cksmB )
-			return BADFILETYPE;      /* flag checksum error */
+		{
+			return BADFILETYPE;        /* flag checksum error */
+		}
 
 		if (!nocopy)
 		{
 			if( (bufPC - 1) > highestPC )
-				highestPC = bufPC - 1;          /* track highest address loaded */
+			{
+				highestPC = bufPC - 1;        /* track highest address loaded */
+			}
 		}
 	}
+
 	valid_record_count++;
 
 	return OK;                        /* Successful return */

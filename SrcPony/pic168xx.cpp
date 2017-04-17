@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: pic168xx.cpp,v 1.3 2009/11/16 23:40:43 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -28,16 +28,18 @@
 //=========================================================================//
 
 #include "types.h"
-#include "pic168xx.h"		// Header file
+#include "pic168xx.h"           // Header file
 #include "errcode.h"
 #include "eeptypes.h"
 
-#include "e2app.h"
+#include <QDebug>
+
+#include "e2cmdw.h"
 #include "e2awinfo.h"
 
 //=====>>> Costruttore <<<======
 Pic168xx::Pic168xx(e2AppWinInfo *wininfo, BusIO *busp)
-	:	Pic16xx(wininfo, busp)
+	:       Pic16xx(wininfo, busp)
 {
 }
 
@@ -50,40 +52,45 @@ int Pic168xx::CodeProtectAdjust(uint16_t &config, int read)
 {
 	long type = 0;
 	Pic168xx::QueryType(type);
+
 	if (type == PIC1684A)
 	{
 		Pic16xx::CodeProtectAdjust(config, read);
 	}
 	else
+	{
 		config = ~config & 0x3fff;
+	}
 
 	return OK;
 }
 
-typedef struct {
+typedef struct
+{
 	int code;
 	int type;
 } IdType;
 
-static IdType IdArray[] = {
-	{0x560, PIC1684A},	// 00 0101 011 0 0000
+static IdType IdArray[] =
+{
+	{0x560, PIC1684A},      // 00 0101 011 0 0000
 
-	{0xd00, PIC16870},	// 00 1101 000 0 0000
-	{0xd20, PIC16871},	// 00 1101 001 0 0000
-	{0x8e0, PIC16872},	// 00 1000 111 0 0000
+	{0xd00, PIC16870},      // 00 1101 000 0 0000
+	{0xd20, PIC16871},      // 00 1101 001 0 0000
+	{0x8e0, PIC16872},      // 00 1000 111 0 0000
 
-	{0x960, PIC16873},	// 00 1001 011 0 0000
-	{0x920, PIC16874},	// 00 1001 001 0 0000
-	{0x9e0, PIC16876},	// 00 1001 111 0 0000
-	{0x9a0, PIC16877},	// 00 1001 101 0 0000
+	{0x960, PIC16873},      // 00 1001 011 0 0000
+	{0x920, PIC16874},      // 00 1001 001 0 0000
+	{0x9e0, PIC16876},      // 00 1001 111 0 0000
+	{0x9a0, PIC16877},      // 00 1001 101 0 0000
 
-	{0xe40, PIC16873A},	// 00 1110 0100 XXXX
-	{0xe60, PIC16874A},	// 00 1110 0110 XXXX
-	{0xe00, PIC16876A},	// 00 1110 0000 XXXX
-	{0xe20, PIC16877A},	// 00 1110 0010 XXXX
+	{0xe40, PIC16873A},     // 00 1110 0100 XXXX
+	{0xe60, PIC16874A},     // 00 1110 0110 XXXX
+	{0xe00, PIC16876A},     // 00 1110 0000 XXXX
+	{0xe20, PIC16877A},     // 00 1110 0010 XXXX
 
-	{0x7a0, PIC16627},	// 00 0111 101 x xxxx
-	{0x7c0, PIC16628},	// 00 0111 110 x xxxx
+	{0x7a0, PIC16627},      // 00 0111 101 x xxxx
+	{0x7c0, PIC16628},      // 00 0111 110 x xxxx
 
 	{0x00, PIC16800}
 };
@@ -93,13 +100,14 @@ int Pic168xx::QueryType(long &type)
 	int rv = DEVICE_UNKNOWN;
 
 	id_locations[6] = 0;
+
 	if ( GetBus()->ReadConfig(id_locations) == OK )
 	{
 		int code = id_locations[6];
 
-		UserDebug1(UserApp2, "Pic168xx::ParseID() *** 0x%04X\n", code);
+		qDebug() << "Pic168xx::ParseID() *** " << (hex) << code << (dec);
 
-		code &= 0x3fe0;		//Strip revision number
+		code &= 0x3fe0;         //Strip revision number
 
 		type = 0;
 		int k;
@@ -138,7 +146,7 @@ int Pic168xx::Probe(int probe_size)
 	}
 	else
 	{
-		if ( THEAPP->GetIgnoreFlag() )
+		if ( E2Profile::GetIgnoreFlag() )
 		{
 			rv = GetSize();
 		}
@@ -147,9 +155,13 @@ int Pic168xx::Probe(int probe_size)
 			if (rv == OK)
 			{
 				if ( GetAWInfo()->GetEEPSubType() == subtype )
+				{
 					rv = GetSize();
+				}
 				else
+				{
 					rv = DEVICE_BADTYPE;
+				}
 			}
 		}
 	}
@@ -164,9 +176,13 @@ int Pic168xx::Write(int probe, int type)
 	if (rv > 0)
 	{
 		if ( (type & PROG_TYPE) && (type & DATA_TYPE) )
+		{
 			GetBus()->Erase(ALL_TYPE);
+		}
 		else
+		{
 			GetBus()->Erase(type);
+		}
 
 		if (GetSize() >= GetSplitted())
 		{
@@ -174,11 +190,15 @@ int Pic168xx::Write(int probe, int type)
 			{
 				rv = WriteProg();
 			}
-			if (rv > 0 && GetSize() > GetSplitted())	//check for DATA size
+
+			if (rv > 0 && GetSize() > GetSplitted())        //check for DATA size
 			{
 				if (type & DATA_TYPE)
+				{
 					rv = WriteData();
+				}
 			}
+
 			if ( rv > 0 && (type & CONFIG_TYPE) )
 			{
 				// write the config locations
@@ -189,9 +209,10 @@ int Pic168xx::Write(int probe, int type)
 			}
 		}
 	}
-	else
-	if (rv == 0)
+	else if (rv == 0)
+	{
 		rv = E2ERR_WRITEFAILED;
+	}
 
 	return rv;
 }

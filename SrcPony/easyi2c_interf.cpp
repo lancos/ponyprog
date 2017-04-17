@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: easyi2c_interf.cpp,v 1.4 2009/11/16 22:29:18 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -28,46 +28,52 @@
 //=========================================================================//
 
 #include "errcode.h"
+#include "e2profil.h"
+#include "wait.h"
+
+#include "e2cmdw.h"
+
 #include "easyi2c_interf.h"
-#include "e2app.h"
+
+#include <QDebug>
 
 /* data register (0x378)
- * bit 0: D0	(pin 2)
- * bit 1: D1	(pin 3)
- * bit 2: D2	(pin 4)
- * bit 3: D3	(pin 5)
- * bit 4: D4	(pin 6)
- * bit 5: D5	(pin 7)
- * bit 6: D6	(pin 8)
- * bit 7: D7	(pin 9)
+ * bit 0: D0    (pin 2)
+ * bit 1: D1    (pin 3)
+ * bit 2: D2    (pin 4)
+ * bit 3: D3    (pin 5)
+ * bit 4: D4    (pin 6)
+ * bit 5: D5    (pin 7)
+ * bit 6: D6    (pin 8)
+ * bit 7: D7    (pin 9)
  */
 
 /* control register (0x37A)
- * bit 0: STROBE	(pin 1)-
- * bit 1: AUTOLF	(pin 14)-
- * bit 2: INIT		(pin 16)-
- * bit 3: SELECTIN	(pin 17)-
+ * bit 0: STROBE        (pin 1)-
+ * bit 1: AUTOLF        (pin 14)-
+ * bit 2: INIT          (pin 16)-
+ * bit 3: SELECTIN      (pin 17)-
  */
 
 /* status register (0x379)
- * bit 3: ERROR		(pin 15)
- * bit 4: SELECT	(pin 13)
- * bit 5: POUT		(pin 12)
- * bit 6: ACK		(pin 10)
- * bit 7: BUSY		(pin 11)-
+ * bit 3: ERROR         (pin 15)
+ * bit 4: SELECT        (pin 13)
+ * bit 5: POUT          (pin 12)
+ * bit 6: ACK           (pin 10)
+ * bit 7: BUSY          (pin 11)-
  */
 
-#define WB_SCL	0		// DATA (pin 2)
-#define WB_SDA	1		// DATA (pin 3)
+#define WB_SCL  0               // DATA (pin 2)
+#define WB_SDA  1               // DATA (pin 3)
 
-#define	RB_SCL	4		// STATUS (pin 13)
-#define RB_SDA	5		// STATUS (pin 12)
+#define RB_SCL  4               // STATUS (pin 13)
+#define RB_SDA  5               // STATUS (pin 12)
 
-#define WF_SCL	(1 << WB_SCL)
-#define WF_SDA	(1 << WB_SDA)
+#define WF_SCL  (1 << WB_SCL)
+#define WF_SDA  (1 << WB_SDA)
 
-#define RF_SCL	(1 << RB_SCL)
-#define RF_SDA	(1 << RB_SDA)
+#define RF_SCL  (1 << RB_SCL)
+#define RF_SDA  (1 << RB_SDA)
 
 EasyI2CInterface::EasyI2CInterface(bool use_io)
 	: LptExtInterface(use_io)
@@ -83,7 +89,9 @@ int EasyI2CInterface::Open(int port_no)
 	if (IsInstalled() != port_no)
 	{
 		if ( InDataPort(port_no) < 0 )
+		{
 			ret_val = E2ERR_OPENFAILED;
+		}
 		else
 		{
 			Install(port_no);
@@ -108,12 +116,14 @@ void EasyI2CInterface::Close()
 
 void EasyI2CInterface::SetDataOut(int sda)
 {
-	UserDebug2(UserApp3, "EasyI2CInterface::SetDataOut(%d) *** Inst=%d\n", sda, IsInstalled());
+	qDebug() << "EasyI2CInterface::SetDataOut(" << sda << ") *** Inst=" << IsInstalled();
 
 	if (IsInstalled())
 	{
-		if ( (THEAPP->GetPolarity() & DOUTINV) != 0 )
+		if ( (E2Profile::GetPolarityControl() & DOUTINV) != 0 )
+		{
 			sda = !sda;
+		}
 
 		//The EasyI2C interface is inverting by default
 		OutDataMask(WF_SDA, sda ? 0 : 1);
@@ -122,12 +132,14 @@ void EasyI2CInterface::SetDataOut(int sda)
 
 void EasyI2CInterface::SetClock(int scl)
 {
-	UserDebug2(UserApp3, "EasyI2CInterface::SetClock(%d) *** Inst=%d\n", scl, IsInstalled());
+	qDebug() << "EasyI2CInterface::SetClock(" << scl << ") *** Inst=" << IsInstalled();
 
 	if (IsInstalled())
 	{
-		if ( (THEAPP->GetPolarity() & CLOCKINV) != 0 )
+		if ( (E2Profile::GetPolarityControl() & CLOCKINV) != 0 )
+		{
 			scl = !scl;
+		}
 
 		//The EasyI2C interface is inverting by default
 		OutDataMask(WF_SCL, scl ? 0 : 1);
@@ -136,55 +148,71 @@ void EasyI2CInterface::SetClock(int scl)
 
 void EasyI2CInterface::SetClockData()
 {
-	UserDebug1(UserApp3, "EasyI2CInterface::SetClockData() *** Inst=%d\n", IsInstalled());
+	qDebug() << "EasyI2CInterface::SetClockData() *** Inst=" << IsInstalled();
 
 	if (IsInstalled())
 	{
-		int control	= THEAPP->GetPolarity();
+		int control     = E2Profile::GetPolarityControl();
 		uint8_t cpreg = GetLastData();
 
 		if (control & CLOCKINV)
+		{
 			cpreg |= WF_SCL;
+		}
 		else
+		{
 			cpreg &= ~WF_SCL;
+		}
 
 		if (control & DOUTINV)
+		{
 			cpreg |= WF_SDA;
+		}
 		else
+		{
 			cpreg &= ~WF_SDA;
+		}
 
 		OutDataPort(cpreg);
 	}
 }
 
-int EasyI2CInterface::GetDataIn() 
+int EasyI2CInterface::GetDataIn()
 {
-	UserDebug1(UserApp3, "EasyI2CInterface::GetDataIn() *** Inst=%d\n", IsInstalled());
+	qDebug() << "EasyI2CInterface::GetDataIn() *** Inst=" << IsInstalled();
 
 	if (IsInstalled())
 	{
-		if (THEAPP->GetPolarity() & DININV) 
+		if (E2Profile::GetPolarityControl() & DININV)
+		{
 			return !(InDataPort() & RF_SDA);
+		}
 		else
+		{
 			return InDataPort() & RF_SDA;
+		}
 	}
 	else
+	{
 		return E2ERR_NOTINSTALLED;
+	}
 }
 
-int EasyI2CInterface::GetClock() 
+int EasyI2CInterface::GetClock()
 {
-	UserDebug1(UserApp3, "EasyI2CInterface::GetClock() *** Inst=%d\n", IsInstalled());
+	qDebug() << "EasyI2CInterface::GetClock() *** Inst=" << IsInstalled();
 
 	if (IsInstalled())
 	{
 		return InDataPort() & RF_SCL;
 	}
 	else
+	{
 		return E2ERR_NOTINSTALLED;
+	}
 }
 
-int EasyI2CInterface::IsClockDataUP() 
+int EasyI2CInterface::IsClockDataUP()
 {
 	if (IsInstalled())
 	{
@@ -192,13 +220,17 @@ int EasyI2CInterface::IsClockDataUP()
 		int sda = val & RF_SDA;
 		int scl = val & RF_SCL;
 
-		if (THEAPP->GetPolarity() & DININV)
+		if (E2Profile::GetPolarityControl() & DININV)
+		{
 			sda = !sda;
+		}
 
 		return (sda && scl);
 	}
 	else
+	{
 		return E2ERR_NOTINSTALLED;
+	}
 }
 
 int EasyI2CInterface::IsClockDataDOWN()
@@ -209,18 +241,22 @@ int EasyI2CInterface::IsClockDataDOWN()
 		int sda = val & RF_SDA;
 		int scl = val & RF_SCL;
 
-		if (THEAPP->GetPolarity() & DININV)
+		if (E2Profile::GetPolarityControl() & DININV)
+		{
 			sda = !sda;
+		}
 
 		return (!sda && !scl);
 	}
 	else
+	{
 		return E2ERR_NOTINSTALLED;
+	}
 }
 
 int EasyI2CInterface::TestPort(int port)
 {
-	UserDebug1(UserApp1, "EasyI2CInterface::TestPort(%d) IN\n", port);
+	qDebug() << "EasyI2CInterface::TestPort(" << port << ") IN";
 
 	int ret_val = TestSave(port);
 	Wait w;
@@ -229,19 +265,26 @@ int EasyI2CInterface::TestPort(int port)
 	{
 		SetDataOut(0);
 		w.WaitMsec(50);
+
 		if (GetDataIn())
+		{
 			ret_val = E2ERR_OPENFAILED;
+		}
 		else
 		{
 			SetDataOut(1);
 			w.WaitMsec(50);
+
 			if (!GetDataIn())
+			{
 				ret_val = E2ERR_OPENFAILED;
+			}
 		}
 	}
+
 	TestRestore();
 
-	UserDebug1(UserApp2, "EasyI2CInterface::TestPort() = %d OUT\n", ret_val);
+	qDebug() << "EasyI2CInterface::TestPort() = " << ret_val << " OUT";
 
 	return ret_val;
 }

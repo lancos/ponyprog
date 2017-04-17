@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: picbusnew.h,v 1.4 2009/11/16 22:29:18 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -27,26 +27,26 @@
 //-------------------------------------------------------------------------//
 //=========================================================================//
 
-#ifndef	_PICBUSNEW_H
-#define	_PICBUSNEW_H
+#ifndef _PICBUSNEW_H
+#define _PICBUSNEW_H
 
 #include "picbus.h"
 
 class PicBusNew : public PicBus
 {
- public:		//------------------------------- public
+public:                //------------------------------- public
 	PicBusNew(BusInterface *ptr = 0);
 
-//	long Read(int addr, uint8_t *data, long length);
+	//      long Read(int addr, uint8_t *data, long length);
 	long Write(int addr, uint8_t const *data, long length, int page_size = 0);
-	
+
 	int Reset();
 
- protected:		//------------------------------- protected
+protected:             //------------------------------- protected
 
 	int WaitReadyAfterWrite(long timeout = 5000);
 
- private:		//------------------------------- private
+private:               //------------------------------- private
 
 };
 

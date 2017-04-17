@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: portint.cpp,v 1.22 2013/05/09 16:20:29 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -31,40 +31,49 @@
 #include "portint.h"
 #include "errcode.h"
 
+#include <QDebug>
+#include <QString>
+
 #include "globals.h"
 
-#include "e2app.h"
+#include "e2cmdw.h"
 
-#ifdef	_LINUX_
+#ifdef  __linux__
 # include <sys/io.h>
 # include <unistd.h>
 
-	int PortInterface::IOperm(int a, int b, int c)
+int PortInterface::IOperm(int a, int b, int c)
+{
+	int retval = -1;
+
+	qDebug() << "PortInterface::IOPerm(" << (hex) << a << ", " << b << ", " << c << (dec) << ")";
+
+	if (a + b <= 0x400)     //access to other ports needs iopl(3)
 	{
-		int retval = -1;
-
-		UserDebug3(UserApp3, "PortInterface::IOPerm(%x, %x, %x)\n", a, b, c);
-		if (a + b <= 0x400)     //access to other ports needs iopl(3)
-			retval = ioperm(a, b, c);
-		UserDebug1(UserApp3, "PortInterface::IOPerm() %d\n", retval);
-
-		return retval;
+		retval = ioperm(a, b, c);
 	}
+
+	qDebug() << "PortInterface::IOPerm() " << retval;
+
+	return retval;
+}
 #else
-	int PortInterface::IOperm(int a, int b, int c)
-	{
-		c = a + b;
-		return 0;
-	}
+int PortInterface::IOperm(int a, int b, int c)
+{
+	c = a + b;
+	return 0;
+}
 #endif
 
-enum LptRegs {
+enum LptRegs
+{
 	dataOfst,
 	statOfst,
 	ctrlOfst
 };
 
-enum UartRegs {
+enum UartRegs
+{
 	thrOfst,
 	ierOfst,
 	iirOfst,
@@ -77,42 +86,45 @@ enum UartRegs {
 
 PortInterface::PortInterface()
 {
-	UserDebug(Constructor, "PortInterface::PortInterface() Constructor I\n");
+	qDebug() << "PortInterface::PortInterface()";
 
 	int k;
+
 	for (k = 0; k < MAX_COMPORTS; k++)
 	{
 		ser_ports[k].base = 0;
 		ser_ports[k].len = 8;
 	}
+
 	for (k = 0; k < MAX_LPTPORTS; k++)
 	{
 		par_ports[k].base = 0;
 		par_ports[k].len = 8;
 	}
 
-//	ser_ports_base[0] = 0x3F8;
-//	ser_ports_base[1] = 0x2F8;
-//	ser_ports_base[2] = 0x3E8;
-//	ser_ports_base[3] = 0x2E8;
+	//      ser_ports_base[0] = 0x3F8;
+	//      ser_ports_base[1] = 0x2F8;
+	//      ser_ports_base[2] = 0x3E8;
+	//      ser_ports_base[3] = 0x2E8;
 
-//	par_ports_base[0] = 0x378;
-//	par_ports_base[1] = 0x278;
-//	par_ports_base[2] = 0x3BC;
+	//      par_ports_base[0] = 0x378;
+	//      par_ports_base[1] = 0x278;
+	//      par_ports_base[2] = 0x3BC;
 
-#ifdef _LINUX_
+#ifdef __linux__
 	lcr_copy = ier_copy = -1;
 #endif
 
-#ifdef	_WINDOWS
+#ifdef  _WINDOWS
 	gfpOut32 = NULL;
 	gfpInp32 = NULL;
 	gfpIsInpOutDriverOpen = NULL;
 	gfpIsXP64Bit = NULL;
 
 	//Dynamically load the DLL at runtime (not linked at compile time)
-	hInpOutDll = LoadLibrary("inpout32.dll");		//The 32bit DLL. If we are building x64 C++
-													//application then use InpOutx64.dll
+	hInpOutDll = LoadLibrary("inpout32.dll");               //The 32bit DLL. If we are building x64 C++
+
+	//application then use InpOutx64.dll
 	if (hInpOutDll != NULL)
 	{
 		gfpOut32 = (lpOut32)GetProcAddress(hInpOutDll, "Out32");
@@ -122,7 +134,7 @@ PortInterface::PortInterface()
 
 		if (!gfpIsInpOutDriverOpen())
 		{
-			UserDebug(Constructor, "Unable to open InpOut32 Driver!\n");
+			qDebug() << "Unable to open InpOut32 Driver!";
 			//All done
 			FreeLibrary(hInpOutDll);
 			hInpOutDll = NULL;
@@ -130,47 +142,61 @@ PortInterface::PortInterface()
 	}
 	else
 	{
-		UserDebug(Constructor, "Unable to load InpOut32 DLL!\n");
+		qDebug() << "Unable to load InpOut32 DLL!";
 	}
+
 #endif
 
 	cpwreg = read_port = write_port = 0;
 	first_port = last_port = no_ports = 0;
 
-	UserDebug(Constructor, "PortInterface::PortInterface() O\n");
+	qDebug() << "PortInterface::PortInterface() O";
 }
 
 PortInterface::~PortInterface()
 {
-	UserDebug(Destructor, "PortInterface::~PortInterface() Destructor\n");
+	qDebug() <<  "PortInterface::~PortInterface()";
 
-#ifdef	_WINDOWS
+#ifdef  _WINDOWS
+
 	if (hInpOutDll != NULL)
 	{
 		//All done
 		FreeLibrary(hInpOutDll);
 		hInpOutDll = NULL;
 	}
+
 #endif
 }
 
 int PortInterface::InPort(int nport) const
 {
-	UserDebug2(UserApp3, "PortInterface::OutPort() ** %xh, %xh\n", first_port, nport);
+	qDebug() << "PortInterface::OutPort() ** " << (hex) << first_port << ", " <<  nport << (dec);
 
-#ifdef	_WINDOWS
+#ifdef  _WINDOWS
+
 	if (gfpInp32 == NULL)
+	{
 		return E2ERR_OPENFAILED;
+	}
+
 #endif
+
 	if (first_port == 0)
+	{
 		return  E2ERR_NOTINSTALLED;
+	}
 
-	if (nport < 0 || nport >= no_ports)		//use default read port
+	if (nport < 0 || nport >= no_ports)             //use default read port
+	{
 		nport = read_port;
+	}
 	else
+	{
 		nport += first_port;
+	}
 
-#ifdef	_WINDOWS
+#ifdef  _WINDOWS
 	return gfpInp32(nport);
 #else
 	return inb(nport);
@@ -179,25 +205,38 @@ int PortInterface::InPort(int nport) const
 
 int PortInterface::OutPort(int val, int nport)
 {
-	UserDebug2(UserApp3, "PortInterface::OutPort() ** %xh, %xh\n", first_port, last_port);
+	qDebug() << "PortInterface::OutPort() ** " << (hex) << first_port << ", " << last_port << (dec);
 
-#ifdef	_WINDOWS
+#ifdef  _WINDOWS
+
 	if (gfpOut32 == NULL)
+	{
 		return E2ERR_OPENFAILED;
+	}
+
 #endif
+
 	if (first_port == 0)
-		return	E2ERR_NOTINSTALLED;
+	{
+		return        E2ERR_NOTINSTALLED;
+	}
 
 	if (nport < 0 || nport >= no_ports)
+	{
 		nport = write_port;
+	}
 	else
+	{
 		nport += first_port;
+	}
 
 	if (nport == write_port)
+	{
 		cpwreg = val;
+	}
 
-	UserDebug2(UserApp3, "PortInterface::outb(%xh, %xh)\n", val, nport);
-#ifdef	_WINDOWS
+	qDebug() << "PortInterface::outb(" << (hex) << val << ", " << nport << (dec) << ")";
+#ifdef  _WINDOWS
 	gfpOut32(nport, val);
 #else
 	outb(val, nport);
@@ -207,32 +246,38 @@ int PortInterface::OutPort(int val, int nport)
 
 int PortInterface::OutPortMask(int mask, int val)
 {
-	UserDebug2(UserApp3, "PortInterface::OutPortMask(%d, %d)\n", mask, val);
+	qDebug() << "PortInterface::OutPortMask(" << mask << ", " << val <<  ")";
 
-#ifdef	_WINDOWS
+#ifdef  _WINDOWS
+
 	if (gfpOut32 == NULL)
+	{
 		return E2ERR_OPENFAILED;
-#endif
-	if (write_port == 0)
-		return E2ERR_NOTINSTALLED;
+	}
 
-	if (val == 0)	//clear the bit 1's in the mask (other bits unchanged)
+#endif
+
+	if (write_port == 0)
+	{
+		return E2ERR_NOTINSTALLED;
+	}
+
+	if (val == 0)   //clear the bit 1's in the mask (other bits unchanged)
 	{
 		cpwreg &= ~mask;
 	}
-	else
-	if (val == 1)	//set the bit 1's in the mask (other bits unchanged)
+	else if (val == 1)     //set the bit 1's in the mask (other bits unchanged)
 	{
 		cpwreg |= mask;
 	}
-	else	//toggle the bit 1's in the mask (other bits unchanged)
+	else     //toggle the bit 1's in the mask (other bits unchanged)
 	{
 		cpwreg ^= mask;
 	}
 
-	UserDebug2(UserApp3, "PortInterface::outb(%xh, %xh)\n", cpwreg, write_port);
+	qDebug() << "PortInterface::outb(" << (hex) << cpwreg << ", " << (dec) << write_port << ")";
 
-#ifdef	_WINDOWS
+#ifdef  _WINDOWS
 	gfpOut32(write_port, cpwreg);
 #else
 	outb(cpwreg, write_port);
@@ -242,7 +287,7 @@ int PortInterface::OutPortMask(int mask, int val)
 
 int PortInterface::OpenPort(const base_len *ports)
 {
-	UserDebug2(UserApp3, "PortInterface::OpenPort(%xh, %d) I\n", ports->base, ports->len);
+	qDebug() << "PortInterface::OpenPort(" << (hex) << ports->base << (dec) << ", " << ports->len << ") I";
 
 	int ret_val = E2ERR_OPENFAILED;
 
@@ -253,7 +298,7 @@ int PortInterface::OpenPort(const base_len *ports)
 		// request the access to I/O ports
 		if (IOperm(ports->base, ports->len, 1) == 0)
 		{
-			ClosePort();	 // close any opened port
+			ClosePort();     // close any opened port
 			first_port = ports->base;
 			last_port = ports->base + ports->len - 1;
 			no_ports = ports->len;
@@ -267,51 +312,54 @@ int PortInterface::OpenPort(const base_len *ports)
 		}
 	}
 
-	UserDebug1(UserApp3, "PortInterface::OpenPort() = %d O\n", ret_val);
+	qDebug() << "PortInterface::OpenPort() = " << ret_val << " O";
 
 	return ret_val;
 }
 
 void PortInterface::ClosePort()
 {
-	UserDebug(UserApp3, "PortInterface::ClosePort() I\n");
+	qDebug() << "PortInterface::ClosePort() I";
 
 	if (first_port && last_port && no_ports)
 	{
 		IOperm(first_port, no_ports, 0);
 	}
+
 	first_port = last_port = no_ports = 0;
 
-	UserDebug(UserApp3, "PortInterface::ClosePort() O\n");
+	qDebug() << "PortInterface::ClosePort() O";
 }
 
 int PortInterface::OpenSerial(int no)
 {
-	UserDebug1(UserApp2, "PortInterface::OpenSerial(%d) I\n", no);
+	qDebug() << "PortInterface::OpenSerial(" << no << ") I";
 
 	int ret_val = E2ERR_OPENFAILED;
 
 	if (no >= 1 && no <= MAX_COMPORTS)
 	{
 		if (ser_ports[no - 1].base == 0)
+		{
 			DetectPorts();
+		}
 
 		//Test if port exist
 		if (ser_ports[no - 1].base > 0)
 		{
-#ifdef	_WINDOWS
-			char str[MAXNUMDIGIT];
+#ifdef  _WINDOWS
+			QString str;
 
 			//Test if port is already in use
-			sprintf(str, "COM%d", no);
-			hCom = CreateFile(str,
-							  GENERIC_READ | GENERIC_WRITE,
-							  0,			// comm devices must be opened w/exclusive-access
-							  NULL,			// no security attrs
-							  OPEN_EXISTING,// comm devices must use OPEN_EXISTING
-							  0,			// not overlapped I/O
-							  NULL			// hTemplate must be NULL for comm devices
-							 );
+			str.sprintf("COM%d", no);
+			hCom = CreateFile(str.toLatin1(),
+			                  GENERIC_READ | GENERIC_WRITE,
+			                  0,                    // comm devices must be opened w/exclusive-access
+			                  NULL,                 // no security attrs
+			                  OPEN_EXISTING,// comm devices must use OPEN_EXISTING
+			                  0,                    // not overlapped I/O
+			                  NULL                  // hTemplate must be NULL for comm devices
+			                 );
 
 			if (hCom != INVALID_HANDLE_VALUE)
 			{
@@ -319,6 +367,7 @@ int PortInterface::OpenSerial(int no)
 				SetCommMask(hCom, 0);
 
 				ret_val = OpenPort(&ser_ports[no - 1]);
+
 				if (ret_val == OK)
 				{
 					write_port = GetFirstPort() + mcrOfst;
@@ -326,9 +375,12 @@ int PortInterface::OpenSerial(int no)
 					cpwreg = 0;
 				}
 				else
+				{
 					CloseSerial();
+				}
 			}
-#else	//Linux
+
+#else   //Linux
 			ret_val = OpenPort(&ser_ports[no - 1]);
 
 			if (ret_val == OK)
@@ -342,33 +394,37 @@ int PortInterface::OpenSerial(int no)
 				read_port = GetFirstPort() + msrOfst;
 				cpwreg = 0;
 			}
+
 #endif
 		}
 	}
 
-	UserDebug1(UserApp2, "PortInterface::OpenSerial() = %d O\n", ret_val);
+	qDebug() << "PortInterface::OpenSerial() = " << ret_val << " O";
 
 	return ret_val;
 }
 
 void PortInterface::CloseSerial()
 {
-#ifdef	_WINDOWS
+#ifdef  _WINDOWS
+
 	if (hCom != INVALID_HANDLE_VALUE)
 	{
 		SetCommMask(hCom, old_mask);
 		CloseHandle(hCom);
 		hCom = INVALID_HANDLE_VALUE;
 	}
+
 #else
-#define	BREAK_MASK	0x40
+#define BREAK_MASK      0x40
 
 	if (lcr_copy != -1 && ier_copy != -1)
 	{
-		outb(lcr_copy&~BREAK_MASK, GetFirstPort() + lcrOfst);
+		outb(lcr_copy & ~BREAK_MASK, GetFirstPort() + lcrOfst);
 		outb(ier_copy, GetFirstPort() + ierOfst);
 		lcr_copy = ier_copy = -1;
 	}
+
 #endif
 	read_port = write_port = 0;
 
@@ -382,27 +438,30 @@ int PortInterface::OpenParallel(int no)
 	if (no >= 1 && no <= MAX_LPTPORTS)
 	{
 		if (par_ports[no - 1].base == 0)
+		{
 			DetectPorts();
+		}
 
 		//Test if port exist
 		if (par_ports[no - 1].base)
 		{
-#ifdef	_WINDOWS
-			char str[MAXNUMDIGIT];
+#ifdef  _WINDOWS
+			QString str;
 
-			sprintf(str, "LPT%d", no);
-			hCom = CreateFile(str,
-							  GENERIC_READ | GENERIC_WRITE,
-							  0,			// comm devices must be opened w/exclusive-access
-							  NULL,			// no security attrs
-							  OPEN_EXISTING,// comm devices must use OPEN_EXISTING
-							  0,			// not overlapped I/O
-							  NULL			// hTemplate must be NULL for comm devices
-							 );
+			str.sprintf("LPT%d", no);
+			hCom = CreateFile(str.toLatin1(),
+			                  GENERIC_READ | GENERIC_WRITE,
+			                  0,                    // comm devices must be opened w/exclusive-access
+			                  NULL,                 // no security attrs
+			                  OPEN_EXISTING,// comm devices must use OPEN_EXISTING
+			                  0,                    // not overlapped I/O
+			                  NULL                  // hTemplate must be NULL for comm devices
+			                 );
 
 			if (hCom != INVALID_HANDLE_VALUE)
 			{
 				ret_val = OpenPort(&par_ports[no - 1]);
+
 				if (ret_val == OK)
 				{
 					write_port = GetFirstPort() + dataOfst;
@@ -410,9 +469,12 @@ int PortInterface::OpenParallel(int no)
 					cpwreg = 0;
 				}
 				else
+				{
 					CloseParallel();
+				}
 			}
-#else		//Linux
+
+#else           //Linux
 			ret_val = OpenPort(&par_ports[no - 1]);
 
 			if (ret_val == OK)
@@ -421,6 +483,7 @@ int PortInterface::OpenParallel(int no)
 				read_port = GetFirstPort() + statOfst;
 				cpwreg = 0;
 			}
+
 #endif
 		}
 	}
@@ -430,12 +493,14 @@ int PortInterface::OpenParallel(int no)
 
 void PortInterface::CloseParallel()
 {
-#ifdef	_WINDOWS
+#ifdef  _WINDOWS
+
 	if (hCom != INVALID_HANDLE_VALUE)
 	{
 		CloseHandle(hCom);
 		hCom = INVALID_HANDLE_VALUE;
 	}
+
 #endif
 
 	read_port = write_port = 0;
@@ -449,12 +514,16 @@ int PortInterface::GetSerBasePort(int no)
 	if (no >= 1 && no <= MAX_COMPORTS)
 	{
 		if (ser_ports[no - 1].base == 0)
+		{
 			DetectPorts();
+		}
 
 		return ser_ports[no - 1].base;
 	}
 	else
+	{
 		return 0;
+	}
 }
 
 int PortInterface::GetParBasePort(int no)
@@ -462,26 +531,34 @@ int PortInterface::GetParBasePort(int no)
 	if (no >= 1 && no <= MAX_LPTPORTS)
 	{
 		if (par_ports[no - 1].base == 0)
+		{
 			DetectPorts();
+		}
 
 		return par_ports[no - 1].base;
 	}
 	else
+	{
 		return 0;
+	}
 }
 
 #ifdef WIN32
 
 #include <windows.h>
 
-#define	TRUE	1
-#define	FALSE	0
+// #define TRUE    1
+// #define FALSE   0
 
 static int winSystemVersion()
 {
 #if 0
+
 	if ((long)GetVersion() >= 0)
+	{
 		return 2;
+	}
+
 #else
 	OSVERSIONINFOEX osvi;
 	BOOL bOsVersionInfoEx;
@@ -494,19 +571,22 @@ static int winSystemVersion()
 		osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
 
 		if (!GetVersionEx((OSVERSIONINFO *)&osvi))
+		{
 			return 0;
+		}
 	}
 
 	switch (osvi.dwPlatformId)
 	{
 	case VER_PLATFORM_WIN32_NT:
-		return 2;		//WINNT
+		return 2;               //WINNT
 		break;
 
 	case VER_PLATFORM_WIN32_WINDOWS:
-		return 1;		//WIN9X
+		return 1;               //WIN9X
 		break;
 	}
+
 #endif
 	return 0;
 }
@@ -518,26 +598,29 @@ static int winSystemVersion()
 //---------------------------------------------------------------------------
 void PortInterface::DetectPorts()
 {
-	THEAPP->GetCOMAddress(ser_ports[0].base, ser_ports[1].base, ser_ports[2].base, ser_ports[3].base);
-	THEAPP->GetLPTAddress(par_ports[0].base, par_ports[1].base, par_ports[2].base);
+	E2Profile::GetCOMAddress(ser_ports[0].base, ser_ports[1].base, ser_ports[2].base, ser_ports[3].base);
+	E2Profile::GetLPTAddress(par_ports[0].base, par_ports[1].base, par_ports[2].base);
 
-#ifdef	_WINDOWS
-	if (THEAPP->GetAutoDetectPorts())
+#ifdef  _WINDOWS
+
+	if (E2Profile::GetAutoDetectPorts())
 	{
-		LPTCount = 0;		// No printer ports counted
-		COMCount = 0;		// No serial ports counted
+		LPTCount = 0;           // No printer ports counted
+		COMCount = 0;           // No serial ports counted
 
 		// Detect the LPT and COM ports available
 
 		// Are we running Windows NT?
 		// Detect the printer ports available
 		if (winSystemVersion() == 2)
-		{	// Win2K / NT version
+		{
+			// Win2K / NT version
 			DetectLPTPortsNT();
 			DetectCOMPortsNT();
 		}
 		else
-		{	// Win9x version
+		{
+			// Win9x version
 			DetectPorts9x();
 		}
 	}
@@ -550,17 +633,17 @@ void PortInterface::DetectPorts()
 	hCom = INVALID_HANDLE_VALUE;
 #endif
 
-	THEAPP->SetCOMAddress(ser_ports[0].base, ser_ports[1].base, ser_ports[2].base, ser_ports[3].base);
-	THEAPP->SetLPTAddress(par_ports[0].base, par_ports[1].base, par_ports[2].base);
+	E2Profile::SetCOMAddress(ser_ports[0].base, ser_ports[1].base, ser_ports[2].base, ser_ports[3].base);
+	E2Profile::SetLPTAddress(par_ports[0].base, par_ports[1].base, par_ports[2].base);
 }
 
 
-#ifdef	_WINDOWS
+#ifdef  _WINDOWS
 
-#if 0	// Not needed, PonyProg should run on Win95 and NT4, or not?
+#if 0   // Not needed, PonyProg should run on Win95 and NT4, or not?
 /********************************************************
- * TODO: These routines should be avoided completely,	*
- * it's much better resolved inside (my) inpout32.dll	*
+ * TODO: These routines should be avoided completely,   *
+ * it's much better resolved inside (my) inpout32.dll   *
  ********************************************************/
 #include <setupapi.h>
 extern "C" {
@@ -575,25 +658,35 @@ void PortInterface::DetectPorts2k()
 	LPTCount = 0;
 	COMCount = 0;
 	HDEVINFO devs = SetupDiGetClassDevs((GUID *)&GUID_DEVCLASS_PORTS, NULL, 0, DIGCF_PRESENT);
+
 	if (devs != INVALID_HANDLE_VALUE)
 	{
 		SP_DEVINFO_DATA devInfo;
 		devInfo.cbSize = sizeof(devInfo);
+
 		for (int i = 0; SetupDiEnumDeviceInfo(devs, i, &devInfo); i++)
 		{
 			HKEY hKey;
+
 			if (CM_Open_DevNode_Key(devInfo.DevInst, KEY_QUERY_VALUE, 0,
-									RegDisposition_OpenExisting, &hKey, CM_REGISTRY_HARDWARE)) continue;
+			                        RegDisposition_OpenExisting, &hKey, CM_REGISTRY_HARDWARE))
+			{
+				continue;
+			}
+
 			char s[16];
 			DWORD slen = sizeof(s);
 			*s = 0;
+
 			if (!RegQueryValueEx(hKey, "PortName", NULL, NULL, (LPBYTE)s, &slen))
 			{
 				LOG_CONF Config;
+
 				if (!CM_Get_First_Log_Conf(&Config, devInfo.DevInst, ALLOC_LOG_CONF))
 				{
 					RES_DES resDes = 0;
 					RESOURCEID resId;
+
 					if (!CM_Get_Next_Res_Des(&resDes, Config, ResType_IO, &resId, 0))
 					{
 						IO_RESOURCE ior;
@@ -603,6 +696,7 @@ void PortInterface::DetectPorts2k()
 						char msg[80];
 						_snprintf(msg, sizeof(msg), "PonyProg:DetectPorts2k(): Detected %s @ 0x%X\n", s, (int)ior.IO_Header.IOD_Alloc_Base);
 						OutputDebugString(msg);
+
 						if (sscanf(s, "COM%d", &n) == 1)
 						{
 							// sorry, this program cannot handle COM ports above COM4
@@ -625,10 +719,12 @@ void PortInterface::DetectPorts2k()
 						}
 					}
 				}
+
 				RegCloseKey(hKey);
 			}
 		}
 	}
+
 	SetupDiDestroyDeviceInfoList(devs);
 }
 #endif
@@ -645,7 +741,7 @@ void PortInterface::DetectPorts9x()
 	const char *HARDWARE_KEY = "HardwareKey";
 
 	const REGSAM KEY_PERMISSIONS = KEY_ENUMERATE_SUB_KEYS |
-								   KEY_QUERY_VALUE;
+	                               KEY_QUERY_VALUE;
 
 	HKEY CurKey;               // Current key when using the registry
 	char KeyName[MAX_PATH];    // A key name when using the registry
@@ -676,10 +772,11 @@ void PortInterface::DetectPorts9x()
 	FILETIME DummyFileTime;
 	DWORD DummyLength = MAX_PATH;
 	KeyCount = 0;
+
 	while (RegEnumKeyEx(
-				CurKey, KeyCount++, KeyName, &DummyLength,
-				NULL, NULL, NULL, &DummyFileTime
-			) != ERROR_NO_MORE_ITEMS)
+	                        CurKey, KeyCount++, KeyName, &DummyLength,
+	                        NULL, NULL, NULL, &DummyFileTime
+	                ) != ERROR_NO_MORE_ITEMS)
 	{
 		DummyLength = MAX_PATH;
 	}
@@ -688,10 +785,11 @@ void PortInterface::DetectPorts9x()
 
 	KeyCount = 0;
 	DummyLength = MAX_PATH;
+
 	while (RegEnumKeyEx(
-				CurKey, KeyCount, KeyName, &DummyLength,
-				NULL, NULL, NULL, &DummyFileTime
-			) != ERROR_NO_MORE_ITEMS)
+	                        CurKey, KeyCount, KeyName, &DummyLength,
+	                        NULL, NULL, NULL, &DummyFileTime
+	                ) != ERROR_NO_MORE_ITEMS)
 	{
 		KeyList[KeyCount] = new char[DummyLength + 1];
 		strcpy(KeyList[KeyCount], KeyName);
@@ -707,21 +805,25 @@ void PortInterface::DetectPorts9x()
 	// whose fields are all valued 0.
 	for (DWORD KeyIndex = 0; KeyIndex < KeyCount; KeyIndex++)
 	{
-		int HasProblem = FALSE; // Is 'Problem' non-zero? Assume it is Ok
+		int HasProblem = false; // Is 'Problem' non-zero? Assume it is Ok
 
 		// Open the key
 		strcpy(KeyName, BASE_KEY);
 		strcat(KeyName, "\\");
 		strcat(KeyName, KeyList[KeyIndex]);
+
 		if (RegOpenKeyEx(
-					HKEY_DYN_DATA, KeyName, 0, KEY_PERMISSIONS, &CurKey
-				) != ERROR_SUCCESS)
+		                        HKEY_DYN_DATA, KeyName, 0, KEY_PERMISSIONS, &CurKey
+		                ) != ERROR_SUCCESS)
+		{
 			continue;
+		}
 
 		// Test for a 0 valued Problem sub-key,
 		// which must only consist of raw data
 		DWORD DataType, DataSize;
 		RegQueryValueEx(CurKey, PROBLEM, NULL, &DataType, NULL, &DataSize);
+
 		if (DataType == REG_BINARY)
 		{
 			// We have a valid, binary "Problem" sub-key
@@ -735,26 +837,33 @@ void PortInterface::DetectPorts9x()
 
 			// Read the data from the "Problem" sub-key
 			if (RegQueryValueEx(
-						CurKey, PROBLEM, NULL,
-						NULL, Data, &DataSize
-					) == ERROR_SUCCESS)
+			                        CurKey, PROBLEM, NULL,
+			                        NULL, Data, &DataSize
+			                ) == ERROR_SUCCESS)
 			{
 				// See if it has any problems
 				for (DWORD index = 0; index < DataSize; index++)
+				{
 					HasProblem |= Data[index];
+				}
 			}
 			else
-				HasProblem = TRUE; // No good
+			{
+				HasProblem = true;        // No good
+			}
 
 			delete[] Data;
 
 			// Now try and read the Hardware sub-key
 			DataSize = MAX_PATH;
 			RegQueryValueEx(
-				CurKey, HARDWARE_KEY, NULL, &DataType, (uint8_t *)HardwareSubKey, &DataSize
+			        CurKey, HARDWARE_KEY, NULL, &DataType, (uint8_t *)HardwareSubKey, &DataSize
 			);
+
 			if (DataType != REG_SZ)
-				HasProblem = TRUE; // No good
+			{
+				HasProblem = true;        // No good
+			}
 
 			// Do we have no problem, and a non-null Hardware sub-key?
 			if (!HasProblem && strlen(HardwareSubKey) > 0)
@@ -764,19 +873,25 @@ void PortInterface::DetectPorts9x()
 
 				strcpy(KeyName, "Enum\\");
 				strcat(KeyName, HardwareSubKey);
+
 				if (RegOpenKeyEx(
-							HKEY_LOCAL_MACHINE, KeyName, 0, KEY_PERMISSIONS, &CurKey
-						) != ERROR_SUCCESS)
+				                        HKEY_LOCAL_MACHINE, KeyName, 0, KEY_PERMISSIONS, &CurKey
+				                ) != ERROR_SUCCESS)
+				{
 					continue;
+				}
 
 				// Now read in the PortName and obtain the LPT number from it
 				char PortName[MAX_PATH];
 				DataSize = MAX_PATH;
 				RegQueryValueEx(
-					CurKey, PORTNAME, NULL, &DataType, (uint8_t *)PortName, &DataSize
+				        CurKey, PORTNAME, NULL, &DataType, (uint8_t *)PortName, &DataSize
 				);
+
 				if (DataType != REG_SZ)
-					strcpy(PortName, ""); // No good
+				{
+					strcpy(PortName, "");        // No good
+				}
 
 				//------- Search for COM ports
 				if (strstr(PortName, "COM") != NULL)
@@ -791,8 +906,8 @@ void PortInterface::DetectPorts9x()
 
 					memset(PortNumberStr, '\0', MAX_PATH);
 					strncpy(PortNumberStr,
-							strstr(PortName, "COM") + 3,
-							strlen(PortName) - (strstr(PortName, "COM") - PortName) - 2);
+					        strstr(PortName, "COM") + 3,
+					        strlen(PortName) - (strstr(PortName, "COM") - PortName) - 2);
 
 					// Find the port number
 					PortNumber = atoi(PortNumberStr);
@@ -807,9 +922,10 @@ void PortInterface::DetectPorts9x()
 
 					DataSize = sizeof(Allocation);
 					RegQueryValueEx(
-						CurKey, ALLOCATION, NULL, &DataType,
-						(unsigned char *)Allocation, &DataSize
+					        CurKey, ALLOCATION, NULL, &DataType,
+					        (unsigned char *)Allocation, &DataSize
 					);
+
 					if (DataType == REG_BINARY)
 					{
 						// Decode the Allocation data: the port address is present
@@ -818,17 +934,20 @@ void PortInterface::DetectPorts9x()
 						for (int pos = 0; pos < 63; pos++)
 						{
 							if (Allocation[pos] == 0x000C &&
-									Allocation[pos + 1] != 0x0000 &&
-									PortNumber <= MAX_COMPORTS)
+							                Allocation[pos + 1] != 0x0000 &&
+							                PortNumber <= MAX_COMPORTS)
 							{
 								// Found a port; add it to the list
-								//	ser_ports_base[COMCount] = Allocation[pos+1];
-								//	if (Allocation[pos+2] > 0 && Allocation[pos+2] >= Allocation[pos+1])
-								//		ser_ports_len[COMCount] = Allocation[pos+2] - Allocation[pos+1] + 1;
+								//      ser_ports_base[COMCount] = Allocation[pos+1];
+								//      if (Allocation[pos+2] > 0 && Allocation[pos+2] >= Allocation[pos+1])
+								//              ser_ports_len[COMCount] = Allocation[pos+2] - Allocation[pos+1] + 1;
 
 								ser_ports[PortNumber - 1].base = Allocation[pos + 1];
+
 								if (Allocation[pos + 2] > 0 && Allocation[pos + 2] >= Allocation[pos + 1])
+								{
 									ser_ports[PortNumber - 1].len = Allocation[pos + 2] - Allocation[pos + 1] + 1;
+								}
 
 								COMCount++;
 								break;
@@ -851,8 +970,8 @@ void PortInterface::DetectPorts9x()
 
 					memset(PortNumberStr, '\0', MAX_PATH);
 					strncpy(PortNumberStr,
-							strstr(PortName, "LPT") + 3,
-							strlen(PortName) - (strstr(PortName, "LPT") - PortName) - 2);
+					        strstr(PortName, "LPT") + 3,
+					        strlen(PortName) - (strstr(PortName, "LPT") - PortName) - 2);
 
 					// Find the port number
 					PortNumber = atoi(PortNumberStr);
@@ -867,9 +986,10 @@ void PortInterface::DetectPorts9x()
 
 					DataSize = sizeof(Allocation);
 					RegQueryValueEx(
-						CurKey, ALLOCATION, NULL, &DataType,
-						(unsigned char *)Allocation, &DataSize
+					        CurKey, ALLOCATION, NULL, &DataType,
+					        (unsigned char *)Allocation, &DataSize
 					);
+
 					if (DataType == REG_BINARY)
 					{
 						// Decode the Allocation data: the port address is present
@@ -878,17 +998,20 @@ void PortInterface::DetectPorts9x()
 						for (int pos = 0; pos < 63; pos++)
 						{
 							if (Allocation[pos] == 0x000C &&
-									Allocation[pos + 1] != 0x0000 &&
-									PortNumber <= MAX_LPTPORTS)
+							                Allocation[pos + 1] != 0x0000 &&
+							                PortNumber <= MAX_LPTPORTS)
 							{
 								// Found a port; add it to the list
 								par_ports[PortNumber - 1].base = Allocation[pos + 1];
-								if (Allocation[pos + 2] > 0 && Allocation[pos + 2] >= Allocation[pos + 1])
-									par_ports[PortNumber - 1].len = Allocation[pos + 2] - Allocation[pos + 1] + 1;
 
-								//	par_ports_base[LPTCount] = Allocation[pos+1];
-								//	if (Allocation[pos+2] > 0 && Allocation[pos+2] >= Allocation[pos+1])
-								//		par_ports_len[LPTCount] = Allocation[pos+2] - Allocation[pos+1] + 1;
+								if (Allocation[pos + 2] > 0 && Allocation[pos + 2] >= Allocation[pos + 1])
+								{
+									par_ports[PortNumber - 1].len = Allocation[pos + 2] - Allocation[pos + 1] + 1;
+								}
+
+								//      par_ports_base[LPTCount] = Allocation[pos+1];
+								//      if (Allocation[pos+2] > 0 && Allocation[pos+2] >= Allocation[pos+1])
+								//              par_ports_len[LPTCount] = Allocation[pos+2] - Allocation[pos+1] + 1;
 
 								LPTCount++;
 								break;
@@ -904,7 +1027,10 @@ void PortInterface::DetectPorts9x()
 
 	// Destroy our key list
 	for (index = 0; index < KeyCount; index++)
+	{
 		delete[] KeyList[index];
+	}
+
 	delete KeyList;
 }
 
@@ -932,116 +1058,159 @@ static int DetectPortsNT(const char *ServiceName, const char *PortFormat, base_l
 	// This revised code keeps some registry keys open, rather than collecting intermediate strings.
 	// No silly key enumeration at all!
 	const REGSAM KEY_PERMISSIONS = KEY_ENUMERATE_SUB_KEYS | KEY_QUERY_VALUE;
-	char buf[MAX_PATH];	// handy stack-allocated multi-purpose buffer
-	int Count = 0;		// return value (can be greater than nports)
+	char buf[MAX_PATH];     // handy stack-allocated multi-purpose buffer
+	int Count = 0;          // return value (can be greater than nports)
 
 	fh = fopen("detect_ports_NT.log", "a");
-	if (fh) fprintf(fh, "Enter DetectPortsNT(%s, %s, %p, %d)\n", ServiceName, PortFormat, ports, nports);
 
-	memset(ports, 0, nports * sizeof(base_len));	// Clear port array
-	HKEY hCCS;		// Open the registry (first stage)
+	if (fh)
+	{
+		fprintf(fh, "Enter DetectPortsNT(%s, %s, %p, %d)\n", ServiceName, PortFormat, ports, nports);
+	}
+
+	memset(ports, 0, nports * sizeof(base_len));    // Clear port array
+	HKEY hCCS;              // Open the registry (first stage)
 	retval = RegOpenKeyEx(HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet", 0, KEY_PERMISSIONS, &hCCS);
+
 	if (retval == ERROR_SUCCESS)
 	{
 		HKEY hSvcEnum;
 		_snprintf(buf, sizeof(buf), "Services\\%s\\Enum", ServiceName);
 		retval = RegOpenKeyEx(hCCS, buf, 0, KEY_PERMISSIONS, &hSvcEnum);
+
 		if (retval == ERROR_SUCCESS)
 		{
-			DWORD Length = sizeof(Count);		// Count gets the number of ports in the system
+			DWORD Length = sizeof(Count);           // Count gets the number of ports in the system
 			retval = RegQueryValueEx(hSvcEnum, "Count", NULL, NULL, (PBYTE)&Count, &Length);
+
 			if (retval == ERROR_SUCCESS)
 			{
-				if (fh) fprintf(fh, "Port count: %d)\n", Count);
+				if (fh)
+				{
+					fprintf(fh, "Port count: %d)\n", Count);
+				}
 
 				for (int i = 0; i < Count; i++)
 				{
-					_snprintf(buf, sizeof(buf), "%d", i);	// A simple number
-					char PnpPath[MAX_PATH];		// Another buffer (small changes in code would avoid even this)
+					_snprintf(buf, sizeof(buf), "%d", i);   // A simple number
+					char PnpPath[MAX_PATH];         // Another buffer (small changes in code would avoid even this)
 					Length = sizeof(PnpPath);
 					retval = RegQueryValueEx(hSvcEnum, buf, NULL, NULL, (PBYTE)PnpPath, &Length);
+
 					if (retval == ERROR_SUCCESS)
 					{
 						HKEY hParams;
 
-						if (fh) fprintf(fh, "Cycle: %d, PNPPath: %s\n", i, PnpPath);
+						if (fh)
+						{
+							fprintf(fh, "Cycle: %d, PNPPath: %s\n", i, PnpPath);
+						}
 
 						_snprintf(buf, sizeof(buf), "Enum\\%s\\Device Parameters", PnpPath);
 						retval = RegOpenKeyEx(hCCS, buf, 0, KEY_PERMISSIONS, &hParams);
+
 						if (retval == ERROR_SUCCESS)
 						{
 							int Index;
 							Length = sizeof(buf);
 							retval = RegQueryValueEx(hParams, "PortName", NULL, NULL, (PBYTE)buf, &Length);
+
 							if (retval == ERROR_SUCCESS
-									&& sscanf(buf, PortFormat, &Index) == 1
-									&& (unsigned)--Index < (unsigned)nports)  	// Use zero-based index from here, avoid negative values
+							                && sscanf(buf, PortFormat, &Index) == 1
+							                && (unsigned)--Index < (unsigned)nports)        // Use zero-based index from here, avoid negative values
 							{
 								HKEY hControl;
 								_snprintf(buf, sizeof(buf), "Enum\\%s\\Control", PnpPath);
 								retval = RegOpenKeyEx(hCCS, buf, 0, KEY_PERMISSIONS, &hControl);
+
 								if (retval == ERROR_SUCCESS)
 								{
 									Length = sizeof(buf);
 									retval = RegQueryValueEx(hControl, "AllocConfig", NULL, NULL, (PBYTE)buf, &Length);
+
 									if (retval == ERROR_SUCCESS)
 									{
 										// This undocumented AllocConfig structure is checked against Win2k and Win8/64.
 										// In both cases, the ResType entry was at byte offset 16.
 										DWORD *p = (DWORD *)buf + 4;
+
 										if ((p[0] == 2 || p[0] == 3 || p[0] == 4 || p[0] == 5)   // have ResType_IO
-												&& !HIWORD(p[2]) && p[2] > 0x100	// port address less than 64K and more than 0x100
-												&& !p[3]							// no high DWORD part
-												&& p[4] >= 8 && p[4] < 16)  		// length limited to 16
+										                && !HIWORD(p[2]) && p[2] > 0x100        // port address less than 64K and more than 0x100
+										                && !p[3]                                                        // no high DWORD part
+										                && p[4] >= 8 && p[4] < 16)              // length limited to 16
 										{
 											if (fh) fprintf(fh, "p=%p [0]=%lu, [1]=%lu, [2]=%lxh, [3]=%lxh, [4]=%lu\n",
-															(void *)p, p[0], p[1], p[2], p[3], p[4]);
+												                (void *)p, p[0], p[1], p[2], p[3], p[4]);
 
-											ports[Index].base = p[2];	// We got one
-											ports[Index].len = p[4];	// (NO check for typical ISA addresses anymore!!)
+											ports[Index].base = p[2];       // We got one
+											ports[Index].len = p[4];        // (NO check for typical ISA addresses anymore!!)
 										}
 									}
 									else
 									{
-										if (fh) fprintf(fh, "RegQueryValueEx(AllocConfig) Failed with code %ld\n", retval);
+										if (fh)
+										{
+											fprintf(fh, "RegQueryValueEx(AllocConfig) Failed with code %ld\n", retval);
+										}
 									}
+
 									RegCloseKey(hControl);
 								}
 								else
 								{
-									if (fh) fprintf(fh, "RegOpenKeyEx(%s) Failed with code %ld\n", buf, retval);
+									if (fh)
+									{
+										fprintf(fh, "RegOpenKeyEx(%s) Failed with code %ld\n", buf, retval);
+									}
 								}
 							}
+
 							RegCloseKey(hParams);
 						}
 						else
 						{
-							if (fh) fprintf(fh, "RegOpenKeyEx(%s) Failed with code %ld\n", buf, retval);
+							if (fh)
+							{
+								fprintf(fh, "RegOpenKeyEx(%s) Failed with code %ld\n", buf, retval);
+							}
 						}
 					}
 				} //for
 			}
 			else
 			{
-				if (fh) fprintf(fh, "RegQueryValueEx(Count) Failed with code %ld\n", retval);
+				if (fh)
+				{
+					fprintf(fh, "RegQueryValueEx(Count) Failed with code %ld\n", retval);
+				}
 			}
+
 			RegCloseKey(hSvcEnum);
 		}
 		else
 		{
-			if (fh) fprintf(fh, "RegOpenKeyEx(%s) Failed with code %ld\n", buf, retval);
+			if (fh)
+			{
+				fprintf(fh, "RegOpenKeyEx(%s) Failed with code %ld\n", buf, retval);
+			}
 		}
+
 		RegCloseKey(hCCS);
 	}
 	else
 	{
-		if (fh) fprintf(fh, "RegOpenKeyEx(HKEY_LOCAL_MACHINE, SYSTEM\\CurrentControlSet) Failed with code %ld\n", retval);
+		if (fh)
+		{
+			fprintf(fh, "RegOpenKeyEx(HKEY_LOCAL_MACHINE, SYSTEM\\CurrentControlSet) Failed with code %ld\n", retval);
+		}
 	}
+
 	if (fh)
 	{
 		fprintf(fh, "Enter DetectPortsNT() *** Count = %d\n", Count);
 		fclose(fh);
 	}
+
 	return (Count < nports) ? Count : nports;
 }
 

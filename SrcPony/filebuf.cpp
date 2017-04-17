@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: filebuf.cpp,v 1.5 2009/11/16 23:40:43 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -28,10 +28,10 @@
 //=========================================================================//
 
 #include <stdio.h>
-#include <string.h>
+#include <QString>
 
 #include "types.h"
-#include "filebuf.h"		// Header file
+#include "filebuf.h"            // Header file
 #include "e2awinfo.h"
 #include "errcode.h"
 
@@ -49,7 +49,9 @@ FileBuf::~FileBuf()
 void FileBuf::SetAWInfo(e2AppWinInfo *wininfo)
 {
 	if (wininfo)
+	{
 		awi = wininfo;
+	}
 }
 
 e2AppWinInfo *FileBuf::GetAWInfo()
@@ -83,33 +85,33 @@ int FileBuf::GetBlockSize() const
 }
 
 //======================>>> FileBuf::SetNewFile <<<=======================
-void FileBuf::SetFileName(char const *name)
+void FileBuf::SetFileName(const QString &name)
 {
 	awi->SetFileName(name);
 }
 
 //======================>>> FileBuf::GetFileName <<<=======================
-char const *FileBuf::GetFileName() const
+QString FileBuf::GetFileName()
 {
 	return awi->GetFileName();
 }
 
-char *FileBuf::GetStringID(char *s)
+QString FileBuf::GetStringID()
 {
-	return awi->GetStringID(s);
+	return awi->GetStringID();
 }
 
-void FileBuf::SetStringID(char const *s)
+void FileBuf::SetStringID(const QString &s)
 {
 	awi->SetStringID(s);
 }
 
-char *FileBuf::GetComment(char *s)
+QString FileBuf::GetComment()
 {
-	return awi->GetComment(s);
+	return awi->GetComment();
 }
 
-void FileBuf::SetComment(char const *s)
+void FileBuf::SetComment(const QString &s)
 {
 	awi->SetComment(s);
 }
@@ -186,16 +188,16 @@ void FileBuf::SetEEpromType(int pritype, int subtype)
 //======================>>> FileBuf::GetFileSize <<<=======================
 long FileBuf::GetFileSize(FILE *fh)
 {
-    long fsize = 0, old_pos;
+	long fsize = 0, old_pos;
 
-    if (fh)
-    {
-        old_pos = ftell(fh);            // salva la posizione attuale
-        fseek(fh, 0, SEEK_END);         // si posizione in fondo al file
-        fsize = ftell(fh);              // ne ricava la lunghezza
-        fseek(fh, old_pos, SEEK_SET);   // si riposizione dove era prima
-    }
+	if (fh)
+	{
+		old_pos = ftell(fh);            // salva la posizione attuale
+		fseek(fh, 0, SEEK_END);         // si posizione in fondo al file
+		fsize = ftell(fh);              // ne ricava la lunghezza
+		fseek(fh, old_pos, SEEK_SET);   // si riposizione dove era prima
+	}
 
-    return fsize;
+	return fsize;
 }
 

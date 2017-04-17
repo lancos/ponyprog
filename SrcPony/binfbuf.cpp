@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: binfbuf.cpp,v 1.3 2009/11/16 22:29:18 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -30,12 +30,13 @@
 #include <stdio.h>
 
 #include "types.h"
-#include "binfbuf.h"		// Header file
+#include "binfbuf.h"            // Header file
 #include "errcode.h"
+
 
 //======================>>> binFileBuf::binFileBuf <<<=======================
 binFileBuf::binFileBuf(e2AppWinInfo *wininfo)
-		: FileBuf(wininfo)
+	: FileBuf(wininfo)
 {
 	file_type = BIN;
 }
@@ -53,14 +54,16 @@ int binFileBuf::Load(int loadtype, long relocation_offset)
 	FILE *fh;
 	int rval = OK;
 
-	if ( (fh = fopen(GetFileName(), "rb")) == NULL )
+	if ( (fh = fopen(GetFileName().toLatin1(), "rb")) == NULL )
+	{
 		return FILENOTFOUND;
-	
+	}
+
 	long fsize = GetFileSize(fh);
 	rewind(fh);
 
-//In questi formati di file "stupidi" la dimensione
-//deve rimanere quella della eeprom attualmente selezionata
+	//In questi formati di file "stupidi" la dimensione
+	//deve rimanere quella della eeprom attualmente selezionata
 	long buf_size = GetBufSize();
 	uint8_t *ptr = GetBufPtr();
 
@@ -77,11 +80,12 @@ int binFileBuf::Load(int loadtype, long relocation_offset)
 			return 0;
 		}
 	}
-	else
-	if (loadtype == PROG_TYPE)
+	else if (loadtype == PROG_TYPE)
 	{
 		if (GetSplitted() > 0 && GetSplitted() <= buf_size)
+		{
 			buf_size = GetSplitted();
+		}
 		else
 		{
 			fclose(fh);
@@ -100,16 +104,19 @@ int binFileBuf::Load(int loadtype, long relocation_offset)
 	}
 
 	if (fsize > buf_size)
+	{
 		fsize = buf_size;
+	}
+
 	rval = fread(ptr, fsize, 1, fh);
 	fclose(fh);
 
-//	SetStringID("");	//????
+	//      SetStringID("");        //????
 	SetComment("");
-	SetRollOver(0);		//2 (che significa NO) ??
+	SetRollOver(0);         //2 (che significa NO) ??
 	SetCRC( mcalc_crc(GetBufPtr(), GetBlockSize() * GetNoOfBlock()) );
 
-//	rval = GetNoOfBlock();
+	//      rval = GetNoOfBlock();
 
 	return rval;
 }
@@ -121,10 +128,14 @@ int binFileBuf::Save(int savetype, long relocation_offset)
 	int rval;
 
 	if (FileBuf::GetNoOfBlock() <= 0)
+	{
 		return NOTHINGTOSAVE;
+	}
 
-	if ( (fh = fopen(FileBuf::GetFileName(), "wb")) == NULL )
+	if ( (fh = fopen(FileBuf::GetFileName().toLatin1(), "wb")) == NULL )
+	{
 		return CREATEERROR;
+	}
 
 	long buf_size = FileBuf::GetBlockSize() * FileBuf::GetNoOfBlock();
 	uint8_t *ptr = FileBuf::GetBufPtr();
@@ -132,15 +143,16 @@ int binFileBuf::Save(int savetype, long relocation_offset)
 	if (savetype == PROG_TYPE)
 	{
 		if (GetSplitted() > 0 && GetSplitted() <= buf_size)
+		{
 			buf_size = GetSplitted();
+		}
 		else
 		{
 			fclose(fh);
 			return 0;
 		}
 	}
-	else
-	if (savetype == DATA_TYPE)
+	else if (savetype == DATA_TYPE)
 	{
 		if (GetSplitted() >= 0 && GetSplitted() < buf_size)
 		{
@@ -155,8 +167,11 @@ int binFileBuf::Save(int savetype, long relocation_offset)
 	}
 
 	rval = fwrite(ptr, buf_size, 1, fh);
+
 	if (rval == 0)
+	{
 		rval = WRITEERROR;
+	}
 
 	fclose(fh);
 	return rval;

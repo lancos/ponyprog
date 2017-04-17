@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: i2cbus.h,v 1.7 2009/11/16 23:40:43 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -27,14 +27,14 @@
 //-------------------------------------------------------------------------//
 //=========================================================================//
 
-#ifndef	_I2CBUS_H
-#define	_I2CBUS_H
+#ifndef _I2CBUS_H
+#define _I2CBUS_H
 
 #include "busio.h"
 
 class I2CBus : public BusIO
 {
- public:		//------------------------------- public
+public:                //------------------------------- public
 	I2CBus(BusInterface *ptr = 0);
 	virtual ~I2CBus();
 
@@ -51,11 +51,11 @@ class I2CBus : public BusIO
 
 	void Close();
 	int TestPort(int port);
-//	int Calibration(int slave = 0xA0);
+	//      int Calibration(int slave = 0xA0);
 
 	void SetDelay();
 
- protected:		//------------------------------- protected
+protected:             //------------------------------- protected
 
 	int CheckBusy();
 	int SendStart();
@@ -67,35 +67,53 @@ class I2CBus : public BusIO
 	int RecByteMast(int ack);
 	int RecByteMastLSB(int ack);
 
- private:		//------------------------------- private
+private:               //------------------------------- private
 
 
 	void setSCLSDA()
-		{ busI->SetClockData(); }
+	{
+		busI->SetClockData();
+	}
 
 	int isSCLSDAuno() const
-		{ return busI->IsClockDataUP(); }
+	{
+		return busI->IsClockDataUP();
+	}
 
 	void setSDA()
-		{ busI->SetDataOut(1); }
+	{
+		busI->SetDataOut(1);
+	}
 
 	void clearSDA()
-		{ busI->SetDataOut(0); }
+	{
+		busI->SetDataOut(0);
+	}
 
 	void setSCL()
-		{ busI->SetClock(1); }
+	{
+		busI->SetClock(1);
+	}
 
 	void clearSCL()
-		{ busI->SetClock(0); }
+	{
+		busI->SetClock(0);
+	}
 
 	int getSCL() const
-		{ return busI->GetClock(); }
+	{
+		return busI->GetClock();
+	}
 
 	int getSDA() const
-		{ return busI->GetDataIn(); }
+	{
+		return busI->GetDataIn();
+	}
 
 	void bitSDA(int b)
-		{ busI->SetDataOut(b); }
+	{
+		busI->SetDataOut(b);
+	}
 };
 
 #endif

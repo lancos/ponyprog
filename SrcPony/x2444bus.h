@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: x2444bus.h,v 1.4 2009/11/16 22:29:18 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -27,14 +27,16 @@
 //-------------------------------------------------------------------------//
 //=========================================================================//
 
-#ifndef	_X2444BUS_H
-#define	_X2444BUS_H
+#ifndef _X2444BUS_H
+#define _X2444BUS_H
 
 #include "microbus.h"
+#include "device.h"
+
 
 class X2444Bus : public MicroWireBus
 {
- public:		//------------------------------- public
+public:                //------------------------------- public
 	X2444Bus(BusInterface *ptr = 0);
 
 	long Read(int addr, uint8_t *data, long length, int page_size = 0);
@@ -52,11 +54,11 @@ class X2444Bus : public MicroWireBus
 		return organization;
 	}
 
- protected:		//------------------------------- protected
+protected:             //------------------------------- protected
 
 	void SendCmdAddr(int cmd, int addr);
 
- private:		//------------------------------- private
+private:               //------------------------------- private
 
 	//Command Opcode
 	const uint8_t ReadCode;
@@ -69,12 +71,16 @@ class X2444Bus : public MicroWireBus
 	const long loop_timeout;
 
 	void setCS()
-		{ SetReset(); }
+	{
+		SetReset();
+	}
 
 	void clearCS()
-		{ ClearReset(); }
+	{
+		ClearReset();
+	}
 
-//	int address_len;
+	//      int address_len;
 	int organization;
 };
 

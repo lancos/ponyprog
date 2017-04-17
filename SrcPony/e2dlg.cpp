@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: e2dlg.cpp,v 1.8 2016/05/27 11:22:51 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -27,451 +27,334 @@
 //-------------------------------------------------------------------------//
 //=========================================================================//
 
-#include <stdio.h>
-#include "e2app.h"
+#include <QMessageBox>
+#include <QRadioButton>
+#include <QCheckBox>
+#include <QStringList>
+#include <QDebug>
+
 #include "e2dlg.h"
 #include "e2cmdw.h"
-#include <v/vnotice.h>
-
+#include "eeptypes.h"
 #include "types.h"
 #include "i2cbus.h"
 
-#include "cmdenum.h"
-#include "modaldlg_utilities.h"
+class e2CmdWindow;
 
-
-//@V@:BeginIDs
-enum {
-	blk0 = 1000,
-	blk1,
-	blk2,
-	frmPortsel,
-	rdbComPort,
-	rdbLptPort,
-	frmInterf,
-	cbxInterf,
-	frmComsel,
-	rdbCom1,
-	rdbCom2,
-	rdbCom3,
-	rdbCom4,
-	frmInterfL,
-	cbxInterfL,
-	frmLptsel,
-	rdbLpt1,
-	rdbLpt2,
-	rdbLpt3,
-
-	frmPolsep,
-	frmPolsel,
-	lblPol1,
-	chkPol1,
-	chkPol2,
-	chkPol3,
-	chkPol4,
-
-	btnTestDlg,		// add your id's here
-	btnCheckHw
-};
-//@V@:EndIds
-
-static char *interfList[] = {
-	//Serial interfaces list
-	" SI Prog API ",
-	" SI Prog I/O ",
-	"   JDM API   ",
-	0
-};
-
-static char *interfListL[] = {
-	//Parallel interfaces list
-	" Avr ISP API ",
-	" Avr ISP I/O ",
-	" DT-006 API  ",
-	" DT-006 I/O  ",
-	" EasyI2C API ",
-	" EasyI2C I/O ",
-	" SysFs I/O   ",
-	0
-};
-
-//@V@:BeginDialogCmd DefaultCmds
-static DialogCmd DefaultCmds[] =
-{
-	{C_Label, lblMainMsg, 0,"X",NoList,CA_MainMsg,isSens,NoFrame, 0, 0},
-
-	{C_Frame,frmPortsel,0,STR_LBLCOMLPT,NoList,CA_None,isSens,NoFrame,0,lblMainMsg},
-	{C_RadioButton,rdbComPort,0,STR_LBLSERIAL,NoList,CA_None,isSens,frmPortsel,0,0},
-	{C_Blank,blk0,0,"  ",NoList,CA_None,isSens,frmPortsel,rdbComPort,0},
-	{C_Blank,blk1,0,"  ",NoList,CA_None,isSens,frmPortsel,blk0,0},
-	{C_Blank,blk2,0,"  ",NoList,CA_None,isSens,frmPortsel,blk1,0},
-	{C_RadioButton,rdbLptPort,0,STR_LBLPARALLEL,NoList,CA_None,isSens,frmPortsel,blk2,0},
-
-	{C_Frame,frmInterf,0,STR_LBLINTERFSEL,NoList,CA_NoBorder,isSens,NoFrame,0,frmPortsel},
-	{C_ComboBox,cbxInterf,0,STR_LBLINTERFTYPE,(void*)interfList,CA_None,isSens,frmInterf,0,0},
-
-	{C_Frame,frmComsel,0,STR_LBLCOMSELECT,NoList,CA_None,isSens,frmInterf,0,cbxInterf},
-	{C_RadioButton,rdbCom1,0,STR_LBLCOM1,NoList,CA_None,isSens,frmComsel,0,0,		0, STR_TTCOM1},
-	{C_RadioButton,rdbCom2,0,STR_LBLCOM2,NoList,CA_None,isSens,frmComsel,0,rdbCom1, 0, STR_TTCOM2},
-	{C_RadioButton,rdbCom3,0,STR_LBLCOM3,NoList,CA_None,isSens,frmComsel,rdbCom1,0, 0, STR_TTCOM3},
-	{C_RadioButton,rdbCom4,0,STR_LBLCOM4,NoList,CA_None,isSens,frmComsel,rdbCom1,rdbCom1, 0, STR_TTCOM4},
-
-	{C_Frame,frmInterfL,0,STR_LBLINTERFSEL,NoList,CA_NoBorder,isSens,NoFrame,frmInterf,frmPortsel},
-	{C_ComboBox,cbxInterfL,0,STR_LBLINTERFTYPE,(void*)interfListL,CA_None,isSens,frmInterfL,0,0},
-
-	{C_Frame,frmLptsel,0,STR_LBLLPTSELECT,NoList,CA_None,isSens,frmInterfL,0,cbxInterfL},
-	{C_RadioButton,rdbLpt1,0,STR_LBLLPT1,NoList,CA_None,isSens,frmLptsel,0,0,		0, STR_TTLPT1},
-	{C_RadioButton,rdbLpt2,0,STR_LBLLPT2,NoList,CA_None,isSens,frmLptsel,0,rdbLpt1,	0, STR_TTLPT2},
-	{C_RadioButton,rdbLpt3,0,STR_LBLLPT3,NoList,CA_None,isSens,frmLptsel,rdbLpt1,0,	0, STR_TTLPT3},
-
-	{C_Frame,frmPolsel,0,STR_LBLSELPOLARITY,NoList,CA_None,isSens,NoFrame,0,frmInterf},
-	{C_Label,lblPol1,0,STR_LBLSELPOLARITY,NoList,CA_None,isSens,frmPolsel,0,0},
-	{C_CheckBox,chkPol1,0,STR_LBLINVRESET,NoList,CA_None,isSens,frmPolsel,0,lblPol1},
-	{C_CheckBox,chkPol2,0,STR_LBLINVSCK,NoList,CA_None,isSens,frmPolsel,0,chkPol1},
-	{C_CheckBox,chkPol3,0,STR_LBLINVDATAIN,NoList,CA_None,isSens,frmPolsel,chkPol1,lblPol1},
-	{C_CheckBox,chkPol4,0,STR_LBLINVDATAOUT,NoList,CA_None,isSens,frmPolsel,chkPol1,chkPol1},
-
-	{C_Button,M_Cancel,0,STR_BTNCANC, NoList,CA_None,isSens,NoFrame,0,frmPolsel},
-	{C_Button,M_OK,0,STR_BTNOK,	NoList,CA_DefaultButton,isSens,NoFrame,M_Cancel,frmPolsel},
-
-	{C_Button,btnTestDlg,0,STR_BTNPROBE,NoList,CA_None,isSens,NoFrame,M_OK,frmPolsel},
-//	{C_Button,btnCheckHw,0,STR_BTNCHECKHW,NoList,CA_None,isSens,NoFrame,btnTestDlg,frmPolsel},
-
-	{C_EndOfList,0,0,0,0,CA_None,0,0,0}
-};
-//@V@:EndDialogCmd
+using namespace Translator;
 
 
 //=========================>>> e2Dialog::e2Dialog <<<====================
-e2Dialog::e2Dialog(vBaseWindow* bw, char* title) :
-		vModalDialog(bw, title),
-			lpt_no(2),
-			com_no(3)
+e2Dialog::e2Dialog(QWidget* bw, const QString title)
+	: QDialog(bw),
+	  lpt_no(2),
+	  com_no(3)
 {
-	UserDebug(Constructor,"e2Dialog::e2Dialog()\n")
+	setupUi(this);
 
-	_myCmdWin = (e2CmdWindow*) bw;
+	setWindowTitle(title);
+
+	cmdWin = (e2CmdWindow*)bw;
+
+	qDebug() << "e2Dialog::e2Dialog()";
+
+	setWidgetsText();
+
+	connect(rdbComPort, SIGNAL(toggled(bool)), this, SLOT(onChangePort(bool)));
+	connect(rdbLptPort, SIGNAL(toggled(bool)), this, SLOT(onChangePort(bool)));
+
+	connect (cbxInterfCOM, SIGNAL(currentIndexChanged(int)), this, SLOT(onSelectCOM(int)));
+	connect (cbxInterfLPT, SIGNAL(currentIndexChanged(int)), this, SLOT(onSelectLPT(int)));
+
+	connect (cbxInterfNum, SIGNAL(currentIndexChanged(int)), this, SLOT(onSelectNum(int)));
+
+	connect(pushOk, SIGNAL(clicked()), this, SLOT(onOk()));
+	connect(pushCancel, SIGNAL(clicked()), this, SLOT(reject()));
+	connect(pushTest, SIGNAL(toggled(bool)), this, SLOT(onTest()));
+
+
+	getSettings();
 }
+
 
 //======================>>> e2Dialog::~e2Dialog <<<======================
 e2Dialog::~e2Dialog()
 {
-	UserDebug(Destructor,"e2Dialog::~e2Dialog() destructor\n")
+	qDebug() << "e2Dialog::~e2Dialog()";
 }
 
-int e2Dialog::DialogAction(char *msg)
+
+void e2Dialog::onSelectLPT(int i)
 {
-	UserDebug1(UserApp1, "e2Dialog::DialogAction() IN *** M_Cancel=%d\n", M_Cancel);
+	interf_type = (HInterfaceType)(i + 3);
+}
 
-	SetCommandObject(chkPol1, (THEAPP->GetPolarity() & RESETINV) ? 1 : 0, DefaultCmds);
-	SetCommandObject(chkPol2, (THEAPP->GetPolarity() & CLOCKINV) ? 1 : 0, DefaultCmds);
-	SetCommandObject(chkPol3, (THEAPP->GetPolarity() & DININV) ? 1 : 0, DefaultCmds);
-	SetCommandObject(chkPol4, (THEAPP->GetPolarity() & DOUTINV) ? 1 : 0, DefaultCmds);
 
-	AddDialogCmds(DefaultCmds);		// add the predefined commands
+void e2Dialog::onSelectCOM(int i)
+{
+	interf_type = (HInterfaceType)i;
+}
 
-	ItemVal ans, rval;
-	ans = ShowModalDialog(msg, rval);
-	if (ans == M_Cancel)
-		return 0;
 
+void e2Dialog::onSelectNum(int i)
+{
+	if (rdbComPort->isChecked() == true)
+	{
+		lpt_no = i;
+		port_no = lpt_no;
+	}
+	else
+	{
+		com_no = i;
+		port_no = com_no;
+	}
+}
+
+void e2Dialog::onChangePort(bool b)
+{
+	QRadioButton *s = static_cast<QRadioButton*>(sender());
+	//      bool state = s->isChecked();
+
+	disconnect(rdbComPort, SIGNAL(toggled(bool)), this, SLOT(onChangePort(bool)));
+	disconnect(rdbLptPort, SIGNAL(toggled(bool)), this, SLOT(onChangePort(bool)));
+
+	if (s == rdbComPort)
+	{
+		cbxInterfCOM->setEnabled(b);
+		cbxInterfLPT->setEnabled(!b);
+
+		disconnect (cbxInterfNum, SIGNAL(currentIndexChanged(int)), this, SLOT(onSelectNum(int)));
+		cbxInterfNum->clear();
+		cbxInterfNum->addItems(usbList);
+		connect (cbxInterfNum, SIGNAL(currentIndexChanged(int)), this, SLOT(onSelectNum(int)));
+
+		cbxInterfNum->setCurrentIndex(com_no);
+	}
+	else
+	{
+		cbxInterfCOM->setEnabled(!b);
+		cbxInterfLPT->setEnabled(b);
+
+		disconnect (cbxInterfNum, SIGNAL(currentIndexChanged(int)), this, SLOT(onSelectNum(int)));
+		cbxInterfNum->clear();
+		cbxInterfNum->addItems(lptList);
+		connect (cbxInterfNum, SIGNAL(currentIndexChanged(int)), this, SLOT(onSelectNum(int)));
+
+		cbxInterfNum->setCurrentIndex(lpt_no);
+	}
+
+	connect(rdbComPort, SIGNAL(toggled(bool)), this, SLOT(onChangePort(bool)));
+	connect(rdbLptPort, SIGNAL(toggled(bool)), this, SLOT(onChangePort(bool)));
+}
+
+
+void e2Dialog::getSettings()
+{
+	interf_type = cmdWin->GetInterfaceType();
+
+	if (interf_type < SIPROG_API || interf_type == LAST_HT)
+	{
+		interf_type = SIPROG_API;
+	}
+
+	port_no = cmdWin->GetPort();
+
+	// init of radiobuttons
+	if (interf_type >= SIPROG_API && interf_type <= JDM_API)  // COM
+	{
+		cbxInterfCOM->setCurrentIndex(interf_type);
+		cbxInterfLPT->setCurrentIndex(0);
+
+		com_no = port_no;
+		rdbComPort->setChecked(true);
+
+		if (com_no >= cbxInterfNum->count())
+		{
+			com_no = 0;
+			port_no = 0;
+		}
+
+		cbxInterfNum->setCurrentIndex(com_no);
+	}
+	else
+	{
+		cbxInterfLPT->setCurrentIndex(interf_type - 3 );
+		cbxInterfCOM->setCurrentIndex(0);
+
+		lpt_no = port_no;
+		rdbLptPort->setChecked(true);
+
+		if (lpt_no >= cbxInterfNum->count())
+		{
+			lpt_no = 0;
+			port_no = 0;
+		}
+
+		cbxInterfNum->setCurrentIndex(lpt_no);
+	}
+
+
+	chkPol1->setChecked((cmdWin->GetPolarity() & RESETINV) ? 1 : 0);
+	chkPol2->setChecked((cmdWin->GetPolarity() & CLOCKINV) ? 1 : 0);
+	chkPol3->setChecked((cmdWin->GetPolarity() & DININV) ? 1 : 0);
+	chkPol4->setChecked((cmdWin->GetPolarity() & DOUTINV) ? 1 : 0);
+}
+
+void e2Dialog::setSettings()
+{
 	// *** Add code to process dialog values here
-	if (GetValue(chkPol1))
-		THEAPP->SetPolarity(THEAPP->GetPolarity() | (uint8_t)RESETINV);
+	if (chkPol1->isChecked())
+	{
+		cmdWin->SetPolarity(cmdWin->GetPolarity() | (uint8_t)RESETINV);
+	}
 	else
-		THEAPP->SetPolarity(THEAPP->GetPolarity() & (uint8_t)~RESETINV);
+	{
+		cmdWin->SetPolarity(cmdWin->GetPolarity() & (uint8_t)~RESETINV);
+	}
 
-	if (GetValue(chkPol2))
-		THEAPP->SetPolarity(THEAPP->GetPolarity() | (uint8_t)CLOCKINV);
+	if (chkPol2->isChecked())
+	{
+		cmdWin->SetPolarity(cmdWin->GetPolarity() | (uint8_t)CLOCKINV);
+	}
 	else
-		THEAPP->SetPolarity(THEAPP->GetPolarity() & (uint8_t)~CLOCKINV);
+	{
+		cmdWin->SetPolarity(cmdWin->GetPolarity() & (uint8_t)~CLOCKINV);
+	}
 
-	if (GetValue(chkPol3))
-		THEAPP->SetPolarity(THEAPP->GetPolarity() | (uint8_t)DININV);
+	if (chkPol3->isChecked())
+	{
+		cmdWin->SetPolarity(cmdWin->GetPolarity() | (uint8_t)DININV);
+	}
 	else
-		THEAPP->SetPolarity(THEAPP->GetPolarity() & (uint8_t)~DININV);
+	{
+		cmdWin->SetPolarity(cmdWin->GetPolarity() & (uint8_t)~DININV);
+	}
 
-	if (GetValue(chkPol4))
-		THEAPP->SetPolarity(THEAPP->GetPolarity() | (uint8_t)DOUTINV);
+	if (chkPol4->isChecked())
+	{
+		cmdWin->SetPolarity(cmdWin->GetPolarity() | (uint8_t)DOUTINV);
+	}
 	else
-		THEAPP->SetPolarity(THEAPP->GetPolarity() & (uint8_t)~DOUTINV);
+	{
+		cmdWin->SetPolarity(cmdWin->GetPolarity() & (uint8_t)~DOUTINV);
+	}
 
 	bool set_port = false;
-	if (port_no != THEAPP->GetPort())
-		set_port = true;
-	if (interf_type != THEAPP->GetInterfaceType())
+
+	if (port_no != cmdWin->GetPort())
 	{
-		THEAPP->ClosePort();
-		THEAPP->SetInterfaceType(interf_type);
 		set_port = true;
 	}
+
+	if (interf_type != cmdWin->GetInterfaceType())
+	{
+		cmdWin->ClosePort();
+		cmdWin->SetInterfaceType(interf_type);
+		set_port = true;
+	}
+
 	if (set_port)
-		THEAPP->SetPort(port_no);
+	{
+		cmdWin->SetPort(port_no);
+	}
 
 	//Store values in the INI file
-	THEAPP->SetParInterfType(interf_type);
-	THEAPP->SetParPortNo(port_no);
-	THEAPP->SetPolarityControl(THEAPP->GetPolarity());
-
-	return ans == M_OK;
-}
-
-//======================>>> e2Dialog::DialogDisplayed <<<================
-void e2Dialog::DialogDisplayed()
-{
-	interf_type = THEAPP->GetInterfaceType();
-	port_no = THEAPP->GetPort();
-	UpdateDialog(1);
-
-//	vDialog::DialogDisplayed();
-	vModalDialog::DialogDisplayed();
+	E2Profile::SetParInterfType(interf_type);
+	E2Profile::SetParPortNo(port_no);
+	cmdWin->SetPolarity(cmdWin->GetPolarity());
 }
 
 
-#define	OPENONLY	1
-
-//====================>>> e2Dialog::UpdateDialog <<<=======================
-void e2Dialog::UpdateDialog(int init, int type)
+void e2Dialog::setWidgetsText()
 {
-	UserDebug2(UserApp1, "e2Dialog::UpdateDialog() IN *** init=%d, type=%d\n", init, type);
+	//Serial interfaces list
+	QStringList interfListC;
+	interfListC <<
+	            "SI Prog API" <<
+	            "SI Prog I/O" <<
+	            "  JDM API  ";
+	cbxInterfCOM->addItems(interfListC);
 
-	extern int TypeToInterfVector(HInterfaceType type);
-	extern int TypeToInterfIndex(HInterfaceType type);
+	//Parallel interfaces list
+	QStringList interfListL;
+	interfListL <<
+	            "Avr ISP API" <<
+	            "Avr ISP I/O" <<
+	            "DT-006 API " <<
+	            "DT-006 I/O " <<
+	            "EasyI2C API" <<
+	            "EasyI2C I/O" <<
+	            "SysFs GPIO ";
+	cbxInterfLPT->addItems(interfListL);
 
-	if (init)
-		type = TypeToInterfVector(interf_type);
+	rdbComPort->setText(STR_LBLSERIAL);
+	rdbLptPort->setText(STR_LBLPARALLEL);
 
-	if (type)
+	lptList << STR_LBLLPT1 << STR_LBLLPT2 << STR_LBLLPT3;
+	comList << STR_LBLCOM1 << STR_LBLCOM2 << STR_LBLCOM3 << STR_LBLCOM4;
+	usbList << STR_LBLUSB1 << STR_LBLUSB2 << STR_LBLUSB3 << STR_LBLUSB4 << STR_LBLUSB5 << STR_LBLUSB6 << STR_LBLUSB7 << STR_LBLUSB8;
+
+	lblPol1->setText(STR_LBLSELPOLARITY);
+
+	chkPol1->setText(STR_LBLINVRESET);
+	chkPol2->setText(STR_LBLINVSCK);
+	chkPol3->setText(STR_LBLINVDATAIN);
+	chkPol4->setText(STR_LBLINVDATAOUT);
+
+	pushOk->setText(STR_BTNOK);
+	pushTest->setText(STR_BTNPROBE);
+	pushCancel->setText(STR_BTNCANC);
+}
+
+
+void e2Dialog::onOk()
+{
+	setSettings();
+
+	accept();
+}
+
+void e2Dialog::onTest()
+{
+	int test = Test();
+
+	if ( test )
 	{
-		SetValue(rdbLptPort, 1, Value);
-		if (init)
-		{
-			lpt_no = port_no;
-			SetValue(cbxInterfL, TypeToInterfIndex(interf_type), Value);
-			SetValue(rdbLpt1 + lpt_no - 1, 1, Value);
-			SetValue(rdbCom1 + com_no - 1, 1, Value);
-		}
-
-		int k;
-		for (k = 0; k < 3; k++)
-		{
-			if ( Test(k+1, OPENONLY) == OK )
-				SetValue(rdbLpt1 + k, 1, Sensitive);
-			else
-				SetValue(rdbLpt1 + k, 0, Sensitive);
-		}
-		SetValue(cbxInterfL, 1, Sensitive);
-		for (k = 0; k < 4; k++)
-			SetValue(rdbCom1 + k, 0, Sensitive);
-		SetValue(cbxInterf, 0, Sensitive);
+		QMessageBox::critical(this, "Failed",  STR_MSGTEST + " " + STR_MSGFAILED);
 	}
 	else
 	{
-		SetValue(rdbComPort, 1, Value);
-		if (init)
-		{
-			com_no = port_no;
-			SetValue(cbxInterf, TypeToInterfIndex(interf_type), Value);
-			SetValue(rdbCom1 + com_no - 1, 1, Value);
-			SetValue(rdbLpt1 + lpt_no - 1, 1, Value);
-		}
-
-		int k;
-		for (k = 0; k < 4; k++)
-		{
-			if ( Test(k+1, OPENONLY) == OK )
-				SetValue(rdbCom1 + k, 1, Sensitive);
-			else
-				SetValue(rdbCom1 + k, 0, Sensitive);
-		}
-		SetValue(cbxInterf, 1, Sensitive);
-		for (k = 0; k < 3; k++)
-			SetValue(rdbLpt1 + k, 0, Sensitive);
-		SetValue(cbxInterfL, 0, Sensitive);
+		QMessageBox::information(this, "Info", STR_MSGTEST + " " + STR_MSGOK);
 	}
-	UserDebug(UserApp1, "e2Dialog::UpdateDialog() OUT ***\n");
 }
+
 
 int e2Dialog::Test(int p, int open_only) const
 {
-	UserDebug2(UserApp1, "e2Dialog::Test() IN *** p=%d, open_only=%d\n", p, open_only);
+	qDebug() << "e2Dialog::Test() IN *** p=" << p << ", open_only=" << open_only;
 
-	HInterfaceType old_interf = THEAPP->GetInterfaceType();
+	HInterfaceType old_interf = cmdWin->GetInterfaceType();
 	int test;
 
 	if (p == 0)
+	{
 		p = port_no;
+	}
 
 	if (interf_type != old_interf)
 	{
-		THEAPP->SetInterfaceType(interf_type);
-		test = THEAPP->TestPort(p, open_only);
-		THEAPP->SetInterfaceType(old_interf);
+		cmdWin->SetInterfaceType(interf_type);
+		test = cmdWin->TestPort(p, open_only);
+		cmdWin->SetInterfaceType(old_interf);
 	}
 	else
-		test = THEAPP->TestPort(p, open_only);
+	{
+		test = cmdWin->TestPort(p, open_only);
+	}
 
-	UserDebug1(UserApp1, "e2Dialog::Test() = %d *** OUT\n", test);
+
+	qDebug() << "e2Dialog::Test() = " << test << " *** OUT";
 
 	return test;
 }
 
-//====================>>> e2Dialog::DialogCommand <<<=======================
-void e2Dialog::DialogCommand(ItemVal id, ItemVal retval, CmdType ctype)
-{
-	extern HInterfaceType VindexToInterfType(int vector, int index);
-	
-	// Dialog commands to here
-
-	UserDebug2(CmdEvents,"e2Dialog::DialogCommand(id:%d, val:%d)\n", id, retval)
-
-	vNoticeDialog note(this);
-
-	switch (id)		// We will do some things depending on value
-	{
-	case rdbComPort:
-	case rdbLptPort:
-	  {
-		if (retval)
-		{
-			int vector = id - rdbComPort;
-			int index = vector ? GetValue(cbxInterfL) : GetValue(cbxInterf);
-
-			interf_type = VindexToInterfType(vector, index);
-			port_no = vector ? lpt_no : com_no;
-			UpdateDialog(0, vector);
-//			UpdateDialog(1);
-		}
-		break;
-	  }
-
-	case rdbLpt1:
-	case rdbLpt2:
-	case rdbLpt3:
-	  {
-		if (retval)
-			lpt_no = port_no = id - rdbLpt1 + 1;
-		break;
-	  }
-
-	case rdbCom1:
-	case rdbCom2:
-	case rdbCom3:
-	case rdbCom4:
-	  {
-		if (retval)
-			com_no = port_no = id - rdbCom1 + 1;
-		break;
-	  }
-
-	case cbxInterf:
-	  {
-		interf_type = VindexToInterfType(0, retval);
-		UpdateDialog(0, 0);
-		break;
-	  }
-
-	case cbxInterfL:
-	  {
-		interf_type = VindexToInterfType(1, retval);
-		UpdateDialog(0, 1);
-		break;
-	  }
-
-	//@V@:Case: btnTestDlg
-	case btnTestDlg:
-	  {
-		char str[MAXMSG];
-
-		if ( Test() )
-			strncpy(str, STR_MSGTEST " " STR_MSGFAILED, MAXMSG);
-		else
-			strncpy(str, STR_MSGTEST " " STR_MSGOK, MAXMSG);
-		str[MAXMSG-1] = '\0';
-		note.Notice(str);
-		break;
-	  }	//@V@:EndCase
-
-//	case btnCheckHw:
-//		break;
-
-	default:
-		vModalDialog::DialogCommand(id,retval,ctype);
-		break;
-	}
-}
-
-
-/********************************** PROGRESS DIALOG ********************************/
-
-static CommandObject ProgressDlg[] = {
-	{C_Label, lblMainMsg, 0,"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",NoList,CA_MainMsg,isSens,NoFrame, 0, 0},
-	{C_ProgressBar, pbrProgress, 0, "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", NoList, CA_Horizontal|CA_Percent,isSens,NoFrame, 0, lblMainMsg},	// Horiz, with label
-	{C_Button, M_Cancel, 0, STR_BTNABORT, NoList,CA_None,isSens,NoFrame,0,pbrProgress},
-
-	{C_EndOfList,0,0,0,0,CA_None,0,0,0}
-};
-
-e2ProgressDialog::e2ProgressDialog(vBaseWindow* bw, char* title) :
-		vDialog(bw, 0, title),
-			pbr_value(0)
-{
-	UserDebug(Constructor,"e2ProgressDialog::e2ProgressDialog()\n")
-
-	_myCmdWin = (e2CmdWindow*) bw;
-	last_msg[0] = '\0';
-
-	AddDialogCmds(ProgressDlg);
-}
-
-e2ProgressDialog::~e2ProgressDialog()
-{
-	UserDebug(Destructor,"e2ProgressDialog::~e2ProgressDialog() destructor\n")
-}
-
-void e2ProgressDialog::ShowDialog(char *msg)
-{
-	if (msg == 0)
-		msg = last_msg;
-	vDialog::ShowDialog(msg);
-}
-
-void e2ProgressDialog::UpdateDialog(int val, char *msg)
-{
-	pbr_value = val;
-	SetValue(pbrProgress,val,Value);    // The horizontal bar
-	if (msg)
-	{
-		UserDebug(UserApp2,"e2ProgressDialog::UpdateDialog() closing...\n")
-
-		CloseDialog();
-
-		UserDebug1(UserApp2,"e2ProgressDialog::UpdateDialog() showing... (%s)\n", msg)
-
-		ShowDialog(msg);
-	}
-}
-
-void e2ProgressDialog::DialogDisplayed()
-{
-//	SetValue(pbrProgress,pbr_value,Value);
-	vDialog::DialogDisplayed();
-}
-
-void e2ProgressDialog::DialogCommand(ItemVal id, ItemVal retval, CmdType ctype)
-{
-	// Dialog commands to here
-
-	UserDebug2(CmdEvents,"e2ProgressDialog::DialogCommand(id:%d, val:%d)\n",id, retval)
-
-	switch (id)		// We will do some things depending on value
-	{
-	case M_Cancel:
-	  {
-		THEAPP->SetAbortFlag();
-	  	break;
-	  }
-	}
-
-	vDialog::DialogCommand(id,retval,ctype);
-}

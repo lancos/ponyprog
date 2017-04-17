@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: lpt_io_interf.h,v 1.3 2009/11/16 22:29:18 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -27,15 +27,15 @@
 //-------------------------------------------------------------------------//
 //=========================================================================//
 
-#ifndef	_LPTIOINTERFACE_H
-#define	_LPTIOINTERFACE_H
+#ifndef _LPTIOINTERFACE_H
+#define _LPTIOINTERFACE_H
 
 #include "types.h"
 #include "portint.h"
 
 class LPTIOInterface : public PortInterface
 {
- public:		//------------------------------- public
+public:                //------------------------------- public
 	LPTIOInterface();
 	virtual ~LPTIOInterface();
 
@@ -53,14 +53,18 @@ class LPTIOInterface : public PortInterface
 	virtual int OutControlMask(int mask, int val);
 
 	int GetLastData() const
-		{ return last_data; }
+	{
+		return last_data;
+	}
 	int GetLastCtrl() const
-		{ return last_ctrl; }
+	{
+		return last_ctrl;
+	}
 
- protected:		//------------------------------- protected
+protected:             //------------------------------- protected
 
- private:		//------------------------------- private
- 
+private:               //------------------------------- private
+
 	int lpt_port;
 	uint8_t last_ctrl, last_data;
 };

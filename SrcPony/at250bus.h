@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: at250bus.h,v 1.5 2009/11/16 23:40:43 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -27,23 +27,23 @@
 //-------------------------------------------------------------------------//
 //=========================================================================//
 
-#ifndef	_AT250BUS_H
-#define	_AT250BUS_H
+#ifndef _AT250BUS_H
+#define _AT250BUS_H
 
 #include "spi-bus.h"
 
 class At250Bus : public SPIBus
 {
- public:		//------------------------------- public
+public:                //------------------------------- public
 	At250Bus(BusInterface *ptr = 0);
-//	virtual ~At250Bus();
+	//      virtual ~At250Bus();
 
 	long Read(int addr, uint8_t *data, long length, int page_size = 0);
 	long Write(int addr, uint8_t const *data, long length, int page_size = 0);
-	
+
 	int Reset();
 
- protected:		//------------------------------- protected
+protected:             //------------------------------- protected
 
 	virtual int ReadEEPByte(int addr);
 	virtual void WriteEEPByte(int addr, int data);
@@ -51,7 +51,7 @@ class At250Bus : public SPIBus
 	int WriteEEPStatus(int data);
 	void EndCycle(void);
 
-	int WaitEndOfWrite(int timeout = 0);		// 07/08/99
+	int WaitEndOfWrite(int timeout = 0);            // 07/08/99
 
 	//Programming commands
 	const uint8_t WriteEnable;
@@ -68,13 +68,17 @@ class At250Bus : public SPIBus
 
 	const int loop_timeout;
 
- private:		//------------------------------- private
+private:               //------------------------------- private
 
 	void setNCS()
-		{ ClearReset(); }	//27/05/98
+	{
+		ClearReset();        //27/05/98
+	}
 
 	void clearNCS()
-		{ SetReset(); }		//27/05/98
+	{
+		SetReset();        //27/05/98
+	}
 };
 
 #endif

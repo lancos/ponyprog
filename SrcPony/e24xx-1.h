@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: e24xx-1.h,v 1.2 2007/04/20 10:58:21 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -33,23 +33,23 @@
 #include "e24xx.h"
 
 #undef  BANK_SIZE
-#define BANK_SIZE	1
+#define BANK_SIZE       1
 
 class E24xx1 : public E24xx
 {
-  public:		//---------------------------------------- public
+public:               //---------------------------------------- public
 
 	E24xx1(e2AppWinInfo *wininfo = 0, BusIO *busp = 0);
 	virtual ~E24xx1();
 
 	int Probe(int probe_size = 0);
-//	int Read(int probe = 1, int type = ALL_TYPE);
-//	int Write(int probe = 1, int type = ALL_TYPE);
-//	int Verify(int type = ALL_TYPE);
+	//      int Read(int probe = 1, int type = ALL_TYPE);
+	//      int Write(int probe = 1, int type = ALL_TYPE);
+	//      int Verify(int type = ALL_TYPE);
 
-  protected:	//--------------------------------------- protected
+protected:    //--------------------------------------- protected
 
-  private:		//--------------------------------------- private
+private:              //--------------------------------------- private
 
 };
 

@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: at93cbus.h,v 1.5 2009/11/16 22:29:18 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -27,16 +27,16 @@
 //-------------------------------------------------------------------------//
 //=========================================================================//
 
-#ifndef	_AT93CBUS_H
-#define	_AT93CBUS_H
+#ifndef _AT93CBUS_H
+#define _AT93CBUS_H
 
 #include "microbus.h"
 
 class At93cBus : public MicroWireBus
 {
- public:		//------------------------------- public
+public:                //------------------------------- public
 	At93cBus(BusInterface *ptr = 0);
-//	virtual ~At93cBus();
+	//      virtual ~At93cBus();
 
 	long Read(int addr, uint8_t *data, long length, int page_size = 0);
 	long Write(int addr, uint8_t const *data, long length, int page_size = 0);
@@ -56,15 +56,19 @@ class At93cBus : public MicroWireBus
 	int Erase(int type = 0);
 
 	int CalcAddressSize(int mem_size) const
-		{ return MicroWireBus::CalcAddressSize(mem_size, organization); }
+	{
+		return MicroWireBus::CalcAddressSize(mem_size, organization);
+	}
 
-	
- protected:		//------------------------------- protected
+
+protected:             //------------------------------- protected
 
 	int SendCmdOpcode(int opcode)
-		{ return SendDataWord(opcode, 3); }
+	{
+		return SendDataWord(opcode, 3);
+	}
 
- private:		//------------------------------- private
+private:               //------------------------------- private
 
 	//Command Opcode
 	const uint8_t ReadCode;
@@ -74,12 +78,16 @@ class At93cBus : public MicroWireBus
 	const uint8_t PrClearCode;
 
 	const long loop_timeout;
-	
+
 	void setCS()
-		{ SetReset(); }		//27/05/98
+	{
+		SetReset();        //27/05/98
+	}
 
 	void clearCS()
-		{ ClearReset(); }	//27/05/98
+	{
+		ClearReset();        //27/05/98
+	}
 
 	int address_len;
 	int organization;

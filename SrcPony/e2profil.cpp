@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: e2profil.cpp,v 1.22 2016/06/24 15:05:56 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -27,1486 +27,1791 @@
 //-------------------------------------------------------------------------//
 //=========================================================================//
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
+#include <QDebug>
+#include <QString>
+#include <QSettings>
+
 #include "e2profil.h"
 #include "types.h"
-#include "e2app.h"
 
-#ifndef	_LINUX_
-#  ifdef	__BORLANDC__
-#    define	strncasecmp strnicmp
-#    define	strcasecmp stricmp
-#  else // _MICROSOFT_ VC++
-#    define strncasecmp	_strnicmp
-#    define	strcasecmp _stricmp
-#    define snprintf _snprintf
-#  endif
-#endif
+#include "errcode.h"
+
+#include "globals.h"
+
+
+
+QString E2Profile::filename = "e2p.ini";
+
+int E2Profile::ignoreFlag = 0;
+int E2Profile::abortFlag = 0;
+
+QSettings* E2Profile::s = new QSettings("e2p.ini", QSettings::IniFormat);
+
 
 
 //=====>>> Costruttore <<<======
-E2Profile::E2Profile()	: Profile("e2p.ini")
+#if 0
+E2Profile::E2Profile(const QString &nm)  :
+	s(0)
 {
+	if (nm.length())
+	{
+		filename = nm;
+	}
+	else
+	{
+		filename = "e2p.ini";
+	}
+
+	s = new QSettings(filename, QSettings::IniFormat);
 }
+
+
+E2Profile::~E2Profile()
+{
+	s->sync();
+}
+#endif
+
+
+//=====================>>> e2App::GetAbortFlag <<<==============================
+int E2Profile::GetAbortFlag()
+{
+	//      CheckEvents();
+
+	int a = abortFlag;
+	abortFlag = 0;
+	return a;
+}
+
+int E2Profile::GetIgnoreFlag()
+{
+	return ignoreFlag;
+}
+
+void E2Profile::SetIgnoreFlag()
+{
+	ignoreFlag = 1;
+}
+
+
+void E2Profile::ClearIgnoreFlag()
+{
+	ignoreFlag = 0;
+}
+
 
 int E2Profile::GetBogoMips()
 {
-	char const *sp = GetParameter("BogoMipsX1000");
-	int rval = 0;		//Defaultvalue
-	if (sp)
-		rval = atoi(sp);
-	return rval;
-}
+	QString sp = s->value("BogoMipsX1000", "0").toString();
+	int rval = 0;           //Defaultvalue
 
-int E2Profile::SetBogoMips(int value)
-{
-	char str[MAXNUMDIGIT];
-
-	if ( decnum2str(value, str, MAXNUMDIGIT) == OK )
-		return SetParameter("BogoMipsX1000", str);
-	else
-		return BADPARAM;
-}
-
-#include "eeptypes.h"
-
-long E2Profile::GetLastDevType()
-{
-	char const *sp = GetParameter("DeviceType");
-
-	if (sp)
-		return GetEEPTypeFromString(sp);
-	else
-		return E2400;		//Default device type
-}
-
-int E2Profile::SetLastDevType(long devtype)
-{
-	int rval = -1;
-	char const *sp = GetEEPTypeString(devtype);
-
-	if (sp)
+	if (sp.length())
 	{
-		rval = SetParameter("DeviceType", StripSpace(sp));
+		rval = sp.toInt();
 	}
 
 	return rval;
 }
 
+
+void E2Profile::SetBogoMips(int value)
+{
+	//      QString str;
+	s->setValue ("BogoMipsX1000", QString::number(value));
+	//      if ( decnum2str(value, str, MAXNUMDIGIT) == OK )
+	//      {
+	//              return s->setValue("BogoMipsX1000", str);
+	//      }
+	//      else
+	//      {
+	//              return BADPARAM;
+	//      }
+}
+
+
+#include "eeptypes.h"
+
+
+long E2Profile::GetLastDevType()
+{
+	QString sp = s->value("DeviceType", "24XX Auto").toString();
+
+	if (sp.length())
+	{
+		return GetEEPTypeFromString(sp);
+	}
+	else
+	{
+		return E2400;        //Default device type
+	}
+}
+
+
+void E2Profile::SetConfigFile(const QString &nm)
+{
+	if (nm.length())
+	{
+		filename = nm;
+	}
+}
+
+
+void E2Profile::SetLastDevType(long devtype)
+{
+	//      int rval = -1;
+	QString sp = GetEEPTypeString(devtype);
+
+	if (sp.length())
+	{
+		s->setValue("DeviceType", sp.remove(QChar(' ')));
+	}
+}
 
 
 HInterfaceType E2Profile::GetParInterfType()
 {
-	extern HInterfaceType NameToInterfType(const char *name);
+	extern HInterfaceType NameToInterfType(const QString & name);
 
-	return NameToInterfType(GetParameter("InterfaceType"));
+	QString v = s->value("InterfaceType", "SI-ProgAPI").toString();
+
+	return NameToInterfType(v);
 }
 
-int E2Profile::SetParInterfType(HInterfaceType type)
+
+void E2Profile::SetParInterfType(HInterfaceType type)
 {
-	const char *TypeToInterfName(HInterfaceType type);
+	QString TypeToInterfName(HInterfaceType type);
 
-	return SetParameter("InterfaceType", (char *)TypeToInterfName(type));
+	s->setValue("InterfaceType", TypeToInterfName(type));
 }
+
 
 int E2Profile::GetParPortNo()
 {
-	char const *sp = GetParameter("PortNumber");
+	QString sp = s->value("PortNumber", "0").toString();
 	int rval = -1;
 
-	if (sp)
+	if (sp.length() > 0)
 	{
-		rval = atoi(sp);
+		bool ok;
+		rval = sp.toInt(&ok);
+
+		if (ok == false )
+		{
+			rval = -1;
+		}
 	}
+
 	return rval;
 }
 
-int E2Profile::SetParPortNo(int port)
+
+void E2Profile::SetParPortNo(int port)
 {
-	int rval = BADPARAM;
+	//      int rval = BADPARAM;
 
 	if (port >= 1 && port <= 4)
 	{
-		char str[MAXNUMDIGIT];
-
-		if ( decnum2str(port, str, MAXNUMDIGIT) == OK )
-			rval = SetParameter("PortNumber", str);
+		s->setValue("PortNumber", QString::number(port));
 	}
-	return rval;
 }
+
 
 /**
-int E2Profile::SetLastFile(char const *name)
+void E2Profile::SetLastFile(QString &name)
 {
-	int rval = -1;
-	if (name && strlen(name))
-	{
-		char *sp = (char *)GetLastFile();
-		if (sp && strcasecmp(name, sp) != 0)
-			SetParameter("PreviousFile", sp);
-		rval = SetParameter("LastFile", (char *)name);
-	}
-	return rval;
+        int rval = -1;
+        if (name && strlen(name))
+        {
+                char *sp = (char *)GetLastFile();
+                if (sp && strcasecmp(name, sp) != 0)
+                        s->setValue("PreviousFile", sp);
+                s->setValue("LastFile", (char *)name);
+        }
+        return rval;
 }
 
-char const *E2Profile::GetLastFile()
+
+QString &E2Profile::GetLastFile()
 {
-	return GetParameter("LastFile");
+        return s->value("LastFile");
 }
 
-char const *E2Profile::GetPrevFile()
+
+QString &E2Profile::GetPrevFile()
 {
-	return GetParameter("PreviousFile");
+        return s->value("PreviousFile");
 
 **/
 
-char const *E2Profile::GetLastScript()
+
+QString E2Profile::GetLastScript()
 {
-	return GetParameter("LastScript");
+	return s->value("LastScript", "").toString();
 }
 
-int E2Profile::SetLastScript(char const *name)
+
+void E2Profile::SetLastScript(const QString &name)
 {
-	return SetParameter("LastScript", name);
+	s->setValue("LastScript", name);
 }
 
-int E2Profile::SetLastFile(char const *name, int data)
-{
-	int rval = BADPARAM;
 
-	if (name && strlen(name))
+void E2Profile::SetLastFile(const QString &name, int data)
+{
+	//      int rval = BADPARAM;
+
+	if (name.length())
 	{
-		char str[MAXPATH];
+		QString str;
 		int n;
-		const char *sp = GetLastFile(n);
-		if (sp && strcasecmp(name, sp) != 0)
+		QString sp = GetLastFile(n);
+
+		if (sp.length() && (name != sp))
 		{
-			strncpy(str, sp, MAXPATH-6);
-			str[MAXPATH-6] = '\0';
+			str = sp;
 
 			if (n == PROG_TYPE)
-				strcat(str, "?PROG");
+			{
+				str += "?PROG";
+			}
+			else if (n == DATA_TYPE)
+			{
+				str += "?DATA";
+			}
 			else
-			if (n == DATA_TYPE)
-				strcat(str, "?DATA");
-			else
-				strcat(str, "?ALL");
+			{
+				str += "?ALL";
+			}
 
-			SetParameter("PreviousFile", str);
+			s->setValue("PreviousFile", str.toLatin1());
 		}
 
-		strncpy(str, name, MAXPATH-6);
-		str[MAXPATH-6] = '\0';
+		str = name;
 
 		if (data == PROG_TYPE)
 		{
-			strcat(str, "?PROG");
+			str += "?PROG";
+		}
+		else if (data == DATA_TYPE)
+		{
+			str += "?DATA";
 		}
 		else
-		if (data == DATA_TYPE)
 		{
-			strcat(str, "?DATA");
-		}
-		else
-		{
-			strcat(str, "?ALL");
+			str += "?ALL";
 		}
 
-		rval = SetParameter("LastFile", str);
+		s->setValue("LastFile", str.toLatin1());
 	}
-	return rval;
 }
 
-static char param_copy[MAXLINESIZE+1];
+QString param_copy;
 
-char const *E2Profile::GetLastFile(int &data)
+
+QString E2Profile::GetLastFile(int &data)
 {
-	char const *sp = GetParameter("LastFile");
+	QString sp = s->value("LastFile", "").toString();
 
 	data = ALL_TYPE;
-	if (sp)
-	{
-		strncpy(param_copy, sp, MAXLINESIZE+1);
-		param_copy[MAXLINESIZE] = '\0';
-		sp = param_copy;
 
-		char *p = (char *)strchr(sp, '?');
-		if (p)
+	if (sp.length())
+	{
+		param_copy = sp;
+
+		int p = sp.indexOf('?');
+
+		if (p >= 0)
 		{
-			*p++ = '\0';
-			if (strcasecmp(p, "DATA") == 0)
+			if (sp.mid(p + 1) == "DATA")
+			{
 				data = DATA_TYPE;
-			else
-			if (strcasecmp(p, "PROG") == 0)
+			}
+			else if (sp.mid(p + 1) == "PROG")
+			{
 				data = PROG_TYPE;
+			}
 		}
 	}
 
 	return sp;
 }
 
-char const *E2Profile::GetPrevFile(int &data)
+
+QString E2Profile::GetPrevFile(int &data)
 {
-	char const *sp = GetParameter("PreviousFile");
+	QString sp = s->value("PreviousFile", "").toString();
 
 	data = ALL_TYPE;
-	if (sp)
-	{
-		strncpy(param_copy, sp, MAXLINESIZE+1);
-		param_copy[MAXLINESIZE] = '\0';
-		sp = param_copy;
 
-		char *p = (char *)strchr(sp, '?');
-		if (p)
+	if (sp.length())
+	{
+		param_copy = sp;
+
+		int p = sp.indexOf('?');
+
+		if (p >= 0)
 		{
-			*p++ = '\0';
-			if (strcasecmp(p, "DATA") == 0)
+			if (sp.mid(p + 1) == "DATA")
+			{
 				data = DATA_TYPE;
-			else
-			if (strcasecmp(p, "PROG") == 0)
+			}
+			else if (sp.mid(p + 1) == "PROG")
+			{
 				data = PROG_TYPE;
+			}
 		}
 	}
 
 	return sp;
 }
+
 
 uint8_t E2Profile::GetPolarityControl()
 {
 	uint8_t res;
-	const char *rval;
+	QString rval;
 
 	res = 0;
-	rval = GetParameter("ClockPolarity");
-	if (rval)
-		if (!strcasecmp(rval, "INV"))
+	rval = s->value("ClockPolarity").toString();
+
+	if (rval.length())
+		if (rval != "INV")
+		{
 			res |= CLOCKINV;
-	rval = GetParameter("ResetPolarity");
-	if (rval)
-		if (!strcasecmp(rval,"INV"))
+		}
+
+	rval = s->value("ResetPolarity").toString();
+
+	if (rval.length())
+		if (rval != "INV")
+		{
 			res |= RESETINV;
-	rval = GetParameter("DOutPolarity");
-	if (rval)
-		if (!strcasecmp(rval,"INV"))
+		}
+
+	rval = s->value("DOutPolarity").toString();
+
+	if (rval.length())
+		if (rval != "INV")
+		{
 			res |= DOUTINV;
-	rval = GetParameter("DInPolarity");
-	if (rval)
-		if (!strcasecmp(rval,"INV"))
+		}
+
+	rval = s->value("DInPolarity").toString();
+
+	if (rval.length())
+		if (rval != "INV")
+		{
 			res |= DININV;
+		}
+
 	return res;
 }
 
-int E2Profile::SetPolarityControl(uint8_t polarity_control)
+
+void E2Profile::SetPolarityControl(uint8_t polarity_control)
 {
 	int rval = OK;
 
 	if (rval == OK)
-		rval = SetParameter("ResetPolarity",
-						(polarity_control & RESETINV) ? "INV" : "TRUE");
+		s->setValue("ResetPolarity",
+		            (polarity_control & RESETINV) ? "INV" : "TRUE");
+
 	if (rval == OK)
-		rval = SetParameter("ClockPolarity",
-						(polarity_control & CLOCKINV) ? "INV" : "TRUE");
+		s->setValue("ClockPolarity",
+		            (polarity_control & CLOCKINV) ? "INV" : "TRUE");
+
 	if (rval == OK)
-		rval = SetParameter("DOutPolarity",
-						(polarity_control & DOUTINV) ? "INV" : "TRUE");
+		s->setValue("DOutPolarity",
+		            (polarity_control & DOUTINV) ? "INV" : "TRUE");
+
 	if (rval == OK)
-		rval = SetParameter("DInPolarity",
-						(polarity_control & DININV) ? "INV" : "TRUE");
-	return rval;
+		s->setValue("DInPolarity",
+		            (polarity_control & DININV) ? "INV" : "TRUE");
+
+	//      return rval;
 }
+
 
 int E2Profile::GetI2CPageWrite()
 {
-	char const *sp = GetParameter("I2CBusPageWrite");
-	int rval = 16;		//Default: 16 bytes page write (only for 16-bit I2C Bus eeprom)
+	QString sp = s->value("I2CBusPageWrite", "16").toString();
+	int rval = 16;          //Default: 16 bytes page write (only for 16-bit I2C Bus eeprom)
 
-	if (sp)
+	if (sp.length())
 	{
-		rval = atoi(sp);
+		rval = sp.toInt();
 	}
+
 	return rval;
 }
 
-int E2Profile::SetI2CPageWrite(int page_write)
-{
-	int rval = BADPARAM;
 
+void E2Profile::SetI2CPageWrite(int page_write)
+{
 	if (page_write > 0)
 	{
-		char str[MAXNUMDIGIT];
-
-		if ( decnum2str(page_write, str, MAXNUMDIGIT) == OK )
-			rval = SetParameter("I2CBusPageWrite", str);
+		s->setValue("I2CBusPageWrite", QString::number(page_write));
 	}
-	return rval;
 }
+
 
 int E2Profile::GetSPIPageWrite()
 {
-	char const *sp = GetParameter("BigSPIPageWrite");
-	int rval = 16;		//Default: 16 bytes page write
+	QString sp = s->value("BigSPIPageWrite", "16").toString();
+	int rval = 16;          //Default: 16 bytes page write
 
-	if (sp)
+	if (sp.length())
 	{
-		rval = atoi(sp);
+		rval = sp.toInt();
 	}
+
 	return rval;
 }
 
-int E2Profile::SetSPIPageWrite(int page_write)
+
+void E2Profile::SetSPIPageWrite(int page_write)
 {
-	int rval = BADPARAM;
+	//      int rval = BADPARAM;
 
 	if (page_write > 0)
 	{
-		char str[MAXNUMDIGIT];
-
-		if ( decnum2str(page_write, str, MAXNUMDIGIT) == OK )
-			rval = SetParameter("BigSPIPageWrite", str);
+		s->setValue("BigSPIPageWrite", QString::number(page_write));
 	}
-	return rval;
 }
 
 
 int E2Profile::GetI2CBaseAddr()
 {
-	char const *sp = GetParameter("I2CBaseAddress");
-	int rval = 0xA0;		//Default base address
+	QString sp = s->value("I2CBaseAddress", "0xa0").toString();
+	int rval = 0xA0;                //Default base address
 
-	if (sp)
+	if (sp.length())
 	{
-		rval = strtol(sp, NULL, 16);
+		bool ok;
+		rval = sp.toLong(&ok, 16);
+
+		if (ok == false)
+		{
+			rval = 0xA0;
+		}
 	}
+
 	return rval;
 }
 
-int E2Profile::SetI2CBaseAddr(int base_addr)
+
+void E2Profile::SetI2CBaseAddr(int base_addr)
 {
-	int rval = BADPARAM;
+	//      int rval = BADPARAM;
 
 	if (base_addr >= 0x00 && base_addr < 0x100)
 	{
-		char str[MAXNUMDIGIT];
-
-		if ( hexnum2str(base_addr, str, MAXNUMDIGIT) == OK )
-			rval = SetParameter("I2CBaseAddress", str);
+		s->setValue("I2CBaseAddress", QString::number(base_addr));
 	}
-	return rval;
 }
+
 
 int E2Profile::GetI2CSpeed()
 {
-	char const *sp = GetParameter("I2CBusSpeed");
-	int rval = NORMAL;		//Default speed
+	QString sp = s->value("I2CBusSpeed", "NORMAL").toString();
+	int rval = NORMAL;              //Default speed
 
-	if (sp)
+	if (sp.length())
 	{
-		if ( strcasecmp(sp,"TURBO") == 0 )
+		if ( sp == "TURBO")
+		{
 			rval = TURBO;
-		else
-		if ( strcasecmp(sp,"FAST") == 0 )
+		}
+		else if ( sp == "FAST")
+		{
 			rval = FAST;
-		else
-		if ( strcasecmp(sp,"SLOW") == 0 )
+		}
+		else if ( sp == "SLOW")
+		{
 			rval = SLOW;
-		else
-		if ( strcasecmp(sp,"VERYSLOW") == 0 )
+		}
+		else if ( sp == "VERYSLOW")
+		{
 			rval = VERYSLOW;
-		else
-		if ( strcasecmp(sp,"ULTRASLOW") == 0 )
+		}
+		else if ( sp == "ULTRASLOW")
+		{
 			rval = ULTRASLOW;
+		}
 	}
+
 	return rval;
 }
 
-int E2Profile::SetI2CSpeed(int speed)
+
+void E2Profile::SetI2CSpeed(int speed)
 {
-	int rval = BADPARAM;
+	//      int rval = BADPARAM;
 
 	if (speed == TURBO)
-		rval = SetParameter("I2CBusSpeed", "TURBO");
-	else
-	if (speed == FAST)
-		rval = SetParameter("I2CBusSpeed", "FAST");
-	else
-	if (speed == NORMAL)
-		rval = SetParameter("I2CBusSpeed", "NORMAL");
-	else
-	if (speed == SLOW)
-		rval = SetParameter("I2CBusSpeed", "SLOW");
-	else
-	if (speed == VERYSLOW)
-		rval = SetParameter("I2CBusSpeed", "VERYSLOW");
-	else
-	if (speed == ULTRASLOW)
-		rval = SetParameter("I2CBusSpeed", "ULTRASLOW");
-
-	return rval;
+	{
+		s->setValue("I2CBusSpeed", "TURBO");
+	}
+	else if (speed == FAST)
+	{
+		s->setValue("I2CBusSpeed", "FAST");
+	}
+	else if (speed == NORMAL)
+	{
+		s->setValue("I2CBusSpeed", "NORMAL");
+	}
+	else if (speed == SLOW)
+	{
+		s->setValue("I2CBusSpeed", "SLOW");
+	}
+	else if (speed == VERYSLOW)
+	{
+		s->setValue("I2CBusSpeed", "VERYSLOW");
+	}
+	else if (speed == ULTRASLOW)
+	{
+		s->setValue("I2CBusSpeed", "ULTRASLOW");
+	}
 }
 
 
 int E2Profile::GetSPIResetPulse()
 {
-	char const *sp = GetParameter("SPIResetPulse");
-	int rval = 100;		//Default: 100 msec
+	QString sp = s->value("SPIResetPulse", "100").toString();
+	int rval = 100;         //Default: 100 msec
 
-	if (sp)
+	if (sp.length())
 	{
-		rval = atoi(sp);
+		rval = sp.toInt();
 	}
+
 	return rval;
 }
 
-int E2Profile::SetSPIResetPulse(int delay)
-{
-	int rval = BADPARAM;
 
+void E2Profile::SetSPIResetPulse(int delay)
+{
 	if (delay > 0)
 	{
-		char str[MAXNUMDIGIT];
-
-		if ( decnum2str(delay, str, MAXNUMDIGIT) == OK )
-			rval = SetParameter("SPIResetPulse", str);
+		s->setValue("SPIResetPulse", QString::number(delay));
 	}
-	return rval;
 }
+
 
 int E2Profile::GetSPIDelayAfterReset()
 {
-	char const *sp = GetParameter("SPIDelayAfterReset");
-	int rval = 50;		//Default: 50 msec
+	QString sp = s->value("SPIDelayAfterReset", "50").toString();
+	int rval = 50;          //Default: 50 msec
 
-	if (sp)
+	if (sp.length())
 	{
-		rval = atoi(sp);
+		rval = sp.toInt();
 	}
+
 	return rval;
 }
 
-int E2Profile::SetSPIDelayAfterReset(int delay)
-{
-	int rval = BADPARAM;
 
+void E2Profile::SetSPIDelayAfterReset(int delay)
+{
 	if (delay > 0)
 	{
-		char str[MAXNUMDIGIT];
-
-		if ( decnum2str(delay, str, MAXNUMDIGIT) == OK )
-			rval = SetParameter("SPIDelayAfterReset", str);
+		s->setValue("SPIDelayAfterReset", QString::number(delay));
 	}
-	return rval;
 }
+
 
 int E2Profile::GetAT89DelayAfterReset()
 {
-	char const *sp = GetParameter("AT89DelayAfterReset");
-	int rval = 50;		//Default: 50 msec
+	QString sp = s->value("AT89DelayAfterReset", "50").toString();
+	int rval = 50;          //Default: 50 msec
 
-	if (sp)
+	if (sp.length())
 	{
-		rval = atoi(sp);
+		rval = sp.length();
 	}
+
 	return rval;
 }
 
-int E2Profile::SetAT89DelayAfterReset(int delay)
-{
-	int rval = BADPARAM;
 
+void E2Profile::SetAT89DelayAfterReset(int delay)
+{
 	if (delay > 0)
 	{
-		char str[MAXNUMDIGIT];
-
-		if ( decnum2str(delay, str, MAXNUMDIGIT) == OK )
-			rval = SetParameter("AT89DelayAfterReset", str);
+		s->setValue("AT89DelayAfterReset", QString::number(delay));
 	}
-	return rval;
 }
+
 
 int E2Profile::GetAVRDelayAfterReset()
 {
-	char const *sp = GetParameter("AVRDelayAfterReset");
-	int rval = 50;		//Default: 50 msec
+	QString sp = s->value("AVRDelayAfterReset", "50").toString();
+	int rval = 50;          //Default: 50 msec
 
-	if (sp)
+	if (sp.length())
 	{
-		rval = atoi(sp);
+		rval = sp.toInt();
 	}
+
 	return rval;
 }
 
-int E2Profile::SetAVRDelayAfterReset(int delay)
-{
-	int rval = BADPARAM;
 
+void E2Profile::SetAVRDelayAfterReset(int delay)
+{
 	if (delay > 0)
 	{
-		char str[MAXNUMDIGIT];
-
-		if ( decnum2str(delay, str, MAXNUMDIGIT) == OK )
-			rval = SetParameter("AVRDelayAfterReset", str);
+		s->setValue("AVRDelayAfterReset", QString::number(delay));
 	}
-	return rval;
 }
+
 
 int E2Profile::GetSPISpeed()
 {
-	char const *sp = GetParameter("SPIBusSpeed");
-	int rval = NORMAL;		//Default speed
+	QString sp = s->value("SPIBusSpeed", "NORMAL").toString();
+	int rval = NORMAL;              //Default speed
 
-	if (sp)
+	if (sp.length())
 	{
-		if ( strcasecmp(sp,"TURBO") == 0 )
+		if ( sp == "TURBO")
+		{
 			rval = TURBO;
-		else
-		if ( strcasecmp(sp,"FAST") == 0 )
+		}
+		else if ( sp == "FAST")
+		{
 			rval = FAST;
-		else
-		if ( strcasecmp(sp,"SLOW") == 0 )
+		}
+		else if ( sp == "SLOW")
+		{
 			rval = SLOW;
-		else
-		if ( strcasecmp(sp,"VERYSLOW") == 0 )
+		}
+		else if ( sp == "VERYSLOW")
+		{
 			rval = VERYSLOW;
-		else
-		if ( strcasecmp(sp,"ULTRASLOW") == 0 )
+		}
+		else if ( sp == "ULTRASLOW")
+		{
 			rval = ULTRASLOW;
+		}
 	}
+
 	return rval;
 }
 
-int E2Profile::SetSPISpeed(int speed)
+
+void E2Profile::SetSPISpeed(int speed)
 {
-	int rval = BADPARAM;
-
 	if (speed == TURBO)
-		rval = SetParameter("SPIBusSpeed", "TURBO");
-	else
-	if (speed == FAST)
-		rval = SetParameter("SPIBusSpeed", "FAST");
-	else
-	if (speed == NORMAL)
-		rval = SetParameter("SPIBusSpeed", "NORMAL");
-	else
-	if (speed == SLOW)
-		rval = SetParameter("SPIBusSpeed", "SLOW");
-	else
-	if (speed == VERYSLOW)
-		rval = SetParameter("SPIBusSpeed", "VERYSLOW");
-	else
-	if (speed == ULTRASLOW)
-		rval = SetParameter("SPIBusSpeed", "ULTRASLOW");
-
-	return rval;
+	{
+		s->setValue("SPIBusSpeed", "TURBO");
+	}
+	else if (speed == FAST)
+	{
+		s->setValue("SPIBusSpeed", "FAST");
+	}
+	else if (speed == NORMAL)
+	{
+		s->setValue("SPIBusSpeed", "NORMAL");
+	}
+	else if (speed == SLOW)
+	{
+		s->setValue("SPIBusSpeed", "SLOW");
+	}
+	else if (speed == VERYSLOW)
+	{
+		s->setValue("SPIBusSpeed", "VERYSLOW");
+	}
+	else if (speed == ULTRASLOW)
+	{
+		s->setValue("SPIBusSpeed", "ULTRASLOW");
+	}
 }
+
 
 int E2Profile::GetMegaPageDelay()
 {
-	char const *sp = GetParameter("ATMegaPageWriteDelay");
-	int rval = 50;		//Default: 50 msec
+	QString sp = s->value("ATMegaPageWriteDelay", "50").toString();
+	int rval = 50;          //Default: 50 msec
 
-	if (sp)
+	if (sp.length())
 	{
-		rval = atoi(sp);
+		rval = sp.toInt();
 	}
+
 	return rval;
 }
 
-int E2Profile::SetMegaPageDelay(int delay)
-{
-	int rval = BADPARAM;
 
+void E2Profile::SetMegaPageDelay(int delay)
+{
 	if (delay > 0)
 	{
-		char str[MAXNUMDIGIT];
-
-		if ( decnum2str(delay, str, MAXNUMDIGIT) == OK )
-			rval = SetParameter("ATMegaPageWriteDelay", str);
+		s->setValue("ATMegaPageWriteDelay", QString::number(delay));
 	}
-	return rval;
 }
+
 
 int E2Profile::GetMicroWireSpeed()
 {
-	char const *sp = GetParameter("MicroWireBusSpeed");
-	int rval = NORMAL;		//Default speed
+	QString sp = s->value("MicroWireBusSpeed", "NORMAL").toString();
+	int rval = NORMAL;              //Default speed
 
-	if (sp)
+	if (sp.length())
 	{
-		if ( strcasecmp(sp,"TURBO") == 0 )
+		if ( sp == "TURBO")
+		{
 			rval = TURBO;
-		else
-		if ( strcasecmp(sp,"FAST") == 0 )
+		}
+		else if ( sp == "FAST")
+		{
 			rval = FAST;
-		else
-		if ( strcasecmp(sp,"SLOW") == 0 )
+		}
+		else if ( sp == "SLOW")
+		{
 			rval = SLOW;
-		else
-		if ( strcasecmp(sp,"VERYSLOW") == 0 )
+		}
+		else if ( sp == "VERYSLOW")
+		{
 			rval = VERYSLOW;
-		else
-		if ( strcasecmp(sp,"ULTRASLOW") == 0 )
+		}
+		else if ( sp == "ULTRASLOW")
+		{
 			rval = ULTRASLOW;
+		}
 	}
+
 	return rval;
 }
 
-int E2Profile::SetMicroWireSpeed(int speed)
+
+void E2Profile::SetMicroWireSpeed(int speed)
 {
-	int rval = BADPARAM;
-
 	if (speed == TURBO)
-		rval = SetParameter("MicroWireBusSpeed", "TURBO");
-	else
-	if (speed == FAST)
-		rval = SetParameter("MicroWireBusSpeed", "FAST");
-	else
-	if (speed == NORMAL)
-		rval = SetParameter("MicroWireBusSpeed", "NORMAL");
-	else
-	if (speed == SLOW)
-		rval = SetParameter("MicroWireBusSpeed", "SLOW");
-	else
-	if (speed == VERYSLOW)
-		rval = SetParameter("MicroWireBusSpeed", "VERYSLOW");
-	else
-	if (speed == ULTRASLOW)
-		rval = SetParameter("MicroWireBusSpeed", "ULTRASLOW");
-
-	return rval;
+	{
+		s->setValue("MicroWireBusSpeed", "TURBO");
+	}
+	else if (speed == FAST)
+	{
+		s->setValue("MicroWireBusSpeed", "FAST");
+	}
+	else if (speed == NORMAL)
+	{
+		s->setValue("MicroWireBusSpeed", "NORMAL");
+	}
+	else if (speed == SLOW)
+	{
+		s->setValue("MicroWireBusSpeed", "SLOW");
+	}
+	else if (speed == VERYSLOW)
+	{
+		s->setValue("MicroWireBusSpeed", "VERYSLOW");
+	}
+	else if (speed == ULTRASLOW)
+	{
+		s->setValue("MicroWireBusSpeed", "ULTRASLOW");
+	}
 }
+
 
 int E2Profile::GetPICSpeed()
 {
-	char const *sp = GetParameter("PICBusSpeed");
-	int rval = NORMAL;		//Default speed
+	QString sp = s->value("PICBusSpeed", "NORMAL").toString();
+	int rval = NORMAL;              //Default speed
 
-	if (sp)
+	if (sp.length())
 	{
-		if ( strcasecmp(sp,"TURBO") == 0 )
+		if ( sp == "TURBO")
+		{
 			rval = TURBO;
-		else
-		if ( strcasecmp(sp,"FAST") == 0 )
+		}
+		else if ( sp == "FAST")
+		{
 			rval = FAST;
-		else
-		if ( strcasecmp(sp,"SLOW") == 0 )
+		}
+		else if ( sp == "SLOW")
+		{
 			rval = SLOW;
-		else
-		if ( strcasecmp(sp,"VERYSLOW") == 0 )
+		}
+		else if ( sp == "VERYSLOW")
+		{
 			rval = VERYSLOW;
-		else
-		if ( strcasecmp(sp,"ULTRASLOW") == 0 )
+		}
+		else if ( sp == "ULTRASLOW")
+		{
 			rval = ULTRASLOW;
+		}
 	}
+
 	return rval;
 }
 
-int E2Profile::SetPICSpeed(int speed)
+
+void E2Profile::SetPICSpeed(int speed)
 {
-	int rval = BADPARAM;
-
 	if (speed == TURBO)
-		rval = SetParameter("PICBusSpeed", "TURBO");
-	else
-	if (speed == FAST)
-		rval = SetParameter("PICBusSpeed", "FAST");
-	else
-	if (speed == NORMAL)
-		rval = SetParameter("PICBusSpeed", "NORMAL");
-	else
-	if (speed == SLOW)
-		rval = SetParameter("PICBusSpeed", "SLOW");
-	else
-	if (speed == VERYSLOW)
-		rval = SetParameter("PICBusSpeed", "VERYSLOW");
-	else
-	if (speed == ULTRASLOW)
-		rval = SetParameter("PICBusSpeed", "ULTRASLOW");
-
-	return rval;
+	{
+		s->setValue("PICBusSpeed", "TURBO");
+	}
+	else if (speed == FAST)
+	{
+		s->setValue("PICBusSpeed", "FAST");
+	}
+	else if (speed == NORMAL)
+	{
+		s->setValue("PICBusSpeed", "NORMAL");
+	}
+	else if (speed == SLOW)
+	{
+		s->setValue("PICBusSpeed", "SLOW");
+	}
+	else if (speed == VERYSLOW)
+	{
+		s->setValue("PICBusSpeed", "VERYSLOW");
+	}
+	else if (speed == ULTRASLOW)
+	{
+		s->setValue("PICBusSpeed", "ULTRASLOW");
+	}
 }
+
 
 int E2Profile::GetSDESpeed()
 {
-	char const *sp = GetParameter("SDEBusSpeed");
-	int rval = NORMAL;		//Default speed
+	QString sp = s->value("SDEBusSpeed", "NORMAL").toString();
+	int rval = NORMAL;              //Default speed
 
-	if (sp)
+	if (sp.length())
 	{
-		if ( strcasecmp(sp,"TURBO") == 0 )
+		if ( sp == "TURBO")
+		{
 			rval = TURBO;
-		else
-		if ( strcasecmp(sp,"FAST") == 0 )
+		}
+		else if ( sp == "FAST")
+		{
 			rval = FAST;
-		else
-		if ( strcasecmp(sp,"SLOW") == 0 )
+		}
+		else if ( sp == "SLOW")
+		{
 			rval = SLOW;
-		else
-		if ( strcasecmp(sp,"VERYSLOW") == 0 )
+		}
+		else if ( sp == "VERYSLOW")
+		{
 			rval = VERYSLOW;
-		else
-		if ( strcasecmp(sp,"ULTRASLOW") == 0 )
+		}
+		else if ( sp == "ULTRASLOW")
+		{
 			rval = ULTRASLOW;
+		}
 	}
+
 	return rval;
 }
 
-int E2Profile::SetSDESpeed(int speed)
+
+void E2Profile::SetSDESpeed(int speed)
 {
-	int rval = BADPARAM;
-
 	if (speed == TURBO)
-		rval = SetParameter("SDEBusSpeed", "TURBO");
-	else
-	if (speed == FAST)
-		rval = SetParameter("SDEBusSpeed", "FAST");
-	else
-	if (speed == NORMAL)
-		rval = SetParameter("SDEBusSpeed", "NORMAL");
-	else
-	if (speed == SLOW)
-		rval = SetParameter("SDEBusSpeed", "SLOW");
-	else
-	if (speed == VERYSLOW)
-		rval = SetParameter("SDEBusSpeed", "VERYSLOW");
-	else
-	if (speed == ULTRASLOW)
-		rval = SetParameter("SDEBusSpeed", "ULTRASLOW");
-
-	return rval;
+	{
+		s->setValue("SDEBusSpeed", "TURBO");
+	}
+	else if (speed == FAST)
+	{
+		s->setValue("SDEBusSpeed", "FAST");
+	}
+	else if (speed == NORMAL)
+	{
+		s->setValue("SDEBusSpeed", "NORMAL");
+	}
+	else if (speed == SLOW)
+	{
+		s->setValue("SDEBusSpeed", "SLOW");
+	}
+	else if (speed == VERYSLOW)
+	{
+		s->setValue("SDEBusSpeed", "VERYSLOW");
+	}
+	else if (speed == ULTRASLOW)
+	{
+		s->setValue("SDEBusSpeed", "ULTRASLOW");
+	}
 }
+
 
 int E2Profile::GetIMBusSpeed()
 {
-	char const *sp = GetParameter("IMBusSpeed");
-	int rval = NORMAL;		//Default speed
+	QString sp = s->value("IMBusSpeed", "NORMAL").toString();
+	int rval = NORMAL;              //Default speed
 
-	if (sp)
+	if (sp.length())
 	{
-		if ( strcasecmp(sp,"TURBO") == 0 )
+		if ( sp == "TURBO")
+		{
 			rval = TURBO;
-		else
-		if ( strcasecmp(sp,"FAST") == 0 )
+		}
+		else if ( sp == "FAST")
+		{
 			rval = FAST;
-		else
-		if ( strcasecmp(sp,"SLOW") == 0 )
+		}
+		else if ( sp == "SLOW")
+		{
 			rval = SLOW;
-		else
-		if ( strcasecmp(sp,"VERYSLOW") == 0 )
+		}
+		else if ( sp == "VERYSLOW")
+		{
 			rval = VERYSLOW;
-		else
-		if ( strcasecmp(sp,"ULTRASLOW") == 0 )
+		}
+		else if ( sp == "ULTRASLOW")
+		{
 			rval = ULTRASLOW;
+		}
 	}
+
 	return rval;
 }
 
-int E2Profile::SetIMBusSpeed(int speed)
+
+void E2Profile::SetIMBusSpeed(int speed)
 {
-	int rval = BADPARAM;
-
 	if (speed == TURBO)
-		rval = SetParameter("IMBusSpeed", "TURBO");
-	else
-	if (speed == FAST)
-		rval = SetParameter("IMBusSpeed", "FAST");
-	else
-	if (speed == NORMAL)
-		rval = SetParameter("IMBusSpeed", "NORMAL");
-	else
-	if (speed == SLOW)
-		rval = SetParameter("IMBusSpeed", "SLOW");
-	else
-	if (speed == VERYSLOW)
-		rval = SetParameter("IMBusSpeed", "VERYSLOW");
-	else
-	if (speed == ULTRASLOW)
-		rval = SetParameter("IMBusSpeed", "ULTRASLOW");
-
-	return rval;
+	{
+		s->setValue("IMBusSpeed", "TURBO");
+	}
+	else if (speed == FAST)
+	{
+		s->setValue("IMBusSpeed", "FAST");
+	}
+	else if (speed == NORMAL)
+	{
+		s->setValue("IMBusSpeed", "NORMAL");
+	}
+	else if (speed == SLOW)
+	{
+		s->setValue("IMBusSpeed", "SLOW");
+	}
+	else if (speed == VERYSLOW)
+	{
+		s->setValue("IMBusSpeed", "VERYSLOW");
+	}
+	else if (speed == ULTRASLOW)
+	{
+		s->setValue("IMBusSpeed", "ULTRASLOW");
+	}
 }
+
 
 int E2Profile::GetPowerUpDelay()
 {
-	char const *sp = GetParameter("PowerUpDelay");
-	int rval = 200;		//Default: 200 msec
+	QString sp = s->value("PowerUpDelay", "200").toString();
+	int rval = 200;         //Default: 200 msec
 
-	if (sp)
+	if (sp.length())
 	{
-		rval = atoi(sp);
+		rval = sp.toInt();
 	}
+
 	return rval;
 }
 
-int E2Profile::SetPowerUpDelay(int delay)
-{
-	int rval = BADPARAM;
 
+void E2Profile::SetPowerUpDelay(int delay)
+{
 	if (delay > 0)
 	{
-		char str[MAXNUMDIGIT];
-
-		if ( decnum2str(delay, str, MAXNUMDIGIT) == OK )
-			rval = SetParameter("PowerUpDelay", str);
+		s->setValue("PowerUpDelay", QString::number(delay));
 	}
-	return rval;
 }
+
 
 int E2Profile::GetAVRProgDelay()
 {
-	char const *sp = GetParameter("AVRByteWriteDelay");
-	int rval = 20;		//Default: 20 msec
+	QString sp = s->value("AVRByteWriteDelay", "20").toString();
+	int rval = 20;          //Default: 20 msec
 
-	if (sp)
+	if (sp.length())
 	{
-		rval = atoi(sp);
+		rval = sp.toInt();
 	}
+
 	return rval;
 }
 
-int E2Profile::SetAVRProgDelay(int delay)
-{
-	int rval = BADPARAM;
 
+void E2Profile::SetAVRProgDelay(int delay)
+{
 	if (delay > 0)
 	{
-		char str[MAXNUMDIGIT];
-
-		if ( decnum2str(delay, str, MAXNUMDIGIT) == OK )
-			rval = SetParameter("AVRByteWriteDelay", str);
+		s->setValue("AVRByteWriteDelay", QString::number(delay));
 	}
-	return rval;
 }
+
 
 int E2Profile::GetAVREraseDelay()
 {
-	char const *sp = GetParameter("AVREraseDelay");
-	int rval = 50;		//Default: 50 msec
+	QString sp = s->value("AVREraseDelay", "50").toString();
+	int rval = 50;          //Default: 50 msec
 
-	if (sp)
+	if (sp.length())
 	{
-		rval = atoi(sp);
+		rval = sp.toInt();
 	}
+
 	return rval;
 }
 
-int E2Profile::SetAVREraseDelay(int delay)
-{
-	int rval = BADPARAM;
 
+void E2Profile::SetAVREraseDelay(int delay)
+{
 	if (delay > 0)
 	{
-		char str[MAXNUMDIGIT];
-
-		if ( decnum2str(delay, str, MAXNUMDIGIT) == OK )
-			rval = SetParameter("AVREraseDelay", str);
+		s->setValue("AVREraseDelay", QString::number(delay));
 	}
-	return rval;
 }
+
 
 int E2Profile::GetMDAProgDelay()
 {
-	char const *sp = GetParameter("MDAWriteDelay");
-	int rval = 30;		//Default: 30 msec
+	QString sp = s->value("MDAWriteDelay", "30").toString();
+	int rval = 30;          //Default: 30 msec
 
-	if (sp)
+	if (sp.length())
 	{
-		rval = atoi(sp);
+		rval = sp.toInt();
 	}
+
 	return rval;
 }
 
-int E2Profile::SetMDAProgDelay(int delay)
-{
-	char str[MAXNUMDIGIT];
 
-	if ( decnum2str(delay, str, MAXNUMDIGIT) == OK )
-		return SetParameter("MDAWriteDelay", str);
-	else
-		return BADPARAM;
+void E2Profile::SetMDAProgDelay(int delay)
+{
+	return s->setValue("MDAWriteDelay", QString::number(delay));
 }
+
 
 int E2Profile::GetNVMProgDelay()
 {
-	char const *sp = GetParameter("NVMWriteDelay");
-	int rval = 30;		//Default: 30 msec
+	QString sp = s->value("NVMWriteDelay", "30").toString();
+	int rval = 30;          //Default: 30 msec
 
-	if (sp)
+	if (sp.length())
 	{
-		rval = atoi(sp);
+		rval = sp.toInt();
 	}
+
 	return rval;
 }
 
-int E2Profile::SetNVMProgDelay(int delay)
-{
-	char str[MAXNUMDIGIT];
 
-	if ( decnum2str(delay, str, MAXNUMDIGIT) == OK )
-		return SetParameter("NVMWriteDelay", str);
-	else
-		return BADPARAM;
+void E2Profile::SetNVMProgDelay(int delay)
+{
+	return s->setValue("NVMWriteDelay", QString::number(delay));
 }
+
 
 unsigned long E2Profile::GetSerialNumVal()
 {
-	char const *sp = GetParameter("SerialNumberVal");
-	unsigned long rval = 0;		//Default 0
+	QString sp = s->value("SerialNumberVal", "0").toString();
+	unsigned long rval = 0;         //Default 0
 
-	if (sp)
+	if (sp.length())
 	{
-		rval = strtoul(sp,NULL,0);
+		rval = sp.toULong();
 	}
+
 	return rval;
 }
 
-int E2Profile::SetSerialNumVal(unsigned long val)
-{
-	int rval = BADPARAM;
 
+void E2Profile::SetSerialNumVal(unsigned long val)
+{
 	if (val > 0)
 	{
-		char str[MAXNUMDIGIT];
-
-		if ( hexnum2str(val, str, MAXNUMDIGIT) == OK )
-			rval = SetParameter("SerialNumberVal", str);
+		s->setValue("SerialNumberVal", QString::number(val));
 	}
-
-	return rval;
 }
+
 
 int E2Profile::GetSerialNumAddress(long &start, int &size, bool &mtype)
 {
-	char const *sp;
+	QString sp;
 
-	start = 0; size = 1; mtype = false;
+	start = 0;
+	size = 1;
+	mtype = false;
 
-	if ( (sp = GetParameter("SerialNumberAddr")) )
+	if ( (sp = s->value("SerialNumberAddr", "0").toString()).length() )
 	{
-		start = strtol(sp,NULL,0);
+		start = sp.toLong();
 	}
-	if ( (sp = GetParameter("SerialNumberSize")) )
+
+	if ( (sp = s->value("SerialNumberSize", "1").toString()).length() )
 	{
-		size = atoi(sp);
+		size = sp.toInt();
 	}
-	if ( (sp = GetParameter("SerialNumberType")) )
+
+	if ( (sp = s->value("SerialNumberType", "PROG").toString()).length() )
 	{
-		if (strcmp(sp, "DATA") == 0)
+		if (sp == "DATA")
+		{
 			mtype = true;
+		}
 	}
 
 	return OK;
 }
 
-int E2Profile::SetSerialNumAddress(unsigned long start, int size, bool mtype)
-{
-	int rval = BADPARAM;
-	char str[MAXNUMDIGIT];
 
+void E2Profile::SetSerialNumAddress(unsigned long start, int size, bool mtype)
+{
 	if (start >= 0)
 	{
-		if ( hexnum2str(start, str, MAXNUMDIGIT) == OK )
-			rval = SetParameter("SerialNumberAddr", str);
+		s->setValue("SerialNumberAddr", QString::number(start));
 	}
+
 	if (size >= 1)
 	{
-		if ( decnum2str(size, str, MAXNUMDIGIT) == OK )
-			rval = SetParameter("SerialNumberSize", str);
+		s->setValue("SerialNumberSize", QString::number(size));
 	}
-	rval = SetParameter("SerialNumberType", mtype ? "DATA" : "PROG");
 
-	return rval;
+	s->setValue("SerialNumberType", mtype ? "DATA" : "PROG");
 }
+
 
 FmtEndian E2Profile::GetSerialNumFormat()
 {
-	char const *sp = GetParameter("SerialNumberFormat");
+	QString sp = s->value("SerialNumberFormat", "BIGENDIAN").toString();
 
-	if ( sp && strcmp("LITTLEENDIAN", sp) == 0 )
+	if ( sp.length() && ("LITTLEENDIAN" == sp))
 	{
 		return FMT_LITTLE_ENDIAN;
 	}
 	else
+	{
 		return FMT_BIG_ENDIAN;
+	}
 }
 
-int E2Profile::SetSerialNumFormat(FmtEndian fmt)
+
+void E2Profile::SetSerialNumFormat(FmtEndian fmt)
 {
 	if (fmt == FMT_BIG_ENDIAN)
-		SetParameter("SerialNumberFormat", "BIGENDIAN");
+	{
+		s->setValue("SerialNumberFormat", "BIGENDIAN");
+	}
 	else
-		SetParameter("SerialNumberFormat", "LITTLEENDIAN");
-
-	return OK;
+	{
+		s->setValue("SerialNumberFormat", "LITTLEENDIAN");
+	}
 }
+
 
 bool E2Profile::GetSerialNumAutoInc()
 {
-	char const *sp = GetParameter("SerialNumAutoIncrement");
+	QString sp = s->value("SerialNumAutoIncrement", "YES").toString();
 
-	if (sp && strcasecmp(sp, "NO") == 0)
+	if (sp.length() && (sp == "NO"))
+	{
 		return false;
+	}
 	else
+	{
 		return true;
+	}
 }
 
-int E2Profile::SetSerialNumAutoInc(bool val)
+
+void E2Profile::SetSerialNumAutoInc(bool val)
 {
 	if (val)
-		SetParameter("SerialNumAutoIncrement", "YES");
+	{
+		s->setValue("SerialNumAutoIncrement", "YES");
+	}
 	else
-		SetParameter("SerialNumAutoIncrement", "NO");
-
-	return OK;
+	{
+		s->setValue("SerialNumAutoIncrement", "NO");
+	}
 }
+
 
 long E2Profile::GetProgramOptions()
 {
-  long res;
-  const char * rval;
+	long res;
+	QString rval;
 
-  res = 0;
-  rval = GetParameter("ReloadOption");
-  if (rval)
-	if (strcasecmp(rval,"NO") != 0)
-	  res |=RELOAD_YES;
-  rval = GetParameter("ReadFlashOption");
-  if (rval)
-	if (strcasecmp(rval,"NO") != 0)
-	  res |=READFLASH_YES;
-  rval = GetParameter("ReadEEpromOption");
-  if (rval)
-	if (strcasecmp(rval,"NO") != 0)
-	  res |=READEEP_YES;
-  rval = GetParameter("ByteSwapOption");
-  if (rval)
-	if (strcasecmp(rval,"NO") != 0)
-	  res |=BYTESWAP_YES;
-  rval = GetParameter("SetIDkeyOption");
-  if (rval)
-	if (strcasecmp(rval,"NO") != 0)
-	  res |=SETID_YES;
-  rval = GetParameter("ReadOscCalibration");
-  if (rval)
-	if (strcasecmp(rval,"NO") != 0)
-	  res |=READOSCAL_YES;
-  rval = GetParameter("EraseOption");
-  if (rval)
-	if (strcasecmp(rval,"NO") != 0)
-	  res |=ERASE_YES;
-  rval = GetParameter("WriteFlashOption");
-  if (rval)
-	if (strcasecmp(rval,"NO") != 0)
-	  res |=FLASH_YES;
-  rval = GetParameter("WriteEEpromOption");
-  if (rval)
-	if (strcasecmp(rval,"NO") != 0)
-	  res |=EEPROM_YES;
-  rval = GetParameter("WriteSecurityOption");
-  if (rval)
-	if (strcasecmp(rval,"NO") != 0)
-	  res |=LOCK_YES;
-  return res;
+	res = 0;
+	rval = s->value("ReloadOption", "").toString();
+
+	if (rval.length())
+		if (rval != "NO")
+		{
+			res |= RELOAD_YES;
+		}
+
+	rval = s->value("ReadFlashOption", "").toString();
+
+	if (rval.length())
+		if (rval != "NO")
+		{
+			res |= READFLASH_YES;
+		}
+
+	rval = s->value("ReadEEpromOption", "").toString();
+
+	if (rval.length())
+		if (rval != "NO")
+		{
+			res |= READEEP_YES;
+		}
+
+	rval = s->value("ByteSwapOption", "").toString();
+
+	if (rval.length())
+		if (rval != "NO")
+		{
+			res |= BYTESWAP_YES;
+		}
+
+	rval = s->value("SetIDkeyOption", "").toString();
+
+	if (rval.length())
+		if (rval != "NO")
+		{
+			res |= SETID_YES;
+		}
+
+	rval = s->value("ReadOscCalibration", "").toString();
+
+	if (rval.length())
+		if (rval != "NO")
+		{
+			res |= READOSCAL_YES;
+		}
+
+	rval = s->value("EraseOption", "").toString();
+
+	if (rval.length())
+		if (rval != "NO")
+		{
+			res |= ERASE_YES;
+		}
+
+	rval = s->value("WriteFlashOption", "").toString();
+
+	if (rval.length())
+		if (rval != "NO")
+		{
+			res |= FLASH_YES;
+		}
+
+	rval = s->value("WriteEEpromOption", "").toString();
+
+	if (rval.length())
+		if (rval != "NO")
+		{
+			res |= EEPROM_YES;
+		}
+
+	rval = s->value("WriteSecurityOption", "").toString();
+
+	if (rval.length())
+		if (rval != "NO")
+		{
+			res |= LOCK_YES;
+		}
+
+	return res;
 }
 
-int E2Profile::SetProgramOptions(long prog_option)
-{
-  int rval;
 
-  rval =   (SetParameter("ReloadOption",
-						(prog_option & RELOAD_YES)?"YES":"NO"));
-  rval &=  (SetParameter("ReadFlashOption",
-						(prog_option & READFLASH_YES)?"YES":"NO"));
-  rval &=  (SetParameter("ReadEEpromOption",
-						(prog_option & READEEP_YES)?"YES":"NO"));
-  rval &=  (SetParameter("ByteSwapOption",
-						(prog_option & BYTESWAP_YES)?"YES":"NO"));
-  rval &=  (SetParameter("SetIDkeyOption",
-						(prog_option & SETID_YES)?"YES":"NO"));
-  rval &=  (SetParameter("ReadOscCalibration",
-						(prog_option & READOSCAL_YES)?"YES":"NO"));
-  rval &=  (SetParameter("EraseOption",
-						(prog_option & ERASE_YES)?"YES":"NO"));
-  rval &=  (SetParameter("WriteFlashOption",
-						(prog_option & FLASH_YES)?"YES":"NO"));
-  rval &=  (SetParameter("WriteEEpromOption",
-						(prog_option & EEPROM_YES)?"YES":"NO"));
-  rval &=  (SetParameter("WriteSecurityOption",
-						(prog_option & LOCK_YES)?"YES":"NO"));
-  return rval;
+void E2Profile::SetProgramOptions(long prog_option)
+{
+	s->setValue("ReloadOption",
+	            (prog_option & RELOAD_YES) ? "YES" : "NO");
+	s->setValue("ReadFlashOption",
+	            (prog_option & READFLASH_YES) ? "YES" : "NO");
+	s->setValue("ReadEEpromOption",
+	            (prog_option & READEEP_YES) ? "YES" : "NO");
+	s->setValue("ByteSwapOption",
+	            (prog_option & BYTESWAP_YES) ? "YES" : "NO");
+	s->setValue("SetIDkeyOption",
+	            (prog_option & SETID_YES) ? "YES" : "NO");
+	s->setValue("ReadOscCalibration",
+	            (prog_option & READOSCAL_YES) ? "YES" : "NO");
+	s->setValue("EraseOption",
+	            (prog_option & ERASE_YES) ? "YES" : "NO");
+	s->setValue("WriteFlashOption",
+	            (prog_option & FLASH_YES) ? "YES" : "NO");
+	s->setValue("WriteEEpromOption",
+	            (prog_option & EEPROM_YES) ? "YES" : "NO");
+	s->setValue("WriteSecurityOption",
+	            (prog_option & LOCK_YES) ? "YES" : "NO");
 }
 
 
-char const *E2Profile::GetLogFileName()
+QString E2Profile::GetLogFileName()
 {
-	char const *sp = GetParameter("LogFileName");
-
-	if (sp == 0)
-		sp = "PonyProg.log";
+	QString sp = s->value("LogFileName", "PonyProg.log").toString();
 
 	return sp;
 }
 
-int E2Profile::SetLogFileName(char const *name)
+
+void E2Profile::SetLogFileName(const QString &name)
 {
-	if (name && strlen(name))
+	if (name.length())
 	{
-		SetParameter("LogFileName", name);
+		s->setValue("LogFileName", name);
 	}
-
-	return OK;
 }
 
-char const *E2Profile::GetLockDir()
+
+QString E2Profile::GetLockDir()
 {
-	char const *sp = GetParameter("ttyLockDir");
-	if (sp == 0)
-		sp = "/var/lock";
+	QString sp = s->value("ttyLockDir",  "/var/lock").toString();
+
 	return sp;
 }
-int E2Profile::SetLockDir(char const *name)
+
+
+void E2Profile::SetLockDir(const QString &name)
 {
-	if (name && strlen(name))
-		SetParameter("ttyLockDir", name);
-	return OK;
+	if (name.length())
+	{
+		s->setValue("ttyLockDir", name);
+	}
 }
 
-char const *E2Profile::GetDevDir()
+
+QString E2Profile::GetDevDir()
 {
-	char const *sp = GetParameter("ttyDevDir");
-	if (sp == 0)
-		sp = "/dev";
+	QString sp = s->value("ttyDevDir", "/dev").toString();
+
 	return sp;
 }
-int E2Profile::SetDevDir(char const *name)
+
+
+void E2Profile::SetDevDir(const QString &name)
 {
-	if (name && strlen(name))
-		SetParameter("ttyDevDir", name);
-	return OK;
+	if (name.length())
+	{
+		s->setValue("ttyDevDir", name);
+	}
 }
 
-char const *E2Profile::GetDevName()
+
+QString E2Profile::GetDevName()
 {
-	char const *sp = GetParameter("ttyDevName");
-	if (sp == 0)
-#ifdef	_LINUX_
+	QString sp = s->value("ttyDevName", "").toString();
+
+	if (sp.length() == 0)
+#ifdef  __linux__
 		sp = "ttyS";
+
 #else
 		sp = "COM";
 #endif
 	return sp;
 }
-int E2Profile::SetDevName(char const *name)
+
+
+void E2Profile::SetDevName(const QString &name)
 {
-	if (name && strlen(name))
-		SetParameter("ttyDevName", name);
-	return OK;
+	if (name.length())
+	{
+		s->setValue("ttyDevName", name);
+	}
 }
 
-char const *E2Profile::GetHtmlBrowseApp()
+
+QString E2Profile::GetHtmlBrowseApp()
 {
-	char const *sp = GetParameter("HtmlBrowseApp");
-	if (sp == 0)
+	QString sp = s->value("HtmlBrowseApp", "").toString();
+
+	if (sp.length() == 0)
+	{
 		sp = "konqueror";
+	}
+
 	return sp;
 }
-int E2Profile::SetHtmlBrowseApp(char const *name)
+
+
+void E2Profile::SetHtmlBrowseApp(const QString &name)
 {
-	if (name && strlen(name))
-		SetParameter("HtmlBrowseApp", name);
-	return OK;
+	if (name.length())
+	{
+		s->setValue("HtmlBrowseApp", name);
+	}
 }
 
-char const *E2Profile::GetLanguageCode()
-{
-	char const *sp = GetParameter("LanguageCode");
 
-	if (sp == 0)
+QString E2Profile::GetLanguageCode()
+{
+	QString sp = s->value("LanguageCode", "C").toString();
+
+	if (sp.length() == 0)
+	{
 		sp = "C";
+	}
 
 	return sp;
 }
 
-int E2Profile::SetLanguageCode(char const *name)
-{
-	if (name && strlen(name))
-		SetParameter("LanguageCode", name);
 
-	return OK;
+void E2Profile::SetLanguageCode(const QString &name)
+{
+	if (name.length())
+	{
+		s->setValue("LanguageCode", name);
+	}
 }
+
 
 bool E2Profile::GetLogEnabled()
 {
-	char const *sp = GetParameter("LogEnabled");
+	QString sp = s->value("LogEnabled", "").toString();
 
-	if (sp && strcasecmp(sp, "YES") == 0)
+	if (sp.length() && (sp == "YES"))
+	{
 		return true;
+	}
 	else
+	{
 		return false;
+	}
 }
 
-int E2Profile::SetLogEnabled(bool enabled)
+
+void E2Profile::SetLogEnabled(bool enabled)
 {
 	if (enabled)
-		SetParameter("LogEnabled", "YES");
+	{
+		s->setValue("LogEnabled", "YES");
+	}
 	else
-		SetParameter("LogEnabled", "NO");
-
-	return OK;
+	{
+		s->setValue("LogEnabled", "NO");
+	}
 }
+
 
 bool E2Profile::GetSkipStartupDialog()
 {
-	char const *sp = GetParameter("SkipStartupDialog");
+	QString sp = s->value("SkipStartupDialog", "").toString();
 
-	if (sp && strcasecmp(sp, "YES") == 0)
+	if (sp.length() && (sp == "YES"))
+	{
 		return true;
+	}
 	else
+	{
 		return false;
+	}
 }
 
-int E2Profile::SetSkipStartupDialog(bool skip)
+
+void E2Profile::SetSkipStartupDialog(bool skip)
 {
 	if (skip)
-		SetParameter("SkipStartupDialog", "YES");
+	{
+		s->setValue("SkipStartupDialog", "YES");
+	}
 	else
-		SetParameter("SkipStartupDialog", "NO");
-
-	return OK;
+	{
+		s->setValue("SkipStartupDialog", "NO");
+	}
 }
+
 
 bool E2Profile::GetClearBufBeforeLoad()
 {
-	char const *sp = GetParameter("ClearBufferBeforeLoad");
+	QString sp = s->value("ClearBufferBeforeLoad").toString();
 
-	if (sp && strcasecmp(sp, "YES") == 0)
+	if (sp.length() && (sp == "YES"))
+	{
 		return true;
+	}
 	else
+	{
 		return false;
+	}
 }
 
-int E2Profile::SetClearBufBeforeLoad(bool enabled)
+
+void E2Profile::SetClearBufBeforeLoad(bool enabled)
 {
 	if (enabled)
-		SetParameter("ClearBufferBeforeLoad", "YES");
+	{
+		s->setValue("ClearBufferBeforeLoad", "YES");
+	}
 	else
-		SetParameter("ClearBufferBeforeLoad", "NO");
-
-	return OK;
+	{
+		s->setValue("ClearBufferBeforeLoad", "NO");
+	}
 }
+
 
 bool E2Profile::GetClearBufBeforeRead()
 {
-	char const *sp = GetParameter("ClearBufferBeforeRead");
+	QString sp = s->value("ClearBufferBeforeRead", "").toString();
 
-	if (sp && strcasecmp(sp, "YES") == 0)
+	if (sp.length() && (sp == "YES"))
+	{
 		return true;
+	}
 	else
+	{
 		return false;
+	}
 }
 
-int E2Profile::SetClearBufBeforeRead(bool enabled)
+
+void E2Profile::SetClearBufBeforeRead(bool enabled)
 {
 	if (enabled)
-		SetParameter("ClearBufferBeforeRead", "YES");
+	{
+		s->setValue("ClearBufferBeforeRead", "YES");
+	}
 	else
-		SetParameter("ClearBufferBeforeRead", "NO");
-
-	return OK;
+	{
+		s->setValue("ClearBufferBeforeRead", "NO");
+	}
 }
+
 
 bool E2Profile::GetAt89PageOp()
 {
-	char const *sp = GetParameter("AT89SPageOpEnabled");
+	QString sp = s->value("AT89SPageOpEnabled", "").toString();
 
-	if (sp && strcasecmp(sp, "NO") == 0)
+	if (sp.length() && (sp == "NO"))
+	{
 		return false;
+	}
 	else
+	{
 		return true;
+	}
 }
 
-int E2Profile::SetAt89PageOp(bool enabled)
+
+void E2Profile::SetAt89PageOp(bool enabled)
 {
 	if (enabled)
-		SetParameter("AT89SPageOpEnabled", "YES");
+	{
+		s->setValue("AT89SPageOpEnabled", "YES");
+	}
 	else
-		SetParameter("AT89SPageOpEnabled", "NO");
-
-	return OK;
+	{
+		s->setValue("AT89SPageOpEnabled", "NO");
+	}
 }
+
 
 bool E2Profile::Get8253FallEdge()
 {
-	char const *sp = GetParameter("AT89S8253FallEdgeSampling");
+	QString sp = s->value("AT89S8253FallEdgeSampling", "").toString();
 
-	if (sp && strcasecmp(sp, "NO") == 0)
+	if (sp.length() && (sp == "NO"))
+	{
 		return false;
+	}
 	else
+	{
 		return true;
+	}
 }
 
-int E2Profile::Set8253FallEdge(bool enabled)
+
+void E2Profile::Set8253FallEdge(bool enabled)
 {
 	if (enabled)
-		SetParameter("AT89S8253FallEdgeSampling", "YES");
+	{
+		s->setValue("AT89S8253FallEdgeSampling", "YES");
+	}
 	else
-		SetParameter("AT89S8253FallEdgeSampling", "NO");
-
-	return OK;
+	{
+		s->setValue("AT89S8253FallEdgeSampling", "NO");
+	}
 }
+
 
 bool E2Profile::GetSoundEnabled()
 {
-	char const *sp = GetParameter("SoundEnabled");
+	QString sp = s->value("SoundEnabled", "").toString();
 
-	if (sp && strcasecmp(sp, "YES") == 0)
+	if (sp.length() && (sp == "YES"))
+	{
 		return true;
+	}
 	else
+	{
 		return false;
+	}
 }
 
-int E2Profile::SetSoundEnabled(bool enabled)
+
+void E2Profile::SetSoundEnabled(bool enabled)
 {
 	if (enabled)
-		SetParameter("SoundEnabled", "YES");
+	{
+		s->setValue("SoundEnabled", "YES");
+	}
 	else
-		SetParameter("SoundEnabled", "NO");
-
-	return OK;
+	{
+		s->setValue("SoundEnabled", "NO");
+	}
 }
 
 
 int E2Profile::GetCalibrationAddress(long &start, int &size, bool &mtype)
 {
-	char const *sp;
+	QString sp;
 
-	start = 0; size = 1; mtype = false;
+	start = 0;
+	size = 1;
+	mtype = false;
 
-	if ( (sp = GetParameter("OscCalibrationAddr")) )
+	if ( (sp = s->value("OscCalibrationAddr", "0").toString()).length() )
 	{
-		start = strtol(sp,NULL,0);
+		start = sp.toLong();
 	}
-	if ( (sp = GetParameter("OscCalibrationSize")) )
+
+	if ( (sp = s->value("OscCalibrationSize", "1").toString()).length() )
 	{
-		size = atoi(sp);
+		size = sp.toInt();
 	}
-	if ( (sp = GetParameter("OscCalibrationMemType")) )
+
+	if ( (sp = s->value("OscCalibrationMemType", "PROG").toString()).length() )
 	{
-		if (strcmp(sp, "DATA") == 0)
+		if (sp == "DATA")
+		{
 			mtype = true;
+		}
 	}
 
 	return OK;
 }
 
-int E2Profile::SetCalibrationAddress(unsigned long start, int size, bool mtype)
-{
-	int rval = BADPARAM;
-	char str[MAXNUMDIGIT];
 
+void E2Profile::SetCalibrationAddress(unsigned long start, int size, bool mtype)
+{
 	if (start >= 0)
 	{
-		if ( hexnum2str(start, str, MAXNUMDIGIT) == OK )
-			rval = SetParameter("OscCalibrationAddr", str);
+		s->setValue("OscCalibrationAddr", QString::number(start));
 	}
+
 	if (size >= 1)
 	{
-		if ( decnum2str(size, str, MAXNUMDIGIT) == OK )
-			rval = SetParameter("OscCalibrationSize", str);
+		s->setValue("OscCalibrationSize", QString::number(size));
 	}
-	rval = SetParameter("OscCalibrationType", mtype ? "DATA" : "PROG");
 
-	return rval;
+	s->setValue("OscCalibrationType", mtype ? "DATA" : "PROG");
 }
+
 
 int E2Profile::GetJDMCmd2CmdDelay()
 {
-	char const *sp = GetParameter("JDM-CmdToCmdDelay");
-	int rval = 4000;		//Default: 4000 usec
+	QString sp = s->value("JDM-CmdToCmdDelay", "4000").toString();
+	int rval = 4000;                //Default: 4000 usec
 
-	if (sp)
+	if (sp.length())
 	{
-		rval = atoi(sp);
+		rval = sp.toInt();
 	}
+
 	return rval;
 }
 
-int E2Profile::SetJDMCmd2CmdDelay(int delay)
-{
-	int rval = BADPARAM;
 
+void E2Profile::SetJDMCmd2CmdDelay(int delay)
+{
 	if (delay >= 0)
 	{
-		char str[MAXNUMDIGIT];
-
-		if ( decnum2str(delay, str, MAXNUMDIGIT) == OK )
-			rval = SetParameter("JDM-CmdToCmdDelay", str);
+		s->setValue("JDM-CmdToCmdDelay", QString::number(delay));
 	}
-	return rval;
 }
+
 
 bool E2Profile::GetVerifyAfterWrite()
 {
-	char const *sp = GetParameter("VerifyAfterWrite");
+	QString sp = s->value("VerifyAfterWrite", "").toString();
 
-	if (sp && strcasecmp(sp, "NO") == 0)
+	if (sp.length() && (sp == "NO"))
+	{
 		return false;
+	}
 	else
+	{
 		return true;
+	}
 }
 
-int E2Profile::SetVerifyAfterWrite(bool enabled)
+
+void E2Profile::SetVerifyAfterWrite(bool enabled)
 {
 	if (enabled)
-		SetParameter("VerifyAfterWrite", "YES");
+	{
+		s->setValue("VerifyAfterWrite", "YES");
+	}
 	else
-		SetParameter("VerifyAfterWrite", "NO");
-
-	return OK;
+	{
+		s->setValue("VerifyAfterWrite", "NO");
+	}
 }
+
 
 bool E2Profile::GetAutoDetectPorts()
 {
-	char const *sp = GetParameter("AutoDetectPorts");
+	QString sp = s->value("AutoDetectPorts", "").toString();
 
-	if (sp && strcasecmp(sp, "NO") == 0)
+	if (sp.length() && (sp == "NO"))
+	{
 		return false;
+	}
 	else
+	{
 		return true;
+	}
 }
 
-int E2Profile::SetAutoDetectPorts(bool enabled)
+
+void E2Profile::SetAutoDetectPorts(bool enabled)
 {
 	if (enabled)
-		SetParameter("AutoDetectPorts", "YES");
+	{
+		s->setValue("AutoDetectPorts", "YES");
+	}
 	else
-		SetParameter("AutoDetectPorts", "NO");
-
-	return OK;
+	{
+		s->setValue("AutoDetectPorts", "NO");
+	}
 }
+
 
 int E2Profile::GetCOMAddress(int &com1, int &com2, int &com3, int &com4)
 {
-	char const *sp = GetParameter("COMPorts");
+	QString sp = s->value("COMPorts").toString();
 
 	com1 = 0x3F8;
 	com2 = 0x2F8;
 	com3 = 0x3E8;
 	com4 = 0x2E8;
 
-	if (sp)
+	if (sp.length())
 	{
-		sscanf(sp, "%x,%x,%x,%x", &com1, &com2, &com3, &com4);
+		sscanf(sp.toLatin1(), "%x,%x,%x,%x", &com1, &com2, &com3, &com4);
 	}
 
 	return OK;
 }
 
-int E2Profile::SetCOMAddress(int com1, int com2, int com3, int com4)
+
+void E2Profile::SetCOMAddress(int com1, int com2, int com3, int com4)
 {
-	char str[STRBUFSIZE];
+	QString str;//[STRBUFSIZE];
 
 	if (com1 > 0)
 	{
@@ -1516,48 +1821,48 @@ int E2Profile::SetCOMAddress(int com1, int com2, int com3, int com4)
 			{
 				if (com4 > 0)
 				{
-					snprintf(str, STRBUFSIZE, "%X,%X,%X,%X", com1, com2, com3, com4);
+					str.sprintf("%X,%X,%X,%X", com1, com2, com3, com4);
 				}
 				else
 				{
-					snprintf(str, STRBUFSIZE, "%X,%X,%X", com1, com2, com3);
+					str.sprintf("%X,%X,%X", com1, com2, com3);
 				}
 			}
 			else
 			{
-				snprintf(str, STRBUFSIZE, "%X,%X", com1, com2);
+				str.sprintf( "%X,%X", com1, com2);
 			}
 		}
 		else
 		{
-			snprintf(str, STRBUFSIZE, "%X", com1);
+			str.sprintf( "%X", com1);
 		}
 
-		SetParameter("COMPorts", str);
+		s->setValue("COMPorts", str);
 	}
-
-	return OK;
 }
+
 
 int E2Profile::GetLPTAddress(int &lpt1, int &lpt2, int &lpt3)
 {
-	char const *sp = GetParameter("LPTPorts");
+	QString sp = s->value("LPTPorts").toString();
 
 	lpt1 = 0x378;
 	lpt2 = 0x278;
 	lpt3 = 0x3BC;
 
-	if (sp)
+	if (sp.length())
 	{
-		sscanf(sp, "%x,%x,%x", &lpt1, &lpt2, &lpt3);
+		sscanf(sp.toLatin1(), "%x,%x,%x", &lpt1, &lpt2, &lpt3);
 	}
 
 	return OK;
 }
 
-int E2Profile::SetLPTAddress(int lpt1, int lpt2, int lpt3)
+
+void E2Profile::SetLPTAddress(int lpt1, int lpt2, int lpt3)
 {
-	char str[STRBUFSIZE];
+	QString str;
 
 	if (lpt1 > 0)
 	{
@@ -1565,182 +1870,178 @@ int E2Profile::SetLPTAddress(int lpt1, int lpt2, int lpt3)
 		{
 			if (lpt3 > 0)
 			{
-				snprintf(str, STRBUFSIZE, "%X,%X,%X", lpt1, lpt2, lpt3);
+				str.sprintf("%X,%X,%X", lpt1, lpt2, lpt3);
 			}
 			else
 			{
-				snprintf(str, STRBUFSIZE, "%X,%X", lpt1, lpt2);
+				str.sprintf("%X,%X", lpt1, lpt2);
 			}
 		}
 		else
 		{
-			snprintf(str, STRBUFSIZE, "%X", lpt1);
+			str.sprintf("%X", lpt1);
 		}
 
-		SetParameter("LPTPorts", str);
+		s->setValue("LPTPorts", str);
 	}
-
-	return OK;
 }
+
 
 FileType E2Profile::GetDefaultFileType()
 {
-	char const *sp = GetParameter("DefaultFileType");
+	QString sp = s->value("DefaultFileType", "E2P").toString();
 	FileType ft = E2P;
 
-	if (sp)
+	if (sp.length())
 	{
-		if ( strcasecmp(sp, "e2p") == 0 )
+		if ( sp == "e2p" )
+		{
 			ft = E2P;
-		else
-		if ( strcasecmp(sp, "bin") == 0 )
+		}
+		else if ( sp == "bin" )
+		{
 			ft = BIN;
-		else
-		if ( strcasecmp(sp, "csm") == 0 )
+		}
+		else if ( sp == "csm" )
+		{
 			ft = CSM;
-		else
-		if ( strcasecmp(sp, "intel-hex") == 0 )
+		}
+		else if ( sp == "intel-hex")
+		{
 			ft = INTEL;
-		else
-		if ( strcasecmp(sp, "mot-srec") == 0 )
+		}
+		else if ( sp == "mot-srec")
+		{
 			ft = MOTOS;
+		}
 	}
 
 	return ft;
 }
 
-int E2Profile::SetDefaultFileType(FileType ft)
-{
-	char str[STRBUFSIZE];
 
-	str[0] = '\0';
+void E2Profile::SetDefaultFileType(FileType ft)
+{
+	QString str;
 
 	if (ft == E2P)
-		strncpy(str, "E2P", STRBUFSIZE);
-	else
-	if (ft == BIN)
-		strncpy(str, "BIN", STRBUFSIZE);
-	else
-	if (ft == CSM)
-		strncpy(str, "CSM", STRBUFSIZE);
-	else
-	if (ft == INTEL)
-		strncpy(str, "INTEL-HEX", STRBUFSIZE);
-	else
-	if (ft == MOTOS)
-		strncpy(str, "MOT-SREC", STRBUFSIZE);
-
-	str[STRBUFSIZE-1] = '\0';
-	if (strlen(str))
 	{
-		SetParameter("DefaultFileType", str);
+		str = "E2P";
+	}
+	else if (ft == BIN)
+	{
+		str = "BIN";
+	}
+	else if (ft == CSM)
+	{
+		str = "CSM";
+	}
+	else if (ft == INTEL)
+	{
+		str = "INTEL-HEX";
+	}
+	else if (ft == MOTOS)
+	{
+		str = "MOT-SREC";
 	}
 
-	return OK;
+	if (str.length())
+	{
+		s->setValue("DefaultFileType", str);
+	}
 }
 
+
 //RaspberryPi default pins
-#define DEF_GPIO_CTRL			23  //Rst pin 16
-#define DEF_GPIO_DATAIN			27  //Miso pin 13
-#define DEF_GPIO_DATAOUT		17  //Mosi pin 11
-#define DEF_GPIO_CLOCK			24  //Clock pin 18
+#define DEF_GPIO_CTRL                   23  //Rst pin 16
+#define DEF_GPIO_DATAIN                 27  //Miso pin 13
+#define DEF_GPIO_DATAOUT                17  //Mosi pin 11
+#define DEF_GPIO_CLOCK                  24  //Clock pin 18
 
 int E2Profile::GetGpioPinCtrl()
 {
-	char const *sp;
-	int rval = DEF_GPIO_CTRL;		//Default pin number
+	QString sp;
+	int rval = DEF_GPIO_CTRL;               //Default pin number
 
-	sp = GetParameter("GpioPinCtrl");
-	if (sp)
+	sp = s->value("GpioPinCtrl", "").toString();
+
+	if (sp.length())
 	{
-		rval = atoi(sp);
+		rval = sp.toInt();
 	}
 
 	return rval;
 }
 
-int E2Profile::SetGpioPinCtrl(int pin)
+
+void E2Profile::SetGpioPinCtrl(int pin)
 {
-	int rval = BADPARAM;
-	char str[MAXNUMDIGIT];
-
-	if (decnum2str(pin, str, MAXNUMDIGIT) == OK)
-		rval = SetParameter("GpioPinCtrl", str);
-
-	return rval;
+	s->setValue("GpioPinCtrl", QString::number(pin));
 }
+
 
 int E2Profile::GetGpioPinClock()
 {
-	char const *sp;
-	int rval = DEF_GPIO_CLOCK;		//Default pin number
+	QString sp;
+	int rval = DEF_GPIO_CLOCK;              //Default pin number
 
-	sp = GetParameter("GpioPinClock");
-	if (sp)
+	sp = s->value("GpioPinClock").toString();
+
+	if (sp.length())
 	{
-		rval = atoi(sp);
+		rval = sp.toInt();
 	}
 
 	return rval;
 }
 
-int E2Profile::SetGpioPinClock(int pin)
+
+void E2Profile::SetGpioPinClock(int pin)
 {
-	int rval = BADPARAM;
-	char str[MAXNUMDIGIT];
-
-	if (decnum2str(pin, str, MAXNUMDIGIT) == OK)
-		rval = SetParameter("GpioPinClock", str);
-
-	return rval;
+	s->setValue("GpioPinClock", QString::number(pin));
 }
+
 
 int E2Profile::GetGpioPinDataIn()
 {
-	char const *sp;
-	int rval = DEF_GPIO_DATAIN;		//Default pin number
+	QString sp;
+	int rval = DEF_GPIO_DATAIN;             //Default pin number
 
-	sp = GetParameter("GpioPinDataIn");
-	if (sp)
+	sp = s->value("GpioPinDataIn").toString();
+
+	if (sp.length())
 	{
-		rval = atoi(sp);
+		rval = sp.toInt();
 	}
 
 	return rval;
 }
 
-int E2Profile::SetGpioPinDataIn(int pin)
+
+void E2Profile::SetGpioPinDataIn(int pin)
 {
-	int rval = BADPARAM;
-	char str[MAXNUMDIGIT];
-
-	if (decnum2str(pin, str, MAXNUMDIGIT) == OK)
-		rval = SetParameter("GpioPinDataIn", str);
-
-	return rval;
+	s->setValue("GpioPinDataIn", QString::number(pin));
 }
+
 
 int E2Profile::GetGpioPinDataOut()
 {
-	char const *sp;
-	int rval = DEF_GPIO_DATAOUT;	//Default pin number
+	QString sp;
+	int rval = DEF_GPIO_DATAOUT;    //Default pin number
 
-	sp = GetParameter("GpioPinDataOut");
-	if (sp)
+	sp = s->value("GpioPinDataOut").toString();
+
+	if (sp.length())
 	{
-		rval = atoi(sp);
+		rval = sp.toInt();
 	}
 
 	return rval;
 }
 
-int E2Profile::SetGpioPinDataOut(int pin)
+
+void E2Profile::SetGpioPinDataOut(int pin)
 {
-	int rval = BADPARAM;
-	char str[MAXNUMDIGIT];
-
-	if (decnum2str(pin, str, MAXNUMDIGIT) == OK)
-		rval = SetParameter("GpioPinDataOut", str);
-
-	return rval;
+	s->setValue("GpioPinDataOut", QString::number(pin));
 }
+

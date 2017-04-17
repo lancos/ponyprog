@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: at90sbus.cpp,v 1.14 2013/10/31 16:10:58 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -32,38 +32,40 @@
 #include "errcode.h"
 #include "eeptypes.h"
 
-#include "e2app.h"
+#include <QDebug>
+
+#include "e2cmdw.h"
 
 //Pay attention that Intel Hex format is Little Endian
-#undef	_BIG_ENDIAN_
+#undef  _BIG_ENDIAN_
 
 // Constructor
 At90sBus::At90sBus(BusInterface *ptr)
 	: SPIBus(ptr),
-		EnableProg0(0xAC), EnableProg1(0x53),
-		ChipErase0(0xAC), ChipErase1(0x80),
-		ReadProgMemH0(0x28), ReadProgMemH1(0),
-		ReadProgMemL0(0x20), ReadProgMemL1(0),
-		WriteProgMemH0(0x48), WriteProgMemH1(0),
-		WriteProgMemL0(0x40), WriteProgMemL1(0),
-		WriteProgPageMem(0x4C),
-		ReadEEPMem0(0xA0), ReadEEPMem1(0),
-		WriteEEPMem0(0xC0), WriteEEPMem1(0),
-		ReadDevCode0(0x30), ReadDevCode1(0),
-		ReadLock0(0x58), ReadLock1(0),
-		WriteLock0(0xAC), WriteLock1(0xE0),
-		ReadFuse0(0x50), ReadFuse1(0),
-		WriteFuse0(0xAC), WriteFuse1a(0xBF), WriteFuse1b(0xA0),
-		ReadFuseHigh0(0x58), ReadFuseHigh1(0x08),
-		WriteFuseHigh0(0xAC), WriteFuseHigh1(0xA8),
-		ReadFuseExt0(0x50), ReadFuseExt1(0x08),
-		WriteFuseExt0(0xAC), WriteFuseExt1(0xA4),
-		ReadCalib0(0x38), ReadCalib1(0),
-		p1_a(0x80), p2_a(0x7F), pflash_a(0x7F),
-		p1_b(0x00), p2_b(0xFF), pflash_b(0xFF),
-		old1200mode(false)
+	  EnableProg0(0xAC), EnableProg1(0x53),
+	  ChipErase0(0xAC), ChipErase1(0x80),
+	  ReadProgMemH0(0x28), ReadProgMemH1(0),
+	  ReadProgMemL0(0x20), ReadProgMemL1(0),
+	  WriteProgMemH0(0x48), WriteProgMemH1(0),
+	  WriteProgMemL0(0x40), WriteProgMemL1(0),
+	  WriteProgPageMem(0x4C),
+	  ReadEEPMem0(0xA0), ReadEEPMem1(0),
+	  WriteEEPMem0(0xC0), WriteEEPMem1(0),
+	  ReadDevCode0(0x30), ReadDevCode1(0),
+	  ReadLock0(0x58), ReadLock1(0),
+	  WriteLock0(0xAC), WriteLock1(0xE0),
+	  ReadFuse0(0x50), ReadFuse1(0),
+	  WriteFuse0(0xAC), WriteFuse1a(0xBF), WriteFuse1b(0xA0),
+	  ReadFuseHigh0(0x58), ReadFuseHigh1(0x08),
+	  WriteFuseHigh0(0xAC), WriteFuseHigh1(0xA8),
+	  ReadFuseExt0(0x50), ReadFuseExt1(0x08),
+	  WriteFuseExt0(0xAC), WriteFuseExt1(0xA4),
+	  ReadCalib0(0x38), ReadCalib1(0),
+	  p1_a(0x80), p2_a(0x7F), pflash_a(0x7F),
+	  p1_b(0x00), p2_b(0xFF), pflash_b(0xFF),
+	  old1200mode(false)
 {
-	UserDebug(Constructor, "At90sBus::At90sBus()\n");
+	qDebug() << "At90sBus::At90sBus()";
 
 	//With this values the AVR can be programmed even at low voltage (3.2V)
 	twd_erase = 30;
@@ -74,7 +76,7 @@ At90sBus::At90sBus(BusInterface *ptr)
 int At90sBus::ReadEEPByte(long addr)
 {
 	SendDataByte(ReadEEPMem0);
-	SendDataByte(ReadEEPMem1 | ((addr & 0xFFFF) >> 8) );	//19/01/1999 -- the bug is due to an error in the original Atmel datasheet
+	SendDataByte(ReadEEPMem1 | ((addr & 0xFFFF) >> 8) );    //19/01/1999 -- the bug is due to an error in the original Atmel datasheet
 	SendDataByte(addr);
 
 	return RecDataByte();
@@ -83,7 +85,7 @@ int At90sBus::ReadEEPByte(long addr)
 void At90sBus::WriteEEPByte(long addr, int data)
 {
 	SendDataByte(WriteEEPMem0);
-	SendDataByte(WriteEEPMem1 | ((addr & 0xFFFF) >> 8) );		//19/01/1999
+	SendDataByte(WriteEEPMem1 | ((addr & 0xFFFF) >> 8) );           //19/01/1999
 	SendDataByte(addr);
 	SendDataByte(data);
 }
@@ -92,10 +94,11 @@ void At90sBus::WriteEEPByte(long addr, int data)
 int At90sBus::ReadProgByte(long addr)
 {
 	int lsb = addr & 1;
-	addr >>= 1;		//convert to word address
+	addr >>= 1;             //convert to word address
 
 	//Se fosse little-endian sarebbe l'inverso
-#ifdef	_BIG_ENDIAN_
+#ifdef  _BIG_ENDIAN_
+
 	if (!lsb)
 #else
 	if (lsb)
@@ -109,6 +112,7 @@ int At90sBus::ReadProgByte(long addr)
 		SendDataByte(ReadProgMemL0);
 		SendDataByte(ReadProgMemL1 | (addr >> 8));
 	}
+
 	SendDataByte(addr);
 
 	return RecDataByte();
@@ -119,10 +123,11 @@ void At90sBus::WriteProgByte(long addr, int data)
 	SetLastProgrammedAddress(addr);
 
 	int lsb = addr & 1;
-	addr >>= 1;		//convert to word address
+	addr >>= 1;             //convert to word address
 
 	//Se fosse little-endian sarebbe l'inverso
-#ifdef	_BIG_ENDIAN_
+#ifdef  _BIG_ENDIAN_
+
 	if (!lsb)
 #else
 	if (lsb)
@@ -136,6 +141,7 @@ void At90sBus::WriteProgByte(long addr, int data)
 		SendDataByte(WriteProgMemL0);
 		SendDataByte(WriteProgMemL1 | (addr >> 8));
 	}
+
 	SendDataByte(addr);
 	SendDataByte(data);
 }
@@ -144,20 +150,21 @@ int At90sBus::Reset()
 {
 	bool success_flag = false;
 
-	UserDebug(UserApp2, "At90sBus::Reset() I\n");
+	qDebug() << "At90sBus::Reset() I";
 
 	RefreshParameters();
 
 	if (old1200mode)
 	{
 		int k;
+
 		for (k = 0; k < 4 && !success_flag; k++)
 		{
 			SPIBus::Reset();
 
-			WaitMsec( THEAPP->GetAVRDelayAfterReset() );	// At least 20msec (AVR datasheets)
+			WaitMsec( E2Profile::GetAVRDelayAfterReset() );    // At least 20msec (AVR datasheets)
 
-			UserDebug(UserApp2, "Avr1200Bus::Reset() ** SendDataByte\n");
+			qDebug() << "Avr1200Bus::Reset() ** SendDataByte";
 
 			SendDataByte(EnableProg0);
 			SendDataByte(EnableProg1);
@@ -165,33 +172,37 @@ int At90sBus::Reset()
 			SendDataByte(0);
 
 			if ( ReadDeviceCode(0) == 0x1E )
+			{
 				success_flag = true;
+			}
 		}
 	}
 	else
 	{
 		int j;
+
 		for (j = 0; j < 4 && !success_flag; j++)
 		{
 			int val = 0;
 
 			SPIBus::Reset();
 
-			WaitMsec( THEAPP->GetAVRDelayAfterReset() );	// At least 20msec (AVR datasheets)
+			WaitMsec( E2Profile::GetAVRDelayAfterReset() );    // At least 20msec (AVR datasheets)
 
 			int k;
+
 			for (k = 0; k < 32 && !success_flag; k++)
 			{
-				UserDebug(UserApp2, "At90sBus::Reset() ** SendEnableProg\n");
+				qDebug() << "At90sBus::Reset() ** SendEnableProg";
 
 				SendDataByte(EnableProg0);
 				SendDataByte(EnableProg1);
 				val = RecDataByte();
 				SendDataByte(0);
 
-				if (val != EnableProg1)		//Echo expected
+				if (val != EnableProg1)         //Echo expected
 				{
-					RecDataBit();		//Give a pulse on SCK (as AVR datasheets suggest)
+					RecDataBit();           //Give a pulse on SCK (as AVR datasheets suggest)
 				}
 				else
 				{
@@ -200,6 +211,7 @@ int At90sBus::Reset()
 			}
 		}
 	}
+
 	return success_flag ? 1 : 0;
 }
 
@@ -238,8 +250,12 @@ int At90sBus::WriteLockBits(uint32_t param, long model)
 	case ATtiny2313:
 	case ATtiny26:
 	case ATtiny13:
-	case ATtiny25: case ATtiny45: case ATtiny85:
-	case ATtiny261: case ATtiny461: case ATtiny861:
+	case ATtiny25:
+	case ATtiny45:
+	case ATtiny85:
+	case ATtiny261:
+	case ATtiny461:
+	case ATtiny861:
 		val1 = WriteLock0;
 		val2 = WriteLock1;
 		//
@@ -256,12 +272,23 @@ int At90sBus::WriteLockBits(uint32_t param, long model)
 	case ATmega32:
 	case ATmega162:
 	case ATmega169:
-	case ATmega8515: case ATmega8535:
-	case ATmega48: case ATmega88: case ATmega168: case ATmega328: // new ATmega328 (RG 22.06.2012)
-	case ATmega164: case ATmega324: case ATmega644:
-	case ATmega640: case ATmega1280: case ATmega1281:
-	case ATmega2560: case ATmega2561:
-	case AT90CAN32: case AT90CAN64: case AT90CAN128:
+	case ATmega8515:
+	case ATmega8535:
+	case ATmega48:
+	case ATmega88:
+	case ATmega168:
+	case ATmega328: // new ATmega328 (RG 22.06.2012)
+	case ATmega164:
+	case ATmega324:
+	case ATmega644:
+	case ATmega640:
+	case ATmega1280:
+	case ATmega1281:
+	case ATmega2560:
+	case ATmega2561:
+	case AT90CAN32:
+	case AT90CAN64:
+	case AT90CAN128:
 		val1 = WriteLock0;
 		val2 = WriteLock1;
 		//
@@ -368,17 +395,31 @@ int At90sBus::WriteFuseBits(uint32_t param, long model)
 
 	//Three byte fuse
 	case ATtiny2313:
-	case ATtiny25: case ATtiny45: case ATtiny85:
-	case ATtiny261: case ATtiny461: case ATtiny861:
+	case ATtiny25:
+	case ATtiny45:
+	case ATtiny85:
+	case ATtiny261:
+	case ATtiny461:
+	case ATtiny861:
 	case ATmega128:
 	case ATmega64:
 	case ATmega162:
 	case ATmega169:
-	case ATmega48: case ATmega88: case ATmega168: case ATmega328: // new ATmega328 (RG 22.06.2012)
-	case ATmega164: case ATmega324: case ATmega644:
-	case AT90CAN32: case AT90CAN64: case AT90CAN128:
-	case ATmega640: case ATmega1280: case ATmega1281:
-	case ATmega2560: case ATmega2561:
+	case ATmega48:
+	case ATmega88:
+	case ATmega168:
+	case ATmega328: // new ATmega328 (RG 22.06.2012)
+	case ATmega164:
+	case ATmega324:
+	case ATmega644:
+	case AT90CAN32:
+	case AT90CAN64:
+	case AT90CAN128:
+	case ATmega640:
+	case ATmega1280:
+	case ATmega1281:
+	case ATmega2560:
+	case ATmega2561:
 		val1 = WriteFuse0;
 		val2 = WriteFuse1b;
 		//
@@ -448,7 +489,7 @@ uint32_t At90sBus::ReadFuseBits(long model)
 	switch (model)
 	{
 	case ATtiny22:
-		SendDataByte(ReadLock0);	//NB Read LOCK!!
+		SendDataByte(ReadLock0);        //NB Read LOCK!!
 		SendDataByte(ReadLock1);
 		SendDataByte(0);
 		rv1 = RecDataByte();
@@ -459,7 +500,7 @@ uint32_t At90sBus::ReadFuseBits(long model)
 	case AT90S2343:
 	case AT90S4434:
 	case AT90S8535:
-		SendDataByte(ReadLock0);	//NB Read LOCK!!
+		SendDataByte(ReadLock0);        //NB Read LOCK!!
 		SendDataByte(ReadLock1);
 		SendDataByte(0);
 		rv1 = RecDataByte();
@@ -508,17 +549,31 @@ uint32_t At90sBus::ReadFuseBits(long model)
 
 	//Three byte fuse
 	case ATtiny2313:
-	case ATtiny25: case ATtiny45: case ATtiny85:
-	case ATtiny261: case ATtiny461: case ATtiny861:
+	case ATtiny25:
+	case ATtiny45:
+	case ATtiny85:
+	case ATtiny261:
+	case ATtiny461:
+	case ATtiny861:
 	case ATmega128:
 	case ATmega64:
 	case ATmega162:
 	case ATmega169:
-	case ATmega48: case ATmega88: case ATmega168: case ATmega328: // new ATmega328 (RG 22.06.2012)
-	case ATmega164: case ATmega324: case ATmega644:
-	case AT90CAN32: case AT90CAN64: case AT90CAN128:
-	case ATmega640: case ATmega1280: case ATmega1281:
-	case ATmega2560: case ATmega2561:
+	case ATmega48:
+	case ATmega88:
+	case ATmega168:
+	case ATmega328: // new ATmega328 (RG 22.06.2012)
+	case ATmega164:
+	case ATmega324:
+	case ATmega644:
+	case AT90CAN32:
+	case AT90CAN64:
+	case AT90CAN128:
+	case ATmega640:
+	case ATmega1280:
+	case ATmega1281:
+	case ATmega2560:
+	case ATmega2561:
 		SendDataByte(ReadFuse0);
 		SendDataByte(ReadFuse1);
 		SendDataByte(0);
@@ -569,8 +624,12 @@ uint32_t At90sBus::ReadLockBits(long model)
 		code[0] = ReadDeviceCode(0);
 		code[1] = ReadDeviceCode(1);
 		code[2] = ReadDeviceCode(2);
+
 		if (code[0] == 0x00 && code[1] == 0x01 && code[2] == 0x02)
-			retval = 0x06;	//both lock bits programmed
+		{
+			retval = 0x06;        //both lock bits programmed
+		}
+
 		break;
 
 	case ATtiny22:
@@ -603,8 +662,12 @@ uint32_t At90sBus::ReadLockBits(long model)
 	case ATtiny13:
 	case ATtiny26:
 	case ATtiny2313:
-	case ATtiny25: case ATtiny45: case ATtiny85:
-	case ATtiny261: case ATtiny461: case ATtiny861:
+	case ATtiny25:
+	case ATtiny45:
+	case ATtiny85:
+	case ATtiny261:
+	case ATtiny461:
+	case ATtiny861:
 		SendDataByte(ReadLock0);
 		SendDataByte(ReadLock1);
 		SendDataByte(0);
@@ -622,12 +685,23 @@ uint32_t At90sBus::ReadLockBits(long model)
 	case ATmega32:
 	case ATmega162:
 	case ATmega169:
-	case ATmega8515: case ATmega8535:
-	case ATmega48: case ATmega88: case ATmega168: case ATmega328: // new ATmega328 (RG 22.06.2012)
-	case ATmega164: case ATmega324: case ATmega644:
-	case AT90CAN32: case AT90CAN64: case AT90CAN128:
-	case ATmega640: case ATmega1280: case ATmega1281:
-	case ATmega2560: case ATmega2561:
+	case ATmega8515:
+	case ATmega8535:
+	case ATmega48:
+	case ATmega88:
+	case ATmega168:
+	case ATmega328: // new ATmega328 (RG 22.06.2012)
+	case ATmega164:
+	case ATmega324:
+	case ATmega644:
+	case AT90CAN32:
+	case AT90CAN64:
+	case AT90CAN128:
+	case ATmega640:
+	case ATmega1280:
+	case ATmega1281:
+	case ATmega2560:
+	case ATmega2561:
 		SendDataByte(ReadLock0);
 		SendDataByte(ReadLock1);
 		SendDataByte(0);
@@ -665,34 +739,44 @@ long At90sBus::Read(int addr, uint8_t *data, long length, int page_size)
 {
 	long len;
 
-//	int code[3];
+	//      int code[3];
 
-//	code[0] = ReadDeviceCode(0);
-//	code[1] = ReadDeviceCode(1);
-//	code[2] = ReadDeviceCode(2);
+	//      code[0] = ReadDeviceCode(0);
+	//      code[1] = ReadDeviceCode(1);
+	//      code[2] = ReadDeviceCode(2);
 
 	if (addr)
-	{	//EEprom
+	{
+		//EEprom
 		addr = 0;
+
 		for (len = 0; len < length; len++)
 		{
 			*data++ = (uint8_t)ReadEEPByte(addr++);
 
 			if ( CheckAbort(len * 100 / length) )
+			{
 				break;
+			}
 		}
+
 		CheckAbort(100);
 	}
 	else
-	{	//Flash Eprom
+	{
+		//Flash Eprom
 		addr = 0;
+
 		for (len = 0; len < length; len++)
 		{
 			*data++ = (uint8_t)ReadProgByte(addr++);
 
 			if ( CheckAbort(len * 100 / length) )
+			{
 				break;
+			}
 		}
+
 		CheckAbort(100);
 	}
 
@@ -711,9 +795,10 @@ int At90sBus::WaitReadyAfterWrite(int type, long addr, int data, long timeout)
 	else
 	{
 		if (type)
-		{	//EEprom
+		{
+			//EEprom
 			if (data == p1_a || data == p2_a ||
-				data == p1_b || data == p2_b)
+			                data == p1_b || data == p2_b)
 			{
 				rval = OK;
 				WaitMsec(twd_prog);
@@ -723,6 +808,7 @@ int At90sBus::WaitReadyAfterWrite(int type, long addr, int data, long timeout)
 				rval = E2P_TIMEOUT;
 
 				int k;
+
 				for (k = 0; k < timeout; k++)
 				{
 					int val = ReadEEPByte(addr);
@@ -737,9 +823,10 @@ int At90sBus::WaitReadyAfterWrite(int type, long addr, int data, long timeout)
 
 		}
 		else
-		{	//Flash
+		{
+			//Flash
 			if (data == pflash_a ||
-				data == pflash_b)
+			                data == pflash_b)
 			{
 				rval = OK;
 				WaitMsec(twd_prog);
@@ -749,6 +836,7 @@ int At90sBus::WaitReadyAfterWrite(int type, long addr, int data, long timeout)
 				rval = E2P_TIMEOUT;
 
 				int k;
+
 				for (k = 0; k < timeout; k++)
 				{
 					int val = ReadProgByte(addr);
@@ -762,6 +850,7 @@ int At90sBus::WaitReadyAfterWrite(int type, long addr, int data, long timeout)
 			}
 		}
 	}
+
 	return rval;
 }
 
@@ -799,7 +888,8 @@ long At90sBus::Write(int addr, uint8_t const *data, long length, int page_size)
 	long len;
 
 	if (addr)
-	{	//EEprom
+	{
+		//EEprom
 		for (addr = 0, len = 0; len < length; addr++, data++, len++)
 		{
 			//09/10/98 -- program only locations that really need to be programmed
@@ -813,16 +903,22 @@ long At90sBus::Write(int addr, uint8_t const *data, long length, int page_size)
 
 				//Interrupt the writing and exit (device missing?)
 				if ( WaitReadyAfterWrite(1, addr, *data) != OK )
+				{
 					return E2ERR_WRITEFAILED;
+				}
 			}
 
 			if ( CheckAbort(len * 100 / length) )
+			{
 				break;
+			}
 		}
+
 		CheckAbort(100);
 	}
 	else
-	{	//Flash Eprom
+	{
+		//Flash Eprom
 		if (page_size > 1)
 		{
 			//Flash Eprom with page write
@@ -831,10 +927,14 @@ long At90sBus::Write(int addr, uint8_t const *data, long length, int page_size)
 				//check for FF's page to skip blank pages
 				if ( !CheckBlankPage(data, page_size) )
 					if (WriteProgPage(addr, data, page_size) != OK)
+					{
 						return E2ERR_WRITEFAILED;
+					}
 
 				if ( CheckAbort(len * 100 / length) )
+				{
 					break;
+				}
 			}
 		}
 		else
@@ -849,13 +949,18 @@ long At90sBus::Write(int addr, uint8_t const *data, long length, int page_size)
 					WaitUsec(100);
 
 					if ( WaitReadyAfterWrite(0, addr, *data, 2000) != OK )
+					{
 						return E2ERR_WRITEFAILED;
+					}
 				}
 
 				if ( CheckAbort(len * 100 / length) )
+				{
 					break;
+				}
 			}
 		}
+
 		CheckAbort(100);
 	}
 
@@ -864,8 +969,8 @@ long At90sBus::Write(int addr, uint8_t const *data, long length, int page_size)
 
 void At90sBus::RefreshParameters()
 {
-	twd_prog = THEAPP->GetAVRProgDelay();
-	twd_erase = THEAPP->GetAVREraseDelay();
+	twd_prog = E2Profile::GetAVRProgDelay();
+	twd_erase = E2Profile::GetAVREraseDelay();
 }
 
 bool At90sBus::GetFlashPagePolling() const
@@ -882,24 +987,28 @@ int At90sBus::WriteProgPage(long addr, uint8_t const *data, long page_size, long
 {
 	long k;
 	bool okflag;
-	long first_loc = -1;		//first location different from 0xFF
+	long first_loc = -1;            //first location different from 0xFF
 
 	if (page_size <= 0 || data == NULL)
+	{
 		return BADPARAM;
+	}
 
 	//align addr to page boundary
-	addr &= ~(page_size - 1);	//0xFFFFFF00
+	addr &= ~(page_size - 1);       //0xFFFFFF00
 
 	for (k = 0; k < page_size; k++, data++)
 	{
 		if (first_loc < 0 && *data != 0xFF)
+		{
 			first_loc = addr + k;
+		}
 
 		WriteProgByte(k, *data);
 	}
 
 	SendDataByte(WriteProgPageMem);
-	SendDataByte(addr >> 9);		//send word address
+	SendDataByte(addr >> 9);                //send word address
 	SendDataByte(addr >> 1);
 	SendDataByte(0);
 
@@ -909,6 +1018,7 @@ int At90sBus::WriteProgPage(long addr, uint8_t const *data, long page_size, long
 	{
 		WaitUsec(100);
 		okflag = false;
+
 		for (k = timeout; k > 0; k--)
 		{
 			if ( ReadProgByte(first_loc) != 0xFF )
@@ -921,8 +1031,9 @@ int At90sBus::WriteProgPage(long addr, uint8_t const *data, long page_size, long
 	else
 	{
 		okflag = true;
-		WaitMsec( THEAPP->GetMegaPageDelay() );
+		WaitMsec( E2Profile::GetMegaPageDelay() );
 	}
+
 	return okflag ? OK : E2P_TIMEOUT;
 }
 

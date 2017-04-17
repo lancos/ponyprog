@@ -9,11 +9,11 @@
 #ifndef _TYPES_H
 #define _TYPES_H
 
-#ifdef	__GNUC__
+#ifdef  __GNUC__
 
 #include <stdint.h>
 
-#elif defined(_MSC_VER)	// && _MSC_VER == 1200
+#elif defined(_MSC_VER) // && _MSC_VER == 1200
 //MSVC doesn't define stdint.h
 
 typedef unsigned long uint32_t;
@@ -26,14 +26,14 @@ typedef signed char int8_t;
 
 #endif
 
-#ifndef	HIDDEN
-#define	HIDDEN	static
+#ifndef HIDDEN
+#define HIDDEN  static
 #endif
 
-#ifdef	__GNUC__
-#define	PACK	__attribute__ ((packed))
+#ifdef  __GNUC__
+#define PACK    __attribute__ ((packed))
 #else
-#define	PACK
+#define PACK
 #endif
 
 #endif

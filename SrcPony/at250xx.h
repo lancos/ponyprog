@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: at250xx.h,v 1.3 2007/04/20 10:58:21 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -35,9 +35,10 @@
 #include "device.h"
 #include "at250bus.h"
 
+
 class At250xx : public Device
 {
-  public:		//---------------------------------------- public
+public:               //---------------------------------------- public
 
 	At250xx(e2AppWinInfo *wininfo = 0, BusIO *busp = 0);
 	virtual ~At250xx();
@@ -47,12 +48,14 @@ class At250xx : public Device
 	virtual int Write(int probe = 1, int type = ALL_TYPE);
 	virtual int Verify(int type = ALL_TYPE);
 
-  protected:	//--------------------------------------- protected
+protected:    //--------------------------------------- protected
 
 	At250Bus *GetBus()
-		{ return (At250Bus *)Device::GetBus(); }
+	{
+		return (At250Bus *)Device::GetBus();
+	}
 
-  private:		//--------------------------------------- private
+private:              //--------------------------------------- private
 
 };
 #endif

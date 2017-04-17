@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: e2app.h,v 1.12 2016/05/27 11:22:51 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -30,11 +30,12 @@
 #ifndef e2APP_H
 #define e2APP_H
 
-// Include standard V files as needed
-#include <v/vapp.h>
-#include <v/vawinfo.h>
 
-#include "e2profil.h"
+#include <QApplication>
+#include <QCoreApplication>
+
+
+// #include "busio.h"
 
 //Include Bus Classes
 #include "i2cbus.h"
@@ -63,112 +64,163 @@
 #include "dt006interf.h"
 #include "linuxsysfsint.h"
 
-enum AppStatus {
+#include "e2profil.h"
+
+class e2AppWinInfo;
+
+enum AppStatus
+{
 	AppReady,
 	AppBusy
 };
 
-class e2App : public vApp, public E2Profile
+
+class e2App
 {
-	friend int AppMain(int, char**);	// allow AppMain access
+public:               //---------------------------------------- public
 
-  public:		//---------------------------------------- public
-
-	e2App(char* name, int w = 0, int h = 0);
+	e2App();
 	virtual ~e2App();
 
 	// Routines from vApp that are normally overridden
 
-	virtual vWindow* NewAppWin(vWindow* win, char* name, int w, int h,
-		vAppWinInfo* winInfo = 0);
+	//      virtual vWindow* NewAppWin(vWindow* win, char* name, int w, int h,
+	//                                 vAppWinInfo* winInfo = 0);
 
 	virtual void Exit();
 
-	virtual int CloseAppWin(vWindow*);
-
-	virtual void AppCommand(vWindow* win, ItemVal id, ItemVal val, CmdType cType);
+	// replace about signal - slots
+	//      virtual void AppCommand(vWindow* win, ItemVal id, ItemVal val, CmdType cType);
 
 	virtual void DropFile(const char *fn);
 
-	virtual void KeyIn(vWindow*, vKey, unsigned int);
+
+	//      virtual void KeyIn(vWindow*, vKey, unsigned int);
 
 	// New routines for this particular app
-	int GetCounter() const
-		{ return winCounter; }
-	int GetPort() const
-		{ return port_number; }
-	void SetPort(int port)
-		{ if (port > 0) port_number = port; }
+	//      int GetCounter() const
+	//      {
+	//              return winCounter;
+	//      }
+	int TestPort(int port = 0, int open_only = 0);
 	int OpenPort(int port = 0);
 	void SetInitialBus(BusIO *p)
-		{ if (p) iniBus = p; }
+	{
+		if (p)
+		{
+			iniBus = p;
+		}
+	}
+	BusInterface* GetInterfPtr()
+	{
+		return busIntp;
+	}
+	BusIO **GetBusVectorPtr()
+	{
+		return busvetp;
+	}
 	void ClosePort();
-	int TestPort(int port = 0, int open_only = 0);
 	int OpenBus(BusIO *p);
 	void SleepBus();
-	
+
+
 	void SetInterfaceType(HInterfaceType type = SIPROG_API);
 	HInterfaceType GetInterfaceType() const
-		{ return iType; }
-	BusInterface* GetInterfPtr()
-		{ return busIntp; }
-	BusIO **GetBusVectorPtr()
-		{ return busvetp; }
+	{
+		return iType;
+	}
 
 	int Calibration();
 
 	const char *GetHelpFile() const
-		{ return helpfile; }
+	{
+		return helpfile.toLatin1();
+	}
 	const char *GetOkSound() const
-		{ return ok_soundfile; }
+	{
+		return ok_soundfile.toLatin1();
+	}
 	const char *GetErrSound() const
-		{ return err_soundfile; }
-
-	int GetAbortFlag();
-	void SetAbortFlag(int a = 1)
-		{ abortFlag = a; }
+	{
+		return err_soundfile.toLatin1();
+	}
 
 	void SetProgress(int progress = 0);
 
 	uint8_t GetPolarity() const
-		{ return polarity_control;}
+	{
+		return polarity_control;
+	}
 	void SetPolarity(uint8_t val)
-		{ polarity_control = val;}
-
+	{
+		polarity_control = val;
+	}
+	int GetPort() const
+	{
+		return port_number;
+	}
+	void SetPort(int port)
+	{
+		if (port > 0)
+		{
+			port_number = port;
+		}
+	}
 	int IsAppBusy()
-		{ return (app_status == AppBusy); }
+	{
+		return (app_status == AppBusy);
+	}
 	int IsAppReady()
-		{ return (app_status == AppReady); }
+	{
+		return (app_status == AppReady);
+	}
+
 	void SetAppBusy();
 	void SetAppReady();
 
-	int GetIgnoreFlag() const;
-	void SetIgnoreFlag();
-	void ClearIgnoreFlag();
+
 
 	int LoadDriver(int start);
 
-	bool scriptMode;	//Script Mode
-	int returnValue;	//return value in Command Line mode
-	char script_name[MAXPATH];
+	void SetAWInfo(e2AppWinInfo *awi)
+	{
+		//             qDebug() << "SetAWInfo" << awi;
+		awip = awi;
+	}
+	e2AppWinInfo* GetAWInfo() const
+	{
+		return awip;
+	}
 
-  protected:	//--------------------------------------- protected
 
-  private:		//--------------------------------------- private
+	bool scriptMode;        //Script Mode
+	int returnValue;        //return value in Command Line mode
 
-	void LookForBogoMips();	//should get bogomips
+	QString script_name;
 
-	int winCounter;		//open windows (child) counter
-	int port_number;	//port number used
+	// AppWinInfo associated with this window
+	e2AppWinInfo* awip;
 
-	int abortFlag;		//True if we have to abort current op
-	int ignoreFlag;		//True if we have to ignore probe errors (usually false)
+protected:    //--------------------------------------- protected
+	static int exit_ok;
 
-	HInterfaceType iType;	//current interface type
-	BusInterface *busIntp;	//pointer to current interface type
+private:              //--------------------------------------- private
+	void initSettings();
+	void LookForBogoMips(); //should get bogomips
+
+	// EK 2017
+	// we can fork the process
+	//      int winCounter;         //open windows (child) counter
+
+	//      int abortFlag;          //True if we have to abort current op
+	//      int ignoreFlag;         //True if we have to ignore probe errors (usually false)
+
+	HInterfaceType iType;   //current interface type
+
+	BusInterface *busIntp;  //pointer to current interface type
 
 	uint8_t polarity_control; //polarity for control lines
-	AppStatus app_status;		//tell if the App is busy (reading, writing, ...) or can react to user events
+	AppStatus app_status;           //tell if the App is busy (reading, writing, ...) or can react to user events
 
 	//AutoTag
 	//List of available interface types
@@ -177,15 +229,16 @@ class e2App : public vApp, public E2Profile
 	EasyI2CInterface easyi2c_apiI;
 	EasyI2CInterface easyi2c_ioI;
 	AvrISPInterface avrisp_apiI;
-	AvrISPInterface	avrisp_ioI;
+	AvrISPInterface avrisp_ioI;
 	Dt006Interface dt006_apiI;
 	Dt006Interface dt006_ioI;
 	JdmInterface jdm_apiI;
-//	JdmIOInterface jdm_ioI;
+	//      JdmIOInterface jdm_ioI;
 	LinuxSysFsInterface linuxsysfs_ioI;
 
-	BusIO *iniBus;					//pointer to current Bus
-	BusIO *busvetp[NO_OF_BUSTYPE];	//array of pointers to available Bus
+	int port_number;        //port number used
+	BusIO *iniBus;                           //pointer to current Bus
+	BusIO *busvetp[NO_OF_BUSTYPE];  //array of pointers to available Bus
 	//AutoTag
 	//List of available bus types
 	I2CBus iicB;
@@ -198,15 +251,15 @@ class e2App : public vApp, public E2Profile
 	SxBus sxB;
 	Sde2506Bus sdeB;
 	At89sBus at89sB;
-//	AtMegaBus atMegaB;
-//	Avr1200Bus at1200B;
+	//      AtMegaBus atMegaB;
+	//      Avr1200Bus at1200B;
 	PicBusNew picNewB;
 	IMBus imB;
 	X2444Bus x2444B;
 	X2444Bus s2430B;
 
-	char helpfile[MAXPATH];
-	char ok_soundfile[MAXPATH];
-	char err_soundfile[MAXPATH];
+	QString helpfile;
+	QString ok_soundfile;
+	QString err_soundfile;
 };
 #endif

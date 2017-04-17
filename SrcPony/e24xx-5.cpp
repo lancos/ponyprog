@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: e24xx-5.cpp,v 1.4 2009/11/16 23:40:43 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -27,24 +27,26 @@
 //-------------------------------------------------------------------------//
 //=========================================================================//
 
-#include <string.h>
+#include <QString>
+
 #include "types.h"
-#include "e2app.h"
-#include "e24xx-5.h"		// Header file
+#include "e2awinfo.h"
+#include "e24xx-5.h"            // Header file
 #include "errcode.h"
 #include "eeptypes.h"
 
 
 //=====>>> Costruttore <<<======
 E24xx5::E24xx5(e2AppWinInfo *wininfo, BusIO *busp)
-	:	E24xx(wininfo, busp, 128)
+	:       E24xx(wininfo, busp, 128)
 {
-//	writepage_size = THEAPP->GetI2CPageWrite();
-//	THEAPP->SetI2CPageWrite(writepage_size);
+	//      writepage_size = E2Profile::GetI2CPageWrite();
+	//      E2Profile::SetI2CPageWrite(writepage_size);
 	writepage_size = 32;
 
-	base_addr = 0x00;		// 24C325 or 24C645 use non standard I2C Bus address, Probe() will try ALL possible I2C Adresses from 0x00 to 0xFE
+	base_addr = 0x00;               // 24C325 or 24C645 use non standard I2C Bus address, Probe() will try ALL possible I2C Adresses from 0x00 to 0xFE
 }
+
 
 //--- Distruttore
 E24xx5::~E24xx5()
@@ -60,27 +62,40 @@ int E24xx5::Write(int probe, int type)
 		//Enable writing
 		uint8_t buffer[4];
 
-		buffer[0] = 0xFF;	//last address (Write protect register)
-		buffer[1] = 0x02;	//set WEL bit
-		if (GetBus()->StartWrite(eeprom_addr[n_bank-1], buffer, 2) != 2)
-			return GetBus()->Error();
+		buffer[0] = 0xFF;       //last address (Write protect register)
+		buffer[1] = 0x02;       //set WEL bit
 
-		buffer[0] = 0xFF;	//last address (Write protect register)
-		buffer[1] = 0x06;	//set RWEL+WEL bit
-		if (GetBus()->StartWrite(eeprom_addr[n_bank-1], buffer, 2) != 2)
+		if (GetBus()->StartWrite(eeprom_addr[n_bank - 1], buffer, 2) != 2)
+		{
 			return GetBus()->Error();
+		}
 
-		buffer[0] = 0xFF;	//last address (Write protect register)
-		buffer[1] = 0x02;	//reset WPEN, BP1, BP0 (disable any write protection)
-		if (GetBus()->Write(eeprom_addr[n_bank-1], buffer, 2) != 2)
+		buffer[0] = 0xFF;       //last address (Write protect register)
+		buffer[1] = 0x06;       //set RWEL+WEL bit
+
+		if (GetBus()->StartWrite(eeprom_addr[n_bank - 1], buffer, 2) != 2)
+		{
 			return GetBus()->Error();
+		}
+
+		buffer[0] = 0xFF;       //last address (Write protect register)
+		buffer[1] = 0x02;       //reset WPEN, BP1, BP0 (disable any write protection)
+
+		if (GetBus()->Write(eeprom_addr[n_bank - 1], buffer, 2) != 2)
+		{
+			return GetBus()->Error();
+		}
 
 		//Ack polling
 		int k;
+
 		for (k = timeout_loop; k > 0 && GetBus()->Read(eeprom_addr[0], buffer, 1) != 1; k--)
 			;
+
 		if (k == 0)
+		{
 			return E2P_TIMEOUT;
+		}
 	}
 
 	return E24xx::Write(probe);

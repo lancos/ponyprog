@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: portint.h,v 1.11 2013/05/09 16:20:29 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -27,32 +27,33 @@
 //-------------------------------------------------------------------------//
 //=========================================================================//
 
-#ifndef	_PORTINTERFACE_H
-#define	_PORTINTERFACE_H
+#ifndef _PORTINTERFACE_H
+#define _PORTINTERFACE_H
 
 #include "types.h"
 
-#ifdef	_WINDOWS
+#ifdef  _WINDOWS
 #include <windows.h>
 
-typedef void	(__stdcall *lpOut32)(short, short);
-typedef short	(__stdcall *lpInp32)(short);
-typedef BOOL	(__stdcall *lpIsInpOutDriverOpen)(void);
-typedef BOOL	(__stdcall *lpIsXP64Bit)(void);
+typedef void    (__stdcall *lpOut32)(short, short);
+typedef short   (__stdcall *lpInp32)(short);
+typedef BOOL    (__stdcall *lpIsInpOutDriverOpen)(void);
+typedef BOOL    (__stdcall *lpIsXP64Bit)(void);
 
 #endif
 
 // Maximum number of printer ports that would be installed on a system
-#define	MAX_LPTPORTS	4
-#define	MAX_COMPORTS	4
+#define MAX_LPTPORTS    4
+#define MAX_COMPORTS    4
 
-struct base_len {
+struct base_len
+{
 	int base, len;
 };
 
 class PortInterface
 {
- public:		//------------------------------- public
+public:                //------------------------------- public
 	PortInterface();
 	virtual ~PortInterface();
 
@@ -63,11 +64,17 @@ class PortInterface
 	int OpenParallel(int no);
 	void CloseParallel();
 	int GetFirstPort() const
-		{ return first_port; }
+	{
+		return first_port;
+	}
 	int GetLastPort() const
-		{ return last_port; }
+	{
+		return last_port;
+	}
 	int GetNoPorts() const
-		{ return no_ports; }
+	{
+		return no_ports;
+	}
 	int GetSerBasePort(int no);
 	int GetParBasePort(int no);
 
@@ -75,32 +82,34 @@ class PortInterface
 	virtual int OutPort(int val, int no = -1);
 	virtual int OutPortMask(int mask, int val);
 
- protected:		//------------------------------- protected
+protected:             //------------------------------- protected
 	uint8_t GetCPWReg()
-		{ return cpwreg; }
+	{
+		return cpwreg;
+	}
 
-#ifdef	_WINDOWS
-	HANDLE	hCom;
+#ifdef  _WINDOWS
+	HANDLE  hCom;
 #endif
 
-	int		write_port,		// Number of output port (write I/O port address)
-			read_port;		// Number of input port (read I/O port address)
-	uint8_t	cpwreg;			// write register image in memory (the content is the same of the hardware register)
+	int             write_port,             // Number of output port (write I/O port address)
+	                read_port;              // Number of input port (read I/O port address)
+	uint8_t cpwreg;                 // write register image in memory (the content is the same of the hardware register)
 
- private:		//------------------------------- private
+private:               //------------------------------- private
 	int IOperm(int a, int b, int c);
 
 	void DetectPorts();
 
-#ifdef	_WINDOWS
-	void DetectPorts9x();	// Win9x version
-	void DetectLPTPortsNT();	// WinNT/2000 version
-	void DetectCOMPortsNT();	// WinNT/2000 version
+#ifdef  _WINDOWS
+	void DetectPorts9x();   // Win9x version
+	void DetectLPTPortsNT();        // WinNT/2000 version
+	void DetectCOMPortsNT();        // WinNT/2000 version
 
-	int LPTCount;			//Number of LPT ports on the system
-	int COMCount;			//Number of COM ports on the system
+	int LPTCount;                   //Number of LPT ports on the system
+	int COMCount;                   //Number of COM ports on the system
 
-	DWORD	old_mask;
+	DWORD   old_mask;
 
 	HINSTANCE hInpOutDll;
 

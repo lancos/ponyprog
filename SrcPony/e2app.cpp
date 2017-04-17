@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: e2app.cpp,v 1.25 2016/06/24 12:21:06 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -27,10 +27,10 @@
 //-------------------------------------------------------------------------//
 //=========================================================================//
 
-#include "e2app.h"		// Header file
+#include "e2profil.h"
 #include "e2awinfo.h"
+#include "e2app.h"        // Header file
 
-#include "cmdenum.h"
 #include "string_table.h"
 
 #include <stdio.h>
@@ -38,112 +38,354 @@
 #include <stdlib.h>
 #include <locale.h>
 
-#ifdef	_LINUX_
+#include <QCoreApplication>
+#include <QString>
+#include <QMessageBox>
+
+#include <QDebug>
+
+#ifdef  __linux__
 #include <sys/time.h>
 #include <unistd.h>
 #include <signal.h>
 #else
-#  ifdef	__BORLANDC__
-#    define	strncasecmp strnicmp
-#    define strcasecmp stricmp
-#  else // _MICROSOFT_ VC++
-#    define strncasecmp	_strnicmp
-#    define strcasecmp _stricmp
-#  endif
+// #  ifdef        __BORLANDC__
+// #    define     strncasecmp strnicmp
+// #    define strcasecmp stricmp
+// #  else // _MICROSOFT_ VC++
+// #    define strncasecmp _strnicmp
+// #    define strcasecmp _stricmp
+// #  endif
 #endif
+
+#include "microbus.h"
 
 //const int idAskToSave = 100; // Dummy Command
 
 //=========================>>> e2App::e2App <<<==========================
-e2App::e2App(char* name, int w, int h)
-	: vApp(name, 0, w, h),
-		winCounter(0),
-		port_number(1),		// uses COM1 by default
-		abortFlag(0),
-		ignoreFlag(0),
-		app_status(AppReady)
+e2App::e2App() :
+	awip(0),
+	app_status(AppReady),
+	port_number(1)
 {
 	// Constructor
-	UserDebug(Constructor, "e2App::e2App()\n");
+	qDebug() << "e2App::e2App()";
 
-	s2430B.SetOrganization(ORG8);		//Default X2444Bus organization is ORG16, but S24H30 organization is ORG8
-//	mega103B.SetPageSize(256);
-//	mega103B.SetFlashPagePolling(false);
-//	atMegaB.SetPageSize(256);
-//	atMegaB.SetFlashPagePolling(true);
-//	mega16xB.SetPageSize(128);
-//	mega16xB.SetFlashPagePolling(true);
-//	mega8xB.SetPageSize(64);
-//	mega8xB.SetFlashPagePolling(true);
-//	tiny2xB.SetPageSize(32);
-//	tiny2xB.SetFlashPagePolling(true);
+	//         awinfo = 0;
+
+	s2430B.SetOrganization(ORG8);           //Default X2444Bus organization is ORG16, but S24H30 organization is ORG8
+	//      mega103B.SetPageSize(256);
+	//      mega103B.SetFlashPagePolling(false);
+	//      atMegaB.SetPageSize(256);
+	//      atMegaB.SetFlashPagePolling(true);
+	//      mega16xB.SetPageSize(128);
+	//      mega16xB.SetFlashPagePolling(true);
+	//      mega8xB.SetPageSize(64);
+	//      mega8xB.SetFlashPagePolling(true);
+	//      tiny2xB.SetPageSize(32);
+	//      tiny2xB.SetFlashPagePolling(true);
 
 	//AutoTag
 	//Initialize Bus Pointers vector
-	busvetp[I2C-1] = &iicB;
-	busvetp[AT90S-1] = &at90sB;
-//	busvetp[ATMEGAB-1] = &atMegaB;
-//	busvetp[AT1200S-1] = &at1200B;
-	busvetp[AT89S-1] = &at89sB;
-	busvetp[AT93C-1] = &at93cB;
-	busvetp[AT250-1] = &at250B;
-	busvetp[AT250BIG-1] = &at250BigB;
-	busvetp[PICB-1] = &picB;
-	busvetp[PIC12B-1] = &pic12B;
-	busvetp[SXB-1] = &sxB;
-	busvetp[SDEB-1] = &sdeB;
-	busvetp[PICNEWB-1] = &picNewB;
-	busvetp[IMBUS-1] = &imB;
-	busvetp[X2444B-1] = &x2444B;
-	busvetp[S2430B-1] = &s2430B;
+	busvetp[I2C - 1] = &iicB;
+	busvetp[AT90S - 1] = &at90sB;
+	//      busvetp[ATMEGAB-1] = &atMegaB;
+	//      busvetp[AT1200S-1] = &at1200B;
+	busvetp[AT89S - 1] = &at89sB;
+	busvetp[AT93C - 1] = &at93cB;
+	busvetp[AT250 - 1] = &at250B;
+	busvetp[AT250BIG - 1] = &at250BigB;
+	busvetp[PICB - 1] = &picB;
+	busvetp[PIC12B - 1] = &pic12B;
+	busvetp[SXB - 1] = &sxB;
+	busvetp[SDEB - 1] = &sdeB;
+	busvetp[PICNEWB - 1] = &picNewB;
+	busvetp[IMBUS - 1] = &imB;
+	busvetp[X2444B - 1] = &x2444B;
+	busvetp[S2430B - 1] = &s2430B;
 
-	SetInterfaceType();	//Set default interface
+	SetInterfaceType();     //Set default interface
+
+	initSettings();
 }
+
 
 //=========================>>> e2App::e2App <<<==========================
 e2App::~e2App()
 {
-	UserDebug(Destructor, "e2App::~e2App()\n");
+	qDebug() << "e2App::~e2App()";
 
 	// Destructor
 
-//	if (_e2CmdWin)
-//		delete _e2CmdWin;
+	//      if (_e2CmdWin)
+	//              delete _e2CmdWin;
 }
 
+
+void e2App::initSettings()
+{
+	QString str;
+
+#ifdef  __unix__
+	QString sp;
+
+	//     str = "";
+	sp = getenv("HOME");
+
+	if (sp.length() > 0 )
+	{
+		str = sp + "/";
+		//         strncpy(str, sp, MAXPATH - (strlen(APPNAME) + 5) );
+		//         strcat(str, "/");
+	}
+
+	str += QString("." + APPNAME + "rc");
+	//     strcat(str, "." APPNAME "rc");
+	//      str[MAXPATH - 1] = '\0';
+
+	E2Profile::SetConfigFile(str);
+#else
+	//The profile file is called "ponyprog.ini"
+	//while the help file "ponyprog.html"
+	QString sp = arguments.at(0);
+	QString progName = sp;
+	int p = QString(sp.lastIndexOf('.'));
+
+	if (p > 0)
+	{
+		sp = sp.left(p);
+		progName = sp;
+	}
+
+	helpfile = progName + ".html";
+
+	SetFileName(QString (progName + ".ini"));
+
+	QString currentAppDir = qApp->applicationDirPath();
+
+	//     sp = strrchr(argv[0], '\\');
+	//
+	//     if (sp)
+	//     {
+	//     sp[1] = '\0';
+	//         strncpy(str, argv[0], MAXPATH);
+	// //         str[MAXPATH - 1] = '\0';
+	//     }
+	//     else
+	//     {
+	//         str[0] = '\0';
+	//     }
+
+	ok_soundfile = currentAppDir + "oksound.wav";
+	err_soundfile = currentAppDir + "errsound.wav";
+
+
+#endif
+
+	QString sp2 = E2Profile::GetLanguageCode();
+
+	if (sp2.length() > 0)
+	{
+		str = sp2;
+
+		E2Profile::SetLanguageCode( str.toLatin1() );
+
+		if (str == "default" )
+		{
+			sp2 = "";
+		}
+		else if (str == "locale")
+		{
+			sp2 = STR_LANGUAGE_CODE;
+		}
+		else
+		{
+			sp2 = str;
+		}
+
+		setlocale(LC_ALL, sp2.toLatin1() );
+	}
+
+	// Read parameters from INI file
+	// Make sure all parameters (even default values) are written
+	//   to the INI file.
+
+	// EK 2017
+	// TODO to remove the read/write because of QSettings?
+	SetInterfaceType( (HInterfaceType) E2Profile::GetParInterfType() );
+	SetPort( E2Profile::GetParPortNo() );
+	E2Profile::SetPowerUpDelay( E2Profile::GetPowerUpDelay() );
+	SetPolarity( E2Profile::GetPolarityControl() );
+	E2Profile::SetSPIResetPulse( E2Profile::GetSPIResetPulse() );
+	E2Profile::SetSPIDelayAfterReset( E2Profile::GetSPIDelayAfterReset() );
+	E2Profile::SetSPIPageWrite( E2Profile::GetSPIPageWrite() );
+	E2Profile::SetMegaPageDelay( E2Profile::GetMegaPageDelay() );
+	E2Profile::SetAVRProgDelay( E2Profile::GetAVRProgDelay() );
+	E2Profile::SetAVREraseDelay( E2Profile::GetAVREraseDelay() );
+	E2Profile::SetAT89DelayAfterReset( E2Profile::GetAT89DelayAfterReset() );
+	E2Profile::SetAVRDelayAfterReset( E2Profile::GetAVRDelayAfterReset() );
+
+	E2Profile::SetI2CSpeed( E2Profile::GetI2CSpeed() );
+	E2Profile::SetSPISpeed( E2Profile::GetSPISpeed() );
+	E2Profile::SetMicroWireSpeed( E2Profile::GetMicroWireSpeed() );
+	E2Profile::SetPICSpeed( E2Profile::GetPICSpeed() );
+	E2Profile::SetSDESpeed( E2Profile::GetSDESpeed() );
+
+	E2Profile::SetLogEnabled( E2Profile::GetLogEnabled() );
+	E2Profile::SetSoundEnabled( E2Profile::GetSoundEnabled() );
+	E2Profile::SetSkipStartupDialog( E2Profile::GetSkipStartupDialog() );
+	E2Profile::SetVerifyAfterWrite( E2Profile::GetVerifyAfterWrite() );
+	E2Profile::SetClearBufBeforeLoad( E2Profile::GetClearBufBeforeLoad() );
+	E2Profile::SetClearBufBeforeRead( E2Profile::GetClearBufBeforeRead() );
+	E2Profile::SetAutoDetectPorts( E2Profile::GetAutoDetectPorts() );
+	E2Profile::SetAt89PageOp( E2Profile::GetAt89PageOp() );
+	E2Profile::Set8253FallEdge( E2Profile::Get8253FallEdge() );
+
+#ifdef  __unix__
+	E2Profile::SetHtmlBrowseApp( E2Profile::GetHtmlBrowseApp() );
+	E2Profile::SetLockDir( E2Profile::GetLockDir() );
+	E2Profile::SetDevDir( E2Profile::GetDevDir() );
+#endif
+
+#ifdef  __linux__
+	E2Profile::SetGpioPinClock( E2Profile::GetGpioPinClock() );
+	E2Profile::SetGpioPinCtrl( E2Profile::GetGpioPinCtrl() );
+	E2Profile::SetGpioPinDataIn( E2Profile::GetGpioPinDataIn() );
+	E2Profile::SetGpioPinDataOut( E2Profile::GetGpioPinDataOut() );
+#endif
+
+	E2Profile::SetDevName( E2Profile::GetDevName() );
+
+	scriptMode = false;
+	returnValue = 0;
+	script_name = "";
+}
+//=====================>>> e2App::OpenPort <<<==============================
+int e2App::OpenPort(int port)
+{
+	qDebug() << "e2App::OpenPort(" << port << ")";
+
+	if (port)
+	{
+		SetPort(port);
+	}
+
+	ClosePort();
+	return iniBus->Open(GetPort());
+}
+
+
+//=====================>>> e2App::ClosePort <<<==============================
+void e2App::ClosePort()
+{
+	qDebug() << "e2App::ClosePort() iniBus=" << (hex) << iniBus << (dec);
+	iniBus->Close();
+}
+
+//=====================>>> e2App::TestPort <<<==============================
+int e2App::TestPort(int port, int open_only)
+{
+	qDebug() << "e2App::TestPort(port=" << port << ", open_only=" << open_only << ")";
+
+	int rv = (open_only) ?
+	         busIntp->TestOpen(port) :
+	         busIntp->TestPort(port);
+
+	qDebug() << "e2App::TestPort() = " << rv;
+
+	return rv;
+}
+
+//=====================>>> e2App::OpenBus <<<==============================
+int e2App::OpenBus(BusIO *p)
+{
+	qDebug() << "e2App::OpenBus(" << (hex) << p << (dec) << ")";
+
+	iniBus->Close();
+
+	qDebug() << "e2App::OpenBus() ** Close";
+
+	iniBus = p;
+	int rv = iniBus->Open(GetPort());
+
+	qDebug() << "e2App::OpenBus() ** Open = " << rv;
+
+	if (rv == OK)
+	{
+		rv = busIntp->SetPower(1);
+
+		qDebug() << "e2App::OpenBus() ** SetPower";
+
+		//Power up delay
+		iniBus->WaitMsec( E2Profile::GetPowerUpDelay() );
+
+		qDebug() << "e2App::OpenBus() ** Reset";
+
+		iniBus->Reset();        //28/10/98
+	}
+
+	qDebug() << "e2App::OpenBus() = " << rv;
+
+	return rv;
+}
+
+//=====================>>> e2App::SleepBus <<<==============================
+void e2App::SleepBus()
+{
+	qDebug() << "e2App::CloseBus() iniBus=" << (hex) << iniBus << (dec);
+
+	iniBus->WaitMsec(5);    // 08/04/98 -- hold time dell'alimentazione
+	busIntp->SetPower(0);
+	iniBus->Close();                // 28/09/98 -- richiude la porta dopo averla usata
+}
+
+
+// EK 2017
+// TODO to remove this to init function
+#if 0
 //=====================>>> e2App::NewAppWin <<<==========================
 vWindow* e2App::NewAppWin(vWindow* win, char* name,
-		int w, int h, vAppWinInfo* winInfo)
+                          int w, int h, vAppWinInfo* winInfo)
 {
-#ifdef WIN32		// Yes it's a dirty hack here but clean in Windows sense, heha 130406
-	HKEY key;	// But I wouldn't change the very incomplete V-lib source.
-	if (!RegOpenKeyEx(HKEY_CURRENT_USER,"Software\\h#s\\PonyProg",0,KEY_QUERY_VALUE,&key)) {
-	 WINDOWPLACEMENT wp;
-	 wp.length=sizeof wp;
-	 HWND w=theApp->winHwnd();
-	 if (GetWindowPlacement(w,&wp)) {
-	  DWORD size=sizeof wp.rcNormalPosition;
-	  if (!RegQueryValueEx(key,"WinPos",NULL,NULL,(LPBYTE)&wp.rcNormalPosition,&size)
-	  && size==sizeof wp.rcNormalPosition) SetWindowPlacement(w,&wp);
-	 }
-	 RegCloseKey(key);
+#ifdef WIN32            // Yes it's a dirty hack here but clean in Windows sense, heha 130406
+	HKEY key;       // But I wouldn't change the very incomplete V-lib source.
+
+	if (!RegOpenKeyEx(HKEY_CURRENT_USER, "Software\\h#s\\PonyProg", 0, KEY_QUERY_VALUE, &key))
+	{
+		WINDOWPLACEMENT wp;
+		wp.length = sizeof wp;
+		HWND w = theApp->winHwnd();
+
+		if (GetWindowPlacement(w, &wp))
+		{
+			DWORD size = sizeof wp.rcNormalPosition;
+
+			if (!RegQueryValueEx(key, "WinPos", NULL, NULL, (LPBYTE)&wp.rcNormalPosition, &size)
+			                && size == sizeof wp.rcNormalPosition)
+			{
+				SetWindowPlacement(w, &wp);
+			}
+		}
+
+		RegCloseKey(key);
 	}
+
 #endif
-	vWindow* thisWin = win;			//local copy to use
+	vWindow* thisWin = win;                 //local copy to use
 	vAppWinInfo* awinfo = winInfo;
 	char *appname = name;
 
 	if (!*name)
 	{
-		appname = "No Name";		// Default name
+		appname = "No Name";            // Default name
 	}
 
-	UserDebug1(Build,"e2App::NewAppWin(%s)\n",appname);
+	qDebug() << "e2App::NewAppWin(" << appname << ")";
 
 	// Create the first window using provided CmdWindow
-	winCounter++;		//incremente il numero di finestre
+	winCounter++;           //incremente il numero di finestre
 
-	if (!thisWin)		//need to new a window
+	if (!thisWin)           //need to new a window
 	{
 		thisWin = new e2CmdWindow(appname, w, h);
 	}
@@ -156,28 +398,34 @@ vWindow* e2App::NewAppWin(vWindow* win, char* name,
 	return vApp::NewAppWin(thisWin, appname, w, h, awinfo);
 }
 
-static int exit_ok = 0;
+#endif
+
+int e2App::exit_ok = 0;
 
 //============================>>> e2App::Exit <<<===========================
 void e2App::Exit()
 {
 	// This is called to close all windows.
 
-	UserDebug(Build,"e2App::Exit()\n");
+	qDebug() << "e2App::Exit()";
 
 	if ( !IsAppReady() )
 	{
 		//06/09/99
-		SetAbortFlag();
-		SendWindowCommandAll(idCloseAllDialog, 0, C_Button);
-		CheckEvents();
-	//	SetAppReady();
+		E2Profile::SetAbortFlag();
+		//              SendWindowCommandAll(idCloseAllDialog, 0, C_Button);
+		//              CheckEvents();
+		//      SetAppReady();
 	}
 
 	if ( IsAppReady() )
 	{
 		if (!scriptMode)
-			SendWindowCommandAll(idAskToSave, 0, C_Button);
+		{
+			// EK 2017
+			// TODO
+			//                      SendWindowCommandAll(idAskToSave, 0, C_Button);
+		}
 
 		exit_ok = 1;
 
@@ -187,15 +435,22 @@ void e2App::Exit()
 		vWindow *tmp;
 
 		bool inExit = true;
-		for (curWin = _WindowList ; curWin !=0 ; curWin = _WindowList)
+
+		for (curWin = _WindowList ; curWin != 0 ; curWin = _WindowList)
 		{
 			int retv;
 
 			tmp = curWin->window;
+
 			if (IsHelpWin(tmp))
+			{
 				retv = CloseHelpWin(tmp);
+			}
 			else
-				retv = CloseAppWin(tmp);		// use local or derived close app
+			{
+				retv = CloseAppWin(tmp);        // use local or derived close app
+			}
+
 			if (!retv)
 			{
 				inExit = false;
@@ -204,9 +459,13 @@ void e2App::Exit()
 		}
 
 		if (inExit)
+		{
 			AppExit(returnValue);
+		}
+
 #else
-		vApp::Exit();		// Default behavior
+		qApp->quit();
+		//              vApp::Exit();           // Default behavior
 #endif
 	}
 }
@@ -214,209 +473,76 @@ void e2App::Exit()
 void e2App::DropFile(const char *fn)
 {
 	if ( fn && strlen(fn) )
-		NewAppWin(0, (char*)fn, DefaultWidth(), DefaultHeight(), 0);
+	{
+		//              NewAppWin(0, (char*)fn, DefaultWidth(), DefaultHeight(), 0);
+	}
 }
 
-#include <v/vynreply.h>	// for vYN dialog
-#include <v/v_defs.h>
-
-//======================>>> e2App::CloseAppWin <<<===========================
-int e2App::CloseAppWin(vWindow* win)
-{
-	if ( !IsAppReady() )
-	{
-		//06/09/99
-		SetAbortFlag();
-		SendWindowCommandAll(idCloseAllDialog, 0, C_Button);
-		CheckEvents();
-
-	//	SetAppReady();
-	}
-
-	if ( IsAppReady() )
-	{
-		// This will be called BEFORE a window has been unregistered or
-		// closed.  Default behavior: unregister and close the window.
-		int really_close = 0;
-		vYNReplyDialog yn(this);
-
-		UserDebug(Build,"e2App::CloseAppWin()\n");
-
-		if ( !exit_ok && ((e2CmdWindow *)win)->IsBufChanged() )
-		{
-			vYNReplyDialog yn(this);
-			if ( yn.AskYN(STR_MSGCLOSEWINSAVE) > 0 )
-			{
-				((e2CmdWindow *)win)->CmdSave();
-			}
-		}
-
-		if (winCounter > 1 || exit_ok)
-			really_close = 1;
-		else
-		{
-			if ( yn.AskYN(STR_MSGCLOSEWINEXIT) > 0 )
-			{
-				really_close = 1;
-			}
-		}
-
-		if (really_close)
-		{
-#ifdef WIN32				// Yes it's a dirty hack here but clean in Windows sense, heha 130406
-			HKEY key;	// Save window position to Win7-safe, roaming hive of registry
-			if (!RegCreateKeyEx(HKEY_CURRENT_USER,"Software\\h#s\\PonyProg",
-			  0,NULL,REG_OPTION_NON_VOLATILE,KEY_SET_VALUE,NULL,&key,NULL)) {
-			 WINDOWPLACEMENT wp;
-			 wp.length=sizeof wp;
-			 if (GetWindowPlacement(theApp->winHwnd(),&wp))
-			   RegSetValueEx(key,"WinPos",0,REG_BINARY,(LPBYTE)&wp.rcNormalPosition,sizeof wp.rcNormalPosition);
-			 RegCloseKey(key);
-			}
-#endif
-			winCounter--;				//decrementa il numero di finestre
-			return vApp::CloseAppWin(win);
-		}
-		else
-			return 0;
-	}
-	else
-		return 0;
-}
 
 //=====================>>> e2App::SetAppBusy <<<==============================
 void e2App::SetAppBusy()
 {
 	app_status = AppBusy;
-	SendWindowCommandAll(idEnableToolBar, 0, C_Button);
+	// EK 2017
+	// TODO
+	//      SendWindowCommandAll(idEnableToolBar, 0, C_Button);
 }
 
 //=====================>>> e2App::SetAppReady <<<==============================
 void e2App::SetAppReady()
 {
 	app_status = AppReady;
-	SendWindowCommandAll(idEnableToolBar, 1, C_Button);
+	// EK 2017
+	// TODO
+	//      SendWindowCommandAll(idEnableToolBar, 1, C_Button);
 }
 
-//=====================>>> e2App::OpenPort <<<==============================
-int e2App::OpenPort(int port)
-{
-	UserDebug1(UserApp1,"e2App::OpenPort(%d)\n",port);
-	if (port)
-		SetPort(port);
-	ClosePort();
-	return iniBus->Open(GetPort());
-}
 
-//=====================>>> e2App::ClosePort <<<==============================
-void e2App::ClosePort()
-{
-	UserDebug1(UserApp1,"e2App::ClosePort() iniBus=%p\n",iniBus);
-	iniBus->Close();
-}
-
-//=====================>>> e2App::TestPort <<<==============================
-int e2App::TestPort(int port, int open_only)
-{
-	UserDebug2(UserApp1,"e2App::TestPort(port=%d, open_only=%d)\n",port,open_only);
-
-	int rv = (open_only) ?
-		busIntp->TestOpen(port) :
-		busIntp->TestPort(port);
-
-	UserDebug1(UserApp1,"e2App::TestPort() = %d\n",rv);
-
-	return rv;
-}
-
-//=====================>>> e2App::OpenBus <<<==============================
-int e2App::OpenBus(BusIO *p)
-{
-	UserDebug1(UserApp1,"e2App::OpenBus(%p)\n", p);
-
-	iniBus->Close();
-
-	UserDebug(UserApp1,"e2App::OpenBus() ** Close\n");
-
-	iniBus = p;
-	int rv = iniBus->Open(GetPort());
-
-	UserDebug1(UserApp1,"e2App::OpenBus() ** Open = %d\n", rv);
-
-	if (rv == OK)
-	{
-		rv = busIntp->SetPower(1);
-
-		UserDebug(UserApp1,"e2App::OpenBus() ** SetPower\n");
-
-		//Power up delay
-		iniBus->WaitMsec( GetPowerUpDelay() );
-
-		UserDebug(UserApp1,"e2App::OpenBus() ** Reset\n");
-
-		iniBus->Reset();	//28/10/98
-	}
-	UserDebug1(UserApp1,"e2App::OpenBus() = %d\n", rv);
-
-	return rv;
-}
-
-//=====================>>> e2App::SleepBus <<<==============================
-void e2App::SleepBus()
-{
-	UserDebug1(UserApp2,"e2App::CloseBus() iniBus=%p\n", iniBus);
-
-	iniBus->WaitMsec(5);	// 08/04/98 -- hold time dell'alimentazione
-	busIntp->SetPower(0);
-	iniBus->Close();		// 28/09/98 -- richiude la porta dopo averla usata
-}
-
-//=====================>>> e2App::GetAbortFlag <<<==============================
-int e2App::GetAbortFlag()
-{
-	CheckEvents();
-
-	int a = abortFlag;
-	abortFlag = 0;
-	return a;
-}
 
 //Update the progress bar
 //=====================>>> e2App::SetProgress <<<==============================
 void e2App::SetProgress(int progress)
 {
-	SendWindowCommandAll(pbrProgress,progress,C_Button);    // The horizontal bar
+	// EK 2017
+	// TODO
+	//      SendWindowCommandAll(pbrProgress, progress, C_Button);  // The horizontal bar
 }
 
 //=====================>>> e2App::Calibration <<<==============================
 int e2App::Calibration()
 {
-	UserDebug(UserApp3,"e2App::Calibration()\n");
+	qDebug() << "e2App::Calibration()";
 
 	int rv = OK;
-//	OpenBus(&iicB);		//aggiunto il 06/03/98
+	//      OpenBus(&iicB);         //aggiunto il 06/03/98
 	LookForBogoMips();
-//	rv = iicB.Calibration();
-//	SleepBus();			//aggiunto il 06/03/98
+	//      rv = iicB.Calibration();
+	//      SleepBus();                     //aggiunto il 06/03/98
 	return rv;
 }
 
+#if 0
+// EK 2017
 //=====================>>> e2App::AppCommand <<<==============================
 void e2App::AppCommand(vWindow* win, ItemVal id, ItemVal val, CmdType cType)
 {
 	// Commands not processed by the window will be passed here
 
-	UserDebug1(Build,"e2App::AppCmd(ID: %d)\n",id);
+	qDebug() << "e2App::AppCmd(ID: " << id << ")";
 	vApp::AppCommand(win, id, val, cType);
 }
+#endif
 
 //=========================>>> e2App::KeyIn <<<==============================
+// EK 2017 key event filter
+#if 0
 void e2App::KeyIn(vWindow* win, vKey key, unsigned int shift)
 {
 	// Key strokes not processed by the window will be passed here
 
 	vApp::KeyIn(win, key, shift);
 }
+#endif
 
 //=======================>>> e2App::SetInterface <<<=========================
 void e2App::SetInterfaceType(HInterfaceType type)
@@ -428,71 +554,84 @@ void e2App::SetInterfaceType(HInterfaceType type)
 		iType = SIPROG_API;
 		busIntp = &siprog_apiI;
 		break;
+
 	case SIPROG_IO:
 		iType = SIPROG_IO;
 		busIntp = &siprog_ioI;
 		break;
+
 	case EASYI2C_API:
 		iType = EASYI2C_API;
 		busIntp = &easyi2c_apiI;
 		easyi2c_apiI.SetIOmode(false);
 		easyi2c_apiI.Close();
 		break;
+
 	case EASYI2C_IO:
 		iType = EASYI2C_IO;
 		busIntp = &easyi2c_ioI;
 		easyi2c_ioI.SetIOmode(true);
 		easyi2c_ioI.Close();
 		break;
+
 	case AVRISP:
 		iType = AVRISP;
 		busIntp = &avrisp_apiI;
 		avrisp_apiI.SetIOmode(false);
 		avrisp_apiI.Close();
 		break;
+
 	case AVRISP_IO:
 		iType = AVRISP_IO;
 		busIntp = &avrisp_ioI;
 		avrisp_ioI.SetIOmode(true);
 		avrisp_ioI.Close();
 		break;
+
 	case JDM_API:
 		iType = JDM_API;
 		busIntp = &jdm_apiI;
-		jdm_apiI.SetCmd2CmdDelay( GetJDMCmd2CmdDelay() );
+		jdm_apiI.SetCmd2CmdDelay( E2Profile::GetJDMCmd2CmdDelay() );
 		break;
-//	case JDM_IO:
-//		iType = JDM_IO;
-//		busIntp = &jdm_ioI;
-//		break;
+
+	//      case JDM_IO:
+	//              iType = JDM_IO;
+	//              busIntp = &jdm_ioI;
+	//              break;
 	case DT006_API:
 		iType = DT006_API;
 		busIntp = &dt006_apiI;
 		dt006_apiI.SetIOmode(false);
 		dt006_apiI.Close();
 		break;
+
 	case DT006_IO:
 		iType = DT006_IO;
 		busIntp = &dt006_ioI;
 		dt006_ioI.SetIOmode(true);
 		dt006_ioI.Close();
 		break;
+
 	case LINUXSYSFS_IO:
 		iType = LINUXSYSFS_IO;
 		busIntp = &linuxsysfs_ioI;
 		break;
+
 	default:
-		iType = SIPROG_API;		//20/07/99 -- to prevent crash
+		iType = SIPROG_API;             //20/07/99 -- to prevent crash
 		busIntp = &siprog_apiI;
 		break;
 	}
 
 	int k;
+
 	for (k = 0; k < NO_OF_BUSTYPE; k++)
+	{
 		busvetp[k]->SetBusInterface(busIntp);
+	}
 }
 
-#ifdef	__unix__
+#ifdef  __unix__
 static volatile int alarm_caught;
 
 static void alarm(int i)
@@ -501,14 +640,14 @@ static void alarm(int i)
 }
 #endif
 
-#define N_SAMPLE	4
-#define	N_CICLI	8000
-#define	UDELAY	40
-#define	MSLICE	((float)UDELAY * N_CICLI / 1000.0)
+#define N_SAMPLE        4
+#define N_CICLI 8000
+#define UDELAY  40
+#define MSLICE  ((float)UDELAY * N_CICLI / 1000.0)
 
 void e2App::LookForBogoMips()
 {
-#ifdef	__unix__
+#ifdef  __unix__
 	struct itimerval it;
 
 	it.it_interval.tv_sec = 0;
@@ -521,69 +660,100 @@ void e2App::LookForBogoMips()
 
 	long ndel[N_SAMPLE];
 	int k;
+
 	for (k = 0; k < N_SAMPLE; k++)
 	{
 		setitimer(ITIMER_REAL, &it, NULL);
 		alarm_caught = 0;
 		long j = 0;
+
 		while (!alarm_caught)
+		{
 			j++;
+		}
+
 		ndel[k] = j;
 
-	//	fprintf(stderr, "** %ld\n", j);
+		//      fprintf(stderr, "** %ld\n", j);
 	}
-	long sum = 0;
-	for (k = 0; k < N_SAMPLE; k++)
-		sum += ndel[k];
 
-	SetBogoMips( (int)(sum / (500 * N_SAMPLE)) );
+	long sum = 0;
+
+	for (k = 0; k < N_SAMPLE; k++)
+	{
+		sum += ndel[k];
+	}
+
+	E2Profile::SetBogoMips( (int)(sum / (500 * N_SAMPLE)) );
 #endif
 
-#ifdef	_WINDOWS
+#ifdef  _WINDOWS
 	DWORD t0;
 	DWORD count;
 	DWORD multiplier = 1;
 
 	static char strbuf[MAX_PATH];
-	strncpy(strbuf, THEAPP->helpfile, MAX_PATH);
+	strncpy(strbuf, helpfile, MAX_PATH);
 	char *sp = strrchr(strbuf, '\\');
+
 	if (sp == NULL)
+	{
 		sp = strrchr(strbuf, '/');
+	}
+
 	if (sp == NULL)
+	{
 		strcpy(strbuf, "bogomips.out");
+	}
 	else
-		strcpy(sp+1, "bogomips.out");
+	{
+		strcpy(sp + 1, "bogomips.out");
+	}
 
 	FILE *fh = fopen(strbuf, "w");
 
 	Wait w;
 	int k;
 
-	w.SetHwTimer(0);	//Disable Hw timer for bogomips calibration
+	w.SetHwTimer(0);        //Disable Hw timer for bogomips calibration
 
 	// First BogoMIPS evaluation
-	do {
+	do
+	{
 		multiplier *= 5;
 
 		SetBogoMips(700 * multiplier);
 		w.SetBogoKips();
 
 		t0 = GetTickCount();
-		for (k = 0; k < N_CICLI/10; k++)
+
+		for (k = 0; k < N_CICLI / 10; k++)
+		{
 			w.WaitUsec(UDELAY);
+		}
+
 		count = GetTickCount() - t0;
 
 		if (fh)
-            fprintf(fh, "bogo = %d, count = %lu\n", GetBogoMips(), count);
-	} while (count <= MSLICE/11);
+		{
+			fprintf(fh, "bogo = %d, count = %lu\n", GetBogoMips(), count);
+		}
+	}
+	while (count <= MSLICE / 11);
 
 	t0 = GetTickCount();
+
 	for (k = 0; k < N_CICLI; k++)
+	{
 		w.WaitUsec(UDELAY);
+	}
+
 	count = GetTickCount() - t0;
 
 	if (fh)
-        fprintf(fh, "1) count = %lu ** mslice = %f *** bogo = %d\n", count, MSLICE, GetBogoMips());
+	{
+		fprintf(fh, "1) count = %lu ** mslice = %f *** bogo = %d\n", count, MSLICE, GetBogoMips());
+	}
 
 	int j;
 
@@ -597,12 +767,18 @@ void e2App::LookForBogoMips()
 		w.SetBogoKips();
 
 		t0 = GetTickCount();
+
 		for (k = 0; k < N_CICLI; k++)
+		{
 			w.WaitUsec(UDELAY);
+		}
+
 		count = GetTickCount() - t0;
 
 		if (fh)
-            fprintf(fh, "2) count = %lu ** mslice = %f *** bogo = %d\n", count, MSLICE, GetBogoMips());
+		{
+			fprintf(fh, "2) count = %lu ** mslice = %f *** bogo = %d\n", count, MSLICE, GetBogoMips());
+		}
 	}
 
 	//Fine correction
@@ -615,42 +791,39 @@ void e2App::LookForBogoMips()
 		w.SetBogoKips();
 
 		t0 = GetTickCount();
+
 		for (k = 0; k < N_CICLI; k++)
+		{
 			w.WaitUsec(UDELAY);
+		}
+
 		count = GetTickCount() - t0;
 
 		if (fh)
-            fprintf(fh, "3) count = %lu ** mslice = %f *** bogo = %d\n", count, MSLICE, GetBogoMips());
+		{
+			fprintf(fh, "3) count = %lu ** mslice = %f *** bogo = %d\n", count, MSLICE, GetBogoMips());
+		}
 	}
 
-	w.CheckHwTimer();	//Check to enable again Hw timer
+	w.CheckHwTimer();       //Check to enable again Hw timer
 
 	if (fh)
 	{
 		if (w.GetHwTimer())
+		{
 			fprintf(fh, "Hardware timer is OK.\n");
+		}
 		else
+		{
 			fprintf(fh, "Hardware timer is too slow, use bogomips (%d)\n", GetBogoMips());
+		}
 
 		fclose(fh);
 	}
+
 #endif
 }
 
-int e2App::GetIgnoreFlag() const
-{
-	return ignoreFlag;
-}
-
-void e2App::SetIgnoreFlag()
-{
-	ignoreFlag = 1;
-}
-
-void e2App::ClearIgnoreFlag()
-{
-	ignoreFlag = 0;
-}
 
 int e2App::LoadDriver(int start)
 {
@@ -661,183 +834,3 @@ int e2App::LoadDriver(int start)
 	return rv;
 }
 
-//###########################################################################
-
-static e2App e2_App(APPNAME " - " APPNAME_EXT);	// The instance of the app
-
-//============================>>> AppMain <<<==============================
-int AppMain(int argc, char** argv)
-{
-	char str[MAXPATH];
-
-#ifdef	__unix__
-	char *sp;
-
-	str[0] = '\0';
-	if ( (sp = getenv("HOME")) != NULL )
-	{
-		strncpy(str, sp, MAXPATH - (strlen(APPNAME) + 5) );
-		strcat(str, "/");
-	}
-	strcat(str, "." APPNAME "rc");
-	str[MAXPATH-1] = '\0';
-	e2_App.SetFileName(str);
-#else
-	//The profile file is called "ponyprog.ini"
-	//while the help file "ponyprog.html"
-	char *sp = strrchr(argv[0], '.');
-	strcpy(sp+1, "html");
-	strncpy(THEAPP->helpfile, argv[0], MAXPATH);
-	THEAPP->helpfile[MAXPATH-1] = '\0';
-
-	strcpy(sp+1, "ini");
-	e2_App.SetFileName(argv[0]);
-
-	sp = strrchr(argv[0], '\\');
-	if (sp)
-	{
-		sp[1] = '\0';
-		strncpy(str, argv[0], MAXPATH);
-		str[MAXPATH-1] = '\0';
-	}
-	else
-	{
-		str[0] = '\0';
-	}
-	strncpy(THEAPP->ok_soundfile, str, MAXPATH - (strlen("oksound.wav") + 1));
-	strcat(THEAPP->ok_soundfile, "oksound.wav");
-	strncpy(THEAPP->err_soundfile, str, MAXPATH - (strlen("errsound.wav") + 1));
-	strcat(THEAPP->err_soundfile, "errsound.wav");
-#endif
-
-	char const *sp2 = e2_App.GetLanguageCode();
-	if (sp2)
-	{
-		strncpy(str, sp2, MAXPATH);
-		str[MAXPATH-1] = '\0';
-		e2_App.SetLanguageCode( str );
-		if (strcasecmp(str, "default") == 0)
-			sp2 = "";
-		else
-		if (strcasecmp(str, "locale") == 0)
-			sp2 = STR_LANGUAGE_CODE;
-		else
-			sp2 = str;
-		setlocale(LC_ALL, sp2 );
-	}
-
-	// Read parameters from INI file
-	// Make sure all parameters (even default values) are written
-	//   to the INI file.
-	e2_App.SetInterfaceType( (HInterfaceType) e2_App.GetParInterfType() );
-	e2_App.SetPort( e2_App.GetParPortNo() );
-	e2_App.SetPowerUpDelay( e2_App.GetPowerUpDelay() );
-	e2_App.SetPolarity( e2_App.GetPolarityControl() );
-	e2_App.SetSPIResetPulse( e2_App.GetSPIResetPulse() );
-	e2_App.SetSPIDelayAfterReset( e2_App.GetSPIDelayAfterReset() );
-	e2_App.SetSPIPageWrite( e2_App.GetSPIPageWrite() );
-	e2_App.SetMegaPageDelay( e2_App.GetMegaPageDelay() );
-	e2_App.SetAVRProgDelay( e2_App.GetAVRProgDelay() );
-	e2_App.SetAVREraseDelay( e2_App.GetAVREraseDelay() );
-	e2_App.SetAT89DelayAfterReset( e2_App.GetAT89DelayAfterReset() );
-	e2_App.SetAVRDelayAfterReset( e2_App.GetAVRDelayAfterReset() );
-
-	e2_App.SetI2CSpeed( e2_App.GetI2CSpeed() );
-	e2_App.SetSPISpeed( e2_App.GetSPISpeed() );
-	e2_App.SetMicroWireSpeed( e2_App.GetMicroWireSpeed() );
-	e2_App.SetPICSpeed( e2_App.GetPICSpeed() );
-	e2_App.SetSDESpeed( e2_App.GetSDESpeed() );
-
-	e2_App.SetLogEnabled( e2_App.GetLogEnabled() );
-	e2_App.SetSoundEnabled( e2_App.GetSoundEnabled() );
-	e2_App.SetSkipStartupDialog( e2_App.GetSkipStartupDialog() );
-	e2_App.SetVerifyAfterWrite( e2_App.GetVerifyAfterWrite() );
-	e2_App.SetClearBufBeforeLoad( e2_App.GetClearBufBeforeLoad() );
-	e2_App.SetClearBufBeforeRead( e2_App.GetClearBufBeforeRead() );
-	e2_App.SetAutoDetectPorts( e2_App.GetAutoDetectPorts() );
-	e2_App.SetAt89PageOp( e2_App.GetAt89PageOp() );
-	e2_App.Set8253FallEdge( e2_App.Get8253FallEdge() );
-#ifdef	__unix__
-	e2_App.SetHtmlBrowseApp( e2_App.GetHtmlBrowseApp() );
-	e2_App.SetLockDir( e2_App.GetLockDir() );
-	e2_App.SetDevDir( e2_App.GetDevDir() );
-#endif
-#ifdef	_LINUX_
-	e2_App.SetGpioPinClock( e2_App.GetGpioPinClock() );
-	e2_App.SetGpioPinCtrl( e2_App.GetGpioPinCtrl() );
-	e2_App.SetGpioPinDataIn( e2_App.GetGpioPinDataIn() );
-	e2_App.SetGpioPinDataOut( e2_App.GetGpioPinDataOut() );
-#endif
-	e2_App.SetDevName( e2_App.GetDevName() );
-	e2_App.scriptMode = false;
-	e2_App.returnValue = 0;
-	e2_App.script_name[0] = '\0';
-
-	// The first parameter of the command line is the file to open (optional)
-	char *param;
-	if (argc > 1 && strlen(argv[1]) > 0)
-	{
-		param = argv[1];
-		//Elimina eventuali virgolette che possono confondere
-		//  il programma
-		if (*param == '"')
-			param++;
-		sp = strrchr(param, '"');
-		if (sp)
-			*sp = '\0';
-
-		sp = strrchr(param, '.');
-		if ( sp && strcasecmp(sp, ".e2s") == 0 )
-		{	//Switch to script mode
-			e2_App.scriptMode = true;
-			strncpy(e2_App.script_name, param, MAXPATH);
-			e2_App.script_name[MAXPATH-1] = '\0';
-			param = "";
-		}
-		else
-		if ( (strcasecmp(param, "-s") == 0 ||
-			 strcasecmp(param, "--script") == 0) )
-		{
-			if ( argc > 2 && strlen(argv[2]) > 0 )
-			{
-				param = argv[2];
-				//Elimina eventuali virgolette che possono confondere
-				//  il programma
-				if (*param == '"')
-					param++;
-				sp = strrchr(param, '"');
-				if (sp)
-					*sp = '\0';
-
-				e2_App.scriptMode = true;
-				strncpy(e2_App.script_name, param, MAXPATH);
-				e2_App.script_name[MAXPATH-1] = '\0';
-				param = "";
-			}
-		}
-	}
-	else
-	{
-		param = "";
-	}
-
-	e2CmdWindow *cwin;
-
-	// Use AppMain to create the main window
-	cwin = (e2CmdWindow *)theApp->NewAppWin(0, param,
-		theApp->DefaultWidth(),
-		theApp->DefaultHeight()
-		);
-
-	if (e2_App.scriptMode && cwin)
-	{
-		e2_App.returnValue = cwin->CmdRunScript();
-
-		if (e2_App.returnValue != 0)
-			return e2_App.returnValue;		//Se AppMain ritorna un valore != 0 esce immediatamente
-		else
-			e2_App.Exit();
-	}
-
-	return 0;
-}

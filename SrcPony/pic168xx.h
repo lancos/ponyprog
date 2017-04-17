@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: pic168xx.h,v 1.3 2009/11/16 23:40:43 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -33,27 +33,30 @@
 #include "pic16xx.h"
 #include "picbusnew.h"
 
+
 class Pic168xx : public Pic16xx
 {
-  public:		//---------------------------------------- public
+public:               //---------------------------------------- public
 
 	Pic168xx(e2AppWinInfo *wininfo = 0, BusIO *busp = 0);
 	virtual ~Pic168xx();
 
 	int Probe(int probe_size = 0);
-//	int Read(int probe = 1, int type = ALL_TYPE);
+	//      int Read(int probe = 1, int type = ALL_TYPE);
 	int Write(int probe = 1, int type = ALL_TYPE);
-//	int Verify(int type = ALL_TYPE);
+	//      int Verify(int type = ALL_TYPE);
 
-  protected:	//--------------------------------------- protected
+protected:    //--------------------------------------- protected
 
 	PicBus *GetBus()
-		{ return (PicBusNew *)Device::GetBus(); }
+	{
+		return (PicBusNew *)Device::GetBus();
+	}
 
 	int QueryType(long &type);
 	int CodeProtectAdjust(uint16_t &config, int read = 0);
 
-  private:		//--------------------------------------- private
+private:              //--------------------------------------- private
 
 };
 #endif

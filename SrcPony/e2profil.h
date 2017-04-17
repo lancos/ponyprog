@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: e2profil.h,v 1.16 2016/06/24 12:21:06 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -30,43 +30,49 @@
 #ifndef _E2PROFILE_H
 #define _E2PROFILE_H
 
+
+#include <QSettings>
 #include "types.h"
 #include "globals.h"
-#include "profile.h"
+
+#include <QString>
 
 #define CLOCKINV (1<<0)
 #define RESETINV (1<<1)
 #define DININV   (1<<2)
 #define DOUTINV  (1<<3)
 
-#define	RELOAD_idx		0
-#define	READFLASH_idx	1
-#define	READEEP_idx		2
-#define	BYTESWAP_idx	3
-#define	SETID_idx		4
-#define READOSCCAL_idx  5
-#define	ERASE_idx		6
-#define	FLASH_idx		7
-#define	EEPROM_idx		8
-#define	LOCK_idx		9
+#define RELOAD_idx              0
+#define READFLASH_idx           1
+#define READEEP_idx             2
+#define BYTESWAP_idx            3
+#define SETID_idx               4
+#define READOSCCAL_idx          5
+#define ERASE_idx               6
+#define FLASH_idx               7
+#define EEPROM_idx              8
+#define LOCK_idx                9
 
-#define	RELOAD_YES		(1<<RELOAD_idx)
-#define	READFLASH_YES	(1<<READFLASH_idx)
-#define	READEEP_YES		(1<<READEEP_idx)
-#define	BYTESWAP_YES	(1<<BYTESWAP_idx)
-#define	SETID_YES		(1<<SETID_idx)
-#define	ERASE_YES		(1<<ERASE_idx)
-#define	FLASH_YES		(1<<FLASH_idx)
-#define	EEPROM_YES		(1<<EEPROM_idx)
-#define	LOCK_YES		(1<<LOCK_idx)
-#define	READOSCAL_YES	(1<<READOSCCAL_idx)
+#define RELOAD_YES              (1<<RELOAD_idx)
+#define READFLASH_YES           (1<<READFLASH_idx)
+#define READEEP_YES             (1<<READEEP_idx)
+#define BYTESWAP_YES            (1<<BYTESWAP_idx)
+#define SETID_YES               (1<<SETID_idx)
+#define ERASE_YES               (1<<ERASE_idx)
+#define FLASH_YES               (1<<FLASH_idx)
+#define EEPROM_YES              (1<<EEPROM_idx)
+#define LOCK_YES                (1<<LOCK_idx)
+#define READOSCAL_YES          (1<<READOSCCAL_idx)
 
-typedef enum {
+
+typedef enum
+{
 	FMT_LITTLE_ENDIAN,
 	FMT_BIG_ENDIAN
 } FmtEndian;
 
-enum {
+enum
+{
 	VERYSLOW,
 	SLOW,
 	NORMAL,
@@ -75,172 +81,191 @@ enum {
 	ULTRASLOW
 };
 
-#define	STRBUFSIZE	256
+#define STRBUFSIZE      256
 
-class E2Profile : public Profile
+
+class E2Profile
 {
-  public:		//---------------------------------------- public
 
-	E2Profile();
+public:               //---------------------------------------- public
+	//      E2Profile(const QString &nm);
+	//      virtual ~E2Profile();
 
-	HInterfaceType GetParInterfType();
-	int SetParInterfType(HInterfaceType type);
-	int GetParPortNo();
-	int SetParPortNo(int value);
+	static HInterfaceType GetParInterfType();
+	static void SetParInterfType(HInterfaceType type);
+	static int GetParPortNo();
+	static void SetParPortNo(int value);
 
-	int GetBogoMips();
-	int SetBogoMips(int value);
+	static int GetBogoMips();
+	static void SetBogoMips(int value);
 
-	long GetLastDevType();
-	int SetLastDevType(long devtype);
+	static long GetLastDevType();
+	static void SetLastDevType(long devtype);
 
-	char const *GetLastFile(int &data);
-	char const *GetPrevFile(int &data);
-	int SetLastFile(char const *name, int data = ALL_TYPE);
+	static QString GetLastFile(int &data);
+	static QString GetPrevFile(int &data);
+	static void SetLastFile(const QString &name, int data = ALL_TYPE);
 
-	char const *GetLastScript();
-	int SetLastScript(char const *name);
+	static QString GetLastScript();
+	static void SetLastScript(const QString &name);
 
-	uint8_t GetPolarityControl();
-	int SetPolarityControl(uint8_t polarity_control);
+	static uint8_t GetPolarityControl();
+	static void SetPolarityControl(uint8_t polarity_control);
 
-	int GetSPIPageWrite();
-	int SetSPIPageWrite(int page_write = 1);
+	static int GetSPIPageWrite();
+	static void SetSPIPageWrite(int page_write = 1);
 
-	int GetI2CPageWrite();
-	int SetI2CPageWrite(int page_write = 1);
+	static int GetI2CPageWrite();
+	static void SetI2CPageWrite(int page_write = 1);
 
-	int GetI2CBaseAddr();
-	int SetI2CBaseAddr(int base_addr = 0xA0);
+	static int GetI2CBaseAddr();
+	static void SetI2CBaseAddr(int base_addr = 0xA0);
 
-	int GetI2CSpeed();
-	int SetI2CSpeed(int speed = NORMAL);
+	static int GetI2CSpeed();
+	static void SetI2CSpeed(int speed = NORMAL);
 
-	int GetSPIResetPulse();
-	int SetSPIResetPulse(int delay = 100);
+	static int GetSPIResetPulse();
+	static void SetSPIResetPulse(int delay = 100);
 
-	int GetSPIDelayAfterReset();
-	int SetSPIDelayAfterReset(int delay = 50);
+	static int GetSPIDelayAfterReset();
+	static void SetSPIDelayAfterReset(int delay = 50);
 
-	int GetAT89DelayAfterReset();
-	int SetAT89DelayAfterReset(int delay = 50);
+	static int GetAT89DelayAfterReset();
+	static void SetAT89DelayAfterReset(int delay = 50);
 
-	int GetAVRDelayAfterReset();
-	int SetAVRDelayAfterReset(int delay = 50);
+	static int GetAVRDelayAfterReset();
+	static void SetAVRDelayAfterReset(int delay = 50);
 
-	int GetPowerUpDelay();
-	int SetPowerUpDelay(int delay = 200);
+	static int GetPowerUpDelay();
+	static void SetPowerUpDelay(int delay = 200);
 
-	int GetSPISpeed();
-	int SetSPISpeed(int speed = NORMAL);
+	static int GetSPISpeed();
+	static void SetSPISpeed(int speed = NORMAL);
 
-	int GetMegaPageDelay();
-	int SetMegaPageDelay(int delay = 25);
+	static int GetMegaPageDelay();
+	static void SetMegaPageDelay(int delay = 25);
 
-	int GetMicroWireSpeed();
-	int SetMicroWireSpeed(int speed = NORMAL);
+	static int GetMicroWireSpeed();
+	static void SetMicroWireSpeed(int speed = NORMAL);
 
-	int GetPICSpeed();
-	int SetPICSpeed(int speed = NORMAL);
+	static int GetPICSpeed();
+	static void SetPICSpeed(int speed = NORMAL);
 
-	int GetSDESpeed();
-	int SetSDESpeed(int speed = NORMAL);
+	static int GetSDESpeed();
+	static void SetSDESpeed(int speed = NORMAL);
 
-	int GetIMBusSpeed();
-	int SetIMBusSpeed(int speed = NORMAL);
+	static int GetIMBusSpeed();
+	static void SetIMBusSpeed(int speed = NORMAL);
 
-	int GetAVRProgDelay();
-	int SetAVRProgDelay(int delay = 10);
+	static int GetAVRProgDelay();
+	static void SetAVRProgDelay(int delay = 10);
 
-	int GetAVREraseDelay();
-	int SetAVREraseDelay(int delay = 30);
+	static int GetAVREraseDelay();
+	static void SetAVREraseDelay(int delay = 30);
 
-	int GetMDAProgDelay();
-	int SetMDAProgDelay(int delay = 30);
-	int GetNVMProgDelay();
-	int SetNVMProgDelay(int delay = 30);
+	static int GetMDAProgDelay();
+	static void SetMDAProgDelay(int delay = 30);
+	static int GetNVMProgDelay();
+	static void SetNVMProgDelay(int delay = 30);
 
-	unsigned long GetSerialNumVal();
-	int SetSerialNumVal(unsigned long val = 0);
-	int GetSerialNumAddress(long &start, int &size, bool &mtype);
-	int SetSerialNumAddress(unsigned long start, int size, bool mtype);
-	FmtEndian GetSerialNumFormat();
-	int SetSerialNumFormat(FmtEndian fmt);
-	bool GetSerialNumAutoInc();
-	int SetSerialNumAutoInc(bool val = true);
+	static unsigned long GetSerialNumVal();
+	static void SetSerialNumVal(unsigned long val = 0);
+	static int GetSerialNumAddress(long &start, int &size, bool &mtype);
+	static void SetSerialNumAddress(unsigned long start, int size, bool mtype);
+	static FmtEndian GetSerialNumFormat();
+	static void SetSerialNumFormat(FmtEndian fmt);
+	static bool GetSerialNumAutoInc();
+	static void SetSerialNumAutoInc(bool val = true);
 
-	long GetProgramOptions();
-	int SetProgramOptions(long prog_option);
+	static long GetProgramOptions();
+	static void SetProgramOptions(long prog_option);
 
-	int GetCalibrationAddress(long &start, int &size, bool &mtype);
-	int SetCalibrationAddress(unsigned long start, int size, bool mtype);
+	static int GetCalibrationAddress(long &start, int &size, bool &mtype);
+	static void SetCalibrationAddress(unsigned long start, int size, bool mtype);
 
-	char const *GetLogFileName();
-	int SetLogFileName(char const *name);
+	static QString GetLogFileName();
+	static void SetLogFileName(const QString &name);
 
-	bool GetLogEnabled();
-	int SetLogEnabled(bool enabled = false);
+	static bool GetLogEnabled();
+	static void SetLogEnabled(bool enabled = false);
 
-	bool GetSkipStartupDialog();
-	int SetSkipStartupDialog(bool skip = false);
+	static bool GetSkipStartupDialog();
+	static void SetSkipStartupDialog(bool skip = false);
 
-	bool GetClearBufBeforeLoad();
-	int SetClearBufBeforeLoad(bool val = false);
-	bool GetClearBufBeforeRead();
-	int SetClearBufBeforeRead(bool val = false);
+	static bool GetClearBufBeforeLoad();
+	static void SetClearBufBeforeLoad(bool val = false);
+	static bool GetClearBufBeforeRead();
+	static void SetClearBufBeforeRead(bool val = false);
 
-	bool GetAt89PageOp();
-	int SetAt89PageOp(bool val = true);
+	static bool GetAt89PageOp();
+	static void SetAt89PageOp(bool val = true);
 
-	bool Get8253FallEdge();
-	int Set8253FallEdge(bool falledge);
+	static bool Get8253FallEdge();
+	static void Set8253FallEdge(bool falledge);
 
-	char const *GetLanguageCode();
-	int SetLanguageCode(char const *code);
+	static QString GetLanguageCode();
+	static void SetLanguageCode(const QString &code);
 
-	bool GetSoundEnabled();
-	int SetSoundEnabled(bool val = true);
+	static bool GetSoundEnabled();
+	static void SetSoundEnabled(bool val = true);
 
-	bool GetVerifyAfterWrite();
-	int SetVerifyAfterWrite(bool enabled = true);
+	static bool GetVerifyAfterWrite();
+	static void SetVerifyAfterWrite(bool enabled = true);
 
-	int GetJDMCmd2CmdDelay();
-	int SetJDMCmd2CmdDelay(int delay = 4000);
+	static int GetJDMCmd2CmdDelay();
+	static void SetJDMCmd2CmdDelay(int delay = 4000);
 
-	bool GetAutoDetectPorts();
-	int SetAutoDetectPorts(bool enabled = true);
+	static bool GetAutoDetectPorts();
+	static void SetAutoDetectPorts(bool enabled = true);
 
-	int GetCOMAddress(int &com1, int &com2, int &com3, int &com4);
-	int SetCOMAddress(int com1, int com2, int com3, int com4);
-	int GetLPTAddress(int &lpt1, int &lpt2, int &lpt3);
-	int SetLPTAddress(int lpt1, int lpt2, int lpt3);
+	static int GetCOMAddress(int &com1, int &com2, int &com3, int &com4);
+	static void SetCOMAddress(int com1, int com2, int com3, int com4);
+	static int GetLPTAddress(int &lpt1, int &lpt2, int &lpt3);
+	static void SetLPTAddress(int lpt1, int lpt2, int lpt3);
 
-	char const *GetLockDir();
-	int SetLockDir(char const *name);
-	char const *GetDevDir();
-	int SetDevDir(char const *name);
-	char const *GetDevName();
-	int SetDevName(char const *name);
+	static void SetConfigFile(const QString &n);
 
-	FileType GetDefaultFileType();
-	int SetDefaultFileType(FileType ft);
+	static QString GetLockDir();
+	static void SetLockDir(const QString &name);
+	static QString GetDevDir();
+	static void SetDevDir(const QString &name);
+	static QString GetDevName();
+	static void SetDevName(const QString &name);
 
-	char const *GetHtmlBrowseApp();
-	int SetHtmlBrowseApp(char const *name);
+	static FileType GetDefaultFileType();
+	static void SetDefaultFileType(FileType ft);
 
-	int GetGpioPinCtrl();
-	int GetGpioPinClock();
-	int GetGpioPinDataIn();
-	int GetGpioPinDataOut();
+	static QString GetHtmlBrowseApp();
+	static void SetHtmlBrowseApp(const QString &name);
 
-	int SetGpioPinCtrl(int pin);
-	int SetGpioPinClock(int pin);
-	int SetGpioPinDataIn(int pin);
-	int SetGpioPinDataOut(int pin);
+	static int GetGpioPinCtrl();
+	static int GetGpioPinClock();
+	static int GetGpioPinDataIn();
+	static int GetGpioPinDataOut();
 
-  protected:	//--------------------------------------- protected
+	static int GetIgnoreFlag();
+	static void SetIgnoreFlag();
 
-  private:		//--------------------------------------- private
+	static void ClearIgnoreFlag();
+
+	static int GetAbortFlag();
+	static void SetAbortFlag(int a = 1)
+	{
+		abortFlag = a;
+	}
+
+	static void SetGpioPinCtrl(int pin);
+	static void SetGpioPinClock(int pin);
+	static void SetGpioPinDataIn(int pin);
+	static void SetGpioPinDataOut(int pin);
+
+protected:    //--------------------------------------- protected
+
+private:              //--------------------------------------- private
+	static QSettings *s;
+	static int ignoreFlag;
+	static int abortFlag;          //True if we have to abort current op
+	static QString filename;       //name of .INI file
 
 };
 #endif

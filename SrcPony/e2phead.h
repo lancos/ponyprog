@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: e2phead.h,v 1.7 2013/05/03 14:13:08 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -28,32 +28,35 @@
 //=========================================================================//
 // Header structure for .E2P files
 
-#ifndef	_E2PHEAD_H
-#define	_EP2HEAD_H
+#ifndef _E2PHEAD_H
+#define _EP2HEAD_H
+
+#include <QString>
 
 #include "types.h"
 
-#define	E2P_ID_SIZE	8
-#define	E2P_STRID_SIZE	28
-#define	E2P_COMM_SIZE	86
+#define E2P_ID_SIZE     8
+#define E2P_STRID_SIZE  28
+#define E2P_COMM_SIZE   86
 
-#define	E2P_FVERSION	0x02
+#define E2P_FVERSION    0x02
 
 #ifdef WIN32
 #pragma pack(push,1)
 #endif
 // Header dei file
-struct e2pHeader {
+struct e2pHeader
+{
 	char fileID[E2P_ID_SIZE];
 	uint8_t e2pFuseBits;
 	uint8_t e2pLockBits;
 	uint32_t e2pType;
 	int32_t e2pSize;
-	uint8_t flags;		//rollOver, splitted
+	uint8_t flags;          //rollOver, splitted
 	uint16_t e2pExtFuseBits;
 	uint16_t e2pExtLockBits;
-	uint8_t fversion;	//file version
-	uint16_t split_size_Low;	//used by splitted devices
+	uint8_t fversion;       //file version
+	uint16_t split_size_Low;        //used by splitted devices
 	char e2pStringID[E2P_STRID_SIZE];
 	uint32_t e2pProgBits;
 	char e2pComment[E2P_COMM_SIZE];

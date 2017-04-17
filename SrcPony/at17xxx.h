@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: at17xxx.h,v 1.3 2009/11/16 23:40:43 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -34,21 +34,21 @@
 
 class At17xxx : public E24xx
 {
-  public:		//---------------------------------------- public
+public:               //---------------------------------------- public
 
 	At17xxx(e2AppWinInfo *wininfo = 0, BusIO *busp = 0);
 
-//	int Probe(int probe_size = 0);
+	//      int Probe(int probe_size = 0);
 	int Read(int probe = 1, int type = ALL_TYPE);
 	int Write(int probe = 1, int type = ALL_TYPE);
 	int Verify(int type = ALL_TYPE);
 
-  protected:	//--------------------------------------- protected
+protected:    //--------------------------------------- protected
 
 	int WritePage(long addr, int addr_bytes, uint8_t *buf, int len);
 	int ReadPage(long addr, int addr_bytes, uint8_t *buf, int len);
 
-  private:		//--------------------------------------- private
+private:              //--------------------------------------- private
 
 };
 #endif

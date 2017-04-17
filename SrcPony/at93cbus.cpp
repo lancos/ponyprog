@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: at93cbus.cpp,v 1.8 2009/11/16 23:40:43 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -31,20 +31,22 @@
 #include "at93cbus.h"
 #include "errcode.h"
 
-#include "e2app.h"
+#include <QDebug>
+
+#include "e2cmdw.h"
 
 //Siamo sicuri BIGENDIAN?? Il formato HexIntel e` little-endian
 //  e quindi anche le AT90S1200
-#define	_BIG_ENDIAN_
+#define _BIG_ENDIAN_
 
-#ifdef	_LINUX_
+#ifdef  __linux__
 //#  include <asm/io.h>
 #  include <unistd.h>
 #else
-#  ifdef	__BORLANDC__
-#    define	__inline__
+#  ifdef        __BORLANDC__
+#    define     __inline__
 #  else // _MICROSOFT_ VC++
-#    define	__inline__ __inline
+#    define     __inline__ __inline
 #    define _export
 #  endif
 #endif
@@ -52,16 +54,16 @@
 // Costruttore
 At93cBus::At93cBus(BusInterface *ptr)
 	: MicroWireBus(ptr),
-		ReadCode(06),
-		WriteCode(05),
-		WriteEnableCode(04),
-		EraseAllCode(04),
-		PrClearCode(07),
-		loop_timeout(8000),
-		address_len(6),		//9346
-		organization(ORG16)
+	  ReadCode(06),
+	  WriteCode(05),
+	  WriteEnableCode(04),
+	  EraseAllCode(04),
+	  PrClearCode(07),
+	  loop_timeout(8000),
+	  address_len(6),         //9346
+	  organization(ORG16)
 {
-	UserDebug(Constructor, "At93cBus::At93cBus()\n");
+	qDebug() << "At93cBus::At93cBus()";
 }
 
 int At93cBus::Erase(int type)
@@ -76,7 +78,7 @@ int At93cBus::Erase(int type)
 	setCS();
 
 	SendCmdOpcode(EraseAllCode);
-	SendDataWord((2 << (address_len-2)), address_len);
+	SendDataWord((2 << (address_len - 2)), address_len);
 
 	clearCS();
 	setCS();
@@ -89,33 +91,33 @@ int At93cBus::Erase(int type)
 
 
 /**** Protect disable sequence:
-	clearCS();
-	PRE = 0;
-	setCS();
+        clearCS();
+        PRE = 0;
+        setCS();
 
-	SendCmdOpcode(WriteEnableCode);		//WEN
-	SendDataWord(0xFFFF, address_len);
+        SendCmdOpcode(WriteEnableCode);         //WEN
+        SendDataWord(0xFFFF, address_len);
 
-	clearCS();
-	PRE = 1;
-	setCS();
+        clearCS();
+        PRE = 1;
+        setCS();
 
-	SendCmdOpcode(WriteEnableCode);		//PREN
-	SendDataWord(0xFFFF, address_len);
+        SendCmdOpcode(WriteEnableCode);         //PREN
+        SendDataWord(0xFFFF, address_len);
 
-	clearCS();
-	PRE = 1;
-	setCS();
+        clearCS();
+        PRE = 1;
+        setCS();
 
-	SendCmdOpcode(PrClearCode);			//PRCLEAR
-	SendDataWord(0xFFFF, address_len);
+        SendCmdOpcode(PrClearCode);                     //PRCLEAR
+        SendDataWord(0xFFFF, address_len);
 
-	clearCS();
-	PRE = 0;
-	setCS();
+        clearCS();
+        PRE = 0;
+        setCS();
 
-	SendCmdOpcode(WriteEnableCode);		//WDS
-	SendDataWord(0, address_len);
+        SendCmdOpcode(WriteEnableCode);         //WDS
+        SendDataWord(0, address_len);
 ****/
 
 
@@ -123,24 +125,32 @@ int At93cBus::Erase(int type)
 // non a BYTE
 long At93cBus::Read(int addr, uint8_t *data, long length, int page_size)
 {
-	UserDebug3(UserApp1, "At93cBus::Read(%xh, %ph, %ld)\n", addr, data, length);
+	qDebug() << "At93cBus::Read(" << (hex) << addr << ", " << data << ", " << (dec) << length;
 
 	long len;
 
 	if (addr > 0)
+	{
 		address_len = addr;
+	}
 
 	addr = 0;
 
 	int inc;
+
 	if (organization == ORG16)
+	{
 		inc = 2;
+	}
 	else
+	{
 		inc = 1;
+	}
 
 	//Dal piu` significativo al meno significativo
 	for (len = 0; len < length; len += inc)
-	{	//17/08/98 -- now repeat the command every word
+	{
+		//17/08/98 -- now repeat the command every word
 		clearCS();
 		setCS();
 
@@ -152,7 +162,7 @@ long At93cBus::Read(int addr, uint8_t *data, long length, int page_size)
 
 		if (organization == ORG16)
 		{
-#ifdef	_BIG_ENDIAN_
+#ifdef  _BIG_ENDIAN_
 			*data++ = (uint8_t)(val >> 8);
 			*data++ = (uint8_t)(val & 0xFF);
 #else
@@ -167,11 +177,14 @@ long At93cBus::Read(int addr, uint8_t *data, long length, int page_size)
 
 		if ( (len % 4) == 0 )
 			if ( CheckAbort(len * 100 / length) )
+			{
 				break;
+			}
 	}
+
 	CheckAbort(100);
 
-	UserDebug1(UserApp1, "At93cBus::Read() = %ld\n", len);
+	qDebug() << "At93cBus::Read() = " << len;
 
 	return len;
 }
@@ -181,9 +194,11 @@ long At93cBus::Write(int addr, uint8_t const *data, long length, int page_size)
 	long curaddr;
 
 	if (addr > 0)
+	{
 		address_len = addr;
+	}
 
-	clearCS();			//17/08/98 -- may be it's not needed
+	clearCS();                      //17/08/98 -- may be it's not needed
 	setCS();
 
 	SendCmdOpcode(WriteEnableCode);
@@ -193,7 +208,9 @@ long At93cBus::Write(int addr, uint8_t const *data, long length, int page_size)
 	setCS();
 
 	if (organization == ORG16)
-		length >>= 1;	//byte to word  counter
+	{
+		length >>= 1;        //byte to word  counter
+	}
 
 	for (curaddr = 0; curaddr < length; curaddr++)
 	{
@@ -201,7 +218,7 @@ long At93cBus::Write(int addr, uint8_t const *data, long length, int page_size)
 
 		if (organization == ORG16)
 		{
-#ifdef	_BIG_ENDIAN_
+#ifdef  _BIG_ENDIAN_
 			val  = (uint16_t)(*data++) << 8;
 			val |= (uint16_t)(*data++);
 #else
@@ -220,8 +237,12 @@ long At93cBus::Write(int addr, uint8_t const *data, long length, int page_size)
 		SendDataWord(val, organization);
 
 #if 1
+
 		if ( WaitReadyAfterWrite(loop_timeout) )
-			return 0;		//- 07/08/99 a number >0 but != length mean "User abort"
+		{
+			return 0;        //- 07/08/99 a number >0 but != length mean "User abort"
+		}
+
 #else
 		WaitMsec(10);
 #endif
@@ -230,7 +251,9 @@ long At93cBus::Write(int addr, uint8_t const *data, long length, int page_size)
 
 		if ( (curaddr & 1) )
 			if ( CheckAbort(curaddr * 100 / length) )
+			{
 				break;
+			}
 	}
 
 	SendCmdOpcode(WriteEnableCode);
@@ -239,7 +262,9 @@ long At93cBus::Write(int addr, uint8_t const *data, long length, int page_size)
 	CheckAbort(100);
 
 	if (organization == ORG16)
-		curaddr <<= 1;		//word to byte counter
+	{
+		curaddr <<= 1;        //word to byte counter
+	}
 
 	return curaddr;
 }

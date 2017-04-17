@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: infomdlg.cpp,v 1.7 2009/11/16 23:40:43 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -30,382 +30,340 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include <v/vnotice.h>
 
+#include <QDebug>
+#include <QString>
+
+#include "string_table.h"
 #include "globals.h"
 #include "infomdlg.h"
-#include "cmdenum.h"
-#include "modaldlg_utilities.h"
 
-#ifdef	WIN32
-#  ifdef	__BORLANDC__
-#    define	strcasecmp stricmp
-#  else // _MICROSOFT_ VC++
-#    define strcasecmp	_stricmp
-#    define snprintf	_snprintf
-#  endif
-#endif
-
-//@V@:BeginDialogCmd DefaultCmds
-static DialogCmd e24xxCmds[] =
-{
-#ifdef	_LINUX_
-	{C_Label,lblMainMsg2,0,"X",NoList,CA_MainMsg,isSens,NoFrame,0,0},
-#else
-	{C_Blank,lblMainMsg2,0," ",NoList,CA_None,isSens,NoFrame,0,0},
-#endif
-
-	{C_Label,lblRllBnk,0,STR_MSGBANKROLL,NoList,CA_None,isSens,NoFrame,0,lblMainMsg2},
-	{C_Text,txtRllBnk,0,"",NoList,CA_None,isSens,NoFrame,lblRllBnk,lblMainMsg2},
-
-	{C_Label,lblCRC,0,STR_MSGCRC,NoList,CA_None,isSens,NoFrame,0,lblRllBnk},
-	{C_Text,txtCRC,0,"0000h",NoList,CA_None,isSens,NoFrame,lblRllBnk,lblRllBnk},
-
-	{C_Label,lblSize,0,STR_MSGSIZE,NoList,CA_None,isSens,NoFrame,0,lblCRC},
-	{C_Text,txtSize,0,"0 Byte",NoList,CA_None,isSens,NoFrame,lblRllBnk,lblCRC},
-/**
-	{C_Label,lblSecurity,0,STR_MSGSECBLOCK,NoList,CA_None,isSens,NoFrame,0,lblSize},
-	{C_Text,txtSecurity,0,"0",NoList,CA_None,isSens,NoFrame,lblRllBnk,lblSize},
-
-	{C_Label,lblHEndurance,0,STR_HIGHENDURAN,NoList,CA_None,isSens,NoFrame,0,lblSecurity},
-	{C_Text,txtHEndurance,0,"0",NoList,CA_None,isSens,NoFrame,lblRllBnk,lblSecurity},
-**/
-	{C_Button,M_OK,0, STR_BTNCLOSE, NoList,CA_DefaultButton,isSens, NoFrame,0,lblSize},
-
-	{C_EndOfList,0,0,0,0,CA_None,0,0,0}
-};
-//@V@:EndDialogCmd
-
-static DialogCmd otherCmds[] =
-{
-#ifdef	_LINUX_
-	{C_Label,lblMainMsg2,0,"X",NoList,CA_MainMsg,isSens,NoFrame,0,0},
-#else
-	{C_Blank,lblMainMsg2,0," ",NoList,CA_None,isSens,NoFrame,0,0},
-#endif
-
-	{C_Label,lblSecurity,0,STR_MSGEEPSIZE ":",NoList,CA_None,isSens,NoFrame,0,lblMainMsg2},
-	{C_Text,txtSecurity,0,"0 Byte",NoList,CA_None,isSens,NoFrame,lblSecurity,lblMainMsg2},
-
-	{C_Label,lblSize,0,STR_MSGFLASHSIZE ":",NoList,CA_None,isSens,NoFrame,0,lblSecurity},
-	{C_Text,txtSize,0,"0 Byte",NoList,CA_None,isSens,NoFrame,lblSecurity,lblSecurity},
-
-	{C_Label,lblCRC,0,STR_MSGCRC,NoList,CA_None,isSens,NoFrame,0,lblSize},
-	{C_Text,txtCRC,0,"0000h",NoList,CA_None,isSens,NoFrame,lblSecurity,lblSize},
-
-	{C_Button,M_OK,0, STR_BTNCLOSE, NoList,CA_DefaultButton,isSens, NoFrame,0,lblCRC},
-
-	{C_EndOfList,0,0,0,0,CA_None,0,0,0}
-};
+using namespace Translator;
 
 
 //======================>>> infoModalDialog::infoModalDialog <<<==================
-e24xx_infoModalDialog::e24xx_infoModalDialog(vBaseWindow* bw, int rlv, uint16_t crc, long size, char* title) :
-    vModalDialog(bw, title)
+e24xx_infoModalDialog::e24xx_infoModalDialog(QWidget* bw, int rlv, uint16_t crc, long size, const QString title) :
+	QDialog(bw)
 {
+	setupUi(this);
+
+	setWindowTitle(title);
+
 	if (rlv == 1)
 	{
-		SetCommandLabel(txtRllBnk, STR_MSGYES, e24xxCmds);
+		txiFrom->setText(STR_MSGYES);// SetCommandLabel(txtRllBnk, STR_MSGYES, e24xxCmds);
+	}
+	else if (rlv == 2)
+	{
+		txiFrom->setText(STR_MSGNO);//SetCommandLabel(txtRllBnk, STR_MSGNO, e24xxCmds);
 	}
 	else
-	if (rlv == 2)
 	{
-		SetCommandLabel(txtRllBnk, STR_MSGNO, e24xxCmds);
-	}
-	else
-	{
-		SetCommandLabel(txtRllBnk, STR_MSGUNKNOWN, e24xxCmds);
+		txiFrom->setText(STR_MSGUNKNOWN);//SetCommandLabel(txtRllBnk, STR_MSGUNKNOWN, e24xxCmds);
 	}
 
-	char str[MAXMSG];
-	snprintf(str, MAXMSG, "%04Xh", crc);
-	str[MAXMSG-1] = '\0';
-	strptr[0] = new char[strlen(str)+1];
-	strcpy(strptr[0], str);
-	SetCommandLabel(txtCRC, strptr[0], e24xxCmds);
+	lblFrom->setText(STR_MSGCRC); // crc label
+	lblTo->setText(STR_MSGEEPSIZE); // size label
+	lblVal->setText(STR_MSGFLASHSIZE); // flash size label
 
-	snprintf(str, MAXMSG, "%ld Byte", size);
-	str[MAXMSG-1] = '\0';
-	strptr[1] = new char[strlen(str)+1];
-	strcpy(strptr[1], str);
-	SetCommandLabel(txtSize, strptr[1], e24xxCmds);
+	QString str;
+	str = QString().sprintf("%04Xh", crc);
+	txiTo->setText(str);
+	txiTo->setReadOnly(true);
 
-	strptr[2] = 0;
-	strptr[3] = 0;
+	str = QString().sprintf("%ld Byte", size);
+	txiVal->setText(str);
+	txiVal->setReadOnly(true);
 
-	AddDialogCmds(e24xxCmds);		// add the predefined commands
+	lblVal->setHidden(true);
+	txiVal->setHidden(true);
+
+	pushOk->setText(STR_BTNCLOSE);
+	pushCancel->setHidden(true);
+
+	connect(pushOk, SIGNAL(clicked()), this, SLOT(onOk()));
+	//      connect(pushCancel, SIGNAL(clicked()), this, SLOT(reject()));
 }
 
-//======================>>> infoModalDialog::infoModalDialog <<<==================
-other_infoModalDialog::other_infoModalDialog(vBaseWindow* bw, long fsize, long esize, uint16_t crc, char* title) :
-    vModalDialog(bw, title)
-{
-	char str[MAXMSG];
-	snprintf(str, MAXMSG, "%04Xh", crc);
-	str[MAXMSG-1] = '\0';
-	strptr[0] = new char[strlen(str)+1];
-	strcpy(strptr[0], str);
-	SetCommandLabel(txtCRC, strptr[0], otherCmds);
-
-	snprintf(str, MAXMSG, "%ld Byte", fsize);
-	str[MAXMSG-1] = '\0';
-	strptr[1] = new char[strlen(str)+1];
-	strcpy(strptr[1], str);
-	SetCommandLabel(txtSize, strptr[1], otherCmds);
-
-	snprintf(str, MAXMSG, "%ld Byte", esize);
-	str[MAXMSG-1] = '\0';
-	strptr[2] = new char[strlen(str)+1];
-	strcpy(strptr[2], str);
-	SetCommandLabel(txtSecurity, strptr[2], otherCmds);
-
-	strptr[3] = 0;
-
-	AddDialogCmds(otherCmds);		// add the predefined commands
-}
 
 //===================>>> infoModalDialog::~infoModalDialog <<<====================
 e24xx_infoModalDialog::~e24xx_infoModalDialog()
 {
-	int k;
-	for (k = 0; k < 4; k++)
-		delete strptr[k];
-
-	UserDebug(Destructor,"infoModalDialog::~infoModalDialog() destructor\n")
+	qDebug() << "infoModalDialog::~infoModalDialog()";
 }
+
+
+void e24xx_infoModalDialog::onOk()
+{
+	accept();
+}
+
+
+//======================>>> infoModalDialog::infoModalDialog <<<==================
+other_infoModalDialog::other_infoModalDialog(QWidget* bw, long fsize, long esize, uint16_t crc, const QString title) :
+	QDialog(bw)
+{
+	setupUi(this);
+
+	setWindowTitle(title);
+
+	QString str;
+
+	lblFrom->setText(STR_MSGCRC); // crc label
+	lblTo->setText(STR_MSGEEPSIZE); // size label
+	lblVal->setText(STR_MSGFLASHSIZE); // flash size label
+
+	str = QString().sprintf( "%04Xh", crc);
+	txiFrom->setText(str);
+	txiFrom->setReadOnly(true);
+
+	str = QString().sprintf( "%ld Byte", fsize);
+	txiTo->setText(str);
+	txiTo->setReadOnly(true);
+
+	str = QString().sprintf( "%ld Byte", esize);
+	txiVal->setText(str);
+	txiVal->setReadOnly(true);
+
+	pushOk->setText(STR_BTNCLOSE);
+	pushCancel->setHidden(true);
+
+	connect(pushOk, SIGNAL(clicked()), this, SLOT(onOk()));
+	//      connect(pushCancel, SIGNAL(clicked()), this, SLOT(reject()));
+}
+
 
 //===================>>> infoModalDialog::~infoModalDialog <<<====================
 other_infoModalDialog::~other_infoModalDialog()
 {
-	int k;
-	for (k = 0; k < 4; k++)
-		delete strptr[k];
-
-	UserDebug(Destructor,"infoModalDialog::~infoModalDialog() destructor\n")
-}
-
-//====================>>> infoModalDialog::infoAction <<<====================
-int other_infoModalDialog::infoAction(char* msg)
-{
-	ItemVal ans,rval;
-
-	ans = ShowModalDialog(msg,rval);
-	if (ans == M_Cancel)
-		return 0;
-
-	// *** Add code to process dialog values here
-
-	return ans == M_OK;
-}
-
-//====================>>> infoModalDialog::infoAction <<<====================
-int e24xx_infoModalDialog::infoAction(char* msg)
-{
-	ItemVal ans,rval;
-
-	ans = ShowModalDialog(msg,rval);
-	if (ans == M_Cancel)
-		return 0;
-
-	// *** Add code to process dialog values here
-
-	return ans == M_OK;
+	qDebug() << "infoModalDialog::~infoModalDialog()";
 }
 
 
-/********************************** NOTES DIALOG ********************************/
-
-extern DialogCmd Notes[];
-
-notesModalDialog::notesModalDialog(vBaseWindow* bw, char* id, char* cm, char* title) :
-    vModalDialog(bw, title)
+void other_infoModalDialog::onOk()
 {
-	UserDebug(Constructor,"notesModalDialog::notesModalDialog()\n")
-	if (id && cm)
+	accept();
+}
+
+
+notesModalDialog::notesModalDialog(QWidget* bw, QString &id, QString &cm, const QString title) :
+	QDialog(bw)
+{
+	setupUi(this);
+
+	setWindowTitle(title);
+
+	qDebug() << "notesModalDialog::notesModalDialog()";
+
+	id_ptr = &id;
+	cm_ptr = &cm;
+
+	lblStrID->setText(STR_MSGCHIPID);
+	lblCommnt->setText(STR_MSGNOTE);
+
+	if (id.length() && cm.length())
 	{
-		Notes[2].title = new char[strlen(id)+1];
-		strcpy(Notes[2].title, id);
+		id_txt = id;
+		txiStrID->setText(id_txt);
+		cmt_txt = cm;
+		txiCommnt->setText(cmt_txt);
+	}
 
-		Notes[4].title = new char[strlen(cm)+1];
-		strcpy(Notes[4].title, cm);
-	}
-	else
-	{
-		Notes[2].title = new char[2];
-		Notes[2].title[0] = '\0';
-		Notes[4].title = new char[2];
-		Notes[4].title[0] = '\0';
-	}
-	AddDialogCmds(Notes);		// add the predefined commands
+	pushOk->setText(STR_BTNOK);
+	pushCancel->setText(STR_BTNCANC);
+
+	connect(pushOk, SIGNAL(clicked()), this, SLOT(onOk()));
+	connect(pushCancel, SIGNAL(clicked()), this, SLOT(reject()));
 }
+
 
 notesModalDialog::~notesModalDialog()
 {
-	UserDebug(Destructor,"notesModalDialog::~notesModalDialog() destructor\n")
-
-	delete Notes[2].title;
-	delete Notes[4].title;
-}
-
-int notesModalDialog::notesAction(char* msg)
-{
-	ItemVal ans,rval;
-
-//	SetString(txiStrID, id);
-//	SetString(txiCommnt, cm);
-	ans = ShowModalDialog(msg,rval);
-	if (ans == M_Cancel)
-		return 0;
-
-	// *** Add code to process dialog values here
-
-	return ans == M_OK;
+	qDebug() << "notesModalDialog::~notesModalDialog()";
 }
 
 
-/********************************** EDIT DIALOG ********************************/
-
-DialogCmd EditChar[] =
+void notesModalDialog::onOk()
 {
-	{C_Label,lblEditMsg,0,"X",NoList,CA_MainMsg,isSens,NoFrame,0,0},
+	cmt_txt = txiCommnt->text();
+	id_txt = txiStrID->text();
 
-	{C_Frame, frmEditChar,0,"Edit Dialog",NoList,CA_None,isSens,NoFrame,0,lblEditMsg},
-	{C_Label, lblHexval,0,STR_MSGHEX,NoList,CA_None,isSens,frmEditChar,0,0},
-	{C_Label, lblDecval,0,STR_MSGDECIMAL,NoList,CA_None,isSens,frmEditChar,0,lblHexval},
-	{C_Label, lblChval,0, STR_MSGCHAR,NoList,CA_None,isSens,frmEditChar,0,lblDecval},
+	*id_ptr = id_txt;
+	*cm_ptr = cmt_txt;
 
-	{C_TextIn,txiHexval,0,"",NoList,CA_None,isSens,NoFrame,frmEditChar,lblEditMsg,5,STR_TTHEX},
-	{C_TextIn,txiDecval,0,"",NoList,CA_None,isSens,NoFrame,frmEditChar,txiHexval,5,STR_TTDECIMAL},
-	{C_TextIn,txiChval,0,"",NoList,CA_None,isSens,NoFrame,frmEditChar,txiDecval,5,STR_TTCHAR},
+	accept();
+}
 
-	{C_Button, M_Cancel, 0, STR_BTNCANC, NoList,CA_None, isSens,NoFrame, 0, frmEditChar},
-	{C_Button, M_OK, 0, STR_BTNOK, NoList, CA_DefaultButton, isSens, NoFrame, M_Cancel, frmEditChar},
 
-	{C_EndOfList,0,0,0,0,CA_None,0,0,0}
-};
-
-editModalDialog::editModalDialog(vBaseWindow* bw, int curval, char* title) :
-    vModalDialog(bw, title)
+editModalDialog::editModalDialog(QWidget* bw, int curval, const QString title) :
+	QDialog(bw)
 {
-	UserDebug(Constructor,"editModalDialog::editModalDialog()\n")
+	setupUi(this);
+
+	setWindowTitle(title);
+
+	qDebug() << "editModalDialog::editModalDialog()";
 
 	if (curval < 0)
+	{
 		curval = 0;
+	}
+
+	lblFrom->setText(STR_MSGHEX);
+	lblTo->setText(STR_MSGDECIMAL);
+	lblVal->setText(STR_MSGCHAR);
 
 	oldval = curval;
 
-	char str[MAXNUMDIGIT];
+	QString str;
+	str = QString().sprintf("%02X", curval);
+	txiFrom->setText(str);
 
-	snprintf(str, MAXNUMDIGIT, "%02X", curval);
-	str[MAXNUMDIGIT-1] = '\0';
-	EditChar[5].title = new char[strlen(str)+1];
-	strcpy(EditChar[5].title, str);
+	connect(txiFrom, SIGNAL(changed()), this, SLOT(onEdit()));
 
-	snprintf(str, MAXNUMDIGIT, "%d", curval);
-	str[MAXNUMDIGIT-1] = '\0';
-	EditChar[6].title = new char[strlen(str)+1];
-	strcpy(EditChar[6].title, str);
+	str = QString().sprintf("%d", curval);
+	txiTo->setText(str);
+	connect(txiTo, SIGNAL(changed()), this, SLOT(onEdit()));
 
-	snprintf(str, MAXNUMDIGIT, "%c", curval);
-	str[MAXNUMDIGIT-1] = '\0';
-	EditChar[7].title = new char[strlen(str)+1];
-	strcpy(EditChar[7].title, str);
+	str = QString().sprintf("%c", curval);
+	txiVal->setText(str);
+	connect(txiVal, SIGNAL(changed()), this, SLOT(onEdit()));
 
-	AddDialogCmds(EditChar);		// add the predefined commands
+	pushOk->setText(STR_BTNOK);
+	pushCancel->setText(STR_BTNCANC);
+
+	connect(pushOk, SIGNAL(clicked()), this, SLOT(onOk()));
+	connect(pushCancel, SIGNAL(clicked()), this, SLOT(reject()));
 }
+
 
 editModalDialog::~editModalDialog()
 {
-	UserDebug(Destructor,"editModalDialog::~editModalDialog() destructor\n")
-
-	delete EditChar[5].title;
-	delete EditChar[6].title;
-	delete EditChar[7].title;
+	qDebug() << "editModalDialog::~editModalDialog()";
 }
 
-int editModalDialog::editAction(char* msg, int &retval)
+
+void editModalDialog::onOk()
 {
-	ItemVal ans,rval;
-
-	ans = ShowModalDialog(msg,rval);
-	if (ans == M_Cancel)
-		return 0;
-
-	int hexval, decval, chval;
-	char str[MAXNUMDIGIT];
-	GetTextIn(txiHexval, str, 3);
-	hexval = strtol(str,NULL,16);
-	GetTextIn(txiDecval, str, 4);
-	decval = strtol(str,NULL,10);
-	GetTextIn(txiChval, str, 2);
-	chval = str[0];
-
-	if (hexval != oldval)
-		retval = hexval;
-	else
-	if (decval != oldval)
-		retval = decval;
-	else
-	if (isprint(chval) && chval != oldval)
-		retval = chval;
-	else
-		retval = oldval;
-
-	return ans == M_OK;
+	accept();
 }
 
-//************************ EDIT DIALOG2 *******************************
-DialogCmd EditChar2[] =
+int editModalDialog::GetVal()
 {
-	{C_Label,lblEditMsg,0,"X",NoList,CA_MainMsg,isSens,NoFrame,0,0},
-
-	{C_TextIn,txiEditText,0,"",NoList,CA_Large,isSens,NoFrame,0,lblEditMsg,80},
-
-	{C_Button, M_Cancel, 0, STR_BTNCANC, NoList,CA_None, isSens,NoFrame, 0, txiEditText},
-	{C_Button, M_OK, 0, STR_BTNOK, NoList, CA_DefaultButton, isSens, NoFrame, M_Cancel, txiEditText},
-
-	{C_EndOfList,0,0,0,0,CA_None,0,0,0}
-};
-
-editModalDialog2::editModalDialog2(vBaseWindow* bw, char* curval, char* title) :
-    vModalDialog(bw, title)
-{
-	UserDebug(Constructor,"editModalDialog::editModalDialog()\n")
-
-	if (curval == 0)
-		curval = "";
-
-	const unsigned int MAXLEN = 80;
-
-	unsigned int len = MAXLEN;
-	if (strlen(curval) < MAXLEN)
-		len = strlen(curval);
-	EditChar2[1].title = new char[len+1];
-	strncpy(EditChar2[1].title, curval, len);
-	EditChar2[1].title[len] = '\0';
-
-	AddDialogCmds(EditChar2);		// add the predefined commands
+	return oldval;
 }
+
+
+void editModalDialog::onEdit()
+{
+	int newval;
+	bool ok;
+
+	QLineEdit *l = static_cast<QLineEdit*>(sender());
+	disconnect(txiFrom, SIGNAL(changed()), this, SLOT(onEdit())); // hex
+	disconnect(txiTo, SIGNAL(changed()), this, SLOT(onEdit())); // dec
+	disconnect(txiVal, SIGNAL(changed()), this, SLOT(onEdit()));  // char
+
+	if (l == txiFrom)  // hex
+	{
+		QString n = txiFrom->text();
+		newval = n.toInt(&ok, 16);
+	}
+
+	if (l == txiTo)  // dec
+	{
+		QString n = txiFrom->text();
+		newval = n.toInt(&ok, 10);
+	}
+
+	if (l == txiVal)  // char
+	{
+		QString n = txiFrom->text();
+
+		if (n.length() > 1)
+		{
+			ok = false;
+		}
+		else
+		{
+			newval = static_cast<unsigned char>(n.at(0).toLatin1());
+			ok = true;
+		}
+	}
+
+	if (ok == true)
+	{
+		if (oldval != newval)
+		{
+			oldval = newval;
+			txiFrom->setText(QString().sprintf("%02X", newval));
+			txiTo->setText(QString().sprintf("%d", newval));
+			txiVal->setText(QString().sprintf("%c", newval));
+		}
+	}
+
+	connect(txiFrom, SIGNAL(changed()), this, SLOT(onEdit()));
+	connect(txiTo, SIGNAL(changed()), this, SLOT(onEdit()));
+	connect(txiVal, SIGNAL(changed()), this, SLOT(onEdit()));
+}
+
+
+const unsigned int MAXLEN = 80;
+
+editModalDialog2::editModalDialog2(QWidget* bw, const QString curval, const QString title) :
+	QDialog(bw)
+{
+	setupUi(this);
+
+	setWindowTitle(title);
+
+	lblFrom->setHidden(true);
+	txiFrom->setHidden(true);
+
+	lblTo->setHidden(true);
+	txiTo->setHidden(true);
+
+	lblVal->setText(STR_MSGCHAR);
+
+	qDebug() << "editModalDialog::editModalDialog()";
+
+	val = curval;
+
+	if (val.length() > MAXLEN)
+	{
+		val = val.left(MAXLEN);
+	}
+
+	txiVal->setText(val);
+
+	pushOk->setText(STR_BTNOK);
+	pushCancel->setText(STR_BTNCANC);
+
+	connect(pushOk, SIGNAL(clicked()), this, SLOT(onOk()));
+	connect(pushCancel, SIGNAL(clicked()), this, SLOT(reject()));
+}
+
 
 editModalDialog2::~editModalDialog2()
 {
-	UserDebug(Destructor,"editModalDialog::~editModalDialog() destructor\n")
-
-	delete EditChar2[1].title;
+	qDebug() << "editModalDialog::~editModalDialog()";
 }
 
-int editModalDialog2::editAction(char* msg, char* text, int len)
+
+QString editModalDialog2::GetVal()
 {
-	ItemVal ans,rval;
-
-	if (len < 1 || text == 0)
-		return 0;
-
-	ans = ShowModalDialog(msg,rval);
-	if (ans == M_Cancel)
-		return 0;
-
-	GetTextIn(txiEditText, text, len);
-
-	return ans == M_OK;
+	return val;
 }
+
+void editModalDialog2::onOk()
+{
+	val = txiVal->text();
+
+	if (val.length() > MAXLEN)
+	{
+		val = val.left(MAXLEN);
+	}
+
+	accept();
+}
+

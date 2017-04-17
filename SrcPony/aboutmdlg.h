@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: aboutmdlg.h,v 1.2 2007/04/20 10:58:20 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -30,23 +30,31 @@
 #ifndef aboutMDLG_H
 #define aboutMDLG_H
 
-#include "types.h"
+#include "ui_aboutdlg.h"
+
+#include <QString>
+#include <QObject>
+#include <QWidget>
+
 #include "e2cmdw.h"
-#include <v/vmodald.h>
 
-class AboutModalDialog : public vModalDialog
+class e2CmdWindow;
+
+class AboutModalDialog :  public QDialog, public Ui::AboutDialog
 {
-  public:		//---------------------------------------- public
-	AboutModalDialog(vBaseWindow* bw, char* title = "About");
-	virtual ~AboutModalDialog();		// Destructor
-	virtual int AboutAction(char* msg = "");
-	virtual void DialogCommand(ItemVal,ItemVal,CmdType); // action selected
+	Q_OBJECT
+public:               //---------------------------------------- public
+	AboutModalDialog(QWidget *bw = 0, const QString title = "About");
+	virtual ~AboutModalDialog();            // Destructor
 
-  protected:	//--------------------------------------- protected
+protected:    //--------------------------------------- protected
 
-  private:		//--------------------------------------- private
+private slots:
+	void onChkStart(bool);
+	void onHelp();
 
-	int help;
+private:              //--------------------------------------- private
+
 	e2CmdWindow *cmdw;
 };
 

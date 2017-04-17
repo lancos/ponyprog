@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: ponyioint.cpp,v 1.6 2009/11/16 22:29:18 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -30,45 +30,48 @@
 
 #include "ponyioint.h"
 #include "errcode.h"
-#include "e2app.h"
+#include "e2cmdw.h"
+
+#include <QDebug>
 
 /* modem control register bits
  * bit 0: DTR  (pin 4)
  * bit 1: RTS  (pin 7)
  */
 
- /* modem status register bits
- * bit 4: CTS  (pin 8 DB9)
- * bit 5: DSR  (pin 6)
- * bit 6: RI   (pin 9)
- * bit 7: DCD  (pin 1)
- */
+/* modem status register bits
+* bit 4: CTS  (pin 8 DB9)
+* bit 5: DSR  (pin 6)
+* bit 6: RI   (pin 9)
+* bit 7: DCD  (pin 1)
+*/
 
-# define WB_SCL	1		/* COM: rts (pin 7) */
-# define WB_SDA	0		/* COM: dtr (pin 4) */
-# undef	RB_SCL			/* Not used */
-# define RB_SDA	4		/* COM: cts (pin 8) */
-# define RB_TEST 5		/* COM: dsr (pin 6) */
+# define WB_SCL 1               /* COM: rts (pin 7) */
+# define WB_SDA 0               /* COM: dtr (pin 4) */
+# undef RB_SCL                  /* Not used */
+# define RB_SDA 4               /* COM: cts (pin 8) */
+# define RB_TEST 5              /* COM: dsr (pin 6) */
 
-# define WF_SCL	(1 << WB_SCL)
-# define WF_SDA	(1 << WB_SDA)
-# define RF_SCL	(1 << RB_SCL)
-# define RF_SDA	(1 << RB_SDA)
+# define WF_SCL (1 << WB_SCL)
+# define WF_SDA (1 << WB_SDA)
+# define RF_SCL (1 << RB_SCL)
+# define RF_SDA (1 << RB_SDA)
 # define RF_TEST (1 << RB_TEST)
 
-#ifdef	_LINUX_
+#ifdef  __linux__
 # include <sys/io.h>
 # include <unistd.h>
 #else
-# ifdef	__BORLANDC__
-#   define	__inline__
+# ifdef __BORLANDC__
+#   define      __inline__
 # else // MICROSOFT VC++
-#   define	__inline__ __inline
+#   define      __inline__ __inline
 #   define _export
 # endif
 #endif
 
-enum UartRegs {
+enum UartRegs
+{
 	thrOfst,
 	ierOfst,
 	iirOfst,
@@ -81,7 +84,7 @@ enum UartRegs {
 
 PonyIOInterface::PonyIOInterface()
 {
-	UserDebug(Constructor, "PonyIOInterface::PonyIOInterface() Constructor\n");
+	qDebug() << "PonyIOInterface::PonyIOInterface()";
 
 	Install(0);
 	old_portno = 0;
@@ -92,32 +95,40 @@ PonyIOInterface::~PonyIOInterface()
 	Close();
 }
 
-#define BREAK_MASK	0x40
+#define BREAK_MASK      0x40
 
 //se  res == 1  abilita il BREAK --> Tx = +12v
 // altrimenti disabilita il BREAK --> Tx = -12v
 void PonyIOInterface::SetControlLine(int res)
 {
-	UserDebug2(UserApp3, "PonyIOInterface::SetControlLine(%d) *** Inst=%d\n", res, IsInstalled());
+	qDebug() << "PonyIOInterface::SetControlLine(" << res << ") *** Inst=" << IsInstalled();
 
 	if (IsInstalled())
 	{
-		UserDebug(UserApp3, "PonyIOInterface::SetControlLine() XX\n");
+		qDebug() << "PonyIOInterface::SetControlLine() XX";
 
-		if (THEAPP->GetPolarity() & RESETINV) 
+		if (E2Profile::GetPolarityControl() & RESETINV)
+		{
 			res = !res;
+		}
 
-		UserDebug1(UserApp3, "PonyIOInterface::SetControlLine() %x\n", lcrOfst);
+		qDebug() << "PonyIOInterface::SetControlLine() " << (hex) << lcrOfst  << (dec);
 
 		if (res)
-#ifdef	_WINDOWS
+#ifdef  _WINDOWS
 			SetCommBreak(hCom);
 		else
+		{
 			ClearCommBreak(hCom);
+		}
+
 #else
 			OutPort(BREAK_MASK, lcrOfst);
 		else
+		{
 			OutPort(0, lcrOfst);
+		}
+
 #endif
 	}
 }
@@ -126,12 +137,12 @@ void PonyIOInterface::SetControlLine(int res)
 //  SCL, SDA, RESET. If any of these lines are on (>5V) the power is ON
 int PonyIOInterface::SetPower(int onoff)
 {
-	UserDebug1(UserApp3, "PonyIOInterface::SetPower(%d)\n", onoff);
+	qDebug() << "PonyIOInterface::SetPower(" << onoff << ")";
 
 	if (onoff)
 	{
 		SetControlLine(1);
-//		SetSCLSDA();		//29/05/98 non funziona la verifica subito dopo la scrittura delle 93Cx6
+		//              SetSCLSDA();            //29/05/98 non funziona la verifica subito dopo la scrittura delle 93Cx6
 	}
 	else
 	{
@@ -144,24 +155,26 @@ int PonyIOInterface::SetPower(int onoff)
 
 int PonyIOInterface::Open(int com_no)
 {
-	UserDebug1(UserApp1, "PonyIOInterface::Open(%d) IN\n", com_no);
+	qDebug() << "PonyIOInterface::Open(" << com_no << ") IN";
 
 	int ret_val = OK;
 
 	if (IsInstalled() != com_no)
 	{
 		if ( (ret_val = OpenSerial(com_no)) == OK )
+		{
 			Install(com_no);
+		}
 	}
 
-	UserDebug1(UserApp2, "PonyIOInterface::Open() = %d OUT\n", ret_val);
+	qDebug() << "PonyIOInterface::Open() = " << ret_val << " OUT";
 
 	return ret_val;
 }
 
 void PonyIOInterface::Close()
 {
-	UserDebug(UserApp1, "PonyIOInterface::Close() IN\n");
+	qDebug() << "PonyIOInterface::Close() IN";
 
 	if (IsInstalled())
 	{
@@ -170,59 +183,79 @@ void PonyIOInterface::Close()
 		Install(0);
 	}
 
-	UserDebug(UserApp2, "PonyIOInterface::Close() OUT\n");
+	qDebug() << "PonyIOInterface::Close() OUT";
 }
 
 void PonyIOInterface::SetDataOut(int sda)
 {
-	UserDebug2(UserApp3, "PonyIOInterface::SetDataOut(%d) *** Inst=%d\n", sda, IsInstalled());
+	qDebug() << "PonyIOInterface::SetDataOut(" << sda << ") *** Inst=" << IsInstalled();
 
 	if (IsInstalled())
 	{
-		if ( (THEAPP->GetPolarity() & DOUTINV) )
+		if ( (E2Profile::GetPolarityControl() & DOUTINV) )
+		{
 			sda = !sda;
+		}
 
 		if (sda)
+		{
 			OutPortMask(WF_SDA, 1);
+		}
 		else
+		{
 			OutPortMask(WF_SDA, 0);
+		}
 	}
 }
 
 void PonyIOInterface::SetClock(int scl)
 {
-	UserDebug2(UserApp3, "PonyIOInterface::SetClock(%d) *** Inst=%d\n", scl, IsInstalled());
+	qDebug() << "PonyIOInterface::SetClock(" << scl << ") *** Inst=" << IsInstalled();
 
 	if (IsInstalled())
 	{
-		if ( (THEAPP->GetPolarity() & CLOCKINV) )
+		if ( (E2Profile::GetPolarityControl() & CLOCKINV) )
+		{
 			scl = !scl;
+		}
 
 		if (scl)
+		{
 			OutPortMask(WF_SCL, 1);
+		}
 		else
+		{
 			OutPortMask(WF_SCL, 0);
+		}
 	}
 }
 
 void PonyIOInterface::SetClockData()
 {
-	UserDebug1(UserApp3, "PonyIOInterface::SetClockData() *** Inst=%d\n", IsInstalled());
+	qDebug() << "PonyIOInterface::SetClockData() *** Inst=" << IsInstalled();
 
 	if (IsInstalled())
 	{
-		int control	= THEAPP->GetPolarity();
+		int control     = E2Profile::GetPolarityControl();
 		uint8_t cpreg = GetCPWReg();
 
 		if (control & CLOCKINV)
+		{
 			cpreg &= ~WF_SCL;
+		}
 		else
+		{
 			cpreg |= WF_SCL;
+		}
 
 		if (control & DOUTINV)
+		{
 			cpreg &= ~WF_SDA;
+		}
 		else
+		{
 			cpreg |= WF_SDA;
+		}
 
 		OutPort(cpreg);
 	}
@@ -231,82 +264,98 @@ void PonyIOInterface::SetClockData()
 
 void PonyIOInterface::ClearClockData()
 {
-	UserDebug1(UserApp3, "PonyIOInterface::ClearClockData() *** Inst=%d\n", IsInstalled());
+	qDebug() << "PonyIOInterface::ClearClockData() *** Inst=" << IsInstalled();
 
 	if (IsInstalled())
 	{
-		int control = THEAPP->GetPolarity(); 
+		int control = E2Profile::GetPolarityControl();
 		uint8_t cpreg = GetCPWReg();
 
 		if (control & CLOCKINV)
+		{
 			cpreg |= WF_SCL;
+		}
 		else
+		{
 			cpreg &= ~WF_SCL;
+		}
 
 		if (control & DOUTINV)
+		{
 			cpreg |= WF_SDA;
+		}
 		else
+		{
 			cpreg &= ~WF_SDA;
+		}
 
 		OutPort(cpreg);
 	}
 }
 
-int PonyIOInterface::GetDataIn() 
+int PonyIOInterface::GetDataIn()
 {
-	UserDebug1(UserApp3, "PonyIOInterface::GetDataIn() *** Inst=%d\n", IsInstalled());
+	qDebug() << "PonyIOInterface::GetDataIn() *** Inst=" << IsInstalled();
 
 	if (IsInstalled())
 	{
-		if (THEAPP->GetPolarity() & DININV) 
+		if (E2Profile::GetPolarityControl() & DININV)
+		{
 			return ~ InPort() & RF_SDA;
+		}
 		else
+		{
 			return InPort() & RF_SDA;
+		}
 	}
 	else
+	{
 		return E2ERR_NOTINSTALLED;
+	}
 }
 
-int PonyIOInterface::GetClock() 
+int PonyIOInterface::GetClock()
 {
 	return 1;
 }
 
 int PonyIOInterface::GetPresence() const
 {
-	UserDebug1(UserApp3, "PonyIOInterface::GetPresence() *** Inst=%d\n", IsInstalled());
+	qDebug() << "PonyIOInterface::GetPresence() *** Inst=" << IsInstalled();
 
 	if (IsInstalled())
 	{
 		return InPort() & RF_TEST;
 	}
 	else
+	{
 		return E2ERR_NOTINSTALLED;
+	}
 }
 
-int PonyIOInterface::IsClockDataUP() 
+int PonyIOInterface::IsClockDataUP()
 {
-	UserDebug1(UserApp3, "PonyIOInterface::IsClockDataUP() *** Inst=%d\n", IsInstalled());
+	qDebug() << "PonyIOInterface::IsClockDataUP() *** Inst=" << IsInstalled();
 
 	return GetDataIn();
 }
 
-int PonyIOInterface::IsClockDataDOWN() 
+int PonyIOInterface::IsClockDataDOWN()
 {
-	UserDebug1(UserApp3, "PonyIOInterface::IsClockDataDOWN() *** Inst=%d\n", IsInstalled());
+	qDebug() << "PonyIOInterface::IsClockDataDOWN() *** Inst=" << IsInstalled();
 
 	return !GetDataIn();
 }
 
 int PonyIOInterface::TestPort(int com_no)
 {
-	UserDebug1(UserApp1, "PonyIOInterface::TestPort(%d) IN\n", com_no);
+	qDebug() << "PonyIOInterface::TestPort(" << com_no << ") IN";
 
 	int ret_val = TestSave(com_no);
 
 	if (ret_val == OK)
 	{
-		int a,b;
+		int a, b;
 		Wait w;
 
 		ret_val = E2ERR_OPENFAILED;
@@ -331,13 +380,16 @@ int PonyIOInterface::TestPort(int com_no)
 				b = GetPresence() ? 1 : 0;
 
 				if (a == b)
+				{
 					ret_val = OK;
+				}
 			}
 		}
 	}
+
 	TestRestore();
 
-	UserDebug1(UserApp2, "PonyIOInterface::TestPort() = %d OUT\n", ret_val);
+	qDebug() << "PonyIOInterface::TestPort() = " << ret_val << " OUT";
 
 	return ret_val;
 }

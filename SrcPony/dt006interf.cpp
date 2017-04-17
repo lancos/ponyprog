@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: dt006interf.cpp,v 1.3 2009/11/16 22:29:18 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -28,48 +28,51 @@
 //=========================================================================//
 
 #include "errcode.h"
+#include "e2profil.h"
 #include "dt006interf.h"
-#include "e2app.h"
+#include "e2cmdw.h"
+
+#include <QDebug>
 
 /* data register (0x378)
- * bit 0: D0	(pin 2)
- * bit 1: D1	(pin 3)
- * bit 2: D2	(pin 4)
- * bit 3: D3	(pin 5)
- * bit 4: D4	(pin 6)
- * bit 5: D5	(pin 7)
- * bit 6: D6	(pin 8)
- * bit 7: D7	(pin 9)
+ * bit 0: D0    (pin 2)
+ * bit 1: D1    (pin 3)
+ * bit 2: D2    (pin 4)
+ * bit 3: D3    (pin 5)
+ * bit 4: D4    (pin 6)
+ * bit 5: D5    (pin 7)
+ * bit 6: D6    (pin 8)
+ * bit 7: D7    (pin 9)
  */
 
 /* control register (0x37A)
- * bit 0: STROBE	(pin 1)-
- * bit 1: AUTOLF	(pin 14)-
- * bit 2: INIT		(pin 16)-
- * bit 3: SELECTIN	(pin 17)-
+ * bit 0: STROBE        (pin 1)-
+ * bit 1: AUTOLF        (pin 14)-
+ * bit 2: INIT          (pin 16)-
+ * bit 3: SELECTIN      (pin 17)-
  */
 
 /* status register (0x379)
- * bit 3: ERROR		(pin 15)
- * bit 4: SELECT	(pin 13)
- * bit 5: POUT		(pin 12)
- * bit 6: ACK		(pin 10)
- * bit 7: BUSY		(pin 11)-
+ * bit 3: ERROR         (pin 15)
+ * bit 4: SELECT        (pin 13)
+ * bit 5: POUT          (pin 12)
+ * bit 6: ACK           (pin 10)
+ * bit 7: BUSY          (pin 11)-
  */
 
 //DT-006 card
-# define WB_DOUT 0		// DATA (pin 2)
-# define WB_RST 2		// DATA (pin 4)
-# define WB_SCK	3		// DATA (pin 5)
+# define WB_DOUT 0              // DATA (pin 2)
+# define WB_RST 2               // DATA (pin 4)
+# define WB_SCK 3               // DATA (pin 5)
 
-# define RB_DIN	7		// STATUS (pin 11)
+# define RB_DIN 7               // STATUS (pin 11)
 
 
-# define WF_SCK		(1 << WB_SCK)
-# define WF_DOUT	(1 << WB_DOUT)
-# define WF_RST		(1 << WB_RST)
+# define WF_SCK         (1 << WB_SCK)
+# define WF_DOUT        (1 << WB_DOUT)
+# define WF_RST         (1 << WB_RST)
 
-# define RF_DIN		(1 << RB_DIN)
+# define RF_DIN         (1 << RB_DIN)
 
 
 Dt006Interface::Dt006Interface(bool use_io)
@@ -83,8 +86,10 @@ void Dt006Interface::SetControlLine(int res)
 {
 	if (IsInstalled())
 	{
-		if (THEAPP->GetPolarity() & RESETINV)
+		if (E2Profile::GetPolarityControl() & RESETINV)
+		{
 			res = !res;
+		}
 
 		OutDataMask(WF_RST, res ? 0 : 1);
 	}
@@ -93,7 +98,7 @@ void Dt006Interface::SetControlLine(int res)
 
 int Dt006Interface::SetPower(int onoff)
 {
-//	OutDataPort(0);		//No action
+	//      OutDataPort(0);         //No action
 	SetControlLine(0);
 
 	return OK;
@@ -104,12 +109,14 @@ int Dt006Interface::Open(int port_no)
 {
 	int ret_val = OK;
 
-	UserDebug2(UserApp2,"Dt006Interface::Open(port=%d) IN *** installed=%d\n",port_no,IsInstalled());
+	qDebug() << "Dt006Interface::Open(port=" << port_no << ") IN *** installed=" << IsInstalled();
 
 	if (IsInstalled() != port_no)
 	{
 		if ( InDataPort(port_no) < 0 )
+		{
 			ret_val = E2ERR_OPENFAILED;
+		}
 		else
 		{
 			Install(port_no);
@@ -118,14 +125,14 @@ int Dt006Interface::Open(int port_no)
 		}
 	}
 
-	UserDebug1(UserApp2,"Dt006Interface::Open() = %d *** OUT\n",ret_val);
+	qDebug() << "Dt006Interface::Open() = " << ret_val << " *** OUT";
 
 	return ret_val;
 }
 
 void Dt006Interface::Close()
 {
-	UserDebug1(UserApp2,"Dt006Interface::Close() IN *** installed=%d\n",IsInstalled());
+	qDebug() << "Dt006Interface::Close() IN *** installed=" << IsInstalled();
 
 	if (IsInstalled())
 	{
@@ -134,15 +141,17 @@ void Dt006Interface::Close()
 		Install(0);
 	}
 
-	UserDebug1(UserApp2,"Dt006Interface::Close() OUT *** installed=%d\n",IsInstalled());
+	qDebug() << "Dt006Interface::Close() OUT *** installed=" << IsInstalled();
 }
 
 void Dt006Interface::SetDataOut(int sda)
 {
 	if (IsInstalled())
 	{
-		if (THEAPP->GetPolarity()&DOUTINV)
+		if (E2Profile::GetPolarityControl()&DOUTINV)
+		{
 			sda = !sda;
+		}
 
 		OutDataMask(WF_DOUT, sda ? 1 : 0);
 	}
@@ -152,8 +161,10 @@ void Dt006Interface::SetClock(int scl)
 {
 	if (IsInstalled())
 	{
-		if (THEAPP->GetPolarity()&CLOCKINV)
+		if (E2Profile::GetPolarityControl()&CLOCKINV)
+		{
 			scl = !scl;
+		}
 
 		OutDataMask(WF_SCK, scl ? 1 : 0);
 	}
@@ -163,18 +174,26 @@ void Dt006Interface::SetClockData()
 {
 	if (IsInstalled())
 	{
-		int control	= THEAPP->GetPolarity();
+		int control     = E2Profile::GetPolarityControl();
 		uint8_t cpreg = GetLastData();
 
 		if (control & CLOCKINV)
+		{
 			cpreg &= ~WF_SCK;
+		}
 		else
+		{
 			cpreg |= WF_SCK;
+		}
 
 		if (control & DOUTINV)
+		{
 			cpreg &= ~WF_DOUT;
+		}
 		else
+		{
 			cpreg |= WF_DOUT;
+		}
 
 		OutDataPort(cpreg);
 	}
@@ -185,18 +204,26 @@ void Dt006Interface::ClearClockData()
 {
 	if (IsInstalled())
 	{
-		int control = THEAPP->GetPolarity();
+		int control = E2Profile::GetPolarityControl();
 		uint8_t cpreg = GetLastData();
 
 		if (control & CLOCKINV)
+		{
 			cpreg |= WF_SCK;
+		}
 		else
+		{
 			cpreg &= ~WF_SCK;
+		}
 
 		if (control & DOUTINV)
+		{
 			cpreg |= WF_DOUT;
+		}
 		else
+		{
 			cpreg &= ~WF_DOUT;
+		}
 
 		OutDataPort(cpreg);
 	}
@@ -206,13 +233,19 @@ int Dt006Interface::GetDataIn()
 {
 	if (IsInstalled())
 	{
-		if (THEAPP->GetPolarity() & DININV)
+		if (E2Profile::GetPolarityControl() & DININV)
+		{
 			return InDataPort() & RF_DIN;
+		}
 		else
+		{
 			return !(InDataPort() & RF_DIN);
+		}
 	}
 	else
+	{
 		return E2ERR_NOTINSTALLED;
+	}
 }
 
 int Dt006Interface::GetClock()

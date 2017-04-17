@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: e2awinfo.cpp,v 1.21 2013/10/31 17:20:45 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -27,366 +27,500 @@
 //-------------------------------------------------------------------------//
 //=========================================================================//
 
-#include "e2app.h"
-#include "e2cnv.h"
-#include "e2awinfo.h"		// Header file
+
 #include "errcode.h"
 #include "eeptypes.h"
 
-#include <v/vnotice.h>
-#include <stdio.h>
+#include "e2cmdw.h"
+#include "e2profil.h"
+#include "e2awinfo.h"           // Header file
 
-#ifdef	WIN32
-#  ifdef	__BORLANDC__
-#    define	strcasecmp stricmp
-#  else // _MICROSOFT_ VC++
-#    define strcasecmp	_stricmp
-#    define snprintf	_snprintf
-#  endif
-#endif
+#include <QMessageBox>
+#include <QString>
+#include <QDebug>
+
 
 //======================>>> e2AppWinInfo::e2AppWinInfo <<<=======================
-e2AppWinInfo::e2AppWinInfo(vCmdWindow* win, char* name, BusIO** busvptr, void* ptr)
-	:	vAppWinInfo(name),
-		hex_per_line(16),
-		buffer_size(BUFFER_SIZE),
-		load_type(ALL_TYPE),
-		save_type(ALL_TYPE),
-		load_relocation(0),
-		save_relocation(0),
-		buf_ok(false),
-		buf_changed(false),
-		fname(0),
-		no_block(0),
-		splitted(0),
-		roll_over(0),
-		fuse_bits(0),
-		lock_bits(0),
-		fuse_ok(false),
-		crc(0)
+e2AppWinInfo::e2AppWinInfo(e2CmdWindow *p, const QString &name, BusIO** busvptr) :
+	hex_per_line(16),
+	buffer_size(BUFFER_SIZE),
+	load_type(ALL_TYPE),
+	save_type(ALL_TYPE),
+	load_relocation(0),
+	save_relocation(0),
+	buf_ok(false),
+	buf_changed(false),
+	//              fname(0),
+	no_block(0),
+	splitted(0),
+	roll_over(0),
+	fuse_bits(0),
+	lock_bits(0),
+	fuse_ok(false),
+	crc(0)
 {
-	UserDebug(Constructor, "e2AppWinInfo::e2AppWinInfo()\n");
+	qDebug() << "e2AppWinInfo::e2AppWinInfo()";
 
 	// Constructor
-	cmdWin = (e2CmdWindow*)win;
-	cmdWin->SetAWInfo(this);
+	cmdWin = static_cast<e2CmdWindow*>(p);
+
+	fname = "",
+
+	qDebug() << "e2awinfo" << p << this;
+
+	//      p->SetAWInfo(this);
+
+	eep24xx = new E24xx(this, busvptr[I2C - 1]);
+	eep2401 = new mE2401(this, busvptr[I2C - 1]);
+
+	eep24xx1 = new E24xx1(this, busvptr[I2C - 1]);
+	eep24xx2 = new E24xx2(this, busvptr[I2C - 1]);
+	eep24xx5 = new E24xx5(this, busvptr[I2C - 1]);
+	eepAt90s = new At90sxx(this, busvptr[AT90S - 1]);
+	eepAt89s = new At89sxx(this, busvptr[AT89S - 1]);
+	eep93xx16 = new At93cxx(this, busvptr[AT93C - 1]);
+	eep93xx8 = new At93cxx8(this, busvptr[AT93C - 1]);
+	eepPic16 = new Pic16xx(this, busvptr[PICB - 1]);
+	eep250xx = new At250xx(this, busvptr[AT250 - 1]);
+	eep25xxx = new At25xxx(this, busvptr[AT250BIG - 1]);
+	eep2506 = new Sde2506(this, busvptr[SDEB - 1]);
+	eepPic168xx = new Pic168xx(this, busvptr[PICNEWB - 1]);
+	eep3060 = new Nvm3060(this, busvptr[IMBUS - 1]);
+	eepPic125xx = new Pic125xx(this, busvptr[PIC12B - 1]);
+	eep17xxx  = new At17xxx(this, busvptr[I2C - 1]);
+	eep2444 = new X2444(this, busvptr[X2444B - 1]);
+	eep2430 = new X2444(this, busvptr[S2430B - 1]);
+
 
 	//AutoTag
 	//Initialize Device Pointers vector
-	eep24xx.SetAWInfo(this);
-	eep24xx.SetBus(busvptr[I2C-1]);
-	eep2401.SetAWInfo(this);
-	eep2401.SetBus(busvptr[I2C-1]);
-	eep24xx1.SetAWInfo(this);
-	eep24xx1.SetBus(busvptr[I2C-1]);
-	eep24xx2.SetAWInfo(this);
-	eep24xx2.SetBus(busvptr[I2C-1]);
-	eep24xx5.SetAWInfo(this);
-	eep24xx5.SetBus(busvptr[I2C-1]);
-	eepAt90s.SetAWInfo(this);
-	eepAt90s.SetBus(busvptr[AT90S-1]);
-	eepAt89s.SetAWInfo(this);
-	eepAt89s.SetBus(busvptr[AT89S-1]);
-	eep93xx16.SetAWInfo(this);
-	eep93xx16.SetBus(busvptr[AT93C-1]);
-	eep93xx8.SetAWInfo(this);
-	eep93xx8.SetBus(busvptr[AT93C-1]);
-	eepPic16.SetAWInfo(this);
-	eepPic16.SetBus(busvptr[PICB-1]);
-	eep250xx.SetAWInfo(this);
-	eep250xx.SetBus(busvptr[AT250-1]);
-	eep25xxx.SetAWInfo(this);
-	eep25xxx.SetBus(busvptr[AT250BIG-1]);
-	eep2506.SetAWInfo(this);
-	eep2506.SetBus(busvptr[SDEB-1]);
-	eepPic168xx.SetAWInfo(this);
-	eepPic168xx.SetBus(busvptr[PICNEWB-1]);
-	eep3060.SetAWInfo(this);
-	eep3060.SetBus(busvptr[IMBUS-1]);
-	eepPic125xx.SetAWInfo(this);
-	eepPic125xx.SetBus(busvptr[PIC12B-1]);
-	eep17xxx.SetAWInfo(this);
-	eep17xxx.SetBus(busvptr[I2C-1]);
-	eep2444.SetAWInfo(this);
-	eep2444.SetBus(busvptr[X2444B-1]);
-	eep2444.DefaultBankSize();
-	eep2430.SetAWInfo(this);
-	eep2430.SetBus(busvptr[S2430B-1]);
-	eep2430.DefaultBankSize();
+	//      eep24xx.SetAWInfo(this);
+	//      eep24xx.SetBus(busvptr[I2C - 1]);
+	//      eep2401.SetAWInfo(this);
+	//      eep2401.SetBus(busvptr[I2C - 1]);
+	//      eep24xx1.SetAWInfo(this);
+	//      eep24xx1.SetBus(busvptr[I2C - 1]);
+	//      eep24xx2.SetAWInfo(this);
+	//      eep24xx2.SetBus(busvptr[I2C - 1]);
+	//      eep24xx5.SetAWInfo(this);
+	//      eep24xx5.SetBus(busvptr[I2C - 1]);
+	//      eepAt90s.SetAWInfo(this);
+	//      eepAt90s.SetBus(busvptr[AT90S - 1]);
+	//      eepAt89s.SetAWInfo(this);
+	//      eepAt89s.SetBus(busvptr[AT89S - 1]);
+	//      eep93xx16.SetAWInfo(this);
+	//      eep93xx16.SetBus(busvptr[AT93C - 1]);
+	//      eep93xx8.SetAWInfo(this);
+	//      eep93xx8.SetBus(busvptr[AT93C - 1]);
+	//      eepPic16.SetAWInfo(this);
+	//      eepPic16.SetBus(busvptr[PICB - 1]);
+	//      eep250xx.SetAWInfo(this);
+	//      eep250xx.SetBus(busvptr[AT250 - 1]);
+	//      eep25xxx.SetAWInfo(this);
+	//      eep25xxx.SetBus(busvptr[AT250BIG - 1]);
+	//      eep2506.SetAWInfo(this);
+	//      eep2506.SetBus(busvptr[SDEB - 1]);
+	//      eepPic168xx.SetAWInfo(this);
+	//      eepPic168xx.SetBus(busvptr[PICNEWB - 1]);
+	//      eep3060.SetAWInfo(this);
+	//      eep3060.SetBus(busvptr[IMBUS - 1]);
+	//      eepPic125xx.SetAWInfo(this);
+	//      eepPic125xx.SetBus(busvptr[PIC12B - 1]);
+	//      eep17xxx.SetAWInfo(this);
+	//      eep17xxx.SetBus(busvptr[I2C - 1]);
+	//      eep2444.SetAWInfo(this);
+	//      eep2444.SetBus(busvptr[X2444B - 1]);
+	//      eep2444.DefaultBankSize();
+	//      eep2430.SetAWInfo(this);
+	//      eep2430.SetBus(busvptr[S2430B - 1]);
+	//      eep2430.DefaultBankSize();
 
-	if (name && strlen(name))
-		SetFileName(name);
+	QString nm = name;
+
+	if (nm.length())
+	{
+		SetFileName(nm);
+	}
 
 	//Initialize File Formats vector
 	fbufvet[E2P] = &e2pfbuf;
 	fbufvet[INTEL] = &intfbuf;
-	fbufvet[MOTOS] = &motsfbuf;		//** 17/03/99
+	fbufvet[MOTOS] = &motsfbuf;             //** 17/03/99
 	fbufvet[BIN] = &binfbuf;
 	fbufvet[CSM] = &csmfbuf;
 
-	int k;
-	for (k = 0; k < NO_OF_FILETYPE; k++)
+	for (int k = 0; k < NO_OF_FILETYPE; k++)
+	{
 		fbufvet[k]->SetAWInfo(this);
+	}
 
-	eeprom_string[0] = '\0';	//eeprom string ID
-	eeprom_comment[0] = '\0';	//eeprom comment
+	eeprom_string = ""; //[0] = '\0';        //eeprom string ID
+	eeprom_comment = ""; //[0] = '\0';       //eeprom comment
 
-	ClearBuffer();				//Clear the new buffer
+	ClearBuffer();                          //Clear the new buffer
 
 	//imposta il tipo di eeprom di default
-//	SetEEProm(THEAPP->GetLastEEPType());	18/10/98
-	SetEEProm( GetE2PPriType(THEAPP->GetLastDevType()), GetE2PSubType(THEAPP->GetLastDevType()) );
-	SetFileBuf(THEAPP->GetDefaultFileType());	//	SetFileBuf(E2P);
+	//      SetEEProm(E2Profile::GetLastEEPType());    18/10/98
+	SetEEProm( GetE2PPriType(E2Profile::GetLastDevType()), GetE2PSubType(E2Profile::GetLastDevType()) );
+	SetFileBuf(E2Profile::GetDefaultFileType());       //      SetFileBuf(E2P);
 
-	SetLoadAutoClearBuf( THEAPP->GetClearBufBeforeLoad() );
+	SetLoadAutoClearBuf( E2Profile::GetClearBufBeforeLoad() );
 
 	// Test and initialize the hardware
-	if (THEAPP->GetCounter() == 1)
+	// EK 2017
+	// TODO remove the app counter??
+	//      if (E2Profile::GetCounter() == 1)
 	{
 		int err;
-		vNoticeDialog note(win);
+		//              QMessageBox::note(win);
 
-		if (!THEAPP->GetSkipStartupDialog())
-			if ( !THEAPP->scriptMode )
+		if (!E2Profile::GetSkipStartupDialog())
+		{
+			if ( !cmdWin->scriptMode )
+			{
 				cmdWin->About();
+			}
+		}
 
-		err = THEAPP->LoadDriver(1);
+		err = cmdWin->LoadDriver(1);
+
 		if (err != OK)
-			note.Notice("Load I/O driver failed.");
+		{
+			int r = QMessageBox::critical (NULL, "Error", "Load I/O driver failed.");
+		}
 
 		//imposta il bus iniziale (relativo al tipo di eeprom)
-		THEAPP->SetInitialBus( eep->GetBus() );
+		cmdWin->SetInitialBus( eep->GetBus() );
 
 		//case of command line parameter
-		if (GetFileName())
+		if (GetFileName().length())
 		{
 			if (Load() <= 0)
-				SetFileName(0);
+			{
+				SetFileName("");
+			}
 		}
 		else
 		{
-			err = THEAPP->OpenPort();
+			err = cmdWin->OpenPort();
+
 			if (err == E2ERR_ACCESSDENIED)
 			{
-#ifdef	_WINDOWS
-				note.Notice("I/O access denied. Driver not found, try to install the software again");
+#ifdef  _WINDOWS
+				int r = QMessageBox::critical (NULL, QString("Error"), QString("I/O access denied. Driver not found, try to install the software again"));
 #else
-				note.Notice("I/O access denied. Run as root, or change the interface");
+				int r = QMessageBox::critical (NULL,  QString("Error"),  QString("I/O access denied. Run as root, or change the interface"));
 #endif
 			}
-			THEAPP->ClosePort();
+
+			cmdWin->ClosePort();
 		}
 	}
-	else
-	if (GetFileName())
+#if 0
+	else if (GetFileName().length())
 	{
 		if (Load() <= 0)
+		{
 			SetFileName(0);
+		}
 	}
 
-	cmdWin->PostInit();
+#endif
+	//      cmdWin->PostInit();
+
 }
 
 
 //======================>>> e2AppWinInfo::~e2AppWinInfo <<<=======================
 e2AppWinInfo::~e2AppWinInfo()
 {
-	UserDebug(Destructor, "e2AppWinInfo::~e2AppWinInfo()\n");
+	qDebug() << "e2AppWinInfo::~e2AppWinInfo()";
 
 	// Destructor
-	if (fname)
-		delete [] fname;
+	fname = "";
 }
+
+
+void e2AppWinInfo::SetFileName(const QString &name)
+{
+	if (name.length())
+	{
+		E2Profile::SetLastFile(name, load_type);
+		fname = name;
+	}
+	else
+	{
+		fname = "";
+	}
+}
+
+
+void e2AppWinInfo::SleepBus()
+{
+	cmdWin->SleepBus();
+}
+
+int e2AppWinInfo::OpenBus()
+{
+	return cmdWin->OpenBus(eep->GetBus());
+}
+
 
 //===================>>> e2AppWinInfo::Reset <<<=============
 void e2AppWinInfo::Reset()
 {
-	OpenBus();
+	cmdWin->OpenBus(eep->GetBus());
 	SleepBus();
+}
+
+
+void e2AppWinInfo::SetEEPTypeId(long id)
+{
+	qDebug() << id << (id >> 16);
+	eep_type = (int)(id >> 16);
+	eep_subtype = (int)(id & 0x07fff);
+	qDebug() << eep_type << eep_subtype;
 }
 
 //======================>>> e2AppWinInfo::SetEEProm <<<=======================
 void e2AppWinInfo::SetEEProm(int type, int subtype)
 {
-//	extern long BuildE2PType(int x, int y = 0);
+	//      extern long BuildE2PType(int x, int y = 0);
 	extern int GetE2PSubType(long x);
 	extern int GetE2PPriType(long x);
 
 	if (type == 0)
-		type = E24XX;		//to avoid segV
+	{
+		type = E24XX;        //to avoid segV
+	}
 
 	eep_type = type;
-	eep_subtype = subtype;			//0 indica di usare GetNoOfBlock()
+	eep_subtype = subtype;                  //0 indica di usare GetNoOfBlock()
 
 	switch(eep_type)
 	{
 	//AutoTag
 	//Setting the device pointer to selected type
 	case E24XX:
-		eep = &eep24xx;
+		eep = eep24xx;
 		break;
+
 	case E24XX1_A:
-		eep = &eep24xx1;
+		eep = eep24xx1;
+
 		if (eep_subtype == 0)
 		{
 			//Forza impostazione manuale
 			eep_subtype = GetE2PSubType(E2401_A);
 		}
+
 		break;
+
 	case E24XX1_B:
-		eep = &eep2401;
+		eep = eep2401;
+
 		if (eep_subtype == 0)
 		{
 			//Forza impostazione manuale
 			eep_subtype = GetE2PSubType(E2401_B);
 		}
+
 		break;
+
 	case E24XX2:
-		eep = &eep24xx2;
+		eep = eep24xx2;
+
 		if (eep_subtype == 0)
 		{
 			//Forza impostazione manuale
 			eep_subtype = GetE2PSubType(E2432);
 		}
-		eep->DefaultBankSize();		//reimposta la dimensione dei banchi di default
+
+		eep->DefaultBankSize();         //reimposta la dimensione dei banchi di default
 		break;
+
 	case E24XX5:
-		eep = &eep24xx5;
+		eep = eep24xx5;
 		break;
+
 	case AT90SXX:
-	{
-		eep = &eepAt90s;
-		if (eep_subtype == 0)
 		{
-			//Forza impostazione manuale
-			eep_subtype = GetE2PSubType(AT90S1200);
+			eep = eepAt90s;
+
+			if (eep_subtype == 0)
+			{
+				//Forza impostazione manuale
+				eep_subtype = GetE2PSubType(AT90S1200);
+			}
+
+			long xtype = GetEEPType();
+			eep->SetProgPageSize(GetEEPTypeWPageSize(eep_type, eep_subtype), false);
+			At90sBus *b = (At90sBus *)eep->GetBus();
+			b->SetFlashPagePolling( (xtype != ATmega603) && (xtype != ATmega103) );
+			b->SetOld1200Mode( (xtype == AT90S1200) );
+			break;
 		}
-		long xtype = GetEEPType();
-		eep->SetProgPageSize(GetEEPTypeWPageSize(eep_type, eep_subtype), false);
-		At90sBus *b = (At90sBus *)eep->GetBus();
-		b->SetFlashPagePolling( (xtype != ATmega603) && (xtype != ATmega103) );
-		b->SetOld1200Mode( (xtype == AT90S1200) );
-		break;
-	}
+
 	case AT89SXX:
-	{
-		eep = &eepAt89s;
-		if (eep_subtype == 0)
 		{
-			//Forza impstazione manuale
-			eep_subtype = GetE2PSubType(AT89S8252);
+			eep = eepAt89s;
+
+			if (eep_subtype == 0)
+			{
+				//Forza impstazione manuale
+				eep_subtype = GetE2PSubType(AT89S8252);
+			}
+
+			long xtype = GetEEPType();
+
+			if (E2Profile::GetAt89PageOp())
+			{
+				eep->SetProgPageSize(GetEEPTypeWPageSize(eep_type, eep_subtype), false);        //write prog page size
+				eep->SetProgPageSize(GetEEPTypeWPageSize(eep_type, eep_subtype), true);         //read prog page size
+				eep->SetDataPageSize(GetEEPTypeWPageSize(eep_type, eep_subtype) / 2, false);    //write data page size
+				eep->SetDataPageSize(GetEEPTypeWPageSize(eep_type, eep_subtype) / 2, true);     //read data page size
+			}
+
+			At89sBus *b = (At89sBus *)eep->GetBus();
+			b->SetCompatibilityMode( (xtype == AT89S8252 || xtype == AT89S53) );
+			b->SetFallingPhase( (xtype == AT89S8253) && E2Profile::Get8253FallEdge() );
+			b->SetPagePolling( true, (xtype == AT89S8253 || xtype == AT89S51 || xtype == AT89S52) );
+			b->SetPagePolling( false, (xtype == AT89S8253) );
+			break;
 		}
-		long xtype = GetEEPType();
-		if (THEAPP->GetAt89PageOp())
-		{
-			eep->SetProgPageSize(GetEEPTypeWPageSize(eep_type, eep_subtype), false);	//write prog page size
-			eep->SetProgPageSize(GetEEPTypeWPageSize(eep_type, eep_subtype), true);		//read prog page size
-			eep->SetDataPageSize(GetEEPTypeWPageSize(eep_type, eep_subtype)/2, false);	//write data page size
-			eep->SetDataPageSize(GetEEPTypeWPageSize(eep_type, eep_subtype)/2, true);	//read data page size
-		}
-		At89sBus *b = (At89sBus *)eep->GetBus();
-		b->SetCompatibilityMode( (xtype == AT89S8252 || xtype == AT89S53) );
-		b->SetFallingPhase( (xtype == AT89S8253) && THEAPP->Get8253FallEdge() );
-		b->SetPagePolling( true, (xtype == AT89S8253 || xtype == AT89S51 || xtype == AT89S52) );
-		b->SetPagePolling( false, (xtype == AT89S8253) );
-		break;
-	}
+
 	case E93X6:
-		eep = &eep93xx16;
+		eep = eep93xx16;
+
 		if (eep_subtype == 0)
 		{
 			//Forza impostazione manuale
 			eep_subtype = GetE2PSubType(E9306);
 		}
+
 		break;
+
 	case E93XX_8:
-		eep = &eep93xx8;
+		eep = eep93xx8;
+
 		if (eep_subtype == 0)
 		{
 			//Forza impostazione manuale
 			eep_subtype = GetE2PSubType(E9306_8);
 		}
+
 		break;
+
 	case PIC16XX:
-		eep = &eepPic16;
+		eep = eepPic16;
+
 		if (eep_subtype == 0)
 		{
 			//Forza impostazione manuale
 			eep_subtype = GetE2PSubType(PIC1684);
 		}
+
 		break;
+
 	case PIC168XX:
-		eep = &eepPic168xx;
-	//	if (eep_subtype == 0)
-	//	{
-	//		eep_subtype = GetE2PSubType(PIC1684A);
-	//	}
+		eep = eepPic168xx;
+		//      if (eep_subtype == 0)
+		//      {
+		//              eep_subtype = GetE2PSubType(PIC1684A);
+		//      }
 		break;
- 	case PIC125XX:
-		eep = &eepPic125xx;
+
+	case PIC125XX:
+		eep = eepPic125xx;
+
 		if (eep_subtype == 0)
 		{
 			//Forza impstazione manuale
 			eep_subtype = GetE2PSubType(PIC12508);
 		}
+
 		break;
+
 	case E250XX:
-		eep = &eep250xx;
+		eep = eep250xx;
+
 		if (eep_subtype == 0)
 		{
 			//Forza impostazione manuale
 			eep_subtype = GetE2PSubType(E25010);
 		}
+
 		break;
+
 	case E25XXX:
-		eep = &eep25xxx;
+		eep = eep25xxx;
+
 		if (eep_subtype == 0)
 		{
 			//Forza impostazione manuale
 			eep_subtype = GetE2PSubType(E25080);
 		}
-//		eep->SetBus(THEAPP->GetBusVectorPtr()[AT250BIG-1]);
+
+		//              eep->SetBus(GetBusVectorPtr()[AT250BIG-1]);
 		break;
+
 	case E2506XX:
-		eep = &eep2506;
+		eep = eep2506;
+
 		if (eep_subtype == 0)
 		{
 			//Forza impostazione manuale
 			eep_subtype = GetE2PSubType(E2506);
 		}
+
 		break;
+
 	case ENVMXXX:
-		eep = &eep3060;
+		eep = eep3060;
+
 		if (eep_subtype == 0)
 		{
 			//Forza impostazione manuale
 			eep_subtype = GetE2PSubType(ENVM3060);
 		}
+
 		break;
+
 	case AT17XXX:
-		eep = &eep17xxx;
+		eep = eep17xxx;
+
 		if (eep_subtype == 0)
 		{
 			//Forza impostazione manuale
 			eep_subtype = GetE2PSubType(AT1765);
 		}
+
 		break;
+
 	case X24C44XX:
 		if (eep_subtype == 0)
 		{
 			//Forza impostazione manuale
 			eep_subtype = GetE2PSubType(S24H30);
 		}
+
 		if (GetEEPType() == S24H30)
-			eep = &eep2430;
+		{
+			eep = eep2430;
+		}
 		else
-			eep = &eep2444;
+		{
+			eep = eep2444;
+		}
+
 		break;
+
 	default:
-		eep = &eep24xx;		//20/07/99	-- to prevent crash
+		eep = eep24xx;         //20/07/99      -- to prevent crash
 		break;
 	}
-	fuse_ok = false;		//invalidate current fuse settings
+
+	fuse_ok = false;                //invalidate current fuse settings
 	SetSplittedInfo( GetEEPTypeSplit(type, eep_subtype) );
 
 	//Imposta la nuova dimensione della memoria in
@@ -404,9 +538,9 @@ int e2AppWinInfo::Read(int type, int raise_power, int leave_on)
 	int probe = !eep_subtype;
 	int rval = OK;
 
-	UserDebug3(UserApp1, "e2AppWinInfo::Read(%d,%d,%d) - IN\n",type,raise_power,leave_on);
+	qDebug() << "e2AppWinInfo::Read(" << type << "," << raise_power << "," << leave_on << ") - IN";
 
-	if ( THEAPP->GetClearBufBeforeRead() )
+	if ( E2Profile::GetClearBufBeforeRead() )
 	{
 		if (load_type == ALL_TYPE)
 		{
@@ -418,6 +552,7 @@ int e2AppWinInfo::Read(int type, int raise_power, int leave_on)
 			{
 				ClearBuffer(PROG_TYPE);
 			}
+
 			if (load_type & DATA_TYPE)
 			{
 				ClearBuffer(DATA_TYPE);
@@ -426,19 +561,21 @@ int e2AppWinInfo::Read(int type, int raise_power, int leave_on)
 	}
 
 	if (raise_power)
-		rval = OpenBus();		//Set correct bus and power up
+	{
+		rval = OpenBus();        //Set correct bus and power up
+	}
 
-	UserDebug1(UserApp1, "e2AppWinInfo::Read() ** OpenBus = %d\n", rval);
+	qDebug() << "e2AppWinInfo::Read() ** OpenBus = " << rval;
 
 	if (rval == OK)
 	{
-		THEAPP->CheckEvents();
+		//              CheckEvents();
 
-		if ( (rval = eep->Read(probe,type)) > 0 )
+		if ( (rval = eep->Read(probe, type)) > 0 )
 		{
-			UserDebug1(UserApp1, "e2AppWinInfo::Read() ** Read = %d\n", rval);
+			qDebug() << "e2AppWinInfo::Read() ** Read = " << rval;
 
-			SetFileName(0);				//Questo per evitare che al prossimo save() si utilizzi il nome vecchio
+			SetFileName(0);                         //Questo per evitare che al prossimo save() si utilizzi il nome vecchio
 			buf_ok = true;
 			buf_changed = false;
 
@@ -451,10 +588,12 @@ int e2AppWinInfo::Read(int type, int raise_power, int leave_on)
 		RecalcCRC();
 
 		if ( !(rval > 0 && leave_on) )
+		{
 			SleepBus();
+		}
 	}
 
-	UserDebug1(UserApp1, "e2AppWinInfo::Read() = %d - OUT\n", rval);
+	qDebug() << "e2AppWinInfo::Read() = " << rval << " - OUT";
 
 	return rval;
 }
@@ -465,25 +604,32 @@ int e2AppWinInfo::Write(int type, int raise_power, int leave_on)
 	int probe = !eep_subtype;
 	int rval = OK;
 
-	UserDebug3(UserApp1, "e2AppWinInfo::Write(%d,%d,%d) - IN\n", type,raise_power,leave_on);
+	qDebug() << "e2AppWinInfo::Write(" << type << "," << raise_power << "," << leave_on << ") - IN";
 
 	if (raise_power)
+	{
 		rval = OpenBus();
+	}
+
 	if ( rval == OK )
 	{
-		THEAPP->CheckEvents();
-		if ( (rval = eep->Write(probe,type)) > 0 )
+		//              CheckEvents();
+
+		if ( (rval = eep->Write(probe, type)) > 0 )
 		{
 			//Aggiunto il 18/03/99 con la determinazione dei numeri di banchi nelle E24xx2,
 			// affinche` la dimensione rimanga quella impostata bisogna correggere la dimensione
 			// del banco.
 			SetBlockSize( eep->GetBankSize() );
 		}
-		if ( !(rval > 0 && leave_on) )		//23/01/1999
+
+		if ( !(rval > 0 && leave_on) )          //23/01/1999
+		{
 			SleepBus();
+		}
 	}
 
-	UserDebug1(UserApp1, "e2AppWinInfo::Write() = %d - OUT\n", rval);
+	qDebug() << "e2AppWinInfo::Write() = " << rval << " - OUT";
 
 	return rval;
 }
@@ -493,18 +639,24 @@ int e2AppWinInfo::Verify(int type, int raise_power, int leave_on)
 {
 	int rval = OK;
 
-	UserDebug3(UserApp1, "e2AppWinInfo::Verify(%d,%d,%d) - IN\n", type,raise_power,leave_on);
+	qDebug() << "e2AppWinInfo::Verify(" << type << "," << raise_power << "," << leave_on << ") - IN";
 
 	if (raise_power)
+	{
 		rval = OpenBus();
+	}
+
 	if (rval == OK)
 	{
 		rval = eep->Verify(type);
+
 		if ( !(rval >= 0 && leave_on) )
+		{
 			SleepBus();
+		}
 	}
 
-	UserDebug1(UserApp1, "e2AppWinInfo::Verify() = %d - OUT\n", rval);
+	qDebug() << "e2AppWinInfo::Verify() = " << rval << " - OUT";
 
 	return rval;
 }
@@ -514,18 +666,24 @@ int e2AppWinInfo::Erase(int type, int raise_power, int leave_on)
 {
 	int rval = OK;
 
-	UserDebug3(UserApp1, "e2AppWinInfo::Erase(%d,%d,%d) - IN\n", type,raise_power,leave_on);
+	qDebug() << "e2AppWinInfo::Erase(" << type << "," << raise_power << "," << leave_on << ") - IN";
 
 	if (raise_power)
+	{
 		rval = OpenBus();
+	}
+
 	if (rval == OK)
 	{
 		rval = eep->Erase(1, type);
+
 		if ( !(rval >= 0 && leave_on) )
+		{
 			SleepBus();
+		}
 	}
 
-	UserDebug1(UserApp1, "e2AppWinInfo::Erase() = %d - OUT\n", rval);
+	qDebug() << "e2AppWinInfo::Erase() = " << rval << " - OUT";
 
 	return rval;
 }
@@ -534,7 +692,10 @@ int e2AppWinInfo::Erase(int type, int raise_power, int leave_on)
 int e2AppWinInfo::BankRollOverDetect(int force)
 {
 	if ( OpenBus() == OK )
+	{
 		roll_over = eep->BankRollOverDetect(force);
+	}
+
 	SleepBus();
 
 	return roll_over;
@@ -547,20 +708,24 @@ int e2AppWinInfo::Load()
 
 	SetFileBuf(E2P);
 	rval = LoadFile();
+
 	if ( rval <= 0 )
 	{
 		SetFileBuf(MOTOS);
 		rval = LoadFile();
+
 		if ( rval <= 0 )
 		{
 			SetFileBuf(INTEL);
 			rval = LoadFile();
 		}
+
 		if ( rval <= 0 )
 		{
 			SetFileBuf(CSM);
 			rval = LoadFile();
 		}
+
 		if ( rval <= 0 )
 		{
 			SetFileBuf(BIN);
@@ -570,8 +735,8 @@ int e2AppWinInfo::Load()
 		if ( rval > 0 )
 		{
 			if ( GetEEPPriType() == PIC16XX ||
-				  GetEEPPriType() == PIC168XX )
-      			{
+			                GetEEPPriType() == PIC168XX )
+			{
 				//It seems a bit tricky...
 				//Relocate the DATA and CONFIG memory with PIC devices
 				//The assembler store the DATA at 0x2100 (word address) and
@@ -581,34 +746,41 @@ int e2AppWinInfo::Load()
 				if (GetSplittedInfo() > 0 && GetSize() > GetSplittedInfo())
 				{
 					//Copy Config memory
-					if ( GetSize()+16 <= GetBufSize() )
-						memcpy(GetBufPtr()+GetSize(), GetBufPtr() + (0x2000 * 2), 16);
+					if ( GetSize() + 16 <= GetBufSize() )
+					{
+						memcpy(GetBufPtr() + GetSize(), GetBufPtr() + (0x2000 * 2), 16);
+					}
 
 					//Now copy data memory (copy only low byte every word)
 					int k;
 					uint8_t *dst = GetBufPtr() + GetSplittedInfo();
 					uint16_t *src = (uint16_t *)GetBufPtr() + 0x2100;
-					for (k = 0; k < GetSize()-GetSplittedInfo(); k++)
+
+					for (k = 0; k < GetSize() - GetSplittedInfo(); k++)
+					{
 						*dst++ = (uint8_t)(*src++ & 0xff);
+					}
+
 					//memcpy(GetBufPtr()+GetSplittedInfo()+16, GetBufPtr() + (0x2100 * 2), GetSize() - (GetSplittedInfo() + 16) );
 
 					//Set fuse bits so the dialog shows the correct values
 					uint8_t *ptr = GetBufPtr() + GetSize() + 14;
-					uint16_t config = ptr[0] + ((uint16_t)ptr[1] << 8);		//little endian buffer
-					config = ~config & 0x3fff;		//	CodeProtectAdjust(config, 1);
+					uint16_t config = ptr[0] + ((uint16_t)ptr[1] << 8);             //little endian buffer
+					config = ~config & 0x3fff;              //      CodeProtectAdjust(config, 1);
 					SetLockBits(config);
 				}
-    			}
-			else
-			if ( GetEEPPriType() == PIC125XX )
+			}
+			else if ( GetEEPPriType() == PIC125XX )
 			{
 				//Copy Config memory
-				if ( GetSize()+16 <= GetBufSize() )
-					memcpy(GetBufPtr()+GetSize()+14, GetBufPtr() + (0xFFF * 2), 2);
+				if ( GetSize() + 16 <= GetBufSize() )
+				{
+					memcpy(GetBufPtr() + GetSize() + 14, GetBufPtr() + (0xFFF * 2), 2);
+				}
 
 				//Set fuse bits so the dialog shows the correct values
 				uint8_t *ptr = GetBufPtr() + GetSize() + 14;
-				uint16_t config = ptr[0] + ((uint16_t)ptr[1] << 8);		//little endian buffer
+				uint16_t config = ptr[0] + ((uint16_t)ptr[1] << 8);             //little endian buffer
 				SetLockBits( ~config & 0x0fff );
 			}
 		}
@@ -632,6 +804,7 @@ int e2AppWinInfo::LoadFile()
 			{
 				ClearBuffer(PROG_TYPE);
 			}
+
 			if (load_type & DATA_TYPE)
 			{
 				ClearBuffer(DATA_TYPE);
@@ -640,11 +813,13 @@ int e2AppWinInfo::LoadFile()
 	}
 
 	int rval = fbufp->Load(load_type, load_relocation);
+
 	if (rval > 0)
 	{
 		buf_ok = true;
 		buf_changed = false;
 	}
+
 	RecalcCRC();
 
 	return rval;
@@ -657,22 +832,25 @@ int e2AppWinInfo::Save()
 
 	uint8_t *localbuf;
 	localbuf = new uint8_t[GetBufSize()];
+
 	if (localbuf == 0)
+	{
 		return OUTOFMEMORY;
+	}
 
 	//save buffer
 	memcpy( localbuf, GetBufPtr(), GetBufSize() );
-	memset( localbuf+GetSize(), 0xFF, GetBufSize()-GetSize() );
+	memset( localbuf + GetSize(), 0xFF, GetBufSize() - GetSize() );
 
 	/**
 	 ** NON va qui!!! Va messo in IntelFileBuf::Save(int savetype)
 	 **               e MotorolaFileBus::Save
 	 **/
- 	if (save_type == ALL_TYPE &&
-			(GetFileBuf() == INTEL || GetFileBuf() == MOTOS) )
+	if (save_type == ALL_TYPE &&
+	                (GetFileBuf() == INTEL || GetFileBuf() == MOTOS) )
 	{
 		if ( GetEEPPriType() == PIC16XX ||
-			  GetEEPPriType() == PIC168XX )
+		                GetEEPPriType() == PIC168XX )
 		{
 			//It seems a bit tricky...
 			//Relocate the DATA and CONFIG memory with PIC devices
@@ -686,23 +864,28 @@ int e2AppWinInfo::Save()
 				memset(GetBufPtr(), 0xFF, GetBufSize());
 
 				//Set fuse bits so the dialog shows the correct values
-				if ( 0x2000*2+16 <= GetBufSize() )
+				if ( 0x2000 * 2 + 16 <= GetBufSize() )
 				{
 					uint16_t config = (uint16_t)GetLockBits();
 
 					if ( GetEEPType() == PIC1683 ||
-						 GetEEPType() == PIC1684 ||
-						 GetEEPType() == PIC1684A )
+					                GetEEPType() == PIC1684 ||
+					                GetEEPType() == PIC1684A )
 					{
-						if (config & (1<<4))
+						if (config & (1 << 4))
+						{
 							config |= 0xfff0;
+						}
 						else
+						{
 							config &= 0x000f;
+						}
 					}
-					config = ~config & 0x3fff;		//	CodeProtectAdjust(config, 0);
 
-					uint8_t *ptr = GetBufPtr() + (0x2000*2) + 14;
-					ptr[0] = (uint8_t)(config & 0xFF);			//little endian buffer
+					config = ~config & 0x3fff;              //      CodeProtectAdjust(config, 0);
+
+					uint8_t *ptr = GetBufPtr() + (0x2000 * 2) + 14;
+					ptr[0] = (uint8_t)(config & 0xFF);                      //little endian buffer
 					ptr[1] = (uint8_t)(config >> 8);
 				}
 
@@ -713,19 +896,21 @@ int e2AppWinInfo::Save()
 				}
 
 				//Copy data memory
-				if ( 0x2100*2 + (GetSize()-GetSplittedInfo()) <= GetBufSize() )
+				if ( 0x2100 * 2 + (GetSize() - GetSplittedInfo()) <= GetBufSize() )
 				{
 					//copy only low byte every word
 					int k;
 					uint8_t *src = localbuf + GetSplittedInfo();
 					uint16_t *dst = (uint16_t *)GetBufPtr() + 0x2100;
-					for (k = 0; k < GetSize()-GetSplittedInfo(); k++)
+
+					for (k = 0; k < GetSize() - GetSplittedInfo(); k++)
+					{
 						*dst++ = *src++;
+					}
 				}
 			}
 		}
-		else
-		if ( GetEEPPriType() == PIC125XX )
+		else if ( GetEEPPriType() == PIC125XX )
 		{
 			//Set ALL overbound buffer to 0xFF
 			memset(GetBufPtr(), 0xFF, GetBufSize());
@@ -737,22 +922,25 @@ int e2AppWinInfo::Save()
 			}
 
 			//Set fuse bits so the dialog shows the correct values
-			if ( 0xFFF*2+2 <= GetBufSize() )
+			if ( 0xFFF * 2 + 2 <= GetBufSize() )
 			{
 				uint16_t config = (uint16_t)GetLockBits();
 
-				config = ~config & 0x0fff;		//	CodeProtectAdjust(config, 0);
+				config = ~config & 0x0fff;              //      CodeProtectAdjust(config, 0);
 
-				uint8_t *ptr = GetBufPtr() + (0xFFF*2);
-				ptr[0] = (uint8_t)(config & 0xFF);			//little endian buffer
+				uint8_t *ptr = GetBufPtr() + (0xFFF * 2);
+				ptr[0] = (uint8_t)(config & 0xFF);                      //little endian buffer
 				ptr[1] = (uint8_t)(config >> 8);
 			}
 		}
 	}
 
 	rval = fbufp->Save(save_type, save_relocation);
+
 	if (rval > 0)
+	{
 		buf_changed = false;
+	}
 
 	//restore buffer
 	memcpy(GetBufPtr(), localbuf, GetBufSize());
@@ -772,7 +960,9 @@ long e2AppWinInfo::GetLoadRelocation() const
 void e2AppWinInfo::SetLoadRelocation(long val)
 {
 	if ( val >= 0 && val < GetBufSize() )
+	{
 		load_relocation = val;
+	}
 }
 
 //====================>>> e2AppWinInfo::GetSaveRelocation <<<===================
@@ -785,7 +975,9 @@ long e2AppWinInfo::GetSaveRelocation() const
 void e2AppWinInfo::SetSaveRelocation(long val)
 {
 	if ( val >= 0 && val < GetBufSize() )
+	{
 		save_relocation = val;
+	}
 }
 
 
@@ -851,9 +1043,13 @@ long e2AppWinInfo::GetSize() const
 void e2AppWinInfo::SetFileBuf(FileType type)
 {
 	if (type >= 0 && type < NO_OF_FILETYPE)
+	{
 		fbufp = fbufvet[type];
+	}
 	else
-		fbufp = fbufvet[E2P];	//Tipo di default
+	{
+		fbufp = fbufvet[E2P];        //Tipo di default
+	}
 }
 
 FileType e2AppWinInfo::GetFileBuf() const
@@ -864,63 +1060,50 @@ FileType e2AppWinInfo::GetFileBuf() const
 	for (n = 0; n < NO_OF_FILETYPE; n++)
 	{
 		type = (FileType)n;
+
 		if (fbufvet[type] == fbufp)
+		{
 			break;
+		}
 	}
 
 	return type;
 }
 
-void e2AppWinInfo::SetFileName(char const *name)
-{
-	if (name)
-		THEAPP->SetLastFile(name, load_type);
 
-	if (fname)
-		delete [] fname;
-	fname = 0;				//nel caso in cui name sia 0
-	if ( name && (fname = new char[strlen(name)+1]) )
-		strcpy(fname, name);
+QString e2AppWinInfo::GetStringID()
+{
+	return eeprom_string;
 }
 
-char *e2AppWinInfo::GetStringID(char *s)
+
+void e2AppWinInfo::SetStringID(const QString &s)
 {
-	if (s)
+	if (s.length())
 	{
-		strncpy(s, eeprom_string, STRINGID_SIZE-1);
-		s[STRINGID_SIZE-1] = '\0';
-		return s;
+		eeprom_string = s;
 	}
 	else
-		return eeprom_string;
-}
-
-void e2AppWinInfo::SetStringID(char const *s)
-{
-	if (s)
 	{
-		strncpy(eeprom_string, s, STRINGID_SIZE-1);
-		eeprom_string[STRINGID_SIZE-1] = '\0';
+		eeprom_string = "";
 	}
 }
 
-char *e2AppWinInfo::GetComment(char *s)
+QString e2AppWinInfo::GetComment()
 {
-	if (s)
+	return eeprom_comment;
+}
+
+void e2AppWinInfo::SetComment(const QString &s)
+{
+	if (s.length())
 	{
-		strncpy(s, eeprom_comment, COMMENT_SIZE-1);
-		s[COMMENT_SIZE-1] = '\0';
-		return s;
+		eeprom_comment = s;
 	}
 	else
-		return eeprom_comment;
-}
-
-void e2AppWinInfo::SetComment(char const *s)
-{
-	if (s)
-		strncpy(eeprom_comment, s, COMMENT_SIZE-1);
-	eeprom_comment[COMMENT_SIZE-1] = '\0';
+	{
+		eeprom_comment = "";
+	}
 }
 
 void e2AppWinInfo::ClearBuffer(int type)
@@ -928,26 +1111,31 @@ void e2AppWinInfo::ClearBuffer(int type)
 	if (type == ALL_TYPE)
 	{
 		memset(GetBufPtr(), 0xFF, GetBufSize());
-		buf_ok = true;		//Validate buffer
+		buf_ok = true;          //Validate buffer
 	}
-	else
-	if (type == PROG_TYPE)
+	else if (type == PROG_TYPE)
 	{
 		long s = GetSplittedInfo();
+
 		if (s <= 0 || s > GetBufSize())
+		{
 			s = GetSize();
+		}
 
 		memset(GetBufPtr(), 0xFF, s);
 	}
-	else
-	if (type == DATA_TYPE)
+	else if (type == DATA_TYPE)
 	{
 		long s = GetSplittedInfo();
+
 		if (s < 0 || s >= GetSize())
+		{
 			s = 0;
+		}
 
 		memset(GetBufPtr() + s, 0xFF, GetSize() - s);
 	}
+
 	RecalcCRC();
 }
 
@@ -956,21 +1144,31 @@ void e2AppWinInfo::FillBuffer(int init_pos, int ch, long len)
 	long l;
 
 	if (len > 0)
+	{
 		l = len;
+	}
 	else
+	{
 		l = GetBufSize();
+	}
 
 	if (init_pos >= GetBufSize())
-		return;			//Bad value
+	{
+		return;        //Bad value
+	}
 
 	// Check for buffer overflow
 	if (init_pos + l > GetBufSize())
+	{
 		l = GetBufSize() - init_pos;
+	}
 
 	// If the buffer was not yet initialized we first
 	//   clear it.
 	if (!buf_ok)
+	{
 		ClearBuffer();
+	}
 
 	memset(GetBufPtr() + init_pos, ch, l);
 
@@ -987,8 +1185,8 @@ void e2AppWinInfo::SwapBytes()
 	for (k = 0; k < size; k += 2)
 	{
 		tmp = buffer[k];
-		buffer[k] = buffer[k+1];
-		buffer[k+1] = tmp;
+		buffer[k] = buffer[k + 1];
+		buffer[k + 1] = tmp;
 	}
 
 	RecalcCRC();
@@ -998,25 +1196,31 @@ void e2AppWinInfo::SwapBytes()
 void e2AppWinInfo::DoubleSize()
 {
 	if (GetSize() == AUTOSIZE_ID)
+	{
 		return;
+	}
 
 	//Attenzione!! Il buffer deve essere capiente il doppio
 	//  della dimensione del dispositivo attuale
-//	int n = GetNoOfBlock();
+	//      int n = GetNoOfBlock();
 	int k;
-	for (k = GetNoOfBlock()-1; k >= 0; k--)
-	{	//Copia l'ultimo banco nei due banchi in fondo
+
+	for (k = GetNoOfBlock() - 1; k >= 0; k--)
+	{
+		//Copia l'ultimo banco nei due banchi in fondo
 		if (k)
-		{	//Non copiarlo su se stesso!
-		memcpy(	buffer + k*2 * GetBlockSize(),
-				buffer + k * GetBlockSize(),
-				GetBlockSize()
-				);
+		{
+			//Non copiarlo su se stesso!
+			memcpy( buffer + k * 2 * GetBlockSize(),
+			        buffer + k * GetBlockSize(),
+			        GetBlockSize()
+			      );
 		}
-		memcpy(	buffer + (k*2+1) * GetBlockSize(),
-				buffer + k * GetBlockSize(),
-				GetBlockSize()
-				);
+
+		memcpy( buffer + (k * 2 + 1) * GetBlockSize(),
+		        buffer + k * GetBlockSize(),
+		        GetBlockSize()
+		      );
 	}
 
 	RecalcCRC();
@@ -1037,14 +1241,18 @@ int e2AppWinInfo::SecurityRead(uint32_t &bits)
 	{
 		lock_bits = bits;
 	}
+
 	return rv;
 }
 
 int e2AppWinInfo::SecurityWrite(uint32_t bits, bool no_param)
 {
 	int rv;
+
 	if (no_param)
+	{
 		bits = lock_bits;
+	}
 
 	OpenBus();
 	rv = eep->SecurityWrite(bits);
@@ -1066,7 +1274,9 @@ int e2AppWinInfo::HighEnduranceRead(uint32_t &block_no)
 	SleepBus();
 
 	if (rv == OK)
+	{
 		SetFuseBits(block_no);
+	}
 
 	return rv;
 }
@@ -1074,8 +1284,11 @@ int e2AppWinInfo::HighEnduranceRead(uint32_t &block_no)
 int e2AppWinInfo::HighEnduranceWrite(uint32_t block_no, bool no_param)
 {
 	int rv;
+
 	if (no_param)
+	{
 		block_no = GetFuseBits();
+	}
 
 	OpenBus();
 	rv = eep->HighEnduranceWrite(block_no);
@@ -1090,7 +1303,9 @@ int e2AppWinInfo::HighEnduranceWrite(uint32_t block_no, bool no_param)
 		SleepBus();
 
 		if (rv == OK && block_no != block2)
+		{
 			rv = E2ERR_WRITEFAILED;
+		}
 	}
 
 	return rv;
@@ -1105,7 +1320,9 @@ int e2AppWinInfo::FusesRead(uint32_t &bits)
 	SleepBus();
 
 	if (rv == OK)
+	{
 		SetFuseBits(bits);
+	}
 
 	return rv;
 }
@@ -1115,25 +1332,28 @@ int e2AppWinInfo::FusesWrite(uint32_t bits, bool no_param)
 	int rv;
 
 	if (no_param)
+	{
 		bits = GetFuseBits();
+	}
 
 	OpenBus();
 	rv = eep->FusesWrite(bits);
 	SleepBus();
 
-/**	the read op doesn't work with every device
-	if (rv == OK)
-	{
-		uint32_t bits2;
+	/**
+	the read op doesn't work with every device
+	        if (rv == OK)
+	        {
+	                uint32_t bits2;
 
-		OpenBus();
-		rv = eep->FusesRead(bits2);
-		SleepBus();
+	                OpenBus();
+	                rv = eep->FusesRead(bits2);
+	                SleepBus();
 
-		if (rv == OK && bits != bits2)
-			rv = E2ERR_WRITEFAILED;
-	}
-**/
+	                if (rv == OK && bits != bits2)
+	                        rv = E2ERR_WRITEFAILED;
+	        }
+	**/
 	return rv;
 }
 
@@ -1161,88 +1381,101 @@ uint16_t e2AppWinInfo::RecalcCRC()
 #include <ctype.h>
 
 //======================>>> e2AppWinInfo::Dump <<<=======================
-char const *e2AppWinInfo::Dump(int line, int type)
+QString e2AppWinInfo::Dump(int line, int type)
 {
 	long idx;
 	long upperlimit;
 
 	if (!buf_ok)
+	{
 		return "";
+	}
 
 	upperlimit = GetSize() == 0 ? GetBufSize() : GetSize();
 
 	idx = line * hex_per_line;
+
 	if (idx < upperlimit)
 	{
 		if (type == 0)
 		{
-			char tmpbuf[16+1];
+			char tmpbuf[16 + 1];
+
 			for (int k = 0; k < hex_per_line; k++)
-				tmpbuf[k] = isprint(buffer[idx+k]) ? buffer[idx+k] : '.';
+			{
+				tmpbuf[k] = isprint(buffer[idx + k]) ? buffer[idx + k] : '.';
+			}
+
 			tmpbuf[hex_per_line] = 0;
 
-			snprintf(linebuf, LINEBUF_SIZE, "  %06lX) %02X %02X %02X %02X %02X %02X %02X %02X - %02X %02X %02X %02X %02X %02X %02X %02X    %s\n",
-					idx,
-					buffer[idx+0],
-					buffer[idx+1],
-					buffer[idx+2],
-					buffer[idx+3],
-					buffer[idx+4],
-					buffer[idx+5],
-					buffer[idx+6],
-					buffer[idx+7],
+			linebuf.sprintf("  %06lX) %02X %02X %02X %02X %02X %02X %02X %02X - %02X %02X %02X %02X %02X %02X %02X %02X    %s\n",
+			                //                      snprintf(linebuf, LINEBUF_SIZE, "  %06lX) %02X %02X %02X %02X %02X %02X %02X %02X - %02X %02X %02X %02X %02X %02X %02X %02X    %s\n",
+			                idx,
+			                buffer[idx + 0],
+			                buffer[idx + 1],
+			                buffer[idx + 2],
+			                buffer[idx + 3],
+			                buffer[idx + 4],
+			                buffer[idx + 5],
+			                buffer[idx + 6],
+			                buffer[idx + 7],
 
-					buffer[idx+ 8],
-					buffer[idx+ 9],
-					buffer[idx+10],
-					buffer[idx+11],
-					buffer[idx+12],
-					buffer[idx+13],
-					buffer[idx+14],
-					buffer[idx+15],
+			                buffer[idx + 8],
+			                buffer[idx + 9],
+			                buffer[idx + 10],
+			                buffer[idx + 11],
+			                buffer[idx + 12],
+			                buffer[idx + 13],
+			                buffer[idx + 14],
+			                buffer[idx + 15],
 
-					tmpbuf
-			);
+			                tmpbuf
+			               );
+		}
+		else if (type == 1)
+		{
+			linebuf.sprintf( "  %06lX)",     idx);
+			//                      snprintf(linebuf, LINEBUF_SIZE, "  %06lX)",     idx);
+		}
+		else if (type == 2)
+		{
+			linebuf.sprintf( " %02X %02X %02X %02X %02X %02X %02X %02X - %02X %02X %02X %02X %02X %02X %02X %02X  ",
+			                 //                      snprintf(linebuf, LINEBUF_SIZE, " %02X %02X %02X %02X %02X %02X %02X %02X - %02X %02X %02X %02X %02X %02X %02X %02X  ",
+			                 buffer[idx + 0],
+			                 buffer[idx + 1],
+			                 buffer[idx + 2],
+			                 buffer[idx + 3],
+			                 buffer[idx + 4],
+			                 buffer[idx + 5],
+			                 buffer[idx + 6],
+			                 buffer[idx + 7],
+
+			                 buffer[idx + 8],
+			                 buffer[idx + 9],
+			                 buffer[idx + 10],
+			                 buffer[idx + 11],
+			                 buffer[idx + 12],
+			                 buffer[idx + 13],
+			                 buffer[idx + 14],
+			                 buffer[idx + 15]
+			               );
 		}
 		else
-		if (type == 1)
 		{
-			snprintf(linebuf, LINEBUF_SIZE, "  %06lX)",	idx);
-		}
-		else
-		if (type == 2)
-		{
-			snprintf(linebuf, LINEBUF_SIZE, " %02X %02X %02X %02X %02X %02X %02X %02X - %02X %02X %02X %02X %02X %02X %02X %02X  ",
-					buffer[idx+0],
-					buffer[idx+1],
-					buffer[idx+2],
-					buffer[idx+3],
-					buffer[idx+4],
-					buffer[idx+5],
-					buffer[idx+6],
-					buffer[idx+7],
+			char tmpbuf[16 + 1];
 
-					buffer[idx+ 8],
-					buffer[idx+ 9],
-					buffer[idx+10],
-					buffer[idx+11],
-					buffer[idx+12],
-					buffer[idx+13],
-					buffer[idx+14],
-					buffer[idx+15]
-			);
-		}
-		else
-		{
-			char tmpbuf[16+1];
 			for (int k = 0; k < hex_per_line; k++)
-				tmpbuf[k] = isprint(buffer[idx+k]) ? buffer[idx+k] : '.';
+			{
+				tmpbuf[k] = isprint(buffer[idx + k]) ? buffer[idx + k] : '.';
+			}
+
 			tmpbuf[hex_per_line] = 0;
 
-			snprintf(linebuf, LINEBUF_SIZE, "  %s\n", tmpbuf);
+			linebuf.sprintf("  %s\n", tmpbuf);
+			//                      snprintf(linebuf, LINEBUF_SIZE, "  %s\n", tmpbuf);
 		}
 
-		linebuf[LINEBUF_SIZE-1] = '\0';
+		//              linebuf[LINEBUF_SIZE - 1] = '\0';
 	}
 
 	return linebuf;

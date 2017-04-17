@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: at93cxx.h,v 1.3 2007/04/20 10:58:21 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -32,27 +32,31 @@
 
 #include "types.h"
 
-#include "device.h"
+
 #include "at93cbus.h"
+#include "device.h"
+
 
 class At93cxx : public Device
 {
-  public:		//---------------------------------------- public
+public:               //---------------------------------------- public
 
 	At93cxx(e2AppWinInfo *wininfo = 0, BusIO *busp = 0);
 	virtual ~At93cxx();
 
-//	int Probe(int probe_size = 0);
+	//      int Probe(int probe_size = 0);
 	int Read(int probe = 1, int type = ALL_TYPE);
 	int Write(int probe = 1, int type = ALL_TYPE);
 	int Verify(int type = ALL_TYPE);
 
-  protected:	//--------------------------------------- protected
+protected:    //--------------------------------------- protected
 
 	At93cBus *GetBus()
-		{ return (At93cBus *)Device::GetBus(); }
+	{
+		return (At93cBus *)Device::GetBus();
+	}
 
-  private:		//--------------------------------------- private
+private:              //--------------------------------------- private
 
 };
 #endif

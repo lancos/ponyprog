@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: microbus.cpp,v 1.5 2009/11/16 22:29:18 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -28,19 +28,26 @@
 //=========================================================================//
 
 #include "types.h"
+#include "globals.h"
+
+
+#include "e2profil.h"
 #include "microbus.h"
 #include "errcode.h"
 
-#include "e2app.h"
+#include "e2cmdw.h"
 
-#ifdef	_LINUX_
+#include <QDebug>
+
+
+#ifdef  __linux__
 //#  include <asm/io.h>
 #  include <unistd.h>
 #else
-#  ifdef	__BORLANDC__
-#    define	__inline__
+#  ifdef        __BORLANDC__
+#    define     __inline__
 #  else // _MICROSOFT_ VC++
-#    define	__inline__ __inline
+#    define     __inline__ __inline
 #    define _export
 #  endif
 #endif
@@ -49,20 +56,20 @@
 MicroWireBus::MicroWireBus(BusInterface *ptr)
 	: BusIO(ptr)
 {
-	UserDebug(Constructor, "MicroWireBus::MicroWireBus()\n");
+	qDebug() << "MicroWireBus::MicroWireBus()";
 }
 
 // Distruttore
 MicroWireBus::~MicroWireBus()
 {
-	UserDebug(Destructor, "MicroWireBus::~MicroWireBus()\n");
+	qDebug() << "MicroWireBus::~MicroWireBus()";
 
-//	Close();
+	//      Close();
 }
 
 void MicroWireBus::SetDelay()
 {
-	int val = THEAPP->GetMicroWireSpeed();
+	int val = E2Profile::GetMicroWireSpeed();
 	int n;
 
 	switch(val)
@@ -70,36 +77,42 @@ void MicroWireBus::SetDelay()
 	case TURBO:
 		n = 0;         // as fast as your PC can
 		break;
+
 	case FAST:
 		n = 1;
 		break;
+
 	case SLOW:
 		n = 10;
 		break;
+
 	case VERYSLOW:
 		n = 80;
 		break;
+
 	case ULTRASLOW:
 		n = 500;
 		break;
+
 	default:
 		n = 5;         //Default (< 100KHz)
 		break;
 	}
+
 	BusIO::SetDelay(n);
 
-	UserDebug1(UserApp2, "MicroWire::SetDelay() = %d\n", n);
+	qDebug() << "MicroWire::SetDelay() = " << n;
 }
 
 
 int MicroWireBus::SendDataBit(int b)
 {
-	clearCLK();		//si assicura che SCK low
+	clearCLK();             //si assicura che SCK low
 	bitDI(b);
 
 	WaitUsec(shot_delay);
 
-	setCLK();		//device latch data bit now!
+	setCLK();               //device latch data bit now!
 
 	WaitUsec(shot_delay);
 
@@ -113,7 +126,7 @@ int MicroWireBus::RecDataBit()
 {
 	register uint8_t b;
 
-	clearCLK();		//si assicura che SCK low
+	clearCLK();             //si assicura che SCK low
 
 	WaitUsec(shot_delay);
 
@@ -129,7 +142,7 @@ int MicroWireBus::RecDataBit()
 
 int MicroWireBus::RecDataBitShort()
 {
-	clearCLK();		//si assicura che SCK low
+	clearCLK();             //si assicura che SCK low
 	WaitUsec(shot_delay);
 	return getDO();
 }
@@ -140,16 +153,23 @@ int MicroWireBus::SendDataWord(int wo, int wlen, int lsb)
 	int k;
 
 	clearCLK();
+
 	if (lsb)
-	{		//Dal meno significativo al piu` significativo
-		for (k = 0; k < wlen; k++)
-			SendDataBit(wo & (1<<k));
-	}
-	else	//Dal piu` significativo al meno significativo
 	{
-		for (k = wlen-1; k >= 0; k--)
-			SendDataBit(wo & (1<<k));
+		//Dal meno significativo al piu` significativo
+		for (k = 0; k < wlen; k++)
+		{
+			SendDataBit(wo & (1 << k));
+		}
 	}
+	else     //Dal piu` significativo al meno significativo
+	{
+		for (k = wlen - 1; k >= 0; k--)
+		{
+			SendDataBit(wo & (1 << k));
+		}
+	}
+
 	clearDI();
 
 	return OK;
@@ -161,17 +181,22 @@ int MicroWireBus::RecDataWord(int wlen, int lsb)
 	int k, val = 0;
 
 	clearCLK();
+
 	if (lsb)
 	{
 		for (k = 0; k < wlen; k++)
 			if ( RecDataBit() )
-				val |= (1<<k);
+			{
+				val |= (1 << k);
+			}
 	}
 	else
 	{
-		for (k = wlen-1; k >= 0; k--)
+		for (k = wlen - 1; k >= 0; k--)
 			if ( RecDataBit() )
-				val |= (1<<k);
+			{
+				val |= (1 << k);
+			}
 	}
 
 	return val;
@@ -194,15 +219,19 @@ int MicroWireBus::RecDataWordShort(int wlen, int lsb)
 
 			for (k = 1; k < wlen; k++)
 				if ( RecDataBit() )
-					val |= (1<<k);
+				{
+					val |= (1 << k);
+				}
 		}
 		else
 		{
-			val = RecDataBitShort() ? 1 << (wlen-1) : 0;
+			val = RecDataBitShort() ? 1 << (wlen - 1) : 0;
 
-			for (k = wlen-2; k >= 0; k--)
+			for (k = wlen - 2; k >= 0; k--)
 				if ( RecDataBit() )
-					val |= (1<<k);
+				{
+					val |= (1 << k);
+				}
 		}
 	}
 
@@ -212,37 +241,40 @@ int MicroWireBus::RecDataWordShort(int wlen, int lsb)
 int MicroWireBus::WaitReadyAfterWrite(long timeout)
 {
 	clearCLK();
-	ClearReset();	//27/05/98
+	ClearReset();   //27/05/98
 
 	WaitUsec(shot_delay);
 
-	SetReset();		//27/05/98
+	SetReset();             //27/05/98
 
 	WaitUsec(shot_delay);
 
 	clearCLK();
 
 	long k;
-	for (k = timeout; k > 0  &&  !getDO(); k--)
-		WaitUsec(1);		//07/08/99 ** try to fix temporization (so to need only one global calibration)
 
-	UserDebug1(UserApp1, "MicroWireBus::WaitReadyAfterWrite() = %ld\n", k);
+	for (k = timeout; k > 0  &&  !getDO(); k--)
+	{
+		WaitUsec(1);        //07/08/99 ** try to fix temporization (so to need only one global calibration)
+	}
+
+	qDebug() << "MicroWireBus::WaitReadyAfterWrite() = " << k;
 
 	return k ? OK : E2P_TIMEOUT;
 }
 
 int MicroWireBus::Reset(void)
 {
-	UserDebug(UserApp2, "MicroWireBus::Reset()\n");
+	qDebug() << "MicroWireBus::Reset()";
 
 	SetDelay();
 
 	clearCLK();
-	//clearDI();	//27/05/98
+	//clearDI();    //27/05/98
 	setDI();
 
-	ClearReset();	//Da un impulso sul reset
-	WaitMsec(1);	//27/05/98
+	ClearReset();   //Da un impulso sul reset
+	WaitMsec(1);    //27/05/98
 	SetReset();
 
 	WaitMsec(50);
@@ -254,13 +286,18 @@ int MicroWireBus::Reset(void)
 int MicroWireBus::CalcAddressSize(int mem_size, int org) const
 {
 	if (mem_size-- <= 0)
+	{
 		return -1;
+	}
 
 	int k;
-	for (k = 15; k > 0; k--)
-		if ( mem_size & (1<<k) )
-			break;
 
-	return k+1;
+	for (k = 15; k > 0; k--)
+		if ( mem_size & (1 << k) )
+		{
+			break;
+		}
+
+	return k + 1;
 }
 

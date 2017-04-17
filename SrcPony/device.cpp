@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: device.cpp,v 1.7 2013/11/30 11:14:05 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -28,21 +28,21 @@
 //=========================================================================//
 
 #include "types.h"
-#include "device.h"		// Header file
+#include "device.h"             // Header file
 #include "e2awinfo.h"
 
 //=====>>> Costruttore <<<======
 Device::Device(e2AppWinInfo *wininfo, BusIO *busp, int b_size)
-	:	detected_type(0),
-        awi(wininfo),
-		bus(busp),
-		def_bank_size(b_size),
-		write_progpage_size(0),
-		read_progpage_size(0),
-		write_datapage_size(0),
-		read_datapage_size(0)
+	:       detected_type(0),
+	        awi(wininfo),
+	        bus(busp),
+	        def_bank_size(b_size),
+	        write_progpage_size(0),
+	        read_progpage_size(0),
+	        write_datapage_size(0),
+	        read_datapage_size(0)
 {
-	detected_signature[0] = '\0';
+	detected_signature = "";
 	DefaultBankSize();
 }
 
@@ -54,7 +54,9 @@ Device::~Device()
 void Device::SetAWInfo(e2AppWinInfo *wininfo)
 {
 	if (wininfo)
+	{
 		awi = wininfo;
+	}
 }
 
 int Device::GetAddrSize() const
@@ -67,10 +69,13 @@ int Device::GetNoOfBank() const
 	return awi->GetNoOfBlock();
 }
 
+
 void Device::SetNoOfBank(int no)
 {
 	if (no >= 0)
+	{
 		awi->SetNoOfBlock(no);
+	}
 }
 
 uint8_t *Device::GetBufPtr() const
@@ -91,38 +96,56 @@ int Device::GetSplitted() const
 void Device::SetSplitted(int split)
 {
 	if (split > 0)
+	{
 		awi->SetSplittedInfo(split);
+	}
 }
 
 int Device::GetProgPageSize(bool rnw) const
 {
 	if (rnw)
+	{
 		return read_progpage_size;
+	}
 	else
+	{
 		return write_progpage_size;
+	}
 }
 void Device::SetProgPageSize(int pagesize, bool rnw)
 {
 	if (rnw)
+	{
 		read_progpage_size = pagesize;
+	}
 	else
+	{
 		write_progpage_size = pagesize;
+	}
 }
 
 int Device::GetDataPageSize(bool rnw) const
 {
 	if (rnw)
+	{
 		return read_datapage_size;
+	}
 	else
+	{
 		return write_datapage_size;
+	}
 }
 
 void Device::SetDataPageSize(int pagesize, bool rnw)
 {
 	if (rnw)
+	{
 		read_datapage_size = pagesize;
+	}
 	else
+	{
 		write_datapage_size = pagesize;
+	}
 }
 
 //Read Flash program memory
@@ -132,11 +155,14 @@ int Device::ReadProg()
 	int size = GetSplitted();
 	int base = 0;
 
-	retval = GetBus()->Read(0, GetBufPtr()+base, size, read_progpage_size);
+	retval = GetBus()->Read(0, GetBufPtr() + base, size, read_progpage_size);
+
 	if (retval != size)
 	{
 		if (retval > 0)
+		{
 			retval = OP_ABORTED;
+		}
 	}
 
 	return retval;
@@ -149,11 +175,14 @@ int Device::ReadData()
 	int size = GetSize() - GetSplitted();
 	int base = GetSplitted();
 
-	retval = GetBus()->Read(1, GetBufPtr()+base, size, read_datapage_size);
+	retval = GetBus()->Read(1, GetBufPtr() + base, size, read_datapage_size);
+
 	if ( retval != size )
 	{
 		if (retval > 0)
+		{
 			retval = OP_ABORTED;
+		}
 	}
 
 	return retval;
@@ -167,11 +196,14 @@ int Device::WriteProg()
 	int base = 0;
 
 	GetBus()->ClearLastProgrammedAddress();
-	rv = GetBus()->Write(0, GetBufPtr()+base, size, write_progpage_size);
+	rv = GetBus()->Write(0, GetBufPtr() + base, size, write_progpage_size);
+
 	if ( rv != size )
 	{
 		if (rv > 0)
+		{
 			rv = OP_ABORTED;
+		}
 	}
 
 	return rv;
@@ -184,11 +216,14 @@ int Device::WriteData()
 	int size = GetSize() - GetSplitted();
 	int base = GetSplitted();
 
-	rv = GetBus()->Write(1, GetBufPtr()+base, size, write_datapage_size);
+	rv = GetBus()->Write(1, GetBufPtr() + base, size, write_datapage_size);
+
 	if ( rv != size )
 	{
 		if (rv > 0)
+		{
 			rv = OP_ABORTED;
+		}
 	}
 
 	return rv;
@@ -202,27 +237,37 @@ int Device::VerifyProg(unsigned char *localbuf)
 
 	//Verify only programmed bytes (to save time in big devices)
 	long v_len = size;
+
 	if ( GetBus()->GetLastProgrammedAddress() > 0 && GetBus()->GetLastProgrammedAddress() < size )
 	{
 		v_len = GetBus()->GetLastProgrammedAddress() + 1;
-		GetBus()->ClearLastProgrammedAddress();	//reset last_programmed_addr, so next verify not preceeded by write verify all the flash
+		GetBus()->ClearLastProgrammedAddress(); //reset last_programmed_addr, so next verify not preceeded by write verify all the flash
 	}
+
 	//Set blank locations to default 0xFF (erased)
 	memset(localbuf, 0xFF, size);
 
 	// read the current flash content and store it in localbuf
 	if (read_progpage_size && (v_len % read_progpage_size) == 0)
+	{
 		rval = GetBus()->Read(0, localbuf, v_len, read_progpage_size);
+	}
 	else
+	{
 		rval = GetBus()->Read(0, localbuf, v_len, 0);
+	}
 
 	if ( rval != v_len )
 	{
 		if (rval > 0)
+		{
 			rval = OP_ABORTED;
+		}
 	}
 	else
-		rval = GetBus()->CompareMultiWord(GetBufPtr()+base, localbuf+base, v_len, 0) == 0 ? OK : 1;
+	{
+		rval = GetBus()->CompareMultiWord(GetBufPtr() + base, localbuf + base, v_len, 0) == 0 ? OK : 1;
+	}
 
 	return rval;
 }
@@ -234,14 +279,19 @@ int Device::VerifyData(unsigned char *localbuf)
 	int base = GetSplitted();
 
 	//read current EEPROM content and
-	rval = GetBus()->Read(1, localbuf+base, size, read_datapage_size);
+	rval = GetBus()->Read(1, localbuf + base, size, read_datapage_size);
+
 	if ( rval != size )
 	{
 		if (rval > 0)
+		{
 			rval = OP_ABORTED;
+		}
 	}
 	else
-		rval = GetBus()->CompareMultiWord(GetBufPtr()+base, localbuf+base, size, 1) == 0 ? OK : 1;
+	{
+		rval = GetBus()->CompareMultiWord(GetBufPtr() + base, localbuf + base, size, 1) == 0 ? OK : 1;
+	}
 
 	return rval;
 }
@@ -250,7 +300,11 @@ int Device::ReadCalibration(int addr)
 {
 	int val;
 	val = Probe(0);
+
 	if (val >= 0)
+	{
 		val = GetBus()->ReadCalibration(addr);
+	}
+
 	return val;
 }

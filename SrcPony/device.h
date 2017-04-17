@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: device.h,v 1.6 2013/11/07 16:33:39 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -30,6 +30,8 @@
 #ifndef _DEVICE_H
 #define _DEVICE_H
 
+#include <QString>
+
 #include "types.h"
 #include "globals.h"
 #include "busio.h"
@@ -38,64 +40,104 @@ class e2AppWinInfo;
 
 class Device
 {
-  public:		//---------------------------------------- public
+public:               //---------------------------------------- public
 
 	Device(e2AppWinInfo *wininfo = 0, BusIO *busp = 0, int b_size = 0);
 	virtual ~Device();
 
 	virtual int Probe(int probe_size = 0)
-		{ return OK; }
+	{
+		return OK;
+	}
 	virtual int Read(int probe = 1, int type = ALL_TYPE) = 0;
 	virtual int Write(int probe = 1, int type = ALL_TYPE) = 0;
 	virtual int Verify(int type = ALL_TYPE) = 0;
 
 	virtual int Erase(int probe = 1, int type = ALL_TYPE)
-		{ return GetBus()->Erase(); }
+	{
+		return GetBus()->Erase();
+	}
 
 	virtual int BankRollOverDetect(int force)
-		{ return 4; }	//4 means no need to know Bank Rollover for this device
+	{
+		return 4;        //4 means no need to know Bank Rollover for this device
+	}
 
 	virtual int SecurityRead(uint32_t &bits)
-		{ bits = 0; return 0; }
+	{
+		bits = 0;
+		return 0;
+	}
 	virtual int SecurityWrite(uint32_t bits)
-		{ return 0; }
+	{
+		return 0;
+	}
 	virtual int FusesRead(uint32_t &bits)
-		{ bits = 0; return 0; }
+	{
+		bits = 0;
+		return 0;
+	}
 	virtual int FusesWrite(uint32_t bits)
-		{ return 0; }
+	{
+		return 0;
+	}
 	virtual int HighEnduranceRead(uint32_t &block_no)
-		{ return 0; }
+	{
+		return 0;
+	}
 	virtual int HighEnduranceWrite(uint32_t block_no)
-		{ return 0; }
+	{
+		return 0;
+	}
 
 	virtual int ReadCalibration(int addr = 0);
 
 	//--------
 	void SetAWInfo(e2AppWinInfo *wininfo);
 	BusIO *GetBus() const
-		{ return bus; }
+	{
+		return bus;
+	}
 	void SetBus(BusIO *busp)
-		{ if (busp) bus = busp; }
+	{
+		if (busp)
+		{
+			bus = busp;
+		}
+	}
 	int GetNoOfBank() const;
 	void SetNoOfBank(int no);
 	int GetBankSize() const
-		{ return bank_size; }
+	{
+		return bank_size;
+	}
 	int GetAddrSize() const;
 	virtual void DefaultBankSize()
-		{ bank_size = def_bank_size; }
+	{
+		bank_size = def_bank_size;
+	}
 
 	int GetProgPageSize(bool rnw) const;
 	void SetProgPageSize(int pagesize, bool rnw);
 	int GetDataPageSize(bool rnw) const;
 	void SetDataPageSize(int pagesize, bool rnw);
 	long GetDetectedType() const
-		{ return detected_type; }
+	{
+		return detected_type;
+	}
 	char const *GetDetectedSignatureStr() const
-		{ return detected_signature; }
+	{
+		return detected_signature.toLatin1();
+	}
 
-  protected:	//--------------------------------------- protected
+protected:    //--------------------------------------- protected
 	void SetBankSize(int size)
-		{ if (size > 0) bank_size = size; }
+	{
+		if (size > 0)
+		{
+			bank_size = size;
+		}
+	}
 	uint8_t *GetBufPtr() const;
 	int GetBufSize() const;
 	void SetSplitted(int split);
@@ -114,20 +156,22 @@ class Device
 	virtual int VerifyData(unsigned char *localbuf);
 
 	e2AppWinInfo *GetAWInfo() const
-		{ return awi; }
+	{
+		return awi;
+	}
 
 	long detected_type;
-	char detected_signature[MAXMSG];
+	QString detected_signature;
 
-  private:		//--------------------------------------- private
+private:              //--------------------------------------- private
 
-	e2AppWinInfo *awi;	// pointer to container object
-	BusIO *bus;			// bus used by the device
-	int bank_size;		// used only with banked memory (240x)
+	e2AppWinInfo *awi;      // pointer to container object
+	BusIO *bus;                     // bus used by the device
+	int bank_size;          // used only with banked memory (240x)
 
 	int const def_bank_size;
 
-	int write_progpage_size;	//some devices write whole pages instead of bytes to speed up programming
+	int write_progpage_size;        //some devices write whole pages instead of bytes to speed up programming
 	int read_progpage_size;
 	int write_datapage_size;
 	int read_datapage_size;

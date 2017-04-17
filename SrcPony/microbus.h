@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: microbus.h,v 1.5 2009/11/16 23:40:43 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -27,31 +27,31 @@
 //-------------------------------------------------------------------------//
 //=========================================================================//
 
-#ifndef	_MICROBUS_H
-#define	_MICROBUS_H
+#ifndef _MICROBUS_H
+#define _MICROBUS_H
 
 #include "busio.h"
 #include "pgminter.h"
 
-#define	ORG8	8
-#define	ORG16	16
+#define ORG8    8
+#define ORG16   16
 
 class MicroWireBus : public BusIO
 {
- public:		//------------------------------- public
+public:                //------------------------------- public
 	MicroWireBus(BusInterface *ptr = 0);
 	virtual ~MicroWireBus();
 
-//	long Read(int addr, uint8_t *data, long length);
-//	long Write(int addr, uint8_t const *data, long length);
-	
+	//      long Read(int addr, uint8_t *data, long length);
+	//      long Write(int addr, uint8_t const *data, long length);
+
 	int Reset();
 
 	virtual int CalcAddressSize(int mem_size, int org) const;
 
 	void SetDelay();
 
- protected:		//------------------------------- protected
+protected:             //------------------------------- protected
 
 	int SendDataWord(int wo, int wlen, int lsb = 0);
 	int RecDataWord(int wlen, int lsb = 0);
@@ -59,36 +59,54 @@ class MicroWireBus : public BusIO
 	int WaitReadyAfterWrite(long timeout = 50000);
 
 	int SendAddress(int addr, int alen)
-		{ return SendDataWord(addr, alen); }
+	{
+		return SendDataWord(addr, alen);
+	}
 
 	void SetReset()
-		{ busI->SetControlLine(1); }
+	{
+		busI->SetControlLine(1);
+	}
 	void ClearReset()
-		{ busI->SetControlLine(0); }
+	{
+		busI->SetControlLine(0);
+	}
 
- private:		//------------------------------- private
+private:               //------------------------------- private
 
 	int SendDataBit(int b);
 	int RecDataBit();
 	int RecDataBitShort();
 
 	void bitDI(int b)
-		{ busI->SetDataOut(b); }
+	{
+		busI->SetDataOut(b);
+	}
 
 	void setDI()
-		{ busI->SetDataOut(1); }
+	{
+		busI->SetDataOut(1);
+	}
 
 	void clearDI()
-		{ busI->SetDataOut(0); }
+	{
+		busI->SetDataOut(0);
+	}
 
 	void setCLK()
-		{ busI->SetClock(1); }
+	{
+		busI->SetClock(1);
+	}
 
 	void clearCLK()
-		{ busI->SetClock(0); }
+	{
+		busI->SetClock(0);
+	}
 
 	int getDO() const
-		{ return busI->GetDataIn(); }
+	{
+		return busI->GetDataIn();
+	}
 };
 
 #endif

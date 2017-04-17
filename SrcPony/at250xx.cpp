@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: at250xx.cpp,v 1.3 2007/04/20 10:58:22 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -28,15 +28,17 @@
 //=========================================================================//
 
 #include "types.h"
-#include "at250xx.h"		// Header file
+#include "at250xx.h"            // Header file
 #include "errcode.h"
 #include "eeptypes.h"
 
-#define	BANK_SIZE	1
+#include <QDebug>
+
+#define BANK_SIZE       1
 
 //=====>>> Costruttore <<<======
 At250xx::At250xx(e2AppWinInfo *wininfo, BusIO *busp)
-	:	Device(wininfo, busp, BANK_SIZE)
+	:       Device(wininfo, busp, BANK_SIZE)
 {
 }
 
@@ -49,12 +51,12 @@ At250xx::~At250xx()
 //---
 int At250xx::Probe(int probe_size)
 {
-	UserDebug1(UserApp1, "At250xx::Probe(%d)\n", probe_size);
+	qDebug() << "At250xx::Probe("  << probe_size << ")";
 
-//	if (probe_size)
-//	{
-//		SetNoOfBank(n_bank);
-//	}
+	//      if (probe_size)
+	//      {
+	//              SetNoOfBank(n_bank);
+	//      }
 
 	return OK;
 }
@@ -62,27 +64,33 @@ int At250xx::Probe(int probe_size)
 
 int At250xx::Read(int probe, int type)
 {
-	UserDebug1(UserApp1, "At250xx::Read(%d)\n", probe);
+	qDebug() << "At250xx::Read(" << probe << ")";
 
 	if (probe || GetNoOfBank() == 0)
+	{
 		Probe();
+	}
 
 	int size = GetNoOfBank() * GetBankSize();
 
-	UserDebug1(UserApp1, "At250xx::Read() ** Size = %d\n", size);
+	qDebug() << "At250xx::Read() ** Size = " << size;
 
 	int rv = size;
+
 	if (type & PROG_TYPE)
 	{
 		rv = GetBus()->Read(0, GetBufPtr(), size);
+
 		if (rv != size)
 		{
 			if (rv > 0)
+			{
 				rv = OP_ABORTED;
+			}
 		}
 	}
 
-	UserDebug1(UserApp1, "At250xx::Read() = %d\n", rv);
+	qDebug() << "At250xx::Read() = " << rv;
 
 	return rv;
 }
@@ -90,18 +98,24 @@ int At250xx::Read(int probe, int type)
 int At250xx::Write(int probe, int type)
 {
 	if (probe || GetNoOfBank() == 0)
+	{
 		Probe();
+	}
 
 	int size = GetNoOfBank() * GetBankSize();
 
 	int rv = size;
+
 	if (type & PROG_TYPE)
 	{
 		rv = GetBus()->Write(0, GetBufPtr(), size);
+
 		if (rv != size)
 		{
 			if (rv > 0)
+			{
 				rv = OP_ABORTED;
+			}
 		}
 	}
 
@@ -111,28 +125,38 @@ int At250xx::Write(int probe, int type)
 int At250xx::Verify(int type)
 {
 	if (GetNoOfBank() == 0)
+	{
 		return BADPARAM;
+	}
 
 	int size = GetNoOfBank() * GetBankSize();
 	unsigned char *localbuf;
 	localbuf = new unsigned char[size];
+
 	if (localbuf == 0)
+	{
 		return OUTOFMEMORY;
+	}
 
 	int rval = 1;
+
 	if (type & PROG_TYPE)
 	{
 		rval = GetBus()->Read(0, localbuf, size);
+
 		if (rval != size)
 		{
 			if (rval > 0)
+			{
 				rval = OP_ABORTED;
+			}
 		}
 		else
 		{
 			rval = ( memcmp(GetBufPtr(), localbuf, size) != 0 ) ? 0 : 1;
 		}
 	}
+
 	delete localbuf;
 
 	return rval;

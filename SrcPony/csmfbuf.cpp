@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: csmfbuf.cpp,v 1.3 2009/11/16 22:29:18 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -28,17 +28,16 @@
 //=========================================================================//
 
 #include <stdio.h>
-#include <string.h>
+#include <QString>
 
-#include "csmfbuf.h"		// Header file
+#include "csmfbuf.h"            // Header file
 #include "crc.h"
 #include "errcode.h"
 
-//#include "e2phead.h"
 
 //======================>>> csmFileBuf::csmFileBuf <<<=======================
 csmFileBuf::csmFileBuf(e2AppWinInfo *wininfo)
-		: FileBuf(wininfo)
+	: FileBuf(wininfo)
 {
 	file_type = CSM;
 }
@@ -54,50 +53,67 @@ int csmFileBuf::Load(int loadtype, long relocation_offfset)
 	FILE *fh;
 	char *s, *s1;
 	int rval = OK;
-	char riga[MAXLINE+1];
+	char riga[MAXLINE + 1];
 
-	if ( (fh = fopen(FileBuf::GetFileName(), "r")) == NULL )
+	if ( (fh = fopen(FileBuf::GetFileName().toLatin1(), "r")) == NULL )
+	{
 		return FILENOTFOUND;
+	}
 
 	int state = 0;
+
 	while ( (s1 = fgets(riga, MAXLINE, fh)) != NULL && state < 3 )
 	{
 		switch (state)
 		{
 		case 0:
+
 			//look for header start
 			if ( (s = strchr(riga, '\"')) != NULL )
 			{
 				state++;
 
-				if ( (s = strstr(s+1, "REFERENCE")) != NULL )
+				if ( (s = strstr(s + 1, "REFERENCE")) != NULL )
 				{
 					state++;
 
-					if ( (s = strchr(s+1, '\"')) != NULL )
+					if ( (s = strchr(s + 1, '\"')) != NULL )
+					{
 						state++;
+					}
 				}
 			}
+
 			break;
+
 		case 1:
+
 			//look for "REFERENCE"
 			if ( (s = strstr(riga, "REFERENCE")) != NULL )
 			{
 				state++;
 
-				if ( (s = strchr(s+1, '\"')) != NULL )
+				if ( (s = strchr(s + 1, '\"')) != NULL )
+				{
 					state++;
+				}
 			}
+
 			break;
+
 		case 2:
+
 			//look for header terminator
 			if ( (s = strchr(riga, '\"')) != NULL )
+			{
 				state++;
+			}
+
 			break;
 		}
 	}
 
-	if (s1 == NULL)			//Header not found
+	if (s1 == NULL)                 //Header not found
 	{
 		rval = BADFILETYPE;
 	}
@@ -111,48 +127,63 @@ int csmFileBuf::Load(int loadtype, long relocation_offfset)
 		//legge tutto il corpo del file
 		while ( (s = fgets(riga, MAXLINE, fh)) != NULL )
 		{
-			if (strlen(riga) > 0)	// salta righe vuote
+			if (strlen(riga) > 0)   // salta righe vuote
 			{
 				n = sscanf(riga, "%x %x", &addr, &value);
+
 				if (n != 2)
 				{
 					rval = BADFILETYPE;
 					break;
 				}
 				else
+				{
 					okline_counter++;
+				}
 
 				//carica valore nel buffer
 				if (loadtype == ALL_TYPE)
 				{
 					if ( addr < FileBuf::GetBufSize() )
+					{
 						FileBuf::GetBufPtr()[addr] = (uint8_t)value;
+					}
 				}
-				else
-				if (loadtype == PROG_TYPE)
+				else if (loadtype == PROG_TYPE)
 				{
 					long s = FileBuf::GetSplitted();
+
 					if ( s <= 0 )
+					{
 						s = FileBuf::GetBufSize();
+					}
 
 					if ( addr < s )
+					{
 						FileBuf::GetBufPtr()[addr] = (uint8_t)value;
+					}
 				}
-				else
-				if (loadtype == DATA_TYPE)
+				else if (loadtype == DATA_TYPE)
 				{
 					long s = FileBuf::GetSplitted();
+
 					if ( s <= 0 )
+					{
 						s = 0;
+					}
 
 					if ( addr < FileBuf::GetBufSize() - s )
+					{
 						FileBuf::GetBufPtr()[addr + s] = (uint8_t)value;
+					}
 				}
 			}
 		}
 
 		if (okline_counter == 0)
+		{
 			rval = BADFILETYPE;
+		}
 
 		rval = addr;
 	}
@@ -161,23 +192,23 @@ int csmFileBuf::Load(int loadtype, long relocation_offfset)
 	return rval;
 
 
-	//			SetStringID(hdr.e2pStringID);
-	//			SetComment(hdr.e2pComment);
+	//                      SetStringID(hdr.e2pStringID);
+	//                      SetComment(hdr.e2pComment);
 }
 
 static char header[] =
-"REFERENCE	=	=\n"
-"CHASSIS	=	=\n"
-"MODEL	=	=\n"
-"SERIAL	=	=\n"
-"CUSTOMER	NAME	=	=\n"
-"DATE	=	=\n"
-"STREET	=	=\n"
-"CITY	=	=\n"
-"STATE	=	=\n"
-"ZIP	=	=\n"
-"PHONE	NUMBER	=	=\n"
-"CUSTOMER	COMPLAINT	=	=";
+        "REFERENCE	=	=\n"
+        "CHASSIS	=	=\n"
+        "MODEL	=	=\n"
+        "SERIAL	=	=\n"
+        "CUSTOMER	NAME	=	=\n"
+        "DATE	=	=\n"
+        "STREET	=	=\n"
+        "CITY	=	=\n"
+        "STATE	=	=\n"
+        "ZIP	=	=\n"
+        "PHONE	NUMBER	=	=\n"
+        "CUSTOMER	COMPLAINT	=	=";
 
 //======================>>> csmFileBuf::Save <<<=======================
 int csmFileBuf::Save(int savetype, long relocation_offfset)
@@ -191,12 +222,15 @@ int csmFileBuf::Save(int savetype, long relocation_offfset)
 	if (savetype == PROG_TYPE)
 	{
 		if (GetSplitted() > 0 && GetSplitted() <= size)
+		{
 			size = GetSplitted();
+		}
 		else
+		{
 			return 0;
+		}
 	}
-	else
-	if (savetype == DATA_TYPE)
+	else if (savetype == DATA_TYPE)
 	{
 		if (GetSplitted() >= 0 && GetSplitted() < size)
 		{
@@ -204,12 +238,15 @@ int csmFileBuf::Save(int savetype, long relocation_offfset)
 			size -= GetSplitted();
 		}
 		else
+		{
 			return 0;
+		}
 	}
 
 	if (size > 0)
 	{
-		fh = fopen(FileBuf::GetFileName(), "w");
+		fh = fopen(FileBuf::GetFileName().toLatin1(), "w");
+
 		if (fh == NULL)
 		{
 			rval = CREATEERROR;
@@ -234,7 +271,9 @@ int csmFileBuf::Save(int savetype, long relocation_offfset)
 		}
 	}
 	else
+	{
 		rval = NOTHINGTOSAVE;
+	}
 
 	return rval;
 }

@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: at17xxx.cpp,v 1.3 2009/11/16 23:40:43 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -28,16 +28,17 @@
 //=========================================================================//
 // Source for AT1765/... class (FPGA eeproms)
 
-#include <string.h>
+#include <QString>
+
 #include "types.h"
-#include "e2app.h"
-#include "at17xxx.h"		// Header file
+#include "e2cmdw.h"
+#include "at17xxx.h"            // Header file
 #include "errcode.h"
 #include "eeptypes.h"
 
 //=====>>> Costruttore <<<======
 At17xxx::At17xxx(e2AppWinInfo *wininfo, BusIO *busp)
-	:	E24xx(wininfo, busp, 8, 1)
+	:       E24xx(wininfo, busp, 8, 1)
 {
 	writepage_size = 64;
 }
@@ -49,28 +50,42 @@ int At17xxx::WritePage(long addr, int addr_bytes, uint8_t *buf, int len)
 
 	//Write Page
 	rval = GetBus()->Start(eeprom_addr[0] & ~1);
-	if (rval < 0)
-		return rval;
 
-	for (j = addr_bytes-1; j >= 0; j--)
+	if (rval < 0)
 	{
-		rval = GetBus()->WriteByte( (addr >> (j*8)) & 0xFF, 0 );
-		if (rval < 0)
-			return rval;
+		return rval;
 	}
+
+	for (j = addr_bytes - 1; j >= 0; j--)
+	{
+		rval = GetBus()->WriteByte( (addr >> (j * 8)) & 0xFF, 0 );
+
+		if (rval < 0)
+		{
+			return rval;
+		}
+	}
+
 	for (j = 0; j < len; j++)
 	{
 		rval = GetBus()->WriteByte( buf[j], 1 );
+
 		if (rval < 0)
+		{
 			return rval;
+		}
 	}
+
 	GetBus()->Stop();
 
 	//Data polling
 	for (j = timeout_loop; j > 0 && GetBus()->Start(eeprom_addr[0] & ~1) < 0; j--)
 		;;
+
 	if (j == 0)
+	{
 		return E2P_TIMEOUT;
+	}
 
 	return OK;
 }
@@ -80,19 +95,24 @@ int At17xxx::Write(int probe, int type)
 	int error = Probe( probe || GetNoOfBank() == 0 );
 
 	if (error < 0)
+	{
 		return error;
+	}
 
 	GetBus()->CheckAbort(0);
 
 	int addr_bytes;
 	long size = GetSize();
+
 	if (size > 0xffff)
-	{	//512/1024 kbits
+	{
+		//512/1024 kbits
 		addr_bytes = 3;
 		writepage_size = 128;
 	}
 	else
-	{	//65/128/256 kbits
+	{
+		//65/128/256 kbits
 		addr_bytes = 2;
 		writepage_size = 64;
 	}
@@ -102,9 +122,11 @@ int At17xxx::Write(int probe, int type)
 	if (type & PROG_TYPE)
 	{
 		long j;
+
 		for (j = 0; j < size; j += writepage_size)
 		{
 			rval = WritePage(j, addr_bytes, GetBufPtr() + j, writepage_size);
+
 			if (rval != OK)
 			{
 				break;
@@ -117,12 +139,17 @@ int At17xxx::Write(int probe, int type)
 			}
 		}
 	}
+
 	GetBus()->CheckAbort(100);
 
 	if (rval == OK)
+	{
 		return GetSize();
+	}
 	else
+	{
 		return rval;
+	}
 }
 
 
@@ -132,36 +159,56 @@ int At17xxx::ReadPage(long addr, int addr_bytes, uint8_t *buf, int len)
 	int rval;
 
 	if (len < 1)
+	{
 		return BADPARAM;
+	}
 
 	//Read Page
 	rval = GetBus()->Start(eeprom_addr[0] & ~1);
-	if (rval < 0)
-		return rval;
 
-	for (j = addr_bytes-1; j >= 0; j--)
+	if (rval < 0)
 	{
-		rval = GetBus()->WriteByte( (addr >> (j*8)) & 0xFF, 0 );
+		return rval;
+	}
+
+	for (j = addr_bytes - 1; j >= 0; j--)
+	{
+		rval = GetBus()->WriteByte( (addr >> (j * 8)) & 0xFF, 0 );
+
 		if (rval < 0)
+		{
 			return rval;
+		}
 	}
 
 	//Read Bytes
 	rval = GetBus()->Start(eeprom_addr[0] | 1);
-	if (rval < 0)
-		return rval;
 
-	for (j = 0; j < len-1; j++)
+	if (rval < 0)
+	{
+		return rval;
+	}
+
+	for (j = 0; j < len - 1; j++)
 	{
 		rval = GetBus()->ReadByte(0, 1);
+
 		if (rval < 0)
+		{
 			return rval;
+		}
+
 		*buf++ = (uint8_t)rval;
 	}
+
 	//ultimo byte senza ACK
 	rval = GetBus()->ReadByte(1, 1);
+
 	if (rval < 0)
+	{
 		return rval;
+	}
+
 	*buf++ = (uint8_t)rval;
 
 	GetBus()->Stop();
@@ -172,21 +219,27 @@ int At17xxx::ReadPage(long addr, int addr_bytes, uint8_t *buf, int len)
 int At17xxx::Read(int probe, int type)
 {
 	int error = Probe( probe || GetNoOfBank() == 0 );
+
 	if (error < 0)
+	{
 		return error;
+	}
 
 	GetBus()->CheckAbort(0);
 
 	int readpage_size;
 	int addr_bytes;
 	long size = GetSize();
+
 	if (size > 0xffff)
-	{	//512/1024 kbits
+	{
+		//512/1024 kbits
 		addr_bytes = 3;
 		readpage_size = 128;
 	}
 	else
-	{	//65/128/256 kbits
+	{
+		//65/128/256 kbits
 		addr_bytes = 2;
 		readpage_size = 64;
 	}
@@ -196,11 +249,15 @@ int At17xxx::Read(int probe, int type)
 	if (type & PROG_TYPE)
 	{
 		long k;
+
 		for (k = 0; k < size; k += readpage_size)
 		{
-			error = ReadPage(k, addr_bytes, GetBufPtr()+k, readpage_size);
+			error = ReadPage(k, addr_bytes, GetBufPtr() + k, readpage_size);
+
 			if (error != OK)
+			{
 				break;
+			}
 
 			if ( GetBus()->CheckAbort(k * 100 / size) )
 			{
@@ -213,27 +270,37 @@ int At17xxx::Read(int probe, int type)
 	GetBus()->CheckAbort(100);
 
 	if (error == OK)
+	{
 		return GetSize();
+	}
 	else
+	{
 		return error;
+	}
 }
 
 int At17xxx::Verify(int type)
 {
-	int rval = Probe();	//Moved here from 7 lines above (10/12/99)
+	int rval = Probe();     //Moved here from 7 lines above (10/12/99)
+
 	if (rval < 0)
+	{
 		return rval;
+	}
 
 	int readpage_size;
 	int addr_bytes;
 	long size = GetSize();
+
 	if (size > 0xffff)
-	{	//512/1024 kbits
+	{
+		//512/1024 kbits
 		addr_bytes = 3;
 		readpage_size = 128;
 	}
 	else
-	{	//65/128/256 kbits
+	{
+		//65/128/256 kbits
 		addr_bytes = 2;
 		readpage_size = 64;
 	}
@@ -241,28 +308,36 @@ int At17xxx::Verify(int type)
 	unsigned char *localbuf = new unsigned char[readpage_size];
 
 	if (localbuf == 0)
+	{
 		return OUTOFMEMORY;
+	}
 
 	GetBus()->CheckAbort(0);
 
-	rval = 1;		//true
+	rval = 1;               //true
 
 	if (type & PROG_TYPE)
 	{
 		long k;
+
 		for (k = 0; k < size; k += readpage_size)
 		{
 			rval = ReadPage(k, addr_bytes, localbuf, readpage_size);
-			if (rval != OK)
-				break;
 
-			if ( memcmp(GetBufPtr()+k, localbuf, readpage_size) != 0 )
+			if (rval != OK)
+			{
+				break;
+			}
+
+			if ( memcmp(GetBufPtr() + k, localbuf, readpage_size) != 0 )
 			{
 				rval = 0;
 				break;
 			}
 			else
+			{
 				rval = 1;
+			}
 
 			if ( GetBus()->CheckAbort(k * 100 / size) )
 			{

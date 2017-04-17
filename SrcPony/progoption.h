@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: progoption.h,v 1.2 2007/04/20 10:58:23 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -30,23 +30,37 @@
 #ifndef progOPTION_H
 #define progOPTION_H
 
-#include <v/vmodald.h>
+#include <QObject>
+#include <QDialog>
+#include <QCheckBox>
+#include <QVector>
+#include <QString>
+
+#include "ui_progoption.h"
 
 #include "e2cmdw.h"
 #include "string_table.h"
 
-class progOptionDialog : public vModalDialog
+using namespace Translator;
+
+// TODO to check modal
+class progOptionDialog : public QDialog, public Ui::ProgOptDialog
 {
-  public:		//---------------------------------------- public
-	progOptionDialog(vBaseWindow* bw, char* title = STR_MSGPROGOPT);
-	virtual ~progOptionDialog();		// Destructor
-	virtual void DialogCommand(ItemVal,ItemVal,CmdType); // action selected
-	virtual int progAction(char* msg, long type, int &reload, int &reep, int &erase, int &flash, int &eeprom, int &lock);
+	Q_OBJECT
+public:               //---------------------------------------- public
+	progOptionDialog(QWidget* bw, long type, int &reload, int &reep, int &erase, int &flash, int &eeprom, int &lock, const QString title = STR_MSGPROGOPT);
+	virtual ~progOptionDialog();            // Destructor
 
-  protected:	//--------------------------------------- protected
+private slots:
+	void onOk();
 
-  private:		//--------------------------------------- private
+protected:    //--------------------------------------- protected
 
+private:
+	void setTextWidgets();
+
+private:              //--------------------------------------- private
+	QVector <QCheckBox*> chk;
 	e2CmdWindow *cmdw;
 };
 #endif

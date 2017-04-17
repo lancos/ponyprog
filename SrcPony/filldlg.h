@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: filldlg.h,v 1.3 2007/04/20 10:58:23 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -29,28 +29,36 @@
 
 #ifndef FillDIALOG_H
 #define FillDIALOG_H
-#include <v/vmodald.h>
 
-#include "types.h"
+#include <QString>
+#include <QDialog>
+#include <QObject>
+
+#include "ui_blockdlg.h"
+
 #include "string_table.h"
 
-class FillDialog : public vModalDialog
+using namespace Translator;
+
+
+class FillDialog : public QDialog, public Ui::BlockDialog
 {
-  public:		//---------------------------------------- public
-	FillDialog(vBaseWindow* bw, long cfrom = -1, long cto = -1, int cval = -1, char* title = STR_LBLFILLBUF);
-	virtual ~FillDialog();		// Destructor
-	virtual int fillAction(char* msg);
+	Q_OBJECT
+public:               //---------------------------------------- public
+	FillDialog(QWidget* bw, long &cfrom, long &cto, int &cval, const QString title = STR_LBLFILLBUF);
+	virtual ~FillDialog();          // Destructor
 
-	long GetFrom() const
-		{ return mFrom; }
-	long GetTo() const
-		{ return mTo; }
-	int GetValue() const
-		{ return mVal; }
 
-  protected:	//--------------------------------------- protected
+protected:    //--------------------------------------- protected
 
-  private:		//--------------------------------------- private
+private slots:
+	void onOk();
+
+
+private:              //--------------------------------------- private
+
+	long *pFrom, *pTo;
+	int *pVal;
 
 	long mFrom, mTo;
 	int mVal;

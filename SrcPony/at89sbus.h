@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: at89sbus.h,v 1.9 2009/11/16 23:40:43 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -27,16 +27,16 @@
 //-------------------------------------------------------------------------//
 //=========================================================================//
 
-#ifndef	_AT89SBUS_H
-#define	_AT89SBUS_H
+#ifndef _AT89SBUS_H
+#define _AT89SBUS_H
 
 #include "spi-bus.h"
 
 class At89sBus : public SPIBus
 {
- public:		//------------------------------- public
+public:                //------------------------------- public
 	At89sBus(BusInterface *ptr = 0);
-//	virtual ~At89sBus();
+	//      virtual ~At89sBus();
 
 	long Read(int addr, uint8_t *data, long length, int page_size = 0);
 	long Write(int addr, uint8_t const *data, long length, int page_size = 0);
@@ -54,16 +54,24 @@ class At89sBus : public SPIBus
 	void SetPagePolling(bool prog, bool val)
 	{
 		if (prog)
+		{
 			enable_progpage_polling = val;
+		}
 		else
+		{
 			enable_datapage_polling = val;
+		}
 	}
 	bool GetPagePolling(bool prog) const
-	{ return prog ? enable_progpage_polling : enable_datapage_polling; }
+	{
+		return prog ? enable_progpage_polling : enable_datapage_polling;
+	}
 	void SetCompatibilityMode(bool old)
-	{ oldmode = old; }
+	{
+		oldmode = old;
+	}
 
- protected:		//------------------------------- protected
+protected:             //------------------------------- protected
 
 	//Programming commands
 	const uint8_t EnableProg0, EnableProg1;
@@ -94,7 +102,7 @@ class At89sBus : public SPIBus
 	int WaitReadyAfterWrite(int type, long addr, int data, long timeout = 5000);
 	bool CheckBlankPage(uint8_t const *data, long length);
 
- private:		//------------------------------- private
+private:               //------------------------------- private
 
 	bool enable_datapage_polling, enable_progpage_polling;
 

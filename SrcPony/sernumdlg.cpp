@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: sernumdlg.cpp,v 1.6 2009/11/16 23:40:43 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -29,248 +29,233 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <v/vnotice.h>
+
+#include <QDebug>
 
 #include "types.h"
 #include "sernumdlg.h"
-#include "modaldlg_utilities.h"
 
-#ifdef	WIN32
-#  ifdef	__BORLANDC__
-#    define	strcasecmp stricmp
-#  else // _MICROSOFT_ VC++
-#    define strcasecmp	_stricmp
-#    define snprintf	_snprintf
-#  endif
-#endif
-
-//@V@:BeginIDs
-enum {
-	lblSNMsg = 1000,
-	frmSN,
-	lblLoc,
-	lblMProgType,
-	lblMDataType,
-	lblLen,
-	lblVal,
-	lblFmt,
-
-	txiLoc,
-	txiMProgType,
-	txiMDataType,
-	txiLen,
-
-	chkMemOffset,
-	chkAutoInc,
-
-	txiVal,
-	frmFormat,
-	rdbLittleEnd,
-	rdbBigEnd,
-
-	LastId
-};
-//@V@:EndIds
-
-//@V@:BeginDialogCmd DefaultCmds
-static DialogCmd DefaultCmds[] =
-{
-//	{C_Label,lblSNMsg,0,"X",NoList,CA_MainMsg,isSens,NoFrame,0,0},
-
-	{C_Frame, frmSN,0,"Serial Number",NoList,CA_None,isSens,NoFrame,0,0},
-	{C_Label, lblLoc, 0, STR_MSGADDRESS, NoList,CA_None,isSens,frmSN,0,0},
-	{C_Label, lblLen, 0, STR_MSGSIZE2, NoList,CA_None,isSens,frmSN,0,lblLoc},
-	{C_Label, lblVal, 0, STR_MSGVALUE,NoList,CA_None,isSens,frmSN,0,lblLen},
-
-	{C_TextIn,txiLoc, 0,"",NoList,CA_None,isSens,NoFrame,frmSN,0,10,STR_TTSNMEMADDR},
-	{C_TextIn,txiLen, 0,"",NoList,CA_None,isSens,NoFrame,frmSN,txiLoc,10,STR_TTSNSIZE},
-	{C_TextIn,txiVal, 0,"",NoList,CA_None,isSens,NoFrame,frmSN,txiLen,10,STR_TTSNVALUE},
-
-	{C_CheckBox, chkMemOffset, 0,STR_MSGOFFSET,NoList,CA_None,isSens,NoFrame,0,frmSN, 0,STR_TTSNOFFSET},
-	{C_CheckBox, chkAutoInc, 0,STR_MSGSNAUTOINC,NoList,CA_None,isSens,NoFrame,0,chkMemOffset, 0, STR_TTSNAUTOINC},
-
-	{C_Frame,frmFormat,0,STR_MSGFORMAT,NoList,CA_None,isSens,NoFrame,0,chkAutoInc},
-	{C_Label, lblFmt, 0, STR_MSGFORMAT, NoList,CA_None,isSens,frmFormat, 0,0},
-	{C_RadioButton,rdbLittleEnd,0,STR_MSGLITTLEEND,NoList,CA_None,isSens,frmFormat,0,lblFmt, 0,STR_TTLITTLEEND},
-	{C_RadioButton,rdbBigEnd,   0,STR_MSGBIGENDIAN,NoList,CA_None,isSens,frmFormat,rdbLittleEnd,lblFmt, 0,STR_TTBIGENDIAN},
-
-	{C_Button, M_Cancel, 0, STR_BTNCANC, NoList,CA_None, isSens,NoFrame, 0, frmFormat},
-	{C_Button, M_OK, 0, STR_BTNOK, NoList, CA_DefaultButton, isSens, NoFrame, M_Cancel, frmFormat},
-
-	{C_EndOfList,0,0,0,0,CA_None,0,0,0}
-};
-//@V@:EndDialogCmd
+using namespace Translator;
 
 
 //=========================>>> SerNumDialog::SerNumDialog <<<====================
-SerNumDialog::SerNumDialog(vBaseWindow* bw, char* title) :
-		vModalDialog(bw, title)
+SerNumDialog::SerNumDialog(QWidget* bw, const QString title) :
+	QDialog(bw)
 {
-	UserDebug(Constructor,"SerNumDialog::SerNumDialog()\n")
+	setupUi(this);
+
+	setWindowTitle(title);
+
+	loc = 0;
+	val = 0;
+	memtype = false;
+	autoinc = false;
+	size = 1;
+	fmt = FMT_BIG_ENDIAN;
+
+	val = E2Profile::GetSerialNumVal();
+	E2Profile::GetSerialNumAddress(loc, size, memtype);
+	autoinc = E2Profile::GetSerialNumAutoInc();
+	fmt = E2Profile::GetSerialNumFormat();
+
+
+	setTextWidgets();
+
+	loc = (loc < 0) ? 0 : loc;
+	size = (size < 0 || size > 4) ? 4 : size;
+	memtype = (memtype == 0 || memtype == 1) ? memtype : 0;
+
+	lblLoc->setText(STR_MSGADDRESS);
+	lblLen->setText(STR_MSGSIZE2);
+	lblVal->setText(STR_MSGVALUE);
+
+	QString str;
+	str = QString().sprintf("0x%04lX", loc);
+	txiLoc->setText(str);
+
+	str = QString().sprintf("%d", size);
+	txiLen->setText(str);
+
+	str = QString().sprintf("%lu", (unsigned long)val);
+	txiVal->setText(str);
+
+	chkMemOffset->setChecked(memtype);
+	chkAutoInc->setChecked(autoinc);
+
+	if (fmt == FMT_LITTLE_ENDIAN)
+	{
+		rdbLittleEnd->setChecked(true);
+		rdbBigEnd->setChecked(false);
+	}
+	else
+	{
+		rdbLittleEnd->setChecked(false);
+		rdbBigEnd->setChecked(true);
+	}
+
+	connect(pushOk, SIGNAL(clicked()), this, SLOT(onOk()));
+	connect(pushCancel, SIGNAL(clicked()), this, SLOT(reject()));
+
+	qDebug() << "SerNumDialog::SerNumDialog()";
 }
 
 //======================>>> SerNumDialog::~SerNumDialog <<<======================
 SerNumDialog::~SerNumDialog()
 {
-	UserDebug(Destructor,"SerNumDialog::~SerNumDialog() destructor\n")
+	qDebug() << "SerNumDialog::~SerNumDialog()";
 }
 
-int SerNumDialog::SerNumAction(long &cLoc, bool &cMemType, bool &cAutoInc, FmtEndian &cFmt, int &cLen, uint32_t &cVal)
+
+void SerNumDialog::setTextWidgets()
 {
-	cLoc = (cLoc < 0) ? 0 : cLoc;
-	cLen = (cLen < 0 || cLen > 4) ? 4 : cLen;
-	cMemType = (cMemType == 0 || cMemType == 1) ? cMemType : 0;
+	pushOk->setText(STR_BTNOK);
+	pushCancel->setText(STR_BTNCANC);
 
-	char str1[MAXNUMDIGIT];
-	char str2[MAXNUMDIGIT];
-	char str3[MAXNUMDIGIT];
+	lblLoc->setText(STR_MSGADDRESS);
+	lblLen->setText( STR_MSGSIZE2);
+	lblVal->setText( STR_MSGVALUE);
 
-	snprintf(str1, MAXNUMDIGIT, "0x%04lX", cLoc);
-	snprintf(str2, MAXNUMDIGIT, "%d", cLen);
-	snprintf(str3, MAXNUMDIGIT, "%lu", (unsigned long)cVal);
-	SetCommandLabel(txiLoc, str1, DefaultCmds);
-	SetCommandLabel(txiLen, str2, DefaultCmds);
-	SetCommandLabel(txiVal, str3, DefaultCmds);
+	chkMemOffset->setText(STR_MSGOFFSET);
+	chkAutoInc->setText(STR_MSGSNAUTOINC);
 
-	SetCommandObject(chkMemOffset, cMemType, DefaultCmds);
-	SetCommandObject(chkAutoInc, cAutoInc, DefaultCmds);
+	frmFormat->setTitle(STR_MSGFORMAT);
 
-	if (cFmt == FMT_LITTLE_ENDIAN)
+	rdbLittleEnd->setText(STR_MSGLITTLEEND);
+	rdbBigEnd->setText(STR_MSGBIGENDIAN);
+}
+
+
+void SerNumDialog::onOk()
+{
+	bool ok;
+	int l = txiLoc->text().toLong(&ok);
+
+	if (ok == true)
 	{
-		SetCommandObject(rdbLittleEnd, 1, DefaultCmds);
-		SetCommandObject(rdbBigEnd, 0, DefaultCmds);
+		loc = l;
+	}
+
+	l = txiLen->text().toLong(&ok);
+
+	if (ok == true)
+	{
+		size = l;
+	}
+
+	int v = txiVal->text().toLong(&ok);
+
+	if (ok == true)
+	{
+		val = v;
+	}
+
+	if ( rdbLittleEnd->isChecked() == true)
+	{
+		fmt = FMT_LITTLE_ENDIAN;
 	}
 	else
 	{
-		SetCommandObject(rdbLittleEnd, 0, DefaultCmds);
-		SetCommandObject(rdbBigEnd, 1, DefaultCmds);
+		fmt = FMT_BIG_ENDIAN;
 	}
 
-	AddDialogCmds(DefaultCmds);		// add the predefined commands
+	memtype = chkMemOffset->isChecked();
+	autoinc = chkAutoInc->isChecked();
 
-	ItemVal ans,rval;
-	ans = ShowModalDialog("",rval);
-	if (ans == M_Cancel)
-		return 0;
+	E2Profile::SetSerialNumAddress(loc, size, memtype);
+	E2Profile::SetSerialNumVal(val);
+	E2Profile::SetSerialNumFormat(fmt);
+	E2Profile::SetSerialNumAutoInc(autoinc);
 
-	char str[MAXNUMDIGIT];
-	GetTextIn(txiLoc, str, 10);
-	cLoc = strtol(str,NULL,0);
-
-	GetTextIn(txiLen, str, 10);
-	cLen = strtol(str,NULL,0);
-
-	GetTextIn(txiVal, str, 10);
-	cVal = strtol(str,NULL,0);
-
-	if ( GetValue(rdbLittleEnd) )
-		cFmt = FMT_LITTLE_ENDIAN;
-	else
-		cFmt = FMT_BIG_ENDIAN;
-
-	cMemType = GetValue(chkMemOffset) ? true : false;
-	cAutoInc = GetValue(chkAutoInc) ? true : false;
-
-	return ans == M_OK;
+	accept();
 }
 
-//------------------------ OscCalibDialog -----------------------------------//
-
-enum {
-	lblMainMsg = 5000,
-	btnRead
-};
-
-static DialogCmd OscCalibCmds[] =
-{
-	{C_Frame, frmSN,0,"Osc.Calibration",NoList,CA_None,isSens,NoFrame,0,0},
-	{C_Label, lblLoc, 0, STR_MSGADDRESS, NoList,CA_None,isSens,frmSN,0,0},
-	{C_Label, lblVal, 0, STR_MSGVALUE,NoList,CA_None,isSens,frmSN,0,lblLoc},
-
-	{C_TextIn,txiLoc, 0,"",NoList,CA_None,isSens,NoFrame,frmSN,0,10,STR_TTSNMEMADDR},
-	{C_TextIn,txiVal, 0,"",NoList,CA_None,notSens,NoFrame,frmSN,txiLoc,10,STR_MSGOSCCALIBCFG},
-
-	{C_CheckBox, chkMemOffset, 0,STR_MSGOFFSET,NoList,CA_None,isSens,NoFrame,0,frmSN, 0,STR_TTSNOFFSET},
-
-	{C_Button, M_Cancel, 0, STR_BTNCANC, NoList,CA_None, isSens,NoFrame, 0, chkMemOffset},
-	{C_Button, M_OK, 0, STR_BTNOK, NoList, CA_DefaultButton, isSens, NoFrame, M_Cancel, chkMemOffset},
-	{C_Button, btnRead,0,STR_BTNREAD, NoList, CA_None, isSens,NoFrame, M_OK, chkMemOffset,	0, STR_READOSCCALIB},
-
-
-	{C_EndOfList,0,0,0,0,CA_None,0,0,0}
-};
-//@V@:EndDialogCmd
 
 
 //=========================>>> OscCalibDialog::OscCalibDialog <<<====================
-OscCalibDialog::OscCalibDialog(vBaseWindow* bw, e2AppWinInfo* aw, char* title) :
-		vModalDialog(bw, title)
+OscCalibDialog::OscCalibDialog(QWidget* bw, e2AppWinInfo* aw, const QString title) :
+	QDialog(bw)
 {
-	UserDebug(Constructor,"OscCalibDialog::OscCalibDialog()\n")
+	setupUi(this);
+
+	setWindowTitle(title);
+
+	loc = 0;
+	val = 0;
+	memtype = false;
+	size = 1;
+
+	qDebug() << "OscCalibDialog::OscCalibDialog()";
+
+	E2Profile::GetCalibrationAddress(loc, size, memtype);
+
+	lblLoc->setText(STR_MSGADDRESS);
+	lblVal->setText(STR_MSGVALUE);
+
+	chkMemOffset->setText(STR_MSGOFFSET);
+
+	QString str1;
+	QString str3;
+
+	loc = (loc < 0) ? 0 : loc;
+
+	str1 = QString().sprintf("0x%04lX", loc);
+	str3 = QString().sprintf("%d", val);
+
+	txiLoc->setText(str1);
+	txiVal->setText(str3);
+
+	chkMemOffset->setChecked( memtype);
+
+
+	pushOk->setText(STR_BTNOK);
+	pushCancel->setText(STR_BTNCANC);
+	pushRead->setText(STR_BTNREAD);
+
+	connect(pushOk, SIGNAL(clicked()), this, SLOT(onOk()));
+	connect(pushCancel, SIGNAL(clicked()), this, SLOT(reject()));
+	connect(pushRead, SIGNAL(clicked()), this, SLOT(onRead()));
 
 	awip = aw;
 }
 
+
 //======================>>> OscCalibDialog::~OscCalibDialog <<<======================
 OscCalibDialog::~OscCalibDialog()
 {
-	UserDebug(Destructor,"OscCalibDialog::~OscCalibDialog() destructor\n")
+	qDebug() << "OscCalibDialog::~OscCalibDialog()";
 }
 
-//======================>>> OscCalibDialog::OscCalibAction <<<======================
-int OscCalibDialog::OscCalibAction(long &cLoc, bool &cMemType, uint8_t &cVal)
+
+void OscCalibDialog::onOk()
 {
-	cLoc = (cLoc < 0) ? 0 : cLoc;
+	bool ok;
+	long i = txiLoc->text().toLong(&ok);
 
-	char str1[MAXNUMDIGIT];
-	char str3[MAXNUMDIGIT];
+	if (ok == true)
+	{
+		loc = i;
+	}
 
-	sprintf(str1, "0x%04lX", cLoc);
-	sprintf(str3, "%d", cVal);
-	SetCommandLabel(txiLoc, str1, OscCalibCmds);
-	SetCommandLabel(txiVal, str3, OscCalibCmds);
+	long v = txiVal->text().toLong(&ok);
 
-	SetCommandObject(chkMemOffset, cMemType, OscCalibCmds);
+	if (ok == true)
+	{
+		val = (uint8_t)v;
+	}
 
-	AddDialogCmds(OscCalibCmds);		// add the predefined commands
+	memtype = chkMemOffset->isChecked();
 
-	ItemVal ans,rval;
-	ans = ShowModalDialog("",rval);
-	if (ans == M_Cancel)
-		return 0;
+	E2Profile::SetCalibrationAddress(loc, size, memtype);
 
-	char str[MAXNUMDIGIT];
-	GetTextIn(txiLoc, str, 10);
-	cLoc = strtol(str,NULL,0);
-
-	GetTextIn(txiVal, str, 10);
-	cVal = (uint8_t)strtol(str,NULL,0);
-
-	cMemType = GetValue(chkMemOffset) ? true : false;
-
-	return (ans == M_OK);
+	accept();
 }
 
-//====================>>> OscCalibDialog::DialogCommand <<<====================
-void OscCalibDialog::DialogCommand(ItemVal id, ItemVal retval, CmdType ctype)
+
+void OscCalibDialog::onRead()
 {
 	int val;
-	char str[MAXNUMDIGIT];
-
-	UserDebug2(CmdEvents,"OscCalibDialog::DialogCommand(id:%d, val:%d)\n",id, retval)
-
-	switch (id)		// We will do some things depending on value
-	{
-	case btnRead:
-		val = awip->ReadOscCalibration();
-		sprintf(str, "0x%02X", val);
-		SetString(txiVal, str);
-		vModalDialog::DialogCommand(id,retval,ctype);
-		break;
-
-	default:
-		vModalDialog::DialogCommand(id,retval,ctype);
-		break;
-	}
+	val = awip->ReadOscCalibration();
+	QString str = QString().sprintf("0x%02X", val);
+	txiVal->setText(str);
 }
 

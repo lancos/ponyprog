@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: at89sxx.h,v 1.7 2009/11/16 23:40:43 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -35,19 +35,20 @@
 #include "device.h"
 #include "at89sbus.h"
 
+
 class At89sxx : public Device
 {
-  public:		//---------------------------------------- public
+public:               //---------------------------------------- public
 
 	At89sxx(e2AppWinInfo *wininfo = 0, BusIO *busp = 0);
-//	virtual ~At89sxx();
+	//      virtual ~At89sxx();
 
 	int Probe(int probe_size = 0);
 	int Read(int probe = 1, int type = ALL_TYPE);
 	int Write(int probe = 1, int type = ALL_TYPE);
 	int Verify(int type = ALL_TYPE);
 
-//	int Erase(int probe = 1, int type = ALL_TYPE);
+	//      int Erase(int probe = 1, int type = ALL_TYPE);
 
 	int SecurityRead(uint32_t &bits);
 	int SecurityWrite(uint32_t bits);
@@ -56,13 +57,15 @@ class At89sxx : public Device
 	int FusesWrite(uint32_t bits);
 
 	At89sBus *GetBus()
-		{ return (At89sBus *)Device::GetBus(); }
+	{
+		return (At89sBus *)Device::GetBus();
+	}
 
-  protected:	//--------------------------------------- protected
+protected:    //--------------------------------------- protected
 
 	int QueryType(long &type);
 
-  private:		//--------------------------------------- private
+private:              //--------------------------------------- private
 
 };
 #endif

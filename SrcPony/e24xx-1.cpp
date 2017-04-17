@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: e24xx-1.cpp,v 1.2 2007/04/20 10:58:21 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -29,18 +29,19 @@
 // 24XX-1 are I2C Bus eeproms that uses 8 bits (1 bytes) for addresses.    //
 // Total capacity can be up to 256 bytes.                                  //
 
-#include <string.h>
+#include <QString>
+
 #include "types.h"
-#include "e2app.h"
-#include "e24xx-1.h"		// Header file
+#include "e2awinfo.h"
+#include "e24xx-1.h"            // Header file
 #include "errcode.h"
 #include "eeptypes.h"
 
 //=====>>> Costruttore <<<======
 E24xx1::E24xx1(e2AppWinInfo *wininfo, BusIO *busp)
-	:	E24xx(wininfo, busp, 8, 128)		//Max 8 bank of 128 bytes
+	:       E24xx(wininfo, busp, 8, 128)            //Max 8 bank of 128 bytes
 {
-//	SetBankSize(1);
+	//      SetBankSize(1);
 }
 
 //--- Distruttore
@@ -54,10 +55,10 @@ int E24xx1::Probe(int probe_size)
 
 	if (rval > 0)
 	{
-	//	long size = GetSize();
+		//      long size = GetSize();
 
 		n_bank = 1;
-	//	SetNoOfBank(n_bank);
+		//      SetNoOfBank(n_bank);
 	}
 
 	return rval;

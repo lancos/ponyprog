@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2016   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: linuxsysfsint.cpp,v 1.5 2016/06/27 16:23:11 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -30,33 +30,35 @@
 
 #include "linuxsysfsint.h"
 #include "errcode.h"
-#include "e2app.h"
+#include "e2cmdw.h"
 
-#define GPIO_OUT			true
-#define GPIO_IN				false
+#include <QDebug>
 
-#ifdef	_LINUX_
+#define GPIO_OUT                        true
+#define GPIO_IN                         false
+
+#ifdef  __linux__
 # include <stdio.h>
 # include <stdlib.h>
 # include <errno.h>
 # include <unistd.h>
 # include <fcntl.h>
 #else
-# ifdef	__BORLANDC__
-#   define	__inline__
+# ifdef __BORLANDC__
+#   define      __inline__
 # else // MICROSOFT VC++
-#   define	__inline__ __inline
+#   define      __inline__ __inline
 #   define _export
 # endif
 #endif
 
 LinuxSysFsInterface::LinuxSysFsInterface()
 {
-	UserDebug(Constructor, "LinuxSysFsInterface::LinuxSysFsInterface() Constructor\n");
+	qDebug() << "LinuxSysFsInterface::LinuxSysFsInterface()";
 
 	Install(0);
 	old_portno = 0;
-    fd_ctrl = fd_clock = fd_datain = fd_dataout = -1;
+	fd_ctrl = fd_clock = fd_datain = fd_dataout = -1;
 }
 
 LinuxSysFsInterface::~LinuxSysFsInterface()
@@ -64,7 +66,7 @@ LinuxSysFsInterface::~LinuxSysFsInterface()
 	Close();
 }
 
-#ifdef	_LINUX_
+#ifdef  __linux__
 
 #define SYSFS_GPIO_DIR "/sys/class/gpio"
 #define MAX_BUF 64
@@ -77,11 +79,13 @@ static int gpio_open(unsigned int gpio, bool out_dir)
 	//trying with gpio command (you need wiringPi installed)
 	snprintf(buf, sizeof(buf), "gpio export %u %s", gpio, out_dir ? "out" : "in");
 	rval = system(buf);
+
 	if (rval != 0)
 	{
 		int fd;
 
 		fd = open(SYSFS_GPIO_DIR "/export", O_WRONLY);
+
 		if (fd < 0)
 		{
 			fprintf(stderr, "Unable to open GPIO export interface: %s\n", strerror(errno));
@@ -101,6 +105,7 @@ static int gpio_open(unsigned int gpio, bool out_dir)
 		{
 			snprintf(buf, sizeof(buf), SYSFS_GPIO_DIR  "/gpio%d/direction", gpio);
 			fd = open(buf, O_WRONLY);
+
 			if (fd < 0)
 			{
 				fprintf(stderr, "Unable to open GPIO direction interface: %s\n", strerror(errno));
@@ -111,9 +116,14 @@ static int gpio_open(unsigned int gpio, bool out_dir)
 				int ret, len;
 
 				if (out_dir)
+				{
 					len = snprintf(buf, sizeof(buf), "out");
+				}
 				else
+				{
 					len = snprintf(buf, sizeof(buf), "in");
+				}
+
 				ret = write(fd, buf, len);
 				close(fd);
 				rval = (ret == len) ? 0 : -1;
@@ -128,6 +138,7 @@ static int gpio_open(unsigned int gpio, bool out_dir)
 
 		snprintf(buf, sizeof(buf), SYSFS_GPIO_DIR "/gpio%d/value", gpio);
 		fd = open(buf, out_dir ? O_WRONLY : O_RDONLY);
+
 		if (fd < 0)
 		{
 			fprintf(stderr, "Unable to open GPIO set-value interface: %s\n", strerror(errno));
@@ -138,7 +149,8 @@ static int gpio_open(unsigned int gpio, bool out_dir)
 			rval = fd;
 		}
 	}
-	UserDebug3(UserApp2, "gpio_open(%u, %s) rval = %d\n", gpio, out_dir ? "out" : "in", rval);
+
+	qDebug() << "gpio_open(" << gpio << ", " << (out_dir ? "out" : "in" ) << ") rval = " << rval;
 
 	return rval;
 }
@@ -150,14 +162,18 @@ static int gpio_close(unsigned int gpio, int fd)
 
 	//close value interface
 	if (fd > 0)
+	{
 		close(fd);
+	}
 
 	//trying with gpio command (you need wiringPi installed)
 	snprintf(buf, sizeof(buf), "gpio unexport %u", gpio);
 	rval = system(buf);
+
 	if (rval != 0)
 	{
 		fd = open(SYSFS_GPIO_DIR "/unexport", O_WRONLY);
+
 		if (fd < 0)
 		{
 			fprintf (stderr, "Unable to open GPIO unexport interface: %s\n", strerror(errno));
@@ -173,7 +189,8 @@ static int gpio_close(unsigned int gpio, int fd)
 			rval = (ret == len) ? 0 : -1;
 		}
 	}
-	UserDebug2(UserApp2, "gpio_close(%u) rval = %d\n", gpio, rval);
+
+	qDebug() << "gpio_close(" << gpio << ") rval = " << rval;
 
 	return rval;
 }
@@ -181,37 +198,39 @@ static int gpio_close(unsigned int gpio, int fd)
 
 int LinuxSysFsInterface::SetPower(int onoff)
 {
-	UserDebug1(UserApp3, "LinuxSysFsInterface::SetPower(%d)\n", onoff);
+	qDebug() << "LinuxSysFsInterface::SetPower(" << onoff << ")";
 	return OK;
 }
 
 int LinuxSysFsInterface::InitPins()
 {
-	pin_ctrl = THEAPP->GetGpioPinCtrl();
-	pin_datain = THEAPP->GetGpioPinDataIn();
-	pin_dataout = THEAPP->GetGpioPinDataOut();
-	pin_clock = THEAPP->GetGpioPinClock();
+	pin_ctrl = E2Profile::GetGpioPinCtrl();
+	pin_datain = E2Profile::GetGpioPinDataIn();
+	pin_dataout = E2Profile::GetGpioPinDataOut();
+	pin_clock = E2Profile::GetGpioPinClock();
 
-	UserDebug2(UserApp2, "LinuxSysFsInterface::InitPins Ctrl=%d, Clock=%d ", pin_ctrl, pin_clock);
-	UserDebug2(UserApp2, "DataIn=%d, DataOut=%d\n", pin_datain, pin_dataout);
+	qDebug() << "LinuxSysFsInterface::InitPins Ctrl=" << pin_ctrl << ", Clock= " << pin_clock;
+	qDebug() << "DataIn=" << pin_datain << ", DataOut=" << pin_dataout;
 
-#ifdef	_LINUX_
+#ifdef  __linux__
 	fd_ctrl = gpio_open(pin_ctrl, GPIO_OUT);
 	fd_clock = gpio_open(pin_clock, GPIO_OUT);
 	fd_datain = gpio_open(pin_datain, GPIO_IN);
 	fd_dataout = gpio_open(pin_dataout, GPIO_OUT);
+
 	if (fd_ctrl < 0 || fd_clock < 0 || fd_datain < 0 || fd_dataout < 0)
 	{
 		DeInitPins();
 		return E2ERR_OPENFAILED;
 	}
+
 #endif
 	return OK;
 }
 
 void LinuxSysFsInterface::DeInitPins()
 {
-#ifdef	_LINUX_
+#ifdef  __linux__
 	gpio_close(pin_ctrl, fd_ctrl);
 	gpio_close(pin_clock, fd_clock);
 	gpio_close(pin_datain, fd_datain);
@@ -222,24 +241,26 @@ void LinuxSysFsInterface::DeInitPins()
 
 int LinuxSysFsInterface::Open(int com_no)
 {
-	UserDebug1(UserApp1, "LinuxSysFsInterface::Open(%d) IN\n", com_no);
+	qDebug() << "LinuxSysFsInterface::Open(" << com_no << ") IN";
 
 	int ret_val = OK;
 
 	if (IsInstalled() != com_no)
 	{
 		if ((ret_val = InitPins()) == OK)
+		{
 			Install(com_no);
+		}
 	}
 
-	UserDebug1(UserApp2, "LinuxSysFsInterface::Open() = %d OUT\n", ret_val);
+	qDebug() << "LinuxSysFsInterface::Open() = " << ret_val << " OUT";
 
 	return ret_val;
 }
 
 void LinuxSysFsInterface::Close()
 {
-	UserDebug(UserApp1, "LinuxSysFsInterface::Close() IN\n");
+	qDebug() << "LinuxSysFsInterface::Close() IN";
 
 	if (IsInstalled())
 	{
@@ -248,91 +269,112 @@ void LinuxSysFsInterface::Close()
 		Install(0);
 	}
 
-	UserDebug(UserApp2, "LinuxSysFsInterface::Close() OUT\n");
+	qDebug() << "LinuxSysFsInterface::Close() OUT";
 }
 
 // Per l'AVR e` la linea di RESET
 void LinuxSysFsInterface::SetControlLine(int res)
 {
-	UserDebug3(UserApp3, "LinuxSysFsInterface::SetControlLine(%d) *** Inst=%d, fd=%d\n", res, IsInstalled(), fd_ctrl);
+	qDebug() << "LinuxSysFsInterface::SetControlLine(" << res << ") *** Inst=" <<  IsInstalled() << ", fd=" << fd_ctrl;
 
 	if (IsInstalled())
 	{
-		if (THEAPP->GetPolarity() & RESETINV)
+		if (E2Profile::GetPolarityControl() & RESETINV)
+		{
 			res = !res;
+		}
 
-#ifdef	_LINUX_
+#ifdef  __linux__
 		int ret;
 
 		if (res)
+		{
 			ret = write(fd_ctrl, "1", 2);
+		}
 		else
+		{
 			ret = write(fd_ctrl, "0", 2);
+		}
 
 		if (ret != 2)
 		{
 			fprintf(stderr, "LinuxSysFsInterface::SetControlLine() write failed (%d)\n", ret);
 			exit(1);
 		}
+
 #endif
 	}
 }
 
 void LinuxSysFsInterface::SetDataOut(int sda)
 {
-	UserDebug3(UserApp3, "LinuxSysFsInterface::SetDataOut(%d) *** Inst=%d, fd=%d\n", sda, IsInstalled(), fd_dataout);
+	qDebug() << "LinuxSysFsInterface::SetDataOut(" << sda << ") *** Inst=" << IsInstalled() << ", fd=" << fd_dataout;
 
 	if (IsInstalled())
 	{
-		if ( (THEAPP->GetPolarity() & DOUTINV) )
+		if ( (E2Profile::GetPolarityControl() & DOUTINV) )
+		{
 			sda = !sda;
+		}
 
-#ifdef	_LINUX_
+#ifdef  __linux__
 		int ret;
 
 		if (sda)
+		{
 			ret = write(fd_dataout, "1", 2);
+		}
 		else
+		{
 			ret = write(fd_dataout, "0", 2);
+		}
 
 		if (ret != 2)
 		{
 			fprintf(stderr, "LinuxSysFsInterface::SetDataOut() write failed (%d)\n", ret);
 			exit(1);
 		}
+
 #endif
 	}
 }
 
 void LinuxSysFsInterface::SetClock(int scl)
 {
-	UserDebug3(UserApp3, "LinuxSysFsInterface::SetClock(%d) *** Inst=%d, fd=%d\n", scl, IsInstalled(), fd_clock);
+	qDebug() << "LinuxSysFsInterface::SetClock(" << scl << ") *** Inst=" << IsInstalled() << ", fd=" << fd_clock;
 
 	if (IsInstalled())
 	{
-		if ( (THEAPP->GetPolarity() & CLOCKINV) )
+		if ( (E2Profile::GetPolarityControl() & CLOCKINV) )
+		{
 			scl = !scl;
+		}
 
-#ifdef	_LINUX_
+#ifdef  __linux__
 		int ret;
 
 		if (scl)
+		{
 			ret = write(fd_clock, "1", 2);
+		}
 		else
+		{
 			ret = write(fd_clock, "0", 2);
+		}
 
 		if (ret != 2)
 		{
 			fprintf(stderr, "LinuxSysFsInterface::SetClock() write failed (%d)\n", ret);
 			exit(1);
 		}
+
 #endif
 	}
 }
 
 void LinuxSysFsInterface::SetClockData()
 {
-	UserDebug1(UserApp3, "LinuxSysFsInterface::SetClockData() *** Inst=%d\n", IsInstalled());
+	qDebug() << "LinuxSysFsInterface::SetClockData() *** Inst=" << IsInstalled();
 
 	if (IsInstalled())
 	{
@@ -344,7 +386,7 @@ void LinuxSysFsInterface::SetClockData()
 
 void LinuxSysFsInterface::ClearClockData()
 {
-	UserDebug1(UserApp3, "LinuxSysFsInterface::ClearClockData() *** Inst=%d\n", IsInstalled());
+	qDebug() << "LinuxSysFsInterface::ClearClockData() *** Inst=" << IsInstalled();
 
 	if (IsInstalled())
 	{
@@ -358,7 +400,7 @@ int LinuxSysFsInterface::GetDataIn()
 	if (IsInstalled())
 	{
 		unsigned int val = 0;
-#ifdef	_LINUX_
+#ifdef  __linux__
 		int ret;
 		char ch;
 
@@ -371,16 +413,23 @@ int LinuxSysFsInterface::GetDataIn()
 			fprintf(stderr, "LinuxSysFsInterface::GetDataIn() read failed (%d)\n", ret);
 			exit(1);
 		}
-#endif
-		UserDebug2(UserApp3, "LinuxSysFsInterface::GetDataIn()=%u, fd=%d\n", val, fd_datain);
 
-		if (THEAPP->GetPolarity() & DININV)
+#endif
+		qDebug() << "LinuxSysFsInterface::GetDataIn()=" << val << ", fd=" << fd_datain;
+
+		if (E2Profile::GetPolarityControl() & DININV)
+		{
 			return !val;
+		}
 		else
+		{
 			return val;
+		}
 	}
 	else
+	{
 		return E2ERR_NOTINSTALLED;
+	}
 }
 
 int LinuxSysFsInterface::GetClock()
@@ -390,14 +439,14 @@ int LinuxSysFsInterface::GetClock()
 
 int LinuxSysFsInterface::IsClockDataUP()
 {
-	UserDebug1(UserApp3, "LinuxSysFsInterface::IsClockDataUP() *** Inst=%d\n", IsInstalled());
+	qDebug() << "LinuxSysFsInterface::IsClockDataUP() *** Inst=" << IsInstalled();
 
 	return GetDataIn();
 }
 
 int LinuxSysFsInterface::IsClockDataDOWN()
 {
-	UserDebug1(UserApp3, "LinuxSysFsInterface::IsClockDataDOWN() *** Inst=%d\n", IsInstalled());
+	qDebug() << "LinuxSysFsInterface::IsClockDataDOWN() *** Inst=" << IsInstalled();
 
 	return !GetDataIn();
 }
@@ -405,43 +454,43 @@ int LinuxSysFsInterface::IsClockDataDOWN()
 /**
 int LinuxSysFsInterface::TestPort(int com_no)
 {
-	UserDebug1(UserApp1, "LinuxSysFsInterface::TestPort(%d) IN\n", com_no);
-	int ret_val = TestSave(com_no);
+        qDebug() << "LinuxSysFsInterface::TestPort(%d) IN"<< com_no;
+        int ret_val = TestSave(com_no);
 
-	if (ret_val == OK)
-	{
-		int a,b;
-		Wait w;
+        if (ret_val == OK)
+        {
+                int a,b;
+                Wait w;
 
-		ret_val = E2ERR_OPENFAILED;
+                ret_val = E2ERR_OPENFAILED;
 
-		SetClockData();
-		w.WaitMsec(50);
-		a = (GetCPWReg() & WF_SCL) ? 1 : 0;
-		b = GetPresence() ? 1 : 0;
+                SetClockData();
+                w.WaitMsec(50);
+                a = (GetCPWReg() & WF_SCL) ? 1 : 0;
+                b = GetPresence() ? 1 : 0;
 
-		if (a == b)
-		{
-			ClearClockData();
-			w.WaitMsec(50);
-			a = (GetCPWReg() & WF_SCL) ? 1 : 0;
-			b = GetPresence() ? 1 : 0;
+                if (a == b)
+                {
+                        ClearClockData();
+                        w.WaitMsec(50);
+                        a = (GetCPWReg() & WF_SCL) ? 1 : 0;
+                        b = GetPresence() ? 1 : 0;
 
-			if (a == b)
-			{
-				SetClockData();
-				w.WaitMsec(50);
-				a = (GetCPWReg() & WF_SCL) ? 1 : 0;
-				b = GetPresence() ? 1 : 0;
+                        if (a == b)
+                        {
+                                SetClockData();
+                                w.WaitMsec(50);
+                                a = (GetCPWReg() & WF_SCL) ? 1 : 0;
+                                b = GetPresence() ? 1 : 0;
 
-				if (a == b)
-					ret_val = OK;
-			}
-		}
-	}
-	TestRestore();
-	UserDebug1(UserApp2, "LinuxSysFsInterface::TestPort() = %d OUT\n", ret_val);
+                                if (a == b)
+                                        ret_val = OK;
+                        }
+                }
+        }
+        TestRestore();
+        qDebug() << "LinuxSysFsInterface::TestPort() = %d OUT"<< ret_val;
 
-	return ret_val;
+        return ret_val;
 }
 **/

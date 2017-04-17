@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: busio.cpp,v 1.4 2008/02/04 17:18:20 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -29,31 +29,34 @@
 
 #include "busio.h"
 
-#include "e2app.h"
+#include "e2cmdw.h"
 
 BusIO::BusIO(BusInterface *p)
-	:	err_no(0),
-		last_addr(0),
-		shot_delay(5),
-		busI(p),
-		old_progress(0),
-		last_programmed_addr(0)
+	:       err_no(0),
+	        last_addr(0),
+	        shot_delay(5),
+	        busI(p),
+	        old_progress(0),
+	        last_programmed_addr(0)
 {
 }
 
+// EK 2017
+// TODO to implement the connection for SetProgress()
+// it's possible only from one QObject
 int BusIO::CheckAbort(int progress)
 {
-	int abort = THEAPP->GetAbortFlag();
+	int abort = E2Profile::GetAbortFlag();
 
 	if (!abort)
 	{
 		if ( (progress == 0 && old_progress != 0) ||
-			progress > old_progress + 4 )
+		                progress > old_progress + 4 )
 		{
-			THEAPP->SetProgress(progress);
+			//                      THEAPP->SetProgress(progress);
 			old_progress = progress;
-		//	if (progress == 100)
-				THEAPP->CheckEvents();
+			//      if (progress == 100)
+			//                      THEAPP->CheckEvents();
 		}
 	}
 
@@ -69,11 +72,13 @@ int BusIO::Error()
 
 void BusIO::SetDelay()
 {
-	shot_delay = 5;	//basic timing of 5usec
+	shot_delay = 5; //basic timing of 5usec
 }
 
 void BusIO::SetDelay(int delay)
 {
 	if (delay >= 0)
+	{
 		shot_delay = delay;
+	}
 }

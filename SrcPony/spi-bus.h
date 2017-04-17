@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: spi-bus.h,v 1.4 2008/01/27 23:39:11 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -27,15 +27,15 @@
 //-------------------------------------------------------------------------//
 //=========================================================================//
 
-#ifndef	_SPIBUS_H
-#define	_SPIBUS_H
+#ifndef _SPIBUS_H
+#define _SPIBUS_H
 
 #include "busio.h"
 #include "pgminter.h"
 
 class SPIBus : public BusIO
 {
- public:		//------------------------------- public
+public:                //------------------------------- public
 	SPIBus(BusInterface *ptr = 0, bool cpha = false);
 	virtual ~SPIBus();
 
@@ -43,39 +43,57 @@ class SPIBus : public BusIO
 
 	void SetDelay();
 	void SetFallingPhase(bool cpha)
-	{ fall_edge_sample = cpha; }
+	{
+		fall_edge_sample = cpha;
+	}
 
- protected:		//------------------------------- protected
+protected:             //------------------------------- protected
 
 	int SendDataByte(int by);
 	int RecDataByte();
 
 	void SetReset()
-		{ busI->SetControlLine(1); }
+	{
+		busI->SetControlLine(1);
+	}
 	void ClearReset()
-		{ busI->SetControlLine(0); }
+	{
+		busI->SetControlLine(0);
+	}
 
 	void setSCK()
-		{ busI->SetClock(1); }
+	{
+		busI->SetClock(1);
+	}
 
 	void clearSCK()
-		{ busI->SetClock(0); }
+	{
+		busI->SetClock(0);
+	}
 
 	int SendDataBit(int b);
 	int RecDataBit();
 
- private:
+private:
 	void bitMOSI(int b)
-		{ busI->SetDataOut(b); }
+	{
+		busI->SetDataOut(b);
+	}
 
 	void setMOSI()
-		{ busI->SetDataOut(1); }
+	{
+		busI->SetDataOut(1);
+	}
 
 	void clearMOSI()
-		{ busI->SetDataOut(0); }
+	{
+		busI->SetDataOut(0);
+	}
 
 	int getMISO() const
-		{ return busI->GetDataIn(); }
+	{
+		return busI->GetDataIn();
+	}
 
 	bool fall_edge_sample;
 };

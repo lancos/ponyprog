@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: jdminter.h,v 1.2 2007/04/20 10:58:22 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -27,24 +27,26 @@
 //-------------------------------------------------------------------------//
 //=========================================================================//
 
-#ifndef	_JDMINTERFACE_H
-#define	_JDMINTERFACE_H
+#ifndef _JDMINTERFACE_H
+#define _JDMINTERFACE_H
 
 #include "pgminter.h"
 
 class JdmInterface : public SIProgInterface
 {
- public:		//------------------------------- public
+public:                //------------------------------- public
 
-//	virtual int Open(int com_no);
-//	virtual void Close();
+	//      virtual int Open(int com_no);
+	//      virtual void Close();
 
 	virtual void SetInvDataOut(int sda = 1)
-		{ SetDataOut(sda); }
+	{
+		SIProgInterface::SetDataOut(sda);
+	}
 
- protected:		//------------------------------- protected
+protected:             //------------------------------- protected
 
- private:		//------------------------------- private
+private:               //------------------------------- private
 
 };
 

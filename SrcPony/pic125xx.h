@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: pic125xx.h,v 1.3 2009/11/16 23:40:43 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -32,12 +32,13 @@
 
 #include "types.h"
 
-#include "device.h"
 #include "pic12bus.h"
+#include "device.h"
+
 
 class Pic125xx : public Device
 {
-  public:		//---------------------------------------- public
+public:               //---------------------------------------- public
 
 	Pic125xx(e2AppWinInfo *wininfo = 0, BusIO *busp = 0);
 	virtual ~Pic125xx();
@@ -51,17 +52,19 @@ class Pic125xx : public Device
 	int SecurityRead(uint32_t &bits);
 	int SecurityWrite(uint32_t bits);
 
-  protected:	//--------------------------------------- protected
+protected:    //--------------------------------------- protected
 
 	Pic12Bus *GetBus()
-		{ return (Pic12Bus *)Device::GetBus(); }
+	{
+		return (Pic12Bus *)Device::GetBus();
+	}
 
 	virtual int CodeProtectAdjust(uint16_t &config, int read = 0);
-//	virtual int WriteProg();
+	//      virtual int WriteProg();
 	virtual int VerifyProg(unsigned char *localbuf);
 
-  private:		//--------------------------------------- private
+private:              //--------------------------------------- private
 
-  	uint16_t config_word;
+	uint16_t config_word;
 };
 #endif

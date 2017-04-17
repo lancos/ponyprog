@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: at90sbus.h,v 1.10 2009/11/16 23:40:43 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -27,16 +27,16 @@
 //-------------------------------------------------------------------------//
 //=========================================================================//
 
-#ifndef	_AT90SBUS_H
-#define	_AT90SBUS_H
+#ifndef _AT90SBUS_H
+#define _AT90SBUS_H
 
 #include "spi-bus.h"
 
 class At90sBus : public SPIBus
 {
- public:		//------------------------------- public
+public:                //------------------------------- public
 	At90sBus(BusInterface *ptr = 0);
-//	virtual ~At90sBus();
+	//      virtual ~At90sBus();
 
 	long Read(int addr, uint8_t *data, long length, int page_size = 0);
 	long Write(int addr, uint8_t const *data, long length, int page_size = 0);
@@ -54,9 +54,11 @@ class At90sBus : public SPIBus
 	void SetFlashPagePolling(bool val);
 	bool GetFlashPagePolling() const;
 	void SetOld1200Mode(bool val)
-	{ old1200mode = val; }
+	{
+		old1200mode = val;
+	}
 
- protected:		//------------------------------- protected
+protected:             //------------------------------- protected
 
 	//Programming commands
 	const uint8_t EnableProg0, EnableProg1;
@@ -99,7 +101,7 @@ class At90sBus : public SPIBus
 
 	bool old1200mode;
 
- private:		//------------------------------- private
+private:               //------------------------------- private
 
 	bool enable_flashpage_polling;
 };

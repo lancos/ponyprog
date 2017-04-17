@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: dt006interf.h,v 1.2 2007/04/20 10:58:21 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -27,14 +27,14 @@
 //-------------------------------------------------------------------------//
 //=========================================================================//
 
-#ifndef	_DT006INTERFACE_H
-#define	_DT006INTERFACE_H
+#ifndef _DT006INTERFACE_H
+#define _DT006INTERFACE_H
 
 #include "lpt_ext_interf.h"
 
 class Dt006Interface : public LptExtInterface
 {
- public:		//------------------------------- public
+public:                //------------------------------- public
 	Dt006Interface(bool use_io = false);
 
 	virtual int Open(int port_no);
@@ -54,10 +54,10 @@ class Dt006Interface : public LptExtInterface
 	int SetPower(int onoff);
 	void SetControlLine(int res = 1);
 
- protected:		//------------------------------- protected
+protected:             //------------------------------- protected
 
- private:		//------------------------------- private
-//	int GetPresence();
+private:               //------------------------------- private
+	//      int GetPresence();
 
 };
 

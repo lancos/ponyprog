@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: intfbuf.cpp,v 1.7 2009/11/16 23:40:43 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -30,27 +30,29 @@
 #include <stdio.h>
 
 //Estensione al formato Intel Extended HEX
-#include <string.h>
+#include <QString>
 #include <stdlib.h>
 #include <ctype.h>
 
 #define MAXLINE 520
 
-#define DATA_RECORD	00	//record contain the data bytes
-#define END_RECORD	01	//record mark end of file
-#define SEG_ADDR_RECORD	02	//record contain the new segmented address (HEX86)
-#define START_RECORD	03	//record contain the program entry point (HEX86)
-#define	LIN_ADDR_RECORD	04	//record contain the new linear address (HEX386)
-#define EXT_START_RECORD	05	//record contain the program entry point (HEX386)
+#define DATA_RECORD     00      //record contain the data bytes
+#define END_RECORD      01      //record mark end of file
+#define SEG_ADDR_RECORD 02      //record contain the new segmented address (HEX86)
+#define START_RECORD    03      //record contain the program entry point (HEX86)
+#define LIN_ADDR_RECORD 04      //record contain the new linear address (HEX386)
+#define EXT_START_RECORD        05      //record contain the program entry point (HEX386)
 
 #include "types.h"
-#include "intfbuf.h"		// Header file
+#include "intfbuf.h"            // Header file
 #include "errcode.h"
 #include "crc.h"
 
+#include "e2awinfo.h"
+
 //======================>>> IntelFileBuf::IntelFileBuf <<<=======================
 IntelFileBuf::IntelFileBuf(e2AppWinInfo *wininfo)
-		: FileBuf(wininfo)
+	: FileBuf(wininfo)
 {
 	file_type = INTEL;
 }
@@ -72,6 +74,7 @@ int IntelFileBuf::WriteRecord(FILE *fh, uint8_t *bptr, long curaddr, long recsiz
 	if (fmt == DATA_RECORD)
 	{
 		discard = 1;
+
 		for (j = 0; j < recsize; j++)
 		{
 			if ( bptr[curaddr + j] != 0xFF )
@@ -82,7 +85,9 @@ int IntelFileBuf::WriteRecord(FILE *fh, uint8_t *bptr, long curaddr, long recsiz
 		}
 	}
 	else
+	{
 		discard = 0;
+	}
 
 	if (!discard)
 	{
@@ -109,6 +114,7 @@ int IntelFileBuf::WriteRecord(FILE *fh, uint8_t *bptr, long curaddr, long recsiz
 			fprintf(fh, "%02X", bptr[curaddr + j]);
 			checksum += bptr[curaddr + j];
 		}
+
 		fprintf(fh, "%02X\n", (~checksum + 1) & 0xFF);
 	}
 
@@ -163,7 +169,7 @@ int IntelFileBuf::WriteAddressRecord(FILE *fh, long curaddr, bool linear_address
 }
 
 
-#define min(a,b)	( (a < b) ? a : b )
+#define min(a,b)        ( (a < b) ? a : b )
 
 //======================>>> IntelFileBuf::Save <<<=======================
 int IntelFileBuf::Save(int savetype, long relocation_offset)
@@ -171,29 +177,34 @@ int IntelFileBuf::Save(int savetype, long relocation_offset)
 	FILE *fh;
 	int rval = OK;
 
-	if ( (fh = fopen(FileBuf::GetFileName(), "w")) == NULL )
+	if ( (fh = fopen(FileBuf::GetFileName().toLatin1(), "w")) == NULL )
+	{
 		return CREATEERROR;
+	}
 
 	long dsize = FileBuf::GetBlockSize() * FileBuf::GetNoOfBlock();
 	long size = FileBuf::GetBufSize();
 	uint8_t *ptr = FileBuf::GetBufPtr();
 
 	//Remove FF's tail
-	while ( ptr[size-1] == 0xFF )
+	while ( ptr[size - 1] == 0xFF )
+	{
 		size--;
+	}
 
 	if (savetype == PROG_TYPE)
 	{
 		if (GetSplitted() > 0 && GetSplitted() <= dsize)
+		{
 			size = GetSplitted();
+		}
 		else
 		{
 			fclose(fh);
 			return 0;
 		}
 	}
-	else
-	if (savetype == DATA_TYPE)
+	else if (savetype == DATA_TYPE)
 	{
 		if (GetSplitted() >= 0 && GetSplitted() < dsize)
 		{
@@ -228,14 +239,18 @@ int IntelFileBuf::Save(int savetype, long relocation_offset)
 				rval = WRITEERROR;
 				break;
 			}
+
 			curaddr += recsize;
 		}
-		WriteRecord(fh, ptr, 0, 0, END_RECORD);		//26/08/99
+
+		WriteRecord(fh, ptr, 0, 0, END_RECORD);         //26/08/99
 
 		rval = curaddr;
 	}
 	else
+	{
 		rval = NOTHINGTOSAVE;
+	}
 
 	fclose(fh);
 
@@ -251,55 +266,76 @@ int IntelFileBuf::Load(int loadtype, long relocation_offset)
 
 	uint8_t *endp = GetBufPtr() + GetBufSize();
 	uint8_t *dp = GetBufPtr();
+
 	if ( loadtype == DATA_TYPE)
 	{
 		if ( GetSplitted() >= 0 && GetSplitted() < GetBufSize() )
+		{
 			dp += GetSplitted();
+		}
 		else
+		{
 			return 0;
+		}
 	}
 
 	//Relocation check
 	if (dp + relocation_offset > endp)
+	{
 		return BADPARAM;
+	}
 	else
+	{
 		dp += relocation_offset;
+	}
 
 	uint32_t laddr = 0;
 
 	FILE *fh;
-	if ( (fh = fopen(GetFileName(), "r")) == NULL )
+
+	if ( (fh = fopen(GetFileName().toLatin1(), "r")) == NULL )
+	{
 		return FILENOTFOUND;
+	}
 
 	int img_size = 0;
-	char riga[MAXLINE+1];
+	char riga[MAXLINE + 1];
 	riga[MAXLINE] = '\0';
+
 	while ( fgets(riga, MAXLINE, fh) )
 	{
 		char *s;
 		int k;
 
 		if ( (s = strchr(riga, ':')) == NULL )
+		{
 			continue;
+		}
 		else
+		{
 			s++;
+		}
 
 		//Byte Count
 		uint16_t bcount;
+
 		if ( ScanHex(&s, 2, bcount) != OK )
 		{
 			rval = BADFILETYPE;
 			break;
 		}
+
 		uint8_t checksum = (uint8_t)bcount;
 
 		//Address
 		uint16_t addr;
+
 		if ( ScanHex(&s, 4, addr) != OK )
 		{
 			rval = BADFILETYPE;
 			break;
 		}
+
 		checksum += (uint8_t)(addr >> 8);
 		checksum += (uint8_t)addr;
 
@@ -309,11 +345,13 @@ int IntelFileBuf::Load(int loadtype, long relocation_offset)
 
 		//Record Type
 		uint16_t rectype;
+
 		if ( ScanHex(&s, 2, rectype) != OK )
 		{
 			rval = BADFILETYPE;
 			break;
 		}
+
 		checksum += (uint8_t)rectype;
 
 		//Data Byte
@@ -322,7 +360,7 @@ int IntelFileBuf::Load(int loadtype, long relocation_offset)
 		if (rectype == DATA_RECORD)
 		{
 			//controllo overflow
-			if (dp+laddr+bcount > endp)
+			if (dp + laddr + bcount > endp)
 			{
 				rval = BUFFEROVERFLOW;
 				break;
@@ -330,19 +368,24 @@ int IntelFileBuf::Load(int loadtype, long relocation_offset)
 
 			bool ok = true;
 			uint8_t *p;
-			for (k = 0, p = dp+laddr; k < bcount && ok; k++)
+
+			for (k = 0, p = dp + laddr; k < bcount && ok; k++)
 			{
 				if ( ScanHex(&s, 2, data) != OK )
+				{
 					ok = false;
+				}
 
 				checksum += (uint8_t)data;
 				*p++ = (uint8_t)data;
 			}
-			if (!ok)	//salta alla riga successiva
+
+			if (!ok)        //salta alla riga successiva
 			{
 				rval = BADFILETYPE;
 				break;
 			}
+
 			img_size = laddr + bcount;
 		}
 		else if (rectype == SEG_ADDR_RECORD)
@@ -356,11 +399,13 @@ int IntelFileBuf::Load(int loadtype, long relocation_offset)
 			{
 				//Address
 				uint16_t addr;
+
 				if ( ScanHex(&s, 4, addr) != OK )
 				{
 					rval = BADFILETYPE;
 					break;
 				}
+
 				checksum += (uint8_t)(addr >> 8);
 				checksum += (uint8_t)addr;
 
@@ -378,47 +423,54 @@ int IntelFileBuf::Load(int loadtype, long relocation_offset)
 			{
 				//Address
 				uint16_t addr;
+
 				if ( ScanHex(&s, 4, addr) != OK )
 				{
 					rval = BADFILETYPE;
 					break;
 				}
+
 				checksum += (uint8_t)(addr >> 8);
 				checksum += (uint8_t)addr;
 
 				laddr = (uint32_t)addr << 16;
 			}
 		}
-	/**	just ignored
-		else if (rectype == START_RECORD)
-		{
-			if (bcount != 4)
-			{
-				rval = BADFILETYPE;
-				break;
-			}
+		/**     just ignored
+		        else if (rectype == START_RECORD)
+		        {
+		                if (bcount != 4)
+		                {
+		                        rval = BADFILETYPE;
+		                        break;
+		                }
 
-			// Lo possiamo ignorare, dovrebbe
-			// essere il linker a mettere tutto
-			// a posto. Noi non fungiamo da loader!
-			//jmpaddr = ScanHex(&s, 8);
-		//	ScanHex(&s, 8);
-			while (bcount--)
-			{
-				data = (uint8_t)ScanHex(&s, 2);
-				checksum += data;
-			}
-		}
-	**/
-		else	// Unknown record type: discard data bytes (but check for validity)
+		                // Lo possiamo ignorare, dovrebbe
+		                // essere il linker a mettere tutto
+		                // a posto. Noi non fungiamo da loader!
+		                //jmpaddr = ScanHex(&s, 8);
+		        //      ScanHex(&s, 8);
+		                while (bcount--)
+		                {
+		                        data = (uint8_t)ScanHex(&s, 2);
+		                        checksum += data;
+		                }
+		        }
+		**/
+		else    // Unknown record type: discard data bytes (but check for validity)
 		{
 			bool ok = true;
+
 			while (bcount-- && ok)
 			{
 				if ( ScanHex(&s, 2, data) != OK )
+				{
 					ok = false;
+				}
+
 				checksum += (uint8_t)data;
 			}
+
 			if (!ok)
 			{
 				rval = BADFILETYPE;
@@ -431,13 +483,16 @@ int IntelFileBuf::Load(int loadtype, long relocation_offset)
 			rval = BADFILETYPE;
 			break;
 		}
+
 		if ( (uint8_t)data != (uint8_t)(~checksum + 1) )
 		{
 			rval = BADFILETYPE;
 			break;
 		}
 		else
+		{
 			okline_counter++;
+		}
 
 		if (rectype == END_RECORD)
 		{
@@ -448,22 +503,26 @@ int IntelFileBuf::Load(int loadtype, long relocation_offset)
 	fclose(fh);
 
 	if (okline_counter == 0)
+	{
 		rval = BADFILETYPE;
+	}
 	else
 	{
-		if (img_size == 0)	//nessun dato ma il formato e` corretto
+		if (img_size == 0)      //nessun dato ma il formato e` corretto
+		{
 			img_size++;
+		}
 	}
 
-//In questi formati di file "stupidi" la dimensione
-//deve rimanere quella della eeprom attualmente selezionata
+	//In questi formati di file "stupidi" la dimensione
+	//deve rimanere quella della eeprom attualmente selezionata
 
 	if (rval == OK)
 	{
-	//	SetStringID("");	//????
+		//      SetStringID("");        //????
 		SetComment("");
-		SetRollOver(0);		//2 (che significa NO) ??
-	//	SetCRC( mcalc_crc(GetBufPtr(), img_size) );
+		SetRollOver(0);         //2 (che significa NO) ??
+		//      SetCRC( mcalc_crc(GetBufPtr(), img_size) );
 
 		rval = img_size;
 	}
@@ -482,13 +541,20 @@ int IntelFileBuf::ScanHex(char **sp, int len, uint32_t &result)
 	int j;
 
 	if (len > 8)
+	{
 		return -2;
+	}
+
 	for (j = 0; j < len && **sp; j++)
 	{
 		cifra[j] = *(*sp)++;
+
 		if ( !isxdigit(cifra[j]) )
+		{
 			return -1;
+		}
 	}
+
 	cifra[j] = '\0';
 	result = strtoul(cifra, NULL, 16);
 

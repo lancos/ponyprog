@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: at93cxx.cpp,v 1.3 2007/04/20 10:58:21 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -28,48 +28,58 @@
 //=========================================================================//
 
 #include "types.h"
-#include "at93cxx.h"		// Header file
+#include "at93cxx.h"            // Header file
 #include "errcode.h"
 #include "eeptypes.h"
 
-#define	BANK_SIZE	2		//16 bit organization
+
+#include <QDebug>
+
+#define BANK_SIZE       2               //16 bit organization
 
 //=====>>> Costruttore <<<======
 At93cxx::At93cxx(e2AppWinInfo *wininfo, BusIO *busp)
-	:	Device(wininfo, busp, BANK_SIZE)
+	:       Device(wininfo, busp, BANK_SIZE)
 {
-	UserDebug(Constructor, "At93cxx::At93cxx()\n");
+	qDebug() << "At93cxx::At93cxx()";
 }
 
 //--- Distruttore
 At93cxx::~At93cxx()
 {
-	UserDebug(Destructor, "At93cxx::~At93cxx()\n");
+	qDebug() << "At93cxx::~At93cxx()";
 }
 
 int At93cxx::Read(int probe, int type)
 {
-	UserDebug1(UserApp1, "At93cxx::Read(%d)\n", probe);
+	qDebug() << "At93cxx::Read(" << probe << ")";
 
 	GetBus()->SetOrganization(ORG16);
 
 	if (probe || GetNoOfBank() == 0)
+	{
 		Probe();
+	}
 
 	int size = GetNoOfBank() * GetBankSize();
 	int asize = GetBus()->CalcAddressSize(GetAddrSize());
 
 	int rv = size;
+
 	if (type & PROG_TYPE)
 	{
 		rv = GetBus()->Read(asize, GetBufPtr(), size);
+
 		if (rv != size)
 		{
 			if (rv > 0)
+			{
 				rv = OP_ABORTED;
+			}
 		}
 	}
-	UserDebug1(UserApp1, "At93cxx::Read() = %d\n", rv);
+
+	qDebug() << "At93cxx::Read() = " << rv;
 
 	return rv;
 }
@@ -79,19 +89,25 @@ int At93cxx::Write(int probe, int type)
 	GetBus()->SetOrganization(ORG16);
 
 	if (probe || GetNoOfBank() == 0)
+	{
 		Probe();
+	}
 
 	int size = GetNoOfBank() * GetBankSize();
 	int asize = GetBus()->CalcAddressSize(GetAddrSize());
 
 	int rv = size;
+
 	if (type & PROG_TYPE)
 	{
 		rv = GetBus()->Write(asize, GetBufPtr(), size);
+
 		if (rv != size)
 		{
 			if (rv > 0)
+			{
 				rv = OP_ABORTED;
+			}
 		}
 	}
 
@@ -103,29 +119,39 @@ int At93cxx::Verify(int type)
 	GetBus()->SetOrganization(ORG16);
 
 	if (GetNoOfBank() == 0)
+	{
 		return BADPARAM;
+	}
 
 	int size = GetNoOfBank() * GetBankSize();
 	int asize = GetBus()->CalcAddressSize(GetAddrSize());
 	unsigned char *localbuf;
 	localbuf = new unsigned char[size];
+
 	if (localbuf == 0)
+	{
 		return OUTOFMEMORY;
+	}
 
 	int rval = 1;
+
 	if (type & PROG_TYPE)
 	{
 		rval = GetBus()->Read(asize, localbuf, size);
+
 		if (rval != size)
 		{
 			if (rval > 0)
+			{
 				rval = OP_ABORTED;
+			}
 		}
 		else
 		{
 			rval = ( memcmp(GetBufPtr(), localbuf, size) != 0 ) ? 0 : 1;
 		}
 	}
+
 	delete localbuf;
 
 	return rval;

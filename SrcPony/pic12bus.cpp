@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: pic12bus.cpp,v 1.10 2009/11/16 23:40:43 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -31,56 +31,58 @@
 #include "pic12bus.h"
 #include "errcode.h"
 
-#include "e2app.h"
+#include <QDebug>
 
-#ifdef	_LINUX_
+#include "e2cmdw.h"
+
+#ifdef  __linux__
 //#  include <asm/io.h>
 #  include <unistd.h>
 #else
-#  ifdef	__BORLANDC__
-#    define	__inline__
+#  ifdef        __BORLANDC__
+#    define     __inline__
 #  else // _MICROSOFT_ VC++
-#    define	__inline__ __inline
+#    define     __inline__ __inline
 #    define _export
 #  endif
 #endif
 
-#define	MAX_PROG_PULSES	8
+#define MAX_PROG_PULSES 8
 
 // Constructor
 Pic12Bus::Pic12Bus(BusInterface *ptr)
 	: BusIO(ptr),
-//		DataMask(0xff),
-		ProgMask(0x0fff),		//12bit instruction
+	  //              DataMask(0xff),
+	  ProgMask(0x0fff),               //12bit instruction
 
-		ReadProgCode(0x04),			//Read Data from Program Memory *
-		LoadProgCode(0x02),			//Load Data for Program Memory *
+	  ReadProgCode(0x04),                     //Read Data from Program Memory *
+	  LoadProgCode(0x02),                     //Load Data for Program Memory *
 
-//		ReadDataCode(0x05),			//Read Data from Data Memory *
-//		LoadDataCode(0x03),			//Load Data for Data Memory *
-//		LoadConfigCode(0x00),		//Load Configuration *
-		IncAddressCode(0x06),		//Increment Address *
-//		EraseProgMem(0x09),			//Bulk Erase Program Memory *
-//		EraseDataMem(0x0b),			//Bulk Erase Data Memory *
-		BeginProgCode(0x08),	//Begin Erase Programming Cycle *
-//		BeginProgOnlyCode(0x18)		//Begin Programming Only Cycle
-		EndProgCode(0x0e)
+	  //              ReadDataCode(0x05),                     //Read Data from Data Memory *
+	  //              LoadDataCode(0x03),                     //Load Data for Data Memory *
+	  //              LoadConfigCode(0x00),           //Load Configuration *
+	  IncAddressCode(0x06),           //Increment Address *
+	  //              EraseProgMem(0x09),                     //Bulk Erase Program Memory *
+	  //              EraseDataMem(0x0b),                     //Bulk Erase Data Memory *
+	  BeginProgCode(0x08),    //Begin Erase Programming Cycle *
+	  //              BeginProgOnlyCode(0x18)         //Begin Programming Only Cycle
+	  EndProgCode(0x0e)
 {
-	UserDebug(Constructor, "Pic12Bus::Pic12Bus()\n");
+	qDebug() << "Pic12Bus::Pic12Bus()";
 
-	OverProgrammingMult = 11;		//Default OverProgramming X value (x11)
-	OverProgrammingAdd = 0;			//Default OverProgramming + value (+0)
+	OverProgrammingMult = 11;               //Default OverProgramming X value (x11)
+	OverProgrammingAdd = 0;                 //Default OverProgramming + value (+0)
 }
 
 // Desctructor
 Pic12Bus::~Pic12Bus()
 {
-//	Close();
+	//      Close();
 }
 
 void Pic12Bus::SetDelay()
 {
-	int val = THEAPP->GetPICSpeed();
+	int val = E2Profile::GetPICSpeed();
 	int n;
 
 	switch(val)
@@ -88,35 +90,41 @@ void Pic12Bus::SetDelay()
 	case TURBO:
 		n = 1;
 		break;
+
 	case FAST:
 		n = 3;
 		break;
+
 	case SLOW:
 		n = 20;
 		break;
+
 	case VERYSLOW:
 		n = 100;
 		break;
+
 	case ULTRASLOW:
 		n = 1000;
 		break;
+
 	default:
 		n = 8;         //Default (< 100KHz)
 		break;
 	}
+
 	BusIO::SetDelay(n);
 
-	UserDebug1(UserApp2, "PIC12Bus::SetDelay() = %d\n", n);
+	qDebug() << "PIC12Bus::SetDelay() = " << n;
 }
 
 int Pic12Bus::SendDataBit(int b)
 {
-	setCLK();		//set SCK high
+	setCLK();               //set SCK high
 	bitDI(b);
 
 	WaitUsec(shot_delay);
 
-	clearCLK();		//device latch data bit now!
+	clearCLK();             //device latch data bit now!
 
 	WaitUsec(shot_delay);
 
@@ -128,11 +136,11 @@ int Pic12Bus::RecDataBit()
 {
 	register uint8_t b;
 
-	setCLK();		//set SCK high (Pic output data now)
+	setCLK();               //set SCK high (Pic output data now)
 
 	WaitUsec(shot_delay);
 
-	b = getDO();	// sampling data on falling edge
+	b = getDO();    // sampling data on falling edge
 	clearCLK();
 
 	WaitUsec(shot_delay);
@@ -150,11 +158,14 @@ int Pic12Bus::SendDataWord(long wo, int wlen)
 
 	//transmit lsb first
 	for (k = 0; k < wlen; k++)
-		SendDataBit(wo & (1<<k));
+	{
+		SendDataBit(wo & (1 << k));
+	}
+
 	setDI();
 
 	//1 usec from a command to the next
-	WaitUsec(shot_delay/4+1);
+	WaitUsec(shot_delay / 4 + 1);
 
 	return OK;
 }
@@ -170,45 +181,47 @@ long Pic12Bus::RecDataWord(int wlen)
 	//receive lsb first
 	for (k = 0; k < wlen; k++)
 		if ( RecDataBit() )
+		{
 			val |= 1 << k;
+		}
 
-	WaitUsec(shot_delay/4+1);
+	WaitUsec(shot_delay / 4 + 1);
 
 	return val;
 }
 
 int Pic12Bus::Reset(void)
 {
-	UserDebug(UserApp2, "Pic12Bus::Reset() IN\n");
+	qDebug() << "Pic12Bus::Reset() IN";
 
 	SetDelay();
 
-	SetMCLR();		//First bogus entry to charge capacitors
-	WaitMsec(200);		//150
+	SetMCLR();              //First bogus entry to charge capacitors
+	WaitMsec(200);          //150
 
 	clearDI();
-	ClearMCLR();		//Now reset the micro
-	setCLK();		//keep Vdd on
+	ClearMCLR();            //Now reset the micro
+	setCLK();               //keep Vdd on
 	WaitMsec(20);
 
-	clearCLK();		//Prepare for Program mode entry
+	clearCLK();             //Prepare for Program mode entry
 	WaitMsec(10);
 
-	SetMCLR();		//Program mode entry
+	SetMCLR();              //Program mode entry
 	WaitMsec(10);
 
 	current_address = -1;
 
-	UserDebug(UserApp2, "Pic12Bus::Reset() OUT\n");
+	qDebug() << "Pic12Bus::Reset() OUT";
 
 	return OK;
 }
 
 long Pic12Bus::ReadConfig(uint16_t &data)
 {
-	UserDebug1(UserApp2, "Pic12Bus::ReadConfig(%x) IN\n", data);
+	qDebug() << "Pic12Bus::ReadConfig(" << (hex) << data << (dec) << ") IN";
 
-//	Reset();
+	//      Reset();
 
 	uint8_t *bp = (uint8_t *)&data;
 
@@ -217,9 +230,11 @@ long Pic12Bus::ReadConfig(uint16_t &data)
 	uint16_t val = RecvProgCode();
 
 	if (val == ProgMask)
+	{
 		val = 0xffff;
+	}
 
-#ifdef	_BIG_ENDIAN_
+#ifdef  _BIG_ENDIAN_
 	*bp++ = (uint8_t)(val >> 8);
 	*bp++ = (uint8_t)(val & 0xFF);
 #else
@@ -228,22 +243,23 @@ long Pic12Bus::ReadConfig(uint16_t &data)
 #endif
 	IncAddress(1);
 
-	UserDebug1(UserApp2, "Pic12Bus::ReadConfig(%x) OUT\n", data);
+	qDebug() << "Pic12Bus::ReadConfig(" << (hex) << data << (dec) << ") OUT";
 
 	return OK;
 }
 
+
 long Pic12Bus::WriteConfig(uint16_t data)
 {
-	UserDebug1(UserApp2, "Pic12Bus::WriteConfig(%x) IN\n", data);
+	qDebug() << "Pic12Bus::WriteConfig(" << (hex) << data << (dec) << ") IN";
 
-//  	Reset();
+	//      Reset();
 
 	uint8_t *bp = (uint8_t *)&data;
 	uint16_t val;
 
 	//Write Program code
-#ifdef	_BIG_ENDIAN_
+#ifdef  _BIG_ENDIAN_
 	val  = (uint16_t)(*bp++) << 8;
 	val |= (uint16_t)(*bp++);
 #else
@@ -251,36 +267,46 @@ long Pic12Bus::WriteConfig(uint16_t data)
 	val |= (uint16_t)(*bp++) << 8;
 #endif
 	int k;
+
 	for (k = 100; k > 0; k--)
+	{
 		ProgramPulse(val, 0);
+	}
 
 	IncAddress(1);
 
-	UserDebug1(UserApp2, "Pic12Bus::WriteConfig(%x) OUT\n", data);
+	qDebug() << "Pic12Bus::WriteConfig(" << (hex) << data << (dec) << ") OUT";
 
 	return OK;
 }
 
 long Pic12Bus::BlankCheck(long length)
 {
-	length >>= 1;	//contatore da byte a word
+	length >>= 1;   //contatore da byte a word
 
 	//Point to first location
-//	SendCmdCode(IncAddressCode);
+	//      SendCmdCode(IncAddressCode);
 
 	long len;
-	for (len = 0; len < length-1; len++)	//Skip last location (RC calibration)
+
+	for (len = 0; len < length - 1; len++)   //Skip last location (RC calibration)
 	{
 		//Read Program Code
 		SendCmdCode(ReadProgCode);
+
 		if ( CompareSingleWord(0xffff, RecvProgCode(), ProgMask) )
+		{
 			break;
+		}
 
 		if ( CheckAbort(len * 100 / length) )
+		{
 			break;
+		}
 
 		IncAddress(1);
 	}
+
 	CheckAbort(100);
 
 	return (len == length);
@@ -290,12 +316,12 @@ long Pic12Bus::Read(int addr, uint8_t *data, long length, int page_size)
 {
 	long len;
 
-	UserDebug3(UserApp2, "Pic12Bus::Read(%d, %ph, %ld) IN\n", addr, data, length);
+	qDebug() << "Pic12Bus::Read(" << addr << ", " << (hex) << data << ", " << (dec) <<  length << ") IN";
 
-	length >>= 1;	//contatore da byte a word
+	length >>= 1;   //contatore da byte a word
 
 	//Point to first location
-//	SendCmdCode(IncAddressCode);
+	//      SendCmdCode(IncAddressCode);
 
 	for (len = 0; len < length; len++)
 	{
@@ -304,9 +330,11 @@ long Pic12Bus::Read(int addr, uint8_t *data, long length, int page_size)
 		uint16_t val = RecvProgCode();
 
 		if (val == ProgMask)
+		{
 			val = 0xffff;
+		}
 
-#ifdef	_BIG_ENDIAN_
+#ifdef  _BIG_ENDIAN_
 		*data++ = (uint8_t)(val >> 8);
 		*data++ = (uint8_t)(val & 0xFF);
 #else
@@ -316,13 +344,16 @@ long Pic12Bus::Read(int addr, uint8_t *data, long length, int page_size)
 		IncAddress(1);
 
 		if ( CheckAbort(len * 100 / length) )
+		{
 			break;
+		}
 	}
+
 	CheckAbort(100);
 
-	len <<= 1;	//contatore da word a byte
+	len <<= 1;      //contatore da word a byte
 
-	UserDebug1(UserApp2, "Pic12Bus::Read() = %ld OUT\n", len);
+	qDebug() << "Pic12Bus::Read() = " << len << " OUT";
 
 	return len;
 }
@@ -332,9 +363,9 @@ long Pic12Bus::Write(int addr, uint8_t const *data, long length, int page_size)
 	long len;
 	int rv = OK;
 
-	UserDebug3(UserApp2, "Pic12Bus::Write(%d, %ph, %ld) IN\n", addr, data, length);
+	qDebug() << "Pic12Bus::Write(" << addr << ", " << (hex) << data << ", " << (dec) << length << ") IN";
 
-	length >>= 1;	//contatore da byte a word
+	length >>= 1;   //contatore da byte a word
 
 	//The address pointer should already point to first address
 	//location (via a ConfigRead or IncAddress)
@@ -345,14 +376,14 @@ long Pic12Bus::Write(int addr, uint8_t const *data, long length, int page_size)
 		uint16_t val;
 
 		//Write Program code
-#ifdef	_BIG_ENDIAN_
+#ifdef  _BIG_ENDIAN_
 		val  = (uint16_t)(*data++) << 8;
 		val |= (uint16_t)(*data++);
 #else
 		val  = (uint16_t)(*data++);
 		val |= (uint16_t)(*data++) << 8;
 #endif
-		rv = WriteProgWord(val, length-1);
+		rv = WriteProgWord(val, length - 1);
 
 		if ( rv != OK )
 		{
@@ -361,14 +392,19 @@ long Pic12Bus::Write(int addr, uint8_t const *data, long length, int page_size)
 		}
 
 		if ( CheckAbort(len * 100 / length) )
+		{
 			break;
+		}
 	}
+
 	CheckAbort(100);
 
 	if (len > 0)
-		len <<= 1;	//contatore da word a byte
+	{
+		len <<= 1;        //contatore da word a byte
+	}
 
-	UserDebug2(UserApp2, "Pic12Bus::Write() = %ld ** %ld OUT\n", len, GetLastProgrammedAddress());
+	qDebug() << "Pic12Bus::Write() = " << len << " ** " <<  GetLastProgrammedAddress() << " OUT";
 
 	return len;
 }
@@ -378,7 +414,7 @@ int Pic12Bus::WriteProgWord(uint16_t val, long rc_addr)
 	int k;
 	int rval = OK;
 
-	UserDebug2(UserApp2, "Pic12Bus::WriteProgWord(%x, %ld) IN\n", val, current_address);
+	qDebug() << "Pic12Bus::WriteProgWord(" << (hex) << val << ", " << (dec) <<  current_address << ") IN";
 
 	//Check for RC calibration location
 	if (current_address == rc_addr)
@@ -387,28 +423,35 @@ int Pic12Bus::WriteProgWord(uint16_t val, long rc_addr)
 		//Programma la RC calibration solamente se la locazione e` cancellata
 		// e il valore da pgrogrammare corrisponde ad una MOVLW xx (0x0Cxx)
 		SendCmdCode(ReadProgCode);
+
 		if ( CompareSingleWord(RecvProgCode(), 0xffff, ProgMask) == 0 &&
-			 CompareSingleWord(val, 0x0C00, (ProgMask & 0xff00)) == 0 )
+		                CompareSingleWord(val, 0x0C00, (ProgMask & 0xff00)) == 0 )
 		{
 			SetLastProgrammedAddress(current_address << 1);
 
 			for (k = 1; k <= MAX_PROG_PULSES; k++)
 			{
 				if ( ProgramPulse(val, 1) == OK )
+				{
 					break;
+				}
 			}
+
 			if (k > MAX_PROG_PULSES)
 			{
-				rval = E2ERR_WRITEFAILED;	//Write error
+				rval = E2ERR_WRITEFAILED;       //Write error
 			}
 			else
 			{
-				UserDebug1(UserApp2, "Pic12Bus::WriteProgWord(): Npulses = %d\n", k);
+				qDebug() << "Pic12Bus::WriteProgWord(): Npulses = " << k;
 
 				k *= OverProgrammingMult;
 				k += OverProgrammingAdd;
+
 				while (k--)
-					ProgramPulse(val, 0);	//Program pulse without test
+				{
+					ProgramPulse(val, 0);        //Program pulse without test
+				}
 			}
 		}
 
@@ -418,6 +461,7 @@ int Pic12Bus::WriteProgWord(uint16_t val, long rc_addr)
 	{
 		//Check for blank (erased cells)
 		SendCmdCode(ReadProgCode);
+
 		if ( CompareSingleWord(RecvProgCode(), 0xffff, ProgMask) )
 		{
 			rval = E2ERR_BLANKCHECKFAILED;
@@ -432,20 +476,26 @@ int Pic12Bus::WriteProgWord(uint16_t val, long rc_addr)
 				for (k = 1; k <= MAX_PROG_PULSES; k++)
 				{
 					if ( ProgramPulse(val, 1) == OK )
+					{
 						break;
+					}
 				}
+
 				if (k > MAX_PROG_PULSES)
 				{
-					rval = E2ERR_WRITEFAILED;	//Write error
+					rval = E2ERR_WRITEFAILED;       //Write error
 				}
 				else
 				{
-					UserDebug1(UserApp2, "Pic12Bus::WriteProgWord(): Npulses = %d\n", k);
+					qDebug() << "Pic12Bus::WriteProgWord(): Npulses = " << k;
 
 					k *= OverProgrammingMult;
 					k += OverProgrammingAdd;
+
 					while (k--)
-						ProgramPulse(val, 0);	//Program pulse without test
+					{
+						ProgramPulse(val, 0);        //Program pulse without test
+					}
 				}
 			}
 
@@ -453,14 +503,14 @@ int Pic12Bus::WriteProgWord(uint16_t val, long rc_addr)
 		}
 	}
 
-	UserDebug1(UserApp2, "Pic12Bus::WriteProgWord() = %d OUT\n", rval);
+	qDebug() << "Pic12Bus::WriteProgWord() = " << rval << " OUT";
 
 	return rval;
 }
 
 void Pic12Bus::IncAddress(int n)
 {
-	UserDebug1(UserApp3, "Pic12Bus::IncAddress(%d) IN\n", n);
+	qDebug() << "Pic12Bus::IncAddress(" << n << ") IN";
 
 	while (n--)
 	{
@@ -468,23 +518,23 @@ void Pic12Bus::IncAddress(int n)
 		current_address++;
 	}
 
-	UserDebug1(UserApp3, "Pic12Bus::IncAddress() OUT ** cur_addr = %ld\n", current_address);
+	qDebug() << "Pic12Bus::IncAddress() OUT ** cur_addr = " << current_address;
 }
 
 int Pic12Bus::ProgramPulse(uint16_t val, int verify, int width)
 {
 	int rval = OK;
 
-	UserDebug3(UserApp3, "Pic12Bus::ProgramPulse(%x, %d, %d) IN\n", val, verify, width);
+	qDebug() << "Pic12Bus::ProgramPulse(" << (hex) << val << ", " << (dec) <<  verify << ", " << width << ") IN";
 
 	SendCmdCode(LoadProgCode);
 	SendProgCode(val);
 
-	SendCmdCode(BeginProgCode);	//Start programming pulse
+	SendCmdCode(BeginProgCode);     //Start programming pulse
 	WaitUsec(width);
-	SendCmdCode(EndProgCode);	//Stop programming pulse
+	SendCmdCode(EndProgCode);       //Stop programming pulse
 
-	WaitUsec(1000);		//wait between pulses
+	WaitUsec(1000);         //wait between pulses
 
 	//Verify programmed location
 	if (verify)
@@ -493,7 +543,7 @@ int Pic12Bus::ProgramPulse(uint16_t val, int verify, int width)
 		rval = CompareSingleWord(val, RecvProgCode(), ProgMask);
 	}
 
-	UserDebug1(UserApp3, "Pic12Bus::ProgramPulse() = %d OUT\n", rval);
+	qDebug() << "Pic12Bus::ProgramPulse() = " << rval << " OUT";
 
 	return rval;
 }
@@ -508,16 +558,19 @@ int Pic12Bus::CompareMultiWord(uint8_t *data1, uint8_t *data2, long length, int 
 	int retval = 0;
 
 	if ( data1 == 0 || data2 == 0 || (length & 1) != 0 )
+	{
 		return BADPARAM;
+	}
 
 	if (!split)
 	{
 		long k;
+
 		for (k = 0; k < length; k += 2)
 		{
 			uint16_t val1, val2;
 
-#ifdef	_BIG_ENDIAN_
+#ifdef  _BIG_ENDIAN_
 			val1  = (uint16_t)(*data1++) << 8;
 			val1 |= (uint16_t)(*data1++);
 
@@ -530,8 +583,11 @@ int Pic12Bus::CompareMultiWord(uint8_t *data1, uint8_t *data2, long length, int 
 			val2  = (uint16_t)(*data2++);
 			val2 |= (uint16_t)(*data2++) << 8;
 #endif
+
 			if ( (retval = CompareSingleWord(val1, val2, ProgMask)) )
-				break;		//Stop if a difference
+			{
+				break;        //Stop if a difference
+			}
 		}
 	}
 	else

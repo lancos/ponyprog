@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: filebuf.h,v 1.5 2009/11/16 23:40:43 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -30,33 +30,35 @@
 #ifndef _FILEBUF_H
 #define _FILEBUF_H
 
-// Include standard V files as needed
+#include <QString>
 
 #include <stdio.h>
-#include <string.h>
 #include "types.h"
 #include "globals.h"
+
 
 class e2AppWinInfo;
 
 class FileBuf
 {
-  public:		//---------------------------------------- public
+public:               //---------------------------------------- public
 
 	FileBuf(e2AppWinInfo *wininfo = 0);
 	virtual ~FileBuf();
 
 	void SetAWInfo(e2AppWinInfo *wininfo);
 
-	void SetFileName(char const *name);	//ok
-	char const *GetFileName() const;	//ok
+	void SetFileName(const QString &name);     //ok
+	QString GetFileName();        //ok
 
 	virtual int Load(int loadtype = ALL_TYPE, long relocation_offset = 0) = 0;
 	virtual int Save(int savetype = ALL_TYPE, long relocation_offset = 0) = 0;
 	FileType GetFileType() const
-		{ return file_type; }
-//	void SetBlockSize(int blksize)
-//		{ awi->SetBlockSize(blksize); }
+	{
+		return file_type;
+	}
+	//      void SetBlockSize(int blksize)
+	//              { awi->SetBlockSize(blksize); }
 	int GetBlockSize() const;
 	int GetNoOfBlock() const;
 	void SetNoOfBlock(int no_blk);
@@ -64,11 +66,11 @@ class FileBuf
 	int GetEEpromPriType() const;
 	int GetEEpromSubType() const;
 	void SetEEpromType(int pritype, int subtype = 0);
-	
-	char *GetStringID(char *s = 0);
-	void SetStringID(char const *s);
-	char *GetComment(char *s = 0);
-	void SetComment(char const *s);
+
+	QString GetStringID();
+	void SetStringID(const QString &s);
+	QString GetComment();
+	void SetComment(const QString &s);
 
 	int GetRollOver() const;
 	void SetRollOver(int rlv);
@@ -81,24 +83,24 @@ class FileBuf
 	uint32_t GetFuseBits() const;
 	void SetFuseBits(uint32_t bits);
 
-//	uint16_t GetCRC() const
-//		{ return awi->GetCRC(); }
+	//      uint16_t GetCRC() const
+	//              { return awi->GetCRC(); }
 	void SetCRC(uint16_t c);
 
-  protected:	//--------------------------------------- protected
-	
+protected:    //--------------------------------------- protected
+
 	uint8_t *GetBufPtr() const;
 	long GetBufSize() const;
 	e2AppWinInfo *GetAWInfo();
 	long GetFileSize(FILE *fh);
 
-	FileType file_type;		//Identificativo del tipo di file (E2P, INTEL, ...)
+	FileType file_type;             //Identificativo del tipo di file (E2P, INTEL, ...)
 
 	// Informazioni addizionali sull'eeprom che vengono salvate nel file
 
-  private:		//--------------------------------------- private
+private:              //--------------------------------------- private
 
-	e2AppWinInfo *awi;	//puntatore alla AppWinInfo che contiene questo FileBuffer
+	e2AppWinInfo *awi;      //puntatore alla AppWinInfo che contiene questo FileBuffer
 };
 
 #endif

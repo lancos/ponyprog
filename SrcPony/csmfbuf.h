@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: csmfbuf.h,v 1.2 2007/04/20 10:58:21 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -35,19 +35,21 @@
 #include "types.h"
 #include "filebuf.h"
 
+#include "device.h"
+
 class csmFileBuf : public FileBuf
 {
-  public:		//---------------------------------------- public
+public:               //---------------------------------------- public
 
 	csmFileBuf(e2AppWinInfo *wininfo = 0);
-//	virtual ~csmFileBuf();
+	//      virtual ~csmFileBuf();
 
 	virtual int Load(int loadtype = ALL_TYPE, long relocation_offfset = 0);
 	virtual int Save(int savetype = ALL_TYPE, long relocation_offfset = 0);
 
-  protected:	//--------------------------------------- protected
+protected:    //--------------------------------------- protected
 
-  private:		//--------------------------------------- private
+private:              //--------------------------------------- private
 
 };
 #endif

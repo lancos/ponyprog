@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: filldlg.cpp,v 1.4 2007/05/03 10:13:54 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -27,119 +27,95 @@
 //-------------------------------------------------------------------------//
 //=========================================================================//
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <v/vnotice.h>
+
+#include <QDebug>
+#include <QString>
 
 #include "types.h"
-#include "globals.h"
 #include "filldlg.h"
 #include "string_table.h"
 
-#ifdef	WIN32
-#  ifdef	__BORLANDC__
-#    define	strcasecmp stricmp
-#  else // _MICROSOFT_ VC++
-#    define strcasecmp	_stricmp
-#    define snprintf	_snprintf
-#  endif
-#endif
 
-//@V@:BeginIDs
-enum {
-	lblFillMsg = 1000,
-	frmFill,
-	lblFrom,
-	lblTo,
-	lblVal,
-
-	txiFrom,
-	txiTo,
-	txiVal,
-
-	LastId
-};
-//@V@:EndIds
-
-//@V@:BeginDialogCmd DefaultCmds
-static DialogCmd DefaultCmds[] =
-{
-	{C_Label,lblFillMsg,0,"X",NoList,CA_MainMsg,isSens,NoFrame,0,0},
-
-	{C_Frame, frmFill,0,STR_LBLFILLBUF,NoList,CA_None,isSens,NoFrame,0,lblFillMsg},
-	{C_Label, lblFrom,0, STR_LBLFROM,NoList,CA_None,isSens,frmFill,0,0},
-	{C_Label, lblTo,  0, STR_LBLTO,NoList,CA_None,isSens,frmFill,0,lblFrom},
-	{C_Label, lblVal, 0, STR_LBLVALUE,NoList,CA_None,isSens,frmFill,0,lblTo},
-
-	{C_TextIn,txiFrom,0,"",NoList,CA_None,isSens,NoFrame,frmFill,lblFillMsg,8,"From address"},
-	{C_TextIn,txiTo,  0,"",NoList,CA_None,isSens,NoFrame,frmFill,txiFrom,8,"To address"},
-	{C_TextIn,txiVal, 0,"",NoList,CA_None,isSens,NoFrame,frmFill,txiTo,8,"Byte value"},
-
-	{C_Button, M_Cancel, 0, STR_BTNCANC, NoList,CA_None, isSens,NoFrame, 0, frmFill},
-	{C_Button, M_OK, 0, STR_BTNOK, NoList, CA_DefaultButton, isSens, NoFrame, M_Cancel, frmFill},
-
-	{C_EndOfList,0,0,0,0,CA_None,0,0,0}
-};
-//@V@:EndDialogCmd
-
+using namespace Translator;
 
 //=========================>>> FillDialog::FillDialog <<<====================
-FillDialog::FillDialog(vBaseWindow* bw, long cfrom, long cto, int cval, char* title) :
-		vModalDialog(bw, title)
+FillDialog::FillDialog(QWidget* bw, long &cfrom, long &cto, int &cval, const QString title) :
+	QDialog(bw)
 {
-	UserDebug(Constructor,"FillDialog::FillDialog()\n")
+	setupUi(this);
 
-	char str[MAXNUMDIGIT];
+	setWindowTitle(title);
+
+	qDebug() << "FillDialog::FillDialog()";
+
+	pFrom = &cfrom;
+	pTo = &cto;
+	pVal = &cval;
 
 	mFrom = (cfrom < 0) ? 0 : cfrom;
 	mTo = (cto < 0) ? 0xFFFFFF : cto;
 	mVal = (cval < 0) ? 0xFF : cval;
 
-	snprintf(str, MAXNUMDIGIT, "0x%04lX", mFrom);
-	str[MAXNUMDIGIT-1] = '\0';
-	DefaultCmds[5].title = new char[strlen(str)+1];
-	strcpy(DefaultCmds[5].title, str);
+	lblFrom->setText(STR_LBLFROM);
+	lblTo->setText(STR_LBLTO);
+	lblVal->setText(STR_LBLVALUE);
 
-	snprintf(str, MAXNUMDIGIT, "0x%04lX", mTo);
-	str[MAXNUMDIGIT-1] = '\0';
-	DefaultCmds[6].title = new char[strlen(str)+1];
-	strcpy(DefaultCmds[6].title, str);
+	pushOk->setText(STR_BTNOK);
+	pushCancel->setText(STR_BTNCANC);
 
-	snprintf(str, MAXNUMDIGIT, "0x%02X", mVal);
-	str[MAXNUMDIGIT-1] = '\0';
-	DefaultCmds[7].title = new char[strlen(str)+1];
-	strcpy(DefaultCmds[7].title, str);
+	QString str;
+	str = QString().sprintf("0x%04lX", mFrom);
+	txiFrom->setText(str);
 
-	AddDialogCmds(DefaultCmds);		// add the predefined commands
+	str = QString().sprintf("0x%04lX", mTo);
+	txiTo->setText(str);
+
+	str = QString().sprintf("0x%02X", mVal);
+	txiVal->setText(str);
+
+	connect(pushOk, SIGNAL(clicked()), this, SLOT(onOk()));
+	connect(pushCancel, SIGNAL(clicked()), this, SLOT(reject()));
 }
+
 
 //======================>>> FillDialog::~FillDialog <<<======================
 FillDialog::~FillDialog()
 {
-	UserDebug(Destructor,"FillDialog::~FillDialog() destructor\n")
-
-	delete DefaultCmds[5].title;
-	delete DefaultCmds[6].title;
-	delete DefaultCmds[7].title;
+	qDebug() << "FillDialog::~FillDialog()";
 }
 
-int FillDialog::fillAction(char* msg)
+
+void FillDialog::onOk()
 {
-	ItemVal ans,rval;
+	bool good;
+	QString str = txiFrom->text();
+	mFrom = str.toLong(&good, 16);
 
-	ans = ShowModalDialog(msg,rval);
-	if (ans == M_Cancel)
-		return 0;
+	if (good == false)  // TODO
+	{
+		reject();
+	}
 
-	char str[MAXNUMDIGIT];
-	GetTextIn(txiFrom, str, 8);
-	mFrom = strtol(str,NULL,0);
+	str = txiTo->text();
+	mTo = str.toLong(&good, 16);
 
-	GetTextIn(txiTo, str, 8);
-	mTo = strtol(str,NULL,0);
+	if (good == false)  // TODO
+	{
+		reject();
+	}
 
-	GetTextIn(txiVal, str, 8);
-	mVal = strtol(str,NULL,0);
+	str = txiVal->text();
+	mVal = str.toLong(&good, 16);
 
-	return ans == M_OK;
+	if (good == false)  // TODO
+	{
+		reject();
+	}
+
+	*pFrom = mFrom;
+	*pTo = mTo;
+	*pVal = mVal;
+
+	accept();
 }
+

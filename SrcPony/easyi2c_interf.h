@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: easyi2c_interf.h,v 1.2 2007/04/20 10:58:21 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -27,14 +27,14 @@
 //-------------------------------------------------------------------------//
 //=========================================================================//
 
-#ifndef	_EASYI2CINTERFACE_H
-#define	_EASYI2CINTERFACE_H
+#ifndef _EASYI2CINTERFACE_H
+#define _EASYI2CINTERFACE_H
 
 #include "lpt_ext_interf.h"
 
 class EasyI2CInterface : public LptExtInterface
 {
- public:		//------------------------------- public
+public:                //------------------------------- public
 	EasyI2CInterface(bool use_io = false);
 
 	virtual int Open(int com_no);
@@ -49,9 +49,9 @@ class EasyI2CInterface : public LptExtInterface
 	virtual int IsClockDataDOWN() ;
 	virtual int TestPort(int port);
 
- protected:		//------------------------------- protected
+protected:             //------------------------------- protected
 
- private:		//------------------------------- private
+private:               //------------------------------- private
 
 };
 

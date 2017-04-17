@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: at90sxx.h,v 1.6 2009/11/16 23:40:43 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -35,9 +35,10 @@
 #include "device.h"
 #include "at90sbus.h"
 
+
 class At90sxx : public Device
 {
-  public:		//---------------------------------------- public
+public:               //---------------------------------------- public
 
 	At90sxx(e2AppWinInfo *wininfo = 0, BusIO *busp = 0);
 	virtual ~At90sxx();
@@ -56,13 +57,15 @@ class At90sxx : public Device
 	int FusesWrite(uint32_t bits);
 
 	At90sBus *GetBus()
-		{ return (At90sBus *)Device::GetBus(); }
+	{
+		return (At90sBus *)Device::GetBus();
+	}
 
-  protected:	//--------------------------------------- protected
+protected:    //--------------------------------------- protected
 
 	int QueryType(long &type);
 
-  private:		//--------------------------------------- private
+private:              //--------------------------------------- private
 
 };
 #endif

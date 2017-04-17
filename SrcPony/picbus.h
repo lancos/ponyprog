@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: picbus.h,v 1.7 2009/11/16 23:40:43 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -27,21 +27,21 @@
 //-------------------------------------------------------------------------//
 //=========================================================================//
 
-#ifndef	_PICBUS_H
-#define	_PICBUS_H
+#ifndef _PICBUS_H
+#define _PICBUS_H
 
 #include "busio.h"
 #include "pgminter.h"
 
 class PicBus : public BusIO
 {
- public:		//------------------------------- public
+public:                //------------------------------- public
 	PicBus(BusInterface *ptr = 0);
 	virtual ~PicBus();
 
 	long Read(int addr, uint8_t *data, long length, int page_size = 0);
 	long Write(int addr, uint8_t const *data, long length, int page_size = 0);
-	
+
 	int Erase(int type = ALL_TYPE);
 
 	int Reset();
@@ -56,7 +56,7 @@ class PicBus : public BusIO
 
 	void SetDelay();
 
- protected:		//------------------------------- protected
+protected:             //------------------------------- protected
 
 	int SendDataWord(long wo, int wlen = 16);
 	long RecDataWord(int wlen = 16);
@@ -69,9 +69,13 @@ class PicBus : public BusIO
 	uint16_t RecvDataCode();
 
 	void SetMCLR()
-		{ busI->SetControlLine(1); }
+	{
+		busI->SetControlLine(1);
+	}
 	void ClearMCLR()
-		{ busI->SetControlLine(0); }
+	{
+		busI->SetControlLine(0);
+	}
 
 	const uint16_t DataMask;
 	const uint16_t ProgMask;
@@ -88,28 +92,40 @@ class PicBus : public BusIO
 	const uint8_t BeginEraseProgCode;
 	const uint8_t BeginProgOnlyCode;
 
- private:		//------------------------------- private
+private:               //------------------------------- private
 
 	int SendDataBit(int b);
 	int RecDataBit();
 
 	void bitDI(int b)
-		{ busI->SetInvDataOut(b); }
+	{
+		busI->SetInvDataOut(b);
+	}
 
 	void setDI()
-		{ busI->SetInvDataOut(1); }
+	{
+		busI->SetInvDataOut(1);
+	}
 
 	void clearDI()
-		{ busI->SetInvDataOut(0); }
+	{
+		busI->SetInvDataOut(0);
+	}
 
 	void setCLK()
-		{ busI->SetClock(1); }
+	{
+		busI->SetClock(1);
+	}
 
 	void clearCLK()
-		{ busI->SetClock(0); }
+	{
+		busI->SetClock(0);
+	}
 
 	int getDO() const
-		{ return busI->GetDataIn(); }
+	{
+		return busI->GetDataIn();
+	}
 
 };
 

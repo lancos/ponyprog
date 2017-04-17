@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: e2pfbuf.h,v 1.4 2009/11/16 23:40:43 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -30,14 +30,14 @@
 #ifndef _E2PFBUF_H
 #define _E2PFBUF_H
 
-// Include standard V files as needed
-
 #include "types.h"
 #include "filebuf.h"
+#include "device.h"
+
 
 class e2pFileBuf : public FileBuf
 {
-  public:		//---------------------------------------- public
+public:               //---------------------------------------- public
 
 	e2pFileBuf(e2AppWinInfo *wininfo = 0);
 	virtual ~e2pFileBuf();
@@ -45,9 +45,9 @@ class e2pFileBuf : public FileBuf
 	virtual int Load(int loadtype = ALL_TYPE, long relocation_offfset = 0);
 	virtual int Save(int savetype = ALL_TYPE, long relocation_offfset = 0);
 
-  protected:	//--------------------------------------- protected
+protected:    //--------------------------------------- protected
 
-  private:		//--------------------------------------- private
-//	void check_offsets();
+private:              //--------------------------------------- private
+	//      void check_offsets();
 };
 #endif

@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: imbus.cpp,v 1.7 2009/11/16 23:40:43 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -31,30 +31,32 @@
 #include "imbus.h"
 #include "errcode.h"
 
-#include "e2app.h"
+#include <QDebug>
 
-#ifdef	_LINUX_
+#include "e2cmdw.h"
+
+#ifdef  __linux__
 #  include <unistd.h>
 #else
-#  ifdef	__BORLANDC__
-#    define	__inline__
+#  ifdef        __BORLANDC__
+#    define     __inline__
 #  else // _MICROSOFT_ VC++
-#    define	__inline__ __inline
+#    define     __inline__ __inline
 #    define _export
 #  endif
 #endif
 
-#define	IMADDR_ADDR(x)		( (x) ? 132 : 128 )
-#define	IMADDR_READ(x)		( (x) ? 133 : 129 )
-#define	IMADDR_WRITE(x)		( (x) ? 135 : 131 )
+#define IMADDR_ADDR(x)          ( (x) ? 132 : 128 )
+#define IMADDR_READ(x)          ( (x) ? 133 : 129 )
+#define IMADDR_WRITE(x)         ( (x) ? 135 : 131 )
 
 // Costruttore
 IMBus::IMBus(BusInterface *ptr)
 	: BusIO(ptr)
 {
-	UserDebug(Constructor, "IMBus::IMBus() constructor\n");
+	qDebug() << "IMBus::IMBus()";
 
-	StatusLocation = 526;	//526 for NVM3060, 14 for MDA2062
+	StatusLocation = 526;   //526 for NVM3060, 14 for MDA2062
 	SecondaryAddress = false;
 	Data16_mode = true;
 	ProgDelay = 30;
@@ -63,15 +65,17 @@ IMBus::IMBus(BusInterface *ptr)
 // Distruttore
 IMBus::~IMBus()
 {
-	UserDebug(Destructor, "IMBus::~IMBus() destructor\n");
+	qDebug() <<  "IMBus::~IMBus()";
 
-//	Close();
+	//      Close();
 }
 
 void IMBus::SetStatusLocation(int val)
 {
 	if (val >= 0)
+	{
 		StatusLocation = val;
+	}
 }
 
 void IMBus::UseSecondaryAddress(bool val)
@@ -82,10 +86,13 @@ void IMBus::UseSecondaryAddress(bool val)
 void IMBus::SetDataMode(int val)
 {
 	if (val == 16)
+	{
 		Data16_mode = true;
-	else
-	if (val == 8)
+	}
+	else if (val == 8)
+	{
 		Data16_mode = false;
+	}
 }
 
 void IMBus::SetProgDelay(int val)
@@ -95,7 +102,7 @@ void IMBus::SetProgDelay(int val)
 
 void IMBus::SetDelay()
 {
-	int val = THEAPP->GetIMBusSpeed();
+	int val = E2Profile::GetIMBusSpeed();
 	int n;
 
 	switch(val)
@@ -103,33 +110,39 @@ void IMBus::SetDelay()
 	case TURBO:
 		n = 1;         // as fast as your PC can
 		break;
+
 	case FAST:
 		n = 3;
 		break;
+
 	case SLOW:
 		n = 18;
 		break;
+
 	case VERYSLOW:
 		n = 80;
 		break;
+
 	case ULTRASLOW:
 		n = 500;
 		break;
+
 	default:
 		n = 5;         //Default (< 100KHz)
 		break;
 	}
+
 	BusIO::SetDelay(n);
 
-	UserDebug1(UserApp2, "IMBus::SetDelay() = %d\n", n);
+	qDebug() << "IMBus::SetDelay() = " << n;
 }
 
 int IMBus::SendDataBit(int b)
 {
-	clearCLK();		//set clock low
+	clearCLK();             //set clock low
 	bitDI(b);
 	WaitUsec(shot_delay);
-	setCLK();		//device latch data bit now!
+	setCLK();               //device latch data bit now!
 	WaitUsec(shot_delay);
 
 	return OK;
@@ -140,7 +153,7 @@ int IMBus::RecDataBit()
 {
 	register uint8_t b;
 
-	clearCLK();				//the eeprom set data now
+	clearCLK();                             //the eeprom set data now
 	WaitUsec(shot_delay);
 	setCLK();
 	b = getDO();
@@ -165,9 +178,13 @@ int IMBus::SendAddrWord(int wo)
 	int k;
 
 	clearIdent();
+
 	//From LSB to MSB
 	for (k = 0; k < 8; k++)
-		SendDataBit(wo & (1<<k));
+	{
+		SendDataBit(wo & (1 << k));
+	}
+
 	setCLK();
 	setDI();
 	setIdent();
@@ -181,7 +198,10 @@ int IMBus::SendDataWord(long wo, int wlen)
 
 	//From LSB to MSB
 	for (k = 0; k < wlen; k++)
-		SendDataBit(wo & (1<<k));
+	{
+		SendDataBit(wo & (1 << k));
+	}
+
 	setCLK();
 	setDI();
 
@@ -194,9 +214,12 @@ int IMBus::RecDataWord(int wlen)
 
 	setCLK();
 	setDI();
+
 	for (k = 0; k < wlen; k++)
 		if ( RecDataBit() )
+		{
 			val |= 1 << k;
+		}
 
 	return val;
 }
@@ -213,7 +236,7 @@ int IMBus::WaitReadyAfterWrite(int addr, int delay, long timeout)
 	{
 		uint8_t val = 0xff;
 
-		while ( (val & (1<<1)) && timeout-- )
+		while ( (val & (1 << 1)) && timeout-- )
 		{
 			//Read status location at address 526
 
@@ -229,7 +252,9 @@ int IMBus::WaitReadyAfterWrite(int addr, int delay, long timeout)
 		}
 
 		if (timeout == 0)
+		{
 			rval = E2P_TIMEOUT;
+		}
 	}
 
 	return rval;
@@ -237,13 +262,13 @@ int IMBus::WaitReadyAfterWrite(int addr, int delay, long timeout)
 
 int IMBus::Reset(void)
 {
-	UserDebug(UserApp2, "IMBus::Reset()\n");
+	qDebug() << "IMBus::Reset()";
 
 	SetDelay();
 
-	setCLK();		//clock = 1
-	setDI();		//data = 1
-	setIdent();		//Ident = 1
+	setCLK();               //clock = 1
+	setDI();                //data = 1
+	setIdent();             //Ident = 1
 
 	WaitMsec(50);
 
@@ -252,7 +277,7 @@ int IMBus::Reset(void)
 
 long IMBus::Read(int addr, uint8_t *data, long length, int page_size)
 {
-	UserDebug3(UserApp2, "IMBus::Read(%Xh, %ph, %ld)\n", addr, data, length);
+	qDebug() << "IMBus::Read(" << (hex) << addr << ", " << data << ", " << (dec) <<  length << ")";
 
 	long len;
 
@@ -270,11 +295,14 @@ long IMBus::Read(int addr, uint8_t *data, long length, int page_size)
 
 		if ( (len % 4) == 0 )
 			if ( CheckAbort(len * 100 / length) )
+			{
 				break;
+			}
 	}
+
 	CheckAbort(100);
 
-	UserDebug1(UserApp2, "IMBus::Read() = %ld\n", len);
+	qDebug() << "IMBus::Read() = " << len;
 
 	return len;
 }
@@ -287,7 +315,8 @@ long IMBus::Write(int addr, uint8_t const *data, long length, int page_size)
 
 	for (len = 0; len < length; len++, addr++, data++)
 	{
-		bval = ~ *data;		//be sure are different to write at least once
+		bval = ~ *data;         //be sure are different to write at least once
+
 		for (loop_timeout = 10; bval != *data && loop_timeout > 0; loop_timeout--)
 		{
 			//Erase command first
@@ -302,10 +331,12 @@ long IMBus::Write(int addr, uint8_t const *data, long length, int page_size)
 			IdentPulse();
 
 			if ( WaitReadyAfterWrite(addr, ProgDelay) != OK )
+			{
 				return E2P_TIMEOUT;
+			}
 
 			//Write command
-			if (ProgDelay <= 0)		//Ripristina l'indirizzo corretto (solo se ` attivo il polling)
+			if (ProgDelay <= 0)             //Ripristina l'indirizzo corretto (solo se ` attivo il polling)
 			{
 				//Send address code
 				SendAddrWord(IMADDR_ADDR(SecondaryAddress));
@@ -319,7 +350,9 @@ long IMBus::Write(int addr, uint8_t const *data, long length, int page_size)
 			IdentPulse();
 
 			if ( WaitReadyAfterWrite(addr, ProgDelay) != OK )
+			{
 				return E2P_TIMEOUT;
+			}
 
 			//Verify while write
 			//Send address code
@@ -334,11 +367,16 @@ long IMBus::Write(int addr, uint8_t const *data, long length, int page_size)
 		} //for
 
 		if (loop_timeout == 0)
+		{
 			return E2ERR_WRITEFAILED;
+		}
 
 		if ( CheckAbort(len * 100 / length) )
+		{
 			break;
+		}
 	}
+
 	CheckAbort(100);
 
 	return len;

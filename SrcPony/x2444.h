@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: x2444.h,v 1.2 2007/04/20 10:58:22 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -32,12 +32,13 @@
 
 #include "types.h"
 
-#include "device.h"
 #include "x2444bus.h"
+#include "device.h"
+
 
 class X2444 : public Device
 {
-  public:		//---------------------------------------- public
+public:               //---------------------------------------- public
 
 	X2444(e2AppWinInfo *wininfo = 0, BusIO *busp = 0);
 
@@ -47,12 +48,14 @@ class X2444 : public Device
 
 	virtual void DefaultBankSize();
 
-  protected:	//--------------------------------------- protected
+protected:    //--------------------------------------- protected
 
 	X2444Bus *GetBus()
-		{ return (X2444Bus *)Device::GetBus(); }
+	{
+		return (X2444Bus *)Device::GetBus();
+	}
 
-  private:		//--------------------------------------- private
+private:              //--------------------------------------- private
 
 };
 #endif

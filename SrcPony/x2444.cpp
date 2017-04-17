@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: x2444.cpp,v 1.2 2007/04/20 10:58:22 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -28,15 +28,19 @@
 //=========================================================================//
 
 #include "types.h"
-#include "x2444.h"		// Header file
+#include "x2444.h"              // Header file
 #include "errcode.h"
 #include "eeptypes.h"
 
+
+#include <QDebug>
+
 //=====>>> Costruttore <<<======
 X2444::X2444(e2AppWinInfo *wininfo, BusIO *busp)
-	:	Device(wininfo, busp, 2)
+	:       Device(wininfo, busp, 2)
 {
-	UserDebug(Constructor, "X2444::X2444()\n");
+	qDebug() << "X2444::X2444()";
+	DefaultBankSize();
 }
 
 void X2444::DefaultBankSize()
@@ -48,32 +52,43 @@ void X2444::DefaultBankSize()
 	else
 	{
 		if (GetBus()->GetOrganization() == ORG16)
+		{
 			SetBankSize(2);
+		}
 		else
+		{
 			SetBankSize(1);
+		}
 	}
 }
 
 int X2444::Read(int probe, int type)
 {
-	UserDebug1(UserApp1, "X2444::Read(%d)\n", probe);
+	qDebug() << "X2444::Read(" << probe << ")";
 
 	if (probe || GetNoOfBank() == 0)
+	{
 		Probe();
+	}
 
 	int size = GetNoOfBank() * GetBankSize();
 
 	int rv = size;
+
 	if (type & PROG_TYPE)
 	{
 		rv = GetBus()->Read(0, GetBufPtr(), size);
+
 		if (rv != size)
 		{
 			if (rv > 0)
+			{
 				rv = OP_ABORTED;
+			}
 		}
 	}
-	UserDebug1(UserApp1, "X2444::Read() = %d\n", rv);
+
+	qDebug() << "X2444::Read() = " << rv;
 
 	return rv;
 }
@@ -81,18 +96,24 @@ int X2444::Read(int probe, int type)
 int X2444::Write(int probe, int type)
 {
 	if (probe || GetNoOfBank() == 0)
+	{
 		Probe();
+	}
 
 	int size = GetNoOfBank() * GetBankSize();
 
 	int rv = size;
+
 	if (type & PROG_TYPE)
 	{
 		rv = GetBus()->Write(0, GetBufPtr(), size);
+
 		if (rv != size)
 		{
 			if (rv > 0)
+			{
 				rv = OP_ABORTED;
+			}
 		}
 	}
 
@@ -102,7 +123,9 @@ int X2444::Write(int probe, int type)
 int X2444::Verify(int type)
 {
 	if (GetNoOfBank() == 0)
+	{
 		return BADPARAM;
+	}
 
 	int rval = 1;
 
@@ -111,19 +134,26 @@ int X2444::Verify(int type)
 		int size = GetNoOfBank() * GetBankSize();
 		unsigned char *localbuf;
 		localbuf = new unsigned char[size];
+
 		if (localbuf == 0)
+		{
 			return OUTOFMEMORY;
+		}
 
 		rval = GetBus()->Read(0, localbuf, size);
+
 		if (rval != size)
 		{
 			if (rval > 0)
+			{
 				rval = OP_ABORTED;
+			}
 		}
 		else
 		{
 			rval = ( memcmp(GetBufPtr(), localbuf, size) != 0 ) ? 0 : 1;
 		}
+
 		delete localbuf;
 	}
 

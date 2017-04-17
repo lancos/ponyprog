@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: ponyioint.h,v 1.3 2007/04/20 10:58:23 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -27,15 +27,15 @@
 //-------------------------------------------------------------------------//
 //=========================================================================//
 
-#ifndef	_PONYIOINTERFACE_H
-#define	_PONYIOINTERFACE_H
+#ifndef _PONYIOINTERFACE_H
+#define _PONYIOINTERFACE_H
 
 #include "businter.h"
 #include "portint.h"
 
 class PonyIOInterface : public BusInterface, public PortInterface
 {
- public:		//------------------------------- public
+public:                //------------------------------- public
 	PonyIOInterface();
 	virtual ~PonyIOInterface();
 
@@ -56,10 +56,10 @@ class PonyIOInterface : public BusInterface, public PortInterface
 	int SetPower(int onoff);
 	void SetControlLine(int res = 1);
 
- protected:		//------------------------------- protected
+protected:             //------------------------------- protected
 	int GetPresence() const;
 
- private:		//------------------------------- private
+private:               //------------------------------- private
 
 };
 

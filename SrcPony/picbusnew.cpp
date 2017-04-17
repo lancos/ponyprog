@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: picbusnew.cpp,v 1.6 2009/11/16 23:40:43 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -31,16 +31,16 @@
 #include "picbusnew.h"
 #include "errcode.h"
 
-#include "e2app.h"
+#include "globals.h"
 
-#ifdef	_LINUX_
+#ifdef  __linux__
 //#  include <asm/io.h>
 #  include <unistd.h>
 #else
-#  ifdef	__BORLANDC__
-#    define	__inline__
+#  ifdef        __BORLANDC__
+#    define     __inline__
 #  else // _MICROSOFT_ VC++
-#    define	__inline__ __inline
+#    define     __inline__ __inline
 #    define _export
 #  endif
 #endif
@@ -68,7 +68,9 @@ long PicBusNew::Write(int addr, uint8_t const *data, long length, int page_size)
 	long len;
 
 	if (addr == 0)
-		length >>= 1;	//contatore da byte a word
+	{
+		length >>= 1;        //contatore da byte a word
+	}
 
 	for (len = 0; len < length; len++)
 	{
@@ -79,6 +81,7 @@ long PicBusNew::Write(int addr, uint8_t const *data, long length, int page_size)
 		{
 			//Write Data code
 			val  = (uint16_t)(*data++);
+
 			if ( CompareSingleWord(val, 0xffff, DataMask) != 0 )
 			{
 				SendCmdCode(LoadDataCode);
@@ -86,24 +89,28 @@ long PicBusNew::Write(int addr, uint8_t const *data, long length, int page_size)
 				SendCmdCode(BeginProgOnlyCode);
 
 				if ( WaitReadyAfterWrite() )
+				{
 					break;
+				}
 			}
+
 			//Verify while programming (10/11/99)
-		//	SendCmdCode(ReadDataCode);
-		//	if ( CompareSingleWord(val, RecvDataCode(), DataMask) )
-		//		break;
+			//      SendCmdCode(ReadDataCode);
+			//      if ( CompareSingleWord(val, RecvDataCode(), DataMask) )
+			//              break;
 
 			SendCmdCode(IncAddressCode);
 		}
 		else
 		{
-#ifdef	_BIG_ENDIAN_
+#ifdef  _BIG_ENDIAN_
 			val  = (uint16_t)(*data++) << 8;
 			val |= (uint16_t)(*data++);
 #else
 			val  = (uint16_t)(*data++);
 			val |= (uint16_t)(*data++) << 8;
 #endif
+
 			if ( CompareSingleWord(val, 0xffff, ProgMask) != 0 )
 			{
 				//Write Program code
@@ -112,24 +119,31 @@ long PicBusNew::Write(int addr, uint8_t const *data, long length, int page_size)
 				SendCmdCode(BeginProgOnlyCode);
 
 				if ( WaitReadyAfterWrite() )
+				{
 					break;
+				}
 			}
 
 			//Verify while programming (10/11/99)
-		//	SendCmdCode(ReadProgCode);
-		//	if ( CompareSingleWord(val, RecvProgCode(), ProgMask) )
-		//		break;
+			//      SendCmdCode(ReadProgCode);
+			//      if ( CompareSingleWord(val, RecvProgCode(), ProgMask) )
+			//              break;
 
 			SendCmdCode(IncAddressCode);
 		}
 
 		if ( CheckAbort(len * 100 / length) )
+		{
 			break;
+		}
 	}
+
 	CheckAbort(100);
 
 	if (addr == 0)
-		len <<= 1;	//contatore da word a byte
+	{
+		len <<= 1;        //contatore da word a byte
+	}
 
 	return len;
 }

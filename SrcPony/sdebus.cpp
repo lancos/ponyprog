@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: sdebus.cpp,v 1.8 2009/11/16 22:29:18 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -31,16 +31,18 @@
 #include "sdebus.h"
 #include "errcode.h"
 
-#include "e2app.h"
+#include <QDebug>
 
-#ifdef	_LINUX_
+#include "e2cmdw.h"
+
+#ifdef  __linux__
 //#  include <asm/io.h>
 #  include <unistd.h>
 #else
-#  ifdef	__BORLANDC__
-#    define	__inline__
+#  ifdef        __BORLANDC__
+#    define     __inline__
 #  else // _MICROSOFT_ VC++
-#    define	__inline__ __inline
+#    define     __inline__ __inline
 #    define _export
 #  endif
 #endif
@@ -49,20 +51,20 @@
 Sde2506Bus::Sde2506Bus(BusInterface *ptr)
 	: BusIO(ptr)
 {
-	UserDebug(Constructor, "Sde2506Bus::Sde2506Bus() constructor\n");
+	qDebug() << "Sde2506Bus::Sde2506Bus()";
 }
 
 // Distruttore
 Sde2506Bus::~Sde2506Bus()
 {
-	UserDebug(Destructor, "Sde2506Bus::~Sde2506Bus() destructor\n");
+	qDebug() <<  "Sde2506Bus::~Sde2506Bus()";
 
-//	Close();
+	//      Close();
 }
 
 void Sde2506Bus::SetDelay()
 {
-	int val = THEAPP->GetSDESpeed();
+	int val = E2Profile::GetSDESpeed();
 	int n;
 
 	switch(val)
@@ -70,35 +72,41 @@ void Sde2506Bus::SetDelay()
 	case TURBO:
 		n = 1;         // as fast as your PC can
 		break;
+
 	case FAST:
 		n = 5;
 		break;
+
 	case SLOW:
 		n = 30;
 		break;
+
 	case VERYSLOW:
 		n = 100;
 		break;
+
 	case ULTRASLOW:
 		n = 1000;
 		break;
+
 	default:
 		n = 10;         //Default (< 100KHz)
 		break;
 	}
+
 	BusIO::SetDelay(n);
 
-	UserDebug1(UserApp2, "Sde2506Bus::SetDelay() = %d\n", n);
+	qDebug() << "Sde2506Bus::SetDelay() = " << n;
 }
 
 int Sde2506Bus::SendDataBit(int b)
 {
-	clearCLK();		//si assicura che SCK low
+	clearCLK();             //si assicura che SCK low
 	WaitUsec(shot_delay);
 	setCLK();
 	bitDI(b);
 	WaitUsec(shot_delay);
-	clearCLK();		//device latch data bit now!
+	clearCLK();             //device latch data bit now!
 
 	return OK;
 }
@@ -108,11 +116,11 @@ int Sde2506Bus::RecDataBit()
 {
 	register uint8_t b;
 
-	clearCLK();		//the eeprom set data now
+	clearCLK();             //the eeprom set data now
 	WaitUsec(shot_delay);
 	setCLK();
 	b = getDO();
-	WaitUsec(shot_delay);	//hold time
+	WaitUsec(shot_delay);   //hold time
 	clearCLK();
 
 	return b;
@@ -124,9 +132,13 @@ int Sde2506Bus::SendDataWord(int wo, int wlen)
 	int k;
 
 	clearCLK();
+
 	//From LSB to MSB
 	for (k = 0; k < wlen; k++)
-		SendDataBit(wo & (1<<k));
+	{
+		SendDataBit(wo & (1 << k));
+	}
+
 	WaitUsec(shot_delay);
 	setDI();
 
@@ -139,9 +151,12 @@ int Sde2506Bus::RecDataWord(int wlen)
 
 	clearCLK();
 	setDI();
+
 	for (k = 0; k < wlen; k++)
 		if ( RecDataBit() )
+		{
 			val |= 1 << k;
+		}
 
 	return val;
 }
@@ -155,20 +170,20 @@ int Sde2506Bus::WaitReadyAfterWrite(long timeout)
 
 int Sde2506Bus::Reset(void)
 {
-	UserDebug(UserApp2, "Sde2506Bus::Reset()\n");
+	qDebug() << "Sde2506Bus::Reset()";
 
 	SetDelay();
 
-	clearCLK();		//clock = 0
-	setDI();		//data = 1
-	setCE();		//CE = 1
+	clearCLK();             //clock = 0
+	setDI();                //data = 1
+	setCE();                //CE = 1
 
 	return OK;
 }
 
 long Sde2506Bus::Read(int addr, uint8_t *data, long length, int page_size)
 {
-	UserDebug3(UserApp2, "Sde2506Bus::Read(%Xh, %ph, %ld)\n", addr, data, length);
+	qDebug() << "Sde2506Bus::Read(" << (hex) << addr << ", " << data << ", " << (dec) << length << ")";
 
 	long len;
 
@@ -178,22 +193,25 @@ long Sde2506Bus::Read(int addr, uint8_t *data, long length, int page_size)
 
 		//Send command opcode
 		SendAddress(addr++);
-		SendControlBit(0);		//SB = 0 --> Read op
+		SendControlBit(0);              //SB = 0 --> Read op
 		clearCE();
 
 		SendDataBit(1);
 		*data++ = RecDataWord();
 
-		WaitUsec(shot_delay+1);
+		WaitUsec(shot_delay + 1);
 		setCE();
 
 		if ( (len % 4) == 0 )
 			if ( CheckAbort(len * 100 / length) )
+			{
 				break;
+			}
 	}
+
 	CheckAbort(100);
 
-	UserDebug1(UserApp2, "Sde2506Bus::Read() = %ld\n", len);
+	qDebug() << "Sde2506Bus::Read() = " << len;
 
 	return len;
 }
@@ -210,28 +228,31 @@ long Sde2506Bus::Write(int addr, uint8_t const *data, long length, int page_size
 		SendDataWord(*data++);
 		SendAddress(curaddr);
 
-		SendControlBit(1);			//SB = 1 --> Write/Erase op
+		SendControlBit(1);                      //SB = 1 --> Write/Erase op
 		clearCE();
 
-		SendDataBit(1);				//Start erase
+		SendDataBit(1);                         //Start erase
 		setDI();
 		WaitReadyAfterWrite();
-		setCE();					//End erase
+		setCE();                                        //End erase
 
-		WaitUsec(shot_delay/2+1);	//perform write
+		WaitUsec(shot_delay / 2 + 1);   //perform write
 		clearDI();
 		WaitUsec(shot_delay);
 		clearCE();
 
-		SendDataBit(0);			//Start write
+		SendDataBit(0);                 //Start write
 		setDI();
 		WaitReadyAfterWrite();
-		setCE();				//End write
+		setCE();                                //End write
 
 		if ( (curaddr & 1) )
 			if ( CheckAbort(curaddr * 100 / length) )
+			{
 				break;
+			}
 	}
+
 	CheckAbort(100);
 
 	return curaddr;

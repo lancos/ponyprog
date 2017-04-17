@@ -7,7 +7,7 @@
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: e2dlg.h,v 1.6 2008/01/30 17:06:35 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -29,55 +29,55 @@
 
 #ifndef e2DIALOG_H
 #define e2DIALOG_H
-#include <v/vmodald.h>
 
-#include "types.h"
+#include <QDialog>
+#include <QWidget>
+#include <QObject>
+
+
+#include "e2cmdw.h"
 #include "globals.h"
+
+#include "ui_e2dlg.h"
 
 #include "string_table.h"
 
+using namespace Translator;
+
 class e2CmdWindow;
 
-class e2Dialog : public vModalDialog
+class e2Dialog : public QDialog, public Ui::E2Dialog
 {
-  public:		//---------------------------------------- public
-	e2Dialog(vBaseWindow* bw, char* title = STR_MSGINTSETUP);
-	virtual ~e2Dialog();		// Destructor
-	virtual void DialogCommand(ItemVal,ItemVal,CmdType); // action selected
-	void DialogDisplayed();
-	int DialogAction(char *msg);
+	Q_OBJECT
 
-  protected:	//--------------------------------------- protected
+public:               //---------------------------------------- public
+	e2Dialog(QWidget* bw, const QString title = STR_MSGINTSETUP);
+	virtual ~e2Dialog();            // Destructor
 
-  private:		//--------------------------------------- private
-	void UpdateDialog(int init, int type = 0);
+protected:    //--------------------------------------- protected
+
+private slots:
+	void onOk();
+	void onTest();
+	void onChangePort(bool);
+	void onSelectNum(int i);
+	void onSelectCOM(int i);
+	void onSelectLPT(int i);
+
+private:              //--------------------------------------- private
 	int Test(int p = 0, int open_only = 0) const;
+	void setWidgetsText();
+	void getSettings();
+	void setSettings();
 
-	e2CmdWindow* _myCmdWin;
-	int port_no;			// Numero della porta utilizzata
+	QStringList lptList;
+	QStringList comList;
+	QStringList usbList;
+
+	e2CmdWindow* cmdWin;
+	int port_no;                    // Numero della porta utilizzata
 	int lpt_no, com_no;
 	HInterfaceType interf_type;
-};
-
-class e2ProgressDialog : public vDialog
-{
-  public:
-	e2ProgressDialog(vBaseWindow* bw, char* title = STR_MSGSTATUS);
-	virtual ~e2ProgressDialog();		// Destructor
-	virtual void DialogCommand(ItemVal,ItemVal,CmdType); // action selected
-//	void AddDefaultCmds();		// to add the defined commands
-
-	virtual void ShowDialog(char *msg = 0);
-	void DialogDisplayed();
-
-	void UpdateDialog(int val = 0, char *msg = 0);
-
-  protected:	//--------------------------------------- protected
-
-  private:		//--------------------------------------- private
-	e2CmdWindow* _myCmdWin;
-	int pbr_value;
-	char last_msg[80];
 };
 
 #endif

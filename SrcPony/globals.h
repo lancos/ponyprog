@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: globals.h,v 1.16 2016/05/27 11:22:52 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -28,32 +28,51 @@
 //=========================================================================//
 // Some global ID and #defines
 
-#ifndef	_GLOBALS_H
-#define	_GLOBALS_H
 
-#define	APPNAME		"PonyProg2000"
-#define	AUTHORNAME	"Claudio Lanconelli"
-#define	AUTHORMAIL	"PonyProg2000@gmail.com"
-#define	AUTHORWEB	"http://www.LancOS.com"
-#define COPYRIGHTYEAR	"1997-2013"
-#define	APPNAME_EXT	STR_APPNAME_EXT
+#ifndef _GLOBALS_H
+#define _GLOBALS_H
 
-#define	APPVERSION	"2.08d Beta"
+#include <QString>
 
-#define	THEAPP	((e2App*)theApp)
+#include "string_table.h"
 
-#ifdef	MAX_PATH
-#define	MAXPATH	MAX_PATH
-#else
-#define	MAXPATH	1024
-#endif
+using namespace Translator;
 
-#define	MAXMSG	256
-#define	MAXFNAMEMSG	40
-#define	MAXNUMDIGIT	64
+#define AUTOSIZE_ID     64768
 
-#define	NO_OF_FILETYPE	LAST_FT
-enum FileType {
+
+#define PROG_TYPE       0x1
+#define DATA_TYPE       0x2
+#define CONFIG_TYPE     0x4
+
+#define ALL_TYPE        0x7 // (PROG_TYPE|DATA_TYPE|CONFIG_TYPE)
+
+static QString APPNAME       = "PonyProg2000";
+static QString AUTHORNAME    = "Claudio Lanconelli";
+static QString AUTHORMAIL    = "PonyProg2000@gmail.com";
+static QString AUTHORWEB     = "http://www.LancOS.com";
+static QString COPYRIGHTYEAR = "1997-2017";
+static QString APPNAME_EXT   = STR_APPNAME_EXT;
+static QString PORTERGQT     = "Eduard Kalinowski";
+static QString PORTERMAIL    = "eduard_kalinowski@yahoo.de";
+
+static QString APPVERSION    = "2.08d Beta";
+
+
+// #ifdef  MAX_PATH
+// #define MAXPATH MAX_PATH
+// #else
+// #define MAXPATH 1024
+// #endif
+
+// #define MAXMSG  256
+
+// #define MAXFNAMEMSG     40
+// #define MAXNUMDIGIT     64
+
+#define NO_OF_FILETYPE  LAST_FT
+enum FileType
+{
 	E2P,
 	INTEL,
 	MOTOS,
@@ -62,32 +81,34 @@ enum FileType {
 	LAST_FT
 };
 
-#define	NO_OF_INTERFACETYPE	(LAST_HT-1)
-enum HInterfaceType {
+// #define NO_OF_INTERFACETYPE     (LAST_HT-1)
+enum HInterfaceType
+{
 	//AutoTag
 	//Interface Identification
-	SIPROG_API = 1,
+	SIPROG_API = 0,
 	SIPROG_IO,
-	EASYI2C_API,
-	EASYI2C_IO,
+	JDM_API,
 	AVRISP,
 	AVRISP_IO,
+	EASYI2C_API,
+	EASYI2C_IO,
 	DT006_API,
 	DT006_IO,
-	JDM_API,
-//	JDM_IO,
+	//      JDM_IO,
 	LINUXSYSFS_IO,
 	LAST_HT
 };
 
 #define NO_OF_BUSTYPE (LAST_BT-1)
-enum BusType {
+enum BusType
+{
 	//AutoTag
 	//Bus Type Identification
 	I2C = 1,
 	AT90S,
-//	ATMEGAB,
-//	AT1200S,
+	//      ATMEGAB,
+	//      AT1200S,
 	AT89S,
 	AT93C,
 	AT250,
@@ -103,13 +124,8 @@ enum BusType {
 	LAST_BT
 };
 
-#define	AUTOSIZE_ID	64768
-
-
-#define	PROG_TYPE	1
-#define	DATA_TYPE	2
-#define	CONFIG_TYPE	4
-
-#define	ALL_TYPE	(PROG_TYPE|DATA_TYPE|CONFIG_TYPE)
 
 #endif
+
+
+

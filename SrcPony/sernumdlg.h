@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: sernumdlg.h,v 1.4 2009/11/16 23:40:43 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -30,7 +30,12 @@
 #ifndef SerNumDIALOG_H
 #define SerNumDIALOG_H
 
-#include <v/vmodald.h>
+#include "ui_osccalibr.h"
+#include "ui_sernumcfg.h"
+
+#include <QString>
+#include <QDialog>
+
 
 #include "types.h"
 #include "e2profil.h"
@@ -38,30 +43,50 @@
 
 #include "string_table.h"
 
-class SerNumDialog : public vModalDialog
+using namespace Translator;
+
+class SerNumDialog : public QDialog, public Ui::SNCfgDialog
 {
-  public:		//---------------------------------------- public
-	SerNumDialog(vBaseWindow* bw, char* title = STR_MSGSERNUMCFG);
-	virtual ~SerNumDialog();		// Destructor
-	virtual int SerNumAction(long &cLoc, bool &cMemType, bool &cAutoInc, FmtEndian &cFmt, int &cLen, uint32_t &cVal);
+	Q_OBJECT
+public:               //---------------------------------------- public
+	SerNumDialog(QWidget* bw, const QString title = STR_MSGSERNUMCFG);
+	virtual ~SerNumDialog();                // Destructor
 
-  protected:	//--------------------------------------- protected
+private slots:
+	void onOk();
 
-  private:		//--------------------------------------- private
+protected:    //--------------------------------------- protected
 
+private:              //--------------------------------------- private
+	void setTextWidgets();
+private:
+	long loc;
+	uint32_t val;
+	bool memtype;
+	bool autoinc;
+	int size;
+	FmtEndian fmt;
 };
 
-class OscCalibDialog : public vModalDialog
+
+class OscCalibDialog : public QDialog, public Ui::OscCalibrDialog
 {
-  public:		//---------------------------------------- public
-	OscCalibDialog(vBaseWindow* bw, e2AppWinInfo* aw, char* title = STR_MSGOSCCALIBCFG);
-	virtual ~OscCalibDialog();		// Destructor
-	virtual void DialogCommand(ItemVal,ItemVal,CmdType); // action selected
-	virtual int OscCalibAction(long &cLoc, bool &cMemType, uint8_t &cVal);
+	Q_OBJECT
+public:               //---------------------------------------- public
+	OscCalibDialog(QWidget* bw, e2AppWinInfo* aw, const QString title = STR_MSGOSCCALIBCFG);
+	virtual ~OscCalibDialog();              // Destructor
 
-  protected:	//--------------------------------------- protected
+private slots:
+	void onOk();
+	void onRead();
 
-  private:		//--------------------------------------- private
+protected:    //--------------------------------------- protected
+
+private:              //--------------------------------------- private
+	long loc;
+	uint8_t val;
+	bool memtype;
+	int size;
 
 	e2AppWinInfo *awip;
 };

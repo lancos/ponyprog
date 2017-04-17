@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: wait.h,v 1.4 2007/04/20 10:58:22 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -30,13 +30,13 @@
 #ifndef _WAIT_H
 #define _WAIT_H
 
-#ifdef	WIN32
+#ifdef  WIN32
 #include "windows.h"
 #endif
 
 class Wait
 {
-  public:		//---------------------------------------- public
+public:               //---------------------------------------- public
 
 	Wait();
 	virtual ~Wait();
@@ -47,20 +47,22 @@ class Wait
 	void SetBogoKips();
 
 	int GetHwTimer() const
-		{ return htimer; }
+	{
+		return htimer;
+	}
 	void SetHwTimer(int ok = -1);
 	int CheckHwTimer();
 
-  protected:	//--------------------------------------- protected
+protected:    //--------------------------------------- protected
 
 	int GetBogoKips();
 
-  private:		//--------------------------------------- private
+private:              //--------------------------------------- private
 
 	static int bogokips;
 	static int htimer;
 
-#ifdef	WIN32
+#ifdef  WIN32
 	static LARGE_INTEGER mlpf;
 #endif
 };

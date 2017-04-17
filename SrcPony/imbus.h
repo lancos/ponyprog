@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: imbus.h,v 1.4 2009/11/16 22:29:18 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -27,15 +27,14 @@
 //-------------------------------------------------------------------------//
 //=========================================================================//
 
-#ifndef	_IMBUS_H
-#define	_IMBUS_H
+#ifndef _IMBUS_H
+#define _IMBUS_H
 
 #include "busio.h"
-//#include "pgminter.h"
 
 class IMBus : public BusIO
 {
- public:		//------------------------------- public
+public:                //------------------------------- public
 	IMBus(BusInterface *ptr = 0);
 	virtual ~IMBus();
 
@@ -51,7 +50,7 @@ class IMBus : public BusIO
 	void SetDataMode(int val);
 	void SetProgDelay(int val);
 
- protected:		//------------------------------- protected
+protected:             //------------------------------- protected
 
 	int SendAddrWord(int wo);
 	int SendDataWord(long wo, int wlen = 8);
@@ -61,11 +60,15 @@ class IMBus : public BusIO
 	int IdentPulse();
 
 	void setIdent()
-		{ busI->SetControlLine(1); }
+	{
+		busI->SetControlLine(1);
+	}
 	void clearIdent()
-		{ busI->SetControlLine(0); }
+	{
+		busI->SetControlLine(0);
+	}
 
- private:		//------------------------------- private
+private:               //------------------------------- private
 
 	int StatusLocation;
 	bool SecondaryAddress;
@@ -76,22 +79,34 @@ class IMBus : public BusIO
 	int RecDataBit();
 
 	void bitDI(int b)
-		{ busI->SetDataOut(b); }
+	{
+		busI->SetDataOut(b);
+	}
 
 	void setDI()
-		{ busI->SetDataOut(1); }
+	{
+		busI->SetDataOut(1);
+	}
 
 	void clearDI()
-		{ busI->SetDataOut(0); }
+	{
+		busI->SetDataOut(0);
+	}
 
 	void setCLK()
-		{ busI->SetClock(1); }
+	{
+		busI->SetClock(1);
+	}
 
 	void clearCLK()
-		{ busI->SetClock(0); }
+	{
+		busI->SetClock(0);
+	}
 
 	int getDO() const
-		{ return busI->GetDataIn(); }
+	{
+		return busI->GetDataIn();
+	}
 };
 
 #endif

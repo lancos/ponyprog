@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: at250bus.cpp,v 1.7 2009/11/16 22:29:18 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -31,14 +31,16 @@
 #include "at250bus.h"
 #include "errcode.h"
 
-#ifdef	_LINUX_
+#include <QDebug>
+
+#ifdef  __linux__
 //#  include <asm/io.h>
 #  include <unistd.h>
 #else
-#  ifdef	__BORLANDC__
-#    define	__inline__
+#  ifdef        __BORLANDC__
+#    define     __inline__
 #  else // _MICROSOFT_ VC++
-#    define	__inline__ __inline
+#    define     __inline__ __inline
 #    define _export
 #  endif
 #endif
@@ -46,24 +48,24 @@
 // Costruttore
 At250Bus::At250Bus(BusInterface *ptr)
 	: SPIBus(ptr),
-		WriteEnable(0x06),
-		WriteDisable(0x04),
-		ReadStatus(0x05),
-		WriteStatus(0x01),
-		ReadData(0x03),
-		WriteData(0x02),
-		NotReadyFlag(1),
-		WenFlag(2),
-		BPFlags(8+4),
-		loop_timeout(5000)
+	  WriteEnable(0x06),
+	  WriteDisable(0x04),
+	  ReadStatus(0x05),
+	  WriteStatus(0x01),
+	  ReadData(0x03),
+	  WriteData(0x02),
+	  NotReadyFlag(1),
+	  WenFlag(2),
+	  BPFlags(8 + 4),
+	  loop_timeout(5000)
 {
 }
 
 void At250Bus::EndCycle()
 {
-//	WaitUsec(1);
+	//      WaitUsec(1);
 	setNCS();
-	WaitUsec(shot_delay*2);
+	WaitUsec(shot_delay * 2);
 	clearNCS();
 	WaitUsec(shot_delay);
 }
@@ -118,27 +120,31 @@ int At250Bus::WriteEEPStatus(int data)
 	return 0;
 }
 
-int At250Bus::WaitEndOfWrite(int timeout)		// 07/08/99
+int At250Bus::WaitEndOfWrite(int timeout)               // 07/08/99
 {
 	if (timeout <= 0)
+	{
 		timeout = loop_timeout;
+	}
 
 	int k;
+
 	for (k = timeout; k > 0 && (ReadEEPStatus() & NotReadyFlag); k--)
 		;
+
 	return (k != 0);
 }
 
 int At250Bus::Reset(void)
 {
-	UserDebug(UserApp2, "At250Bus::Reset()\n");
+	qDebug() <<  "At250Bus::Reset()";
 
 	SPIBus::Reset();
 
 	WaitUsec(shot_delay);
 
-//	SendDataByte(WriteEnable);
-//	EndCycle();
+	//      SendDataByte(WriteEnable);
+	//      EndCycle();
 
 	return OK;
 }
@@ -146,7 +152,7 @@ int At250Bus::Reset(void)
 
 long At250Bus::Read(int addr, uint8_t *data, long length, int page_size)
 {
-	UserDebug3(UserApp2, "At250Bus::Read(%xh, %ph, %ld)\n", addr, data, length);
+	qDebug() <<  "At250Bus::Read(" << (hex) << addr << ", " << data << ", " << (dec) << length << ")";
 
 	long len;
 
@@ -156,11 +162,14 @@ long At250Bus::Read(int addr, uint8_t *data, long length, int page_size)
 
 		if ( (len % 10) == 0 )
 			if ( CheckAbort(len * 100 / length) )
+			{
 				break;
+			}
 	}
+
 	CheckAbort(100);
 
-	UserDebug1(UserApp2, "At250Bus::Read() = %ld\n", len);
+	qDebug() << "At250Bus::Read() = " << len;
 
 	return len;
 }
@@ -173,7 +182,9 @@ long At250Bus::Write(int addr, uint8_t const *data, long length, int page_size)
 
 	// 07/08/99 *** bug fix suggested by Atmel Product engineer
 	if (!WaitEndOfWrite())
+	{
 		return 0;
+	}
 
 	for (len = 0; len < length; len++)
 	{
@@ -183,12 +194,17 @@ long At250Bus::Write(int addr, uint8_t const *data, long length, int page_size)
 		WriteEEPByte(addr++, *data++);
 
 		if (!WaitEndOfWrite())
-			return 0;		//Must return 0, because > 0 (and != length) means "Abort by user"
+		{
+			return 0;        //Must return 0, because > 0 (and != length) means "Abort by user"
+		}
 
 		if ( (len & 1) )
 			if ( CheckAbort(len * 100 / length) )
+			{
 				break;
+			}
 	}
+
 	CheckAbort(100);
 
 	return len;

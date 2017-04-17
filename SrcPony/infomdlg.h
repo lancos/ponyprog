@@ -7,7 +7,7 @@
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: infomdlg.h,v 1.4 2009/11/16 23:40:43 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -30,73 +30,119 @@
 #ifndef infoMDLG_H
 #define infoMDLG_H
 
+#include <QString>
+#include <QObject>
+#include <QDialog>
+
 #include "types.h"
-#include <v/vmodald.h>
+
+#include "ui_notesdlg.h"
+#include "ui_editdlg.h"
+#include "ui_blockdlg.h"
 
 #include "string_table.h"
 
-class e24xx_infoModalDialog : public vModalDialog
+using namespace Translator;
+
+
+class e24xx_infoModalDialog : public QDialog, public Ui::EditDialog
 {
-  public:		//---------------------------------------- public
-	e24xx_infoModalDialog(vBaseWindow* bw, int rlv, uint16_t crc, long size, char* title = STR_MSGDEVINFO);
-	virtual ~e24xx_infoModalDialog();		// Destructor
-	virtual int infoAction(char* msg = "Device Info");
+	Q_OBJECT
+public:               //---------------------------------------- public
+	e24xx_infoModalDialog(QWidget* bw, int rlv, uint16_t crc, long size, const QString title = STR_MSGDEVINFO);
+	virtual ~e24xx_infoModalDialog();               // Destructor
+	//      virtual int infoAction(char* msg = "Device Info");
 
-  protected:	//--------------------------------------- protected
+private slots:
+	void onOk();
 
-  private:		//--------------------------------------- private
-	char *strptr[4];
-};
+protected:    //--------------------------------------- protected
 
-class other_infoModalDialog : public vModalDialog
-{
-  public:		//---------------------------------------- public
-	other_infoModalDialog(vBaseWindow* bw, long fsize, long esize, uint16_t crc, char* title = STR_MSGDEVINFO);
-	virtual ~other_infoModalDialog();		// Destructor
-	virtual int infoAction(char* msg = "Device Info");
-
-  protected:	//--------------------------------------- protected
-
-  private:		//--------------------------------------- private
-	char *strptr[4];
-};
-
-class notesModalDialog : public vModalDialog
-{
-  public:		//---------------------------------------- public
-	notesModalDialog(vBaseWindow* bw, char* id = 0, char* cm = 0, char* title = STR_MSGDEVNOTE);
-	virtual ~notesModalDialog();		// Destructor
-	virtual int notesAction(char* msg = STR_MSGDEVNOTE);
-
-  protected:	//--------------------------------------- protected
-
-  private:		//--------------------------------------- private
+private:              //--------------------------------------- private
 
 };
 
-class editModalDialog : public vModalDialog
+
+
+class other_infoModalDialog : public QDialog, public Ui::EditDialog
 {
-  public:		//---------------------------------------- public
-	editModalDialog(vBaseWindow* bw, int curval = 0, char* title = STR_MSGEDITBUG);
-	virtual ~editModalDialog();		// Destructor
-	virtual int editAction(char* msg, int &retval);
+	Q_OBJECT
+public:               //---------------------------------------- public
+	other_infoModalDialog(QWidget* bw, long fsize, long esize, uint16_t crc, const QString title = STR_MSGDEVINFO);
+	virtual ~other_infoModalDialog();               // Destructor
+	//      virtual int infoAction(char* msg = "Device Info");
 
-  protected:	//--------------------------------------- protected
+private slots:
+	void onOk();
 
-  private:		//--------------------------------------- private
+protected:    //--------------------------------------- protected
+
+private:              //--------------------------------------- private
+
+};
+
+
+class notesModalDialog : public QDialog, public Ui::NotesDialog
+{
+	Q_OBJECT
+public:               //---------------------------------------- public
+	notesModalDialog(QWidget* bw, QString &id, QString &cm, const QString title = STR_MSGDEVNOTE);
+	virtual ~notesModalDialog();            // Destructor
+	//      QString GetId();
+	//      QString GetComment();
+	//      virtual int notesAction(char* msg = STR_MSGDEVNOTE);
+
+private slots:
+	void onOk();
+
+protected:    //--------------------------------------- protected
+
+private:              //--------------------------------------- private
+	QString *id_ptr;
+	QString *cm_ptr;
+
+	QString id_txt;
+	QString cmt_txt;
+
+};
+
+
+class editModalDialog : public QDialog, public Ui::EditDialog
+{
+	Q_OBJECT
+public:               //---------------------------------------- public
+	editModalDialog(QWidget* bw, int curval = 0, const QString title = STR_MSGEDITBUG);
+	virtual ~editModalDialog();             // Destructor
+	//      virtual int editAction(char* msg, int &retval);
+	int GetVal();
+
+private slots:
+	void onOk();
+	void onEdit();
+
+protected:    //--------------------------------------- protected
+
+private:              //--------------------------------------- private
 	int oldval;
 };
 
-class editModalDialog2 : public vModalDialog
+
+class editModalDialog2 : public QDialog, public Ui::EditDialog
 {
-  public:		//---------------------------------------- public
-	editModalDialog2(vBaseWindow* bw, char *curval = "", char* title = STR_MSGEDITBUG);
-	virtual ~editModalDialog2();		// Destructor
-	virtual int editAction(char* msg, char *text, int len);
+	Q_OBJECT
+public:               //---------------------------------------- public
+	editModalDialog2(QWidget* bw, const QString curval = "", const QString title = STR_MSGEDITBUG);
+	virtual ~editModalDialog2();            // Destructor
+	//      virtual int editAction(char* msg, char *text, int len);
+	QString GetVal();
 
-  protected:	//--------------------------------------- protected
+private slots:
+	void onOk();
 
-  private:		//--------------------------------------- private
+protected:    //--------------------------------------- protected
+
+private:              //--------------------------------------- private
+	QString val;
 };
 
 #endif

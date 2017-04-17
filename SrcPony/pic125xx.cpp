@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: pic125xx.cpp,v 1.5 2009/11/16 23:40:43 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -28,20 +28,22 @@
 //=========================================================================//
 
 #include "types.h"
-#include "pic125xx.h"		// Header file
+#include "pic125xx.h"           // Header file
 #include "errcode.h"
 #include "eeptypes.h"
 
+#include <QDebug>
+
 #include "e2awinfo.h"
 
-#undef	BANK_SIZE
-#define	BANK_SIZE	1
+#undef  BANK_SIZE
+#define BANK_SIZE       1
 
-#define	CONFIG_SIZE	( 8 * sizeof(uint16_t) )
+#define CONFIG_SIZE     ( 8 * sizeof(uint16_t) )
 
 //=====>>> Costruttore <<<======
 Pic125xx::Pic125xx(e2AppWinInfo *wininfo, BusIO *busp)
-	:	Device(wininfo, busp, BANK_SIZE)
+	:       Device(wininfo, busp, BANK_SIZE)
 {
 	config_word = 0xffff;
 }
@@ -104,7 +106,8 @@ int Pic125xx::Read(int probe, int type)
 			GetAWInfo()->SetLockBits(f);
 		}
 		else
-		{	//Skip configuration word
+		{
+			//Skip configuration word
 			GetBus()->IncAddress(1);
 		}
 
@@ -124,10 +127,12 @@ int Pic125xx::Write(int probe, int type)
 	if (rv > 0)
 	{
 		if ( type & PROG_TYPE )
-		{	//Skip configuration word
+		{
+			//Skip configuration word
 			GetBus()->IncAddress(1);
 			rv = WriteProg();
 		}
+
 		if ( rv > 0 && (type & CONFIG_TYPE) )
 		{
 			// write the config locations
@@ -140,9 +145,10 @@ int Pic125xx::Write(int probe, int type)
 			SecurityWrite(f);
 		}
 	}
-	else
-	if (rv == 0)
+	else if (rv == 0)
+	{
 		rv = E2ERR_WRITEFAILED;
+	}
 
 	return rv;
 }
@@ -152,15 +158,21 @@ int Pic125xx::Verify(int type)
 	GetBus()->Reset();
 
 	if (GetNoOfBank() == 0)
+	{
 		return BADPARAM;
+	}
 
 	int rval = -1;
+
 	if (GetSize() >= GetSplitted())
 	{
 		unsigned char *localbuf;
 		localbuf = new unsigned char[GetSize()];
+
 		if (localbuf == 0)
+		{
 			return OUTOFMEMORY;
+		}
 
 		int v_prog = OK, v_config = OK;
 
@@ -169,7 +181,7 @@ int Pic125xx::Verify(int type)
 			uint32_t f;
 			SecurityRead(f);
 
-			UserDebug2(UserApp2, "Pic125xx::Verify() ** %lu <-> %lu\n", (unsigned long)f, (unsigned long)GetAWInfo()->GetLockBits());
+			qDebug() << "Pic125xx::Verify() ** " << f << " <-> " << (unsigned long)GetAWInfo()->GetLockBits();
 
 			if (GetAWInfo()->GetLockBits() == f)
 			{
@@ -178,10 +190,11 @@ int Pic125xx::Verify(int type)
 			else
 			{
 				v_config = 1;
-				}
+			}
 		}
 		else
-		{	//Skip configuration word
+		{
+			//Skip configuration word
 			GetBus()->IncAddress(1);
 		}
 
@@ -205,12 +218,13 @@ int Pic125xx::VerifyProg(unsigned char *localbuf)
 	int base = 0;
 
 	//Verify only programmed bytes (to save time in big devices)
-//	long v_len = size - 2;		//Don't verify RC Calibration location
+	//      long v_len = size - 2;          //Don't verify RC Calibration location
 	long v_len = size;
-	if (GetBus()->GetLastProgrammedAddress() > 0 && GetBus()->GetLastProgrammedAddress() < size-1 )
+
+	if (GetBus()->GetLastProgrammedAddress() > 0 && GetBus()->GetLastProgrammedAddress() < size - 1 )
 	{
 		v_len = GetBus()->GetLastProgrammedAddress() + 2;
-		GetBus()->ClearLastProgrammedAddress();		//reset last_programmed_addr, so next verify not preceeded by write verify all the flash
+		GetBus()->ClearLastProgrammedAddress();         //reset last_programmed_addr, so next verify not preceeded by write verify all the flash
 	}
 
 	//Set blank locations to default 0xFF (erased)
@@ -218,13 +232,18 @@ int Pic125xx::VerifyProg(unsigned char *localbuf)
 
 	// read the current flash content and store it in localbuf
 	rval = GetBus()->Read(0, localbuf, v_len);
+
 	if ( rval != v_len )
 	{
 		if (rval > 0)
+		{
 			rval = OP_ABORTED;
+		}
 	}
 	else
-		rval = GetBus()->CompareMultiWord(GetBufPtr()+base, localbuf+base, v_len, 0) == 0 ? OK : 1;
+	{
+		rval = GetBus()->CompareMultiWord(GetBufPtr() + base, localbuf + base, v_len, 0) == 0 ? OK : 1;
+	}
 
 	return rval;
 }
@@ -233,17 +252,17 @@ int Pic125xx::VerifyProg(unsigned char *localbuf)
 //Write Flash program memory (don't program RC calibration value)
 int Pic125xx::WriteProg()
 {
-	int rv;
-	int size = GetSplitted()-2;		//Don't program last location (RC calibration value)
-	int base = 0;
+        int rv;
+        int size = GetSplitted()-2;             //Don't program last location (RC calibration value)
+        int base = 0;
 
-	rv = GetBus()->Write(0, GetBufPtr()+base, size);
-	if ( rv != size )
-	{
-		if (rv > 0)
-			rv = OP_ABORTED;
-	}
+        rv = GetBus()->Write(0, GetBufPtr()+base, size);
+        if ( rv != size )
+        {
+                if (rv > 0)
+                        rv = OP_ABORTED;
+        }
 
-	return rv;
+        return rv;
 }
 **/

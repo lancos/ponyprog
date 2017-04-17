@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: lpt_io_interf.cpp,v 1.2 2007/04/20 10:58:23 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -30,13 +30,13 @@
 #include "types.h"
 #include "errcode.h"
 
-#include "v/vdebug.h"
+#include <QDebug>
 
-#ifdef	_WINDOWS
+#ifdef  _WINDOWS
 #include <windows.h>
 #endif
 
-#ifdef	_LINUX_
+#ifdef  __linux__
 #include <stdio.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -44,7 +44,8 @@
 
 #include "lpt_io_interf.h"
 
-enum LptRegs {
+enum LptRegs
+{
 	dataOfst,
 	statOfst,
 	ctrlOfst
@@ -52,17 +53,17 @@ enum LptRegs {
 
 LPTIOInterface::LPTIOInterface()
 {
-	UserDebug(Constructor, "LPTIOInterface::LPTIOInterface() constructor\n");
+	qDebug() << "LPTIOInterface::LPTIOInterface()";
 
 	last_ctrl = last_data = 0;
 	lpt_port = 0;
 
-//	PortInterface::OpenParallel(lpt_port);
+	//      PortInterface::OpenParallel(lpt_port);
 }
 
 LPTIOInterface::~LPTIOInterface()
 {
-	UserDebug(Destructor, "LPTIOInterface::~LPTIOInterface() destructor\n");
+	qDebug() <<  "LPTIOInterface::~LPTIOInterface()";
 
 	PortInterface::CloseParallel();
 }
@@ -70,9 +71,9 @@ LPTIOInterface::~LPTIOInterface()
 
 void LPTIOInterface::SetPort(int port_no)
 {
-	UserDebug1(UserApp2, "LPTIOInterface::SetPort(%d)\n", port_no);
+	qDebug() << "LPTIOInterface::SetPort(" << port_no << ")";
 
-	if ( port_no >= 1 && port_no <= MAX_LPTPORTS ) 
+	if ( port_no >= 1 && port_no <= MAX_LPTPORTS )
 	{
 		lpt_port = port_no;
 
@@ -81,22 +82,22 @@ void LPTIOInterface::SetPort(int port_no)
 	}
 }
 
- //   Bit           Bit
- //    0 - Unused    4 - Pin 13
- //    1 - Unused    5 - Pin 12
- //    2 - Unused    6 - Pin 10
- //    3 - Pin 15    7 - Pin 11 (Inverted)
- //
- /////////////////////////////////////////////////////////////////
+//   Bit           Bit
+//    0 - Unused    4 - Pin 13
+//    1 - Unused    5 - Pin 12
+//    2 - Unused    6 - Pin 10
+//    3 - Pin 15    7 - Pin 11 (Inverted)
+//
+/////////////////////////////////////////////////////////////////
 
 int LPTIOInterface::InDataPort(int port_no)
 {
-	UserDebug2(UserApp3, "LPTIOInterface::InDataPort(%d) ** lp=%d\n", port_no, lpt_port);
+	qDebug() << "LPTIOInterface::InDataPort(" << port_no << ") ** lp=" << lpt_port;
 
 	int ret_val = OK;
 
 	if ( port_no >= 1 && port_no <= MAX_LPTPORTS &&
-			port_no != lpt_port )
+	                port_no != lpt_port )
 	{
 		lpt_port = port_no;
 
@@ -105,31 +106,33 @@ int LPTIOInterface::InDataPort(int port_no)
 	}
 
 	if (ret_val == OK)
+	{
 		ret_val = PortInterface::InPort(statOfst);
+	}
 
-	UserDebug1(UserApp3, "LPTIOInterface::InDataPort() = %d\n", ret_val);
+	qDebug() << "LPTIOInterface::InDataPort() = " << ret_val;
 
 	return ret_val;
 }
 
 
- //
- //   Bit           Bit
- //    0 - Pin 2    4 - Pin 6
- //    1 - Pin 3    5 - Pin 7
- //    2 - Pin 4    6 - Pin 8
- //    3 - Pin 5    7 - Pin 9
- //
- /////////////////////////////////////////////////////////////////
+//
+//   Bit           Bit
+//    0 - Pin 2    4 - Pin 6
+//    1 - Pin 3    5 - Pin 7
+//    2 - Pin 4    6 - Pin 8
+//    3 - Pin 5    7 - Pin 9
+//
+/////////////////////////////////////////////////////////////////
 
 int LPTIOInterface::OutDataPort(int val, int port_no)
 {
-	UserDebug2(UserApp3, "LPTIOInterface::OutDataPort(%d, %d)\n", val, port_no);
+	qDebug() << "LPTIOInterface::OutDataPort(" << val << ", " << port_no << ")";
 
 	int ret_val = OK;
 
 	if ( port_no >= 1 && port_no <= MAX_LPTPORTS &&
-			port_no != lpt_port )
+	                port_no != lpt_port )
 	{
 		lpt_port = port_no;
 
@@ -143,7 +146,7 @@ int LPTIOInterface::OutDataPort(int val, int port_no)
 		ret_val = PortInterface::OutPort(val, dataOfst);
 	}
 
-	UserDebug1(UserApp3, "LPTIOInterface::OutDataPort() = %d\n", ret_val);
+	qDebug() << "LPTIOInterface::OutDataPort() = " << ret_val;
 
 	return ret_val;
 }
@@ -151,23 +154,23 @@ int LPTIOInterface::OutDataPort(int val, int port_no)
 
 
 
- //
- //   Bit           
- //    0 - Pin 1    
- //    1 - Pin 14   
- //    2 - Pin 16   
- //    3 - Pin 17      NOTE: Bits 5-7 are not used.
- //
- /////////////////////////////////////////////////////////////////
+//
+//   Bit
+//    0 - Pin 1
+//    1 - Pin 14
+//    2 - Pin 16
+//    3 - Pin 17      NOTE: Bits 5-7 are not used.
+//
+/////////////////////////////////////////////////////////////////
 
 int LPTIOInterface::OutControlPort(int val, int port_no)
 {
-	UserDebug2(UserApp3, "LPTIOInterface::OutControlPort(%d, %d)\n", val, port_no);
+	qDebug() << "LPTIOInterface::OutControlPort(" << val << ", " << port_no << ")";
 
 	int ret_val = OK;
 
 	if ( port_no >= 1 && port_no <= MAX_LPTPORTS &&
-			port_no != lpt_port )
+	                port_no != lpt_port )
 	{
 		lpt_port = port_no;
 
@@ -181,7 +184,7 @@ int LPTIOInterface::OutControlPort(int val, int port_no)
 		ret_val = PortInterface::OutPort(val, ctrlOfst);
 	}
 
-	UserDebug1(UserApp3, "LPTIOInterface::OutControlPort() = %d\n", ret_val);
+	qDebug() << "LPTIOInterface::OutControlPort() = " << ret_val;
 
 	return ret_val;
 }
@@ -194,8 +197,7 @@ int LPTIOInterface::OutDataMask(int mask, int val)
 	{
 		last_data &= ~mask;
 	}
-	else
-	if (val == 1)
+	else if (val == 1)
 	{
 		last_data |= mask;
 	}
@@ -217,8 +219,7 @@ int LPTIOInterface::OutControlMask(int mask, int val)
 	{
 		last_ctrl &= ~mask;
 	}
-	else
-	if (val == 1)
+	else if (val == 1)
 	{
 		last_ctrl |= mask;
 	}

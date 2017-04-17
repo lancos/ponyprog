@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: busio.h,v 1.9 2009/11/16 23:40:43 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -27,93 +27,133 @@
 //-------------------------------------------------------------------------//
 //=========================================================================//
 
-#ifndef	_BUSIO_H
-#define	_BUSIO_H
+#ifndef _BUSIO_H
+#define _BUSIO_H
 
 #include "types.h"
 #include "wait.h"
 #include "businter.h"
+#include "errcode.h"
 
 //Formato di bus generico seriale
 class BusIO : public Wait
 {
- public:		//------------------------------- public
+public:                //------------------------------- public
 	BusIO(BusInterface *p = 0);
-//	virtual ~BusIO() { }
+	//      virtual ~BusIO() { }
 
 	virtual int Open(int port)
-		{ return (err_no = busI->Open(port)); }
+	{
+		return (err_no = busI->Open(port));
+	}
 	virtual void Close()
-		{ busI->Close(); }
+	{
+		busI->Close();
+	}
 	virtual int Error();
 
 	virtual int TestPort(int port)
-		{ return OK; }
+	{
+		return OK;
+	}
 
 	virtual int Reset() = 0;
 
 	virtual long Read(int addr, uint8_t *data, long length, int page_size = 0) = 0;
-	virtual long Write(int addr,uint8_t const *data, long length, int page_size = 0) = 0;
+	virtual long Write(int addr, uint8_t const *data, long length, int page_size = 0) = 0;
 	virtual int Erase(int type = 0)
-		{ return NOTSUPPORTED; }
+	{
+		return NOTSUPPORTED;
+	}
 
 	virtual int ReadDeviceCode(int addr)
-		{ return OK; }
+	{
+		return OK;
+	}
 	virtual int WriteLockBits(uint32_t val, long model = 0)
-		{ return OK; }
+	{
+		return OK;
+	}
 	virtual int WriteFuseBits(uint32_t val, long model = 0)
-		{ return OK; }
+	{
+		return OK;
+	}
 	virtual uint32_t ReadLockBits(long model = 0)
-		{ return 0; }
+	{
+		return 0;
+	}
 	virtual uint32_t ReadFuseBits(long model = 0)
-		{ return 0; }
+	{
+		return 0;
+	}
 
 	virtual long ReadCalibration(int addr = 0)
-		{ return -1; }			//No calibration value available
+	{
+		return -1;        //No calibration value available
+	}
 
 	virtual int CompareMultiWord(uint8_t *data1, uint8_t *data2, long length, int split)
-		{ return memcmp(data1, data2, length); }
+	{
+		return memcmp(data1, data2, length);
+	}
 
 	int GetErrNo()
-		{ return err_no; }
-	int GetLastAddr() const		//useful in I2C Bus transaction,
-		{ return last_addr; }	// tell the address where error occurs
+	{
+		return err_no;
+	}
+	int GetLastAddr() const         //useful in I2C Bus transaction,
+	{
+		return last_addr;        // tell the address where error occurs
+	}
 
 	void SetBusInterface(BusInterface *ptr)
-		{ if (ptr) busI = ptr; }
+	{
+		if (ptr)
+		{
+			busI = ptr;
+		}
+	}
 
 	int CheckAbort(int progress = 0);
 
 	virtual void SetDelay();
 	virtual void SetDelay(int delay);
 	int GetDelay() const
-		{ return shot_delay; }
+	{
+		return shot_delay;
+	}
 
 	long GetLastProgrammedAddress() const
-		{ return last_programmed_addr; }
+	{
+		return last_programmed_addr;
+	}
 
 	void ClearLastProgrammedAddress()
-		{ last_programmed_addr = 0; }
+	{
+		last_programmed_addr = 0;
+	}
 
 	void SetLastProgrammedAddress(long addr)
 	{
 		if (addr > last_programmed_addr)
+		{
 			last_programmed_addr = addr;
+		}
 	}
 
- protected:		//------------------------------- protected
+protected:             //------------------------------- protected
 
-	int	err_no;			//error code
-	int	last_addr;
+	int     err_no;                 //error code
+	int     last_addr;
 
-	int shot_delay;		//delay unit to perform bus timing
+	int shot_delay;         //delay unit to perform bus timing
 
 	BusInterface *busI;
 
- private:		//------------------------------- private
+private:               //------------------------------- private
 
 	int old_progress;
-	long last_programmed_addr;	//record last programmed address for verify
+	long last_programmed_addr;      //record last programmed address for verify
 
 };
 

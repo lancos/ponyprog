@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: e2awinfo.h,v 1.13 2013/11/07 16:33:39 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -30,12 +30,13 @@
 #ifndef e2AWINFO_H
 #define e2AWINFO_H
 
-// Include standard V files as needed
-#include <v/vawinfo.h>
+
+#include <QWidget>
+#include <QObject>
+#include <QString>
+#include <QByteArray>
 
 #include "types.h"
-
-#include "e2cmdw.h"
 
 #include "device.h"
 //AutoTag
@@ -67,99 +68,139 @@
 #include "csmfbuf.h"
 
 #include "eeptypes.h"
-#include "e2app.h"
 
 #include "e2phead.h"
 
-//At the moment the bigger device is ATmega2560 (256KiB + 4KiB)
-#define	BUFFER_SIZE (1024 * 260)
 
-#ifdef	_WINDOWS
+
+//At the moment the bigger device is ATmega2560 (256KiB + 4KiB)
+#define BUFFER_SIZE (1024 * 260)
+
+#ifdef  _WINDOWS
 # ifndef WIN32
-#  undef	BUFFER_SIZE
-#  define	BUFFER_SIZE	(1024 * 16)
+#  undef        BUFFER_SIZE
+#  define       BUFFER_SIZE     (1024 * 16)
 # endif
 #endif
 
-#define	STRINGID_SIZE	E2P_STRID_SIZE
-#define	COMMENT_SIZE	E2P_COMM_SIZE
 
-#define LINEBUF_SIZE	128
+#define STRINGID_SIZE   E2P_STRID_SIZE
+#define COMMENT_SIZE    E2P_COMM_SIZE
 
-class e2AppWinInfo : public vAppWinInfo
+#define LINEBUF_SIZE    128
+
+
+class e2CmdWindow;
+
+
+class e2AppWinInfo // : public QObject
 {
-  public:		//---------------------------------------- public
+public:               //---------------------------------------- public
 
-	e2AppWinInfo(vCmdWindow* win = 0, char* name = "", BusIO** busptr = 0, void* ptr = 0);
+	e2AppWinInfo(e2CmdWindow* p = 0, const QString &name = "", BusIO** busptr = 0);
 	~e2AppWinInfo();
 
-	int Read(int type = ALL_TYPE, int raise_power = TRUE, int leave_on = FALSE);
-	int Write(int type = ALL_TYPE, int raise_power = TRUE, int leave_on = FALSE);
-	int Verify(int type = ALL_TYPE, int raise_power = TRUE, int leave_on = FALSE);
-	int Erase(int type = ALL_TYPE, int raise_power = TRUE, int leave_on = FALSE);
-//	int BlankCheck(int type = ALL_TYPE, int raise_power = TRUE, int leave_on = FALSE);
+	int Read(int type = ALL_TYPE, int raise_power = true, int leave_on = false);
+	int Write(int type = ALL_TYPE, int raise_power = true, int leave_on = false);
+	int Verify(int type = ALL_TYPE, int raise_power = true, int leave_on = false);
+	int Erase(int type = ALL_TYPE, int raise_power = true, int leave_on = false);
+	//      int BlankCheck(int type = ALL_TYPE, int raise_power = true, int leave_on = false);
 
-//	int Load(int bank = 0);
+	//      int Load(int bank = 0);
 	int Load();
 	int Save();
-	char const *Dump(int line, int type = 0);
+
+	QString Dump(int line, int type = 0);
 
 	int GetNoOfBlock() const
-		{ return no_block; }
+	{
+		return no_block;
+	}
 	void SetNoOfBlock(int blk)
-		{ no_block = blk; }
+	{
+		no_block = blk;
+	}
 	int GetBlockSize() const
-		{ return block_size; }
+	{
+		return block_size;
+	}
 
 	long GetSize() const;
 	int GetHexPerLine() const
-		{ return hex_per_line; }
+	{
+		return hex_per_line;
+	}
 
 	void SetEEProm(int type = E24XX, int subtype = 0);
 
 	void SetFileBuf(FileType type);
 	FileType GetFileBuf() const;
 
-	void SetFileName(char const *name);
-	char const *GetFileName() const
-		{ return fname; }
+	void SetFileName(const QString &name);
 
-	char *GetStringID(char *s = 0);
-	void SetStringID(char const *s);
+	QString GetFileName()
+	{
+		return fname;
+	}
 
-	char *GetComment(char *s = 0);
-	void SetComment(char const *s);
+	QString GetStringID();
+	void SetStringID(const QString &s);
+
+	QString GetComment();
+	void SetComment(const QString &s);
 
 	int GetEEPPriType() const
-		{ return eep_type; }
+	{
+		return eep_type;
+	}
 	int GetEEPSubType() const
-		{ return eep_subtype ? eep_subtype : GetE2PSubType( GetEEPTypeFromSize(eep_type, GetNoOfBlock()) ); } //GetNoOfBlock(); }
-  	int GetEEPType() const
-		{ return BuildE2PType(eep_type, eep_subtype); }
-
+	{
+		return eep_subtype ? eep_subtype : GetE2PSubType( GetEEPTypeFromSize(eep_type, GetNoOfBlock()) );
+	} //GetNoOfBlock(); }
+	int GetEEPType() const
+	{
+		return BuildE2PType(eep_type, eep_subtype);
+	}
+	void SetEEPTypeId(long e2type_id);
 	int GetBankRollOver() const
-		{ return roll_over; }
+	{
+		return roll_over;
+	}
 	void SetBankRollOver(int rlv = 0)
-		{ roll_over = rlv; }
+	{
+		roll_over = rlv;
+	}
 	int BankRollOverDetect(int force = 0);
 
 	void Reset();
 
 	long GetSplittedInfo() const
-		{ return splitted; }
+	{
+		return splitted;
+	}
 	void SetSplittedInfo(long spl = 0)
-		{ splitted = spl; }
+	{
+		splitted = spl;
+	}
 
 	uint16_t GetCRC() const
-		{ return crc; }
+	{
+		return crc;
+	}
 	void SetCRC(int c = 0)
-		{ crc = c; }
+	{
+		crc = c;
+	}
 	uint16_t RecalcCRC();
 
 	uint8_t *GetBufPtr() const
-		{ return (uint8_t *)buffer; }
+	{
+		return (uint8_t *)buffer;
+	}
 	int GetBufSize() const
-		{ return buffer_size; }
+	{
+		return buffer_size;
+	}
 
 	void DoubleSize();
 	void SwapBytes();
@@ -176,21 +217,33 @@ class e2AppWinInfo : public vAppWinInfo
 	int ReadOscCalibration(int addr = 0);
 
 	uint32_t GetLockBits() const
-		{ return lock_bits; }
+	{
+		return lock_bits;
+	}
 	uint32_t GetFuseBits() const
-		{ return fuse_bits; }
+	{
+		return fuse_bits;
+	}
 	void SetLockBits(uint32_t bits);
 	void SetFuseBits(uint32_t bits);
 
 	bool IsFuseValid() const
-		{ return fuse_ok; }
+	{
+		return fuse_ok;
+	}
 	bool IsBufferValid() const
-		{ return buf_ok; }
+	{
+		return buf_ok;
+	}
 
 	void BufChanged(bool val = true)
-		{ buf_changed = val; }
+	{
+		buf_changed = val;
+	}
 	bool IsBufChanged() const
-		{ return buf_changed; }
+	{
+		return buf_changed;
+	}
 
 	int SetLoadType(int val);
 	int GetLoadType() const;
@@ -201,89 +254,108 @@ class e2AppWinInfo : public vAppWinInfo
 	long GetLoadRelocation() const;
 	void SetSaveRelocation(long val);
 	long GetSaveRelocation() const;
-	bool GetLoadAutoClearBuf() { return clear_buffer_before_load; }
-	void SetLoadAutoClearBuf(bool val) { clear_buffer_before_load = val; }
+	bool GetLoadAutoClearBuf()
+	{
+		return clear_buffer_before_load;
+	}
+	void SetLoadAutoClearBuf(bool val)
+	{
+		clear_buffer_before_load = val;
+	}
 	long GetDetectedType() const
-		{ return eep ? eep->GetDetectedType() : 0; }
-	char const *GetDetectedTypeStr() const
-		{ return GetEEPTypeString(GetDetectedType()); }
-	char const *GetDetectedSignatureStr() const
-		{ return eep ? eep->GetDetectedSignatureStr() : 0; }
+	{
+		return eep ? eep->GetDetectedType() : 0;
+	}
+	QString GetDetectedTypeStr() const
+	{
+		return GetEEPTypeString(GetDetectedType());
+	}
+	QString GetDetectedSignatureStr() const
+	{
+		return eep ? eep->GetDetectedSignatureStr() : 0;
+	}
 
-  protected:	//--------------------------------------- protected
+public:
+	Device *eep;
+
+protected:    //--------------------------------------- protected
 	e2CmdWindow* cmdWin;
 
-  private:		//--------------------------------------- private
-	int OpenBus()
-		{ return THEAPP->OpenBus(eep->GetBus()); }
-	void SleepBus()
-		{ THEAPP->SleepBus(); }
+private:              //--------------------------------------- private
+	int OpenBus();
+	void SleepBus();
 	void SetBlockSize(int blk)
-		{ block_size = blk; }
+	{
+		block_size = blk;
+	}
 	int LoadFile();
+
+	QString fname;                            //nome del file
 
 	int const hex_per_line;
 	int const buffer_size;
 
-	int load_type;				//load ALL, Flash only or EEPROM only
-	int save_type;				//save ALL, Flash only or EEPROM only
+	int load_type;                          //load ALL, Flash only or EEPROM only
+	int save_type;                          //save ALL, Flash only or EEPROM only
 
 	long load_relocation;
 	long save_relocation;
 
 	bool clear_buffer_before_load;          //flag, clear buffer before load a file
-//	bool clear_buffer_before_read;          //flag, clear buffer before read from device
+	//      bool clear_buffer_before_read;          //flag, clear buffer before read from device
 
-	uint8_t buffer[BUFFER_SIZE];	//device content buffer
-	char linebuf[LINEBUF_SIZE];	//print line buffer
-	bool buf_ok;				//true if buffer is valid
-	bool buf_changed;			//true if buffer changed/edited
+	// EK 2017
+	// TODO convert to QByteArray?
+	uint8_t buffer[BUFFER_SIZE];    //device content buffer
+	QString linebuf;//[LINEBUF_SIZE];     //print line buffer
+	bool buf_ok;                            //true if buffer is valid
+	bool buf_changed;                       //true if buffer changed/edited
 
-	int eep_type;				//indica il tipo di chip di eeprom
-	int eep_subtype;			//sottotipo (in pratica il numero di banchi)
-								//se zero viene usato GetNoOfBank(), serve per una forzatura manuale
+	int eep_type;                           //indica il tipo di chip di eeprom
+	int eep_subtype;                        //sottotipo (in pratica il numero di banchi)
+	//se zero viene usato GetNoOfBank(), serve per una forzatura manuale
 
-	char *fname;				//nome del file
-	int block_size;				//dimensione del blocco (puo` essere anche 1, dipende dal tipo di eeprom)
-	int no_block;				//numero dei blocchi che contiene l'eeprom, indica la dimensione
 
-	int splitted;				//indica se la EEPROM e` divisa in due parti distinte (EEPROM - FLASH)
-	int roll_over;				//indica se e`presente una features della eeprom
+	int block_size;                         //dimensione del blocco (puo` essere anche 1, dipende dal tipo di eeprom)
+	int no_block;                           //numero dei blocchi che contiene l'eeprom, indica la dimensione
 
-	uint32_t fuse_bits;			//device dependent bits
-	uint32_t lock_bits;			//device dependent lock (security) bits
+	int splitted;                           //indica se la EEPROM e` divisa in due parti distinte (EEPROM - FLASH)
+	int roll_over;                          //indica se e`presente una features della eeprom
+
+	uint32_t fuse_bits;                     //device dependent bits
+	uint32_t lock_bits;                     //device dependent lock (security) bits
 	bool fuse_ok;
 
-	uint16_t crc;					//CRC del contenuto della eeprom
+	uint16_t crc;                                   //CRC del contenuto della eeprom
 
-	char eeprom_string[STRINGID_SIZE];	//eeprom string ID
-	char eeprom_comment[COMMENT_SIZE];	//eeprom comment
+	QString eeprom_string;//[STRINGID_SIZE];      //eeprom string ID
+	QString eeprom_comment;//[COMMENT_SIZE];      //eeprom comment
 
-	Device *eep;						//current device pointer (can be any of the following list)
+	//current device pointer (can be any of the following list)
 	//AutoTag
 	//List of available device types
-	E24xx eep24xx;
-	mE2401 eep2401;
-	E24xx1 eep24xx1;
-	E24xx2 eep24xx2;
-	E24xx5 eep24xx5;
-	At90sxx eepAt90s;
-	At89sxx eepAt89s;
-	At93cxx eep93xx16;
-	At93cxx8 eep93xx8;
-	Pic16xx eepPic16;
-	Pic168xx eepPic168xx;
-	Pic125xx eepPic125xx;
-	At250xx eep250xx;
-	At25xxx eep25xxx;
-	Sde2506 eep2506;
-	Nvm3060 eep3060;
-	At17xxx eep17xxx;
-	X2444 eep2444;
-	X2444 eep2430;
+	E24xx *eep24xx;
+	mE2401 *eep2401;
+	E24xx1 *eep24xx1;
+	E24xx2 *eep24xx2;
+	E24xx5 *eep24xx5;
+	At90sxx *eepAt90s;
+	At89sxx *eepAt89s;
+	At93cxx *eep93xx16;
+	At93cxx8 *eep93xx8;
+	Pic16xx *eepPic16;
+	Pic168xx *eepPic168xx;
+	Pic125xx *eepPic125xx;
+	At250xx *eep250xx;
+	At25xxx *eep25xxx;
+	Sde2506 *eep2506;
+	Nvm3060 *eep3060;
+	At17xxx *eep17xxx;
+	X2444 *eep2444;
+	X2444 *eep2430;
 
-	FileBuf *fbufp;						//current filebuffer pointer
-	FileBuf *fbufvet[NO_OF_FILETYPE];	//filebuffer list
+	FileBuf *fbufp;                                         //current filebuffer pointer
+	FileBuf *fbufvet[NO_OF_FILETYPE];       //filebuffer list
 	//List of available file types
 	e2pFileBuf e2pfbuf;
 	binFileBuf binfbuf;

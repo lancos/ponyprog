@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: pgminter.h,v 1.3 2007/04/20 10:58:22 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -27,17 +27,17 @@
 //-------------------------------------------------------------------------//
 //=========================================================================//
 
-#ifndef	_SIPROGINTERFACE_H
-#define	_SIPROGINTERFACE_H
+#ifndef _SIPROGINTERFACE_H
+#define _SIPROGINTERFACE_H
 
 #include "businter.h"
 #include "rs232int.h"
 
 class SIProgInterface : public BusInterface, public RS232Interface
 {
- public:		//------------------------------- public
+public:                //------------------------------- public
 	SIProgInterface();
-//	virtual ~SIProgInterface();
+	//      virtual ~SIProgInterface();
 
 	virtual int Open(int com_no);
 	virtual void Close();
@@ -52,15 +52,15 @@ class SIProgInterface : public BusInterface, public RS232Interface
 	virtual int IsClockDataDOWN() ;
 
 	virtual int TestPort(int port);
-//	int TestSave(int port);
-//	void TestRestore();
+	//      int TestSave(int port);
+	//      void TestRestore();
 
 	int SetPower(int onoff);
 	void SetControlLine(int res = 1);
 
- protected:		//------------------------------- protected
+protected:             //------------------------------- protected
 
- private:		//------------------------------- private
+private:               //------------------------------- private
 
 };
 

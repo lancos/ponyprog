@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: e24xx-2.h,v 1.4 2009/11/16 23:40:43 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -32,28 +32,29 @@
 
 #include "e24xx.h"
 
+
 class E24xx2 : public E24xx
 {
-  public:		//---------------------------------------- public
+public:               //---------------------------------------- public
 
 	E24xx2(e2AppWinInfo *wininfo = 0, BusIO *busp = 0);
-//	virtual ~E24xx2();
+	//      virtual ~E24xx2();
 
 	int Probe(int probe_size = 0);
 	int Read(int probe = 1, int type = ALL_TYPE);
 	int Write(int probe = 1, int type = ALL_TYPE);
 	int Verify(int type = ALL_TYPE);
 
-//	int BankRollOverDetect(int force);
+	//      int BankRollOverDetect(int force);
 
 	int SecurityRead(uint32_t &blocks);
 	int SecurityWrite(uint32_t blocks);
 	int HighEnduranceRead(uint32_t &block_no);
 	int HighEnduranceWrite(uint32_t block_no);
 
-  protected:	//--------------------------------------- protected
+protected:    //--------------------------------------- protected
 
-  private:		//--------------------------------------- private
+private:              //--------------------------------------- private
 
 	int const SecurityReadCode;
 	int const SecurityWriteCode;

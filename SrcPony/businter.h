@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: businter.h,v 1.4 2008/01/30 17:12:00 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -27,43 +27,43 @@
 //-------------------------------------------------------------------------//
 //=========================================================================//
 
-#ifndef	_I2CINTERFACE_H
-#define	_I2CINTERFACE_H
+#ifndef _I2CINTERFACE_H
+#define _I2CINTERFACE_H
 
 #include "types.h"
-//#include "portint.h"
 #include "errcode.h"
 
-#include <v/v_defs.h>
+#include <QDebug>
+
 
 class BusInterface
 {
- public:		//------------------------------- public
+public:                //------------------------------- public
 	BusInterface()
 	{
 		cmd2cmd_delay = 0;
 		installed = 0;
 	}
-//	virtual ~BusInterface();
+	//      virtual ~BusInterface();
 
 	virtual int Open(int port) = 0;
 	virtual void Close() = 0;
 
 	virtual int TestOpen(int port)
 	{
-		UserDebug1(UserApp1, "BusInterface::TestOpen(%d) IN\n", port);
+		qDebug() << "BusInterface::TestOpen(" << port << ") IN";
 
 		int ret_val = TestSave(port);
 
 		TestRestore();
 
-		UserDebug1(UserApp2, "BusInterface::TestOpen() = %d OUT\n", ret_val);
+		qDebug() << "BusInterface::TestOpen() = " << ret_val << " OUT";
 
 		return ret_val;
 	}
 	virtual int TestPort(int port)
 	{
-		UserDebug1(UserApp1, "BusInterface::TestPort(%d) IN\n", port);
+		qDebug() << "BusInterface::TestPort(" << port << ") IN";
 
 		return TestOpen(port);
 	}
@@ -71,70 +71,92 @@ class BusInterface
 	{
 		int ret_val;
 
-		UserDebug1(UserApp1, "BusInterface::TestSave(%d) IN\n", port);
+		qDebug() << "BusInterface::TestSave(" << port << ") IN";
 
 		if ( (old_portno = installed) )
 		{
-//			old_cpreg = cpreg;
+			//                      old_cpreg = cpreg;
 		}
+
 		Close();
+
 		if ( (ret_val = Open(port)) == OK )
 		{
 		}
-		UserDebug1(UserApp2, "BusInterface::TestSave() = %d OUT\n", ret_val);
+
+		qDebug() << "BusInterface::TestSave() = " << ret_val << " OUT";
 
 		return ret_val;
 	}
 	virtual void TestRestore()
 	{
-		UserDebug1(UserApp1, "BusInterface::TestRestore() IN *** Inst=%d\n", installed);
+		qDebug() << "BusInterface::TestRestore() IN *** Inst=" << installed;
 
 		if (installed)
+		{
 			Close();
+		}
+
 		if (old_portno)
 		{
 			Open(old_portno);
-//			cpreg = old_cpreg;
+			//                      cpreg = old_cpreg;
 		}
+
 		old_portno = 0;
 
-		UserDebug(UserApp2, "BusInterface::TestRestore() OUT\n");
+		qDebug() << "BusInterface::TestRestore() OUT";
 	}
 
 	virtual int SetPower(int onoff)
-		{ return OK; }
+	{
+		return OK;
+	}
 	virtual void SetControlLine(int res = 1)
-		{ }
+	{ }
 
 	virtual void SetDataOut(int sda = 1) = 0;
 	virtual void SetInvDataOut(int sda = 1)
-		{ SetDataOut(!sda); }
+	{
+		SetDataOut(!sda);
+	}
 	virtual void SetClock(int scl = 1) = 0;
 	virtual int GetDataIn() = 0;
 	virtual int GetClock() = 0;
 	virtual void SetClockData() = 0;
 	virtual void ClearClockData()
-		{ }
+	{ }
 	virtual int IsClockDataUP() = 0;
 	virtual int IsClockDataDOWN() = 0;
 
 	int GetCmd2CmdDelay() const
-		{ return cmd2cmd_delay; }
+	{
+		return cmd2cmd_delay;
+	}
 	void SetCmd2CmdDelay(int delay)
-		{ if (delay >= 0) cmd2cmd_delay = delay; }
+	{
+		if (delay >= 0)
+		{
+			cmd2cmd_delay = delay;
+		}
+	}
 
 	int IsInstalled() const
-		{ return installed; }
+	{
+		return installed;
+	}
 
- protected:		//------------------------------- protected
+protected:             //------------------------------- protected
 	void Install(int val)
-		{ installed = val; }
+	{
+		installed = val;
+	}
 
-	int		old_portno;		// TestSave() save the status here
+	int             old_portno;             // TestSave() save the status here
 
- private:		//------------------------------- private
-	int		installed;		// 0 --> not installed, <> 0 number if the installed port
-	int		cmd2cmd_delay;	// <> 0 if a delay between commands is needed
+private:               //------------------------------- private
+	int             installed;              // 0 --> not installed, <> 0 number if the installed port
+	int             cmd2cmd_delay;  // <> 0 if a delay between commands is needed
 };
 
 #endif

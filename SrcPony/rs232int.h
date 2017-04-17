@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: rs232int.h,v 1.6 2009/11/16 23:40:43 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -27,27 +27,27 @@
 //-------------------------------------------------------------------------//
 //=========================================================================//
 
-#ifndef	_RS232INTERFACE_H
-#define	_RS232INTERFACE_H
+#ifndef _RS232INTERFACE_H
+#define _RS232INTERFACE_H
 
-#ifdef	_LINUX_
+#ifdef  __linux__
 #include <termios.h>
 #endif
 
-#ifdef	_WINDOWS
+#ifdef  _WINDOWS
 #include <windows.h>
 #endif
 
 #include "types.h"
 #include "e2profil.h"
 
-#define	MAX_COMPORTS	4
+#define MAX_COMPORTS    4
 
 class RS232Interface
 {
-  public:		//------------------------------- public
+public:               //------------------------------- public
 
-	RS232Interface(E2Profile *prof, int com_no = 0);
+	RS232Interface(int com_no = 0);
 	virtual ~RS232Interface();
 
 	int OpenSerial(int no);
@@ -59,7 +59,7 @@ class RS232Interface
 	long WriteSerial(uint8_t *buffer, long len);
 	int SetSerialParams(long speed = -1, int bits = -1, int parity = -1, int stops = -1, int flow_control = -1);
 	int SetSerialTimeouts(long init_read = -1, long while_read = -1);
-//	void SetSerialEventMask(long mask);
+	//      void SetSerialEventMask(long mask);
 	int SetSerialBreak(int state);
 
 	int SetSerialDTR(int dtr);
@@ -68,11 +68,11 @@ class RS232Interface
 	int GetSerialCTS() const;
 	int SetSerialRTSDTR(int state);
 
-  protected:		//------------------------------- protected
+protected:            //------------------------------- protected
 
 	void WaitForTxEmpty();
 
-  private:		//------------------------------- private
+private:              //------------------------------- private
 
 	long read_total_timeout, read_interval_timeout;
 
@@ -81,18 +81,18 @@ class RS232Interface
 	int actual_flowcontrol;
 	bool wait_endTX_mode;
 
-	E2Profile *profile;
-#ifdef	_WINDOWS
+	//      E2Profile *profile;
+#ifdef  _WINDOWS
 	HANDLE hCom;
 
 	DWORD old_mask;
 	COMMTIMEOUTS old_timeout;
 	DCB old_dcb;
 #endif
-#ifdef	_LINUX_
-	int fd; 
+#ifdef  __linux__
+	int fd;
 	struct termios old_termios;
-	char lockname[MAXPATH]; 
+	QString lockname;
 #endif
 };
 

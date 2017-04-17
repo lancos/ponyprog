@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: e24xx.h,v 1.5 2009/11/16 23:40:43 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -30,17 +30,23 @@
 #ifndef _E24XX_H
 #define _E24XX_H
 
+
 #include "types.h"
 
 #include "device.h"
 #include "i2cbus.h"
 
-#define BANK_SIZE	256
-#define	MAX_BANK	128
+
+#define BANK_SIZE       256
+#define MAX_BANK        128
+
+class e2AppWinInfo;
+
+
 
 class E24xx : public Device
 {
-  public:		//---------------------------------------- public
+public:               //---------------------------------------- public
 
 	E24xx(e2AppWinInfo *wininfo = 0, BusIO *busp = 0, int max_no_of_bank = 8, int def_banksize = BANK_SIZE);
 	virtual ~E24xx();
@@ -52,29 +58,31 @@ class E24xx : public Device
 
 	int BankRollOverDetect(int force);
 
-	int	const max_bank;		// max number of banks (max eeprom size)
+	int     const max_bank;         // max number of banks (max eeprom size)
 
-  protected:	//--------------------------------------- protected
+protected:    //--------------------------------------- protected
 
-	int const timeout_loop;		//eeprom timeout
+	int const timeout_loop;         //eeprom timeout
 
 	//!!! 07/03/98
-	int base_addr;				//eeprom I2C base address
-	int n_bank;					//numero indirizzi (o banchi reali)
+	int base_addr;                          //eeprom I2C base address
+	int n_bank;                                     //numero indirizzi (o banchi reali)
 
-	int eeprom_addr[MAX_BANK];		// indirizzi I2C a cui risponde la EEPROM
+	int eeprom_addr[MAX_BANK];              // indirizzi I2C a cui risponde la EEPROM
 
 	I2CBus *GetBus()
-		{ return (I2CBus *)Device::GetBus(); }
+	{
+		return (I2CBus *)Device::GetBus();
+	}
 
 	virtual int bank_out(uint8_t const *copy_buf, int bank_no, long size = -1, long idx = 0);
 	virtual int bank_in(uint8_t *copy_buf, int bank_no, long size = -1, long idx = 0);
 
 	//-- Parte riguardante la EEPROM
-	int sequential_read;			//1 --> legge un banco in una volta
-	int writepage_size;				//se > 1 scrive una pagina alla volta
+	int sequential_read;                    //1 --> legge un banco in una volta
+	int writepage_size;                             //se > 1 scrive una pagina alla volta
 
-  private:		//--------------------------------------- private
+private:              //--------------------------------------- private
 
 };
 #endif

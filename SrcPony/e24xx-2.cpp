@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: e24xx-2.cpp,v 1.4 2009/11/16 23:40:43 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -29,23 +29,26 @@
 // 24XX-2 are I2C Bus eeproms that uses 16 bits (2 bytes) for addresses.   //
 // Total capacity can be up to 64KBytes.                                   //
 
-#include <string.h>
+#include <QString>
+
 #include "types.h"
-#include "e2app.h"
-#include "e24xx-2.h"		// Header file
+#include "e2profil.h"
+#include "e2cmdw.h"
+
+#include "e24xx-2.h"            // Header file
 #include "errcode.h"
 #include "eeptypes.h"
 
 //=====>>> Costruttore <<<======
 E24xx2::E24xx2(e2AppWinInfo *wininfo, BusIO *busp)
-	:	E24xx(wininfo, busp),
-		SecurityReadCode(0xC0),
-		SecurityWriteCode(0x80),
-		HEnduranceReadCode(0x40),
-		HEnduranceWriteCode(0x00)
+	:       E24xx(wininfo, busp),
+	        SecurityReadCode(0xC0),
+	        SecurityWriteCode(0x80),
+	        HEnduranceReadCode(0x40),
+	        HEnduranceWriteCode(0x00)
 {
-	writepage_size = THEAPP->GetI2CPageWrite();
-	THEAPP->SetI2CPageWrite(writepage_size);
+	writepage_size = E2Profile::GetI2CPageWrite();
+	E2Profile::SetI2CPageWrite(writepage_size);
 }
 
 int E24xx2::Probe(int probe_size)
@@ -69,38 +72,49 @@ int E24xx2::Write(int probe, int type)
 	int error = Probe( probe || GetNoOfBank() == 0 );
 
 	if (error < 0)
+	{
 		return error;
+	}
 
 	if (n_bank == 0)
+	{
 		return BADPARAM;
+	}
 
 	GetBus()->CheckAbort(0);
 
 	long size = GetSize();
-	unsigned char *localbuf = new unsigned char[writepage_size+2];
+	unsigned char *localbuf = new unsigned char[writepage_size + 2];
+
 	if (localbuf == 0)
+	{
 		return OUTOFMEMORY;
+	}
 
 	int rval = OK;
 
 	if (type & PROG_TYPE)
 	{
 		long j;
+
 		for (j = 0; j < size; j += writepage_size)
 		{
-			memcpy(localbuf+2, GetBufPtr()+j, writepage_size);
+			memcpy(localbuf + 2, GetBufPtr() + j, writepage_size);
 
 			localbuf[0] = (uint8_t)((j >> 8) & 0xFF);
 			localbuf[1] = (uint8_t)( j & 0xFF );
-			if ( GetBus()->Write(eeprom_addr[0], localbuf, 2+writepage_size) != (2+writepage_size) )
+
+			if ( GetBus()->Write(eeprom_addr[0], localbuf, 2 + writepage_size) != (2 + writepage_size) )
 			{
 				rval = GetBus()->Error();
 				break;
 			}
 
 			int k;
+
 			for (k = timeout_loop; k > 0 && GetBus()->Read(eeprom_addr[0], localbuf, 1) != 1; k--)
 				;
+
 			if (k == 0)
 			{
 				rval = E2P_TIMEOUT;
@@ -114,21 +128,29 @@ int E24xx2::Write(int probe, int type)
 			}
 		}
 	}
+
 	GetBus()->CheckAbort(100);
 
 	delete localbuf;
 
 	if (rval == OK)
+	{
 		return GetSize();
+	}
 	else
+	{
 		return rval;
+	}
 }
 
 int E24xx2::Read(int probe, int type)
 {
 	int error = Probe( probe || GetNoOfBank() == 0 );
+
 	if (error < 0)
+	{
 		return error;
+	}
 
 	GetBus()->CheckAbort(0);
 
@@ -140,6 +162,7 @@ int E24xx2::Read(int probe, int type)
 		long readpage_size = 256;
 		long k;
 		long size = GetSize();
+
 		for (k = 0; k < size; k += readpage_size)
 		{
 			//Scrive l'indice del sottoindirizzamento
@@ -153,7 +176,7 @@ int E24xx2::Read(int probe, int type)
 				break;
 			}
 
-			if (GetBus()->Read(eeprom_addr[0], GetBufPtr()+k, readpage_size) < readpage_size)
+			if (GetBus()->Read(eeprom_addr[0], GetBufPtr() + k, readpage_size) < readpage_size)
 			{
 				error = GetBus()->Error();
 				break;
@@ -166,35 +189,46 @@ int E24xx2::Read(int probe, int type)
 			}
 		}
 	}
+
 	GetBus()->CheckAbort(100);
 
 	if (error == OK)
+	{
 		return GetSize();
+	}
 	else
+	{
 		return error;
+	}
 }
 
 int E24xx2::Verify(int type)
 {
-	int rval = Probe();	//Moved here from 7 lines above (10/12/99)
+	int rval = Probe();     //Moved here from 7 lines above (10/12/99)
+
 	if (rval < 0)
+	{
 		return rval;
+	}
 
 	long readpage_size = 256;
 	unsigned char *localbuf = new unsigned char[readpage_size];
 
 	if (localbuf == 0)
+	{
 		return OUTOFMEMORY;
+	}
 
 	GetBus()->CheckAbort(0);
 
-	rval = 1;		//true
+	rval = 1;               //true
 
 	if (type & PROG_TYPE)
 	{
 		uint8_t index[2];
 		long k;
 		long size = GetSize();
+
 		for (k = 0; k < size; k += readpage_size)
 		{
 			//Scrive l'indice del sottoindirizzamento
@@ -214,7 +248,7 @@ int E24xx2::Verify(int type)
 				break;
 			}
 
-			if ( memcmp(GetBufPtr()+k, localbuf, readpage_size) != 0 )
+			if ( memcmp(GetBufPtr() + k, localbuf, readpage_size) != 0 )
 			{
 				rval = 0;
 				break;
@@ -227,6 +261,7 @@ int E24xx2::Verify(int type)
 			}
 		}
 	}
+
 	GetBus()->CheckAbort(100);
 
 	delete localbuf;
@@ -236,7 +271,7 @@ int E24xx2::Verify(int type)
 
 int E24xx2::SecurityRead(uint32_t &blocks)
 {
-	int rv = Probe();	//Determina gli indirizzi I2C
+	int rv = Probe();       //Determina gli indirizzi I2C
 
 	if (rv > 0)
 	{
@@ -245,16 +280,26 @@ int E24xx2::SecurityRead(uint32_t &blocks)
 		buf[0] = 0xFF;
 		buf[1] = 0xFF;
 		buf[2] = SecurityReadCode;
+
 		if (GetBus()->StartWrite(eeprom_addr[0], buf, 3) != 3)
+		{
 			return GetBus()->Error();
+		}
 
 		int val;
+
 		if ( (val = GetBus()->ReadByte(0)) < 0 )
+		{
 			return GetBus()->Error();
+		}
+
 		blocks = (val << 4) & 0xF0;
 
 		if ( (val = GetBus()->ReadByte(1)) < 0 )
+		{
 			return GetBus()->Error();
+		}
+
 		blocks |= (val & 0x0F);
 
 		GetBus()->Stop();
@@ -262,14 +307,16 @@ int E24xx2::SecurityRead(uint32_t &blocks)
 		rv = OK;
 	}
 	else
+	{
 		rv = IICERR_NOADDRACK;
+	}
 
 	return rv;
 }
 
 int E24xx2::SecurityWrite(uint32_t blocks)
 {
-	int rv = Probe();	//Determina gli indirizzi I2C
+	int rv = Probe();       //Determina gli indirizzi I2C
 
 	if (rv > 0)
 	{
@@ -281,20 +328,25 @@ int E24xx2::SecurityWrite(uint32_t blocks)
 		buf[0] = 0x80 | (start_block << 1);
 		buf[1] = 0xFF;
 		buf[2] = SecurityWriteCode | (no_of_block & 0x3F);
+
 		if (GetBus()->Write(eeprom_addr[0], buf, 3) != 3)
+		{
 			return GetBus()->Error();
+		}
 
 		rv = OK;
 	}
 	else
+	{
 		rv = IICERR_NOADDRACK;
+	}
 
 	return rv;
 }
 
 int E24xx2::HighEnduranceRead(uint32_t &block_no)
 {
-	int rv = Probe();	//Determina gli indirizzi I2C
+	int rv = Probe();       //Determina gli indirizzi I2C
 
 	if (rv > 0)
 	{
@@ -303,12 +355,19 @@ int E24xx2::HighEnduranceRead(uint32_t &block_no)
 		buf[0] = 0xFF;
 		buf[1] = 0xFF;
 		buf[2] = HEnduranceReadCode;
+
 		if (GetBus()->StartWrite(eeprom_addr[0], buf, 3) != 3)
+		{
 			return GetBus()->Error();
+		}
 
 		int val;
+
 		if ( (val = GetBus()->ReadByte(1)) < 0 )
+		{
 			return GetBus()->Error();
+		}
+
 		block_no = val & 0x0F;
 
 		GetBus()->Stop();
@@ -316,14 +375,16 @@ int E24xx2::HighEnduranceRead(uint32_t &block_no)
 		rv = OK;
 	}
 	else
+	{
 		rv = IICERR_NOADDRACK;
+	}
 
 	return rv;
 }
 
 int E24xx2::HighEnduranceWrite(uint32_t block_no)
 {
-	int rv = Probe();	//Determina gli indirizzi I2C
+	int rv = Probe();       //Determina gli indirizzi I2C
 
 	if (rv > 0)
 	{
@@ -332,12 +393,18 @@ int E24xx2::HighEnduranceWrite(uint32_t block_no)
 		buf[0] = 0x80 | (uint8_t)(block_no << 1);
 		buf[1] = 0xFF;
 		buf[2] = HEnduranceWriteCode;
+
 		if (GetBus()->Write(eeprom_addr[0], buf, 3) != 3)
+		{
 			return GetBus()->Error();
+		}
+
 		rv = OK;
 	}
 	else
+	{
 		rv = IICERR_NOADDRACK;
+	}
 
 	return rv;
 }

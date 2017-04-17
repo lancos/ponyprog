@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: at250bus2.h,v 1.5 2009/11/16 23:40:43 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -27,42 +27,42 @@
 //-------------------------------------------------------------------------//
 //=========================================================================//
 
-#ifndef	_AT250BIGBUS_H
-#define	_AT250BIGBUS_H
+#ifndef _AT250BIGBUS_H
+#define _AT250BIGBUS_H
 
 #include "at250bus.h"
 
 class At250BigBus: public At250Bus
 {
- public:		//------------------------------- public
+public:                //------------------------------- public
 	At250BigBus(BusInterface *ptr = 0);
 
 	long Read(int addr, uint8_t *data, long length, int page_size = 0);
 	long Write(int addr, uint8_t const *data, long length, int page_size = 0);
-	
-//	int Reset();
 
- protected:		//------------------------------- protected
+	//      int Reset();
 
-//	int ReadEEPByte(int addr);
-//	void WriteEEPByte(int addr, int data);
+protected:             //------------------------------- protected
 
- private:		//------------------------------- private
+	//      int ReadEEPByte(int addr);
+	//      void WriteEEPByte(int addr, int data);
+
+private:               //------------------------------- private
 
 	//Programming commands
-//	const uint8_t WriteEnable;
-//	const uint8_t WriteDisable;
-//	const uint8_t ReadStatus;
-//	const uint8_t WriteStatus;
-//	const uint8_t ReadData;
-//	const uint8_t WriteData;
+	//      const uint8_t WriteEnable;
+	//      const uint8_t WriteDisable;
+	//      const uint8_t ReadStatus;
+	//      const uint8_t WriteStatus;
+	//      const uint8_t ReadData;
+	//      const uint8_t WriteData;
 
 	//Status flags
-//	const uint8_t NotReadyFlag;
-//	const uint8_t WenFlag;
-//	const uint8_t BPFlags;
+	//      const uint8_t NotReadyFlag;
+	//      const uint8_t WenFlag;
+	//      const uint8_t BPFlags;
 
-//	const loop_timeout;
+	//      const loop_timeout;
 };
 
 #endif

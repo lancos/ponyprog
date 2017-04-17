@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: e2401.h,v 1.2 2007/04/20 10:58:21 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -35,30 +35,33 @@
 #include "device.h"
 #include "i2cbus.h"
 
+
 class mE2401 : public Device
 {
-  public:		//---------------------------------------- public
+public:               //---------------------------------------- public
 
 	mE2401(e2AppWinInfo *wininfo = 0, BusIO *busp = 0, int def_banksize = 128);
-//	virtual ~mE2401();
+	//      virtual ~mE2401();
 
 	int Probe(int probe_size = 0);
 	int Read(int probe = 1, int type = ALL_TYPE);
 	int Write(int probe = 1, int type = ALL_TYPE);
 	int Verify(int type = ALL_TYPE);
 
-  protected:	//--------------------------------------- protected
+protected:    //--------------------------------------- protected
 
-	int const timeout_loop;		//eeprom timeout
+	int const timeout_loop;         //eeprom timeout
 
 	I2CBus *GetBus()
-		{ return (I2CBus *)Device::GetBus(); }
+	{
+		return (I2CBus *)Device::GetBus();
+	}
 
 	//-- Parte riguardante la EEPROM
-	int sequential_read;			//1 --> legge un banco in una volta
-	int writepage_size;				//se > 1 scrive una pagina alla volta
+	int sequential_read;                    //1 --> legge un banco in una volta
+	int writepage_size;                             //se > 1 scrive una pagina alla volta
 
-  private:		//--------------------------------------- private
+private:              //--------------------------------------- private
 
 };
 #endif

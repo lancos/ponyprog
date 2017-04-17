@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: nvm3060.h,v 1.2 2007/04/20 10:58:22 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -35,9 +35,10 @@
 #include "device.h"
 #include "imbus.h"
 
+
 class Nvm3060 : public Device
 {
-  public:		//---------------------------------------- public
+public:               //---------------------------------------- public
 
 	Nvm3060(e2AppWinInfo *wininfo = 0, BusIO *busp = 0);
 	virtual ~Nvm3060();
@@ -47,12 +48,14 @@ class Nvm3060 : public Device
 	int Write(int probe = 1, int type = ALL_TYPE);
 	int Verify(int type = ALL_TYPE);
 
-  protected:	//--------------------------------------- protected
+protected:    //--------------------------------------- protected
 
 	IMBus *GetBus()
-		{ return (IMBus *)Device::GetBus(); }
+	{
+		return (IMBus *)Device::GetBus();
+	}
 
-  private:		//--------------------------------------- private
+private:              //--------------------------------------- private
 
 };
 #endif

@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: e2cmdw.h,v 1.9 2009/07/08 10:44:00 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -30,74 +30,167 @@
 #ifndef e2CMDW_H
 #define e2CMDW_H
 
-#include <v/vcmdwin.h>	// So we can use vCmdWindow
-#include <v/vmenu.h>	// For the menu pane
-#include <v/vutil.h>	// For V Utilities
-#include <v/vcmdpane.h> // command pane
-#include <v/vstatusp.h>	// For the status pane
-//#include <v/vtimer.h>	// Timer
+
+#include <QMainWindow>
+#include <QMessageBox>
+#include <QTimer>
+#include <QLabel>
+#include <QLineEdit>
+#include <QProgressBar>
+#include <QCloseEvent>
+#include <QComboBox>
+#include <QKeyEvent>
+#include <QScrollArea>
+#include <QImage>
+#include <QProgressDialog>
+#include <QActionGroup>
+#include <QMenu>
+#include <QVector>
+
 
 #include "device.h"
 
-#include "e2cnv.h"	// e2TextCanvasPane
-#include "e2dlg.h"	// e2Dialog
+#include "e2app.h"
+#include "e2awinfo.h"
 
-/**
-class e2CmdWindow;
 
-class e2Timer : public vTimer
+#include "ui_mainwindow.h"
+#include "../SrcHex/qhexedit.h"
+
+
+typedef enum
 {
-      public:		//---------------------------------------- public
-	e2Timer(e2CmdWindow* cw) { cmdw = cw; }
-	~e2Timer() {}
-	virtual void TimerTick();
-      private:		//--------------------------------------- private
-	e2CmdWindow* cmdw;
-};
-**/
-
-typedef enum {
 	verboseNo,
 	verboseErr,
 	verboseAll
 } VerboseType;
 
+
+class e2App;
+
 class e2AppWinInfo;
 
-class e2CmdWindow : public vCmdWindow
+
+class e2CmdWindow : public QMainWindow, public e2App, public Ui::MainWindow
 {
-	friend int AppMain(int, char**);	// allow AppMain access
+	Q_OBJECT
 
-  public:		//---------------------------------------- public
-	e2CmdWindow(char*, int, int);
+public:               //---------------------------------------- public
+	e2CmdWindow(QWidget *parent = 0);
 	virtual ~e2CmdWindow();
-	virtual void WindowCommand(ItemVal id, ItemVal val, CmdType cType);
-	virtual void KeyIn(vKey keysym, unsigned int shift);
+	virtual int CloseAppWin();
 
-	void SetAWInfo(e2AppWinInfo* awi)
-		{ awip = awi; }
-	e2AppWinInfo* GetAWInfo() const
-		{ return awip; }
+	//      virtual void WindowCommand(ItemVal id, ItemVal val, CmdType cType);
+	//      virtual void KeyIn(vKey keysym, unsigned int shift);
 
 	void About();
-	void Draw(int rows = 0, int cols = 0);
+	void Draw(/*int rows = 0, int cols = 0*/);
 	void Print();
-	int NextLine();
-	int PrevLine();
-	void ScrollV(int top);
+	//      int NextLine();
+	//      int PrevLine();
+	//      void ScrollV(int top);
 
 	void PostInit();
-	void CharEdit(int row = -1, int col = -1);
+	//      void CharEdit(int row = -1, int col = -1);
 
 	int IsBufChanged() const;
 
 	void SetTitle();
 
-	const char *GetFileName() const;
+	QString GetFileName();
 
-	e2ProgressDialog *GetProgressDlg() const
-		{ return e2Prg; }
+	QProgressDialog *GetProgressDlg()
+	{
+		return e2Prg;
+	}
 
+	long GetCurrentChipType()
+	{
+		return e2type_id;
+	}
+
+
+private slots:
+	void onNew();
+	void onOpen(); //
+	void onSave(); //
+	void onSaveAs(); //
+	void onReload(); //
+	void onPrint(); //
+	void onAboutQt();
+
+	void onWrite(); //
+	void onRead(); //
+	void onErase(); //
+	void onVerify(); //
+	void onRunScript(); //
+	void onLoadScript(); //
+	//      void onDebugger();  //
+	void onReset(); //
+	void onInterfSetup();  //
+	void onGetInfo(); //
+	void onHelp(); //
+	void onAbout(); //
+	void onEditBufToggle(); //
+	void onCalibration(); //
+	void onProgram(); //
+	void onByteSwap();
+	void onLastFile1();
+	void onLastFile2();
+	void onDoubleSize();
+	//     void onOverwriteMode(bool b);
+	void onWriteHEndurance();
+	void onAskToSave();
+	void onProgress(int val);
+	void onCloseAllDialog();
+
+	void onSelectEEPType(int val);
+	void onEEPSubType(int val);
+	void onSetSerialNumber();
+	void onClearBuf();
+	void onEditNote();
+	void onReadCalibration(int idx);
+	void onWriteCalibration(int idx);
+	void onReadSecurity(bool display_dialog);
+	void onWriteSecurity();
+	void onFillBuf();
+	void onSpecialBits();
+	void onProgramOptions(); //
+	void onSerialNumberOptions();
+	void onOscCalibOption();
+	void onClose(); //
+	void onExit(); //
+	void onDevType(int i);
+	void onDevSubType(int i);
+
+	// EK 2017: slots for signals from group actions
+	void onSelectI2C8(QAction* a);
+	void onSelectI2C16(QAction* a);
+	void onSelectI2CAT17(QAction* a);
+	void onSelectMW16(QAction* a);
+	void onSelectMW8(QAction* a);
+	void onSelectSPI(QAction* a);
+	void onSelectAVR(QAction* a);
+	void onSelectAT89S(QAction* a);
+	void onSelectPIC16(QAction* a);
+	void onSelectPIC12(QAction* a);
+	void onSelectImBus(QAction* a);
+	void onSelectSDE2506(QAction* a);
+	void onSelectX244(QAction* a);
+
+	//      void setOverwriteMode(bool);
+	//      void dataChanged();
+
+
+public:
+	int CmdHelp();
+
+
+protected:
+	//      void CmdRemoteMode();
+
+
+private:
 	//All commands
 	int CmdOpen(int type = ALL_TYPE, char *file = 0, long relocation = 0, int clear_buffer = -1);
 	int CmdSave(int type = ALL_TYPE, char *file = 0, long relocation = 0);
@@ -113,6 +206,9 @@ class e2CmdWindow : public vCmdWindow
 	int CmdGetInfo();
 	int CmdReset();
 	int CmdReadLock();
+	int CmdWrite(int type);
+	//      int CmdRunScript();
+	int CmdLoadScript();
 	int CmdWriteLock();
 	int CmdReadSpecial();
 	int CmdWriteSpecial();
@@ -123,85 +219,119 @@ class e2CmdWindow : public vCmdWindow
 	int CmdFillBuf();
 	int CmdByteSwap();
 	int CmdCalibration();
-	int CmdHelp();
+
 	int CmdEditNote();
 	int CmdSelectDevice(long new_type);
-	int CmdSetDeviceType(ItemVal val);
-	int CmdSetDeviceSubType(ItemVal val);
+	int CmdSetDeviceType(int val); // or const QString* ?
+	int CmdSetDeviceSubType(int val);
 	int CmdProgram();
 	int CmdSetSerialNumber();
 	int CmdReadCalibration(int idx);
 	int CmdRunScript(bool test_mode = false);
-
-	int SpecialBits(int readonly = 0);
+	int SpecialBits();
 	int ProgramOptions();
 	int SerialNumberOptions();
 	int OscCalibOption();
 
-  protected:
-//	void CmdRemoteMode();
+	void createToolBarNotice();
+	void createToolBarCbx();
+	void reateToolBarNotice();
+	void createStatusWidgets();
 
-  private:		//--------------------------------------- private
+	int findItemInMenuVector(const QString &n);
 
-	int NextPage();
-	int PrevPage();
-	void FirstPage();
-	void LastPage();
 
+private:              //--------------------------------------- private
+	void createSignalSlotConnections();
+	QString convertFilterListToString(const QStringList &lst);
+
+	//      int NextPage();
+	//      int PrevPage();
+	//      void FirstPage();
+	//      void LastPage();
+	void createDeviceMenues();
 	int SaveFile(int force_select = 0);
-	int OpenFile(char const *file = 0);
+	int OpenFile(const QString &file = 0);
 	void UpdateStrFromBuf();
-	void UpdateStrFromStr(char const *s1, char const *s2 = 0);
+	void UpdateStrFromStr(const QString &s1, const QString &s2 = 0);
 	void UpdateStatusBar();
-//	void UpdateChipType(int pritype = -1, int subtype = -1);
-//	void SetChipSubType(int pritype, int subtype = 0);
-	void UpdateMenuType(long new_type = 0);
+	//      void UpdateChipType(int pritype = -1, int subtype = -1);
+	//      void SetChipSubType(int pritype, int subtype = 0);
+	void UpdateMenuType(int new_type = 0, int new_subtype = 0);
 	void UpdateFileMenu();
-	int TypeToMenuId(long type);
-	long MenuIdToType(int id);
-	void MenuIdToCbxId(int id, int &idx1, int &idx2);
-	void TypeToCbxId(long type, int &idx1, int &idx2);
+	//      int TypeToMenuId(long type);
+	//      long MenuIdToType(QAction * id);
+	//      void MenuIdToCbxId(int id, int &idx1, int &idx2);
+	//      void TypeToCbxId(long type, int &idx1, int &idx2);
 	void CbxMenuInit();
 	long CbxIdToType(int idx1, int idx2);
-	int OpenScript(char const *file);
+	int OpenScript(const QString &file);
 
-	int OnError(int err_no, char const *msgerr = 0);
+	int OnError(int err_no, const QString &msgerr = 0);
 	int PlaySoundMsg(bool val);
 
 	long GetDevSize() const;
 
-	int CoordToIndex(int row, int col);
-	void IndexToCoord(int index, int &row, int &col);
+	//      int CoordToIndex(int row, int col);
+	//      void IndexToCoord(int index, int &row, int &col);
+	void setMenuIndexes();
+	void selectTypeSubtype(const QString &t, const QString &st);
+	int ScriptError(int line_number, int arg_index, char *arg, const QString msg = "");
 
-	int ScriptError(int line_number, int arg_index, char *arg, char *msg = 0);
+private:
+	int idxI2Cbus8;
+	int idxI2Cbus16;
+	int idxI2CbusAT17;
+	int idxMicroWire16;
+	int idxMicroWire8;
+	int idxSPI;
+	int idxAVR;
+	int idxAT89S;
+	int idxPIC16;
+	int idxPIC12;
+	int idxImBus;
+	int idxSDE2506;
+	int idxX244;
+
+	QLabel *txtComment;
+	QLabel *txtID;
+
+	QStringList arguments;
+
+	QComboBox* cbxEEPType;
+	QComboBox* cbxEEPSubType;
+	QLabel *lblEEPInfo;
+	QLabel *lblStringID;
+
+	QLineEdit *txtEEPInfo;
+	QLineEdit *txtStringID;
+	QProgressBar *statusProgress;
 
 	// Standard elements
-	vMenuPane* e2Menu;				// For the menu bar
-	e2TextCanvasPane* e2Canvas;		// For the canvas
-	vCommandPane* e2CmdPane;		// for the first command pane
-	vCommandPane* e2CmdPane2;		// for the second command pane
-	vStatusPane* e2Status;			// For the status bar
-//	e2Timer* _timer;				// Timer for Date/Time
+	QHexEdit* e2HexEdit;             // For the canvas
 
-	// Dialogs associated with CmdWindow
-//	e2Dialog* e2Dlg;
-	e2ProgressDialog *e2Prg;
-
-	// AppWinInfo associated with this window
-	e2AppWinInfo* awip;
+	QProgressDialog *e2Prg;
 
 	// Info for the TextCanvas
 	int first_line;
+	int pre_type;
+	int pre_subtype;
+
+	long e2type_id;
 
 	// Index for checking type menu
-	int type_index;
+	//      int type_index;
 
 	// Edit buffer enabled (checked the menu)
 	int editbuf_enabled;
 
-	int curIndex;
+	//      int curIndex;
 
 	//Verbose mode
 	VerboseType verbose;
 };
+
+
 #endif
+
+

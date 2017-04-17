@@ -2,12 +2,12 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id$
+// $Id: pic16xx.h,v 1.4 2009/11/16 23:40:43 lancos Exp $
 //-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
@@ -35,9 +35,10 @@
 #include "device.h"
 #include "picbus.h"
 
+
 class Pic16xx : public Device
 {
-  public:		//---------------------------------------- public
+public:               //---------------------------------------- public
 
 	Pic16xx(e2AppWinInfo *wininfo = 0, BusIO *busp = 0);
 	virtual ~Pic16xx();
@@ -53,23 +54,25 @@ class Pic16xx : public Device
 	int SecurityRead(uint32_t &bits);
 	int SecurityWrite(uint32_t bits);
 
-  protected:	//--------------------------------------- protected
+protected:    //--------------------------------------- protected
 
 	PicBus *GetBus()
-		{ return (PicBus *)Device::GetBus(); }
+	{
+		return (PicBus *)Device::GetBus();
+	}
 
 	uint16_t id_locations[8];
-/**
-	int ReadProg();
-	int ReadData();
-	int WriteProg();
-	int WriteData();
-	int VerifyProg(unsigned char *localbuf);
-	int VerifyData(unsigned char *localbuf);
-**/
+	/**
+	        int ReadProg();
+	        int ReadData();
+	        int WriteProg();
+	        int WriteData();
+	        int VerifyProg(unsigned char *localbuf);
+	        int VerifyData(unsigned char *localbuf);
+	**/
 	virtual int CodeProtectAdjust(uint16_t &config, int read = 0);
 
-  private:		//--------------------------------------- private
+private:              //--------------------------------------- private
 
 };
 #endif
