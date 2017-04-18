@@ -42,7 +42,7 @@
 #include <QDebug>
 #include <QMessageBox>  // from vNoticeDialog
 
-#include "../SrcHex/qhexedit.h"
+#include "qhexedit.h"
 
 
 #include "e2profil.h"

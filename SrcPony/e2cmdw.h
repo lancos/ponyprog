@@ -55,7 +55,7 @@
 
 
 #include "ui_mainwindow.h"
-#include "../SrcHex/qhexedit.h"
+#include "qhexedit.h"
 
 
 typedef enum
