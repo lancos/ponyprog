@@ -161,7 +161,7 @@ e2AppWinInfo::e2AppWinInfo(e2CmdWindow *p, const QString &name, BusIO** busvptr)
 
 	//imposta il tipo di eeprom di default
 	//      SetEEProm(E2Profile::GetLastEEPType());    18/10/98
-	SetEEProm( GetE2PPriType(E2Profile::GetLastDevType()), GetE2PSubType(E2Profile::GetLastDevType()) );
+	SetEEProm( E2Profile::GetLastDevType());
 	SetFileBuf(E2Profile::GetDefaultFileType());       //      SetFileBuf(E2P);
 
 	SetLoadAutoClearBuf( E2Profile::GetClearBufBeforeLoad() );
@@ -274,28 +274,33 @@ void e2AppWinInfo::Reset()
 }
 
 
-void e2AppWinInfo::SetEEPTypeId(long id)
+void e2AppWinInfo::SetEEPTypeId(unsigned long id)
 {
-	qDebug() << id << (id >> 16);
-	eep_type = (int)(id >> 16);
-	eep_subtype = (int)(id & 0x07fff);
-	qDebug() << eep_type << eep_subtype;
+	eep_id = id;
+	//      qDebug() << id << (id >> 16);
+	//      eep_type = (int)(id >> 16);
+	//      eep_subtype = (int)(id & 0x07fff);
+	//      qDebug() << eep_type << eep_subtype;
 }
 
 //======================>>> e2AppWinInfo::SetEEProm <<<=======================
-void e2AppWinInfo::SetEEProm(int type, int subtype)
+void e2AppWinInfo::SetEEProm(unsigned long id /*int type, int subtype*/)
 {
 	//      extern long BuildE2PType(int x, int y = 0);
-	extern int GetE2PSubType(long x);
-	extern int GetE2PPriType(long x);
+	extern int GetE2PSubType(unsigned long x);
+	extern int GetE2PPriType(unsigned long x);
+
+
+	int type = GetE2PPriType(GetEEPId());
+	int subtype = GetE2PSubType(GetEEPId());
 
 	if (type == 0)
 	{
 		type = E24XX;        //to avoid segV
 	}
 
-	eep_type = type;
-	eep_subtype = subtype;                  //0 indica di usare GetNoOfBlock()
+	int eep_type = type;
+	int eep_subtype = subtype;                  //0 indica di usare GetNoOfBlock()
 
 	switch(eep_type)
 	{
@@ -353,8 +358,8 @@ void e2AppWinInfo::SetEEProm(int type, int subtype)
 				eep_subtype = GetE2PSubType(AT90S1200);
 			}
 
-			long xtype = GetEEPType();
-			eep->SetProgPageSize(GetEEPTypeWPageSize(eep_type, eep_subtype), false);
+			long xtype = GetEEPId();
+			eep->SetProgPageSize(GetEEPTypeWPageSize(xtype), false);
 			At90sBus *b = (At90sBus *)eep->GetBus();
 			b->SetFlashPagePolling( (xtype != ATmega603) && (xtype != ATmega103) );
 			b->SetOld1200Mode( (xtype == AT90S1200) );
@@ -371,14 +376,14 @@ void e2AppWinInfo::SetEEProm(int type, int subtype)
 				eep_subtype = GetE2PSubType(AT89S8252);
 			}
 
-			long xtype = GetEEPType();
+			long xtype = GetEEPId();
 
 			if (E2Profile::GetAt89PageOp())
 			{
-				eep->SetProgPageSize(GetEEPTypeWPageSize(eep_type, eep_subtype), false);        //write prog page size
-				eep->SetProgPageSize(GetEEPTypeWPageSize(eep_type, eep_subtype), true);         //read prog page size
-				eep->SetDataPageSize(GetEEPTypeWPageSize(eep_type, eep_subtype) / 2, false);    //write data page size
-				eep->SetDataPageSize(GetEEPTypeWPageSize(eep_type, eep_subtype) / 2, true);     //read data page size
+				eep->SetProgPageSize(GetEEPTypeWPageSize(GetEEPId()), false);        //write prog page size
+				eep->SetProgPageSize(GetEEPTypeWPageSize(GetEEPId()), true);         //read prog page size
+				eep->SetDataPageSize(GetEEPTypeWPageSize(GetEEPId()) / 2, false);    //write data page size
+				eep->SetDataPageSize(GetEEPTypeWPageSize(GetEEPId()) / 2, true);     //read data page size
 			}
 
 			At89sBus *b = (At89sBus *)eep->GetBus();
@@ -504,7 +509,7 @@ void e2AppWinInfo::SetEEProm(int type, int subtype)
 			eep_subtype = GetE2PSubType(S24H30);
 		}
 
-		if (GetEEPType() == S24H30)
+		if (GetEEPId() == S24H30)
 		{
 			eep = eep2430;
 		}
@@ -521,11 +526,11 @@ void e2AppWinInfo::SetEEProm(int type, int subtype)
 	}
 
 	fuse_ok = false;                //invalidate current fuse settings
-	SetSplittedInfo( GetEEPTypeSplit(type, eep_subtype) );
+	SetSplittedInfo( GetEEPTypeSplit(id) );
 
 	//Imposta la nuova dimensione della memoria in
 	// base al tipo di eeprom.
-	SetNoOfBlock( GetEEPTypeSize(type, eep_subtype) );
+	SetNoOfBlock( GetEEPTypeSize(id) );
 
 	//Imposta la dimensione del banco che dipende
 	// dal tipo di eeprom.
@@ -535,7 +540,7 @@ void e2AppWinInfo::SetEEProm(int type, int subtype)
 //======================>>> e2AppWinInfo::Read <<<=======================
 int e2AppWinInfo::Read(int type, int raise_power, int leave_on)
 {
-	int probe = !eep_subtype;
+	int probe = !GetE2PSubType( eep_id);
 	int rval = OK;
 
 	qDebug() << "e2AppWinInfo::Read(" << type << "," << raise_power << "," << leave_on << ") - IN";
@@ -601,7 +606,7 @@ int e2AppWinInfo::Read(int type, int raise_power, int leave_on)
 //======================>>> e2AppWinInfo::Write <<<=======================
 int e2AppWinInfo::Write(int type, int raise_power, int leave_on)
 {
-	int probe = !eep_subtype;
+	int probe = !GetE2PSubType(eep_id);
 	int rval = OK;
 
 	qDebug() << "e2AppWinInfo::Write(" << type << "," << raise_power << "," << leave_on << ") - IN";
@@ -734,8 +739,8 @@ int e2AppWinInfo::Load()
 
 		if ( rval > 0 )
 		{
-			if ( GetEEPPriType() == PIC16XX ||
-			                GetEEPPriType() == PIC168XX )
+			if ( GetE2PPriType(GetEEPId()) == PIC16XX ||
+			                GetE2PPriType(GetEEPId()) == PIC168XX )
 			{
 				//It seems a bit tricky...
 				//Relocate the DATA and CONFIG memory with PIC devices
@@ -770,7 +775,7 @@ int e2AppWinInfo::Load()
 					SetLockBits(config);
 				}
 			}
-			else if ( GetEEPPriType() == PIC125XX )
+			else if ( GetE2PPriType(GetEEPId()) == PIC125XX )
 			{
 				//Copy Config memory
 				if ( GetSize() + 16 <= GetBufSize() )
@@ -849,8 +854,8 @@ int e2AppWinInfo::Save()
 	if (save_type == ALL_TYPE &&
 	                (GetFileBuf() == INTEL || GetFileBuf() == MOTOS) )
 	{
-		if ( GetEEPPriType() == PIC16XX ||
-		                GetEEPPriType() == PIC168XX )
+		if ( GetE2PPriType(GetEEPId()) == PIC16XX ||
+		                GetE2PPriType(GetEEPId()) == PIC168XX )
 		{
 			//It seems a bit tricky...
 			//Relocate the DATA and CONFIG memory with PIC devices
@@ -868,9 +873,9 @@ int e2AppWinInfo::Save()
 				{
 					uint16_t config = (uint16_t)GetLockBits();
 
-					if ( GetEEPType() == PIC1683 ||
-					                GetEEPType() == PIC1684 ||
-					                GetEEPType() == PIC1684A )
+					if ( GetEEPId() == PIC1683 ||
+					                GetEEPId() == PIC1684 ||
+					                GetEEPId() == PIC1684A )
 					{
 						if (config & (1 << 4))
 						{
@@ -910,7 +915,7 @@ int e2AppWinInfo::Save()
 				}
 			}
 		}
-		else if ( GetEEPPriType() == PIC125XX )
+		else if ( GetE2PPriType(GetEEPId()) == PIC125XX )
 		{
 			//Set ALL overbound buffer to 0xFF
 			memset(GetBufPtr(), 0xFF, GetBufSize());
