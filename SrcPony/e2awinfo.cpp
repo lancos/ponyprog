@@ -274,33 +274,26 @@ void e2AppWinInfo::Reset()
 }
 
 
-void e2AppWinInfo::SetEEPTypeId(unsigned long id)
-{
-	eep_id = id;
-	//      qDebug() << id << (id >> 16);
-	//      eep_type = (int)(id >> 16);
-	//      eep_subtype = (int)(id & 0x07fff);
-	//      qDebug() << eep_type << eep_subtype;
-}
-
 //======================>>> e2AppWinInfo::SetEEProm <<<=======================
-void e2AppWinInfo::SetEEProm(unsigned long id /*int type, int subtype*/)
+void e2AppWinInfo::SetEEProm(unsigned long id)
 {
 	//      extern long BuildE2PType(int x, int y = 0);
 	extern int GetE2PSubType(unsigned long x);
 	extern int GetE2PPriType(unsigned long x);
 
+    if (id == 0)
+    {
+        id = E2400;         //to avoid segV
+    }
 
-	int type = GetE2PPriType(GetEEPId());
-	int subtype = GetE2PSubType(GetEEPId());
+    eep_id = id;
 
-	if (type == 0)
-	{
-		type = E24XX;        //to avoid segV
-	}
+    //eep_type, eep_subtype are local shadow variables of eep_id
+    int eep_type = GetE2PPriType(id);
+    int eep_subtype = GetE2PSubType(id);
 
-	int eep_type = type;
-	int eep_subtype = subtype;                  //0 indica di usare GetNoOfBlock()
+//	int eep_type = type;
+//	int eep_subtype = subtype;                  //0 indica di usare GetNoOfBlock()
 
 	switch(eep_type)
 	{
@@ -315,7 +308,7 @@ void e2AppWinInfo::SetEEProm(unsigned long id /*int type, int subtype*/)
 
 		if (eep_subtype == 0)
 		{
-			//Forza impostazione manuale
+            //no autodetect: set a reasonable default
 			eep_subtype = GetE2PSubType(E2401_A);
 		}
 
@@ -326,7 +319,7 @@ void e2AppWinInfo::SetEEProm(unsigned long id /*int type, int subtype*/)
 
 		if (eep_subtype == 0)
 		{
-			//Forza impostazione manuale
+            //no autodetect: set a reasonable default
 			eep_subtype = GetE2PSubType(E2401_B);
 		}
 
@@ -337,11 +330,11 @@ void e2AppWinInfo::SetEEProm(unsigned long id /*int type, int subtype*/)
 
 		if (eep_subtype == 0)
 		{
-			//Forza impostazione manuale
+            //no autodetect: set a reasonable default
 			eep_subtype = GetE2PSubType(E2432);
 		}
 
-		eep->DefaultBankSize();         //reimposta la dimensione dei banchi di default
+        eep->DefaultBankSize();
 		break;
 
 	case E24XX5:
@@ -354,7 +347,7 @@ void e2AppWinInfo::SetEEProm(unsigned long id /*int type, int subtype*/)
 
 			if (eep_subtype == 0)
 			{
-				//Forza impostazione manuale
+                //no autodetect: set a reasonable default
 				eep_subtype = GetE2PSubType(AT90S1200);
 			}
 
@@ -372,7 +365,7 @@ void e2AppWinInfo::SetEEProm(unsigned long id /*int type, int subtype*/)
 
 			if (eep_subtype == 0)
 			{
-				//Forza impstazione manuale
+                //no autodetect: set a reasonable default
 				eep_subtype = GetE2PSubType(AT89S8252);
 			}
 
@@ -399,7 +392,7 @@ void e2AppWinInfo::SetEEProm(unsigned long id /*int type, int subtype*/)
 
 		if (eep_subtype == 0)
 		{
-			//Forza impostazione manuale
+            //no autodetect: set a reasonable default
 			eep_subtype = GetE2PSubType(E9306);
 		}
 
@@ -410,7 +403,7 @@ void e2AppWinInfo::SetEEProm(unsigned long id /*int type, int subtype*/)
 
 		if (eep_subtype == 0)
 		{
-			//Forza impostazione manuale
+            //no autodetect: set a reasonable default
 			eep_subtype = GetE2PSubType(E9306_8);
 		}
 
@@ -421,7 +414,7 @@ void e2AppWinInfo::SetEEProm(unsigned long id /*int type, int subtype*/)
 
 		if (eep_subtype == 0)
 		{
-			//Forza impostazione manuale
+            //no autodetect: set a reasonable default
 			eep_subtype = GetE2PSubType(PIC1684);
 		}
 
@@ -440,7 +433,7 @@ void e2AppWinInfo::SetEEProm(unsigned long id /*int type, int subtype*/)
 
 		if (eep_subtype == 0)
 		{
-			//Forza impstazione manuale
+            //no autodetect: set a reasonable default
 			eep_subtype = GetE2PSubType(PIC12508);
 		}
 
@@ -451,7 +444,7 @@ void e2AppWinInfo::SetEEProm(unsigned long id /*int type, int subtype*/)
 
 		if (eep_subtype == 0)
 		{
-			//Forza impostazione manuale
+            //no autodetect: set a reasonable default
 			eep_subtype = GetE2PSubType(E25010);
 		}
 
@@ -462,11 +455,11 @@ void e2AppWinInfo::SetEEProm(unsigned long id /*int type, int subtype*/)
 
 		if (eep_subtype == 0)
 		{
-			//Forza impostazione manuale
+            //no autodetect: set a reasonable default
 			eep_subtype = GetE2PSubType(E25080);
 		}
 
-		//              eep->SetBus(GetBusVectorPtr()[AT250BIG-1]);
+        //eep->SetBus(GetBusVectorPtr()[AT250BIG-1]);
 		break;
 
 	case E2506XX:
@@ -474,7 +467,7 @@ void e2AppWinInfo::SetEEProm(unsigned long id /*int type, int subtype*/)
 
 		if (eep_subtype == 0)
 		{
-			//Forza impostazione manuale
+            //no autodetect: set a reasonable default
 			eep_subtype = GetE2PSubType(E2506);
 		}
 
@@ -485,7 +478,7 @@ void e2AppWinInfo::SetEEProm(unsigned long id /*int type, int subtype*/)
 
 		if (eep_subtype == 0)
 		{
-			//Forza impostazione manuale
+            //no autodetect: set a reasonable default
 			eep_subtype = GetE2PSubType(ENVM3060);
 		}
 
@@ -496,7 +489,7 @@ void e2AppWinInfo::SetEEProm(unsigned long id /*int type, int subtype*/)
 
 		if (eep_subtype == 0)
 		{
-			//Forza impostazione manuale
+            //no autodetect: set a reasonable default
 			eep_subtype = GetE2PSubType(AT1765);
 		}
 
@@ -505,7 +498,7 @@ void e2AppWinInfo::SetEEProm(unsigned long id /*int type, int subtype*/)
 	case X24C44XX:
 		if (eep_subtype == 0)
 		{
-			//Forza impostazione manuale
+            //no autodetect: set a reasonable default
 			eep_subtype = GetE2PSubType(S24H30);
 		}
 

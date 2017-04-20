@@ -65,8 +65,8 @@ public:               //---------------------------------------- public
 	long GetEEpromType() const;
 	int GetEEpromPriType() const;
 	int GetEEpromSubType() const;
-	//      void SetEEpromType(int pritype, int subtype = 0);
-	void SetEEpromId(unsigned long id);
+	void SetEEpromType(int pritype, int subtype);
+	void SetEEpromType(unsigned long id);
 
 	QString GetStringID();
 	void SetStringID(const QString &s);

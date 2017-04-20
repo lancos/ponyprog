@@ -88,8 +88,8 @@ void e2pFileBuf::check_offsets()
 //======================>>> e2pFileBuf::Load <<<=======================
 int e2pFileBuf::Load(int loadtype, long relocation_offset)
 {
-	int GetE2PSubType(unsigned long x);
-	int GetE2PPriType(unsigned long x);
+	extern int GetE2PSubType(unsigned long x);
+	extern int GetE2PPriType(unsigned long x);
 
 	FILE *fh;
 	e2pHeader hdr;
@@ -111,14 +111,14 @@ int e2pFileBuf::Load(int loadtype, long relocation_offset)
 		{
 			//Controlla il CRC dell'Header
 			if ( mcalc_crc(&hdr, sizeof(hdr) - sizeof(hdr.headCrc)) == hdr.headCrc &&
-			                //Controlla il CRC della memoria
+							//Check for CRC in memory
 			                fcalc_crc(fh, sizeof(e2pHeader), 0) == hdr.e2pCrc &&
-			                //Legge il contenuto nel buffer
+							//read buffer
 			                fread(localbuf, hdr.e2pSize, 1, fh) )
 				//                      fread(FileBuf::GetBufPtr(), hdr.e2pSize, 1, fh) )
 			{
-				SetEEpromId(hdr.e2pType);  //Questa imposta il tipo di eeprom, e indirettamente la dimensione del block
-				//                      FileBuf::SetNoOfBlock( hdr.e2pSize / FileBuf::GetBlockSize() );
+				SetEEpromType(hdr.e2pType);  //set eeprom device type (and block size too)
+				//FileBuf::SetNoOfBlock( hdr.e2pSize / FileBuf::GetBlockSize() );
 
 				if (hdr.fversion > 0)
 				{

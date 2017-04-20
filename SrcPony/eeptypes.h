@@ -36,6 +36,8 @@
 #include <QString>
 #include <QStringList>
 
+#define EID_INVALID     0
+
 #define E24XX           0x01
 // Sub types
 #define E2400           0x010000

@@ -95,7 +95,6 @@ void e2CmdWindow::About()
 	about.exec();
 }
 
-
 //====================>>> e2CmdWindow::e2CmdWindow <<<====================
 e2CmdWindow::e2CmdWindow(QWidget *parent ) :
 	QMainWindow(parent),
@@ -180,22 +179,17 @@ e2CmdWindow::e2CmdWindow(QWidget *parent ) :
 
 	//      if (!awip)
 	{
-		BusIO ** b = GetBusVectorPtr();
+		BusIO **b = GetBusVectorPtr();
 
 		if (!b)
 		{
 			exit (-1);
 		}
 
-		// EK 2017
-		// the name of eeprom file to load?
-		e2AppWinInfo *a = new e2AppWinInfo(this, "", b);
+		awip = new e2AppWinInfo(this, "No Name", b);
 		//              qDebug() << b << a;
-		awip = a;
 		PostInit(); // removed from e2AppWinInfo
 	}
-
-	e2p_id = -1;
 
 	UpdateMenuType(E2Profile::GetLastDevType() );
 
@@ -209,15 +203,6 @@ e2CmdWindow::e2CmdWindow(QWidget *parent ) :
 	// Associated dialogs
 	e2Prg = new QProgressDialog(this);
 	e2Prg->setAutoClose(true);
-
-#if 0
-	// Show Window
-#ifdef WIN32    // fill out client area (no useful reason not to do so) - heha 130406
-	::ShowWindow(winHwnd(), SW_MAXIMIZE);
-#else
-	ShowWindow();
-#endif
-#endif
 
 	// to show th main window
 	//      show();
@@ -1304,7 +1289,7 @@ void e2CmdWindow::selectTypeSubtype(const QString &t, const QString &st)
 	}
 
 	// search id
-	long new_id = 0;
+	long new_id = EID_INVALID;
 
 	for (int i = 0; i < deviceMenu[nt].info.count(); i++)
 	{
@@ -1314,9 +1299,14 @@ void e2CmdWindow::selectTypeSubtype(const QString &t, const QString &st)
 		}
 	}
 
-	// EK 2017
-	UpdateMenuType(new_id);
-	//      CmdSelectDevice( MenuIdToType(id) );
+	Q_ASSERT(new_id != EID_INVALID);
+
+	if (new_id != awip->GetEEPId())
+	{
+		awip->SetEEProm(new_id);
+		UpdateMenuType(new_id);
+	//	CmdSelectDevice( MenuIdToType(id) );
+	}
 }
 
 
@@ -4128,8 +4118,8 @@ int e2CmdWindow::CmdDoubleSize()
 int e2CmdWindow::CmdSetDeviceType(int val)
 {
 	long new_type = CbxIdToType(val, 0);
-	//      awip->SetEEProm(eeptype_vector[val]);
-	awip->SetEEProm( new_type);
+	//awip->SetEEProm(eeptype_vector[val]);
+	awip->SetEEProm(new_type);
 
 	UpdateMenuType(new_type);
 
@@ -4261,7 +4251,7 @@ int e2CmdWindow::SpecialBits()
 		//              lock = awip->GetLockBits();
 		//              fuse = awip->GetFuseBits();
 
-		long type = e2p_id; // BuildE2PType(awip->GetEEPPriType(), awip->GetEEPSubType());
+		long type = awip->GetEEPId(); // BuildE2PType(awip->GetEEPPriType(), awip->GetEEPSubType());
 
 		if (type != E2464)
 		{
@@ -4321,7 +4311,7 @@ int e2CmdWindow::ProgramOptions()
 	//      lock = awip->GetLockBits();
 	//      fuse = awip->GetFuseBits();
 
-	progOptionDialog prog(this, e2p_id, // BuildE2PType(awip->GetEEPPriType(), awip->GetEEPSubType()),
+	progOptionDialog prog(this, awip->GetEEPId(), // BuildE2PType(awip->GetEEPPriType(), awip->GetEEPSubType()),
 	                      reload, reep, erase, flash, eeprom, lock);
 
 	if (prog.exec() == QDialog::Accepted)
@@ -4627,7 +4617,7 @@ int e2CmdWindow::CmdReadSpecial()
 	int rval;
 	int retry_flag = 1;
 
-	long type = e2p_id;// BuildE2PType( awip->GetEEPPriType(), awip->GetEEPSubType() );
+	long type = awip->GetEEPId();	// BuildE2PType( awip->GetEEPPriType(), awip->GetEEPSubType() );
 
 	while (retry_flag)
 	{
@@ -4704,7 +4694,7 @@ int e2CmdWindow::CmdWriteSpecial()
 
 	QMessageBox note;
 
-	long type = e2p_id; //BuildE2PType( awip->GetEEPPriType(), awip->GetEEPSubType() );
+	long type = awip->GetEEPId();	//BuildE2PType( awip->GetEEPPriType(), awip->GetEEPSubType() );
 	/**
 	if (type == E2464)              //Microchip 24C65 high endurance block
 	{
@@ -4869,7 +4859,7 @@ int e2CmdWindow::CmdEditNote()
 // new_type is the chip id
 int e2CmdWindow::CmdSelectDevice(long new_type)
 {
-	awip->SetEEProm( new_type );
+	awip->SetEEProm(new_type);
 
 	// TODO check this two functions
 	//      int t = GetE2PPriType(new_type);
@@ -5006,7 +4996,7 @@ void e2CmdWindow::UpdateStatusBar()
 	buf.sprintf(STATUSBAR_PRINT, GetDevSize(), awip->GetCRC(), awip->IsBufChanged() ? '*' : ' ');
 
 	lblEEPInfo->setText(buf);
-	lblStringID->setText( awip == 0 ? " " : awip->GetStringID());
+	lblStringID->setText(!awip ? " " : awip->GetStringID());
 }
 
 
@@ -5172,7 +5162,7 @@ void e2CmdWindow::onDevSubType(int st)
 }
 
 
-menuToGroup* e2CmdWindow::searchMenuInDeviceVector( int type )
+menuToGroup* e2CmdWindow::searchMenuInDeviceVector(int type)
 {
 	menuToGroup *pM = NULL;
 
@@ -5196,37 +5186,43 @@ menuToGroup* e2CmdWindow::searchMenuInDeviceVector( int type )
 
 
 //==================>>> e2CmdWindow::UpdateMenuType <<<=======================
-void e2CmdWindow::UpdateMenuType(long new_id)
+void e2CmdWindow::UpdateMenuType(long new_type)
 {
-	if (cbxEEPType == NULL || cbxEEPSubType == NULL)
-	{
-		return;
-	}
+	Q_CHECK_PTR(cbxEEPType);
+	Q_CHECK_PTR(cbxEEPSubType);
+
+//	if (cbxEEPType == NULL || cbxEEPSubType == NULL)
+//	{
+//		return;
+//	}
+
+	if (new_type == 0)
+		new_type = awip->GetEEPId();
 
 	// reset checkboxes
 	static menuToGroup* m = 0;
 
-	qDebug() << "UpdateMenuType" << new_id;
+	qDebug() << "UpdateMenuType" << new_type;
 
-	int pre_type = GetE2PPriType(e2p_id);
-	int pre_subtype = GetE2PSubType(e2p_id);
+	int pre_pritype = GetE2PPriType(awip->GetEEPId());
+	int pre_subtype = GetE2PSubType(awip->GetEEPId());
 
-	int new_type = GetE2PPriType(new_id);
-	int new_subtype = GetE2PSubType(new_id);
+	int new_pritype = GetE2PPriType(new_type);
+	int new_subtype = GetE2PSubType(new_type);
 
-	qDebug() << "UpdateMenuType" << new_type << new_subtype;
+	qDebug() << "UpdateMenuType" << new_pritype << new_subtype;
 
 	disconnect(cbxEEPSubType, SIGNAL(currentIndexChanged(int)), this, SLOT(onDevSubType(int)));
 
 	// new main type selected, rebuild the subtype list
-	if ((pre_type == -1) || (pre_type != new_type))
+//	if ((pre_pritype == -1) || (pre_pritype != new_pritype))
 	{
 		cbxEEPSubType->clear();
 		QStringList l;
 
 		if (new_type >= 0)
 		{
-			m = searchMenuInDeviceVector( new_type );
+			m = searchMenuInDeviceVector(new_pritype);
 
 			if (m != NULL)
 			{
@@ -5266,7 +5262,7 @@ void e2CmdWindow::UpdateMenuType(long new_id)
 		{
 			chipInfo c = (*m).info.at(i);
 
-			if (c.id  == new_id)
+			if (c.id  == new_type)
 			{
 				cbxEEPSubType->setCurrentIndex( i);
 				break;
@@ -5277,9 +5273,9 @@ void e2CmdWindow::UpdateMenuType(long new_id)
 	connect(cbxEEPSubType, SIGNAL(currentIndexChanged(int)), this, SLOT(onDevSubType(int)));
 
 	// uncheck the old item
-	if (pre_type >= 0 )
+	if (pre_pritype >= 0)
 	{
-		menuToGroup* mOld = searchMenuInDeviceVector( pre_type );
+		menuToGroup* mOld = searchMenuInDeviceVector(pre_pritype);
 
 		if (mOld != NULL)
 		{
@@ -5289,7 +5285,7 @@ void e2CmdWindow::UpdateMenuType(long new_id)
 			{
 				for(int im = 0; im < (*mOld).info.count(); im++)
 				{
-					if ((*mOld).info.at(im).id == e2p_id)
+					if ((*mOld).info.at(im).id == new_type)
 					{
 						aLst.at(im)->setChecked(false);
 						break;
@@ -5299,10 +5295,8 @@ void e2CmdWindow::UpdateMenuType(long new_id)
 		}
 	}
 
-	e2p_id = new_id;
-
 	// now update radiobutton
-	if (new_type >= 0)
+	if (new_pritype >= 0)
 	{
 		QList<QAction *> aLst = (*m).grp->actions();
 
@@ -5310,7 +5304,7 @@ void e2CmdWindow::UpdateMenuType(long new_id)
 		{
 			for(int im = 0; im < (*m).info.count(); im++)
 			{
-				if ((*m).info.at(im).id  == new_id)
+				if ((*m).info.at(im).id  == new_type)
 				{
 					aLst.at(im)->setChecked(true);
 					break;
@@ -5321,13 +5315,14 @@ void e2CmdWindow::UpdateMenuType(long new_id)
 
 	//Memorizza in memoria e nel file .INI
 
-	E2Profile::SetLastDevType( e2p_id ) ;
+	Q_CHECK_PTR(awip);
 
-	awip->SetEEPTypeId(e2p_id);
+	awip->SetEEProm(new_type);
+	E2Profile::SetLastDevType(new_type) ;
 
 	// EK 2017
 	// it's not possible to hide the actions, or?
-	if ( awip && (GetE2PPriType(awip->GetEEPId()) == PIC125XX) )        //Not Erasable
+	if (GetE2PPriType(awip->GetEEPId()) == PIC125XX)        //Not Erasable
 	{
 		actionErase->setDisabled(true);
 	}
@@ -5336,7 +5331,7 @@ void e2CmdWindow::UpdateMenuType(long new_id)
 		actionErase->setEnabled(true);
 	}
 
-	if ( awip && (awip->GetSplittedInfo() > 0) && (awip->GetSize() > awip->GetSplittedInfo()) )
+	if ((awip->GetSplittedInfo() > 0) && (awip->GetSize() > awip->GetSplittedInfo()))
 	{
 		//Enable menus
 		actionReadFlash->setEnabled(true);

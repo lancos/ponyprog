@@ -164,7 +164,6 @@ void FileBuf::SetCRC(uint16_t c)
 //======================>>> FileBuf::GetEEpromType <<<=======================
 long FileBuf::GetEEpromType() const
 {
-	//      return ((long)awi->GetEEPPriType() << 16) | (awi->GetEEPSubType() & 0x7FFF);
 	return awi->GetEEPId();
 }
 
@@ -181,12 +180,14 @@ int FileBuf::GetEEpromSubType() const
 }
 
 //======================>>> FileBuf::SetEEpromType <<<=======================
-// void FileBuf::SetEEpromType(int pritype, int subtype)
-// {
-//      awi->SetEEProm(pritype, subtype);
-// }
+void FileBuf::SetEEpromType(int pritype, int subtype)
+{
+    extern long BuildE2PType(int pritype, int subtype);
 
-void FileBuf::SetEEpromId(unsigned long id)
+    awi->SetEEProm(BuildE2PType(pritype, subtype));
+}
+
+void FileBuf::SetEEpromType(unsigned long id)
 {
 	awi->SetEEProm(id);
 }

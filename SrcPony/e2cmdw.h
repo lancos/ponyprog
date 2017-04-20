@@ -118,7 +118,10 @@ public:               //---------------------------------------- public
 
 	long GetCurrentChipType()
 	{
-		return e2p_id;
+		if (awip)
+			return awip->GetEEPId();
+		else
+			return EID_INVALID;
 	}
 
 
@@ -342,8 +345,6 @@ private:
 
 	// Info for the TextCanvas
 	int first_line;
-
-	long e2p_id; // id of chip
 
 	// Index for checking type menu
 	//      int type_index;
