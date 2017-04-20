@@ -88,8 +88,8 @@ void e2pFileBuf::check_offsets()
 //======================>>> e2pFileBuf::Load <<<=======================
 int e2pFileBuf::Load(int loadtype, long relocation_offset)
 {
-	int GetE2PSubType(long x);
-	int GetE2PPriType(long x);
+	int GetE2PSubType(unsigned long x);
+	int GetE2PPriType(unsigned long x);
 
 	FILE *fh;
 	e2pHeader hdr;
@@ -117,7 +117,7 @@ int e2pFileBuf::Load(int loadtype, long relocation_offset)
 			                fread(localbuf, hdr.e2pSize, 1, fh) )
 				//                      fread(FileBuf::GetBufPtr(), hdr.e2pSize, 1, fh) )
 			{
-				SetEEpromType(GetE2PPriType(hdr.e2pType), GetE2PSubType(hdr.e2pType));  //Questa imposta il tipo di eeprom, e indirettamente la dimensione del block
+				SetEEpromId(hdr.e2pType);  //Questa imposta il tipo di eeprom, e indirettamente la dimensione del block
 				//                      FileBuf::SetNoOfBlock( hdr.e2pSize / FileBuf::GetBlockSize() );
 
 				if (hdr.fversion > 0)

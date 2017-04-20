@@ -58,6 +58,18 @@
 #include "qhexedit.h"
 
 
+
+struct menuToGroup
+{
+	QMenu *mnu;
+	QActionGroup *grp;
+	// vector of main type
+	QVector <int> type;
+	// copy of chipInfo
+	QVector<chipInfo> info;
+};
+
+
 typedef enum
 {
 	verboseNo,
@@ -106,7 +118,7 @@ public:               //---------------------------------------- public
 
 	long GetCurrentChipType()
 	{
-		return e2type_id;
+		return e2p_id;
 	}
 
 
@@ -245,6 +257,7 @@ private:              //--------------------------------------- private
 	void createSignalSlotConnections();
 	QString convertFilterListToString(const QStringList &lst);
 
+	menuToGroup* searchMenuInDeviceVector( int new_type );
 	//      int NextPage();
 	//      int PrevPage();
 	//      void FirstPage();
@@ -257,7 +270,8 @@ private:              //--------------------------------------- private
 	void UpdateStatusBar();
 	//      void UpdateChipType(int pritype = -1, int subtype = -1);
 	//      void SetChipSubType(int pritype, int subtype = 0);
-	void UpdateMenuType(int new_type = 0, int new_subtype = 0);
+	//      void UpdateMenuType(int new_type = 0, int new_subtype = 0);
+	void UpdateMenuType(long new_id = 0);
 	void UpdateFileMenu();
 	//      int TypeToMenuId(long type);
 	//      long MenuIdToType(QAction * id);
@@ -314,10 +328,10 @@ private:
 
 	// Info for the TextCanvas
 	int first_line;
-	int pre_type;
-	int pre_subtype;
+	long pre_id;
+	//      int pre_subtype;
 
-	long e2type_id;
+	long e2p_id; // id of chip
 
 	// Index for checking type menu
 	//      int type_index;

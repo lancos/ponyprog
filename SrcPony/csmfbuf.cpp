@@ -47,8 +47,8 @@ csmFileBuf::csmFileBuf(e2AppWinInfo *wininfo)
 //======================>>> csmFileBuf::Load <<<=======================
 int csmFileBuf::Load(int loadtype, long relocation_offfset)
 {
-	int GetE2PSubType(long x);
-	int GetE2PPriType(long x);
+	int GetE2PSubType(unsigned long x);
+	int GetE2PPriType(unsigned long x);
 
 	FILE *fh;
 	char *s, *s1;

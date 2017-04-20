@@ -35,6 +35,8 @@
 #include <QObject>
 #include <QString>
 #include <QByteArray>
+#include <QBuffer>
+
 
 #include "types.h"
 
@@ -70,7 +72,6 @@
 #include "eeptypes.h"
 
 #include "e2phead.h"
-
 
 
 //At the moment the bigger device is ATmega2560 (256KiB + 4KiB)
@@ -131,7 +132,8 @@ public:               //---------------------------------------- public
 		return hex_per_line;
 	}
 
-	void SetEEProm(int type = E24XX, int subtype = 0);
+	//      void SetEEProm(int type = E24XX, int subtype = 0);
+	void SetEEProm(unsigned long id = E2400);
 
 	void SetFileBuf(FileType type);
 	FileType GetFileBuf() const;
@@ -149,6 +151,12 @@ public:               //---------------------------------------- public
 	QString GetComment();
 	void SetComment(const QString &s);
 
+	int GetEEPId() const
+	{
+		return eep_id;
+	}
+
+#if 0
 	int GetEEPPriType() const
 	{
 		return eep_type;
@@ -157,11 +165,13 @@ public:               //---------------------------------------- public
 	{
 		return eep_subtype ? eep_subtype : GetE2PSubType( GetEEPTypeFromSize(eep_type, GetNoOfBlock()) );
 	} //GetNoOfBlock(); }
+
 	int GetEEPType() const
 	{
 		return BuildE2PType(eep_type, eep_subtype);
 	}
-	void SetEEPTypeId(long e2type_id);
+#endif
+	void SetEEPTypeId(unsigned long e2type_id);
 	int GetBankRollOver() const
 	{
 		return roll_over;
@@ -305,14 +315,15 @@ private:              //--------------------------------------- private
 	//      bool clear_buffer_before_read;          //flag, clear buffer before read from device
 
 	// EK 2017
-	// TODO convert to QByteArray?
+	// TODO convert to QByteArray or QBuffer?
 	uint8_t buffer[BUFFER_SIZE];    //device content buffer
 	QString linebuf;//[LINEBUF_SIZE];     //print line buffer
 	bool buf_ok;                            //true if buffer is valid
 	bool buf_changed;                       //true if buffer changed/edited
 
-	int eep_type;                           //indica il tipo di chip di eeprom
-	int eep_subtype;                        //sottotipo (in pratica il numero di banchi)
+	unsigned long eep_id;
+	//      int eep_type;                           //indica il tipo di chip di eeprom
+	//      int eep_subtype;                        //sottotipo (in pratica il numero di banchi)
 	//se zero viene usato GetNoOfBank(), serve per una forzatura manuale
 
 

@@ -533,27 +533,33 @@ static QVector<chipInfo> const eep17xxx_map =
 };
 
 
-extern long BuildE2PType(int pritype, int subtype = 0);
-extern int GetE2PSubType(long subtype);
-extern int GetE2PPriType(long pritype);
+// extern long BuildE2PType(int pritype, int subtype = 0);
+extern long BuildE2PType(unsigned long type);
+extern int GetE2PSubType(unsigned long type);
+extern int GetE2PPriType(unsigned long type);
 
 chipInfo GetChipInfo(QVector<chipInfo> &c, long subtype);
 
-extern QString GetEEPTypeString(int pritype, int subtype);
-extern QString GetEEPTypeString(long type);
+// extern QString GetEEPTypeString(int pritype, int subtype);
+extern QString GetEEPTypeString(unsigned long type);
 
 extern int GetEEPTypeIndex(int type);
 // extern QStringList GetEEPSubTypeList(int type);
 extern QVector<chipInfo> GetEEPSubTypeVector(int type);
-extern int GetEEPSubTypeIndex(long type);
-extern int GetEEPTypeSize(int pritype, int subtype);
-extern int GetEEPAddrSize(int pritype, int subtype);
-extern int GetEEPTypeSplit(int pritype, int subtype);
+extern int GetEEPSubTypeIndex(unsigned long type);
+// extern int GetEEPTypeSize(int pritype, int subtype);
+extern int GetEEPTypeSize(unsigned long type);
+// extern int GetEEPAddrSize(int pritype, int subtype);
+extern int GetEEPAddrSize(unsigned long type);
+// extern int GetEEPTypeSplit(int pritype, int subtype);
+extern int GetEEPTypeSplit(unsigned long type);
 
-extern long GetEEPTypeFromSize(int pritype, int size);
+// extern long GetEEPTypeFromSize(int pritype, int size);
+extern long GetEEPTypeFromSize(unsigned long type, int size);
 extern long GetEEPTypeFromString(const QString &name);
 
-extern int GetEEPTypeWPageSize(int pritype, int subtype);
+// extern int GetEEPTypeWPageSize(int pritype, int subtype);
+extern int GetEEPTypeWPageSize(unsigned long type);
 
 
 #endif

@@ -60,7 +60,7 @@ int At90sxx::SecurityRead(uint32_t &bits)
 
 	if (rv > 0)
 	{
-		bits = GetBus()->ReadLockBits( GetAWInfo()->GetEEPType() );
+		bits = GetBus()->ReadLockBits( GetAWInfo()->GetEEPId() );
 		rv = OK;
 	}
 
@@ -73,7 +73,7 @@ int At90sxx::SecurityWrite(uint32_t bits)
 
 	if (rv > 0)     //Try to write even with AutoXXX device setted
 	{
-		rv = GetBus()->WriteLockBits(bits,  GetAWInfo()->GetEEPType());
+		rv = GetBus()->WriteLockBits(bits, GetAWInfo()->GetEEPId());
 	}
 
 	return rv;
@@ -85,7 +85,7 @@ int At90sxx::FusesRead(uint32_t &bits)
 
 	if (rv > 0)
 	{
-		bits = GetBus()->ReadFuseBits( GetAWInfo()->GetEEPType() );
+		bits = GetBus()->ReadFuseBits(GetAWInfo()->GetEEPId());
 		rv = OK;
 	}
 
@@ -98,7 +98,7 @@ int At90sxx::FusesWrite(uint32_t bits)
 
 	if (rv > 0)
 	{
-		rv = GetBus()->WriteFuseBits(bits, GetAWInfo()->GetEEPType());
+		rv = GetBus()->WriteFuseBits(bits, GetAWInfo()->GetEEPId());
 	}
 
 	return rv;
@@ -343,7 +343,7 @@ int At90sxx::Probe(int probe_size)
 
 		if (rv == OK)
 		{
-			if ( GetAWInfo()->GetEEPSubType() == subtype )
+			if ( GetE2PSubType(GetAWInfo()->GetEEPId()) == subtype )
 			{
 				rv = GetSize();
 			}
@@ -402,10 +402,10 @@ int At90sxx::Read(int probe, int type)
 				if (type & CONFIG_TYPE)
 				{
 					// read the fuses
-					uint32_t f = GetBus()->ReadFuseBits( GetAWInfo()->GetEEPType() );
+					uint32_t f = GetBus()->ReadFuseBits( GetAWInfo()->GetEEPId() );
 					GetAWInfo()->SetFuseBits(f);
 
-					f = GetBus()->ReadLockBits( GetAWInfo()->GetEEPType() );
+					f = GetBus()->ReadLockBits( GetAWInfo()->GetEEPId() );
 					GetAWInfo()->SetLockBits(f);
 				}
 			}
@@ -446,27 +446,27 @@ int At90sxx::Write(int probe, int type)
 			{
 				if (type & CONFIG_TYPE)
 				{
-					if ( GetAWInfo()->GetEEPType() == AT90S4433 || GetAWInfo()->GetEEPType() == AT90S2333 )
+					if ( GetAWInfo()->GetEEPId() == AT90S4433 || GetAWInfo()->GetEEPId() == AT90S2333 )
 					{
 						//write the locks
 						uint32_t f = GetAWInfo()->GetLockBits();
-						GetBus()->WriteLockBits(f,  GetAWInfo()->GetEEPType());
+						GetBus()->WriteLockBits(f, GetAWInfo()->GetEEPId());
 
 						GetBus()->WaitMsec(100);
 
 						//write the fuses
 						f = GetAWInfo()->GetFuseBits();
-						GetBus()->WriteFuseBits(f, GetAWInfo()->GetEEPType());
+						GetBus()->WriteFuseBits(f, GetAWInfo()->GetEEPId());
 					}
 					else
 					{
 						//write the fuses
 						uint32_t f = GetAWInfo()->GetFuseBits();
-						GetBus()->WriteFuseBits(f, GetAWInfo()->GetEEPType());
+						GetBus()->WriteFuseBits(f, GetAWInfo()->GetEEPId());
 
 						//write the locks
 						f = GetAWInfo()->GetLockBits();
-						GetBus()->WriteLockBits(f,  GetAWInfo()->GetEEPType());
+						GetBus()->WriteLockBits(f, GetAWInfo()->GetEEPId());
 					}
 				}
 			}
@@ -510,8 +510,8 @@ int At90sxx::Verify(int type)
 		if (type & CONFIG_TYPE)
 		{
 			// read the fuses & locks
-			uint32_t f = GetBus()->ReadFuseBits( GetAWInfo()->GetEEPType() );
-			uint32_t l = GetBus()->ReadLockBits( GetAWInfo()->GetEEPType() );
+			uint32_t f = GetBus()->ReadFuseBits(GetAWInfo()->GetEEPId() );
+			uint32_t l = GetBus()->ReadLockBits(GetAWInfo()->GetEEPId() );
 
 			if ( GetAWInfo()->GetLockBits() == l && GetAWInfo()->GetFuseBits() == f )
 			{

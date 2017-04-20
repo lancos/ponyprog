@@ -29,6 +29,7 @@
 
 #include <QString>
 #include <QVector>
+#include <QDebug>
 
 #include "types.h"
 #include "globals.h"
@@ -41,14 +42,15 @@ long BuildE2PType(int pritype, int subtype)
 	return (((long)pritype & 0x7FFF) << 16) | (subtype & 0x7FFF);
 }
 
-int GetE2PSubType(long subtype)
+int GetE2PSubType(unsigned long type)
 {
-	return (int)(subtype & 0x7FFF);
+	return (int)(type & 0x7FFF);
 }
 
-int GetE2PPriType(long pritype)
+int GetE2PPriType(unsigned long type)
 {
-	return (int)((pritype >> 16) & 0x7FFF);
+	//      qDebug() << "GetE2PPriType" << type << ((type >> 16) & 0x7F);
+	return (int)((type >> 16) & 0x7F);
 }
 
 
@@ -156,7 +158,7 @@ static QVector<chipInfo> const GetMap(int pritype)
 	}
 }
 
-
+#if 0
 long GetEEPTypeFromSize(int pritype, int size)
 {
 	QVector<chipInfo> mp = GetMap(pritype);
@@ -176,9 +178,56 @@ long GetEEPTypeFromSize(int pritype, int size)
 
 	return -1;
 }
+#endif
 
+
+long GetEEPTypeFromSize(unsigned long type, int size)
+{
+	int pritype = GetE2PPriType(type);
+	QVector<chipInfo> mp = GetMap(pritype);
+
+	if (mp.count() == 0)
+	{
+		return -1;
+	}
+
+	for (int j = 0; j < mp.count(); j++)
+	{
+		if (mp.at(j).sz == size)
+		{
+			return mp.at(j).id;
+		}
+	}
+
+	return -1;
+}
+
+#if 0
 int GetEEPTypeSize(int pritype, int subtype)
 {
+	if (pritype == 0)
+	{
+		return 0;
+	}
+
+	QVector<chipInfo> mp = GetMap(pritype);
+
+	if (mp.count() == 0)
+	{
+		return 0;
+	}
+
+	chipInfo i = GetChipInfo(mp, subtype);
+
+	return i.sz;
+}
+#endif
+
+int GetEEPTypeSize(unsigned long type)
+{
+	int pritype = GetE2PPriType(type);
+	int subtype = GetE2PSubType(type);
+
 	if (pritype == 0)
 	{
 		return 0;
@@ -198,6 +247,7 @@ int GetEEPTypeSize(int pritype, int subtype)
 
 //Serve solamente nei bus che utilizzano la dimensione
 // di word degli indirizzi dinamica (per es. Microwire)
+#if 0
 int GetEEPAddrSize(int pritype, int subtype)
 {
 	QVector<chipInfo> mp = GetMap(pritype);
@@ -211,8 +261,26 @@ int GetEEPAddrSize(int pritype, int subtype)
 
 	return i.adrsz;
 }
+#endif
 
+int GetEEPAddrSize(unsigned long type)
+{
+	int pritype = GetE2PPriType(type);
+	int subtype = GetE2PSubType(type);
 
+	QVector<chipInfo> mp = GetMap(pritype);
+
+	if (mp.count() == 0)
+	{
+		return -1;
+	}
+
+	chipInfo i = GetChipInfo(mp, subtype);
+
+	return i.adrsz;
+}
+
+#if 0
 int GetEEPTypeSplit(int pritype, int subtype)
 {
 	QVector<chipInfo> mp = GetMap(pritype);
@@ -226,9 +294,46 @@ int GetEEPTypeSplit(int pritype, int subtype)
 
 	return i.splt;
 }
+#endif
 
+int GetEEPTypeSplit(unsigned long type)
+{
+	int pritype = GetE2PPriType(type);
+	int subtype = GetE2PSubType(type);
+
+	QVector<chipInfo> mp = GetMap(pritype);
+
+	if (mp.count() == 0)
+	{
+		return -1;
+	}
+
+	chipInfo i = GetChipInfo(mp, subtype);
+
+	return i.splt;
+}
+
+#if 0
 int GetEEPTypeWPageSize(int pritype, int subtype)
 {
+	QVector<chipInfo> mp = GetMap(pritype);
+
+	if (mp.count() == 0)
+	{
+		return -1;
+	}
+
+	chipInfo i = GetChipInfo(mp, subtype);
+
+	return i.wpgsz;
+}
+#endif
+
+int GetEEPTypeWPageSize(unsigned long type)
+{
+	int pritype = GetE2PPriType(type);
+	int subtype = GetE2PSubType(type);
+
 	QVector<chipInfo> mp = GetMap(pritype);
 
 	if (mp.count() == 0)
@@ -264,16 +369,40 @@ int GetEEPSubTypeIndex(long type)
 	return i.id;
 }
 
-
+#if 0
 QString  GetEEPTypeString(int pritype, int subtype)
 {
 	QVector<chipInfo> mp = GetMap(pritype);
 
 	if (mp.count())
 	{
+		qDebug() << "mp" << mp.count();
+
 		foreach(chipInfo i, mp)
 		{
-			if (i.id == subtype)
+			if ((i.id & 0x07fff) == subtype)
+			{
+				return i.name;
+			}
+		}
+	}
+
+	return "";
+}
+#endif
+
+QString GetEEPTypeString(unsigned long type)
+{
+	int pritype = GetE2PPriType(type);
+	int subtype = GetE2PSubType(type);
+
+	QVector<chipInfo> mp = GetMap(pritype);
+
+	if (mp.count())
+	{
+		foreach(chipInfo i, mp)
+		{
+			if ((i.id & 0x07fff) == subtype)
 			{
 				return i.name;
 			}
@@ -284,13 +413,16 @@ QString  GetEEPTypeString(int pritype, int subtype)
 }
 
 //18/10/98
+#if 0
 QString GetEEPTypeString(long type)
 {
 	int pritype = GetE2PPriType(type);
 	int subtype = GetE2PSubType(type);
 
+	qDebug() << "GetEEPTypeString" << pritype << subtype << GetEEPTypeString(pritype, subtype);
 	return GetEEPTypeString(pritype, subtype);
 }
+#endif
 
 /**
 long GetEEPTypeFromString(char const *name)
