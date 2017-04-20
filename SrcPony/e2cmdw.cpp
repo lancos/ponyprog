@@ -952,7 +952,7 @@ void e2CmdWindow::addSDEStruct()
  * @brief
  *
  */
-void e2CmdWindow::addX24Ctruct()
+void e2CmdWindow::addX24CStruct()
 {
 	menuToGroup *mTmp = new menuToGroup();
 	mTmp = new menuToGroup();
@@ -1036,7 +1036,7 @@ void e2CmdWindow::createDeviceMenues()
 
 	// X2444
 	//eep2444_map
-	addX24Ctruct();
+	addX24CStruct();
 
 	setMenuIndexes();
 }

@@ -272,7 +272,7 @@ private:              //--------------------------------------- private
 	void addPIC12Struct();
 	void addIMBUSStruct();
 	void addSDEStruct();
-	void addX24Ctruct();
+	void addX24CStruct();
 
 	int SaveFile(int force_select = 0);
 	int OpenFile(const QString &file = 0);
