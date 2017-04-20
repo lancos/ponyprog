@@ -128,15 +128,15 @@ void fuseModalDialog::onOk()
 
 	for (int k = 0; k < LOCKPACKSIZE; k++)
 	{
-		lock |= (chkLock[0 * 8 + k]->isChecked()) ? (0x80000000 >> k) : 0;
-		lock |= (chkLock[1 * 8 + k]->isChecked()) ? (0x800000 >> k) : 0;
-		lock |= (chkLock[2 * 8 + k]->isChecked()) ? (0x8000 >> k) : 0;
-		lock |= (chkLock[3 * 8 + k]->isChecked()) ? (0x80 >> k) : 0;
+		lock |= (chkLock.at(0 * 8 + k)->isChecked()) ? (0x80000000 >> k) : 0;
+		lock |= (chkLock.at(1 * 8 + k)->isChecked()) ? (0x800000 >> k) : 0;
+		lock |= (chkLock.at(2 * 8 + k)->isChecked()) ? (0x8000 >> k) : 0;
+		lock |= (chkLock.at(3 * 8 + k)->isChecked()) ? (0x80 >> k) : 0;
 
-		fuse |= (chkFuse[0 * 8 + k]->isChecked()) ? (0x80000000 >> k) : 0;
-		fuse |= (chkFuse[1 * 8 + k]->isChecked()) ? (0x800000 >> k) : 0;
-		fuse |= (chkFuse[2 * 8 + k]->isChecked()) ? (0x8000 >> k) : 0;
-		fuse |= (chkFuse[3 * 8 + k]->isChecked()) ? (0x80 >> k) : 0;
+		fuse |= (chkFuse.at(0 * 8 + k)->isChecked()) ? (0x80000000 >> k) : 0;
+		fuse |= (chkFuse.at(1 * 8 + k)->isChecked()) ? (0x800000 >> k) : 0;
+		fuse |= (chkFuse.at(2 * 8 + k)->isChecked()) ? (0x8000 >> k) : 0;
+		fuse |= (chkFuse.at(3 * 8 + k)->isChecked()) ? (0x80 >> k) : 0;
 	}
 
 	//      lock = lock;
@@ -181,21 +181,16 @@ void fuseModalDialog::onRead()
 
 int fuseModalDialog::eep_FindFuses(long type)
 {
-	int k;
-	int retval = -1;
-
-	for (k = 0; eep_fusebits[k].type; k++)
+	for (int k = 0; eep_fusebits.count(); k++)
 	{
-		if (eep_fusebits[k].type == type)
+		if (eep_fusebits.at(k).type == type)
 		{
-			retval = k;
-			break;
+			return k;
 		}
 	}
 
-	return retval;
+	return -1;
 }
-
 
 
 void fuseModalDialog::initWidgets(const QString &msg, long int type, bool readonly)
@@ -204,80 +199,17 @@ void fuseModalDialog::initWidgets(const QString &msg, long int type, bool readon
 
 	if (j >= 0)
 	{
-		FuseBit fBit = eep_fusebits[j];
+		FuseBit fBit = eep_fusebits.at(j);
 
-		if ( fBit.lockenable3 == 0 )
-		{
-			frmLock0->setHidden( true);
-		}
-		else
-		{
-			frmLock0->setHidden( false);
-		}
+		frmLock0->setHidden( fBit.lockenable3 == 0);
+		frmLock1->setHidden( fBit.lockenable2 == 0);
+		frmLock2->setHidden( fBit.lockenable1 == 0);
+		frmLock3->setHidden( fBit.lockenable0 == 0);
 
-		if ( fBit.lockenable2 == 0 )
-		{
-			frmLock1->setHidden( true);
-		}
-		else
-		{
-			frmLock1->setHidden( false);
-		}
-
-		if ( fBit.lockenable1 == 0 )
-		{
-			frmLock2->setHidden( true);
-		}
-		else
-		{
-			frmLock2->setHidden( false);
-		}
-
-		if ( fBit.lockenable0 == 0 )
-		{
-			frmLock3->setHidden( true);
-		}
-		else
-		{
-			frmLock1->setHidden( false);
-		}
-
-
-		if ( fBit.fuseenable3 == 0 )
-		{
-			frmFuses0->setHidden( true);
-		}
-		else
-		{
-			frmFuses0->setHidden( false);
-		}
-
-		if ( fBit.fuseenable2 == 0 )
-		{
-			frmFuses1->setHidden( true);
-		}
-		else
-		{
-			frmFuses1->setHidden( false);
-		}
-
-		if ( fBit.fuseenable1 == 0 )
-		{
-			frmFuses2->setHidden( true);
-		}
-		else
-		{
-			frmFuses2->setHidden( false);
-		}
-
-		if ( fBit.fuseenable0 == 0 )
-		{
-			frmFuses3->setHidden( true);
-		}
-		else
-		{
-			frmFuses3->setHidden( false);
-		}
+		frmFuses0->setHidden( fBit.fuseenable3 == 0);
+		frmFuses1->setHidden( fBit.fuseenable2 == 0);
+		frmFuses2->setHidden( fBit.fuseenable1 == 0);
+		frmFuses3->setHidden( fBit.fuseenable0 == 0);
 
 		if ( fBit.lockenable3 == 0 &&
 		                fBit.lockenable2 == 0 &&
@@ -317,7 +249,7 @@ void fuseModalDialog::initWidgets(const QString &msg, long int type, bool readon
 				sp = def;
 			}
 
-			chkLock[0 * 8 + k]->setText(sp);
+			chkLock.at(0 * 8 + k)->setText(sp);
 
 			sp = fBit.locklabel2[k];
 
@@ -326,7 +258,7 @@ void fuseModalDialog::initWidgets(const QString &msg, long int type, bool readon
 				sp = def;
 			}
 
-			chkLock[1 * 8 + k]->setText(sp);
+			chkLock.at(1 * 8 + k)->setText(sp);
 
 			sp = fBit.locklabel1[k];
 
@@ -335,7 +267,7 @@ void fuseModalDialog::initWidgets(const QString &msg, long int type, bool readon
 				sp = def;
 			}
 
-			chkLock[2 * 8 + k]->setText(sp);
+			chkLock.at(2 * 8 + k)->setText(sp);
 
 			sp = fBit.locklabel0[k];
 
@@ -344,7 +276,7 @@ void fuseModalDialog::initWidgets(const QString &msg, long int type, bool readon
 				sp = def;
 			}
 
-			chkLock[3 * 8 + k]->setText(sp);
+			chkLock.at(3 * 8 + k)->setText(sp);
 
 
 			sp = fBit.fuselabel3[k];
@@ -354,7 +286,7 @@ void fuseModalDialog::initWidgets(const QString &msg, long int type, bool readon
 				sp = def;
 			}
 
-			chkFuse[0 * 8 + k]->setText(sp);
+			chkFuse.at(0 * 8 + k)->setText(sp);
 
 			sp = fBit.fuselabel2[k];
 
@@ -363,7 +295,7 @@ void fuseModalDialog::initWidgets(const QString &msg, long int type, bool readon
 				sp = def;
 			}
 
-			chkFuse[1 * 8 + k]->setText(sp);
+			chkFuse.at(1 * 8 + k)->setText(sp);
 
 			sp = fBit.fuselabel1[k];
 
@@ -372,7 +304,7 @@ void fuseModalDialog::initWidgets(const QString &msg, long int type, bool readon
 				sp = def;
 			}
 
-			chkFuse[2 * 8 + k]->setText(sp);
+			chkFuse.at(2 * 8 + k)->setText(sp);
 
 			sp = fBit.fuselabel0[k];
 
@@ -381,21 +313,21 @@ void fuseModalDialog::initWidgets(const QString &msg, long int type, bool readon
 				sp = def;
 			}
 
-			chkFuse[3 * 8 + k]->setText(sp);
+			chkFuse.at(3 * 8 + k)->setText(sp);
 		}
 
 		//Sensitive
 		for (int k = 0; k < LOCKPACKSIZE; k++)
 		{
-			chkLock[0 * 8 + k]->setEnabled((fBit.lockenable3 & (0x80 >> k)) ? true : false);
-			chkLock[1 * 8 + k]->setEnabled((fBit.lockenable2 & (0x80 >> k)) ? true : false);
-			chkLock[2 * 8 + k]->setEnabled((fBit.lockenable1 & (0x80 >> k)) ? true : false);
-			chkLock[3 * 8 + k]->setEnabled((fBit.lockenable0 & (0x80 >> k)) ? true : false);
+			chkLock.at(0 * 8 + k)->setEnabled((fBit.lockenable3 & (0x80 >> k)) ? true : false);
+			chkLock.at(1 * 8 + k)->setEnabled((fBit.lockenable2 & (0x80 >> k)) ? true : false);
+			chkLock.at(2 * 8 + k)->setEnabled((fBit.lockenable1 & (0x80 >> k)) ? true : false);
+			chkLock.at(3 * 8 + k)->setEnabled((fBit.lockenable0 & (0x80 >> k)) ? true : false);
 
-			chkFuse[0 * 8 + k]->setEnabled((fBit.fuseenable3 & (0x80 >> k)) ? true : false);
-			chkFuse[1 * 8 + k]->setEnabled((fBit.fuseenable2 & (0x80 >> k)) ? true : false);
-			chkFuse[2 * 8 + k]->setEnabled((fBit.fuseenable1 & (0x80 >> k)) ? true : false);
-			chkFuse[3 * 8 + k]->setEnabled((fBit.fuseenable0 & (0x80 >> k)) ? true : false);
+			chkFuse.at(0 * 8 + k)->setEnabled((fBit.fuseenable3 & (0x80 >> k)) ? true : false);
+			chkFuse.at(1 * 8 + k)->setEnabled((fBit.fuseenable2 & (0x80 >> k)) ? true : false);
+			chkFuse.at(2 * 8 + k)->setEnabled((fBit.fuseenable1 & (0x80 >> k)) ? true : false);
+			chkFuse.at(3 * 8 + k)->setEnabled((fBit.fuseenable0 & (0x80 >> k)) ? true : false);
 		}
 	}
 	else
@@ -405,41 +337,41 @@ void fuseModalDialog::initWidgets(const QString &msg, long int type, bool readon
 		{
 			QString def = QString().sprintf( " %d", k);
 			//Label
-			chkLock[0 * 8 + k]->setText(def);
-			chkLock[1 * 8 + k]->setText(def);
-			chkLock[2 * 8 + k]->setText(def);
-			chkLock[3 * 8 + k]->setText(def);
+			chkLock.at(0 * 8 + k)->setText(def);
+			chkLock.at(1 * 8 + k)->setText(def);
+			chkLock.at(2 * 8 + k)->setText(def);
+			chkLock.at(3 * 8 + k)->setText(def);
 
-			chkFuse[0 * 8 + k]->setText(def);
-			chkFuse[1 * 8 + k]->setText(def);
-			chkFuse[2 * 8 + k]->setText(def);
-			chkFuse[3 * 8 + k]->setText(def);
+			chkFuse.at(0 * 8 + k)->setText(def);
+			chkFuse.at(1 * 8 + k)->setText(def);
+			chkFuse.at(2 * 8 + k)->setText(def);
+			chkFuse.at(3 * 8 + k)->setText(def);
 
 			//Sensitive
-			chkLock[0 * 8 + k]->setEnabled(false);
-			chkLock[1 * 8 + k]->setEnabled(false);
-			chkLock[2 * 8 + k]->setEnabled(false);
-			chkLock[3 * 8 + k]->setEnabled(false);
+			chkLock.at(0 * 8 + k)->setEnabled(false);
+			chkLock.at(1 * 8 + k)->setEnabled(false);
+			chkLock.at(2 * 8 + k)->setEnabled(false);
+			chkLock.at(3 * 8 + k)->setEnabled(false);
 
-			chkFuse[0 * 8 + k]->setEnabled(false);
-			chkFuse[1 * 8 + k]->setEnabled(false);
-			chkFuse[2 * 8 + k]->setEnabled(false);
-			chkFuse[3 * 8 + k]->setEnabled(false);
+			chkFuse.at(0 * 8 + k)->setEnabled(false);
+			chkFuse.at(1 * 8 + k)->setEnabled(false);
+			chkFuse.at(2 * 8 + k)->setEnabled(false);
+			chkFuse.at(3 * 8 + k)->setEnabled(false);
 		}
 	}
 
 	//Checked
 	for (int k = 0; k < LOCKPACKSIZE; k++)
 	{
-		chkLock[0 * 8 + k]->setChecked(((lock >> 24) & (0x80 >> k)) ? true : false); // L0
-		chkLock[1 * 8 + k]->setChecked(((lock >> 16) & (0x80 >> k)) ? true : false); // L1
-		chkLock[2 * 8 + k]->setChecked(((lock >>  8) & (0x80 >> k)) ? true : false); // L2
-		chkLock[3 * 8 + k]->setChecked(((lock) & (0x80 >> k)) ? true : false);     // L3
+		chkLock.at(0 * 8 + k)->setChecked(((lock >> 24) & (0x80 >> k)) ? true : false); // L0
+		chkLock.at(1 * 8 + k)->setChecked(((lock >> 16) & (0x80 >> k)) ? true : false); // L1
+		chkLock.at(2 * 8 + k)->setChecked(((lock >>  8) & (0x80 >> k)) ? true : false); // L2
+		chkLock.at(3 * 8 + k)->setChecked(((lock) & (0x80 >> k)) ? true : false);     // L3
 
-		chkFuse[0 * 8 + k]->setChecked(((fuse >> 24) & (0x80 >> k)) ? true : false); // F0
-		chkFuse[1 * 8 + k]->setChecked(((fuse >> 16) & (0x80 >> k)) ? true : false); // F1
-		chkFuse[2 * 8 + k]->setChecked(((fuse >>  8) & (0x80 >> k)) ? true : false); // F2
-		chkFuse[3 * 8 + k]->setChecked(((fuse) & (0x80 >> k)) ? true : false);     // F3
+		chkFuse.at(0 * 8 + k)->setChecked(((fuse >> 24) & (0x80 >> k)) ? true : false); // F0
+		chkFuse.at(1 * 8 + k)->setChecked(((fuse >> 16) & (0x80 >> k)) ? true : false); // F1
+		chkFuse.at(2 * 8 + k)->setChecked(((fuse >>  8) & (0x80 >> k)) ? true : false); // F2
+		chkFuse.at(3 * 8 + k)->setChecked(((fuse) & (0x80 >> k)) ? true : false);     // F3
 	}
 
 	chkHlp1->setText(STR_FUSEDLGNOTESET + " (bit = 0)");
