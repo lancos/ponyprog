@@ -225,7 +225,7 @@ e2CmdWindow::e2CmdWindow(QWidget *parent ) :
 	//      type_index = -1;
 	//Initialize Type controls in Tool Bars
 	//      UpdateChipType( GetE2PPriType(GetLastDevType()), GetE2PSubType(GetLastDevType()) );
-	//      UpdateMenuType( GetLastDevType() );
+	//         UpdateMenuType( GetE2PPriType(E2Profile::GetLastDevType()), GetE2PSubType(E2Profile::GetLastDevType()) );
 	// TODO get last device
 	//      UpdateMenuType();
 
@@ -1171,7 +1171,16 @@ void e2CmdWindow::selectTypeSubtype(const QString &t, const QString &st)
 		nst = 0;
 	}
 
-	cbxEEPSubType->setCurrentIndex(nst); // sends signal
+	// search id
+	long new_id = 0;
+
+	for (int i = 0; i < deviceMenu[nt].info.count(); i++)
+	{
+		if (deviceMenu[nt].info.at(i).name == st)
+		{
+			new_id = deviceMenu[nt].info.at(i).id;
+		}
+	}
 
 	// EK 2017
 	UpdateMenuType(new_id);
