@@ -214,47 +214,47 @@ void e2App::initSettings()
 	// TODO to remove the read/write because of QSettings?
 	SetInterfaceType( (HInterfaceType) E2Profile::GetParInterfType() );
 	SetPort( E2Profile::GetParPortNo() );
-	E2Profile::SetPowerUpDelay( E2Profile::GetPowerUpDelay() );
+	E2Profile::GetPowerUpDelay() ; // E2Profile::SetPowerUpDelay( E2Profile::GetPowerUpDelay() );
 	SetPolarity( E2Profile::GetPolarityControl() );
-	E2Profile::SetSPIResetPulse( E2Profile::GetSPIResetPulse() );
-	E2Profile::SetSPIDelayAfterReset( E2Profile::GetSPIDelayAfterReset() );
-	E2Profile::SetSPIPageWrite( E2Profile::GetSPIPageWrite() );
-	E2Profile::SetMegaPageDelay( E2Profile::GetMegaPageDelay() );
-	E2Profile::SetAVRProgDelay( E2Profile::GetAVRProgDelay() );
-	E2Profile::SetAVREraseDelay( E2Profile::GetAVREraseDelay() );
-	E2Profile::SetAT89DelayAfterReset( E2Profile::GetAT89DelayAfterReset() );
-	E2Profile::SetAVRDelayAfterReset( E2Profile::GetAVRDelayAfterReset() );
-
-	E2Profile::SetI2CSpeed( E2Profile::GetI2CSpeed() );
-	E2Profile::SetSPISpeed( E2Profile::GetSPISpeed() );
-	E2Profile::SetMicroWireSpeed( E2Profile::GetMicroWireSpeed() );
-	E2Profile::SetPICSpeed( E2Profile::GetPICSpeed() );
-	E2Profile::SetSDESpeed( E2Profile::GetSDESpeed() );
-
-	E2Profile::SetLogEnabled( E2Profile::GetLogEnabled() );
-	E2Profile::SetSoundEnabled( E2Profile::GetSoundEnabled() );
-	E2Profile::SetSkipStartupDialog( E2Profile::GetSkipStartupDialog() );
-	E2Profile::SetVerifyAfterWrite( E2Profile::GetVerifyAfterWrite() );
-	E2Profile::SetClearBufBeforeLoad( E2Profile::GetClearBufBeforeLoad() );
-	E2Profile::SetClearBufBeforeRead( E2Profile::GetClearBufBeforeRead() );
-	E2Profile::SetAutoDetectPorts( E2Profile::GetAutoDetectPorts() );
-	E2Profile::SetAt89PageOp( E2Profile::GetAt89PageOp() );
-	E2Profile::Set8253FallEdge( E2Profile::Get8253FallEdge() );
+	E2Profile::GetSPIResetPulse();//        E2Profile::SetSPIResetPulse( E2Profile::GetSPIResetPulse() );
+	E2Profile::GetSPIDelayAfterReset();//   E2Profile::SetSPIDelayAfterReset( E2Profile::GetSPIDelayAfterReset() );
+	E2Profile::GetSPIPageWrite();//         E2Profile::SetSPIPageWrite( E2Profile::GetSPIPageWrite() );
+	E2Profile::GetMegaPageDelay();//       E2Profile::SetMegaPageDelay( E2Profile::GetMegaPageDelay() );
+	E2Profile::GetAVRProgDelay();//         E2Profile::SetAVRProgDelay( E2Profile::GetAVRProgDelay() );
+	E2Profile::GetAVREraseDelay();//        E2Profile::SetAVREraseDelay( E2Profile::GetAVREraseDelay() );
+	E2Profile::GetAT89DelayAfterReset(); //         E2Profile::SetAT89DelayAfterReset( E2Profile::GetAT89DelayAfterReset() );
+	E2Profile::GetAVRDelayAfterReset();//   E2Profile::SetAVRDelayAfterReset( E2Profile::GetAVRDelayAfterReset() );
+	//
+	E2Profile::GetI2CSpeed();//     E2Profile::SetI2CSpeed( E2Profile::GetI2CSpeed() );
+	E2Profile::GetSPISpeed();//     E2Profile::SetSPISpeed( E2Profile::GetSPISpeed() );
+	E2Profile::GetMicroWireSpeed();//       E2Profile::SetMicroWireSpeed( E2Profile::GetMicroWireSpeed() );
+	E2Profile::GetPICSpeed();//     E2Profile::SetPICSpeed( E2Profile::GetPICSpeed() );
+	E2Profile::GetSDESpeed();//     E2Profile::SetSDESpeed( E2Profile::GetSDESpeed() );
+	//
+	E2Profile::GetLogEnabled();//   E2Profile::SetLogEnabled( E2Profile::GetLogEnabled() );
+	E2Profile::GetSoundEnabled();//         E2Profile::SetSoundEnabled( E2Profile::GetSoundEnabled() );
+	E2Profile::GetSkipStartupDialog();//    E2Profile::SetSkipStartupDialog( E2Profile::GetSkipStartupDialog() );
+	E2Profile::GetVerifyAfterWrite();//     E2Profile::SetVerifyAfterWrite( E2Profile::GetVerifyAfterWrite() );
+	E2Profile::GetClearBufBeforeLoad();//   E2Profile::SetClearBufBeforeLoad( E2Profile::GetClearBufBeforeLoad() );
+	E2Profile::GetClearBufBeforeRead();//   E2Profile::SetClearBufBeforeRead( E2Profile::GetClearBufBeforeRead() );
+	E2Profile::GetAutoDetectPorts();//      E2Profile::SetAutoDetectPorts( E2Profile::GetAutoDetectPorts() );
+	E2Profile::GetAt89PageOp();//   E2Profile::SetAt89PageOp( E2Profile::GetAt89PageOp() );
+	E2Profile::Get8253FallEdge();//         E2Profile::Set8253FallEdge( E2Profile::Get8253FallEdge() );
 
 #ifdef  __unix__
-	E2Profile::SetHtmlBrowseApp( E2Profile::GetHtmlBrowseApp() );
-	E2Profile::SetLockDir( E2Profile::GetLockDir() );
-	E2Profile::SetDevDir( E2Profile::GetDevDir() );
+	E2Profile::GetHtmlBrowseApp();//        E2Profile::SetHtmlBrowseApp( E2Profile::GetHtmlBrowseApp() );
+	E2Profile::GetLockDir();//      E2Profile::SetLockDir( E2Profile::GetLockDir() );
+	E2Profile::GetDevDir();//       E2Profile::SetDevDir( E2Profile::GetDevDir() );
 #endif
 
 #ifdef  __linux__
-	E2Profile::SetGpioPinClock( E2Profile::GetGpioPinClock() );
-	E2Profile::SetGpioPinCtrl( E2Profile::GetGpioPinCtrl() );
-	E2Profile::SetGpioPinDataIn( E2Profile::GetGpioPinDataIn() );
-	E2Profile::SetGpioPinDataOut( E2Profile::GetGpioPinDataOut() );
+	E2Profile::GetGpioPinClock();//         E2Profile::SetGpioPinClock( E2Profile::GetGpioPinClock() );
+	E2Profile::GetGpioPinCtrl();//  E2Profile::SetGpioPinCtrl( E2Profile::GetGpioPinCtrl() );
+	E2Profile::GetGpioPinDataIn();//        E2Profile::SetGpioPinDataIn( E2Profile::GetGpioPinDataIn() );
+	E2Profile::GetGpioPinDataOut();//       E2Profile::SetGpioPinDataOut( E2Profile::GetGpioPinDataOut() );
 #endif
 
-	E2Profile::SetDevName( E2Profile::GetDevName() );
+	E2Profile::GetDevName(); //     E2Profile::SetDevName( E2Profile::GetDevName() );
 
 	scriptMode = false;
 	returnValue = 0;
