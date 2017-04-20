@@ -162,19 +162,21 @@ e2CmdWindow::e2CmdWindow(QWidget *parent ) :
 		exit (returnValue); //Se AppMain ritorna un valore != 0 esce immediatamente
 	}
 
-	// TODO
-	// read as options?
-	pre_type = -1;
-
-	pre_subtype = -1;
-
-
-	// menu creation
+	// menu creation for all devices
 	createDeviceMenues();
 
-    // The Canvas
-    e2HexEdit = new QHexEdit(this); //e2TextCanvasPane(this);
-    setCentralWidget(e2HexEdit);
+	// status widget
+	createStatusWidgets();
+
+	// combo boxes
+	CbxMenuInit();
+
+	// The Canvas
+	e2HexEdit = new QHexEdit(this); //e2TextCanvasPane(this);
+	setCentralWidget(e2HexEdit);
+
+	// create all signals, from e2HexEdit too
+	createSignalSlotConnections();
 
 	//      if (!awip)
 	{
@@ -185,18 +187,17 @@ e2CmdWindow::e2CmdWindow(QWidget *parent ) :
 			exit (-1);
 		}
 
-		e2AppWinInfo *a = new e2AppWinInfo(this, APPNAME, b);
+		// EK 2017
+		// the name of eeprom file to load?
+		e2AppWinInfo *a = new e2AppWinInfo(this, "", b);
 		//              qDebug() << b << a;
 		awip = a;
 		PostInit(); // removed from e2AppWinInfo
 	}
 
-
-	createStatusWidgets();
-
-	CbxMenuInit();
-
-	createSignalSlotConnections();
+	pre_id = -1; 
+        
+	UpdateMenuType(E2Profile::GetLastDevType() );
 
 	// The Status Bar
 	//      e2Status = new vStatusPane(StatBar);
@@ -612,6 +613,7 @@ void e2CmdWindow::createDeviceMenues()
 
 	mTmp->grp = new QActionGroup(this);
 	mTmp->info << eep24xx_map << eep24xx1A_map << eep24xx1B_map << eep24xx5_map;
+	mTmp->type << E24XX << E24XX1_A << E24XX1_B << E24XX5;
 
 	for (int i = 0; i < mTmp->info.count(); i++ )
 	{
@@ -634,6 +636,7 @@ void e2CmdWindow::createDeviceMenues()
 
 	mTmp->grp = new QActionGroup(this);
 	mTmp->info << eep24xx2_map;
+	mTmp->type << E24XX2;
 
 	for (int i = 0; i < mTmp->info.count(); i++ )
 	{
@@ -657,6 +660,7 @@ void e2CmdWindow::createDeviceMenues()
 
 	mTmp->grp = new QActionGroup(this);
 	mTmp->info << eep17xxx_map;
+	mTmp->type << AT17XXX;
 
 	for (int i = 0; i < mTmp->info.count(); i++ )
 	{
@@ -679,6 +683,7 @@ void e2CmdWindow::createDeviceMenues()
 
 	mTmp->grp = new QActionGroup(this);
 	mTmp->info << eep93x6_map;
+	mTmp->type << E93X6;
 
 	for (int i = 0; i < mTmp->info.count(); i++ )
 	{
@@ -701,6 +706,7 @@ void e2CmdWindow::createDeviceMenues()
 
 	mTmp->grp = new QActionGroup(this);
 	mTmp->info << eep93xx8_map;
+	mTmp->type << E93XX_8;
 
 	for (int i = 0; i < mTmp->info.count(); i++ )
 	{
@@ -724,6 +730,7 @@ void e2CmdWindow::createDeviceMenues()
 
 	mTmp->grp = new QActionGroup(this);
 	mTmp->info << eep250xx_map << eep25xxx_map;
+	mTmp->type << E250XX << E25XXX;
 
 	for (int i = 0; i < mTmp->info.count(); i++ )
 	{
@@ -746,6 +753,7 @@ void e2CmdWindow::createDeviceMenues()
 
 	mTmp->grp = new QActionGroup(this);
 	mTmp->info << eepAt90s_map;
+	mTmp->type << AT90SXX;
 
 	for (int i = 0; i < mTmp->info.count(); i++ )
 	{
@@ -768,6 +776,7 @@ void e2CmdWindow::createDeviceMenues()
 
 	mTmp->grp = new QActionGroup(this);
 	mTmp->info << eepAt89s_map;
+	mTmp->type << AT89SXX;
 
 	for (int i = 0; i < mTmp->info.count(); i++ )
 	{
@@ -790,6 +799,7 @@ void e2CmdWindow::createDeviceMenues()
 
 	mTmp->grp = new QActionGroup(this);
 	mTmp->info << eepPic168xx_map << eepPic16_map;
+	mTmp->type << PIC168XX << PIC16XX;
 
 	for (int i = 0; i < mTmp->info.count(); i++ )
 	{
@@ -812,6 +822,7 @@ void e2CmdWindow::createDeviceMenues()
 
 	mTmp->grp = new QActionGroup(this);
 	mTmp->info << eepPic125_map;
+	mTmp->type << PIC125XX;
 
 	for (int i = 0; i < mTmp->info.count(); i++ )
 	{
@@ -834,6 +845,7 @@ void e2CmdWindow::createDeviceMenues()
 
 	mTmp->grp = new QActionGroup(this);
 	mTmp->info = eepnvm3060_map;
+	mTmp->type << ENVMXXX;
 
 	for (int i = 0; i < mTmp->info.count(); i++ )
 	{
@@ -856,6 +868,7 @@ void e2CmdWindow::createDeviceMenues()
 
 	mTmp->grp = new QActionGroup(this);
 	mTmp->info << eep2506_map;
+	mTmp->type << E2506XX;
 
 	for (int i = 0; i < mTmp->info.count(); i++ )
 	{
@@ -878,6 +891,7 @@ void e2CmdWindow::createDeviceMenues()
 
 	mTmp->grp = new QActionGroup(this);
 	mTmp->info << eep2444_map;
+	mTmp->type << X24C44XX;
 
 	for (int i = 0; i < mTmp->info.count(); i++ )
 	{
@@ -1141,7 +1155,7 @@ void e2CmdWindow::selectTypeSubtype(const QString &t, const QString &st)
 	QString st_tmp = st;
 	st_tmp.remove(QChar('&'));
 
-	qDebug() << t_tmp << st_tmp;
+// 	qDebug() << t_tmp << st_tmp;
 
 	int nt = cbxEEPType->findText(t_tmp);
 
@@ -1149,8 +1163,6 @@ void e2CmdWindow::selectTypeSubtype(const QString &t, const QString &st)
 	{
 		nt = 0;
 	}
-
-	cbxEEPType->setCurrentIndex(nt); // sends signal
 
 	int nst = cbxEEPSubType->findText(st_tmp);
 
@@ -4703,9 +4715,6 @@ int e2CmdWindow::CmdEditNote()
 
 	if (notes.exec() == QDialog::Accepted)
 	{
-		//              QString str1 = notes.GetId();
-		//              QString str2 = notes.GetComment();
-
 		UpdateStrFromStr(str1, str2);
 
 		UpdateStatusBar();
@@ -4974,19 +4983,29 @@ void e2CmdWindow::createToolBarCbx()
 }
 
 
-// EK 2017
-//  TODO
+/**
+ * @brief slot from comboobox pritype
+ *
+ */
 void e2CmdWindow::onDevType(int t)
 {
-	UpdateMenuType(t, 0);
-	//      disconnect(cbxEEPType, SIGNAL(currentIndexChanged(int)), this, SLOT(onDevType(int)));
-	//      UpdateMenuType(t);
-	//      connect(cbxEEPType, SIGNAL(currentIndexChanged(int)), this, SLOT(onDevType(int)));
+
+	// search id
+	long new_id = 0;
+
+	if (deviceMenu[t].info.count())
+	{
+		new_id = deviceMenu[t].info.at(0).id;
+	}
+
+	UpdateMenuType(new_id);
 }
 
 
-// EK 2017
-//  TODO
+/**
+ * @brief slot from comboobox subtype
+ *
+ */
 void e2CmdWindow::onDevSubType(int st)
 {
 
