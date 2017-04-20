@@ -195,7 +195,7 @@ e2CmdWindow::e2CmdWindow(QWidget *parent ) :
 		PostInit(); // removed from e2AppWinInfo
 	}
 
-	pre_id = -1; 
+	e2p_id = -1; 
         
 	UpdateMenuType(E2Profile::GetLastDevType() );
 
@@ -5076,8 +5076,8 @@ void e2CmdWindow::UpdateMenuType(long new_id)
 
 	qDebug() << "UpdateMenuType" << new_id;
 
-	int pre_type = GetE2PPriType(pre_id);
-	int pre_subtype = GetE2PSubType(pre_id);
+	int pre_type = GetE2PPriType(e2p_id);
+	int pre_subtype = GetE2PSubType(e2p_id);
 
 	int new_type = GetE2PPriType(new_id);
 	int new_subtype = GetE2PSubType(new_id);
@@ -5157,7 +5157,7 @@ void e2CmdWindow::UpdateMenuType(long new_id)
 			{
 				for(int im = 0; im < (*mOld).info.count(); im++)
 				{
-					if ((*mOld).info.at(im).id == pre_id)
+					if ((*mOld).info.at(im).id == e2p_id)
 					{
 						aLst.at(im)->setChecked(false);
 						break;
@@ -5166,8 +5166,6 @@ void e2CmdWindow::UpdateMenuType(long new_id)
 			}
 		}
 	}
-
-	pre_id = new_id;
 
 	e2p_id = new_id;
 

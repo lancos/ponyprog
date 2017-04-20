@@ -328,8 +328,6 @@ private:
 
 	// Info for the TextCanvas
 	int first_line;
-	long pre_id;
-	//      int pre_subtype;
 
 	long e2p_id; // id of chip
 
