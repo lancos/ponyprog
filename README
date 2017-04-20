@@ -1,14 +1,7 @@
 -------------------------------------------
-PonyProg - Serial Device Programmer  v2.08d
+3.0.0 - PonyProg - Serial Device Programmer
 
 PonyProg is the universal programmer for many serial devices.
 If you want to know more about PonyProg look at my site
 
 http://www.LancOS.com
-
-
-For connection with hardware please copy the file udev/rules.d/z90_cncusb.rules into /etc/udev/rules.d/ directory and restart the udev daemon.
-
-Version history
-
-3.0.0   Project converted to Qt framework
