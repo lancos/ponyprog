@@ -7,8 +7,6 @@
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id: rs232int.h,v 1.6 2009/11/16 23:40:43 lancos Exp $
-//-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
 // modify it under the terms of the GNU  General Public License            //
@@ -41,16 +39,17 @@
 #include "types.h"
 #include "e2profil.h"
 
-#define MAX_COMPORTS    4
+//#define MAX_COMPORTS    64
 
 class RS232Interface
 {
 public:               //------------------------------- public
 
-	RS232Interface(int com_no = 0);
+	RS232Interface();
 	virtual ~RS232Interface();
 
 	int OpenSerial(int no);
+	int OpenSerial(QString devname);
 	void CloseSerial();
 
 	void SerialFlushRx();
@@ -59,7 +58,7 @@ public:               //------------------------------- public
 	long WriteSerial(uint8_t *buffer, long len);
 	int SetSerialParams(long speed = -1, int bits = -1, int parity = -1, int stops = -1, int flow_control = -1);
 	int SetSerialTimeouts(long init_read = -1, long while_read = -1);
-	//      void SetSerialEventMask(long mask);
+//	void SetSerialEventMask(long mask);
 	int SetSerialBreak(int state);
 
 	int SetSerialDTR(int dtr);
@@ -73,6 +72,8 @@ protected:            //------------------------------- protected
 	void WaitForTxEmpty();
 
 private:              //------------------------------- private
+
+	QString m_devname;
 
 	long read_total_timeout, read_interval_timeout;
 
@@ -92,7 +93,6 @@ private:              //------------------------------- private
 #ifdef  __linux__
 	int fd;
 	struct termios old_termios;
-	QString lockname;
 #endif
 };
 
