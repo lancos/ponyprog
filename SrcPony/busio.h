@@ -54,6 +54,7 @@ public:                //------------------------------- public
 
 	virtual int TestPort(int port)
 	{
+		(void)port;
 		return OK;
 	}
 
@@ -63,37 +64,47 @@ public:                //------------------------------- public
 	virtual long Write(int addr, uint8_t const *data, long length, int page_size = 0) = 0;
 	virtual int Erase(int type = 0)
 	{
+		(void)type;
 		return NOTSUPPORTED;
 	}
 
 	virtual int ReadDeviceCode(int addr)
 	{
+		(void)addr;
 		return OK;
 	}
 	virtual int WriteLockBits(uint32_t val, long model = 0)
 	{
+		(void)val;
+		(void)model;
 		return OK;
 	}
 	virtual int WriteFuseBits(uint32_t val, long model = 0)
 	{
+		(void)val;
+		(void)model;
 		return OK;
 	}
 	virtual uint32_t ReadLockBits(long model = 0)
 	{
+		(void)model;
 		return 0;
 	}
 	virtual uint32_t ReadFuseBits(long model = 0)
 	{
+		(void)model;
 		return 0;
 	}
 
 	virtual long ReadCalibration(int addr = 0)
 	{
+		(void)addr;
 		return -1;        //No calibration value available
 	}
 
 	virtual int CompareMultiWord(uint8_t *data1, uint8_t *data2, long length, int split)
 	{
+		(void)split;
 		return memcmp(data1, data2, length);
 	}
 

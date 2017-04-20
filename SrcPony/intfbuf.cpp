@@ -177,6 +177,8 @@ int IntelFileBuf::Save(int savetype, long relocation_offset)
 	FILE *fh;
 	int rval = OK;
 
+	(void)relocation_offset;
+
 	if ( (fh = fopen(FileBuf::GetFileName().toLatin1(), "w")) == NULL )
 	{
 		return CREATEERROR;

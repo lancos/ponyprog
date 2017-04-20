@@ -112,6 +112,7 @@ int Pic16xx::SecurityWrite(uint32_t bits)
 
 int Pic16xx::Probe(int probe_size)
 {
+	(void)probe_size;
 	return 1;
 }
 

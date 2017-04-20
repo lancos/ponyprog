@@ -148,6 +148,7 @@ int SxBus::RecDataWord(int wlen)
 
 int SxBus::WaitReadyAfterWrite(long timeout)
 {
+	(void)timeout;
 	WaitMsec(10);
 
 	return OK;
@@ -172,6 +173,9 @@ int SxBus::Reset(void)
 long SxBus::Read(int addr, uint8_t *data, long length, int page_size)
 {
 	long len = length;
+
+	(void)addr;
+	(void)page_size;
 
 	length >>= 1;   //contatore da byte a word
 
@@ -200,6 +204,9 @@ long SxBus::Read(int addr, uint8_t *data, long length, int page_size)
 long SxBus::Write(int addr, uint8_t const *data, long length, int page_size)
 {
 	long curaddr;
+
+	(void)addr;
+	(void)page_size;
 
 	length >>= 1;   //contatore da byte a word
 

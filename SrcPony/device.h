@@ -47,6 +47,7 @@ public:               //---------------------------------------- public
 
 	virtual int Probe(int probe_size = 0)
 	{
+		(void)probe_size;
 		return OK;
 	}
 	virtual int Read(int probe = 1, int type = ALL_TYPE) = 0;
@@ -55,11 +56,14 @@ public:               //---------------------------------------- public
 
 	virtual int Erase(int probe = 1, int type = ALL_TYPE)
 	{
+		(void)probe;
+		(void)type;
 		return GetBus()->Erase();
 	}
 
 	virtual int BankRollOverDetect(int force)
 	{
+		(void)force;
 		return 4;        //4 means no need to know Bank Rollover for this device
 	}
 
@@ -70,6 +74,7 @@ public:               //---------------------------------------- public
 	}
 	virtual int SecurityWrite(uint32_t bits)
 	{
+		(void)bits;
 		return 0;
 	}
 	virtual int FusesRead(uint32_t &bits)
@@ -79,14 +84,17 @@ public:               //---------------------------------------- public
 	}
 	virtual int FusesWrite(uint32_t bits)
 	{
+		(void)bits;
 		return 0;
 	}
 	virtual int HighEnduranceRead(uint32_t &block_no)
 	{
+		(void)block_no;
 		return 0;
 	}
 	virtual int HighEnduranceWrite(uint32_t block_no)
 	{
+		(void)block_no;
 		return 0;
 	}
 

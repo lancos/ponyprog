@@ -132,7 +132,7 @@ int Pic168xx::Probe(int probe_size)
 	long type;
 
 	rv = QueryType(type);
-	int pritype = GetE2PPriType(type);
+//	int pritype = GetE2PPriType(type);
 	int subtype = GetE2PSubType(type);
 
 	if (probe_size)

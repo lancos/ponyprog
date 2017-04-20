@@ -636,6 +636,7 @@ static volatile int alarm_caught;
 
 static void alarm(int i)
 {
+	(void)i;
 	alarm_caught = 1;
 }
 #endif

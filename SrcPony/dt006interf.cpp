@@ -98,6 +98,7 @@ void Dt006Interface::SetControlLine(int res)
 
 int Dt006Interface::SetPower(int onoff)
 {
+	(void)onoff;
 	//      OutDataPort(0);         //No action
 	SetControlLine(0);
 
@@ -265,5 +266,7 @@ int Dt006Interface::IsClockDataDOWN()
 
 int Dt006Interface::TestPort(int com_no)
 {
+	(void)com_no;
+
 	return OK;
 }

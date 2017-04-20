@@ -68,6 +68,8 @@ At93cBus::At93cBus(BusInterface *ptr)
 
 int At93cBus::Erase(int type)
 {
+	(void)type;
+
 	clearCS();
 	setCS();
 
@@ -121,10 +123,11 @@ int At93cBus::Erase(int type)
 ****/
 
 
-//ATTENZIONE!!! Le 93CXX vengono lette e scritte una WORD per volta,
-// non a BYTE
+//ATTENTION!!! 93CXX are read and written a WORD at a time (not BYTE)
 long At93cBus::Read(int addr, uint8_t *data, long length, int page_size)
 {
+	(void)page_size;
+
 	qDebug() << "At93cBus::Read(" << (hex) << addr << ", " << data << ", " << (dec) << length;
 
 	long len;

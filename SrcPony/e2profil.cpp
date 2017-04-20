@@ -1687,7 +1687,7 @@ int E2Profile::GetCalibrationAddress(long &start, int &size, bool &mtype)
 
 void E2Profile::SetCalibrationAddress(unsigned long start, int size, bool mtype)
 {
-	if (start >= 0)
+//	if (start >= 0)
 	{
 		s->setValue("OscCalibrationAddr", QString::number(start));
 	}

@@ -51,6 +51,8 @@ E24xx1::~E24xx1()
 
 int E24xx1::Probe(int probe_size)
 {
+	(void)probe_size;
+
 	int rval = E24xx::Probe(0);
 
 	if (rval > 0)
