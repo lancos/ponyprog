@@ -82,7 +82,7 @@ SET(CURRENT_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR})
 # see the patched README file in this commit
 #cat README | grep -E  '^[0-9]+\.[0-9]+\.[0-9]+' | head -n 1
 EXECUTE_PROCESS (
-   COMMAND cat README
+   COMMAND cat HISTORY
    COMMAND grep -E  "^[0-9]+\\.[0-9]+\\.[0-9]+"
    COMMAND head -n 1
    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
