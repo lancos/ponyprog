@@ -195,8 +195,8 @@ e2CmdWindow::e2CmdWindow(QWidget *parent ) :
 		PostInit(); // removed from e2AppWinInfo
 	}
 
-	e2p_id = -1; 
-        
+	e2p_id = -1;
+
 	UpdateMenuType(E2Profile::GetLastDevType() );
 
 	// The Status Bar
@@ -593,19 +593,12 @@ int e2CmdWindow::OnError(int err_no, const QString &msgerr)
 	return rv;
 }
 
-// extern const char* eep24xx_map[];
-
 /**
  * @brief
  *
  */
-void e2CmdWindow::createDeviceMenues()
+void e2CmdWindow::addI2C8Struct()
 {
-	// to add into menu: menuDevice
-
-	// I2Cbus8
-	// eep24xx_map, eep24xx1A_map, eep24xx1B_map, eep24xx5_map
-
 	menuToGroup *mTmp = new menuToGroup();
 
 	mTmp->mnu = new QMenu("I2C Bus 8bit eeprom");
@@ -627,12 +620,18 @@ void e2CmdWindow::createDeviceMenues()
 
 	connect(mTmp->grp, SIGNAL(triggered(QAction*)), this, SLOT(onSelectI2C8(QAction*)));
 	deviceMenu << *mTmp;
+}
 
-	// I2Cbus16
-	// eep24xx2_map
+/**
+ * @brief
+ *
+ */
+void e2CmdWindow::addI2C16Struct()
+{
+	menuToGroup *mTmp = new menuToGroup();
 	mTmp = new menuToGroup();
 	mTmp->mnu = new QMenu("I2C Bus 16bit eeprom");
-	actionRecent = menuDevice->addMenu(mTmp->mnu);
+	QAction *actionRecent = menuDevice->addMenu(mTmp->mnu);
 
 	mTmp->grp = new QActionGroup(this);
 	mTmp->info << eep24xx2_map;
@@ -650,13 +649,19 @@ void e2CmdWindow::createDeviceMenues()
 
 	connect(mTmp->grp, SIGNAL(triggered(QAction*)), this, SLOT(onSelectI2C16(QAction*)));
 	deviceMenu << *mTmp;
+}
 
+/**
+ * @brief
+ *
+ */
+void e2CmdWindow::addI2CAT17Struct()
+{
+	menuToGroup *mTmp = new menuToGroup();
 
-	// I2CbusAT17
-	// eep17xxx_map
 	mTmp = new menuToGroup();
 	mTmp->mnu =  new QMenu("I2C Bus AT17 eeprom");
-	actionRecent = menuDevice->addMenu(mTmp->mnu);
+	QAction *actionRecent = menuDevice->addMenu(mTmp->mnu);
 
 	mTmp->grp = new QActionGroup(this);
 	mTmp->info << eep17xxx_map;
@@ -674,12 +679,19 @@ void e2CmdWindow::createDeviceMenues()
 
 	connect(mTmp->grp, SIGNAL(triggered(QAction*)), this, SLOT(onSelectI2CAT17(QAction*)));
 	deviceMenu << *mTmp;
+}
 
-	// MicroWire16
-	// eep93x6_map
+
+/**
+ * @brief
+ *
+ */
+void e2CmdWindow::addMW16Struct()
+{
+	menuToGroup *mTmp = new menuToGroup();
 	mTmp = new menuToGroup();
 	mTmp->mnu = new QMenu("MicroWire16 eeprom");
-	actionRecent = menuDevice->addMenu(mTmp->mnu);
+	QAction *actionRecent = menuDevice->addMenu(mTmp->mnu);
 
 	mTmp->grp = new QActionGroup(this);
 	mTmp->info << eep93x6_map;
@@ -697,12 +709,19 @@ void e2CmdWindow::createDeviceMenues()
 
 	connect(mTmp->grp, SIGNAL(triggered(QAction*)), this, SLOT(onSelectMW16(QAction*)));
 	deviceMenu << *mTmp;
+}
 
-	// MicroWire8
-	// eep93xx8_map
+
+/**
+ * @brief
+ *
+ */
+void e2CmdWindow::addMW8Struct()
+{
+	menuToGroup *mTmp = new menuToGroup();
 	mTmp = new menuToGroup();
 	mTmp->mnu = new QMenu("MicroWire8 eeprom");
-	actionRecent = menuDevice->addMenu(mTmp->mnu);
+	QAction *actionRecent = menuDevice->addMenu(mTmp->mnu);
 
 	mTmp->grp = new QActionGroup(this);
 	mTmp->info << eep93xx8_map;
@@ -720,13 +739,19 @@ void e2CmdWindow::createDeviceMenues()
 
 	connect(mTmp->grp, SIGNAL(triggered(QAction*)), this, SLOT(onSelectMW8(QAction*)));
 	deviceMenu << *mTmp;
+}
 
 
-	// SPI eeprom
-	// eep250xx_map, eep25xxx_map
+/**
+ * @brief
+ *
+ */
+void e2CmdWindow::addSPIStruct()
+{
+	menuToGroup *mTmp = new menuToGroup();
 	mTmp = new menuToGroup();
 	mTmp->mnu = new QMenu("SPI eeprom");
-	actionRecent = menuDevice->addMenu(mTmp->mnu);
+	QAction *actionRecent = menuDevice->addMenu(mTmp->mnu);
 
 	mTmp->grp = new QActionGroup(this);
 	mTmp->info << eep250xx_map << eep25xxx_map;
@@ -744,12 +769,18 @@ void e2CmdWindow::createDeviceMenues()
 
 	connect(mTmp->grp, SIGNAL(triggered(QAction*)), this, SLOT(onSelectSPI(QAction*)));
 	deviceMenu << *mTmp;
+}
 
-	// AVR
-	// eepAt90_map
+/**
+ * @brief
+ *
+ */
+void e2CmdWindow::addAT90Struct()
+{
+	menuToGroup *mTmp = new menuToGroup();
 	mTmp = new menuToGroup();
 	mTmp->mnu = new QMenu("AVR micro");
-	actionRecent = menuDevice->addMenu(mTmp->mnu);
+	QAction *actionRecent = menuDevice->addMenu(mTmp->mnu);
 
 	mTmp->grp = new QActionGroup(this);
 	mTmp->info << eepAt90s_map;
@@ -767,12 +798,19 @@ void e2CmdWindow::createDeviceMenues()
 
 	connect(mTmp->grp, SIGNAL(triggered(QAction*)), this, SLOT(onSelectAVR(QAction*)));
 	deviceMenu << *mTmp;
+}
 
-	// AT89
-	// eepAt89_map
+
+/**
+ * @brief
+ *
+ */
+void e2CmdWindow::addAT89Struct()
+{
+	menuToGroup *mTmp = new menuToGroup();
 	mTmp = new menuToGroup();
 	mTmp->mnu = new QMenu("AT89S micro");
-	actionRecent = menuDevice->addMenu(mTmp->mnu);
+	QAction *actionRecent = menuDevice->addMenu(mTmp->mnu);
 
 	mTmp->grp = new QActionGroup(this);
 	mTmp->info << eepAt89s_map;
@@ -790,12 +828,19 @@ void e2CmdWindow::createDeviceMenues()
 
 	connect(mTmp->grp, SIGNAL(triggered(QAction*)), this, SLOT(onSelectAT89S(QAction*)));
 	deviceMenu << *mTmp;
+}
 
-	// PIC16
-	// eepPic168xx_map, eepPic16_map
+
+/**
+ * @brief
+ *
+ */
+void e2CmdWindow::addPIC16Struct()
+{
+	menuToGroup *mTmp = new menuToGroup();
 	mTmp = new menuToGroup();
 	mTmp->mnu = new QMenu("PIC 16 micro");
-	actionRecent = menuDevice->addMenu(mTmp->mnu);
+	QAction *actionRecent = menuDevice->addMenu(mTmp->mnu);
 
 	mTmp->grp = new QActionGroup(this);
 	mTmp->info << eepPic168xx_map << eepPic16_map;
@@ -813,12 +858,19 @@ void e2CmdWindow::createDeviceMenues()
 
 	connect(mTmp->grp, SIGNAL(triggered(QAction*)), this, SLOT(onSelectPIC16(QAction*)));
 	deviceMenu << *mTmp;
+}
 
-	// PIC12
-	// eepPic125_map
+
+/**
+ * @brief
+ *
+ */
+void e2CmdWindow::addPIC12Struct()
+{
+	menuToGroup *mTmp = new menuToGroup();
 	mTmp = new menuToGroup();
 	mTmp->mnu = new QMenu("PIC 12 micro");
-	actionRecent = menuDevice->addMenu(mTmp->mnu);
+	QAction *actionRecent = menuDevice->addMenu(mTmp->mnu);
 
 	mTmp->grp = new QActionGroup(this);
 	mTmp->info << eepPic125_map;
@@ -836,12 +888,18 @@ void e2CmdWindow::createDeviceMenues()
 
 	connect(mTmp->grp, SIGNAL(triggered(QAction*)), this, SLOT(onSelectPIC12(QAction*)));
 	deviceMenu << *mTmp;
+}
 
-	// ImBus
-	//eepnvm3060_map
+/**
+ * @brief
+ *
+ */
+void e2CmdWindow::addIMBUSStruct()
+{
+	menuToGroup *mTmp = new menuToGroup();
 	mTmp = new menuToGroup();
 	mTmp->mnu = new QMenu("ImBus eeprom");
-	actionRecent = menuDevice->addMenu(mTmp->mnu);
+	QAction *actionRecent = menuDevice->addMenu(mTmp->mnu);
 
 	mTmp->grp = new QActionGroup(this);
 	mTmp->info = eepnvm3060_map;
@@ -859,12 +917,18 @@ void e2CmdWindow::createDeviceMenues()
 
 	connect(mTmp->grp, SIGNAL(triggered(QAction*)), this, SLOT(onSelectImBus(QAction*)));
 	deviceMenu << *mTmp;
+}
 
-	// SDE
-	//eep2506_map
+/**
+ * @brief
+ *
+ */
+void e2CmdWindow::addSDEStruct()
+{
+	menuToGroup *mTmp = new menuToGroup();
 	mTmp = new menuToGroup();
 	mTmp->mnu = new QMenu("SDE2506 eeprom");
-	actionRecent = menuDevice->addMenu(mTmp->mnu);
+	QAction *actionRecent = menuDevice->addMenu(mTmp->mnu);
 
 	mTmp->grp = new QActionGroup(this);
 	mTmp->info << eep2506_map;
@@ -882,12 +946,18 @@ void e2CmdWindow::createDeviceMenues()
 
 	connect(mTmp->grp, SIGNAL(triggered(QAction*)), this, SLOT(onSelectSDE2506(QAction*)));
 	deviceMenu << *mTmp;
+}
 
-	// X2444
-	//eep2444_map
+/**
+ * @brief
+ *
+ */
+void e2CmdWindow::addX24Ctruct()
+{
+	menuToGroup *mTmp = new menuToGroup();
 	mTmp = new menuToGroup();
 	mTmp->mnu = new QMenu("X2444 eeprom");
-	actionRecent = menuDevice->addMenu(mTmp->mnu);
+	QAction *actionRecent = menuDevice->addMenu(mTmp->mnu);
 
 	mTmp->grp = new QActionGroup(this);
 	mTmp->info << eep2444_map;
@@ -905,6 +975,68 @@ void e2CmdWindow::createDeviceMenues()
 
 	connect(mTmp->grp, SIGNAL(triggered(QAction*)), this, SLOT(onSelectX244(QAction*)));
 	deviceMenu << *mTmp;
+}
+
+
+/**
+ * @brief
+ *
+ */
+void e2CmdWindow::createDeviceMenues()
+{
+	// to add into menu: menuDevice
+
+	// I2Cbus8
+	// eep24xx_map, eep24xx1A_map, eep24xx1B_map, eep24xx5_map
+	addI2C8Struct();
+
+	// I2Cbus16
+	// eep24xx2_map
+	addI2C16Struct();
+
+	// I2CbusAT17
+	// eep17xxx_map
+	addI2CAT17Struct();
+
+	// MicroWire16
+	// eep93x6_map
+	addMW16Struct();
+
+	// MicroWire8
+	// eep93xx8_map
+	addMW8Struct();
+
+	// SPI eeprom
+	// eep250xx_map, eep25xxx_map
+	addSPIStruct();
+
+	// AVR
+	// eepAt90_map
+	addAT90Struct();
+
+	// AT89
+	// eepAt89_map
+	addAT89Struct();
+
+	// PIC16
+	// eepPic168xx_map, eepPic16_map
+	addPIC16Struct();
+
+	// PIC12
+	// eepPic125_map
+	addPIC12Struct();
+
+	// ImBus
+	//eepnvm3060_map
+	addIMBUSStruct();
+
+	// SDE
+	//eep2506_map
+	addSDEStruct();
+
+	// X2444
+	//eep2444_map
+	addX24Ctruct();
 
 	setMenuIndexes();
 }
@@ -1155,7 +1287,7 @@ void e2CmdWindow::selectTypeSubtype(const QString &t, const QString &st)
 	QString st_tmp = st;
 	st_tmp.remove(QChar('&'));
 
-// 	qDebug() << t_tmp << st_tmp;
+	//      qDebug() << t_tmp << st_tmp;
 
 	int nt = cbxEEPType->findText(t_tmp);
 
@@ -4000,9 +4132,9 @@ int e2CmdWindow::CmdSetDeviceType(int val)
 	awip->SetEEProm( new_type);
 
 	UpdateMenuType(new_type);
-        
-        first_line = 0;
-// 	curIndex = 0;
+
+	first_line = 0;
+	//      curIndex = 0;
 	Draw();
 	awip->RecalcCRC();      //??? 08/02/1998 riguardare
 	UpdateStatusBar();
@@ -5243,16 +5375,16 @@ void e2CmdWindow::UpdateMenuType(long new_id)
 
 	//      SetChipSubType(awip->GetEEPPriType());
 
-// 	first_line = 0;
+	//      first_line = 0;
 	//  curIndex = 0;
 	// EK 2017
 	// TODO
-// 	Draw();
+	//      Draw();
 
-// 	if ( awip )
-// 	{
-// 		awip->RecalcCRC();      //??? 08/02/1998 riguardare
-// 	}
+	//      if ( awip )
+	//      {
+	//              awip->RecalcCRC();      //??? 08/02/1998 riguardare
+	//      }
 
 	UpdateStatusBar();
 }
@@ -5860,14 +5992,14 @@ void e2CmdWindow::Draw()
 	}
 
 	QBuffer *b = new QBuffer(this);
-        b->setData(reinterpret_cast<char*>(awip->GetBufPtr()), awip->GetBufSize());
-//         dev.open();
-//         dev.read(reinterpret_cast<char*>(awip->GetBufPtr()), awip->GetBufSize());
+	b->setData(reinterpret_cast<char*>(awip->GetBufPtr()), awip->GetBufSize());
+	//         dev.open();
+	//         dev.read(reinterpret_cast<char*>(awip->GetBufPtr()), awip->GetBufSize());
 
-// 	QByteArray databuf = QByteArray(reinterpret_cast<char*>(awip->GetBufPtr()), awip->GetBufSize());
-// qDebug() << databuf;
+	//      QByteArray databuf = QByteArray(reinterpret_cast<char*>(awip->GetBufPtr()), awip->GetBufSize());
+	// qDebug() << databuf;
 	e2HexEdit->setData(*b);
-//         dev.close();
+	//         dev.close();
 #if 0
 	int no_line;
 	int new_top, new_shown;

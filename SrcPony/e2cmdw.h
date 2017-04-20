@@ -258,16 +258,28 @@ private:              //--------------------------------------- private
 	QString convertFilterListToString(const QStringList &lst);
 
 	menuToGroup* searchMenuInDeviceVector( int new_type );
-	//      int NextPage();
-	//      int PrevPage();
-	//      void FirstPage();
-	//      void LastPage();
+
 	void createDeviceMenues();
+	void addI2C8Struct();;
+	void addI2C16Struct();
+	void addI2CAT17Struct();
+	void addMW16Struct();
+	void addMW8Struct();
+	void addSPIStruct();
+	void addAT90Struct();
+	void addAT89Struct();
+	void addPIC16Struct();
+	void addPIC12Struct();
+	void addIMBUSStruct();
+	void addSDEStruct();
+	void addX24Ctruct();
+
 	int SaveFile(int force_select = 0);
 	int OpenFile(const QString &file = 0);
 	void UpdateStrFromBuf();
 	void UpdateStrFromStr(const QString &s1, const QString &s2 = 0);
 	void UpdateStatusBar();
+
 	//      void UpdateChipType(int pritype = -1, int subtype = -1);
 	//      void SetChipSubType(int pritype, int subtype = 0);
 	//      void UpdateMenuType(int new_type = 0, int new_subtype = 0);
@@ -291,6 +303,8 @@ private:              //--------------------------------------- private
 	void setMenuIndexes();
 	void selectTypeSubtype(const QString &t, const QString &st);
 	int ScriptError(int line_number, int arg_index, char *arg, const QString msg = "");
+
+
 
 private:
 	int idxI2Cbus8;
