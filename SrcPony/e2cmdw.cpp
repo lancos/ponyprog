@@ -4947,10 +4947,15 @@ void e2CmdWindow::createStatusWidgets()
 {
 	//
 	lblEEPInfo = new QLabel();
-	lblEEPInfo->setFixedWidth(250);
+	lblEEPInfo->setFixedWidth(300);
 	//      lblEEPInfo->setFixedHeight(17);
 	statusbar->addWidget(lblEEPInfo);
 
+	QFrame *verticalLine    =  new QFrame();
+	verticalLine->setFrameStyle(QFrame::VLine);
+	statusbar->addWidget(verticalLine);
+
+	//         verticalLine->setSizePolicy(QSizePolicy.Minimum,QSizePolicy.Expanding)
 	// EK 2017
 	// if we need the progress bar in state...
 	//      statusProgress = new QProgressBar();
@@ -4959,9 +4964,9 @@ void e2CmdWindow::createStatusWidgets()
 	//      statusbar->addWidget(statusProgress);
 
 	lblStringID = new QLabel();
-	lblStringID->setFixedWidth(250);
+	lblStringID->setFixedWidth(300);
 	//      lblStringID->setFixedHeight(17);
-	statusbar->addPermanentWidget(lblStringID);
+	statusbar->addWidget(lblStringID);
 }
 
 
