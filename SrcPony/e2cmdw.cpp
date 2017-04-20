@@ -80,15 +80,6 @@ static QString   STR_TITLE = APPNAME + " - ";
 class e2AppWinInfo;
 
 
-struct menuToGroup
-{
-	QMenu *mnu;
-	QActionGroup *grp;
-	// copy of chipInfo
-	QVector<chipInfo> info;
-};
-
-
 // EK 2017
 // TODO insert this into class
 QVector<menuToGroup> deviceMenu;
@@ -171,19 +162,21 @@ e2CmdWindow::e2CmdWindow(QWidget *parent ) :
 		exit (returnValue); //Se AppMain ritorna un valore != 0 esce immediatamente
 	}
 
-	// TODO
-	// read as options?
-	pre_type = -1;
-
-	pre_subtype = -1;
-
-
-	// menu creation
+	// menu creation for all devices
 	createDeviceMenues();
 
-    // The Canvas
-    e2HexEdit = new QHexEdit(this); //e2TextCanvasPane(this);
-    setCentralWidget(e2HexEdit);
+	// status widget
+	createStatusWidgets();
+
+	// combo boxes
+	CbxMenuInit();
+
+	// The Canvas
+	e2HexEdit = new QHexEdit(this); //e2TextCanvasPane(this);
+	setCentralWidget(e2HexEdit);
+
+	// create all signals, from e2HexEdit too
+	createSignalSlotConnections();
 
 	//      if (!awip)
 	{
@@ -194,18 +187,17 @@ e2CmdWindow::e2CmdWindow(QWidget *parent ) :
 			exit (-1);
 		}
 
-		e2AppWinInfo *a = new e2AppWinInfo(this, APPNAME, b);
+		// EK 2017
+		// the name of eeprom file to load?
+		e2AppWinInfo *a = new e2AppWinInfo(this, "", b);
 		//              qDebug() << b << a;
 		awip = a;
 		PostInit(); // removed from e2AppWinInfo
 	}
 
+	e2p_id = -1;
 
-	createStatusWidgets();
-
-	CbxMenuInit();
-
-	createSignalSlotConnections();
+	UpdateMenuType(E2Profile::GetLastDevType() );
 
 	// The Status Bar
 	//      e2Status = new vStatusPane(StatBar);
@@ -233,7 +225,7 @@ e2CmdWindow::e2CmdWindow(QWidget *parent ) :
 	//      type_index = -1;
 	//Initialize Type controls in Tool Bars
 	//      UpdateChipType( GetE2PPriType(GetLastDevType()), GetE2PSubType(GetLastDevType()) );
-	//      UpdateMenuType( GetLastDevType() );
+	//         UpdateMenuType( GetE2PPriType(E2Profile::GetLastDevType()), GetE2PSubType(E2Profile::GetLastDevType()) );
 	// TODO get last device
 	//      UpdateMenuType();
 
@@ -601,19 +593,12 @@ int e2CmdWindow::OnError(int err_no, const QString &msgerr)
 	return rv;
 }
 
-// extern const char* eep24xx_map[];
-
 /**
  * @brief
  *
  */
-void e2CmdWindow::createDeviceMenues()
+void e2CmdWindow::addI2C8Struct()
 {
-	// to add into menu: menuDevice
-
-	// I2Cbus8
-	// eep24xx_map, eep24xx1A_map, eep24xx1B_map, eep24xx5_map
-
 	menuToGroup *mTmp = new menuToGroup();
 
 	mTmp->mnu = new QMenu("I2C Bus 8bit eeprom");
@@ -621,6 +606,7 @@ void e2CmdWindow::createDeviceMenues()
 
 	mTmp->grp = new QActionGroup(this);
 	mTmp->info << eep24xx_map << eep24xx1A_map << eep24xx1B_map << eep24xx5_map;
+	mTmp->type << E24XX << E24XX1_A << E24XX1_B << E24XX5;
 
 	for (int i = 0; i < mTmp->info.count(); i++ )
 	{
@@ -634,15 +620,22 @@ void e2CmdWindow::createDeviceMenues()
 
 	connect(mTmp->grp, SIGNAL(triggered(QAction*)), this, SLOT(onSelectI2C8(QAction*)));
 	deviceMenu << *mTmp;
+}
 
-	// I2Cbus16
-	// eep24xx2_map
+/**
+ * @brief
+ *
+ */
+void e2CmdWindow::addI2C16Struct()
+{
+	menuToGroup *mTmp = new menuToGroup();
 	mTmp = new menuToGroup();
 	mTmp->mnu = new QMenu("I2C Bus 16bit eeprom");
-	actionRecent = menuDevice->addMenu(mTmp->mnu);
+	QAction *actionRecent = menuDevice->addMenu(mTmp->mnu);
 
 	mTmp->grp = new QActionGroup(this);
 	mTmp->info << eep24xx2_map;
+	mTmp->type << E24XX2;
 
 	for (int i = 0; i < mTmp->info.count(); i++ )
 	{
@@ -656,16 +649,23 @@ void e2CmdWindow::createDeviceMenues()
 
 	connect(mTmp->grp, SIGNAL(triggered(QAction*)), this, SLOT(onSelectI2C16(QAction*)));
 	deviceMenu << *mTmp;
+}
 
+/**
+ * @brief
+ *
+ */
+void e2CmdWindow::addI2CAT17Struct()
+{
+	menuToGroup *mTmp = new menuToGroup();
 
-	// I2CbusAT17
-	// eep17xxx_map
 	mTmp = new menuToGroup();
 	mTmp->mnu =  new QMenu("I2C Bus AT17 eeprom");
-	actionRecent = menuDevice->addMenu(mTmp->mnu);
+	QAction *actionRecent = menuDevice->addMenu(mTmp->mnu);
 
 	mTmp->grp = new QActionGroup(this);
 	mTmp->info << eep17xxx_map;
+	mTmp->type << AT17XXX;
 
 	for (int i = 0; i < mTmp->info.count(); i++ )
 	{
@@ -679,15 +679,23 @@ void e2CmdWindow::createDeviceMenues()
 
 	connect(mTmp->grp, SIGNAL(triggered(QAction*)), this, SLOT(onSelectI2CAT17(QAction*)));
 	deviceMenu << *mTmp;
+}
 
-	// MicroWire16
-	// eep93x6_map
+
+/**
+ * @brief
+ *
+ */
+void e2CmdWindow::addMW16Struct()
+{
+	menuToGroup *mTmp = new menuToGroup();
 	mTmp = new menuToGroup();
 	mTmp->mnu = new QMenu("MicroWire16 eeprom");
-	actionRecent = menuDevice->addMenu(mTmp->mnu);
+	QAction *actionRecent = menuDevice->addMenu(mTmp->mnu);
 
 	mTmp->grp = new QActionGroup(this);
 	mTmp->info << eep93x6_map;
+	mTmp->type << E93X6;
 
 	for (int i = 0; i < mTmp->info.count(); i++ )
 	{
@@ -701,15 +709,23 @@ void e2CmdWindow::createDeviceMenues()
 
 	connect(mTmp->grp, SIGNAL(triggered(QAction*)), this, SLOT(onSelectMW16(QAction*)));
 	deviceMenu << *mTmp;
+}
 
-	// MicroWire8
-	// eep93xx8_map
+
+/**
+ * @brief
+ *
+ */
+void e2CmdWindow::addMW8Struct()
+{
+	menuToGroup *mTmp = new menuToGroup();
 	mTmp = new menuToGroup();
 	mTmp->mnu = new QMenu("MicroWire8 eeprom");
-	actionRecent = menuDevice->addMenu(mTmp->mnu);
+	QAction *actionRecent = menuDevice->addMenu(mTmp->mnu);
 
 	mTmp->grp = new QActionGroup(this);
 	mTmp->info << eep93xx8_map;
+	mTmp->type << E93XX_8;
 
 	for (int i = 0; i < mTmp->info.count(); i++ )
 	{
@@ -723,16 +739,23 @@ void e2CmdWindow::createDeviceMenues()
 
 	connect(mTmp->grp, SIGNAL(triggered(QAction*)), this, SLOT(onSelectMW8(QAction*)));
 	deviceMenu << *mTmp;
+}
 
 
-	// SPI eeprom
-	// eep250xx_map, eep25xxx_map
+/**
+ * @brief
+ *
+ */
+void e2CmdWindow::addSPIStruct()
+{
+	menuToGroup *mTmp = new menuToGroup();
 	mTmp = new menuToGroup();
 	mTmp->mnu = new QMenu("SPI eeprom");
-	actionRecent = menuDevice->addMenu(mTmp->mnu);
+	QAction *actionRecent = menuDevice->addMenu(mTmp->mnu);
 
 	mTmp->grp = new QActionGroup(this);
 	mTmp->info << eep250xx_map << eep25xxx_map;
+	mTmp->type << E250XX << E25XXX;
 
 	for (int i = 0; i < mTmp->info.count(); i++ )
 	{
@@ -746,15 +769,22 @@ void e2CmdWindow::createDeviceMenues()
 
 	connect(mTmp->grp, SIGNAL(triggered(QAction*)), this, SLOT(onSelectSPI(QAction*)));
 	deviceMenu << *mTmp;
+}
 
-	// AVR
-	// eepAt90_map
+/**
+ * @brief
+ *
+ */
+void e2CmdWindow::addAT90Struct()
+{
+	menuToGroup *mTmp = new menuToGroup();
 	mTmp = new menuToGroup();
 	mTmp->mnu = new QMenu("AVR micro");
-	actionRecent = menuDevice->addMenu(mTmp->mnu);
+	QAction *actionRecent = menuDevice->addMenu(mTmp->mnu);
 
 	mTmp->grp = new QActionGroup(this);
 	mTmp->info << eepAt90s_map;
+	mTmp->type << AT90SXX;
 
 	for (int i = 0; i < mTmp->info.count(); i++ )
 	{
@@ -768,15 +798,23 @@ void e2CmdWindow::createDeviceMenues()
 
 	connect(mTmp->grp, SIGNAL(triggered(QAction*)), this, SLOT(onSelectAVR(QAction*)));
 	deviceMenu << *mTmp;
+}
 
-	// AT89
-	// eepAt89_map
+
+/**
+ * @brief
+ *
+ */
+void e2CmdWindow::addAT89Struct()
+{
+	menuToGroup *mTmp = new menuToGroup();
 	mTmp = new menuToGroup();
 	mTmp->mnu = new QMenu("AT89S micro");
-	actionRecent = menuDevice->addMenu(mTmp->mnu);
+	QAction *actionRecent = menuDevice->addMenu(mTmp->mnu);
 
 	mTmp->grp = new QActionGroup(this);
 	mTmp->info << eepAt89s_map;
+	mTmp->type << AT89SXX;
 
 	for (int i = 0; i < mTmp->info.count(); i++ )
 	{
@@ -790,15 +828,23 @@ void e2CmdWindow::createDeviceMenues()
 
 	connect(mTmp->grp, SIGNAL(triggered(QAction*)), this, SLOT(onSelectAT89S(QAction*)));
 	deviceMenu << *mTmp;
+}
 
-	// PIC16
-	// eepPic168xx_map, eepPic16_map
+
+/**
+ * @brief
+ *
+ */
+void e2CmdWindow::addPIC16Struct()
+{
+	menuToGroup *mTmp = new menuToGroup();
 	mTmp = new menuToGroup();
 	mTmp->mnu = new QMenu("PIC 16 micro");
-	actionRecent = menuDevice->addMenu(mTmp->mnu);
+	QAction *actionRecent = menuDevice->addMenu(mTmp->mnu);
 
 	mTmp->grp = new QActionGroup(this);
 	mTmp->info << eepPic168xx_map << eepPic16_map;
+	mTmp->type << PIC168XX << PIC16XX;
 
 	for (int i = 0; i < mTmp->info.count(); i++ )
 	{
@@ -812,15 +858,23 @@ void e2CmdWindow::createDeviceMenues()
 
 	connect(mTmp->grp, SIGNAL(triggered(QAction*)), this, SLOT(onSelectPIC16(QAction*)));
 	deviceMenu << *mTmp;
+}
 
-	// PIC12
-	// eepPic125_map
+
+/**
+ * @brief
+ *
+ */
+void e2CmdWindow::addPIC12Struct()
+{
+	menuToGroup *mTmp = new menuToGroup();
 	mTmp = new menuToGroup();
 	mTmp->mnu = new QMenu("PIC 12 micro");
-	actionRecent = menuDevice->addMenu(mTmp->mnu);
+	QAction *actionRecent = menuDevice->addMenu(mTmp->mnu);
 
 	mTmp->grp = new QActionGroup(this);
 	mTmp->info << eepPic125_map;
+	mTmp->type << PIC125XX;
 
 	for (int i = 0; i < mTmp->info.count(); i++ )
 	{
@@ -834,15 +888,22 @@ void e2CmdWindow::createDeviceMenues()
 
 	connect(mTmp->grp, SIGNAL(triggered(QAction*)), this, SLOT(onSelectPIC12(QAction*)));
 	deviceMenu << *mTmp;
+}
 
-	// ImBus
-	//eepnvm3060_map
+/**
+ * @brief
+ *
+ */
+void e2CmdWindow::addIMBUSStruct()
+{
+	menuToGroup *mTmp = new menuToGroup();
 	mTmp = new menuToGroup();
 	mTmp->mnu = new QMenu("ImBus eeprom");
-	actionRecent = menuDevice->addMenu(mTmp->mnu);
+	QAction *actionRecent = menuDevice->addMenu(mTmp->mnu);
 
 	mTmp->grp = new QActionGroup(this);
 	mTmp->info = eepnvm3060_map;
+	mTmp->type << ENVMXXX;
 
 	for (int i = 0; i < mTmp->info.count(); i++ )
 	{
@@ -856,15 +917,22 @@ void e2CmdWindow::createDeviceMenues()
 
 	connect(mTmp->grp, SIGNAL(triggered(QAction*)), this, SLOT(onSelectImBus(QAction*)));
 	deviceMenu << *mTmp;
+}
 
-	// SDE
-	//eep2506_map
+/**
+ * @brief
+ *
+ */
+void e2CmdWindow::addSDEStruct()
+{
+	menuToGroup *mTmp = new menuToGroup();
 	mTmp = new menuToGroup();
 	mTmp->mnu = new QMenu("SDE2506 eeprom");
-	actionRecent = menuDevice->addMenu(mTmp->mnu);
+	QAction *actionRecent = menuDevice->addMenu(mTmp->mnu);
 
 	mTmp->grp = new QActionGroup(this);
 	mTmp->info << eep2506_map;
+	mTmp->type << E2506XX;
 
 	for (int i = 0; i < mTmp->info.count(); i++ )
 	{
@@ -878,15 +946,22 @@ void e2CmdWindow::createDeviceMenues()
 
 	connect(mTmp->grp, SIGNAL(triggered(QAction*)), this, SLOT(onSelectSDE2506(QAction*)));
 	deviceMenu << *mTmp;
+}
 
-	// X2444
-	//eep2444_map
+/**
+ * @brief
+ *
+ */
+void e2CmdWindow::addX24CStruct()
+{
+	menuToGroup *mTmp = new menuToGroup();
 	mTmp = new menuToGroup();
 	mTmp->mnu = new QMenu("X2444 eeprom");
-	actionRecent = menuDevice->addMenu(mTmp->mnu);
+	QAction *actionRecent = menuDevice->addMenu(mTmp->mnu);
 
 	mTmp->grp = new QActionGroup(this);
 	mTmp->info << eep2444_map;
+	mTmp->type << X24C44XX;
 
 	for (int i = 0; i < mTmp->info.count(); i++ )
 	{
@@ -900,6 +975,68 @@ void e2CmdWindow::createDeviceMenues()
 
 	connect(mTmp->grp, SIGNAL(triggered(QAction*)), this, SLOT(onSelectX244(QAction*)));
 	deviceMenu << *mTmp;
+}
+
+
+/**
+ * @brief
+ *
+ */
+void e2CmdWindow::createDeviceMenues()
+{
+	// to add into menu: menuDevice
+
+	// I2Cbus8
+	// eep24xx_map, eep24xx1A_map, eep24xx1B_map, eep24xx5_map
+	addI2C8Struct();
+
+	// I2Cbus16
+	// eep24xx2_map
+	addI2C16Struct();
+
+	// I2CbusAT17
+	// eep17xxx_map
+	addI2CAT17Struct();
+
+	// MicroWire16
+	// eep93x6_map
+	addMW16Struct();
+
+	// MicroWire8
+	// eep93xx8_map
+	addMW8Struct();
+
+	// SPI eeprom
+	// eep250xx_map, eep25xxx_map
+	addSPIStruct();
+
+	// AVR
+	// eepAt90_map
+	addAT90Struct();
+
+	// AT89
+	// eepAt89_map
+	addAT89Struct();
+
+	// PIC16
+	// eepPic168xx_map, eepPic16_map
+	addPIC16Struct();
+
+	// PIC12
+	// eepPic125_map
+	addPIC12Struct();
+
+	// ImBus
+	//eepnvm3060_map
+	addIMBUSStruct();
+
+	// SDE
+	//eep2506_map
+	addSDEStruct();
+
+	// X2444
+	//eep2444_map
+	addX24CStruct();
 
 	setMenuIndexes();
 }
@@ -1150,7 +1287,7 @@ void e2CmdWindow::selectTypeSubtype(const QString &t, const QString &st)
 	QString st_tmp = st;
 	st_tmp.remove(QChar('&'));
 
-	qDebug() << t_tmp << st_tmp;
+	//      qDebug() << t_tmp << st_tmp;
 
 	int nt = cbxEEPType->findText(t_tmp);
 
@@ -1159,8 +1296,6 @@ void e2CmdWindow::selectTypeSubtype(const QString &t, const QString &st)
 		nt = 0;
 	}
 
-	cbxEEPType->setCurrentIndex(nt); // sends signal
-
 	int nst = cbxEEPSubType->findText(st_tmp);
 
 	if (nst == -1)
@@ -1168,10 +1303,19 @@ void e2CmdWindow::selectTypeSubtype(const QString &t, const QString &st)
 		nst = 0;
 	}
 
-	cbxEEPSubType->setCurrentIndex(nst); // sends signal
+	// search id
+	long new_id = 0;
+
+	for (int i = 0; i < deviceMenu[nt].info.count(); i++)
+	{
+		if (deviceMenu[nt].info.at(i).name == st)
+		{
+			new_id = deviceMenu[nt].info.at(i).id;
+		}
+	}
 
 	// EK 2017
-	UpdateMenuType(nt, nst);
+	UpdateMenuType(new_id);
 	//      CmdSelectDevice( MenuIdToType(id) );
 }
 
@@ -2286,7 +2430,8 @@ int e2CmdWindow::CmdRead(int type)
 			Draw();
 
 			QString sp;
-			sp = GetEEPTypeString(awip->GetEEPPriType(), awip->GetEEPSubType());
+			//                      sp = GetEEPTypeString(awip->GetEEPPriType(), awip->GetEEPSubType());
+			sp = GetEEPTypeString(awip->GetEEPId());
 			//             qDebug() << "CmdRead" << awip->GetEEPPriType() << awip->GetEEPSubType() << sp;
 			UpdateStrFromStr(sp, "");
 			awip->RecalcCRC();
@@ -2442,7 +2587,8 @@ int e2CmdWindow::CmdWrite(int type, bool verify)
 						if (GetDevSize() == 0)
 						{
 							QString sp;
-							sp = GetEEPTypeString(awip->GetEEPPriType(), awip->GetEEPSubType());
+							//                                                      sp = GetEEPTypeString(awip->GetEEPPriType(), awip->GetEEPSubType());
+							sp = GetEEPTypeString(awip->GetEEPId());
 							//                             qDebug() << "CmdWrite" << awip->GetEEPPriType() << awip->GetEEPSubType() << sp;
 							UpdateStrFromStr(sp);
 						}
@@ -3883,7 +4029,7 @@ int e2CmdWindow::CmdGetInfo()
 
 	esize = tsize - fsize;
 
-	int pritype = awip->GetEEPPriType();
+	int pritype = GetE2PPriType(awip->GetEEPId());
 
 	if (pritype == E24XX || pritype == E24XX2 || pritype == E24XX5)
 	{
@@ -3959,7 +4105,8 @@ int e2CmdWindow::CmdDoubleSize()
 	else
 	{
 		// Double the size
-		long new_type = GetEEPTypeFromSize(awip->GetEEPPriType(), awip->GetNoOfBlock() * 2);
+		//              long new_type = GetEEPTypeFromSize(awip->GetEEPPriType(), awip->GetNoOfBlock() * 2);
+		long new_type = GetEEPTypeFromSize(awip->GetEEPId(), awip->GetNoOfBlock() * 2);
 
 		if (new_type > 0)
 		{
@@ -3982,9 +4129,15 @@ int e2CmdWindow::CmdSetDeviceType(int val)
 {
 	long new_type = CbxIdToType(val, 0);
 	//      awip->SetEEProm(eeptype_vector[val]);
-	awip->SetEEProm( GetE2PPriType(new_type), GetE2PSubType(new_type) );
+	awip->SetEEProm( new_type);
 
-	UpdateMenuType();
+	UpdateMenuType(new_type);
+
+	first_line = 0;
+	//      curIndex = 0;
+	Draw();
+	awip->RecalcCRC();      //??? 08/02/1998 riguardare
+	UpdateStatusBar();
 
 	return OK;
 }
@@ -4001,8 +4154,8 @@ int e2CmdWindow::CmdSetDeviceSubType(int val)
 
 	qDebug() << "CmdSetDeviceSubType(" << val << "), v1=" << v1 << ", type=" << (hex) << newtype << (dec);
 
-	awip->SetEEProm(GetE2PPriType(newtype), GetE2PSubType(newtype));
-	UpdateMenuType();
+	awip->SetEEProm(newtype);
+	UpdateMenuType(newtype);
 
 	return OK;
 }
@@ -4108,7 +4261,7 @@ int e2CmdWindow::SpecialBits()
 		//              lock = awip->GetLockBits();
 		//              fuse = awip->GetFuseBits();
 
-		long type = e2type_id; // BuildE2PType(awip->GetEEPPriType(), awip->GetEEPSubType());
+		long type = e2p_id; // BuildE2PType(awip->GetEEPPriType(), awip->GetEEPSubType());
 
 		if (type != E2464)
 		{
@@ -4168,7 +4321,7 @@ int e2CmdWindow::ProgramOptions()
 	//      lock = awip->GetLockBits();
 	//      fuse = awip->GetFuseBits();
 
-	progOptionDialog prog(this, e2type_id, // BuildE2PType(awip->GetEEPPriType(), awip->GetEEPSubType()),
+	progOptionDialog prog(this, e2p_id, // BuildE2PType(awip->GetEEPPriType(), awip->GetEEPSubType()),
 	                      reload, reep, erase, flash, eeprom, lock);
 
 	if (prog.exec() == QDialog::Accepted)
@@ -4239,7 +4392,7 @@ int e2CmdWindow::CmdWriteSecurity()
 {
 	int result;
 
-	if ( awip->GetEEPType() == AT90S4433 || awip->GetEEPType() == AT90S2333 )
+	if ( awip->GetEEPId() == AT90S4433 || awip->GetEEPId() == AT90S2333 )
 	{
 		result = CmdWriteLock();
 
@@ -4474,7 +4627,7 @@ int e2CmdWindow::CmdReadSpecial()
 	int rval;
 	int retry_flag = 1;
 
-	long type = e2type_id;// BuildE2PType( awip->GetEEPPriType(), awip->GetEEPSubType() );
+	long type = e2p_id;// BuildE2PType( awip->GetEEPPriType(), awip->GetEEPSubType() );
 
 	while (retry_flag)
 	{
@@ -4551,7 +4704,7 @@ int e2CmdWindow::CmdWriteSpecial()
 
 	QMessageBox note;
 
-	long type = e2type_id; //BuildE2PType( awip->GetEEPPriType(), awip->GetEEPSubType() );
+	long type = e2p_id; //BuildE2PType( awip->GetEEPPriType(), awip->GetEEPSubType() );
 	/**
 	if (type == E2464)              //Microchip 24C65 high endurance block
 	{
@@ -4703,9 +4856,6 @@ int e2CmdWindow::CmdEditNote()
 
 	if (notes.exec() == QDialog::Accepted)
 	{
-		//              QString str1 = notes.GetId();
-		//              QString str2 = notes.GetComment();
-
 		UpdateStrFromStr(str1, str2);
 
 		UpdateStatusBar();
@@ -4719,12 +4869,13 @@ int e2CmdWindow::CmdEditNote()
 // new_type is the chip id
 int e2CmdWindow::CmdSelectDevice(long new_type)
 {
-	// TODO check this two functions
-	int t = GetE2PPriType(new_type);
-	int st = GetE2PSubType(new_type);
+	awip->SetEEProm( new_type );
 
-	awip->SetEEProm( t, st );
-	UpdateMenuType(t, st);
+	// TODO check this two functions
+	//      int t = GetE2PPriType(new_type);
+	//      int st = GetE2PSubType(new_type);
+
+	UpdateMenuType(new_type);
 
 	return OK;
 }
@@ -4917,7 +5068,7 @@ void e2CmdWindow::UpdateChipType(int pritype, int subtype)
 }
 **/
 
-#define COMBOLIST_SIZE 128
+// #define COMBOLIST_SIZE 128
 
 
 /**
@@ -4928,10 +5079,15 @@ void e2CmdWindow::createStatusWidgets()
 {
 	//
 	lblEEPInfo = new QLabel();
-	lblEEPInfo->setFixedWidth(250);
+	lblEEPInfo->setFixedWidth(300);
 	//      lblEEPInfo->setFixedHeight(17);
 	statusbar->addWidget(lblEEPInfo);
 
+	QFrame *verticalLine    =  new QFrame();
+	verticalLine->setFrameStyle(QFrame::VLine);
+	statusbar->addWidget(verticalLine);
+
+	//         verticalLine->setSizePolicy(QSizePolicy.Minimum,QSizePolicy.Expanding)
 	// EK 2017
 	// if we need the progress bar in state...
 	//      statusProgress = new QProgressBar();
@@ -4940,24 +5096,24 @@ void e2CmdWindow::createStatusWidgets()
 	//      statusbar->addWidget(statusProgress);
 
 	lblStringID = new QLabel();
-	lblStringID->setFixedWidth(250);
+	lblStringID->setFixedWidth(300);
 	//      lblStringID->setFixedHeight(17);
-	statusbar->addPermanentWidget(lblStringID);
+	statusbar->addWidget(lblStringID);
 }
 
 
 void e2CmdWindow::createToolBarNotice()
 {
-	txtComment = new QLabel();
-	txtComment->setFixedWidth(90);
-	txtComment->setFixedHeight(25);
-	toolBarNote->addWidget(txtComment);
-
 	txtID = new QLabel();
+	txtID->setFixedWidth(90);
 	txtID->setFixedHeight(25);
-	txtID->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
-	txtID->setStyleSheet("border: 1px solid grey");
 	toolBarNote->addWidget(txtID);
+
+	txtComment = new QLabel();
+	txtComment->setFixedHeight(25);
+	txtComment->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+	txtComment->setStyleSheet("border: 1px solid grey");
+	toolBarNote->addWidget(txtComment);
 }
 
 
@@ -4973,112 +5129,205 @@ void e2CmdWindow::createToolBarCbx()
 }
 
 
-// EK 2017
-//  TODO
+/**
+ * @brief slot from comboobox pritype
+ *
+ */
 void e2CmdWindow::onDevType(int t)
 {
-	UpdateMenuType(t, 0);
-	//      disconnect(cbxEEPType, SIGNAL(currentIndexChanged(int)), this, SLOT(onDevType(int)));
-	//      UpdateMenuType(t);
-	//      connect(cbxEEPType, SIGNAL(currentIndexChanged(int)), this, SLOT(onDevType(int)));
+
+	// search id
+	long new_id = 0;
+
+	if (deviceMenu[t].info.count())
+	{
+		new_id = deviceMenu[t].info.at(0).id;
+	}
+
+	UpdateMenuType(new_id);
 }
 
 
-// EK 2017
-//  TODO
+/**
+ * @brief slot from comboobox subtype
+ *
+ */
 void e2CmdWindow::onDevSubType(int st)
 {
-	UpdateMenuType(pre_type, st);
-	//      disconnect(cbxEEPSubType, SIGNAL(currentIndexChanged(int)), this, SLOT(onDevSubType(int)));
-	//      UpdateMenuType(st);
-	//      connect(cbxEEPSubType, SIGNAL(currentIndexChanged(int)), this, SLOT(onDevSubType(int)));
+
+	// search id
+	int t = cbxEEPType->currentIndex();
+	QString nm = cbxEEPSubType->currentText();
+	long new_id = 0;
+
+	for (int i = 0; i < deviceMenu[t].info.count(); i++)
+	{
+		if (deviceMenu[t].info.at(i).name == nm)
+		{
+			new_id = deviceMenu[t].info.at(i).id;
+		}
+	}
+
+	UpdateMenuType(new_id);
+}
+
+
+menuToGroup* e2CmdWindow::searchMenuInDeviceVector( int type )
+{
+	menuToGroup *pM = NULL;
+
+	for(int i = 0; i < deviceMenu.count(); i++)
+	{
+		menuToGroup* mTmp = (menuToGroup*)&deviceMenu.at(i);
+
+		for (int t = 0; t < (*mTmp).type.count(); t++)
+		{
+			if ((*mTmp).type.at(t) == type)
+			{
+				pM = mTmp;
+
+				return pM;
+			}
+		}
+	}
+
+	return NULL;
 }
 
 
 //==================>>> e2CmdWindow::UpdateMenuType <<<=======================
-void e2CmdWindow::UpdateMenuType(int new_type, int new_subtype)
+void e2CmdWindow::UpdateMenuType(long new_id)
 {
 	if (cbxEEPType == NULL || cbxEEPSubType == NULL)
 	{
 		return;
 	}
 
-	disconnect(cbxEEPType, SIGNAL(currentIndexChanged(int)), this, SLOT(onDevType(int)));
-	cbxEEPType->setCurrentIndex(new_type);
-	connect(cbxEEPType, SIGNAL(currentIndexChanged(int)), this, SLOT(onDevType(int)));
-
 	// reset checkboxes
-	//    pre_type
-	//    pre_subtype
+	static menuToGroup* m = 0;
+
+	qDebug() << "UpdateMenuType" << new_id;
+
+	int pre_type = GetE2PPriType(e2p_id);
+	int pre_subtype = GetE2PSubType(e2p_id);
+
+	int new_type = GetE2PPriType(new_id);
+	int new_subtype = GetE2PSubType(new_id);
+
+	qDebug() << "UpdateMenuType" << new_type << new_subtype;
 
 	disconnect(cbxEEPSubType, SIGNAL(currentIndexChanged(int)), this, SLOT(onDevSubType(int)));
 
 	// new main type selected, rebuild the subtype list
-	if (pre_type != new_type)
+	if ((pre_type == -1) || (pre_type != new_type))
 	{
 		cbxEEPSubType->clear();
+		QStringList l;
 
-		if (new_type >= 0 && new_subtype >= 0)
+		if (new_type >= 0)
 		{
-			QStringList l;
+			m = searchMenuInDeviceVector( new_type );
 
-			foreach(chipInfo c, deviceMenu[new_type].info)
+			if (m != NULL)
 			{
-				l << c.name;
-			}
+				disconnect(cbxEEPType, SIGNAL(currentIndexChanged(int)), this, SLOT(onDevType(int)));
+				QString nmMenu = m->mnu->title();
+				int nt = cbxEEPType->findText(nmMenu);
+				cbxEEPType->setCurrentIndex(nt);
+				connect(cbxEEPType, SIGNAL(currentIndexChanged(int)), this, SLOT(onDevType(int)));
 
-			if (l.count())
-			{
-				cbxEEPSubType->addItems(l);
-				//                              cbxEEPSubType->setSizeAdjustPolicy(QComboBox::AdjustToContents);
-				cbxEEPSubType->setCurrentIndex(0);
+				for(int i = 0; i < (*m).info.count(); i++)
+				{
+					l << (*m).info.at(i).name;
+				}
 			}
+		}
+
+		if (l.count())
+		{
+			cbxEEPSubType->addItems(l);
+		}
+		else
+		{
+			qDebug() << "something is wrong with search" << new_type;
+			return;
 		}
 	}
 
-	if (new_subtype < cbxEEPSubType->count())
+	if (m == 0)
 	{
-		cbxEEPSubType->setCurrentIndex( new_subtype);
+		qDebug() << "pointer m not found" << new_type;
+		return;
+	}
+
+	if (new_subtype >= 0)
+	{
+		for(int i = 0;  i < (*m).info.count(); i++)
+		{
+			chipInfo c = (*m).info.at(i);
+
+			if (c.id  == new_id)
+			{
+				cbxEEPSubType->setCurrentIndex( i);
+				break;
+			}
+		}
 	}
 
 	connect(cbxEEPSubType, SIGNAL(currentIndexChanged(int)), this, SLOT(onDevSubType(int)));
 
-	// uncheck the old
-	if (pre_type >= 0 && pre_type < deviceMenu.count())
+	// uncheck the old item
+	if (pre_type >= 0 )
 	{
-		QList<QAction *> aLst = deviceMenu[pre_type].grp->actions();
+		menuToGroup* mOld = searchMenuInDeviceVector( pre_type );
 
-		if (pre_subtype >= 0 && pre_subtype < aLst.count())
+		if (mOld != NULL)
 		{
-			aLst.at(pre_subtype)->setChecked(false);
+			QList<QAction *> aLst = (*mOld).grp->actions();
+
+			if (pre_subtype >= 0)
+			{
+				for(int im = 0; im < (*mOld).info.count(); im++)
+				{
+					if ((*mOld).info.at(im).id == e2p_id)
+					{
+						aLst.at(im)->setChecked(false);
+						break;
+					}
+				}
+			}
 		}
 	}
 
-	pre_type = new_type;;
-	pre_subtype = new_subtype;
+	e2p_id = new_id;
 
-	e2type_id = 0;
-
-	if (new_type >= 0 && new_type < deviceMenu.count())
+	// now update radiobutton
+	if (new_type >= 0)
 	{
-		QList<QAction *> aLst = deviceMenu[new_type].grp->actions();
+		QList<QAction *> aLst = (*m).grp->actions();
 
-		if (new_subtype >= 0 && new_subtype < aLst.count())
+		if (new_subtype >= 0)
 		{
-			aLst.at(new_subtype)->setChecked(true);
-			// TODO to check this
-			e2type_id = deviceMenu[new_type].info[new_subtype].id;
+			for(int im = 0; im < (*m).info.count(); im++)
+			{
+				if ((*m).info.at(im).id  == new_id)
+				{
+					aLst.at(im)->setChecked(true);
+					break;
+				}
+			}
 		}
 	}
 
 	//Memorizza in memoria e nel file .INI
-	E2Profile::SetLastDevType( e2type_id ) ;//BuildE2PType(awip->GetEEPPriType(), awip->GetEEPSubType()) );
 
-	awip->SetEEPTypeId(e2type_id);
+	E2Profile::SetLastDevType( e2p_id ) ;
+
+	awip->SetEEPTypeId(e2p_id);
 
 	// EK 2017
 	// it's not possible to hide the actions, or?
-	if ( awip && awip->GetEEPPriType() == PIC125XX )        //Not Erasable
+	if ( awip && (GetE2PPriType(awip->GetEEPId()) == PIC125XX) )        //Not Erasable
 	{
 		actionErase->setDisabled(true);
 	}
@@ -5087,7 +5336,7 @@ void e2CmdWindow::UpdateMenuType(int new_type, int new_subtype)
 		actionErase->setEnabled(true);
 	}
 
-	if ( awip && awip->GetSplittedInfo() > 0 && awip->GetSize() > awip->GetSplittedInfo() )
+	if ( awip && (awip->GetSplittedInfo() > 0) && (awip->GetSize() > awip->GetSplittedInfo()) )
 	{
 		//Enable menus
 		actionReadFlash->setEnabled(true);
@@ -5121,18 +5370,21 @@ void e2CmdWindow::UpdateMenuType(int new_type, int new_subtype)
 	// TODO
 	// now change the data fields
 
-	QString sp = GetEEPTypeString(e2type_id); //awip->GetEEPPriType(), awip->GetEEPSubType());
-	UpdateStrFromStr(sp);
+	//      QString sp = GetEEPTypeString(e2p_id); //awip->GetEEPPriType(), awip->GetEEPSubType());
+	//      UpdateStrFromStr(sp);
 
 	//      SetChipSubType(awip->GetEEPPriType());
 
-	first_line = 0;
+	//      first_line = 0;
 	//  curIndex = 0;
 	// EK 2017
 	// TODO
-	Draw();
+	//      Draw();
 
-	awip->RecalcCRC();      //??? 08/02/1998 riguardare
+	//      if ( awip )
+	//      {
+	//              awip->RecalcCRC();      //??? 08/02/1998 riguardare
+	//      }
 
 	UpdateStatusBar();
 }
@@ -5144,21 +5396,18 @@ void e2CmdWindow::UpdateMenuType(int new_type, int new_subtype)
  */
 long GetEEPTypeFromString(const QString & name)
 {
-	long rv = -1;
-
 	foreach (menuToGroup m, deviceMenu)
 	{
 		foreach (chipInfo c, m.info)
 		{
 			if (c.name == name)
 			{
-				rv = c.id;
-				return rv;
+				return c.id;
 			}
 		}
 	}
 
-	return rv;
+	return -1;
 }
 
 
@@ -5208,7 +5457,7 @@ void e2CmdWindow::CbxMenuInit()
 		cbxEEPType->setCurrentIndex(0);
 	}
 
-	UpdateMenuType();
+	//      UpdateMenuType();
 
 	//Clear the check in menu Edit buffer
 	actionEditBuferEnabled->setChecked(false);// TODO to check this
@@ -5240,7 +5489,7 @@ void e2CmdWindow::UpdateStrFromStr(const QString &s1, const QString &s2)
 {
 	if (s1.length())
 	{
-		txtID->setText(s2);
+		txtID->setText(s1);
 		awip->SetStringID(s1);
 	}
 
@@ -5743,14 +5992,14 @@ void e2CmdWindow::Draw()
 	}
 
 	QBuffer *b = new QBuffer(this);
-        b->setData(reinterpret_cast<char*>(awip->GetBufPtr()), awip->GetBufSize());
-//         dev.open();
-//         dev.read(reinterpret_cast<char*>(awip->GetBufPtr()), awip->GetBufSize());
+	b->setData(reinterpret_cast<char*>(awip->GetBufPtr()), awip->GetBufSize());
+	//         dev.open();
+	//         dev.read(reinterpret_cast<char*>(awip->GetBufPtr()), awip->GetBufSize());
 
-// 	QByteArray databuf = QByteArray(reinterpret_cast<char*>(awip->GetBufPtr()), awip->GetBufSize());
-// qDebug() << databuf;
+	//      QByteArray databuf = QByteArray(reinterpret_cast<char*>(awip->GetBufPtr()), awip->GetBufSize());
+	// qDebug() << databuf;
 	e2HexEdit->setData(*b);
-//         dev.close();
+	//         dev.close();
 #if 0
 	int no_line;
 	int new_top, new_shown;
@@ -5859,11 +6108,11 @@ void e2CmdWindow::PostInit()
 	// TODO
 	Draw();
 	// UpdateChipType();
-	UpdateMenuType();
+	//      UpdateMenuType();
 
-	QString sp = GetEEPTypeString(awip->GetEEPPriType(), awip->GetEEPSubType());
+	//      QString sp = GetEEPTypeString(awip->GetEEPPriType(), awip->GetEEPSubType());
 	//     qDebug() << "PostInit" << awip->GetEEPPriType() << awip->GetEEPSubType() << sp;
-	UpdateStrFromStr(sp);
+	//      UpdateStrFromStr(sp);
 
 	UpdateStatusBar();
 

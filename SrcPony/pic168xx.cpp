@@ -139,8 +139,8 @@ int Pic168xx::Probe(int probe_size)
 	{
 		if (rv == OK)
 		{
-			SetNoOfBank(  GetEEPTypeSize(pritype, subtype) );
-			SetSplitted( GetEEPTypeSplit(pritype, subtype) );
+			SetNoOfBank( GetEEPTypeSize(type) );
+			SetSplitted( GetEEPTypeSplit(type) );
 			rv = GetSize();
 		}
 	}
@@ -154,7 +154,7 @@ int Pic168xx::Probe(int probe_size)
 		{
 			if (rv == OK)
 			{
-				if ( GetAWInfo()->GetEEPSubType() == subtype )
+				if ( GetE2PSubType( GetAWInfo()->GetEEPId()) == subtype )
 				{
 					rv = GetSize();
 				}

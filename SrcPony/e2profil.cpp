@@ -159,7 +159,6 @@ void E2Profile::SetConfigFile(const QString &nm)
 
 void E2Profile::SetLastDevType(long devtype)
 {
-	//      int rval = -1;
 	QString sp = GetEEPTypeString(devtype);
 
 	if (sp.length())
@@ -260,8 +259,6 @@ void E2Profile::SetLastScript(const QString &name)
 
 void E2Profile::SetLastFile(const QString &name, int data)
 {
-	//      int rval = BADPARAM;
-
 	if (name.length())
 	{
 		QString str;
@@ -429,8 +426,6 @@ void E2Profile::SetPolarityControl(uint8_t polarity_control)
 	if (rval == OK)
 		s->setValue("DInPolarity",
 		            (polarity_control & DININV) ? "INV" : "TRUE");
-
-	//      return rval;
 }
 
 
@@ -473,8 +468,6 @@ int E2Profile::GetSPIPageWrite()
 
 void E2Profile::SetSPIPageWrite(int page_write)
 {
-	//      int rval = BADPARAM;
-
 	if (page_write > 0)
 	{
 		s->setValue("BigSPIPageWrite", QString::number(page_write));
@@ -504,8 +497,6 @@ int E2Profile::GetI2CBaseAddr()
 
 void E2Profile::SetI2CBaseAddr(int base_addr)
 {
-	//      int rval = BADPARAM;
-
 	if (base_addr >= 0x00 && base_addr < 0x100)
 	{
 		s->setValue("I2CBaseAddress", QString::number(base_addr));
@@ -548,8 +539,6 @@ int E2Profile::GetI2CSpeed()
 
 void E2Profile::SetI2CSpeed(int speed)
 {
-	//      int rval = BADPARAM;
-
 	if (speed == TURBO)
 	{
 		s->setValue("I2CBusSpeed", "TURBO");

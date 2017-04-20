@@ -164,26 +164,33 @@ void FileBuf::SetCRC(uint16_t c)
 //======================>>> FileBuf::GetEEpromType <<<=======================
 long FileBuf::GetEEpromType() const
 {
-	return ((long)awi->GetEEPPriType() << 16) | (awi->GetEEPSubType() & 0x7FFF);
+	//      return ((long)awi->GetEEPPriType() << 16) | (awi->GetEEPSubType() & 0x7FFF);
+	return awi->GetEEPId();
 }
 
 //======================>>> FileBuf::GetEEpromPriType <<<=======================
 int FileBuf::GetEEpromPriType() const
 {
-	return awi->GetEEPPriType();
+	return GetE2PPriType(awi->GetEEPId());
 }
 
 //======================>>> FileBuf::GetEEpromSubType <<<=======================
 int FileBuf::GetEEpromSubType() const
 {
-	return awi->GetEEPSubType();
+	return GetE2PSubType(awi->GetEEPId());
 }
 
 //======================>>> FileBuf::SetEEpromType <<<=======================
-void FileBuf::SetEEpromType(int pritype, int subtype)
+// void FileBuf::SetEEpromType(int pritype, int subtype)
+// {
+//      awi->SetEEProm(pritype, subtype);
+// }
+
+void FileBuf::SetEEpromId(unsigned long id)
 {
-	awi->SetEEProm(pritype, subtype);
+	awi->SetEEProm(id);
 }
+
 
 //======================>>> FileBuf::GetFileSize <<<=======================
 long FileBuf::GetFileSize(FILE *fh)
