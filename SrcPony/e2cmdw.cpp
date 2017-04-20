@@ -4972,16 +4972,16 @@ void e2CmdWindow::createStatusWidgets()
 
 void e2CmdWindow::createToolBarNotice()
 {
-	txtComment = new QLabel();
-	txtComment->setFixedWidth(90);
-	txtComment->setFixedHeight(25);
-	toolBarNote->addWidget(txtComment);
-
 	txtID = new QLabel();
+	txtID->setFixedWidth(90);
 	txtID->setFixedHeight(25);
-	txtID->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
-	txtID->setStyleSheet("border: 1px solid grey");
 	toolBarNote->addWidget(txtID);
+
+	txtComment = new QLabel();
+	txtComment->setFixedHeight(25);
+	txtComment->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+	txtComment->setStyleSheet("border: 1px solid grey");
+	toolBarNote->addWidget(txtComment);
 }
 
 
@@ -5359,7 +5359,7 @@ void e2CmdWindow::UpdateStrFromStr(const QString &s1, const QString &s2)
 {
 	if (s1.length())
 	{
-		txtID->setText(s2);
+		txtID->setText(s1);
 		awip->SetStringID(s1);
 	}
 
