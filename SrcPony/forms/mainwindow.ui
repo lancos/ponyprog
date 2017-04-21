@@ -20,12 +20,12 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>29</height>
+     <height>30</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
-     <string>Fi&amp;le</string>
+     <string>File</string>
     </property>
     <addaction name="actionNew"/>
     <addaction name="separator"/>
@@ -49,12 +49,12 @@
    </widget>
    <widget class="QMenu" name="menuDevice">
     <property name="title">
-     <string>De&amp;vice</string>
+     <string>Device</string>
     </property>
    </widget>
    <widget class="QMenu" name="menuCommand">
     <property name="title">
-     <string>&amp;Command</string>
+     <string>Command</string>
     </property>
     <addaction name="actionReadAll"/>
     <addaction name="actionReadFlash"/>
@@ -80,7 +80,7 @@
    </widget>
    <widget class="QMenu" name="menuScript">
     <property name="title">
-     <string>Scri&amp;pt</string>
+     <string>Script</string>
     </property>
     <addaction name="actionLoadScript"/>
     <addaction name="separator"/>
@@ -88,7 +88,7 @@
    </widget>
    <widget class="QMenu" name="menuUtility">
     <property name="title">
-     <string>&amp;Utility</string>
+     <string>Utility</string>
     </property>
     <addaction name="actionClearBuffer"/>
     <addaction name="actionFillBuffer"/>
@@ -99,7 +99,7 @@
    </widget>
    <widget class="QMenu" name="menuSetup">
     <property name="title">
-     <string>Se&amp;tup</string>
+     <string>Setup</string>
     </property>
     <addaction name="actionInterfaceSetup"/>
     <addaction name="actionCalibration"/>
@@ -187,6 +187,7 @@
    <addaction name="actionErase"/>
    <addaction name="actionLock"/>
    <addaction name="actionSerial_Number"/>
+   <addaction name="actionProgram"/>
   </widget>
   <widget class="QToolBar" name="toolBarNote">
    <property name="windowTitle">
@@ -314,7 +315,7 @@
      <normaloff>:/icons/rd_all20x20.png</normaloff>:/icons/rd_all20x20.png</iconset>
    </property>
    <property name="text">
-    <string>&amp;Read All</string>
+    <string>Read All</string>
    </property>
   </action>
   <action name="actionReadFlash">
@@ -323,7 +324,7 @@
      <normaloff>:/icons/rd_flash20x20.png</normaloff>:/icons/rd_flash20x20.png</iconset>
    </property>
    <property name="text">
-    <string>Read Program (&amp;FLASH)</string>
+    <string>Read Program (FLASH)</string>
    </property>
   </action>
   <action name="actionReadEep">
@@ -332,7 +333,7 @@
      <normaloff>:/icons/rd_eep20x20.png</normaloff>:/icons/rd_eep20x20.png</iconset>
    </property>
    <property name="text">
-    <string>Read &amp;Data (EEPROM)</string>
+    <string>Read Data (EEPROM)</string>
    </property>
   </action>
   <action name="actionWriteAll">
@@ -341,7 +342,7 @@
      <normaloff>:/icons/wr_all20x20.png</normaloff>:/icons/wr_all20x20.png</iconset>
    </property>
    <property name="text">
-    <string>&amp;Write All</string>
+    <string>Write All</string>
    </property>
   </action>
   <action name="actionWriteFlash">
@@ -350,7 +351,7 @@
      <normaloff>:/icons/wr_flash20x20.png</normaloff>:/icons/wr_flash20x20.png</iconset>
    </property>
    <property name="text">
-    <string>Wr&amp;ite Program (FLASH)</string>
+    <string>Write Program (FLASH)</string>
    </property>
   </action>
   <action name="actionWriteEep">
@@ -359,7 +360,7 @@
      <normaloff>:/icons/wr_eep20x20.png</normaloff>:/icons/wr_eep20x20.png</iconset>
    </property>
    <property name="text">
-    <string>Write Data (EEPRO&amp;M)</string>
+    <string>Write Data (EEPROM)</string>
    </property>
   </action>
   <action name="actionErase">
@@ -400,12 +401,12 @@
   </action>
   <action name="actionVerifyAll">
    <property name="text">
-    <string>&amp;Verify All</string>
+    <string>Verify All</string>
    </property>
   </action>
   <action name="actionVerifyFlash">
    <property name="text">
-    <string>Verif&amp;y Program (FLASH)</string>
+    <string>Verify Program (FLASH)</string>
    </property>
   </action>
   <action name="actionVerifyEep">
@@ -415,7 +416,7 @@
   </action>
   <action name="actionWriteSecurity">
    <property name="text">
-    <string>&amp;Security and Configuration Bits...</string>
+    <string>Security and Configuration Bits...</string>
    </property>
   </action>
   <action name="actionReset">
@@ -424,43 +425,47 @@
    </property>
   </action>
   <action name="actionProgram">
+   <property name="icon">
+    <iconset resource="../ponyprog.qrc">
+     <normaloff>:/icons/program20x20.png</normaloff>:/icons/program20x20.png</iconset>
+   </property>
    <property name="text">
-    <string>&amp;Program</string>
+    <string>Program</string>
    </property>
   </action>
   <action name="actionProgramOptions">
    <property name="text">
-    <string>Progr&amp;am Options...</string>
+    <string>Program Options...</string>
    </property>
   </action>
   <action name="actionReadOscByte">
    <property name="text">
-    <string>Read Osc.&amp;Calibration Byte</string>
+    <string>Read Osc.Calibration Byte</string>
    </property>
   </action>
   <action name="actionOscOptions">
    <property name="text">
-    <string>&amp;Osc. Calibration Options...</string>
+    <string>Osc. Calibration Options...</string>
    </property>
   </action>
   <action name="actionClose">
    <property name="text">
-    <string>&amp;Close</string>
+    <string>Close</string>
    </property>
   </action>
   <action name="actionExit">
    <property name="text">
-    <string>&amp;Exit</string>
+    <string>Exit</string>
    </property>
   </action>
   <action name="actionInterfaceSetup">
    <property name="text">
-    <string>&amp;Interface Setup...</string>
+    <string>Interface Setup...</string>
    </property>
   </action>
   <action name="actionCalibration">
    <property name="text">
-    <string>&amp;Calibration</string>
+    <string>Calibration</string>
    </property>
   </action>
   <action name="actionSecurityBits">
@@ -470,52 +475,52 @@
   </action>
   <action name="actionLoadScript">
    <property name="text">
-    <string>&amp;Load and Run...</string>
+    <string>Load and Run...</string>
    </property>
   </action>
   <action name="actionRunScript">
    <property name="text">
-    <string>&amp;Run</string>
+    <string>Run</string>
    </property>
   </action>
   <action name="actionClearBuffer">
    <property name="text">
-    <string>&amp;Clear Buffer</string>
+    <string>Clear Buffer</string>
    </property>
   </action>
   <action name="actionFillBuffer">
    <property name="text">
-    <string>&amp;Fill Buffer...</string>
+    <string>Fill Buffer...</string>
    </property>
   </action>
   <action name="actionDoubleBank">
    <property name="text">
-    <string>&amp;Double Bank</string>
+    <string>Double Bank</string>
    </property>
   </action>
   <action name="actionByteSwap">
    <property name="text">
-    <string>&amp;Byte Swap</string>
+    <string>Byte Swap</string>
    </property>
   </action>
   <action name="actionSetSN">
    <property name="text">
-    <string>&amp;Set SerialNumber</string>
+    <string>Set SerialNumber</string>
    </property>
   </action>
   <action name="actionSNConfig">
    <property name="text">
-    <string>S&amp;erialNumber Config...</string>
+    <string>SerialNumber Config...</string>
    </property>
   </action>
   <action name="actionHelp_2">
    <property name="text">
-    <string>&amp;Help</string>
+    <string>Help</string>
    </property>
   </action>
   <action name="actionAbout">
    <property name="text">
-    <string>&amp;About</string>
+    <string>About</string>
    </property>
   </action>
   <action name="actionLog">
