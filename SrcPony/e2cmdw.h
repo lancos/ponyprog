@@ -236,7 +236,7 @@ private:
 	int CmdCalibration();
 
 	int CmdEditNote();
-	int CmdSelectDevice(long new_type);
+	int CmdSelectDevice(long new_type, bool init = false);
 	int CmdSetDeviceType(int val); // or const QString* ?
 	int CmdSetDeviceSubType(int val);
 	int CmdProgram();
@@ -285,8 +285,7 @@ private:              //--------------------------------------- private
 
 	//      void UpdateChipType(int pritype = -1, int subtype = -1);
 	//      void SetChipSubType(int pritype, int subtype = 0);
-	//      void UpdateMenuType(int new_type = 0, int new_subtype = 0);
-	void UpdateMenuType(long new_id = 0);
+	void UpdateMenuType(long new_type = 0, long old_type = 0);
 	void UpdateFileMenu();
 	//      int TypeToMenuId(long type);
 	//      long MenuIdToType(QAction * id);

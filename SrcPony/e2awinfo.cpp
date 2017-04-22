@@ -159,12 +159,10 @@ e2AppWinInfo::e2AppWinInfo(e2CmdWindow *p, const QString &name, BusIO** busvptr)
 
 	ClearBuffer();                          //Clear the new buffer
 
-	//imposta il tipo di eeprom di default
-	//      SetEEProm(E2Profile::GetLastEEPType());    18/10/98
-	SetEEProm( E2Profile::GetLastDevType());
+	SetEEProm(E2Profile::GetLastDevType());
 	SetFileBuf(E2Profile::GetDefaultFileType());       //      SetFileBuf(E2P);
 
-	SetLoadAutoClearBuf( E2Profile::GetClearBufBeforeLoad() );
+	SetLoadAutoClearBuf(E2Profile::GetClearBufBeforeLoad());
 
 	// Test and initialize the hardware
 	// EK 2017
@@ -190,7 +188,7 @@ e2AppWinInfo::e2AppWinInfo(e2CmdWindow *p, const QString &name, BusIO** busvptr)
 		}
 
 		//imposta il bus iniziale (relativo al tipo di eeprom)
-		cmdWin->SetInitialBus( eep->GetBus() );
+		cmdWin->SetInitialBus(eep->GetBus());
 
 		//case of command line parameter
 		if (GetFileName().length())

@@ -132,7 +132,7 @@ public:               //---------------------------------------- public
 		return hex_per_line;
 	}
 
-	//      void SetEEProm(int type = E24XX, int subtype = 0);
+//	void SetEEProm(int type = E24XX, int subtype = 0);
 	void SetEEProm(unsigned long id = E2400);
 
 	void SetFileBuf(FileType type);
@@ -171,7 +171,7 @@ public:               //---------------------------------------- public
 		return BuildE2PType(eep_type, eep_subtype);
 	}
 #endif
-	void SetEEPTypeId(unsigned long e2type_id);
+//	void SetEEPTypeId(unsigned long e2type_id);
 	int GetBankRollOver() const
 	{
 		return roll_over;
@@ -285,9 +285,6 @@ public:               //---------------------------------------- public
 		return eep ? eep->GetDetectedSignatureStr() : 0;
 	}
 
-public:
-	Device *eep;
-
 protected:    //--------------------------------------- protected
 	e2CmdWindow* cmdWin;
 
@@ -343,6 +340,8 @@ private:              //--------------------------------------- private
 	QString eeprom_comment;//[COMMENT_SIZE];      //eeprom comment
 
 	//current device pointer (can be any of the following list)
+	Device *eep;
+
 	//AutoTag
 	//List of available device types
 	E24xx *eep24xx;
