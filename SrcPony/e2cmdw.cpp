@@ -5272,7 +5272,7 @@ void e2CmdWindow::UpdateMenuType(long new_type, long old_type)
 			{
 				for(int im = 0; im < (*mOld).info.count(); im++)
 				{
-					if ((*mOld).info.at(im).id == new_type)
+					if ((*mOld).info.at(im).id == old_type)
 					{
 						aLst.at(im)->setChecked(false);
 						break;
