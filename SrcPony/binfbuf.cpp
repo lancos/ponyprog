@@ -7,8 +7,6 @@
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id: binfbuf.cpp,v 1.3 2009/11/16 22:29:18 lancos Exp $
-//-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
 // modify it under the terms of the GNU  General Public License            //
@@ -27,7 +25,8 @@
 //-------------------------------------------------------------------------//
 //=========================================================================//
 
-#include <stdio.h>
+// #include <stdio.h>
+#include <QDataStream>
 
 #include "types.h"
 #include "binfbuf.h"            // Header file
@@ -51,19 +50,17 @@ binFileBuf::~binFileBuf()
 //======================>>> binFileBuf::Load <<<=======================
 int binFileBuf::Load(int loadtype, long relocation_offset)
 {
-	FILE *fh;
+	QFile fh(GetFileName());
 	int rval = OK;
 
-	if ( (fh = fopen(GetFileName().toLatin1(), "rb")) == NULL )
+	if (!fh.open(QIODevice::ReadOnly))
 	{
 		return FILENOTFOUND;
 	}
 
 	long fsize = GetFileSize(fh);
-	rewind(fh);
+	//rewind(fh);
 
-	//In questi formati di file "stupidi" la dimensione
-	//deve rimanere quella della eeprom attualmente selezionata
 	long buf_size = GetBufSize();
 	uint8_t *ptr = GetBufPtr();
 
@@ -76,7 +73,7 @@ int binFileBuf::Load(int loadtype, long relocation_offset)
 		}
 		else
 		{
-			fclose(fh);
+			fh.close();
 			return 0;
 		}
 	}
@@ -88,7 +85,7 @@ int binFileBuf::Load(int loadtype, long relocation_offset)
 		}
 		else
 		{
-			fclose(fh);
+			fh.close();
 			return 0;
 		}
 	}
@@ -108,8 +105,11 @@ int binFileBuf::Load(int loadtype, long relocation_offset)
 		fsize = buf_size;
 	}
 
-	rval = fread(ptr, fsize, 1, fh);
-	fclose(fh);
+	QDataStream datastream(&fh);
+
+	rval = datastream.readRawData( (char*)ptr, fsize); 
+
+	fh.close();
 
 	//      SetStringID("");        //????
 	SetComment("");
@@ -124,7 +124,7 @@ int binFileBuf::Load(int loadtype, long relocation_offset)
 //======================>>> binFileBuf::Save <<<=======================
 int binFileBuf::Save(int savetype, long relocation_offset)
 {
-	FILE *fh;
+	QFile fh(FileBuf::GetFileName());
 	int rval;
 
 	if (FileBuf::GetNoOfBlock() <= 0)
@@ -132,7 +132,7 @@ int binFileBuf::Save(int savetype, long relocation_offset)
 		return NOTHINGTOSAVE;
 	}
 
-	if ( (fh = fopen(FileBuf::GetFileName().toLatin1(), "wb")) == NULL )
+	if (!fh.open(QIODevice::WriteOnly))
 	{
 		return CREATEERROR;
 	}
@@ -148,7 +148,7 @@ int binFileBuf::Save(int savetype, long relocation_offset)
 		}
 		else
 		{
-			fclose(fh);
+			fh.close();
 			return 0;
 		}
 	}
@@ -161,18 +161,19 @@ int binFileBuf::Save(int savetype, long relocation_offset)
 		}
 		else
 		{
-			fclose(fh);
+			fh.close();
 			return 0;
 		}
 	}
 
-	rval = fwrite(ptr, buf_size, 1, fh);
+	QDataStream datastream(&fh);
+	rval = datastream.writeRawData((const char*) ptr, buf_size);
 
 	if (rval == 0)
 	{
 		rval = WRITEERROR;
 	}
 
-	fclose(fh);
+	fh.close();
 	return rval;
 }

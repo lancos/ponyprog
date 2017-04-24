@@ -7,8 +7,6 @@
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id: intfbuf.cpp,v 1.7 2009/11/16 23:40:43 lancos Exp $
-//-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
 // modify it under the terms of the GNU  General Public License            //
@@ -27,10 +25,12 @@
 //-------------------------------------------------------------------------//
 //=========================================================================//
 
-#include <stdio.h>
+// #include <stdio.h>
 
 //Estensione al formato Intel Extended HEX
+#include <QTextStream>
 #include <QString>
+
 #include <stdlib.h>
 #include <ctype.h>
 
@@ -63,7 +63,7 @@ IntelFileBuf::~IntelFileBuf()
 }
 
 
-int IntelFileBuf::WriteRecord(FILE *fh, uint8_t *bptr, long curaddr, long recsize, int fmt)
+int IntelFileBuf::WriteRecord(QFile &fh, uint8_t *bptr, long curaddr, long recsize, int fmt)
 {
 	int rval = 1;
 
@@ -93,39 +93,41 @@ int IntelFileBuf::WriteRecord(FILE *fh, uint8_t *bptr, long curaddr, long recsiz
 	{
 		int checksum = 0;
 		int len = recsize;
+		QTextStream out(&fh);
 
-		fprintf(fh, ":");
+		out << ":";
 
 		//byte count
-		fprintf(fh, "%02X", len & 0xFF);
+		out << QString().sprintf("%02X", len & 0xFF);
 		checksum += len & 0xFF;
 
 		//addr field
-		fprintf(fh, "%04lX", curaddr & 0xFFFF);
+		out << QString().sprintf("%04lX", curaddr & 0xFFFF);
 		checksum += (curaddr >> 8) & 0xFF;
 		checksum += curaddr & 0xFF;
 
 		//record type
-		fprintf(fh, "%02X", fmt & 0xFF);
+		out << QString().sprintf( "%02X", fmt & 0xFF);
 		checksum += fmt & 0xFF;
 
 		for (j = 0; j < recsize; j++)
 		{
-			fprintf(fh, "%02X", bptr[curaddr + j]);
+			out << QString().sprintf( "%02X", bptr[curaddr + j]);
 			checksum += bptr[curaddr + j];
 		}
 
-		fprintf(fh, "%02X\n", (~checksum + 1) & 0xFF);
+		out << QString().sprintf("%02X\n", (~checksum + 1) & 0xFF);
 	}
 
 	return rval;
 }
 
-int IntelFileBuf::WriteAddressRecord(FILE *fh, long curaddr, bool linear_address)
+int IntelFileBuf::WriteAddressRecord(QFile &fh, long curaddr, bool linear_address)
 {
 	int rval = 1;
+	QTextStream out(&fh);
 
-	fprintf(fh, ":");
+	out << ":";
 
 	if (rval)
 	{
@@ -133,16 +135,16 @@ int IntelFileBuf::WriteAddressRecord(FILE *fh, long curaddr, bool linear_address
 		int len = 2;
 
 		//byte count
-		fprintf(fh, "%02X", len & 0xFF);
+		out << QString().sprintf( "%02X", len & 0xFF);
 		checksum += len & 0xFF;
 
 		//addr field
-		fprintf(fh, "%04X", 0);
+		out << QString().sprintf( "%04X", 0);
 
 		if (linear_address)
 		{
 			//record type
-			fprintf(fh, "%02X", LIN_ADDR_RECORD & 0xFF);
+			out << QString().sprintf( "%02X", LIN_ADDR_RECORD & 0xFF);
 			checksum += LIN_ADDR_RECORD & 0xFF;
 
 			//adjust extended linear address
@@ -151,18 +153,18 @@ int IntelFileBuf::WriteAddressRecord(FILE *fh, long curaddr, bool linear_address
 		else
 		{
 			//record type
-			fprintf(fh, "%02X", SEG_ADDR_RECORD & 0xFF);
+			out << QString().sprintf("%02X", SEG_ADDR_RECORD & 0xFF);
 			checksum += SEG_ADDR_RECORD & 0xFF;
 
 			//adjust extended segmented address
 			curaddr >>= 4;
 		}
 
-		fprintf(fh, "%04lX", curaddr & 0xFFFF);
+		out << QString().sprintf( "%04lX", curaddr & 0xFFFF);
 		checksum += (curaddr >> 8) & 0xFF;
 		checksum += curaddr & 0xFF;
 
-		fprintf(fh, "%02X\n", (~checksum + 1) & 0xFF);
+		out << QString().sprintf( "%02X\n", (~checksum + 1) & 0xFF);
 	}
 
 	return rval;
@@ -174,12 +176,12 @@ int IntelFileBuf::WriteAddressRecord(FILE *fh, long curaddr, bool linear_address
 //======================>>> IntelFileBuf::Save <<<=======================
 int IntelFileBuf::Save(int savetype, long relocation_offset)
 {
-	FILE *fh;
+	QFile fh(FileBuf::GetFileName());
 	int rval = OK;
 
 	(void)relocation_offset;
 
-	if ( (fh = fopen(FileBuf::GetFileName().toLatin1(), "w")) == NULL )
+	if (!fh.open(QIODevice::WriteOnly | QIODevice::Text ))
 	{
 		return CREATEERROR;
 	}
@@ -202,7 +204,7 @@ int IntelFileBuf::Save(int savetype, long relocation_offset)
 		}
 		else
 		{
-			fclose(fh);
+			fh.close();
 			return 0;
 		}
 	}
@@ -215,7 +217,7 @@ int IntelFileBuf::Save(int savetype, long relocation_offset)
 		}
 		else
 		{
-			fclose(fh);
+			fh.close();
 			return 0;
 		}
 	}
@@ -254,7 +256,7 @@ int IntelFileBuf::Save(int savetype, long relocation_offset)
 		rval = NOTHINGTOSAVE;
 	}
 
-	fclose(fh);
+	fh.close();
 
 	return rval;
 }
@@ -293,9 +295,9 @@ int IntelFileBuf::Load(int loadtype, long relocation_offset)
 
 	uint32_t laddr = 0;
 
-	FILE *fh;
+	QFile fh(GetFileName());
 
-	if ( (fh = fopen(GetFileName().toLatin1(), "r")) == NULL )
+	if (!fh.open(QIODevice::ReadOnly | QIODevice::Text ))
 	{
 		return FILENOTFOUND;
 	}
@@ -304,8 +306,10 @@ int IntelFileBuf::Load(int loadtype, long relocation_offset)
 	char riga[MAXLINE + 1];
 	riga[MAXLINE] = '\0';
 
-	while ( fgets(riga, MAXLINE, fh) )
+	while (!fh.atEnd())
 	{
+		fh.readLine(riga, MAXLINE);
+
 		char *s;
 		int k;
 
@@ -502,7 +506,7 @@ int IntelFileBuf::Load(int loadtype, long relocation_offset)
 		}
 	}
 
-	fclose(fh);
+	fh.close();
 
 	if (okline_counter == 0)
 	{

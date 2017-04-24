@@ -7,8 +7,6 @@
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id: e2cmdw.h,v 1.9 2009/07/08 10:44:00 lancos Exp $
-//-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
 // modify it under the terms of the GNU  General Public License            //
@@ -119,9 +117,13 @@ public:               //---------------------------------------- public
 	long GetCurrentChipType()
 	{
 		if (awip)
+		{
 			return awip->GetEEPId();
+		}
 		else
+		{
 			return EID_INVALID;
+		}
 	}
 
 

@@ -7,8 +7,6 @@
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id: filebuf.h,v 1.5 2009/11/16 23:40:43 lancos Exp $
-//-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
 // modify it under the terms of the GNU  General Public License            //
@@ -31,8 +29,9 @@
 #define _FILEBUF_H
 
 #include <QString>
+#include <QFile>
 
-#include <stdio.h>
+// #include <stdio.h>
 #include "types.h"
 #include "globals.h"
 
@@ -93,7 +92,7 @@ protected:    //--------------------------------------- protected
 	uint8_t *GetBufPtr() const;
 	long GetBufSize() const;
 	e2AppWinInfo *GetAWInfo();
-	long GetFileSize(FILE *fh);
+	long GetFileSize(QFile &fh);
 
 	FileType file_type;             //Identificativo del tipo di file (E2P, INTEL, ...)
 

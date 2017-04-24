@@ -1,39 +1,36 @@
-#include <stdio.h>
+#include <QFile>
+
 #include "crc.h"
 
 /* Calcola il CRC in un file a partire da ini_ofs per un numero di bytes
    dato da len. Se len e` zero prosegue fino alla fine del file, il file
    deve essere aperto in modo da permettere la lettura (r, r+, w+) */
-uint16_t fcalc_crc(FILE *fh, long ini_ofs, long len)
+uint16_t fcalc_crc(QFile &fh, long ini_ofs, long len)
 {
 	uint16_t crc16 = 0;
-	int ch;
+	char ch;
 	long old_pos;
 
-	if (!fh)
-	{
-		return 0;
-	}
+	old_pos = fh.pos();
 
-	old_pos = ftell(fh);
-	fseek(fh, ini_ofs, SEEK_SET);
+	fh.seek(ini_ofs);//, SEEK_SET); // from begin to init_ofs
 
 	if (len)
 	{
-		for (; len && (ch = getc(fh)) != EOF; len--)
+		for (; len && fh.read(&ch, 1) > 0; len--)
 		{
 			crc16 = updcrcr(crc16, ch);
 		}
 	}
 	else
 	{
-		while( (ch = getc(fh)) != EOF )
+		while (fh.read( &ch, 1) > 0)	//while( (ch = getc(fh)) != EOF )
 		{
 			crc16 = updcrcr(crc16, ch);
 		}
 	}
 
-	fseek(fh, old_pos, SEEK_SET);
+	fh.seek(old_pos);//, SEEK_SET);
 
 	return crc16;
 }

@@ -7,8 +7,6 @@
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id: e2cmdw.cpp,v 1.32 2013/11/07 16:33:39 lancos Exp $
-//-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
 // modify it under the terms of the GNU  General Public License            //
@@ -170,7 +168,7 @@ e2CmdWindow::e2CmdWindow(QWidget *parent ) :
 	// combo boxes
 	CbxMenuInit();
 
-//	UpdateMenuType(E2Profile::GetLastDevType());
+	//      UpdateMenuType(E2Profile::GetLastDevType());
 
 	// The Canvas
 	e2HexEdit = new QHexEdit(this); //e2TextCanvasPane(this);
@@ -1270,7 +1268,7 @@ void e2CmdWindow::selectTypeSubtype(const QString &t, const QString &st)
 	QString st_tmp = st;
 	st_tmp.remove(QChar('&'));
 
-//	qDebug() << t_tmp << st_tmp;
+	//      qDebug() << t_tmp << st_tmp;
 
 	int nt = cbxEEPType->findText(t_tmp);
 
@@ -2302,7 +2300,7 @@ int e2CmdWindow::CmdHelp()
 #ifdef  __linux__
 	QString str;
 	str = E2Profile::GetHtmlBrowseApp() + " \"http://www.lancos.com/e2p/ponyprog2000.html\" &";
-	system(str.toLatin1());
+	system(str.toLatin1().constData());
 #endif
 
 	return OK;
@@ -3168,7 +3166,7 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 	char *arg[32];
 	int n;
 	int linecounter;
-	FILE *fh;
+
 
 	VerboseType old_verbose = verbose;
 
@@ -3182,17 +3180,18 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 		return BADPARAM;
 	}
 
-	fh = fopen(script_name.toLatin1(), "r");
+	QFile fh(script_name);
 
-	if (fh == NULL)
+	if (!fh.open(QIODevice::ReadOnly | QIODevice::Text))
 	{
 		return FILENOTFOUND;
 	}
 
 	linecounter = 0;
 
-	while (result == OK && fgets(buf, 511, fh) != NULL)
+	while(result == OK && !fh.atEnd())
 	{
+		fh.readLine(buf, 511);
 		linecounter++;
 
 		if (buf[0] == '#')              //Skip comments
@@ -4590,7 +4589,7 @@ int e2CmdWindow::CmdReadSpecial()
 	int rval;
 	int retry_flag = 1;
 
-	long type = awip->GetEEPId();	// BuildE2PType( awip->GetEEPPriType(), awip->GetEEPSubType() );
+	long type = awip->GetEEPId();   // BuildE2PType( awip->GetEEPPriType(), awip->GetEEPSubType() );
 
 	while (retry_flag)
 	{
@@ -4667,7 +4666,7 @@ int e2CmdWindow::CmdWriteSpecial()
 
 	QMessageBox note;
 
-	long type = awip->GetEEPId();	//BuildE2PType( awip->GetEEPPriType(), awip->GetEEPSubType() );
+	long type = awip->GetEEPId();   //BuildE2PType( awip->GetEEPPriType(), awip->GetEEPSubType() );
 	/**
 	if (type == E2464)              //Microchip 24C65 high endurance block
 	{
@@ -4838,7 +4837,7 @@ int e2CmdWindow::CmdSelectDevice(long new_type, bool init)
 		UpdateMenuType(new_type);
 
 		first_line = 0;
-	//	curIndex = 0;
+		//      curIndex = 0;
 		Draw();
 		awip->RecalcCRC();
 		UpdateStatusBar();
@@ -4846,13 +4845,14 @@ int e2CmdWindow::CmdSelectDevice(long new_type, bool init)
 	else
 	{
 		long old_type = awip->GetEEPId();
+
 		if (new_type != old_type)
 		{
 			awip->SetEEProm(new_type);
 			UpdateMenuType(new_type, old_type);
 
 			first_line = 0;
-		//	curIndex = 0;
+			//      curIndex = 0;
 			Draw();
 			awip->RecalcCRC();
 			UpdateStatusBar();
@@ -5186,7 +5186,9 @@ void e2CmdWindow::UpdateMenuType(long new_type, long old_type)
 	Q_CHECK_PTR(cbxEEPSubType);
 
 	if (new_type == 0)
+	{
 		new_type = awip->GetEEPId();
+	}
 
 	// reset checkboxes
 	static menuToGroup* m = 0;
@@ -5622,8 +5624,8 @@ int e2CmdWindow::OpenFile(const QString &file)
 				oldname = "";
 			}
 
-			awip->SetFileName(fileName);			//Set FileName, update LastFile and PrevFile
-			long old_type = awip->GetEEPId();		//EEP type can be changed by E2P file load
+			awip->SetFileName(fileName);                    //Set FileName, update LastFile and PrevFile
+			long old_type = awip->GetEEPId();               //EEP type can be changed by E2P file load
 
 			rval = awip->Load();
 
@@ -5647,7 +5649,7 @@ int e2CmdWindow::OpenFile(const QString &file)
 				UpdateMenuType(awip->GetEEPId(), old_type);
 
 				first_line = 0;
-			//	curIndex = 0;
+				//      curIndex = 0;
 				Draw();
 				UpdateStatusBar();
 

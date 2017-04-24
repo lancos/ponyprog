@@ -45,18 +45,26 @@ long BuildE2PType(int pritype, int subtype)
 int GetE2PSubType(unsigned long type)
 {
 	if (type == EID_INVALID)
+	{
 		return -1;
+	}
 	else
+	{
 		return (int)(type & 0x7FFF);
+	}
 }
 
 int GetE2PPriType(unsigned long type)
 {
 	//      qDebug() << "GetE2PPriType" << type << ((type >> 16) & 0x7F);
 	if (type == EID_INVALID)
+	{
 		return -1;
+	}
 	else
+	{
 		return (int)((type >> 16) & 0x7F);
+	}
 }
 
 

@@ -7,8 +7,6 @@
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id: e2app.cpp,v 1.25 2016/06/24 12:21:06 lancos Exp $
-//-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
 // modify it under the terms of the GNU  General Public License            //
@@ -48,14 +46,6 @@
 #include <sys/time.h>
 #include <unistd.h>
 #include <signal.h>
-#else
-// #  ifdef        __BORLANDC__
-// #    define     strncasecmp strnicmp
-// #    define strcasecmp stricmp
-// #  else // _MICROSOFT_ VC++
-// #    define strncasecmp _strnicmp
-// #    define strcasecmp _stricmp
-// #  endif
 #endif
 
 #include "microbus.h"
@@ -711,7 +701,14 @@ void e2App::LookForBogoMips()
 		strcpy(sp + 1, "bogomips.out");
 	}
 
-	FILE *fh = fopen(strbuf, "w");
+	QFile fh(strbuf);
+
+	if (!fh.open(QIODevice::WriteOnly | QIODevice::Text))
+	{
+		return;
+	}
+
+	QTextStream out(&fh);
 
 	Wait w;
 	int k;
@@ -735,10 +732,7 @@ void e2App::LookForBogoMips()
 
 		count = GetTickCount() - t0;
 
-		if (fh)
-		{
-			fprintf(fh, "bogo = %d, count = %lu\n", GetBogoMips(), count);
-		}
+		out << "bogo = " << GetBogoMips() << ", count =" << count << "\n";
 	}
 	while (count <= MSLICE / 11);
 
@@ -751,10 +745,7 @@ void e2App::LookForBogoMips()
 
 	count = GetTickCount() - t0;
 
-	if (fh)
-	{
-		fprintf(fh, "1) count = %lu ** mslice = %f *** bogo = %d\n", count, MSLICE, GetBogoMips());
-	}
+	out << "1) count = " << count << " ** mslice = " << MSLICE << " *** bogo = " << GetBogoMips() << "\n";
 
 	int j;
 
@@ -776,10 +767,7 @@ void e2App::LookForBogoMips()
 
 		count = GetTickCount() - t0;
 
-		if (fh)
-		{
-			fprintf(fh, "2) count = %lu ** mslice = %f *** bogo = %d\n", count, MSLICE, GetBogoMips());
-		}
+		out << "2) count = " << count << " ** mslice = " << MSLICE << " *** bogo = " << GetBogoMips() << "\n";
 	}
 
 	//Fine correction
@@ -800,27 +788,21 @@ void e2App::LookForBogoMips()
 
 		count = GetTickCount() - t0;
 
-		if (fh)
-		{
-			fprintf(fh, "3) count = %lu ** mslice = %f *** bogo = %d\n", count, MSLICE, GetBogoMips());
-		}
+		count << "3) count = " << count << " ** mslice = " << MSLICE << " *** bogo = " << GetBogoMips() << "\n";
 	}
 
 	w.CheckHwTimer();       //Check to enable again Hw timer
 
-	if (fh)
+	if (w.GetHwTimer())
 	{
-		if (w.GetHwTimer())
-		{
-			fprintf(fh, "Hardware timer is OK.\n");
-		}
-		else
-		{
-			fprintf(fh, "Hardware timer is too slow, use bogomips (%d)\n", GetBogoMips());
-		}
-
-		fclose(fh);
+		out << "Hardware timer is OK.\n";
 	}
+	else
+	{
+		out << "Hardware timer is too slow, use bogomips (" << GetBogoMips() << ")\n";
+	}
+
+	fh.close();
 
 #endif
 }

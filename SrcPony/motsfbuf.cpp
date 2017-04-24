@@ -7,8 +7,6 @@
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id: motsfbuf.cpp,v 1.9 2009/11/16 22:29:18 lancos Exp $
-//-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
 // modify it under the terms of the GNU  General Public License            //
@@ -27,8 +25,9 @@
 //-------------------------------------------------------------------------//
 //=========================================================================//
 
-#include <stdio.h>
+// #include <stdio.h>
 #include <QString>
+#include <QTextStream>
 
 #include <stdlib.h>
 
@@ -69,7 +68,7 @@ MotorolaSFileBuf::~MotorolaSFileBuf()
 }
 
 
-int MotorolaSFileBuf::WriteRecord(FILE *fh, uint8_t *bptr, long curaddr, long recsize, int fmt)
+int MotorolaSFileBuf::WriteRecord(QTextStream &outs, uint8_t *bptr, long curaddr, long recsize, int fmt)
 {
 	int rval = 1;
 	int len = 0;
@@ -153,23 +152,23 @@ int MotorolaSFileBuf::WriteRecord(FILE *fh, uint8_t *bptr, long curaddr, long re
 		int checksum = 0;
 
 		//type field
-		fprintf(fh, "S%c", fmt);
+		outs << QString().sprintf("S%c", fmt);
 
 		//len field
-		fprintf(fh, "%02X", len & 0xFF);
+		outs << QString().sprintf("%02X", len & 0xFF);
 		checksum += len & 0xFF;
 
 		//addr field
 		if (fmt == DATA_RECORD24 || fmt == END_RECORD24)
 		{
-			fprintf(fh, "%06lX", curaddr & 0xFFFFFF);
+			outs << QString().sprintf("%06lX", curaddr & 0xFFFFFF);
 			checksum += (curaddr >> 16) & 0xFF;
 			checksum += (curaddr >> 8) & 0xFF;
 			checksum += curaddr & 0xFF;
 		}
 		else if (fmt == DATA_RECORD32 || fmt == END_RECORD32)
 		{
-			fprintf(fh, "%08lX", curaddr);
+			outs << QString().sprintf("%08lX", curaddr);
 			checksum += (curaddr >> 24) & 0xFF;
 			checksum += (curaddr >> 16) & 0xFF;
 			checksum += (curaddr >> 8) & 0xFF;
@@ -177,18 +176,18 @@ int MotorolaSFileBuf::WriteRecord(FILE *fh, uint8_t *bptr, long curaddr, long re
 		}
 		else        //all other have a 16 bit address field
 		{
-			fprintf(fh, "%04lX", curaddr & 0xFFFF);
+			outs << QString().sprintf("%04lX", curaddr & 0xFFFF);
 			checksum += (curaddr >> 8) & 0xFF;
 			checksum += curaddr & 0xFF;
 		}
 
 		for (j = 0; j < recsize; j++)
 		{
-			fprintf(fh, "%02X", bptr[curaddr + j]);
+			outs << QString().sprintf("%02X", bptr[curaddr + j]);
 			checksum += bptr[curaddr + j];
 		}
 
-		fprintf(fh, "%02X\n", ~checksum & 0xFF);
+		outs << QString().sprintf("%02X\n", ~checksum & 0xFF);
 	}
 
 	return rval;
@@ -199,13 +198,17 @@ int MotorolaSFileBuf::WriteRecord(FILE *fh, uint8_t *bptr, long curaddr, long re
 //======================>>> MotorolaSFileBuf::Save <<<=======================
 int MotorolaSFileBuf::Save(int savetype, long relocation_offset)
 {
-	FILE *fh;
+	QFile fh(FileBuf::GetFileName());
 	int rval = OK;
 
-	if ( (fh = fopen(FileBuf::GetFileName().toLatin1(), "w")) == NULL )
+	(void)relocation_offset;	//unused
+
+	if (!fh.open(QIODevice::WriteOnly))
 	{
 		return CREATEERROR;
 	}
+
+	QTextStream out(&fh);
 
 	long dsize = FileBuf::GetBlockSize() * FileBuf::GetNoOfBlock();
 	long size = FileBuf::GetBufSize();
@@ -225,7 +228,7 @@ int MotorolaSFileBuf::Save(int savetype, long relocation_offset)
 		}
 		else
 		{
-			fclose(fh);
+			fh.close();
 			return 0;
 		}
 	}
@@ -238,7 +241,7 @@ int MotorolaSFileBuf::Save(int savetype, long relocation_offset)
 		}
 		else
 		{
-			fclose(fh);
+			fh.close();
 			return 0;
 		}
 	}
@@ -248,7 +251,7 @@ int MotorolaSFileBuf::Save(int savetype, long relocation_offset)
 		char rectype;
 		long curaddr = 0;
 
-		WriteRecord(fh, ptr, 0, 0, START_RECORD);
+		WriteRecord(out, ptr, 0, 0, START_RECORD);
 
 		while (curaddr < size)
 		{
@@ -266,7 +269,7 @@ int MotorolaSFileBuf::Save(int savetype, long relocation_offset)
 				rectype = DATA_RECORD32;
 			}
 
-			if ( !WriteRecord(fh, ptr, curaddr, recsize, rectype) )
+			if ( !WriteRecord(out, ptr, curaddr, recsize, rectype) )
 			{
 				rval = WRITEERROR;
 				break;
@@ -287,7 +290,7 @@ int MotorolaSFileBuf::Save(int savetype, long relocation_offset)
 			rectype = END_RECORD32;
 		}
 
-		WriteRecord(fh, ptr, 0, 0, rectype);
+		WriteRecord(out, ptr, 0, 0, rectype);
 
 		rval = curaddr;
 	}
@@ -296,7 +299,7 @@ int MotorolaSFileBuf::Save(int savetype, long relocation_offset)
 		rval = NOTHINGTOSAVE;
 	}
 
-	fclose(fh);
+	fh.close();
 
 	return rval;
 }
@@ -337,9 +340,9 @@ int MotorolaSFileBuf::Load(int loadtype, long relocation_offset)
 	highestAddr = 0;
 	lowestAddr = 0x7fffffff;
 
-	FILE *fh;
+	QFile fh(GetFileName());
 
-	if ( (fh = fopen(GetFileName().toLatin1(), "r")) == NULL )
+	if (!fh.open(QIODevice::ReadOnly | QIODevice::Text))
 	{
 		return FILENOTFOUND;
 	}
@@ -349,8 +352,10 @@ int MotorolaSFileBuf::Load(int loadtype, long relocation_offset)
 	char riga[MAXLINE + 1];
 	riga[MAXLINE] = '\0';
 
-	while ( fgets(riga, MAXLINE, fh) )
+	while (!fh.atEnd())
 	{
+		fh.readLine(riga, MAXLINE);
+
 		if ( (rval = ParseRecord(riga, dp, endp, 0, nocopy_mode)) != OK )
 		{
 			if (rval == BUFFEROVERFLOW)
@@ -380,12 +385,15 @@ int MotorolaSFileBuf::Load(int loadtype, long relocation_offset)
 			highestAddr = 0;
 			lowestAddr = 0x7fffffff;
 
-			rewind(fh);
+			fh.seek(0);
+			//                      rewind(fh);
 
 			riga[MAXLINE] = '\0';
 
-			while ( fgets(riga, MAXLINE, fh) )
+			while ( !fh.atEnd())
 			{
+				fh.readLine(riga, MAXLINE);
+
 				if ( (rval = ParseRecord(riga, dp, endp, l_offset, nocopy_mode)) != OK )
 				{
 					break;
@@ -403,7 +411,7 @@ int MotorolaSFileBuf::Load(int loadtype, long relocation_offset)
 		img_size = highestPC + 1 - dp;
 	}
 
-	fclose(fh);
+	fh.close();
 
 	//This format doesn't contain information about the device size,
 	// so keep the size of the selected eeprom

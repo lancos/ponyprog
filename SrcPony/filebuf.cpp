@@ -7,8 +7,6 @@
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id: filebuf.cpp,v 1.5 2009/11/16 23:40:43 lancos Exp $
-//-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
 // modify it under the terms of the GNU  General Public License            //
@@ -27,8 +25,10 @@
 //-------------------------------------------------------------------------//
 //=========================================================================//
 
-#include <stdio.h>
+// #include <stdio.h>
 #include <QString>
+#include <QFile>
+#include <QFileInfo>
 
 #include "types.h"
 #include "filebuf.h"            // Header file
@@ -182,9 +182,9 @@ int FileBuf::GetEEpromSubType() const
 //======================>>> FileBuf::SetEEpromType <<<=======================
 void FileBuf::SetEEpromType(int pritype, int subtype)
 {
-    extern long BuildE2PType(int pritype, int subtype);
+	extern long BuildE2PType(int pritype, int subtype);
 
-    awi->SetEEProm(BuildE2PType(pritype, subtype));
+	awi->SetEEProm(BuildE2PType(pritype, subtype));
 }
 
 void FileBuf::SetEEpromType(unsigned long id)
@@ -194,18 +194,15 @@ void FileBuf::SetEEpromType(unsigned long id)
 
 
 //======================>>> FileBuf::GetFileSize <<<=======================
-long FileBuf::GetFileSize(FILE *fh)
+long FileBuf::GetFileSize(QFile &fh)
 {
-	long fsize = 0, old_pos;
-
-	if (fh)
+	if (fh.exists())
 	{
-		old_pos = ftell(fh);            // salva la posizione attuale
-		fseek(fh, 0, SEEK_END);         // si posizione in fondo al file
-		fsize = ftell(fh);              // ne ricava la lunghezza
-		fseek(fh, old_pos, SEEK_SET);   // si riposizione dove era prima
+		return fh.size();
 	}
-
-	return fsize;
+	else
+	{
+		return -1;
+	}
 }
 

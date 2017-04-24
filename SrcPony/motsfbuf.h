@@ -7,8 +7,6 @@
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id: motsfbuf.h,v 1.6 2009/11/16 22:29:18 lancos Exp $
-//-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
 // modify it under the terms of the GNU  General Public License            //
@@ -32,6 +30,8 @@
 #ifndef _MOTOSFBUF_H
 #define _MOTOSFBUF_H
 
+#include <QTextStream>
+
 #include "types.h"
 #include "filebuf.h"
 
@@ -50,7 +50,7 @@ protected:    //--------------------------------------- protected
 
 private:              //--------------------------------------- private
 
-	int WriteRecord(FILE *fh, uint8_t *bptr, long curaddr, long recsize, int fmt);
+	int WriteRecord(QTextStream &outs, uint8_t *bptr, long curaddr, long recsize, int fmt);
 	int ParseRecord(char *lbufPC, uint8_t *buf_startP, uint8_t *buf_endP, long offset, int nocopy);
 
 	uint8_t *highestPC;

@@ -27,12 +27,14 @@
 //-------------------------------------------------------------------------//
 //=========================================================================//
 
-#include <stdio.h>
+// #include <stdio.h>
 #include "portint.h"
 #include "errcode.h"
 
 #include <QDebug>
 #include <QString>
+#include <QFile>
+#include <QTextStream>
 
 #include "globals.h"
 
@@ -1034,7 +1036,7 @@ void PortInterface::DetectPorts9x()
 	delete KeyList;
 }
 
-static int DetectPortsNT(const char *ServiceName, const char *PortFormat, base_len *ports, int nports);
+static int DetectPortsNT(const QString &ServiceName, const QString &PortFormat, base_len *ports, int nports);
 
 //---------------------------------------------------------------------------
 // DetectPorts() Win2K / NT version
@@ -1051,9 +1053,8 @@ void PortInterface::DetectCOMPortsNT()
 
 // Static member function
 // See the two possible usage examples above!
-static int DetectPortsNT(const char *ServiceName, const char *PortFormat, base_len *ports, int nports)
+static int DetectPortsNT(const QString &ServiceName, const QString &PortFormat, base_len *ports, int nports)
 {
-	FILE *fh;
 	LONG retval;
 	// This revised code keeps some registry keys open, rather than collecting intermediate strings.
 	// No silly key enumeration at all!
@@ -1061,12 +1062,16 @@ static int DetectPortsNT(const char *ServiceName, const char *PortFormat, base_l
 	char buf[MAX_PATH];     // handy stack-allocated multi-purpose buffer
 	int Count = 0;          // return value (can be greater than nports)
 
-	fh = fopen("detect_ports_NT.log", "a");
+	QFile fh("detect_ports_NT.log");
 
-	if (fh)
+	if (!fh.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text))
 	{
-		fprintf(fh, "Enter DetectPortsNT(%s, %s, %p, %d)\n", ServiceName, PortFormat, ports, nports);
+		return -1;
 	}
+
+	QTextStream out(&fh);
+
+	out << "Enter DetectPortsNT(" << ServiceName << ", " << PortFormat << ", " << (hex) << ports << (dec) << ", " << nports << ")\n";
 
 	memset(ports, 0, nports * sizeof(base_len));    // Clear port array
 	HKEY hCCS;              // Open the registry (first stage)
@@ -1085,10 +1090,7 @@ static int DetectPortsNT(const char *ServiceName, const char *PortFormat, base_l
 
 			if (retval == ERROR_SUCCESS)
 			{
-				if (fh)
-				{
-					fprintf(fh, "Port count: %d)\n", Count);
-				}
+				out << "Port count: " << Count << ")\n";
 
 				for (int i = 0; i < Count; i++)
 				{
@@ -1101,10 +1103,7 @@ static int DetectPortsNT(const char *ServiceName, const char *PortFormat, base_l
 					{
 						HKEY hParams;
 
-						if (fh)
-						{
-							fprintf(fh, "Cycle: %d, PNPPath: %s\n", i, PnpPath);
-						}
+						out << "Cycle: " << i << ", PNPPath: " << PnpPath << "\n";
 
 						_snprintf(buf, sizeof(buf), "Enum\\%s\\Device Parameters", PnpPath);
 						retval = RegOpenKeyEx(hCCS, buf, 0, KEY_PERMISSIONS, &hParams);
@@ -1139,8 +1138,7 @@ static int DetectPortsNT(const char *ServiceName, const char *PortFormat, base_l
 										                && !p[3]                                                        // no high DWORD part
 										                && p[4] >= 8 && p[4] < 16)              // length limited to 16
 										{
-											if (fh) fprintf(fh, "p=%p [0]=%lu, [1]=%lu, [2]=%lxh, [3]=%lxh, [4]=%lu\n",
-												                (void *)p, p[0], p[1], p[2], p[3], p[4]);
+											out << "p=" << (hex) << (void *)p << (dec) << " [0]=" << p[0] << ", [1]=" << p[1] << ", [2]=" << (hex) << p[2] << "h, [3]=" << p[3] << "h, [4]=" << (dec) << p[4] << "\n";
 
 											ports[Index].base = p[2];       // We got one
 											ports[Index].len = p[4];        // (NO check for typical ISA addresses anymore!!)
@@ -1148,20 +1146,14 @@ static int DetectPortsNT(const char *ServiceName, const char *PortFormat, base_l
 									}
 									else
 									{
-										if (fh)
-										{
-											fprintf(fh, "RegQueryValueEx(AllocConfig) Failed with code %ld\n", retval);
-										}
+										out << "RegQueryValueEx(AllocConfig) Failed with code " << retval << "\n";
 									}
 
 									RegCloseKey(hControl);
 								}
 								else
 								{
-									if (fh)
-									{
-										fprintf(fh, "RegOpenKeyEx(%s) Failed with code %ld\n", buf, retval);
-									}
+									out << "RegOpenKeyEx(" << buf << ") Failed with code " << retval << "\n";
 								}
 							}
 
@@ -1169,47 +1161,32 @@ static int DetectPortsNT(const char *ServiceName, const char *PortFormat, base_l
 						}
 						else
 						{
-							if (fh)
-							{
-								fprintf(fh, "RegOpenKeyEx(%s) Failed with code %ld\n", buf, retval);
-							}
+							out << "RegOpenKeyEx(" << buf << ") Failed with code " << retval << "\n";
 						}
 					}
 				} //for
 			}
 			else
 			{
-				if (fh)
-				{
-					fprintf(fh, "RegQueryValueEx(Count) Failed with code %ld\n", retval);
-				}
+				out << "RegQueryValueEx(Count) Failed with code " << retval << "\n";
 			}
 
 			RegCloseKey(hSvcEnum);
 		}
 		else
 		{
-			if (fh)
-			{
-				fprintf(fh, "RegOpenKeyEx(%s) Failed with code %ld\n", buf, retval);
-			}
+			out << "RegOpenKeyEx(" << buf << ") Failed with code " << retval << "\n";
 		}
 
 		RegCloseKey(hCCS);
 	}
 	else
 	{
-		if (fh)
-		{
-			fprintf(fh, "RegOpenKeyEx(HKEY_LOCAL_MACHINE, SYSTEM\\CurrentControlSet) Failed with code %ld\n", retval);
-		}
+		out << "RegOpenKeyEx(HKEY_LOCAL_MACHINE, SYSTEM\\CurrentControlSet) Failed with code " << retval << "\n";
 	}
 
-	if (fh)
-	{
-		fprintf(fh, "Enter DetectPortsNT() *** Count = %d\n", Count);
-		fclose(fh);
-	}
+	out << "Enter DetectPortsNT() *** Count = " << count << "\n";
+	fh.close();
 
 	return (Count < nports) ? Count : nports;
 }

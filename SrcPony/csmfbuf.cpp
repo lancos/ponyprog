@@ -7,8 +7,6 @@
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id: csmfbuf.cpp,v 1.3 2009/11/16 22:29:18 lancos Exp $
-//-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
 // modify it under the terms of the GNU  General Public License            //
@@ -27,8 +25,9 @@
 //-------------------------------------------------------------------------//
 //=========================================================================//
 
-#include <stdio.h>
+//#include <stdio.h>
 #include <QString>
+#include <QFile>
 
 #include "csmfbuf.h"            // Header file
 #include "crc.h"
@@ -47,23 +46,28 @@ csmFileBuf::csmFileBuf(e2AppWinInfo *wininfo)
 //======================>>> csmFileBuf::Load <<<=======================
 int csmFileBuf::Load(int loadtype, long relocation_offfset)
 {
-	int GetE2PSubType(unsigned long x);
-	int GetE2PPriType(unsigned long x);
+	extern int GetE2PSubType(unsigned long x);
+	extern int GetE2PPriType(unsigned long x);
 
-	FILE *fh;
-	char *s, *s1;
+	(void)relocation_offfset;	//unused
+
+	QFile fh(FileBuf::GetFileName());
+
+	char *s;//, *s1;
 	int rval = OK;
 	char riga[MAXLINE + 1];
 
-	if ( (fh = fopen(FileBuf::GetFileName().toLatin1(), "r")) == NULL )
+	if (!fh.open(QIODevice::ReadOnly | QIODevice::Text))
 	{
 		return FILENOTFOUND;
 	}
 
 	int state = 0;
 
-	while ( (s1 = fgets(riga, MAXLINE, fh)) != NULL && state < 3 )
+	while (!fh.atEnd() && state < 3)
 	{
+		fh.readLine(riga, MAXLINE);
+
 		switch (state)
 		{
 		case 0:
@@ -113,7 +117,7 @@ int csmFileBuf::Load(int loadtype, long relocation_offfset)
 		}
 	}
 
-	if (s1 == NULL)                 //Header not found
+	if (state < 3)				//Header not found
 	{
 		rval = BADFILETYPE;
 	}
@@ -124,9 +128,11 @@ int csmFileBuf::Load(int loadtype, long relocation_offfset)
 
 		addr = 0;
 
-		//legge tutto il corpo del file
-		while ( (s = fgets(riga, MAXLINE, fh)) != NULL )
+		//read all remaining file (body)
+		while (!fh.atEnd())
 		{
+			fh.readLine(riga, MAXLINE);
+
 			if (strlen(riga) > 0)   // salta righe vuote
 			{
 				n = sscanf(riga, "%x %x", &addr, &value);
@@ -188,7 +194,7 @@ int csmFileBuf::Load(int loadtype, long relocation_offfset)
 		rval = addr;
 	}
 
-	fclose(fh);
+	fh.close();
 	return rval;
 
 
@@ -196,7 +202,7 @@ int csmFileBuf::Load(int loadtype, long relocation_offfset)
 	//                      SetComment(hdr.e2pComment);
 }
 
-static char header[] =
+static const char header[] =
         "REFERENCE	=	=\n"
         "CHASSIS	=	=\n"
         "MODEL	=	=\n"
@@ -213,8 +219,9 @@ static char header[] =
 //======================>>> csmFileBuf::Save <<<=======================
 int csmFileBuf::Save(int savetype, long relocation_offfset)
 {
-	FILE *fh;
 	int rval = 0;
+
+	(void) relocation_offfset;		//unused
 
 	long size = FileBuf::GetBlockSize() * FileBuf::GetNoOfBlock();
 	uint8_t *ptr = FileBuf::GetBufPtr();
@@ -245,27 +252,28 @@ int csmFileBuf::Save(int savetype, long relocation_offfset)
 
 	if (size > 0)
 	{
-		fh = fopen(FileBuf::GetFileName().toLatin1(), "w");
+		QFile fh(FileBuf::GetFileName());
 
-		if (fh == NULL)
+		if (!fh.open(QIODevice::WriteOnly | QIODevice::Text ))
 		{
 			rval = CREATEERROR;
 		}
 		else
 		{
+			QTextStream out(&fh);
 			int addr, value;
 
 			//Write Header
-			fprintf(fh, "\"\n%s\n\"", header);
+			out << "\"\n" << header << "\n\"";
 
 			//Write buffer
 			for (addr = 0; addr < size; addr++)
 			{
 				value = ptr[addr];
-				fprintf(fh, "%x %x\n", addr, value);
+				out << (hex) << addr << " " << value << "\n";
 			}
 
-			fclose(fh);
+			fh.close();
 
 			rval = addr;
 		}

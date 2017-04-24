@@ -7,8 +7,6 @@
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id: intfbuf.h,v 1.4 2009/11/16 22:29:18 lancos Exp $
-//-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
 // modify it under the terms of the GNU  General Public License            //
@@ -30,6 +28,8 @@
 #ifndef _INTELFBUF_H
 #define _INTELFBUF_H
 
+#include <QFile>
+
 #include "types.h"
 #include "filebuf.h"
 #include "device.h"
@@ -49,8 +49,8 @@ protected:    //--------------------------------------- protected
 
 private:              //--------------------------------------- private
 
-	int WriteRecord(FILE *fh, uint8_t *bptr, long curaddr, long recsize, int fmt);
-	int WriteAddressRecord(FILE *fh, long curaddr, bool linear_address = false);
+	int WriteRecord(QFile &fh, uint8_t *bptr, long curaddr, long recsize, int fmt);
+	int WriteAddressRecord(QFile &fh, long curaddr, bool linear_address = false);
 
 	int ScanHex(char **sp, int len, uint32_t &result);
 	int ScanHex(char **sp, int len, uint16_t &result);

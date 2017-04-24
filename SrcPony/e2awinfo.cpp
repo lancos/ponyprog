@@ -279,16 +279,16 @@ void e2AppWinInfo::SetEEProm(unsigned long id)
 	extern int GetE2PSubType(unsigned long x);
 	extern int GetE2PPriType(unsigned long x);
 
-    if (id == 0)
-    {
-        id = E2400;         //to avoid segV
-    }
+	if (id == 0)
+	{
+		id = E2400;         //to avoid segV
+	}
 
-    eep_id = id;
+	eep_id = id;
 
-    //eep_type, eep_subtype are local shadow variables of eep_id
-    int eep_type = GetE2PPriType(id);
-    int eep_subtype = GetE2PSubType(id);
+	//eep_type, eep_subtype are local shadow variables of eep_id
+	int eep_type = GetE2PPriType(id);
+	int eep_subtype = GetE2PSubType(id);
 
 //	int eep_type = type;
 //	int eep_subtype = subtype;                  //0 indica di usare GetNoOfBlock()
@@ -306,7 +306,7 @@ void e2AppWinInfo::SetEEProm(unsigned long id)
 
 		if (eep_subtype == 0)
 		{
-            //no autodetect: set a reasonable default
+			//no autodetect: set a reasonable default
 			eep_subtype = GetE2PSubType(E2401_A);
 		}
 
@@ -317,7 +317,7 @@ void e2AppWinInfo::SetEEProm(unsigned long id)
 
 		if (eep_subtype == 0)
 		{
-            //no autodetect: set a reasonable default
+			//no autodetect: set a reasonable default
 			eep_subtype = GetE2PSubType(E2401_B);
 		}
 
@@ -328,11 +328,11 @@ void e2AppWinInfo::SetEEProm(unsigned long id)
 
 		if (eep_subtype == 0)
 		{
-            //no autodetect: set a reasonable default
+			//no autodetect: set a reasonable default
 			eep_subtype = GetE2PSubType(E2432);
 		}
 
-        eep->DefaultBankSize();
+		eep->DefaultBankSize();
 		break;
 
 	case E24XX5:
@@ -345,7 +345,7 @@ void e2AppWinInfo::SetEEProm(unsigned long id)
 
 			if (eep_subtype == 0)
 			{
-                //no autodetect: set a reasonable default
+				//no autodetect: set a reasonable default
 				eep_subtype = GetE2PSubType(AT90S1200);
 			}
 
@@ -363,7 +363,7 @@ void e2AppWinInfo::SetEEProm(unsigned long id)
 
 			if (eep_subtype == 0)
 			{
-                //no autodetect: set a reasonable default
+				//no autodetect: set a reasonable default
 				eep_subtype = GetE2PSubType(AT89S8252);
 			}
 
@@ -390,7 +390,7 @@ void e2AppWinInfo::SetEEProm(unsigned long id)
 
 		if (eep_subtype == 0)
 		{
-            //no autodetect: set a reasonable default
+			//no autodetect: set a reasonable default
 			eep_subtype = GetE2PSubType(E9306);
 		}
 
@@ -401,7 +401,7 @@ void e2AppWinInfo::SetEEProm(unsigned long id)
 
 		if (eep_subtype == 0)
 		{
-            //no autodetect: set a reasonable default
+			//no autodetect: set a reasonable default
 			eep_subtype = GetE2PSubType(E9306_8);
 		}
 
@@ -412,7 +412,7 @@ void e2AppWinInfo::SetEEProm(unsigned long id)
 
 		if (eep_subtype == 0)
 		{
-            //no autodetect: set a reasonable default
+			//no autodetect: set a reasonable default
 			eep_subtype = GetE2PSubType(PIC1684);
 		}
 
@@ -431,7 +431,7 @@ void e2AppWinInfo::SetEEProm(unsigned long id)
 
 		if (eep_subtype == 0)
 		{
-            //no autodetect: set a reasonable default
+			//no autodetect: set a reasonable default
 			eep_subtype = GetE2PSubType(PIC12508);
 		}
 
@@ -442,7 +442,7 @@ void e2AppWinInfo::SetEEProm(unsigned long id)
 
 		if (eep_subtype == 0)
 		{
-            //no autodetect: set a reasonable default
+			//no autodetect: set a reasonable default
 			eep_subtype = GetE2PSubType(E25010);
 		}
 
@@ -453,11 +453,11 @@ void e2AppWinInfo::SetEEProm(unsigned long id)
 
 		if (eep_subtype == 0)
 		{
-            //no autodetect: set a reasonable default
+			//no autodetect: set a reasonable default
 			eep_subtype = GetE2PSubType(E25080);
 		}
 
-        //eep->SetBus(GetBusVectorPtr()[AT250BIG-1]);
+		//eep->SetBus(GetBusVectorPtr()[AT250BIG-1]);
 		break;
 
 	case E2506XX:
@@ -465,7 +465,7 @@ void e2AppWinInfo::SetEEProm(unsigned long id)
 
 		if (eep_subtype == 0)
 		{
-            //no autodetect: set a reasonable default
+			//no autodetect: set a reasonable default
 			eep_subtype = GetE2PSubType(E2506);
 		}
 
@@ -476,7 +476,7 @@ void e2AppWinInfo::SetEEProm(unsigned long id)
 
 		if (eep_subtype == 0)
 		{
-            //no autodetect: set a reasonable default
+			//no autodetect: set a reasonable default
 			eep_subtype = GetE2PSubType(ENVM3060);
 		}
 
@@ -487,7 +487,7 @@ void e2AppWinInfo::SetEEProm(unsigned long id)
 
 		if (eep_subtype == 0)
 		{
-            //no autodetect: set a reasonable default
+			//no autodetect: set a reasonable default
 			eep_subtype = GetE2PSubType(AT1765);
 		}
 
@@ -496,7 +496,7 @@ void e2AppWinInfo::SetEEProm(unsigned long id)
 	case X24C44XX:
 		if (eep_subtype == 0)
 		{
-            //no autodetect: set a reasonable default
+			//no autodetect: set a reasonable default
 			eep_subtype = GetE2PSubType(S24H30);
 		}
 

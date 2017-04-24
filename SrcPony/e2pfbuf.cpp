@@ -7,8 +7,6 @@
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id: e2pfbuf.cpp,v 1.5 2009/11/16 23:40:43 lancos Exp $
-//-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
 // modify it under the terms of the GNU  General Public License            //
@@ -27,8 +25,9 @@
 //-------------------------------------------------------------------------//
 //=========================================================================//
 
-#include <stdio.h>
+// #include <stdio.h>
 #include <QString>
+#include <QDataStream>
 
 #include "e2pfbuf.h"            // Header file
 #include "crc.h"
@@ -40,16 +39,12 @@
 
 static char const *id_string = "E2P!Lanc";
 
-// EK 2017
-// what is it?
-#define BUILD_BUG_ON(condition) ((void)sizeof(char[1 - 2 * !!(condition)]))
-
 //======================>>> e2pFileBuf::e2pFileBuf <<<=======================
 e2pFileBuf::e2pFileBuf(e2AppWinInfo *wininfo)
 	: FileBuf(wininfo)
 {
 	file_type = E2P;
-	BUILD_BUG_ON(sizeof(struct e2pHeader) != 152);
+	static_assert(sizeof(struct e2pHeader) == 152, "Bad size for e2pHeader");
 }
 
 //======================>>> e2pFileBuf::~e2pFileBuf <<<=======================
@@ -91,17 +86,19 @@ int e2pFileBuf::Load(int loadtype, long relocation_offset)
 	extern int GetE2PSubType(unsigned long x);
 	extern int GetE2PPriType(unsigned long x);
 
-	FILE *fh;
+	QFile fh(FileBuf::GetFileName());
 	e2pHeader hdr;
 	int rval;
 
-	if ( (fh = fopen(FileBuf::GetFileName().toLatin1(), "rb")) == NULL )
+	if (!fh.open(QIODevice::ReadOnly))
 	{
 		return FILENOTFOUND;
 	}
 
+	QDataStream datastream(&fh);
+
 	// Controlla il tipo di file
-	if ( fread(&hdr, sizeof(e2pHeader), 1, fh) &&
+	if (datastream.readRawData( (char*)&hdr, sizeof(e2pHeader)) &&
 	                strncmp(hdr.fileID, id_string, E2P_ID_SIZE) == 0 )
 	{
 		unsigned char *localbuf;
@@ -111,10 +108,10 @@ int e2pFileBuf::Load(int loadtype, long relocation_offset)
 		{
 			//Controlla il CRC dell'Header
 			if ( mcalc_crc(&hdr, sizeof(hdr) - sizeof(hdr.headCrc)) == hdr.headCrc &&
-							//Check for CRC in memory
+			                //Check for CRC in memory
 			                fcalc_crc(fh, sizeof(e2pHeader), 0) == hdr.e2pCrc &&
-							//read buffer
-			                fread(localbuf, hdr.e2pSize, 1, fh) )
+			                //read buffer
+			                datastream.readRawData( (char*)localbuf, hdr.e2pSize) )
 				//                      fread(FileBuf::GetBufPtr(), hdr.e2pSize, 1, fh) )
 			{
 				SetEEpromType(hdr.e2pType);  //set eeprom device type (and block size too)
@@ -210,14 +207,14 @@ int e2pFileBuf::Load(int loadtype, long relocation_offset)
 		rval = BADFILETYPE;
 	}
 
-	fclose(fh);
+	fh.close();
+
 	return rval;
 }
 
 //======================>>> e2pFileBuf::Save <<<=======================
 int e2pFileBuf::Save(int savetype, long relocation_offset)
 {
-	FILE *fh;
 	e2pHeader hdr;
 	int rval, create_file = 0;
 
@@ -226,18 +223,16 @@ int e2pFileBuf::Save(int savetype, long relocation_offset)
 		return NOTHINGTOSAVE;
 	}
 
-	fh = fopen(FileBuf::GetFileName().toLatin1(), "r+b");
+	QFile fh(FileBuf::GetFileName());
 
-	if (fh == NULL)
+	if (!fh.exists())
 	{
-		fh = fopen(FileBuf::GetFileName().toLatin1(), "w+b");
-
-		if (fh == NULL)
-		{
-			return CREATEERROR;
-		}
-
 		create_file = 1;
+	}
+
+	if (!fh.open(QIODevice::ReadWrite))
+	{
+		return CREATEERROR;
 	}
 
 	//Header settings
@@ -247,6 +242,8 @@ int e2pFileBuf::Save(int savetype, long relocation_offset)
 
 	unsigned char *localbuf;
 	localbuf = new unsigned char[hdr.e2pSize];
+
+	QDataStream datastream(&fh);
 
 	if (localbuf)
 	{
@@ -259,18 +256,18 @@ int e2pFileBuf::Save(int savetype, long relocation_offset)
 			//Initialize local buffer
 			//  if the file already exist read the current content
 			//  otherwise set the localbuffer to 0xFF
-			rv = fseek(fh, sizeof(hdr), SEEK_SET);
+			rv = fh.seek( sizeof(hdr));
 
 			if (rv == 0)
 			{
-				rv = fread(localbuf, hdr.e2pSize, 1, fh);
+				rv = datastream.readRawData( (char*)localbuf, hdr.e2pSize);
 			}
 			else
 			{
 				rv = 0;
 			}
 
-			rewind(fh);
+			fh.seek(0);
 		}
 
 		if (!rv)
@@ -314,8 +311,8 @@ int e2pFileBuf::Save(int savetype, long relocation_offset)
 		hdr.headCrc = mcalc_crc(&hdr, sizeof(hdr) - sizeof(hdr.headCrc));
 
 		//Write to file
-		if (    fwrite(&hdr, sizeof(hdr), 1, fh) &&             //Write the header
-		                fwrite(localbuf, hdr.e2pSize, 1, fh) )   //Write the buffer
+		if (    datastream.writeRawData((char*)&hdr, sizeof(hdr)) &&             //Write the header
+		                datastream.writeRawData((char*)localbuf, hdr.e2pSize) )   //Write the buffer
 		{
 			rval = GetNoOfBlock();
 		}
@@ -331,6 +328,6 @@ int e2pFileBuf::Save(int savetype, long relocation_offset)
 		rval = OUTOFMEMORY;
 	}
 
-	fclose(fh);
+	fh.close();
 	return rval;
 }
