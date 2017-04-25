@@ -306,14 +306,20 @@ void editModalDialog::onEdit()
 	{
 		QString n = txiVal->text();
 
-		if (n.length() > 1)
+		if (n.length() != 1)
 		{
 			ok = false;
+			QPalette *palette = new QPalette();
+			palette->setColor(QPalette::Text, Qt::red);
+			txiVal->setPalette(*palette);
 		}
 		else
 		{
 			newval = static_cast<unsigned char>(n.at(0).toLatin1());
 			ok = true;
+			QPalette *palette = new QPalette();
+			palette->setColor(QPalette::Text, Qt::red);
+			txiVal->setPalette(*palette);
 		}
 	}
 
