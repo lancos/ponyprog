@@ -268,17 +268,43 @@ void editModalDialog::onEdit()
 	{
 		QString n = txiFrom->text();
 		newval = n.toInt(&ok, 16);
+
+		if (ok == true)
+		{
+			QPalette *palette = new QPalette();
+			palette->setColor(QPalette::Text, Qt::black);
+			txiFrom->setPalette(*palette);
+		}
+		else
+		{
+			QPalette *palette = new QPalette();
+			palette->setColor(QPalette::Text, Qt::red);
+			txiFrom->setPalette(*palette);
+		}
 	}
 
 	if (l == txiTo)  // dec
 	{
-		QString n = txiFrom->text();
+		QString n = txiTo->text();
 		newval = n.toInt(&ok, 10);
+
+		if (ok == true)
+		{
+			QPalette *palette = new QPalette();
+			palette->setColor(QPalette::Text, Qt::black);
+			txiTo->setPalette(*palette);
+		}
+		else
+		{
+			QPalette *palette = new QPalette();
+			palette->setColor(QPalette::Text, Qt::red);
+			txiTo->setPalette(*palette);
+		}
 	}
 
 	if (l == txiVal)  // char
 	{
-		QString n = txiFrom->text();
+		QString n = txiVal->text();
 
 		if (n.length() > 1)
 		{

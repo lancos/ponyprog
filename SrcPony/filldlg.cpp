@@ -93,7 +93,12 @@ void FillDialog::onOk()
 
 	if (good == false)  // TODO
 	{
-		reject();
+		QPalette *palette = new QPalette();
+		palette->setColor(QPalette::Text, Qt::red);
+		txiFrom->setPalette(*palette);
+
+		return;
+		//              reject();
 	}
 
 	str = txiTo->text();
@@ -101,7 +106,11 @@ void FillDialog::onOk()
 
 	if (good == false)  // TODO
 	{
-		reject();
+		QPalette *palette = new QPalette();
+		palette->setColor(QPalette::Text, Qt::red);
+		txiTo->setPalette(*palette);
+
+		return;
 	}
 
 	str = txiVal->text();
@@ -109,7 +118,11 @@ void FillDialog::onOk()
 
 	if (good == false)  // TODO
 	{
-		reject();
+		QPalette *palette = new QPalette();
+		palette->setColor(QPalette::Text, Qt::red);
+		txiVal->setPalette(*palette);
+
+		return;
 	}
 
 	*pFrom = mFrom;

@@ -134,6 +134,14 @@ void SerNumDialog::onOk()
 	{
 		loc = l;
 	}
+	else
+	{
+		QPalette *palette = new QPalette();
+		palette->setColor(QPalette::Text, Qt::red);
+		txiLoc->setPalette(*palette);
+
+		return;
+	}
 
 	l = txiLen->text().toLong(&ok);
 
@@ -141,12 +149,28 @@ void SerNumDialog::onOk()
 	{
 		size = l;
 	}
+	else
+	{
+		QPalette *palette = new QPalette();
+		palette->setColor(QPalette::Text, Qt::red);
+		txiLen->setPalette(*palette);
+
+		return;
+	}
 
 	int v = txiVal->text().toLong(&ok);
 
 	if (ok == true)
 	{
 		val = v;
+	}
+	else
+	{
+		QPalette *palette = new QPalette();
+		palette->setColor(QPalette::Text, Qt::red);
+		txiVal->setPalette(*palette);
+
+		return;
 	}
 
 	if ( rdbLittleEnd->isChecked() == true)
@@ -235,12 +259,28 @@ void OscCalibDialog::onOk()
 	{
 		loc = i;
 	}
+	else
+	{
+		QPalette *palette = new QPalette();
+		palette->setColor(QPalette::Text, Qt::red);
+		txiLoc->setPalette(*palette);
+
+		return;
+	}
 
 	long v = txiVal->text().toLong(&ok);
 
 	if (ok == true)
 	{
 		val = (uint8_t)v;
+	}
+	else
+	{
+		QPalette *palette = new QPalette();
+		palette->setColor(QPalette::Text, Qt::red);
+		txiVal->setPalette(*palette);
+
+		return;
 	}
 
 	memtype = chkMemOffset->isChecked();
