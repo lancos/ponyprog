@@ -158,7 +158,7 @@ private slots:
 	//     void onOverwriteMode(bool b);
 	void onWriteHEndurance();
 	void onAskToSave();
-	void onProgress(int val);
+	//      void onProgress(int val);
 	void onCloseAllDialog();
 
 	void onSelectEEPType(int val);
@@ -194,6 +194,8 @@ private slots:
 	void onSelectImBus(QAction* a);
 	void onSelectSDE2506(QAction* a);
 	void onSelectX244(QAction* a);
+
+	void onEndProgress();
 
 	//      void setOverwriteMode(bool);
 	//      void dataChanged();
@@ -261,6 +263,9 @@ private:
 private:              //--------------------------------------- private
 	void createSignalSlotConnections();
 	QString convertFilterListToString(const QStringList &lst);
+
+	void doProgress(const QString &text);
+
 
 	menuToGroup* searchMenuInDeviceVector( int new_type );
 

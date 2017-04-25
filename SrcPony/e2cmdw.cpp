@@ -109,6 +109,8 @@ e2CmdWindow::e2CmdWindow(QWidget *parent ) :
 	lblStringID = NULL;
 	lblEEPInfo = NULL;
 
+	e2Prg = NULL;
+
 	// reading of arguments
 
 	arguments = QCoreApplication::arguments();
@@ -198,9 +200,6 @@ e2CmdWindow::e2CmdWindow(QWidget *parent ) :
 	//      _timer = new e2Timer(this);             // create timer
 	//      _timer->TimerSet(1000);         // 1 second intervals
 
-	// Associated dialogs
-	e2Prg = new QProgressDialog(this);
-	e2Prg->setAutoClose(true);
 
 	// to show th main window
 	//      show();
@@ -245,7 +244,10 @@ e2CmdWindow::~e2CmdWindow()
 	//      _timer->TimerStop();    // end it
 	//      delete _timer;                  // free it
 	//      delete e2Dlg;
-	delete e2Prg;
+	if (e2Prg)
+	{
+		delete e2Prg;
+	}
 }
 
 
@@ -1039,6 +1041,41 @@ void e2CmdWindow::setMenuIndexes()
 	idxImBus = findItemInMenuVector("ImBus eeprom");
 	idxSDE2506 = findItemInMenuVector("SDE2506 eeprom");
 	idxX244 = findItemInMenuVector("X2444 eeprom");
+}
+
+/**
+ * @brief creating of QProgressDialog and start
+ *
+ */
+void e2CmdWindow::doProgress(const QString &text)
+{
+	if (e2Prg)
+	{
+		qDebug() << "something is running";
+		return;
+	}
+
+	e2Prg = new QProgressDialog(text, "Abort", 0, 0, this);
+	e2Prg->setRange(0, 0); // for not percentage progress
+	e2Prg->setWindowModality(Qt::WindowModal);
+	connect (e2Prg, SIGNAL(canceled()), this,  SLOT(onEndProgress()));
+	e2Prg->show();
+}
+
+/**
+ * @brief SLOT from "cancel" of ProgressDialog
+ *
+ */
+void e2CmdWindow::onEndProgress()
+{
+	if (e2Prg)
+	{
+		e2Prg->close();
+		delete e2Prg;
+		e2Prg = NULL;
+	}
+
+	qDebug() << "progress dialog finished";
 }
 
 
@@ -1956,15 +1993,16 @@ void e2CmdWindow::onAskToSave()
 }
 
 
-void e2CmdWindow::onProgress(int val)
-{
-	e2Prg->setValue(val);
-}
+// void e2CmdWindow::onProgress(int val)
+// {
+//      e2Prg->setValue(val);
+// }
 
 
 void e2CmdWindow::onCloseAllDialog()
 {
-	e2Prg->close();
+	//e2Prg->close();
+	emit onEndProgress();
 	//      e2Dlg->CloseDialog();
 }
 
@@ -2386,17 +2424,19 @@ int e2CmdWindow::CmdRead(int type)
 
 		retry_flag = 0;
 
-		if (e2Prg->isHidden())
+		if (!e2Prg)
 		{
-			e2Prg->setLabelText(STR_MSGREADING);
-			e2Prg->setValue(0);
+			doProgress(STR_MSGREADING);
+			//e2Prg->setLabelText(STR_MSGREADING);
+			//e2Prg->setValue(0);
 		}
 
 		awip->SetFileName(0);
 		SetTitle();
 
 		rval = awip->Read(type);
-		e2Prg->close();
+		//e2Prg->close();
+		emit onEndProgress();
 
 		if ( rval > 0 )
 		{
@@ -2511,10 +2551,11 @@ int e2CmdWindow::CmdWrite(int type, bool verify)
 
 				retry_flag = 0;
 
-				if (e2Prg->isHidden())
+				if (!e2Prg)
 				{
-					e2Prg->setLabelText(STR_MSGWRITING);
-					e2Prg->setValue(0);
+					doProgress(STR_MSGWRITING);
+					//e2Prg->setLabelText(STR_MSGWRITING);
+					//e2Prg->setValue(0);
 				}
 
 				rval = awip->Write(type, true, verify ? true : false);
@@ -2523,8 +2564,9 @@ int e2CmdWindow::CmdWrite(int type, bool verify)
 				{
 					if (verify)
 					{
-						e2Prg->setLabelText(STR_MSGVERIFING);
-						e2Prg->setValue(0);
+						doProgress(STR_MSGVERIFING);
+						//e2Prg->setLabelText(STR_MSGVERIFING);
+						//e2Prg->setValue(0);
 
 						if ( (old_type & CONFIG_TYPE) &&
 						                !(awip->GetFuseBits() == 0 && awip->GetLockBits() == 0) )
@@ -2548,7 +2590,8 @@ int e2CmdWindow::CmdWrite(int type, bool verify)
 						}
 					}
 
-					e2Prg->close();
+					//e2Prg->close();
+					emit onEndProgress();
 
 					QMessageBox note;
 
@@ -2607,7 +2650,8 @@ int e2CmdWindow::CmdWrite(int type, bool verify)
 				} // if ( (rval = ...
 				else
 				{
-					e2Prg->close();
+					//e2Prg->close();
+					emit onEndProgress();
 					//                                      CheckEvents();
 
 					result = rval;
@@ -2638,7 +2682,8 @@ int e2CmdWindow::CmdWrite(int type, bool verify)
 
 			E2Profile::ClearIgnoreFlag();
 
-			e2Prg->close();
+			//e2Prg->close();
+			emit onEndProgress();
 		} // if ( yn.AskYN(...
 	} //else
 
@@ -2779,14 +2824,16 @@ int e2CmdWindow::CmdErase(int type)
 
 		retry_flag = 0;
 
-		if (e2Prg->isHidden())
+		if (!e2Prg)
 		{
-			e2Prg->setLabelText(STR_MSGERASING);
-			e2Prg->setValue(0);
+			doProgress(STR_MSGERASING);
+			//e2Prg->setLabelText(STR_MSGERASING);
+			//e2Prg->setValue(0);
 		}
 
 		rval = awip->Erase(type);
-		e2Prg->close();
+		//e2Prg->close();
+		emit onEndProgress();
 
 		if ( rval > 0 )
 		{
@@ -2860,16 +2907,18 @@ int e2CmdWindow::CmdVerify(int type)
 	}
 	else
 	{
-		if (e2Prg->isHidden())
+		if (!e2Prg)
 		{
-			e2Prg->setLabelText(STR_MSGVERIFING);
-			e2Prg->setValue(0);
+			doProgress(STR_MSGVERIFING);
+			//e2Prg->setLabelText(STR_MSGVERIFING);
+			//e2Prg->setValue(0);
 		}
 
 		QMessageBox note;
 
 		int rval = awip->Verify(type);
-		e2Prg->close();
+		//e2Prg->close();
+		emit onEndProgress();
 
 		if (rval < 0)
 		{
@@ -3166,7 +3215,6 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 	char *arg[32];
 	int n;
 	int linecounter;
-
 
 	VerboseType old_verbose = verbose;
 
@@ -4443,17 +4491,19 @@ int e2CmdWindow::CmdWriteLock()
 
 			retry_flag = 0;
 
-			if (e2Prg->isHidden())
+			if (!e2Prg)
 			{
-				e2Prg->setLabelText(STR_MSGWRITINGSEC);
-				e2Prg->setValue(0);
+				doProgress(STR_MSGWRITINGSEC);
+				//e2Prg->setLabelText(STR_MSGWRITINGSEC);
+				//e2Prg->setValue(0);
 			}
 
 			rval = awip->SecurityWrite(0, true);
 
 			if (rval == OK)
 			{
-				e2Prg->close();
+				//e2Prg->close();
+				emit onEndProgress();
 
 				//      if (verbose == verboseAll)
 				//              note.setText("Security bits write successful");
@@ -4461,11 +4511,13 @@ int e2CmdWindow::CmdWriteLock()
 			} // if ( (rval = ...
 			else if (rval == NOTSUPPORTED)
 			{
-				e2Prg->close();
+				//e2Prg->close();
+				emit onEndProgress();
 			}
 			else
 			{
-				e2Prg->close();
+				//e2Prg->close();
+				emit onEndProgress();
 				//                              CheckEvents();
 
 				result = rval;
@@ -4519,10 +4571,11 @@ int e2CmdWindow::CmdReadLock()
 
 		retry_flag = 0;
 
-		if (e2Prg->isHidden())
+		if (!e2Prg)
 		{
-			e2Prg->setLabelText(STR_MSGREADINGSEC);
-			e2Prg->setValue(0);
+			doProgress(STR_MSGREADINGSEC);
+			//e2Prg->setLabelText(STR_MSGREADINGSEC);
+			//e2Prg->setValue(0);
 		}
 
 		rval = awip->SecurityRead(bits);
@@ -4534,13 +4587,15 @@ int e2CmdWindow::CmdReadLock()
 			Draw();
 			UpdateStatusBar();
 
-			e2Prg->close();
+			//e2Prg->close();
+			emit onEndProgress();
 
 			// orig deactivated     SpecialBits();
 		} // if ( (rval = ...
 		else if (rval == NOTSUPPORTED)
 		{
-			e2Prg->close();
+			//e2Prg->close();
+			emit onEndProgress();
 		}
 		else
 		{
@@ -4597,10 +4652,11 @@ int e2CmdWindow::CmdReadSpecial()
 
 		retry_flag = 0;
 
-		if (e2Prg->isHidden())
+		if (!e2Prg)
 		{
-			e2Prg->setLabelText(STR_MSGREADINGFUSE);
-			e2Prg->setValue(0);
+			doProgress(STR_MSGREADINGFUSE);
+			//e2Prg->setLabelText(STR_MSGREADINGFUSE);
+			//e2Prg->setValue(0);
 		}
 
 		if (type == E2464)
@@ -4614,17 +4670,20 @@ int e2CmdWindow::CmdReadSpecial()
 
 		if ( rval == OK )
 		{
-			e2Prg->close();
+			//e2Prg->close();
+			emit onEndProgress();
 
 			// orig deactivated     SpecialBits(1);
 		} // if ( (rval = ...
 		else if (rval == NOTSUPPORTED)
 		{
-			e2Prg->close();
+			//e2Prg->close();
+			emit onEndProgress();
 		}
 		else
 		{
-			e2Prg->close();
+			//e2Prg->close();
+			emit onEndProgress();
 			//                      CheckEvents();
 
 			result = rval;
@@ -4713,10 +4772,11 @@ int e2CmdWindow::CmdWriteSpecial()
 
 			retry_flag = 0;
 
-			if (e2Prg->isHidden())
+			if (!e2Prg)
 			{
-				e2Prg->setLabelText(STR_MSGWRITINGFUSE);
-				e2Prg->setValue(0);
+				doProgress(STR_MSGWRITINGFUSE);
+				//e2Prg->setLabelText(STR_MSGWRITINGFUSE);
+				//e2Prg->setValue(0);
 			}
 
 			if (type == E2464)
@@ -4730,18 +4790,21 @@ int e2CmdWindow::CmdWriteSpecial()
 
 			if ( rval == OK )
 			{
-				e2Prg->close();
+				//e2Prg->close();
+				emit onEndProgress();
 
 				//      if (verbose == verboseAll)
 				//              note.setText("Special write successful");
 			} // if ( (rval = ...
 			else if (rval == NOTSUPPORTED)
 			{
-				e2Prg->close();
+				//e2Prg->close();
+				emit onEndProgress();
 			}
 			else
 			{
-				e2Prg->close();
+				//e2Prg->close();
+				emit onEndProgress();
 				//                              CheckEvents();
 
 				result = rval;
@@ -4877,7 +4940,8 @@ void e2CmdWindow::CmdRemoteMode()
         SocketServer srv(0, this);
 
         if ( srv.UDPMainLoop() != OK)
-                e2Prg->close();
+                //e2Prg->close();
+            emit onEndProgress();
 
         verbose = old_verbose;
 }
