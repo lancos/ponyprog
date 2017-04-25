@@ -177,6 +177,8 @@ int RS232Interface::OpenSerial(QString devname)
 	if ((ioctl(fd, TIOCSBRK, 0) == -1) || (ioctl(fd, TIOCCBRK, 0) == -1))
 	{
 		qDebug() << "RS232Interface::OpenPort IOCTL not available";
+		close(fd);
+		fd = INVALID_HANDLE_VALUE;
 		return ret_val;
 	}
 #else

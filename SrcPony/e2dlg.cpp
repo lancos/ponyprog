@@ -70,7 +70,7 @@ e2Dialog::e2Dialog(QWidget* bw, const QString title)
 
 	connect(pushOk, SIGNAL(clicked()), this, SLOT(onOk()));
 	connect(pushCancel, SIGNAL(clicked()), this, SLOT(reject()));
-	connect(pushTest, SIGNAL(toggled(bool)), this, SLOT(onTest()));
+	connect(pushTest, SIGNAL(clicked(bool)), this, SLOT(onTest()));
 
 
 	getSettings();
