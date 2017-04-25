@@ -318,7 +318,7 @@ void editModalDialog::onEdit()
 			newval = static_cast<unsigned char>(n.at(0).toLatin1());
 			ok = true;
 			QPalette *palette = new QPalette();
-			palette->setColor(QPalette::Text, Qt::red);
+			palette->setColor(QPalette::Text, Qt::black);
 			txiVal->setPalette(*palette);
 		}
 	}
