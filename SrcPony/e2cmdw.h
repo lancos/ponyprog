@@ -155,6 +155,12 @@ public:               //---------------------------------------- public
 	//      virtual void DropFile(const char *fn);          //TODO use QDrag for drag&drop file into the buffer
 	virtual void Exit();
 
+	QString getStyleSheet()
+	{
+		return programStyleSheet;
+	}
+
+
 private slots:
 	void onNew();
 	void onOpen(); //
@@ -361,12 +367,12 @@ private:
 
 	QFont sysFont;
 	short fontSize;
-	QString programStyleSheet;
 
 	QLabel *txtComment;
 	QLabel *txtID;
 
 	QStringList arguments;
+	QString programStyleSheet;
 
 	QComboBox* cbxEEPType;
 	QComboBox* cbxEEPSubType;

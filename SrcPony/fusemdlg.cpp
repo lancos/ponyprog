@@ -50,6 +50,13 @@ fuseModalDialog::fuseModalDialog(e2CmdWindow* bw, e2AppWinInfo *p, bool readonly
 	lock = awip->GetLockBits();
 	fuse = awip->GetFuseBits();
 
+	e2CmdWindow *cmdw = static_cast<e2CmdWindow *>(bw);
+
+	if (cmdw->getStyleSheet().length() > 0)
+	{
+		setStyleSheet(cmdw->getStyleSheet());
+	}
+
 	long type = bw->GetCurrentChipType();
 
 	qDebug() << "fuseModalDialog::fuseModalDialog()";
@@ -404,6 +411,13 @@ blockDialog::blockDialog(e2CmdWindow* bw, e2AppWinInfo *p, bool readonly, const 
 
 	lock = awip->GetLockBits();
 	fuse = awip->GetFuseBits();
+
+	e2CmdWindow *cmdw = static_cast<e2CmdWindow *>(bw);
+
+	if (cmdw->getStyleSheet().length() > 0)
+	{
+		setStyleSheet(cmdw->getStyleSheet());
+	}
 
 	qDebug() << "blockDialog::blockDialog()";
 

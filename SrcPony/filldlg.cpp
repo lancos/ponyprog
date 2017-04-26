@@ -31,12 +31,15 @@
 #include <QDebug>
 #include <QString>
 
+#include "e2cmdw.h"
 #include "types.h"
 #include "filldlg.h"
 #include "string_table.h"
 
 
 using namespace Translator;
+
+class e2CmdWindow;
 
 //=========================>>> FillDialog::FillDialog <<<====================
 FillDialog::FillDialog(QWidget* bw, long &cfrom, long &cto, int &cval, long max_addr, const QString title) :
@@ -45,6 +48,13 @@ FillDialog::FillDialog(QWidget* bw, long &cfrom, long &cto, int &cval, long max_
 	setupUi(this);
 
 	setWindowTitle(title);
+
+	e2CmdWindow *cmdw = static_cast<e2CmdWindow *>(bw);
+
+	if (cmdw->getStyleSheet().length() > 0)
+	{
+		setStyleSheet(cmdw->getStyleSheet());
+	}
 
 	qDebug() << "FillDialog::FillDialog()";
 
@@ -92,15 +102,15 @@ void FillDialog::onOk()
 	bool good;
 	bool bad = false;
 	QPalette *palette = new QPalette();
-	palette->setColor(QPalette::Text, Qt::black);	//Color for good parameter
+	palette->setColor(QPalette::Text, Qt::black);   //Color for good parameter
 	txiFrom->setPalette(*palette);
 	txiTo->setPalette(*palette);
 	txiVal->setPalette(*palette);
 
-	palette->setColor(QPalette::Text, Qt::red);		//Color for bad parameter
+	palette->setColor(QPalette::Text, Qt::red);             //Color for bad parameter
 
 	QString str = txiFrom->text();
-	mFrom = str.toLong(&good, 0);	//0 accept both decimal and hex format (with 0x prefix)
+	mFrom = str.toLong(&good, 0);   //0 accept both decimal and hex format (with 0x prefix)
 
 	//Check from field format
 	if (good == false)
@@ -130,7 +140,9 @@ void FillDialog::onOk()
 	}
 
 	if (bad)
+	{
 		return;
+	}
 
 	//Check from field range
 	if (mFrom >= mMax)
@@ -154,7 +166,9 @@ void FillDialog::onOk()
 	}
 
 	if (bad)
+	{
 		return;
+	}
 
 	*pFrom = mFrom;
 	*pTo = mTo;

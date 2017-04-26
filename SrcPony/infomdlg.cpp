@@ -34,11 +34,14 @@
 #include <QDebug>
 #include <QString>
 
+#include "e2cmdw.h"
 #include "string_table.h"
 #include "globals.h"
 #include "infomdlg.h"
 
 using namespace Translator;
+
+class e2CmdWindow;
 
 
 //======================>>> infoModalDialog::infoModalDialog <<<==================
@@ -48,6 +51,13 @@ e24xx_infoModalDialog::e24xx_infoModalDialog(QWidget* bw, int rlv, uint16_t crc,
 	setupUi(this);
 
 	setWindowTitle(title);
+
+	e2CmdWindow *cmdw = static_cast<e2CmdWindow *>(bw);
+
+	if (cmdw->getStyleSheet().length() > 0)
+	{
+		setStyleSheet(cmdw->getStyleSheet());
+	}
 
 	if (rlv == 1)
 	{
@@ -107,6 +117,13 @@ other_infoModalDialog::other_infoModalDialog(QWidget* bw, long fsize, long esize
 
 	setWindowTitle(title);
 
+	e2CmdWindow *cmdw = static_cast<e2CmdWindow *>(bw);
+
+	if (cmdw->getStyleSheet().length() > 0)
+	{
+		setStyleSheet(cmdw->getStyleSheet());
+	}
+
 	QString str;
 
 	lblFrom->setText(STR_MSGCRC); // crc label
@@ -152,6 +169,13 @@ notesModalDialog::notesModalDialog(QWidget* bw, QString &id, QString &cm, const 
 	setupUi(this);
 
 	setWindowTitle(title);
+
+	e2CmdWindow *cmdw = static_cast<e2CmdWindow *>(bw);
+
+	if (cmdw->getStyleSheet().length() > 0)
+	{
+		setStyleSheet(cmdw->getStyleSheet());
+	}
 
 	qDebug() << "notesModalDialog::notesModalDialog()";
 
@@ -201,6 +225,13 @@ editModalDialog::editModalDialog(QWidget* bw, int curval, const QString title) :
 	setupUi(this);
 
 	setWindowTitle(title);
+
+	e2CmdWindow *cmdw = static_cast<e2CmdWindow *>(bw);
+
+	if (cmdw->getStyleSheet().length() > 0)
+	{
+		setStyleSheet(cmdw->getStyleSheet());
+	}
 
 	qDebug() << "editModalDialog::editModalDialog()";
 
@@ -348,6 +379,13 @@ editModalDialog2::editModalDialog2(QWidget* bw, const QString curval, const QStr
 	setupUi(this);
 
 	setWindowTitle(title);
+
+	e2CmdWindow *cmdw = static_cast<e2CmdWindow *>(bw);
+
+	if (cmdw->getStyleSheet().length() > 0)
+	{
+		setStyleSheet(cmdw->getStyleSheet());
+	}
 
 	lblFrom->setHidden(true);
 	txiFrom->setHidden(true);

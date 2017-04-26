@@ -52,6 +52,11 @@ AboutModalDialog::AboutModalDialog(QWidget* bw, const QString title)
 
 	cmdw = static_cast<e2CmdWindow *>(bw);
 
+	if (cmdw->getStyleSheet().length() > 0)
+	{
+		setStyleSheet(cmdw->getStyleSheet());
+	}
+
 	lblAbout0->setText(APPNAME + " - " + APPNAME_EXT  + "<br>" + STR_MSGVERSION + "  " + APPVERSION + "  " __DATE__);
 	lblAbout1->setText("Copyright (C) " + COPYRIGHTYEAR + "  by  <a href=\"" + AUTHORMAIL + "\">" + AUTHORNAME + "</a><br><br>" +
 	                   "Porting to Qt4/Qt5 by <a href=\"" + PORTERMAIL + "\">" + PORTERGQT + "</a><br><br>" +
