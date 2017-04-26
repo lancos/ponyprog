@@ -4311,7 +4311,7 @@ int e2CmdWindow::CmdFillBuf()
 	static long fromAddr = 0, toAddr = 0xFFFF;
 	static int val = 0xFF;
 
-	FillDialog e2Fill(this, fromAddr, toAddr, val, STR_MSGINSPARAM);
+	FillDialog e2Fill(this, fromAddr, toAddr, val, awip->GetBufSize(), STR_MSGINSPARAM);
 
 	if (e2Fill.exec() == QDialog::Accepted)
 	{
