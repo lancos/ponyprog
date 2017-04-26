@@ -45,7 +45,7 @@ class FillDialog : public QDialog, public Ui::BlockDialog
 {
 	Q_OBJECT
 public:               //---------------------------------------- public
-	FillDialog(QWidget* bw, long &cfrom, long &cto, int &cval, const QString title = STR_LBLFILLBUF);
+	FillDialog(QWidget* bw, long &cfrom, long &cto, int &cval, long max_addr, const QString title = STR_LBLFILLBUF);
 	virtual ~FillDialog();          // Destructor
 
 
@@ -62,6 +62,7 @@ private:              //--------------------------------------- private
 
 	long mFrom, mTo;
 	int mVal;
+	long mMax;
 };
 
 #endif

@@ -39,7 +39,7 @@
 using namespace Translator;
 
 //=========================>>> FillDialog::FillDialog <<<====================
-FillDialog::FillDialog(QWidget* bw, long &cfrom, long &cto, int &cval, const QString title) :
+FillDialog::FillDialog(QWidget* bw, long &cfrom, long &cto, int &cval, long max_addr, const QString title) :
 	QDialog(bw)
 {
 	setupUi(this);
@@ -52,8 +52,9 @@ FillDialog::FillDialog(QWidget* bw, long &cfrom, long &cto, int &cval, const QSt
 	pTo = &cto;
 	pVal = &cval;
 
+	mMax = (max_addr > 0) ? max_addr : 0xFFFFFF;
 	mFrom = (cfrom < 0) ? 0 : cfrom;
-	mTo = (cto < 0) ? 0xFFFFFF : cto;
+	mTo = (cto < 0) ? mMax : cto;
 	mVal = (cval < 0) ? 0xFF : cval;
 
 	lblFrom->setText(STR_LBLFROM);
@@ -63,6 +64,7 @@ FillDialog::FillDialog(QWidget* bw, long &cfrom, long &cto, int &cval, const QSt
 	pushOk->setText(STR_BTNOK);
 	pushCancel->setText(STR_BTNCANC);
 
+	//TODO: should get strings from E2Profile settings, not local variables
 	QString str;
 	str = QString().sprintf("0x%04lX", mFrom);
 	txiFrom->setText(str);
@@ -88,42 +90,71 @@ FillDialog::~FillDialog()
 void FillDialog::onOk()
 {
 	bool good;
+	bool bad = false;
+	QPalette *palette = new QPalette();
+	palette->setColor(QPalette::Text, Qt::black);	//Color for good parameter
+	txiFrom->setPalette(*palette);
+	txiTo->setPalette(*palette);
+	txiVal->setPalette(*palette);
+
+	palette->setColor(QPalette::Text, Qt::red);		//Color for bad parameter
+
 	QString str = txiFrom->text();
-	mFrom = str.toLong(&good, 16);
+	mFrom = str.toLong(&good, 0);	//0 accept both decimal and hex format (with 0x prefix)
 
-	if (good == false)  // TODO
+	//Check from field format
+	if (good == false)
 	{
-		QPalette *palette = new QPalette();
-		palette->setColor(QPalette::Text, Qt::red);
 		txiFrom->setPalette(*palette);
-
-		return;
-		//              reject();
+		bad = true;
 	}
 
 	str = txiTo->text();
-	mTo = str.toLong(&good, 16);
+	mTo = str.toLong(&good, 0);
 
-	if (good == false)  // TODO
+	//Check to field format
+	if (good == false)
 	{
-		QPalette *palette = new QPalette();
-		palette->setColor(QPalette::Text, Qt::red);
 		txiTo->setPalette(*palette);
-
-		return;
+		bad = true;
 	}
 
 	str = txiVal->text();
-	mVal = str.toLong(&good, 16);
+	mVal = str.toLong(&good, 0);
 
-	if (good == false)  // TODO
+	//Check val field format
+	if (good == false)
 	{
-		QPalette *palette = new QPalette();
-		palette->setColor(QPalette::Text, Qt::red);
 		txiVal->setPalette(*palette);
-
-		return;
+		bad = true;
 	}
+
+	if (bad)
+		return;
+
+	//Check from field range
+	if (mFrom >= mMax)
+	{
+		txiFrom->setPalette(*palette);
+		bad = true;
+	}
+
+	//Check to field range
+	if (mTo < mFrom || mTo > mMax)
+	{
+		txiTo->setPalette(*palette);
+		bad = true;
+	}
+
+	//Check value field range
+	if (mVal < 0 || mVal > 0xff)
+	{
+		txiVal->setPalette(*palette);
+		bad = true;
+	}
+
+	if (bad)
+		return;
 
 	*pFrom = mFrom;
 	*pTo = mTo;
