@@ -74,7 +74,6 @@ enum AppStatus
 	AppBusy
 };
 
-
 class e2App
 {
 public:               //---------------------------------------- public
@@ -87,13 +86,8 @@ public:               //---------------------------------------- public
 	//      virtual vWindow* NewAppWin(vWindow* win, char* name, int w, int h,
 	//                                 vAppWinInfo* winInfo = 0);
 
-	virtual void Exit();
-
 	// replace about signal - slots
 	//      virtual void AppCommand(vWindow* win, ItemVal id, ItemVal val, CmdType cType);
-
-	virtual void DropFile(const char *fn);
-
 
 	//      virtual void KeyIn(vWindow*, vKey, unsigned int);
 
@@ -145,8 +139,6 @@ public:               //---------------------------------------- public
 		return err_soundfile.toLatin1();
 	}
 
-	void SetProgress(int progress = 0);
-
 	uint8_t GetPolarity() const
 	{
 		return polarity_control;
@@ -166,19 +158,6 @@ public:               //---------------------------------------- public
 			port_number = port;
 		}
 	}
-	int IsAppBusy()
-	{
-		return (app_status == AppBusy);
-	}
-	int IsAppReady()
-	{
-		return (app_status == AppReady);
-	}
-
-	void SetAppBusy();
-	void SetAppReady();
-
-
 
 	int LoadDriver(int start);
 
@@ -192,17 +171,14 @@ public:               //---------------------------------------- public
 		return awip;
 	}
 
-
 	bool scriptMode;        //Script Mode
 	int returnValue;        //return value in Command Line mode
 
 	QString script_name;
 
+protected:    //--------------------------------------- protected
 	// AppWinInfo associated with this window
 	e2AppWinInfo* awip;
-
-protected:    //--------------------------------------- protected
-	static int exit_ok;
 
 private:              //--------------------------------------- private
 	void initSettings();
@@ -220,7 +196,6 @@ private:              //--------------------------------------- private
 	BusInterface *busIntp;  //pointer to current interface type
 
 	uint8_t polarity_control; //polarity for control lines
-	AppStatus app_status;           //tell if the App is busy (reading, writing, ...) or can react to user events
 
 	//AutoTag
 	//List of available interface types

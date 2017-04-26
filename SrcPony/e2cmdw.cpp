@@ -77,6 +77,8 @@ static QString   STR_TITLE = APPNAME + " - ";
 
 class e2AppWinInfo;
 
+//Global e2CmdWindow pointer
+e2CmdWindow *cmdWin;
 
 // EK 2017
 // TODO insert this into class
@@ -97,9 +99,14 @@ void e2CmdWindow::About()
 e2CmdWindow::e2CmdWindow(QWidget *parent ) :
 	QMainWindow(parent),
 	e2App(),
+	ignoreFlag(false),
+	abortFlag(false),
+	app_status(AppReady),
 	editbuf_enabled(0),
 	verbose(verboseAll)
 {
+	cmdWin = this;
+
 	setupUi(this);
 	qDebug() << "e2CmdWindow::e2CmdWindow(" << APPNAME << ")";
 
@@ -252,21 +259,21 @@ e2CmdWindow::~e2CmdWindow()
 
 
 
-
+#if 0
 //======================>>> e2CmdWindow::CloseAppWin <<<===========================
 int e2CmdWindow::CloseAppWin()
 {
-	if ( !IsAppReady() )
+	if (!IsAppReady())
 	{
 		//06/09/99
-		E2Profile::SetAbortFlag();
-		//              SendWindowCommandAll(idCloseAllDialog, 0, C_Button);
-		//              CheckEvents();
+		SetAbortFlag();
+		//SendWindowCommandAll(idCloseAllDialog, 0, C_Button);
+		//CheckEvents();
 
-		//      SetAppReady();
+		SetAppReady();
 	}
 
-	if ( IsAppReady() )
+	if (IsAppReady())
 	{
 		// This will be called BEFORE a window has been unregistered or
 		// closed.  Default behavior: unregister and close the window.
@@ -274,7 +281,7 @@ int e2CmdWindow::CloseAppWin()
 
 		qDebug() << "e2App::CloseAppWin()";
 
-		if ( !exit_ok && IsBufChanged() )
+		if (!e2CmdWindow::exit_ok && IsBufChanged())
 		{
 			int ret = QMessageBox::warning(this, "PonyProg",
 			                               STR_MSGCLOSEWINSAVE,
@@ -288,7 +295,7 @@ int e2CmdWindow::CloseAppWin()
 
 		// EK 2017
 		// TODO now is the winCounter deactivated
-		if (/*winCounter > 1 || */exit_ok)
+		if (/*winCounter > 1 || */ e2CmdWindow::exit_ok)
 		{
 			really_close = 1;
 		}
@@ -338,6 +345,7 @@ int e2CmdWindow::CloseAppWin()
 
 	return 0;
 }
+#endif
 
 #if 0
 // EK 2017
@@ -1055,11 +1063,9 @@ void e2CmdWindow::doProgress(const QString &text)
 		return;
 	}
 
-	e2Prg = new QProgressDialog(text, "Abort", 0, 0, this);
-	e2Prg->setRange(0, 0); // for not percentage progress
+	e2Prg = new QProgressDialog(text, "Abort", 0, 100, this);
 	e2Prg->setWindowModality(Qt::WindowModal);
 	connect (e2Prg, SIGNAL(canceled()), this,  SLOT(onEndProgress()));
-	e2Prg->show();
 }
 
 /**
@@ -1558,7 +1564,8 @@ void e2CmdWindow::onExit()
 
 void e2CmdWindow::onClose()
 {
-	CloseAppWin();
+//	CloseAppWin();
+	Exit();
 }
 
 
@@ -1679,29 +1686,24 @@ void e2CmdWindow::onWrite()
 
 void e2CmdWindow::onRead( )
 {
+	QAction *a = static_cast<QAction*>(sender());
+
+	SetAppBusy();
+
+	if (a == actionReadAll)
 	{
-		SetAppBusy();
-		QAction *a = static_cast<QAction*>(sender());
-
-		if (a == actionReadAll)
-		{
-			CmdRead(ALL_TYPE );
-			return;
-		}
-
-		if (a == actionReadFlash)
-		{
-			CmdRead(PROG_TYPE );
-			return;
-		}
-
-		if (a == actionReadEep)
-		{
-			CmdRead(DATA_TYPE );
-		}
-
-		SetAppReady();
+		CmdRead(ALL_TYPE );
 	}
+	else if (a == actionReadFlash)
+	{
+		CmdRead(PROG_TYPE );
+	}
+	else if (a == actionReadEep)
+	{
+		CmdRead(DATA_TYPE );
+	}
+
+	SetAppReady();
 }
 
 
@@ -2396,9 +2398,6 @@ int e2CmdWindow::CmdWrite(int type)
 //====================>>> e2CmdWindow::CmdRead <<<====================
 int e2CmdWindow::CmdRead(int type)
 {
-
-	SetAppBusy();
-
 	if ( IsBufChanged() && awip->IsBufferValid() && verbose == verboseAll)
 	{
 		int ret = QMessageBox::warning(this, "PonyProg",
@@ -2412,7 +2411,7 @@ int e2CmdWindow::CmdRead(int type)
 		}
 	}
 
-	E2Profile::ClearIgnoreFlag();
+	ClearIgnoreFlag();
 
 	int result;
 	int rval;
@@ -2441,9 +2440,7 @@ int e2CmdWindow::CmdRead(int type)
 		if ( rval > 0 )
 		{
 			first_line = 0;
-			//                      curIndex = 0;
-			// EK 2017
-			// TODO
+			//curIndex = 0;
 			Draw();
 
 			QString sp;
@@ -2469,9 +2466,7 @@ int e2CmdWindow::CmdRead(int type)
 		else
 		{
 			first_line = 0;
-			//                      curIndex = 0;
-			// EK 2017
-			// TODO
+			//curIndex = 0;
 			Draw();
 
 			qDebug() << "CmdWindow->Read -- Error";
@@ -2485,26 +2480,24 @@ int e2CmdWindow::CmdRead(int type)
 				if (rval == QMessageBox::Cancel)   //Abort
 				{
 					retry_flag = 0;
-					E2Profile::ClearIgnoreFlag();
+					ClearIgnoreFlag();
 				}
 
 				if (rval == QMessageBox::Ok)   //Retry
 				{
 					retry_flag = 1;
-					E2Profile::ClearIgnoreFlag();
+					ClearIgnoreFlag();
 				}
 				else if (rval == QMessageBox::Ignore)     //Ignore
 				{
 					retry_flag = 1;
-					E2Profile::SetIgnoreFlag();
+					SetIgnoreFlag();
 				}
 			}
 		}
 	} //while (retry_flag)
 
-	E2Profile::ClearIgnoreFlag();
-
-	SetAppReady();
+	ClearIgnoreFlag();
 
 	return result;
 }
@@ -2543,7 +2536,7 @@ int e2CmdWindow::CmdWrite(int type, bool verify)
 			int rval;
 			int retry_flag = 1;
 
-			E2Profile::ClearIgnoreFlag();
+			ClearIgnoreFlag();
 
 			while (retry_flag)
 			{
@@ -2663,24 +2656,24 @@ int e2CmdWindow::CmdWrite(int type, bool verify)
 						if (rval == QMessageBox::Cancel)   //Abort
 						{
 							retry_flag = 0;
-							E2Profile::ClearIgnoreFlag();
+							ClearIgnoreFlag();
 						}
 
 						if (rval == QMessageBox::Ok)   //Retry
 						{
 							retry_flag = 1;
-							E2Profile::ClearIgnoreFlag();
+							ClearIgnoreFlag();
 						}
 						else if (rval == QMessageBox::Ignore)     //Ignore
 						{
 							retry_flag = 1;
-							E2Profile::SetIgnoreFlag();
+							SetIgnoreFlag();
 						}
 					} // if (verbose != verboseNo)
 				}
 			} // while (retry_flag)
 
-			E2Profile::ClearIgnoreFlag();
+			ClearIgnoreFlag();
 
 			//e2Prg->close();
 			emit onEndProgress();
@@ -2693,7 +2686,7 @@ int e2CmdWindow::CmdWrite(int type, bool verify)
 //====================>>> e2CmdWindow::CmdReadCalibration <<<====================
 int e2CmdWindow::CmdReadCalibration(int idx)
 {
-	E2Profile::ClearIgnoreFlag();
+	ClearIgnoreFlag();
 
 	int result;
 	int rval = 0xFF;
@@ -2761,18 +2754,18 @@ int e2CmdWindow::CmdReadCalibration(int idx)
 					if (rval == QMessageBox::Cancel)   //Abort
 					{
 						retry_flag = 0;
-						E2Profile::ClearIgnoreFlag();
+						ClearIgnoreFlag();
 					}
 
 					if (rval == QMessageBox::Ok)   //Retry
 					{
 						retry_flag = 1;
-						E2Profile::ClearIgnoreFlag();
+						ClearIgnoreFlag();
 					}
 					else if (rval == QMessageBox::Ignore)     //Ignore
 					{
 						retry_flag = 1;
-						E2Profile::SetIgnoreFlag();
+						SetIgnoreFlag();
 					}
 				}
 			}
@@ -2788,31 +2781,31 @@ int e2CmdWindow::CmdReadCalibration(int idx)
 				if (rval == QMessageBox::Cancel)   //Abort
 				{
 					retry_flag = 0;
-					E2Profile::ClearIgnoreFlag();
+					ClearIgnoreFlag();
 				}
 
 				if (rval == QMessageBox::Ok)   //Retry
 				{
 					retry_flag = 1;
-					E2Profile::ClearIgnoreFlag();
+					ClearIgnoreFlag();
 				}
 				else if (rval == QMessageBox::Ignore)     //Ignore
 				{
 					retry_flag = 1;
-					E2Profile::SetIgnoreFlag();
+					SetIgnoreFlag();
 				}
 			}
 		}
 	} //while (retry_flag)
 
-	E2Profile::ClearIgnoreFlag();
+	ClearIgnoreFlag();
 	return result;
 }
 
 //====================>>> e2CmdWindow::CmdErase <<<====================
 int e2CmdWindow::CmdErase(int type)
 {
-	E2Profile::ClearIgnoreFlag();
+	ClearIgnoreFlag();
 
 	int result;
 	int rval;
@@ -2865,24 +2858,24 @@ int e2CmdWindow::CmdErase(int type)
 				if (rval == QMessageBox::Cancel)   //Abort
 				{
 					retry_flag = 0;
-					E2Profile::ClearIgnoreFlag();
+					ClearIgnoreFlag();
 				}
 
 				if (rval == QMessageBox::Ok)   //Retry
 				{
 					retry_flag = 1;
-					E2Profile::ClearIgnoreFlag();
+					ClearIgnoreFlag();
 				}
 				else if (rval == QMessageBox::Ignore)     //Ignore
 				{
 					retry_flag = 1;
-					E2Profile::SetIgnoreFlag();
+					SetIgnoreFlag();
 				}
 			}
 		}
 	} //while (retry_flag)
 
-	E2Profile::ClearIgnoreFlag();
+	ClearIgnoreFlag();
 
 	return result;
 }
@@ -4483,7 +4476,7 @@ int e2CmdWindow::CmdWriteLock()
 		int rval;
 		int retry_flag = 1;
 
-		E2Profile::ClearIgnoreFlag();
+		ClearIgnoreFlag();
 
 		while (retry_flag)
 		{
@@ -4529,24 +4522,24 @@ int e2CmdWindow::CmdWriteLock()
 					if (rval == QMessageBox::Cancel)   //Abort
 					{
 						retry_flag = 0;
-						E2Profile::ClearIgnoreFlag();
+						ClearIgnoreFlag();
 					}
 
 					if (rval == QMessageBox::Ok)   //Retry
 					{
 						retry_flag = 1;
-						E2Profile::ClearIgnoreFlag();
+						ClearIgnoreFlag();
 					}
 					else if (rval == QMessageBox::Ignore)     //Ignore
 					{
 						retry_flag = 1;
-						E2Profile::SetIgnoreFlag();
+						SetIgnoreFlag();
 					}
 				} // if (verbose != verboseNo)
 			} // else
 		} // while (retry_flag)
 
-		E2Profile::ClearIgnoreFlag();
+		ClearIgnoreFlag();
 	}
 
 	return result;
@@ -4558,7 +4551,7 @@ int e2CmdWindow::CmdReadLock()
 	int result = OK;
 	uint32_t bits;
 
-	E2Profile::ClearIgnoreFlag();
+	ClearIgnoreFlag();
 
 	int rval;
 	int retry_flag = 1;
@@ -4611,24 +4604,24 @@ int e2CmdWindow::CmdReadLock()
 				if (rval == QMessageBox::Cancel)   //Abort
 				{
 					retry_flag = 0;
-					E2Profile::ClearIgnoreFlag();
+					ClearIgnoreFlag();
 				}
 
 				if (rval == QMessageBox::Ok)   //Retry
 				{
 					retry_flag = 1;
-					E2Profile::ClearIgnoreFlag();
+					ClearIgnoreFlag();
 				}
 				else if (rval == QMessageBox::Ignore)     //Ignore
 				{
 					retry_flag = 1;
-					E2Profile::SetIgnoreFlag();
+					SetIgnoreFlag();
 				}
 			}
 		} // else
 	} // while (retry_flag)
 
-	E2Profile::ClearIgnoreFlag();
+	ClearIgnoreFlag();
 
 	return result;
 }
@@ -4639,7 +4632,7 @@ int e2CmdWindow::CmdReadSpecial()
 	int result = OK;
 	uint32_t bits;
 
-	E2Profile::ClearIgnoreFlag();
+	ClearIgnoreFlag();
 
 	int rval;
 	int retry_flag = 1;
@@ -4695,24 +4688,24 @@ int e2CmdWindow::CmdReadSpecial()
 				if (rval == QMessageBox::Cancel)   //Abort
 				{
 					retry_flag = 0;
-					E2Profile::ClearIgnoreFlag();
+					ClearIgnoreFlag();
 				}
 
 				if (rval == QMessageBox::Ok)   //Retry
 				{
 					retry_flag = 1;
-					E2Profile::ClearIgnoreFlag();
+					ClearIgnoreFlag();
 				}
 				else if (rval == QMessageBox::Ignore)     //Ignore
 				{
 					retry_flag = 1;
-					E2Profile::SetIgnoreFlag();
+					SetIgnoreFlag();
 				}
 			}
 		} // else
 	} // while (retry_flag)
 
-	E2Profile::ClearIgnoreFlag();
+	ClearIgnoreFlag();
 
 	return result;
 }
@@ -4764,7 +4757,7 @@ int e2CmdWindow::CmdWriteSpecial()
 	{
 		int rval;
 		int retry_flag = 1;
-		E2Profile::ClearIgnoreFlag();
+		ClearIgnoreFlag();
 
 		while (retry_flag)
 		{
@@ -4816,24 +4809,24 @@ int e2CmdWindow::CmdWriteSpecial()
 					if (rval == QMessageBox::Cancel)   //Abort
 					{
 						retry_flag = 0;
-						E2Profile::ClearIgnoreFlag();
+						ClearIgnoreFlag();
 					}
 
 					if (rval == QMessageBox::Ok)   //Retry
 					{
 						retry_flag = 1;
-						E2Profile::ClearIgnoreFlag();
+						ClearIgnoreFlag();
 					}
 					else if (rval == QMessageBox::Ignore)     //Ignore
 					{
 						retry_flag = 1;
-						E2Profile::SetIgnoreFlag();
+						SetIgnoreFlag();
 					}
 				}
 			} // else
 		} // while (retry_flag)
 
-		E2Profile::ClearIgnoreFlag();
+		ClearIgnoreFlag();
 	}
 
 	return result;
@@ -6218,4 +6211,122 @@ void e2CmdWindow::Print()
 HIDDEN int FileExist(const QString &name)
 {
 	return QFile::exists(name);
+}
+
+
+bool e2CmdWindow::GetAbortFlag()
+{
+	//CheckEvents();
+
+	if (e2Prg && e2Prg->wasCanceled())
+	{
+		abortFlag = true;
+	}
+	bool a = abortFlag;
+	abortFlag = false;
+	return a;
+}
+
+bool e2CmdWindow::GetIgnoreFlag()
+{
+	return ignoreFlag;
+}
+
+void e2CmdWindow::SetIgnoreFlag()
+{
+	ignoreFlag = true;
+}
+
+void e2CmdWindow::ClearIgnoreFlag()
+{
+	ignoreFlag = false;
+}
+
+//Update the progress bar
+//=====================>>> e2App::SetProgress <<<==============================
+void e2CmdWindow::SetProgress(int progress)
+{
+	// EK 2017
+	// TODO
+	//SendWindowCommandAll(pbrProgress, progress, C_Button);  // The horizontal bar
+	e2Prg->setValue(progress);
+}
+
+//void e2CmdWindow::DropFile(const char *fn)
+//{
+//	if ( fn && strlen(fn) )
+//	{
+//		NewAppWin(0, (char*)fn, DefaultWidth(), DefaultHeight(), 0);
+//	}
+//}
+
+void e2CmdWindow::SetAppBusy()
+{
+	app_status = AppBusy;
+	// EK 2017
+	// TODO
+	//SendWindowCommandAll(idEnableToolBar, 0, C_Button);
+}
+
+void e2CmdWindow::SetAppReady()
+{
+	app_status = AppReady;
+	// EK 2017
+	// TODO
+	//SendWindowCommandAll(idEnableToolBar, 1, C_Button);
+}
+
+void e2CmdWindow::Exit()
+{
+	// This is called to close all windows.
+
+	qDebug() << "e2App::Exit()";
+
+	if (!IsAppReady())
+	{
+		//06/09/99
+		SetAbortFlag();
+		//SendWindowCommandAll(idCloseAllDialog, 0, C_Button);
+		//CheckEvents();
+		SetAppReady();
+	}
+
+	if (IsAppReady())
+	{
+		if (!scriptMode)
+		{
+			qDebug() << "e2App::CloseAppWin()";
+
+			if (IsBufChanged())
+			{
+				int ret = QMessageBox::warning(this, "PonyProg",
+											   STR_MSGCLOSEWINSAVE,
+											   QMessageBox::Yes | QMessageBox::No);
+
+				if ( ret == QMessageBox::Yes )
+				{
+					CmdSave();
+				}
+			}
+
+			// EK 2017
+			// TODO now is the winCounter deactivated
+			//if (winCounter > 1 || exit_ok)
+			//{
+			//	really_close = true;
+			//}
+			//else
+			//{
+			//	int ret = QMessageBox::warning(this, "PonyProg",
+			//								   STR_MSGCLOSEWINEXIT,
+			//								   QMessageBox::Yes | QMessageBox::No);
+			//	if ( ret == QMessageBox::Yes )
+			//	{
+			//		really_close = true;
+			//	}
+			//}
+		}
+
+		qApp->quit();
+	}
 }

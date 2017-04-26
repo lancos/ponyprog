@@ -88,7 +88,7 @@ class e2CmdWindow : public QMainWindow, public e2App, public Ui::MainWindow
 public:               //---------------------------------------- public
 	e2CmdWindow(QWidget *parent = 0);
 	virtual ~e2CmdWindow();
-	virtual int CloseAppWin();
+//	virtual int CloseAppWin();
 
 	//      virtual void WindowCommand(ItemVal id, ItemVal val, CmdType cType);
 	//      virtual void KeyIn(vKey keysym, unsigned int shift);
@@ -114,6 +114,31 @@ public:               //---------------------------------------- public
 		return e2Prg;
 	}
 
+	bool GetIgnoreFlag();
+	void SetIgnoreFlag();
+
+	void ClearIgnoreFlag();
+
+	bool GetAbortFlag();
+	void SetAbortFlag(bool a = true)
+	{
+		abortFlag = a;
+	}
+
+	void SetProgress(int progress = 0);
+
+	int IsAppBusy()
+	{
+		return (app_status == AppBusy);
+	}
+	int IsAppReady()
+	{
+		return (app_status == AppReady);
+	}
+
+	void SetAppBusy();
+	void SetAppReady();
+
 	long GetCurrentChipType()
 	{
 		if (awip)
@@ -126,6 +151,8 @@ public:               //---------------------------------------- public
 		}
 	}
 
+//	virtual void DropFile(const char *fn);		//TODO use QDrag for drag&drop file into the buffer
+	virtual void Exit();
 
 private slots:
 	void onNew();
@@ -200,14 +227,11 @@ private slots:
 	//      void setOverwriteMode(bool);
 	//      void dataChanged();
 
-
 public:
 	int CmdHelp();
 
-
 protected:
-	//      void CmdRemoteMode();
-
+	//void CmdRemoteMode();
 
 private:
 	//All commands
@@ -314,7 +338,6 @@ private:              //--------------------------------------- private
 	int ScriptError(int line_number, int arg_index, char *arg, const QString msg = "");
 
 
-
 private:
 	int idxI2Cbus8;
 	int idxI2Cbus16;
@@ -342,7 +365,7 @@ private:
 
 	QLineEdit *txtEEPInfo;
 	QLineEdit *txtStringID;
-	QProgressBar *statusProgress;
+//	QProgressBar *statusProgress;
 
 	// Standard elements
 	QHexEdit* e2HexEdit;             // For the canvas
@@ -354,16 +377,23 @@ private:
 
 	// Index for checking type menu
 	//      int type_index;
+	//      int curIndex;
+
+//	int exit_ok;
+
+	bool ignoreFlag;
+	bool abortFlag;          //True if we have to abort current op
+
+	AppStatus app_status;           //tell if the App is busy (reading, writing, ...) or can react to user events
 
 	// Edit buffer enabled (checked the menu)
 	int editbuf_enabled;
-
-	//      int curIndex;
 
 	//Verbose mode
 	VerboseType verbose;
 };
 
+extern e2CmdWindow *cmdWin;
 
 #endif
 

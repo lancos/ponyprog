@@ -7,8 +7,6 @@
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id: busio.cpp,v 1.4 2008/02/04 17:18:20 lancos Exp $
-//-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
 // modify it under the terms of the GNU  General Public License            //
@@ -46,17 +44,17 @@ BusIO::BusIO(BusInterface *p)
 // it's possible only from one QObject
 int BusIO::CheckAbort(int progress)
 {
-	int abort = E2Profile::GetAbortFlag();
+	int abort = cmdWin->GetAbortFlag();
 
 	if (!abort)
 	{
 		if ( (progress == 0 && old_progress != 0) ||
 		                progress > old_progress + 4 )
 		{
-			//                      THEAPP->SetProgress(progress);
+			cmdWin->SetProgress(progress);
 			old_progress = progress;
-			//      if (progress == 100)
-			//                      THEAPP->CheckEvents();
+			//if (progress == 100)
+			//  THEAPP->CheckEvents();
 		}
 	}
 

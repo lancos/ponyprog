@@ -146,7 +146,7 @@ int Pic168xx::Probe(int probe_size)
 	}
 	else
 	{
-		if ( E2Profile::GetIgnoreFlag() )
+		if (cmdWin->GetIgnoreFlag())
 		{
 			rv = GetSize();
 		}
@@ -154,7 +154,7 @@ int Pic168xx::Probe(int probe_size)
 		{
 			if (rv == OK)
 			{
-				if ( GetE2PSubType( GetAWInfo()->GetEEPId()) == subtype )
+				if ( GetE2PSubType(GetAWInfo()->GetEEPId()) == subtype )
 				{
 					rv = GetSize();
 				}

@@ -55,7 +55,6 @@
 //=========================>>> e2App::e2App <<<==========================
 e2App::e2App() :
 	awip(0),
-	app_status(AppReady),
 	port_number(1)
 {
 	// Constructor
@@ -389,114 +388,6 @@ vWindow* e2App::NewAppWin(vWindow* win, char* name,
 }
 
 #endif
-
-int e2App::exit_ok = 0;
-
-//============================>>> e2App::Exit <<<===========================
-void e2App::Exit()
-{
-	// This is called to close all windows.
-
-	qDebug() << "e2App::Exit()";
-
-	if ( !IsAppReady() )
-	{
-		//06/09/99
-		E2Profile::SetAbortFlag();
-		//              SendWindowCommandAll(idCloseAllDialog, 0, C_Button);
-		//              CheckEvents();
-		//      SetAppReady();
-	}
-
-	if ( IsAppReady() )
-	{
-		if (!scriptMode)
-		{
-			// EK 2017
-			// TODO
-			//                      SendWindowCommandAll(idAskToSave, 0, C_Button);
-		}
-
-		exit_ok = 1;
-
-		// Close All registered windows and exit
-#if 0
-		WindList *curWin;
-		vWindow *tmp;
-
-		bool inExit = true;
-
-		for (curWin = _WindowList ; curWin != 0 ; curWin = _WindowList)
-		{
-			int retv;
-
-			tmp = curWin->window;
-
-			if (IsHelpWin(tmp))
-			{
-				retv = CloseHelpWin(tmp);
-			}
-			else
-			{
-				retv = CloseAppWin(tmp);        // use local or derived close app
-			}
-
-			if (!retv)
-			{
-				inExit = false;
-				return;
-			}
-		}
-
-		if (inExit)
-		{
-			AppExit(returnValue);
-		}
-
-#else
-		qApp->quit();
-		//              vApp::Exit();           // Default behavior
-#endif
-	}
-}
-
-void e2App::DropFile(const char *fn)
-{
-	if ( fn && strlen(fn) )
-	{
-		//              NewAppWin(0, (char*)fn, DefaultWidth(), DefaultHeight(), 0);
-	}
-}
-
-
-//=====================>>> e2App::SetAppBusy <<<==============================
-void e2App::SetAppBusy()
-{
-	app_status = AppBusy;
-	// EK 2017
-	// TODO
-	//      SendWindowCommandAll(idEnableToolBar, 0, C_Button);
-}
-
-//=====================>>> e2App::SetAppReady <<<==============================
-void e2App::SetAppReady()
-{
-	app_status = AppReady;
-	// EK 2017
-	// TODO
-	//      SendWindowCommandAll(idEnableToolBar, 1, C_Button);
-}
-
-
-
-//Update the progress bar
-//=====================>>> e2App::SetProgress <<<==============================
-void e2App::SetProgress(int progress)
-{
-	// EK 2017
-	// TODO
-	//      SendWindowCommandAll(pbrProgress, progress, C_Button);  // The horizontal bar
-}
 
 //=====================>>> e2App::Calibration <<<==============================
 int e2App::Calibration()

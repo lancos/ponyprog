@@ -7,8 +7,6 @@
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id: e2profil.h,v 1.16 2016/06/24 12:21:06 lancos Exp $
-//-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
 // modify it under the terms of the GNU  General Public License            //
@@ -243,17 +241,6 @@ public:               //---------------------------------------- public
 	static int GetGpioPinDataIn();
 	static int GetGpioPinDataOut();
 
-	static int GetIgnoreFlag();
-	static void SetIgnoreFlag();
-
-	static void ClearIgnoreFlag();
-
-	static int GetAbortFlag();
-	static void SetAbortFlag(int a = 1)
-	{
-		abortFlag = a;
-	}
-
 	static void SetGpioPinCtrl(int pin);
 	static void SetGpioPinClock(int pin);
 	static void SetGpioPinDataIn(int pin);
@@ -263,9 +250,7 @@ protected:    //--------------------------------------- protected
 
 private:              //--------------------------------------- private
 	static QSettings *s;
-	static int ignoreFlag;
-	static int abortFlag;          //True if we have to abort current op
 	static QString filename;       //name of .INI file
-
 };
+
 #endif

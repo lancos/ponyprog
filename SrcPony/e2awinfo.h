@@ -286,7 +286,7 @@ public:               //---------------------------------------- public
 	}
 
 protected:    //--------------------------------------- protected
-	e2CmdWindow* cmdWin;
+//	e2CmdWindow* cmdWin;
 
 private:              //--------------------------------------- private
 	int OpenBus();

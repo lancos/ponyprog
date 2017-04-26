@@ -7,8 +7,6 @@
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id: e2app.h,v 1.12 2016/05/27 11:22:51 lancos Exp $
-//-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
 // modify it under the terms of the GNU  General Public License            //
@@ -34,7 +32,6 @@
 #include <QDebug>
 
 #include "e2cmdw.h"
-
 
 int main(int argc, char **argv)
 {

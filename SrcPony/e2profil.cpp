@@ -7,8 +7,6 @@
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id: e2profil.cpp,v 1.22 2016/06/24 15:05:56 lancos Exp $
-//-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
 // modify it under the terms of the GNU  General Public License            //
@@ -42,9 +40,6 @@
 
 QString E2Profile::filename = "e2p.ini";
 
-int E2Profile::ignoreFlag = 0;
-int E2Profile::abortFlag = 0;
-
 QSettings* E2Profile::s = new QSettings("e2p.ini", QSettings::IniFormat);
 
 
@@ -72,34 +67,6 @@ E2Profile::~E2Profile()
 	s->sync();
 }
 #endif
-
-
-//=====================>>> e2App::GetAbortFlag <<<==============================
-int E2Profile::GetAbortFlag()
-{
-	//      CheckEvents();
-
-	int a = abortFlag;
-	abortFlag = 0;
-	return a;
-}
-
-int E2Profile::GetIgnoreFlag()
-{
-	return ignoreFlag;
-}
-
-void E2Profile::SetIgnoreFlag()
-{
-	ignoreFlag = 1;
-}
-
-
-void E2Profile::ClearIgnoreFlag()
-{
-	ignoreFlag = 0;
-}
-
 
 int E2Profile::GetBogoMips()
 {

@@ -54,7 +54,7 @@ e2Dialog::e2Dialog(QWidget* bw, const QString title)
 
 	setWindowTitle(title);
 
-	cmdWin = (e2CmdWindow*)bw;
+//	cmdWin = (e2CmdWindow*)bw;
 
 	qDebug() << "e2Dialog::e2Dialog()";
 

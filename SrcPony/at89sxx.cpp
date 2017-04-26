@@ -150,7 +150,7 @@ int At89sxx::Probe(int probe_size)
 
 	qDebug() << "At89sxx::Probe(" << probe_size << ") IN";
 
-	if (E2Profile::GetIgnoreFlag())
+	if (cmdWin->GetIgnoreFlag())
 	{
 		rv = GetSize();
 	}

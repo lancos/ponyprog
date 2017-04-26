@@ -62,7 +62,7 @@ e2AppWinInfo::e2AppWinInfo(e2CmdWindow *p, const QString &name, BusIO** busvptr)
 	qDebug() << "e2AppWinInfo::e2AppWinInfo()";
 
 	// Constructor
-	cmdWin = static_cast<e2CmdWindow*>(p);
+//	cmdWin = static_cast<e2CmdWindow*>(p);
 
 	fname = "",
 

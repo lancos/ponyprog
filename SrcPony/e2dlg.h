@@ -74,7 +74,7 @@ private:              //--------------------------------------- private
 	QStringList comList;
 	QStringList usbList;
 
-	e2CmdWindow* cmdWin;
+//	e2CmdWindow* cmdWin;
 	int port_no;                    // Numero della porta utilizzata
 	int lpt_no, com_no;
 	HInterfaceType interf_type;
