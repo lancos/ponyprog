@@ -118,10 +118,12 @@ e2CmdWindow::e2CmdWindow(QWidget *parent ) :
 
 	e2Prg = NULL;
 
-	QFont sysFont = qApp->font();
-	sysFont = sysFont;
+	//      QFont sysFont = qApp->font();
+	//      sysFont = sysFont;
 
-	fontSize = sysFont.pointSize();
+	// EK 2017
+	// to check this
+	fontSize = E2Profile::GetFontSize();//sysFont.pointSize();
 
 	programStyleSheet = QString().sprintf("font-size: %dpt", fontSize);
 
@@ -1386,6 +1388,8 @@ void e2CmdWindow::selectFontSize(QAction* mnu)
 	{
 		programStyleSheet = QString().sprintf("font-size: %dpt", fontSize);
 	}
+
+	E2Profile::SetFontSize(fontSize);
 
 	QString sSheet2 = QString("QMenu { %1; }").arg( programStyleSheet );
 
@@ -4302,6 +4306,7 @@ int e2CmdWindow::CmdClearBuf(int type)
 
 	return OK;
 }
+
 
 // EK 2017
 // TODO to check this

@@ -158,6 +158,10 @@ public:               //---------------------------------------- public
 	static int GetAVRProgDelay();
 	static void SetAVRProgDelay(int delay = 10);
 
+	static int GetFontSize();
+	static void SetFontSize(int sz = 9);
+
+
 	static int GetAVREraseDelay();
 	static void SetAVREraseDelay(int delay = 30);
 

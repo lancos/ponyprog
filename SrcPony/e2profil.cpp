@@ -1004,6 +1004,29 @@ void E2Profile::SetAVRProgDelay(int delay)
 }
 
 
+int E2Profile::GetFontSize()
+{
+	QString sp = s->value("FontSize", "9").toString();
+	int rval = 9;          //Default: 20 msec
+
+	if (sp.length())
+	{
+		rval = sp.toInt();
+	}
+
+	return rval;
+}
+
+
+void E2Profile::SetFontSize(int sz)
+{
+	if (sz > 0)
+	{
+		s->setValue("FontSize", QString::number(sz));
+	}
+}
+
+
 int E2Profile::GetAVREraseDelay()
 {
 	QString sp = s->value("AVREraseDelay", "50").toString();
@@ -1654,7 +1677,7 @@ int E2Profile::GetCalibrationAddress(long &start, int &size, bool &mtype)
 
 void E2Profile::SetCalibrationAddress(unsigned long start, int size, bool mtype)
 {
-//	if (start >= 0)
+	//      if (start >= 0)
 	{
 		s->setValue("OscCalibrationAddr", QString::number(start));
 	}
