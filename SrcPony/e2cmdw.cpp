@@ -118,6 +118,27 @@ e2CmdWindow::e2CmdWindow(QWidget *parent ) :
 
 	e2Prg = NULL;
 
+	QFont sysFont = qApp->font();
+	sysFont = sysFont;
+
+	fontSize = sysFont.pointSize();
+
+	programStyleSheet = QString().sprintf("font-size: %dpt", fontSize);
+
+	if ( fontSize == -1)
+	{
+		fontSize = sysFont.pixelSize();
+		programStyleSheet = QString().sprintf("font-size: %dpx", fontSize);
+	}
+
+	if (programStyleSheet.length() > 0)
+	{
+		setStyleSheet(programStyleSheet);
+	}
+
+
+	createFontSizeMenu();
+
 	// reading of arguments
 
 	arguments = QCoreApplication::arguments();
@@ -1344,6 +1365,76 @@ void e2CmdWindow::selectTypeSubtype(const QString &t, const QString &st)
 }
 
 
+
+void e2CmdWindow::selectFontSize(QAction* mnu)
+{
+	QString lngStr;
+
+	lngStr = mnu->text();
+	fontSize = lngStr.toInt();
+
+	mnu->setChecked(true);
+
+	int sz = sysFont.pointSize();
+
+	// for lang menu and for fontsize menu
+	if ( sz == -1)
+	{
+		programStyleSheet = QString().sprintf("font-size: %dpx", fontSize);
+	}
+	else
+	{
+		programStyleSheet = QString().sprintf("font-size: %dpt", fontSize);
+	}
+
+	QString sSheet2 = QString("QMenu { %1; }").arg( programStyleSheet );
+
+	setStyleSheet(programStyleSheet);
+
+	//     langMenu->setStyleSheet(sSheet2);
+
+	setFontForWidgets();
+}
+
+
+
+void e2CmdWindow::setFontForWidgets()
+{
+	//     buttonsWidget->setStyleSheet(programStyleSheet);
+	//
+	//     for (int i = 0; i < 6; i++) {
+	//         widgets[i]->setStyleSheet(programStyleSheet);
+	//     }
+}
+
+void e2CmdWindow::createFontSizeMenu()
+{
+	QMenu *m = new QMenu("Font size");
+	QAction *fontSizeMenu = menuSetup->addMenu(m);
+	//     QMenu *fontSizeMenu = new QMenu();
+	fsizeGroup = new QActionGroup(this);
+	QStringList szList;
+	szList << "9" << "10" << "12" << "14" << "16" << "18" << "20";
+
+	foreach(QString entry, szList)
+	{
+		QAction *tmpAction = new QAction(entry, m);
+		tmpAction->setCheckable(true);
+
+		m->addAction(tmpAction);
+		fsizeGroup->addAction(tmpAction);
+
+		if (fontSize == entry.toInt())
+		{
+			tmpAction->setChecked(true);
+		}
+
+		actFSizeSelect.push_back(tmpAction);
+	}
+
+	connect(fsizeGroup, SIGNAL(triggered(QAction*)), this, SLOT(selectFontSize(QAction*)));
+}
+
 /**
  * @brief create all SIGNAL -> SLOT connections
  * EK 2017
@@ -1360,6 +1451,9 @@ void e2CmdWindow::createSignalSlotConnections()
 	// EK 2017
 	// TODO
 	// not implemented are: cut/copy/paste buttons
+
+	// font size
+	connect(fsizeGroup, SIGNAL(triggered()), this, SLOT(selectFontSize()));
 
 	// new
 	connect(actionNew, SIGNAL(triggered()), this, SLOT(onNew()));
@@ -1564,7 +1658,7 @@ void e2CmdWindow::onExit()
 
 void e2CmdWindow::onClose()
 {
-//	CloseAppWin();
+	//      CloseAppWin();
 	Exit();
 }
 
@@ -4217,7 +4311,7 @@ int e2CmdWindow::CmdFillBuf()
 	static long fromAddr = 0, toAddr = 0xFFFF;
 	static int val = 0xFF;
 
-	FillDialog e2Fill(this, fromAddr, toAddr, val, awip->GetBufSize(), STR_MSGINSPARAM);
+	FillDialog e2Fill(this, fromAddr, toAddr, val, STR_MSGINSPARAM);
 
 	if (e2Fill.exec() == QDialog::Accepted)
 	{
@@ -6222,6 +6316,7 @@ bool e2CmdWindow::GetAbortFlag()
 	{
 		abortFlag = true;
 	}
+
 	bool a = abortFlag;
 	abortFlag = false;
 	return a;
@@ -6254,10 +6349,10 @@ void e2CmdWindow::SetProgress(int progress)
 
 //void e2CmdWindow::DropFile(const char *fn)
 //{
-//	if ( fn && strlen(fn) )
-//	{
-//		NewAppWin(0, (char*)fn, DefaultWidth(), DefaultHeight(), 0);
-//	}
+//      if ( fn && strlen(fn) )
+//      {
+//              NewAppWin(0, (char*)fn, DefaultWidth(), DefaultHeight(), 0);
+//      }
 //}
 
 void e2CmdWindow::SetAppBusy()
@@ -6300,8 +6395,8 @@ void e2CmdWindow::Exit()
 			if (IsBufChanged())
 			{
 				int ret = QMessageBox::warning(this, "PonyProg",
-											   STR_MSGCLOSEWINSAVE,
-											   QMessageBox::Yes | QMessageBox::No);
+				                               STR_MSGCLOSEWINSAVE,
+				                               QMessageBox::Yes | QMessageBox::No);
 
 				if ( ret == QMessageBox::Yes )
 				{
@@ -6313,17 +6408,17 @@ void e2CmdWindow::Exit()
 			// TODO now is the winCounter deactivated
 			//if (winCounter > 1 || exit_ok)
 			//{
-			//	really_close = true;
+			//      really_close = true;
 			//}
 			//else
 			//{
-			//	int ret = QMessageBox::warning(this, "PonyProg",
-			//								   STR_MSGCLOSEWINEXIT,
-			//								   QMessageBox::Yes | QMessageBox::No);
-			//	if ( ret == QMessageBox::Yes )
-			//	{
-			//		really_close = true;
-			//	}
+			//      int ret = QMessageBox::warning(this, "PonyProg",
+			//                                                                 STR_MSGCLOSEWINEXIT,
+			//                                                                 QMessageBox::Yes | QMessageBox::No);
+			//      if ( ret == QMessageBox::Yes )
+			//      {
+			//              really_close = true;
+			//      }
 			//}
 		}
 

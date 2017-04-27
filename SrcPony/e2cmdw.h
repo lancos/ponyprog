@@ -44,6 +44,7 @@
 #include <QActionGroup>
 #include <QMenu>
 #include <QVector>
+#include <QFont>
 
 
 #include "device.h"
@@ -88,7 +89,7 @@ class e2CmdWindow : public QMainWindow, public e2App, public Ui::MainWindow
 public:               //---------------------------------------- public
 	e2CmdWindow(QWidget *parent = 0);
 	virtual ~e2CmdWindow();
-//	virtual int CloseAppWin();
+	//      virtual int CloseAppWin();
 
 	//      virtual void WindowCommand(ItemVal id, ItemVal val, CmdType cType);
 	//      virtual void KeyIn(vKey keysym, unsigned int shift);
@@ -151,7 +152,7 @@ public:               //---------------------------------------- public
 		}
 	}
 
-//	virtual void DropFile(const char *fn);		//TODO use QDrag for drag&drop file into the buffer
+	//      virtual void DropFile(const char *fn);          //TODO use QDrag for drag&drop file into the buffer
 	virtual void Exit();
 
 private slots:
@@ -223,6 +224,8 @@ private slots:
 	void onSelectX244(QAction* a);
 
 	void onEndProgress();
+
+	void selectFontSize(QAction* mnu);
 
 	//      void setOverwriteMode(bool);
 	//      void dataChanged();
@@ -331,6 +334,9 @@ private:              //--------------------------------------- private
 
 	long GetDevSize() const;
 
+	void setFontForWidgets(void);
+	void createFontSizeMenu();
+
 	//      int CoordToIndex(int row, int col);
 	//      void IndexToCoord(int index, int &row, int &col);
 	void setMenuIndexes();
@@ -353,6 +359,10 @@ private:
 	int idxSDE2506;
 	int idxX244;
 
+	QFont sysFont;
+	short fontSize;
+	QString programStyleSheet;
+
 	QLabel *txtComment;
 	QLabel *txtID;
 
@@ -365,7 +375,12 @@ private:
 
 	QLineEdit *txtEEPInfo;
 	QLineEdit *txtStringID;
-//	QProgressBar *statusProgress;
+	//      QProgressBar *statusProgress;
+
+	QVector<QAction*> actLangSelect;
+	QVector<QAction*> actFSizeSelect;
+
+	QActionGroup *fsizeGroup;
 
 	// Standard elements
 	QHexEdit* e2HexEdit;             // For the canvas
@@ -379,7 +394,7 @@ private:
 	//      int type_index;
 	//      int curIndex;
 
-//	int exit_ok;
+	//      int exit_ok;
 
 	bool ignoreFlag;
 	bool abortFlag;          //True if we have to abort current op
