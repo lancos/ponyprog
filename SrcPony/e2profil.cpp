@@ -1145,7 +1145,7 @@ int E2Profile::GetSerialNumAddress(long &start, int &size, bool &mtype)
 
 void E2Profile::SetSerialNumAddress(unsigned long start, int size, bool mtype)
 {
-	if (start >= 0)
+//	if (start >= 0)
 	{
 		s->setValue("SerialNumberAddr", QString::number(start));
 	}
