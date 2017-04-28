@@ -250,6 +250,9 @@ public:               //---------------------------------------- public
 	static void SetGpioPinDataIn(int pin);
 	static void SetGpioPinDataOut(int pin);
 
+	static bool GetEditBufferEnabled();
+	static void SetEditBufferEnabled(bool enable);
+
 protected:    //--------------------------------------- protected
 
 private:              //--------------------------------------- private

@@ -407,9 +407,6 @@ private:
 
 	AppStatus app_status;           //tell if the App is busy (reading, writing, ...) or can react to user events
 
-	// Edit buffer enabled (checked the menu)
-	int editbuf_enabled;
-
 	//Verbose mode
 	VerboseType verbose;
 };

@@ -2024,3 +2024,12 @@ void E2Profile::SetGpioPinDataOut(int pin)
 	s->setValue("GpioPinDataOut", QString::number(pin));
 }
 
+bool E2Profile::GetEditBufferEnabled()
+{
+	return !(s->value("Editor/ReadOnlyMode", false).toBool());
+}
+
+void E2Profile::SetEditBufferEnabled(bool enable)
+{
+	s->setValue("Editor/ReadOnlyMode", !enable);
+}

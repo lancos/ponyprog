@@ -102,7 +102,6 @@ e2CmdWindow::e2CmdWindow(QWidget *parent ) :
 	ignoreFlag(false),
 	abortFlag(false),
 	app_status(AppReady),
-	editbuf_enabled(0),
 	verbose(verboseAll)
 {
 	cmdWin = this;
@@ -239,14 +238,18 @@ e2CmdWindow::e2CmdWindow(QWidget *parent ) :
 	//      UpdateChipType( GetE2PPriType(GetLastDevType()), GetE2PSubType(GetLastDevType()) );
 	//         UpdateMenuType( GetE2PPriType(E2Profile::GetLastDevType()), GetE2PSubType(E2Profile::GetLastDevType()) );
 
-	if (editbuf_enabled)
-	{
-		e2HexEdit->setReadOnly(false);
-	}
-	else
-	{
-		e2HexEdit->setReadOnly(true);
-	}
+	e2HexEdit->setReadOnly(!actionEditBuferEnabled->isChecked());
+
+//	e2HexEdit->setHighlightingColor(settings.value("Editor/HighlightingColor").value<QColor>());
+//	e2HexEdit->setSelectionColor(settings.value("Editor/SelectionColor").value<QColor>());
+//	e2HexEdit->setAddressAreaColor(settings.value("Editor/AddressAreaColor").value<QColor>());
+//	e2HexEdit->setAddressFontColor(settings.value("Editor/AddressFontColor").value<QColor>());
+//	e2HexEdit->setAsciiAreaColor(settings.value("Editor/AsciiAreaColor").value<QColor>());
+//	e2HexEdit->setAsciiFontColor(settings.value("Editor/AsciiFontColor").value<QColor>());
+//	e2HexEdit->setHexFontColor(settings.value("Editor/HexFontColor").value<QColor>());
+//	e2HexEdit->setFont(settings.value("Editor/Font").value<QFont>());
+//	e2HexEdit->setAddressWidth(settings.value("AddressAreaWidth").toInt());
+//	e2HexEdit->setBytesPerLine(settings.value("BytesPerLine").toInt());
 
 	first_line = 0;
 	//curIndex = 0;
@@ -2008,9 +2011,8 @@ void e2CmdWindow::onEditBufToggle()
 {
 	bool b = actionEditBuferEnabled->isChecked();
 
-	editbuf_enabled = b;
-
-	e2HexEdit->setReadOnly(!editbuf_enabled);
+	e2HexEdit->setReadOnly(!b);
+	E2Profile::SetEditBufferEnabled(b);
 
 	// EK 2017
 	// TODO
@@ -5572,7 +5574,7 @@ void e2CmdWindow::CbxMenuInit()
 	//UpdateMenuType();
 
 	//Clear the check in menu Edit buffer
-	actionEditBuferEnabled->setChecked(false);// TODO to check this
+	actionEditBuferEnabled->setChecked(E2Profile::GetEditBufferEnabled());
 	//      EditMenu[2].checked = 0;
 }
 
@@ -6349,7 +6351,10 @@ void e2CmdWindow::SetProgress(int progress)
 	// EK 2017
 	// TODO
 	//SendWindowCommandAll(pbrProgress, progress, C_Button);  // The horizontal bar
-	e2Prg->setValue(progress);
+	if (e2Prg)
+	{
+		e2Prg->setValue(progress);
+	}
 }
 
 //void e2CmdWindow::DropFile(const char *fn)
