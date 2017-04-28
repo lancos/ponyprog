@@ -118,7 +118,7 @@ int Pic16xx::Probe(int probe_size)
 
 int Pic16xx::Read(int probe, int type)
 {
-	int rv = Probe( probe || GetNoOfBank() == 0 );
+	int rv = Probe(probe || GetNoOfBank() == 0);
 
 	if (rv > 0)
 	{
@@ -135,7 +135,7 @@ int Pic16xx::Read(int probe, int type)
 			}
 		}
 
-		if ( rv > 0 && (type & CONFIG_TYPE) )
+		if (rv > 0 && (type & CONFIG_TYPE))
 		{
 			// read the config locations
 			// this must be the LAST operation (to exit from config mode we have to clear Vpp)
@@ -151,11 +151,11 @@ int Pic16xx::Read(int probe, int type)
 
 int Pic16xx::Write(int probe, int type)
 {
-	int rv = Probe( probe || GetNoOfBank() == 0 );
+	int rv = Probe(probe || GetNoOfBank() == 0);
 
 	if (rv > 0)
 	{
-		if ( (type & PROG_TYPE) && (type & DATA_TYPE) )
+		if ((type & PROG_TYPE) && (type & DATA_TYPE))
 		{
 			GetBus()->Erase(ALL_TYPE);
 		}
@@ -179,7 +179,7 @@ int Pic16xx::Write(int probe, int type)
 				}
 			}
 
-			if ( rv > 0 && (type & CONFIG_TYPE) )
+			if (rv > 0 && (type & CONFIG_TYPE))
 			{
 				// write the config locations
 				// this must be the LAST operation (to exit from config mode we have to clear Vpp)

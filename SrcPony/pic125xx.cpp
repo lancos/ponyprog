@@ -93,11 +93,11 @@ int Pic125xx::Probe(int probe_size)
 
 int Pic125xx::Read(int probe, int type)
 {
-	int rv = Probe( probe || GetNoOfBank() == 0 );
+	int rv = Probe(probe || GetNoOfBank() == 0);
 
 	if (rv > 0)
 	{
-		if ( type & CONFIG_TYPE )
+		if (type & CONFIG_TYPE)
 		{
 			// read the config locations
 			// this must be the FIRST operation (just after reset)
@@ -111,7 +111,7 @@ int Pic125xx::Read(int probe, int type)
 			GetBus()->IncAddress(1);
 		}
 
-		if ( type & PROG_TYPE )
+		if (type & PROG_TYPE)
 		{
 			rv = ReadProg();
 		}
@@ -122,18 +122,18 @@ int Pic125xx::Read(int probe, int type)
 
 int Pic125xx::Write(int probe, int type)
 {
-	int rv = Probe( probe || GetNoOfBank() == 0 );
+	int rv = Probe(probe || GetNoOfBank() == 0);
 
 	if (rv > 0)
 	{
-		if ( type & PROG_TYPE )
+		if (type & PROG_TYPE)
 		{
 			//Skip configuration word
 			GetBus()->IncAddress(1);
 			rv = WriteProg();
 		}
 
-		if ( rv > 0 && (type & CONFIG_TYPE) )
+		if (rv > 0 && (type & CONFIG_TYPE))
 		{
 			// write the config locations
 			// this must be the FIRST operation (just after reset)
@@ -176,7 +176,7 @@ int Pic125xx::Verify(int type)
 
 		int v_prog = OK, v_config = OK;
 
-		if ( type & CONFIG_TYPE )
+		if (type & CONFIG_TYPE)
 		{
 			uint32_t f;
 			SecurityRead(f);
@@ -198,7 +198,7 @@ int Pic125xx::Verify(int type)
 			GetBus()->IncAddress(1);
 		}
 
-		if ( type & PROG_TYPE )
+		if (type & PROG_TYPE)
 		{
 			v_prog = VerifyProg(localbuf);
 		}
@@ -221,7 +221,7 @@ int Pic125xx::VerifyProg(unsigned char *localbuf)
 	//      long v_len = size - 2;          //Don't verify RC Calibration location
 	long v_len = size;
 
-	if (GetBus()->GetLastProgrammedAddress() > 0 && GetBus()->GetLastProgrammedAddress() < size - 1 )
+	if (GetBus()->GetLastProgrammedAddress() > 0 && GetBus()->GetLastProgrammedAddress() < size - 1)
 	{
 		v_len = GetBus()->GetLastProgrammedAddress() + 2;
 		GetBus()->ClearLastProgrammedAddress();         //reset last_programmed_addr, so next verify not preceeded by write verify all the flash
@@ -233,7 +233,7 @@ int Pic125xx::VerifyProg(unsigned char *localbuf)
 	// read the current flash content and store it in localbuf
 	rval = GetBus()->Read(0, localbuf, v_len);
 
-	if ( rval != v_len )
+	if (rval != v_len)
 	{
 		if (rval > 0)
 		{

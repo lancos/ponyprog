@@ -38,7 +38,7 @@
 
 class mE2401 : public Device
 {
-public:               //---------------------------------------- public
+  public:               //---------------------------------------- public
 
 	mE2401(e2AppWinInfo *wininfo = 0, BusIO *busp = 0, int def_banksize = 128);
 	//      virtual ~mE2401();
@@ -48,7 +48,7 @@ public:               //---------------------------------------- public
 	int Write(int probe = 1, int type = ALL_TYPE);
 	int Verify(int type = ALL_TYPE);
 
-protected:    //--------------------------------------- protected
+  protected:    //--------------------------------------- protected
 
 	int const timeout_loop;         //eeprom timeout
 
@@ -61,7 +61,7 @@ protected:    //--------------------------------------- protected
 	int sequential_read;                    //1 --> legge un banco in una volta
 	int writepage_size;                             //se > 1 scrive una pagina alla volta
 
-private:              //--------------------------------------- private
+  private:              //--------------------------------------- private
 
 };
 #endif

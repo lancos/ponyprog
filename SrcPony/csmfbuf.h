@@ -39,7 +39,7 @@
 
 class csmFileBuf : public FileBuf
 {
-public:               //---------------------------------------- public
+  public:               //---------------------------------------- public
 
 	csmFileBuf(e2AppWinInfo *wininfo = 0);
 	//      virtual ~csmFileBuf();
@@ -47,9 +47,9 @@ public:               //---------------------------------------- public
 	virtual int Load(int loadtype = ALL_TYPE, long relocation_offfset = 0);
 	virtual int Save(int savetype = ALL_TYPE, long relocation_offfset = 0);
 
-protected:    //--------------------------------------- protected
+  protected:    //--------------------------------------- protected
 
-private:              //--------------------------------------- private
+  private:              //--------------------------------------- private
 
 };
 #endif

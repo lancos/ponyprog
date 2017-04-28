@@ -138,7 +138,7 @@ int SxBus::RecDataWord(int wlen)
 
 	//receive lsb first
 	for (k = 0; k < wlen; k++)
-		if ( RecDataBit() )
+		if (RecDataBit())
 		{
 			val |= 1 << k;
 		}
@@ -228,7 +228,7 @@ long SxBus::Write(int addr, uint8_t const *data, long length, int page_size)
 		//              SendCmdCode(BeginProgCode);
 #if 0
 
-		if ( WaitReadyAfterWrite(loop_timeout) )
+		if (WaitReadyAfterWrite(loop_timeout))
 		{
 			break;
 		}

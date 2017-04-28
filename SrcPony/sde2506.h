@@ -38,7 +38,7 @@
 
 class Sde2506 : public Device
 {
-public:               //---------------------------------------- public
+  public:               //---------------------------------------- public
 
 	Sde2506(e2AppWinInfo *wininfo = 0, BusIO *busp = 0);
 	virtual ~Sde2506();
@@ -48,14 +48,14 @@ public:               //---------------------------------------- public
 	int Write(int probe = 1, int type = ALL_TYPE);
 	int Verify(int type = ALL_TYPE);
 
-protected:    //--------------------------------------- protected
+  protected:    //--------------------------------------- protected
 
 	Sde2506Bus *GetBus()
 	{
 		return (Sde2506Bus *)Device::GetBus();
 	}
 
-private:              //--------------------------------------- private
+  private:              //--------------------------------------- private
 
 };
 #endif

@@ -36,7 +36,7 @@
 
 class Wait
 {
-public:               //---------------------------------------- public
+  public:               //---------------------------------------- public
 
 	Wait();
 	virtual ~Wait();
@@ -53,11 +53,11 @@ public:               //---------------------------------------- public
 	void SetHwTimer(int ok = -1);
 	int CheckHwTimer();
 
-protected:    //--------------------------------------- protected
+  protected:    //--------------------------------------- protected
 
 	int GetBogoKips();
 
-private:              //--------------------------------------- private
+  private:              //--------------------------------------- private
 
 	static int bogokips;
 	static int htimer;

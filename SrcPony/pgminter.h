@@ -35,7 +35,7 @@
 
 class SIProgInterface : public BusInterface, public RS232Interface
 {
-public:                //------------------------------- public
+  public:                //------------------------------- public
 	SIProgInterface();
 	//      virtual ~SIProgInterface();
 
@@ -58,9 +58,9 @@ public:                //------------------------------- public
 	int SetPower(int onoff);
 	void SetControlLine(int res = 1);
 
-protected:             //------------------------------- protected
+  protected:             //------------------------------- protected
 
-private:               //------------------------------- private
+  private:               //------------------------------- private
 
 };
 

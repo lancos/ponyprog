@@ -76,7 +76,7 @@ HInterfaceType NameToInterfType(const QString &name)
 			v.remove(QChar(' '));
 			v.remove(QChar('/'));
 
-			if ( v.indexOf( n ) >= 0)
+			if (v.indexOf(n) >= 0)
 			{
 				return index_interface.at(k).type;
 			}
@@ -134,7 +134,7 @@ HInterfaceType VindexToInterfType(int vector, int index)
 	for (int k = 0; k < index_interface.count(); k++)
 	{
 		if (index_interface.at(k).vector == vector &&
-		                index_interface.at(k).index == index)
+				index_interface.at(k).index == index)
 		{
 			return index_interface.at(k).type;
 		}

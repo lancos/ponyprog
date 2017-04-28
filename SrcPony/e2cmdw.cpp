@@ -96,7 +96,7 @@ void e2CmdWindow::About()
 }
 
 //====================>>> e2CmdWindow::e2CmdWindow <<<====================
-e2CmdWindow::e2CmdWindow(QWidget *parent ) :
+e2CmdWindow::e2CmdWindow(QWidget *parent) :
 	QMainWindow(parent),
 	e2App(),
 	ignoreFlag(false),
@@ -126,7 +126,7 @@ e2CmdWindow::e2CmdWindow(QWidget *parent ) :
 
 	programStyleSheet = QString().sprintf("font-size: %dpt", fontSize);
 
-	if ( fontSize == -1)
+	if (fontSize == -1)
 	{
 		fontSize = sysFont.pixelSize();
 		programStyleSheet = QString().sprintf("font-size: %dpx", fontSize);
@@ -156,15 +156,15 @@ e2CmdWindow::e2CmdWindow(QWidget *parent ) :
 
 		int p = param.lastIndexOf(".");
 
-		if ( p > 0 && param.indexOf(".e2s", p) >= 0 )
+		if (p > 0 && param.indexOf(".e2s", p) >= 0)
 		{
 			//Switch to script mode
 			scriptMode = true;
 			script_name = param;// param, MAXPATH);
 		}
-		else if ( param == "-s" || param == "--script" )
+		else if (param == "-s" || param == "--script")
 		{
-			if ( arguments.count() > 2 && arguments.at(2).length() > 0 )
+			if (arguments.count() > 2 && arguments.at(2).length() > 0)
 			{
 				param = arguments.at(2);
 
@@ -187,7 +187,7 @@ e2CmdWindow::e2CmdWindow(QWidget *parent ) :
 	{
 		returnValue = CmdRunScript();
 
-		exit (returnValue); //Se AppMain ritorna un valore != 0 esce immediatamente
+		exit(returnValue);  //Se AppMain ritorna un valore != 0 esce immediatamente
 	}
 
 	// menu creation for all devices
@@ -214,7 +214,7 @@ e2CmdWindow::e2CmdWindow(QWidget *parent ) :
 
 		if (!b)
 		{
-			exit (-1);
+			exit(-1);
 		}
 
 		awip = new e2AppWinInfo(this, "No Name", b);
@@ -310,10 +310,10 @@ int e2CmdWindow::CloseAppWin()
 		if (!e2CmdWindow::exit_ok && IsBufChanged())
 		{
 			int ret = QMessageBox::warning(this, "PonyProg",
-			                               STR_MSGCLOSEWINSAVE,
-			                               QMessageBox::Yes | QMessageBox::No);
+										   STR_MSGCLOSEWINSAVE,
+										   QMessageBox::Yes | QMessageBox::No);
 
-			if ( ret == QMessageBox::Yes )
+			if (ret == QMessageBox::Yes)
 			{
 				CmdSave();
 			}
@@ -328,10 +328,10 @@ int e2CmdWindow::CloseAppWin()
 		else
 		{
 			int ret = QMessageBox::warning(this, "PonyProg",
-			                               STR_MSGCLOSEWINEXIT,
-			                               QMessageBox::Yes | QMessageBox::No);
+										   STR_MSGCLOSEWINEXIT,
+										   QMessageBox::Yes | QMessageBox::No);
 
-			if ( ret == QMessageBox::Yes )
+			if (ret == QMessageBox::Yes)
 			{
 				really_close = 1;
 			}
@@ -345,7 +345,7 @@ int e2CmdWindow::CloseAppWin()
 			HKEY key;       // Save window position to Win7-safe, roaming hive of registry
 
 			if (!RegCreateKeyEx(HKEY_CURRENT_USER, "Software\\h#s\\PonyProg",
-			                    0, NULL, REG_OPTION_NON_VOLATILE, KEY_SET_VALUE, NULL, &key, NULL))
+								0, NULL, REG_OPTION_NON_VOLATILE, KEY_SET_VALUE, NULL, &key, NULL))
 			{
 				WINDOWPLACEMENT wp;
 				wp.length = sizeof wp;
@@ -381,51 +381,51 @@ void e2CmdWindow::KeyIn(vKey keysym, unsigned int shift)
 {
 	switch (keysym)
 	{
-	case vk_Up:
+		case vk_Up:
 		{
 			PrevLine();
 			break;
 		}
 
-	case vk_Down:
+		case vk_Down:
 		{
 			NextLine();
 			break;
 		}
 
-	case vk_Page_Up:
+		case vk_Page_Up:
 		{
 			PrevPage();
 			break;
 		}
 
-	case vk_Page_Down:
+		case vk_Page_Down:
 		{
 			NextPage();
 			break;
 		}
 
-	case vk_Home:
+		case vk_Home:
 		{
 			FirstPage();
 			break;
 		}
 
-	case vk_End:
+		case vk_End:
 		{
 			LastPage();
 			break;
 		}
 
-	case vk_Return:
+		case vk_Return:
 		{
 			CharEdit();
 			break;
 		}
 
-	//      case vk_Left:
-	//      case vk_Right:
-	default:
+		//      case vk_Left:
+		//      case vk_Right:
+		default:
 		{
 			vCmdWindow::KeyIn(keysym, shift);
 			break;
@@ -443,20 +443,20 @@ int e2CmdWindow::OnError(int err_no, const QString &msgerr)
 	note.setWindowTitle("Error");
 	note.setIcon(QMessageBox::Critical);
 
-	switch(err_no)
+	switch (err_no)
 	{
-	case 0:
-		note.setText(STR_DEVNOTRESP);
-		note.exec();
-		break;
+		case 0:
+			note.setText(STR_DEVNOTRESP);
+			note.exec();
+			break;
 
-	case BADPARAM:
+		case BADPARAM:
 		{
 			rv = QMessageBox::question(this, "Error", STR_MSGBADPARAM, QMessageBox::Ignore | QMessageBox::Cancel  | QMessageBox::Ok);
 			break;
 		}
 
-	case DEVICE_BADTYPE:
+		case DEVICE_BADTYPE:
 		{
 			QString str = awip ? awip->GetDetectedTypeStr() : "";
 
@@ -474,7 +474,7 @@ int e2CmdWindow::OnError(int err_no, const QString &msgerr)
 			break;
 		}
 
-	case DEVICE_UNKNOWN:
+		case DEVICE_UNKNOWN:
 		{
 			QString str = awip ? awip->GetDetectedSignatureStr() : "";
 
@@ -492,7 +492,7 @@ int e2CmdWindow::OnError(int err_no, const QString &msgerr)
 			break;
 		}
 
-	case DEVICE_LOCKED:
+		case DEVICE_LOCKED:
 		{
 			msg = QString("%1 (%2)").arg(STR_DEVLOCKED).arg(err_no);
 
@@ -501,55 +501,55 @@ int e2CmdWindow::OnError(int err_no, const QString &msgerr)
 			break;
 		}
 
-	case OP_ABORTED:
-		note.setText(STR_OPABORTED);
-		note.exec();
-		break;
+		case OP_ABORTED:
+			note.setText(STR_OPABORTED);
+			note.exec();
+			break;
 
-	case E2ERR_OPENFAILED:
-		msg = QString("%1 (%2)").arg(STR_OPENFAILED).arg(err_no);
+		case E2ERR_OPENFAILED:
+			msg = QString("%1 (%2)").arg(STR_OPENFAILED).arg(err_no);
 
-		note.setText(msg);
-		note.exec();
-		break;
+			note.setText(msg);
+			note.exec();
+			break;
 
-	case E2ERR_ACCESSDENIED:
-		msg = QString("%1 (%2)").arg(STR_ACCDENIED).arg(err_no);
+		case E2ERR_ACCESSDENIED:
+			msg = QString("%1 (%2)").arg(STR_ACCDENIED).arg(err_no);
 
-		note.setText(msg);
-		note.exec();
-		break;
+			note.setText(msg);
+			note.exec();
+			break;
 
-	case E2ERR_NOTINSTALLED:
-		msg = QString("%1 (%2)").arg(STR_NOTINST).arg(err_no);
+		case E2ERR_NOTINSTALLED:
+			msg = QString("%1 (%2)").arg(STR_NOTINST).arg(err_no);
 
-		note.setText(msg);
-		note.exec();
-		break;
+			note.setText(msg);
+			note.exec();
+			break;
 
-	case IICERR_SDACONFLICT:
-	case IICERR_SCLCONFLICT:
-		msg = QString("%1 (%2)").arg(STR_HWERROR).arg(err_no);
+		case IICERR_SDACONFLICT:
+		case IICERR_SCLCONFLICT:
+			msg = QString("%1 (%2)").arg(STR_HWERROR).arg(err_no);
 
-		note.setText(msg);
-		note.exec();
-		break;
+			note.setText(msg);
+			note.exec();
+			break;
 
-	case IICERR_BUSBUSY:
-		msg = QString("%1 (%2)").arg(STR_BUSBUSY).arg(err_no);
+		case IICERR_BUSBUSY:
+			msg = QString("%1 (%2)").arg(STR_BUSBUSY).arg(err_no);
 
-		note.setText(msg);
-		note.exec();
-		break;
+			note.setText(msg);
+			note.exec();
+			break;
 
-	case IICERR_NOTACK:
-		msg = QString("%1 (%2)").arg(STR_I2CNOACK).arg(err_no);
+		case IICERR_NOTACK:
+			msg = QString("%1 (%2)").arg(STR_I2CNOACK).arg(err_no);
 
-		note.setText(msg);
-		note.exec();
-		break;
+			note.setText(msg);
+			note.exec();
+			break;
 
-	case IICERR_NOADDRACK:
+		case IICERR_NOADDRACK:
 		{
 			msg = QString("%1 (%2)").arg(STR_I2CNODEV).arg(err_no);
 			rv = QMessageBox::question(this, "Error", msg, QMessageBox::Ignore | QMessageBox::Cancel  | QMessageBox::Ok);//retryModalDialog re(this, msg);
@@ -557,54 +557,54 @@ int e2CmdWindow::OnError(int err_no, const QString &msgerr)
 			break;
 		}
 
-	case IICERR_TIMEOUT:
-		msg = QString("%1 (%2)").arg(STR_I2CTIMEOUT).arg(err_no);
+		case IICERR_TIMEOUT:
+			msg = QString("%1 (%2)").arg(STR_I2CTIMEOUT).arg(err_no);
 
-		note.setText(msg);
-		note.exec();
-		break;
+			note.setText(msg);
+			note.exec();
+			break;
 
-	case IICERR_STOP:
-		msg = QString("%1 (%2)").arg(STR_I2CSTOPERR).arg(err_no);
+		case IICERR_STOP:
+			msg = QString("%1 (%2)").arg(STR_I2CSTOPERR).arg(err_no);
 
-		note.setText(msg);
-		note.exec();
-		break;
+			note.setText(msg);
+			note.exec();
+			break;
 
-	case E2ERR_WRITEFAILED:
-		msg = QString("%1 (%2)").arg(STR_WRITEERR).arg(err_no);
+		case E2ERR_WRITEFAILED:
+			msg = QString("%1 (%2)").arg(STR_WRITEERR).arg(err_no);
 
-		note.setText(msg);
-		note.exec();
-		break;
+			note.setText(msg);
+			note.exec();
+			break;
 
-	case E2ERR_BLANKCHECKFAILED:
-		msg = QString("%1 (%2)").arg(STR_BLANKCHECKERR).arg(err_no);
+		case E2ERR_BLANKCHECKFAILED:
+			msg = QString("%1 (%2)").arg(STR_BLANKCHECKERR).arg(err_no);
 
-		note.setText(msg);
-		note.exec();
-		break;
+			note.setText(msg);
+			note.exec();
+			break;
 
-	case NOTSUPPORTED:
-		msg = QString("%1 (%2)").arg(STR_OPNOTSUP).arg(err_no);
+		case NOTSUPPORTED:
+			msg = QString("%1 (%2)").arg(STR_OPNOTSUP).arg(err_no);
 
-		note.setText(msg);
-		note.exec();
-		break;
+			note.setText(msg);
+			note.exec();
+			break;
 
-	default:
-		if (msgerr.length())
-		{
-			msg = msgerr;
-		}
-		else
-		{
-			msg = QString("%1 (%2)").arg(STR_ERRNO).arg(err_no);
-		}
+		default:
+			if (msgerr.length())
+			{
+				msg = msgerr;
+			}
+			else
+			{
+				msg = QString("%1 (%2)").arg(STR_ERRNO).arg(err_no);
+			}
 
-		note.setText(msg);
-		note.exec();
-		break;
+			note.setText(msg);
+			note.exec();
+			break;
 	}
 
 	return rv;
@@ -625,7 +625,7 @@ void e2CmdWindow::addI2C8Struct()
 	mTmp->info << eep24xx_map << eep24xx1A_map << eep24xx1B_map << eep24xx5_map;
 	mTmp->type << E24XX << E24XX1_A << E24XX1_B << E24XX5;
 
-	for (int i = 0; i < mTmp->info.count(); i++ )
+	for (int i = 0; i < mTmp->info.count(); i++)
 	{
 		QString entry = mTmp->info[i].name;
 		QAction *tmpAction = new QAction(entry, actionRecent);
@@ -635,7 +635,7 @@ void e2CmdWindow::addI2C8Struct()
 		mTmp->grp->addAction(tmpAction);
 	}
 
-	connect(mTmp->grp, SIGNAL(triggered(QAction*)), this, SLOT(onSelectI2C8(QAction*)));
+	connect(mTmp->grp, SIGNAL(triggered(QAction *)), this, SLOT(onSelectI2C8(QAction *)));
 	deviceMenu << *mTmp;
 }
 
@@ -654,7 +654,7 @@ void e2CmdWindow::addI2C16Struct()
 	mTmp->info << eep24xx2_map;
 	mTmp->type << E24XX2;
 
-	for (int i = 0; i < mTmp->info.count(); i++ )
+	for (int i = 0; i < mTmp->info.count(); i++)
 	{
 		QString entry = mTmp->info[i].name;
 		QAction *tmpAction = new QAction(entry, actionRecent);
@@ -664,7 +664,7 @@ void e2CmdWindow::addI2C16Struct()
 		mTmp->grp->addAction(tmpAction);
 	}
 
-	connect(mTmp->grp, SIGNAL(triggered(QAction*)), this, SLOT(onSelectI2C16(QAction*)));
+	connect(mTmp->grp, SIGNAL(triggered(QAction *)), this, SLOT(onSelectI2C16(QAction *)));
 	deviceMenu << *mTmp;
 }
 
@@ -684,7 +684,7 @@ void e2CmdWindow::addI2CAT17Struct()
 	mTmp->info << eep17xxx_map;
 	mTmp->type << AT17XXX;
 
-	for (int i = 0; i < mTmp->info.count(); i++ )
+	for (int i = 0; i < mTmp->info.count(); i++)
 	{
 		QString entry = mTmp->info[i].name;
 		QAction *tmpAction = new QAction(entry, actionRecent);
@@ -694,7 +694,7 @@ void e2CmdWindow::addI2CAT17Struct()
 		mTmp->grp->addAction(tmpAction);
 	}
 
-	connect(mTmp->grp, SIGNAL(triggered(QAction*)), this, SLOT(onSelectI2CAT17(QAction*)));
+	connect(mTmp->grp, SIGNAL(triggered(QAction *)), this, SLOT(onSelectI2CAT17(QAction *)));
 	deviceMenu << *mTmp;
 }
 
@@ -714,7 +714,7 @@ void e2CmdWindow::addMW16Struct()
 	mTmp->info << eep93x6_map;
 	mTmp->type << E93X6;
 
-	for (int i = 0; i < mTmp->info.count(); i++ )
+	for (int i = 0; i < mTmp->info.count(); i++)
 	{
 		QString entry = mTmp->info[i].name;
 		QAction *tmpAction = new QAction(entry, actionRecent);
@@ -724,7 +724,7 @@ void e2CmdWindow::addMW16Struct()
 		mTmp->grp->addAction(tmpAction);
 	}
 
-	connect(mTmp->grp, SIGNAL(triggered(QAction*)), this, SLOT(onSelectMW16(QAction*)));
+	connect(mTmp->grp, SIGNAL(triggered(QAction *)), this, SLOT(onSelectMW16(QAction *)));
 	deviceMenu << *mTmp;
 }
 
@@ -744,7 +744,7 @@ void e2CmdWindow::addMW8Struct()
 	mTmp->info << eep93xx8_map;
 	mTmp->type << E93XX_8;
 
-	for (int i = 0; i < mTmp->info.count(); i++ )
+	for (int i = 0; i < mTmp->info.count(); i++)
 	{
 		QString entry = mTmp->info[i].name;
 		QAction *tmpAction = new QAction(entry, actionRecent);
@@ -754,7 +754,7 @@ void e2CmdWindow::addMW8Struct()
 		mTmp->grp->addAction(tmpAction);
 	}
 
-	connect(mTmp->grp, SIGNAL(triggered(QAction*)), this, SLOT(onSelectMW8(QAction*)));
+	connect(mTmp->grp, SIGNAL(triggered(QAction *)), this, SLOT(onSelectMW8(QAction *)));
 	deviceMenu << *mTmp;
 }
 
@@ -774,7 +774,7 @@ void e2CmdWindow::addSPIStruct()
 	mTmp->info << eep250xx_map << eep25xxx_map;
 	mTmp->type << E250XX << E25XXX;
 
-	for (int i = 0; i < mTmp->info.count(); i++ )
+	for (int i = 0; i < mTmp->info.count(); i++)
 	{
 		QString entry = mTmp->info[i].name;
 		QAction *tmpAction = new QAction(entry, actionRecent);
@@ -784,7 +784,7 @@ void e2CmdWindow::addSPIStruct()
 		mTmp->grp->addAction(tmpAction);
 	}
 
-	connect(mTmp->grp, SIGNAL(triggered(QAction*)), this, SLOT(onSelectSPI(QAction*)));
+	connect(mTmp->grp, SIGNAL(triggered(QAction *)), this, SLOT(onSelectSPI(QAction *)));
 	deviceMenu << *mTmp;
 }
 
@@ -803,7 +803,7 @@ void e2CmdWindow::addAT90Struct()
 	mTmp->info << eepAt90s_map;
 	mTmp->type << AT90SXX;
 
-	for (int i = 0; i < mTmp->info.count(); i++ )
+	for (int i = 0; i < mTmp->info.count(); i++)
 	{
 		QString entry = mTmp->info[i].name;
 		QAction *tmpAction = new QAction(entry, actionRecent);
@@ -813,7 +813,7 @@ void e2CmdWindow::addAT90Struct()
 		mTmp->grp->addAction(tmpAction);
 	}
 
-	connect(mTmp->grp, SIGNAL(triggered(QAction*)), this, SLOT(onSelectAVR(QAction*)));
+	connect(mTmp->grp, SIGNAL(triggered(QAction *)), this, SLOT(onSelectAVR(QAction *)));
 	deviceMenu << *mTmp;
 }
 
@@ -833,7 +833,7 @@ void e2CmdWindow::addAT89Struct()
 	mTmp->info << eepAt89s_map;
 	mTmp->type << AT89SXX;
 
-	for (int i = 0; i < mTmp->info.count(); i++ )
+	for (int i = 0; i < mTmp->info.count(); i++)
 	{
 		QString entry = mTmp->info[i].name;
 		QAction *tmpAction = new QAction(entry, actionRecent);
@@ -843,7 +843,7 @@ void e2CmdWindow::addAT89Struct()
 		mTmp->grp->addAction(tmpAction);
 	}
 
-	connect(mTmp->grp, SIGNAL(triggered(QAction*)), this, SLOT(onSelectAT89S(QAction*)));
+	connect(mTmp->grp, SIGNAL(triggered(QAction *)), this, SLOT(onSelectAT89S(QAction *)));
 	deviceMenu << *mTmp;
 }
 
@@ -863,7 +863,7 @@ void e2CmdWindow::addPIC16Struct()
 	mTmp->info << eepPic168xx_map << eepPic16_map;
 	mTmp->type << PIC168XX << PIC16XX;
 
-	for (int i = 0; i < mTmp->info.count(); i++ )
+	for (int i = 0; i < mTmp->info.count(); i++)
 	{
 		QString entry = mTmp->info[i].name;
 		QAction *tmpAction = new QAction(entry, actionRecent);
@@ -873,7 +873,7 @@ void e2CmdWindow::addPIC16Struct()
 		mTmp->grp->addAction(tmpAction);
 	}
 
-	connect(mTmp->grp, SIGNAL(triggered(QAction*)), this, SLOT(onSelectPIC16(QAction*)));
+	connect(mTmp->grp, SIGNAL(triggered(QAction *)), this, SLOT(onSelectPIC16(QAction *)));
 	deviceMenu << *mTmp;
 }
 
@@ -893,7 +893,7 @@ void e2CmdWindow::addPIC12Struct()
 	mTmp->info << eepPic125_map;
 	mTmp->type << PIC125XX;
 
-	for (int i = 0; i < mTmp->info.count(); i++ )
+	for (int i = 0; i < mTmp->info.count(); i++)
 	{
 		QString entry = mTmp->info[i].name;
 		QAction *tmpAction = new QAction(entry, actionRecent);
@@ -903,7 +903,7 @@ void e2CmdWindow::addPIC12Struct()
 		mTmp->grp->addAction(tmpAction);
 	}
 
-	connect(mTmp->grp, SIGNAL(triggered(QAction*)), this, SLOT(onSelectPIC12(QAction*)));
+	connect(mTmp->grp, SIGNAL(triggered(QAction *)), this, SLOT(onSelectPIC12(QAction *)));
 	deviceMenu << *mTmp;
 }
 
@@ -922,7 +922,7 @@ void e2CmdWindow::addIMBUSStruct()
 	mTmp->info = eepnvm3060_map;
 	mTmp->type << ENVMXXX;
 
-	for (int i = 0; i < mTmp->info.count(); i++ )
+	for (int i = 0; i < mTmp->info.count(); i++)
 	{
 		QString entry = mTmp->info[i].name;
 		QAction *tmpAction = new QAction(entry, actionRecent);
@@ -932,7 +932,7 @@ void e2CmdWindow::addIMBUSStruct()
 		mTmp->grp->addAction(tmpAction);
 	}
 
-	connect(mTmp->grp, SIGNAL(triggered(QAction*)), this, SLOT(onSelectImBus(QAction*)));
+	connect(mTmp->grp, SIGNAL(triggered(QAction *)), this, SLOT(onSelectImBus(QAction *)));
 	deviceMenu << *mTmp;
 }
 
@@ -951,7 +951,7 @@ void e2CmdWindow::addSDEStruct()
 	mTmp->info << eep2506_map;
 	mTmp->type << E2506XX;
 
-	for (int i = 0; i < mTmp->info.count(); i++ )
+	for (int i = 0; i < mTmp->info.count(); i++)
 	{
 		QString entry = mTmp->info[i].name;
 		QAction *tmpAction = new QAction(entry, actionRecent);
@@ -961,7 +961,7 @@ void e2CmdWindow::addSDEStruct()
 		mTmp->grp->addAction(tmpAction);
 	}
 
-	connect(mTmp->grp, SIGNAL(triggered(QAction*)), this, SLOT(onSelectSDE2506(QAction*)));
+	connect(mTmp->grp, SIGNAL(triggered(QAction *)), this, SLOT(onSelectSDE2506(QAction *)));
 	deviceMenu << *mTmp;
 }
 
@@ -980,7 +980,7 @@ void e2CmdWindow::addX24CStruct()
 	mTmp->info << eep2444_map;
 	mTmp->type << X24C44XX;
 
-	for (int i = 0; i < mTmp->info.count(); i++ )
+	for (int i = 0; i < mTmp->info.count(); i++)
 	{
 		QString entry = mTmp->info[i].name;
 		QAction *tmpAction = new QAction(entry, actionRecent);
@@ -990,7 +990,7 @@ void e2CmdWindow::addX24CStruct()
 		mTmp->grp->addAction(tmpAction);
 	}
 
-	connect(mTmp->grp, SIGNAL(triggered(QAction*)), this, SLOT(onSelectX244(QAction*)));
+	connect(mTmp->grp, SIGNAL(triggered(QAction *)), this, SLOT(onSelectX244(QAction *)));
 	deviceMenu << *mTmp;
 }
 
@@ -1091,7 +1091,7 @@ void e2CmdWindow::doProgress(const QString &text)
 
 	e2Prg = new QProgressDialog(text, "Abort", 0, 100, this);
 	e2Prg->setWindowModality(Qt::WindowModal);
-	connect (e2Prg, SIGNAL(canceled()), this,  SLOT(onEndProgress()));
+	connect(e2Prg, SIGNAL(canceled()), this,  SLOT(onEndProgress()));
 }
 
 /**
@@ -1128,7 +1128,7 @@ int e2CmdWindow::findItemInMenuVector(const QString &n)
  * @brief slot for signal from I2c8 action group
  *
  */
-void e2CmdWindow::onSelectI2C8(QAction* a)
+void e2CmdWindow::onSelectI2C8(QAction *a)
 {
 	if (IsAppReady())
 	{
@@ -1144,7 +1144,7 @@ void e2CmdWindow::onSelectI2C8(QAction* a)
  * @brief slot for signal from I2c16 action group
  *
  */
-void e2CmdWindow::onSelectI2C16(QAction* a)
+void e2CmdWindow::onSelectI2C16(QAction *a)
 {
 	if (IsAppReady())
 	{
@@ -1160,7 +1160,7 @@ void e2CmdWindow::onSelectI2C16(QAction* a)
  * @brief slot for signal from I2AT17 action group
  *
  */
-void e2CmdWindow::onSelectI2CAT17(QAction* a)
+void e2CmdWindow::onSelectI2CAT17(QAction *a)
 {
 	if (IsAppReady())
 	{
@@ -1175,7 +1175,7 @@ void e2CmdWindow::onSelectI2CAT17(QAction* a)
  * @brief slot for signal from MW16 action group
  *
  */
-void e2CmdWindow::onSelectMW16(QAction* a)
+void e2CmdWindow::onSelectMW16(QAction *a)
 {
 	if (IsAppReady())
 	{
@@ -1191,7 +1191,7 @@ void e2CmdWindow::onSelectMW16(QAction* a)
  * @brief slot for signal from MW8 action group
  *
  */
-void e2CmdWindow::onSelectMW8(QAction* a)
+void e2CmdWindow::onSelectMW8(QAction *a)
 {
 	if (IsAppReady())
 	{
@@ -1207,7 +1207,7 @@ void e2CmdWindow::onSelectMW8(QAction* a)
  * @brief slot for signal from SPI action group
  *
  */
-void e2CmdWindow::onSelectSPI(QAction* a)
+void e2CmdWindow::onSelectSPI(QAction *a)
 {
 	if (IsAppReady())
 	{
@@ -1223,7 +1223,7 @@ void e2CmdWindow::onSelectSPI(QAction* a)
  * @brief slot for signal from AVR action group
  *
  */
-void e2CmdWindow::onSelectAVR(QAction* a)
+void e2CmdWindow::onSelectAVR(QAction *a)
 {
 	if (IsAppReady())
 	{
@@ -1239,7 +1239,7 @@ void e2CmdWindow::onSelectAVR(QAction* a)
  * @brief slot for signal from AT89S action group
  *
  */
-void e2CmdWindow::onSelectAT89S(QAction* a)
+void e2CmdWindow::onSelectAT89S(QAction *a)
 {
 	if (IsAppReady())
 	{
@@ -1254,7 +1254,7 @@ void e2CmdWindow::onSelectAT89S(QAction* a)
  * @brief slot for signal from PIC16 action group
  *
  */
-void e2CmdWindow::onSelectPIC16(QAction* a)
+void e2CmdWindow::onSelectPIC16(QAction *a)
 {
 	if (IsAppReady())
 	{
@@ -1270,7 +1270,7 @@ void e2CmdWindow::onSelectPIC16(QAction* a)
  * @brief slot for signal from PIC12 action group
  *
  */
-void e2CmdWindow::onSelectPIC12(QAction* a)
+void e2CmdWindow::onSelectPIC12(QAction *a)
 {
 	if (IsAppReady())
 	{
@@ -1286,7 +1286,7 @@ void e2CmdWindow::onSelectPIC12(QAction* a)
  * @brief slot for signal from ImBus action group
  *
  */
-void e2CmdWindow::onSelectImBus(QAction* a)
+void e2CmdWindow::onSelectImBus(QAction *a)
 {
 	if (IsAppReady())
 	{
@@ -1302,7 +1302,7 @@ void e2CmdWindow::onSelectImBus(QAction* a)
  * @brief slot for signal from SDE action group
  *
  */
-void e2CmdWindow::onSelectSDE2506(QAction* a)
+void e2CmdWindow::onSelectSDE2506(QAction *a)
 {
 	if (IsAppReady())
 	{
@@ -1318,7 +1318,7 @@ void e2CmdWindow::onSelectSDE2506(QAction* a)
  * @brief slot for signal from X244 action group
  *
  */
-void e2CmdWindow::onSelectX244(QAction* a)
+void e2CmdWindow::onSelectX244(QAction *a)
 {
 	if (IsAppReady())
 	{
@@ -1371,7 +1371,7 @@ void e2CmdWindow::selectTypeSubtype(const QString &t, const QString &st)
 
 
 
-void e2CmdWindow::selectFontSize(QAction* mnu)
+void e2CmdWindow::selectFontSize(QAction *mnu)
 {
 	QString lngStr;
 
@@ -1383,7 +1383,7 @@ void e2CmdWindow::selectFontSize(QAction* mnu)
 	int sz = sysFont.pointSize();
 
 	// for lang menu and for fontsize menu
-	if ( sz == -1)
+	if (sz == -1)
 	{
 		programStyleSheet = QString().sprintf("font-size: %dpx", fontSize);
 	}
@@ -1394,7 +1394,7 @@ void e2CmdWindow::selectFontSize(QAction* mnu)
 
 	E2Profile::SetFontSize(fontSize);
 
-	QString sSheet2 = QString("QMenu { %1; }").arg( programStyleSheet );
+	QString sSheet2 = QString("QMenu { %1; }").arg(programStyleSheet);
 
 	setStyleSheet(programStyleSheet);
 
@@ -1423,7 +1423,7 @@ void e2CmdWindow::createFontSizeMenu()
 	QStringList szList;
 	szList << "9" << "10" << "12" << "14" << "16" << "18" << "20";
 
-	foreach(QString entry, szList)
+	foreach (QString entry, szList)
 	{
 		QAction *tmpAction = new QAction(entry, m);
 		tmpAction->setCheckable(true);
@@ -1439,7 +1439,7 @@ void e2CmdWindow::createFontSizeMenu()
 		actFSizeSelect.push_back(tmpAction);
 	}
 
-	connect(fsizeGroup, SIGNAL(triggered(QAction*)), this, SLOT(selectFontSize(QAction*)));
+	connect(fsizeGroup, SIGNAL(triggered(QAction *)), this, SLOT(selectFontSize(QAction *)));
 }
 
 /**
@@ -1574,10 +1574,10 @@ void e2CmdWindow::createSignalSlotConnections()
 	connect(actionByteSwap, SIGNAL(triggered()), this, SLOT(onByteSwap()));
 
 	// double buffer
-	connect(actionDoubleBank, SIGNAL(triggered()), this, SLOT( onDoubleSize()));
+	connect(actionDoubleBank, SIGNAL(triggered()), this, SLOT(onDoubleSize()));
 
 	// set serial number
-	connect(actionSetSN, SIGNAL(triggered()), this, SLOT( onSetSerialNumber()));
+	connect(actionSetSN, SIGNAL(triggered()), this, SLOT(onSetSerialNumber()));
 
 	// clear all data
 	//      connect(actionErase, SIGNAL(triggered()), this, SLOT( onClearBuf(ALL_TYPE)));
@@ -1585,19 +1585,19 @@ void e2CmdWindow::createSignalSlotConnections()
 	//      connect(actionEraseEep, SIGNAL(triggered()), this, SLOT( onClearBuf(DATA_TYPE)));
 
 	// edit notes
-	connect(actionEditNote, SIGNAL(triggered()), this, SLOT( onEditNote()));
+	connect(actionEditNote, SIGNAL(triggered()), this, SLOT(onEditNote()));
 
 	// write security bits
-	connect(actionWriteSecurity, SIGNAL(triggered()), this, SLOT( onWriteSecurity()));
+	connect(actionWriteSecurity, SIGNAL(triggered()), this, SLOT(onWriteSecurity()));
 
 	// fill buffer
-	connect(actionFillBuffer, SIGNAL(triggered()), this, SLOT( onFillBuf()));
+	connect(actionFillBuffer, SIGNAL(triggered()), this, SLOT(onFillBuf()));
 
 
-	connect(actionWriteSecurity, SIGNAL(triggered()), this, SLOT( onSpecialBits()));
+	connect(actionWriteSecurity, SIGNAL(triggered()), this, SLOT(onSpecialBits()));
 
 
-	connect(actionOscOptions, SIGNAL(triggered()), this, SLOT( onOscCalibOption()));
+	connect(actionOscOptions, SIGNAL(triggered()), this, SLOT(onOscCalibOption()));
 
 	// get device info
 	//      connect(actionGetInfo, SIGNAL(triggered()), this, SLOT(onGetInfo()));
@@ -1607,19 +1607,19 @@ void e2CmdWindow::createSignalSlotConnections()
 	//      connect(actionWriteHEndu, SIGNAL(triggered()), this, SLOT( onWriteHEndurance()));
 
 
-	connect(actionSNConfig, SIGNAL(triggered()), this, SLOT( onSerialNumberOptions()));
+	connect(actionSNConfig, SIGNAL(triggered()), this, SLOT(onSerialNumberOptions()));
 
 #if 0
-	connect(actiontEnableToolBar, SIGNAL(triggered()), this, SLOT( onEnableToolBar(int val)));
+	connect(actiontEnableToolBar, SIGNAL(triggered()), this, SLOT(onEnableToolBar(int val)));
 	//      connect(actiontLastFile1, SIGNAL(triggered()), this, SLOT( onLastFile1()));
 	//      connect(actiontLastFile2, SIGNAL(triggered()), this, SLOT( onLastFile2()));
 
-	connect(actiontAskToSave, SIGNAL(triggered()), this, SLOT( onAskToSave()));
-	connect(actiontProgress, SIGNAL(triggered()), this, SLOT( onProgress(int val)));
-	connect(actiontCloseAll, SIGNAL(triggered()), this, SLOT( onCloseAllDialog()));
-	connect(actiontSelectDevice, SIGNAL(triggered()), this, SLOT( onSelectDevice(long new_type)));
-	connect(actiontEEPType, SIGNAL(triggered()), this, SLOT( onSelectEEPType(int val)));
-	connect(actiontEEPSubtype, SIGNAL(triggered()), this, SLOT( onEEPSubType(int val)));
+	connect(actiontAskToSave, SIGNAL(triggered()), this, SLOT(onAskToSave()));
+	connect(actiontProgress, SIGNAL(triggered()), this, SLOT(onProgress(int val)));
+	connect(actiontCloseAll, SIGNAL(triggered()), this, SLOT(onCloseAllDialog()));
+	connect(actiontSelectDevice, SIGNAL(triggered()), this, SLOT(onSelectDevice(long new_type)));
+	connect(actiontEEPType, SIGNAL(triggered()), this, SLOT(onSelectEEPType(int val)));
+	connect(actiontEEPSubtype, SIGNAL(triggered()), this, SLOT(onEEPSubType(int val)));
 #endif
 	connect(actionCalibration, SIGNAL(triggered()), this, SLOT(onReadCalibration(int idx)));
 	// interface setup
@@ -1674,7 +1674,7 @@ void e2CmdWindow::onOpen()
 {
 	if (IsAppReady())
 	{
-		QAction *a = static_cast<QAction*>(sender());
+		QAction *a = static_cast<QAction *>(sender());
 
 		if (a == actionOpen)
 		{
@@ -1700,7 +1700,7 @@ void e2CmdWindow::onSave()
 {
 	if (IsAppReady())
 	{
-		QAction *a = static_cast<QAction*>(sender());
+		QAction *a = static_cast<QAction *>(sender());
 
 		if (a == actionSave)
 		{
@@ -1714,7 +1714,7 @@ void e2CmdWindow::onSaveAs()
 {
 	if (IsAppReady())
 	{
-		QAction *a = static_cast<QAction*>(sender());
+		QAction *a = static_cast<QAction *>(sender());
 
 		if (a == actionSaveAs)
 		{
@@ -1761,19 +1761,19 @@ void e2CmdWindow::onWrite()
 		bool verify = E2Profile::GetVerifyAfterWrite();
 		SetAppBusy();
 
-		QAction *a = static_cast<QAction*>(sender());
+		QAction *a = static_cast<QAction *>(sender());
 
 		if (a == actionWriteAll)
 		{
-			CmdWrite(ALL_TYPE, verify );
+			CmdWrite(ALL_TYPE, verify);
 		}
 		else if (a == actionWriteFlash)
 		{
-			CmdWrite(PROG_TYPE, verify );
+			CmdWrite(PROG_TYPE, verify);
 		}
 		else if (a == actionWriteEep)
 		{
-			CmdWrite(DATA_TYPE, verify );
+			CmdWrite(DATA_TYPE, verify);
 		}
 
 		SetAppReady();
@@ -1781,23 +1781,23 @@ void e2CmdWindow::onWrite()
 }
 
 
-void e2CmdWindow::onRead( )
+void e2CmdWindow::onRead()
 {
-	QAction *a = static_cast<QAction*>(sender());
+	QAction *a = static_cast<QAction *>(sender());
 
 	SetAppBusy();
 
 	if (a == actionReadAll)
 	{
-		CmdRead(ALL_TYPE );
+		CmdRead(ALL_TYPE);
 	}
 	else if (a == actionReadFlash)
 	{
-		CmdRead(PROG_TYPE );
+		CmdRead(PROG_TYPE);
 	}
 	else if (a == actionReadEep)
 	{
-		CmdRead(DATA_TYPE );
+		CmdRead(DATA_TYPE);
 	}
 
 	SetAppReady();
@@ -1822,23 +1822,23 @@ void e2CmdWindow::onVerify()
 	if (IsAppReady())
 	{
 		SetAppBusy();
-		QAction *a = static_cast<QAction*>(sender());
+		QAction *a = static_cast<QAction *>(sender());
 
 		if (a == actionVerifyAll)
 		{
-			CmdVerify(ALL_TYPE );
+			CmdVerify(ALL_TYPE);
 			return;
 		}
 
 		if (a == actionVerifyFlash)
 		{
-			CmdVerify(PROG_TYPE );
+			CmdVerify(PROG_TYPE);
 			return;
 		}
 
 		if (a == actionVerifyEep)
 		{
-			CmdVerify(DATA_TYPE );
+			CmdVerify(DATA_TYPE);
 		}
 
 		SetAppReady();
@@ -1875,7 +1875,7 @@ void e2CmdWindow::onLoadScript()
 
 		if (rv == OK)
 		{
-			E2Profile::SetLastScript( script_name );
+			E2Profile::SetLastScript(script_name);
 
 			QString str = STR_RUNSCR;//[MAXPATH];
 			str += script_name;
@@ -2072,7 +2072,7 @@ void e2CmdWindow::onEEPSubType(int val)
 
 void e2CmdWindow::onAskToSave()
 {
-	if ( IsBufChanged() )
+	if (IsBufChanged())
 	{
 		QString str;
 
@@ -2080,10 +2080,10 @@ void e2CmdWindow::onAskToSave()
 		str.replace("%s", GetFileName());
 
 		int ret = QMessageBox::warning(this, "PonyProg",
-		                               str,
-		                               QMessageBox::Yes | QMessageBox::No);
+									   str,
+									   QMessageBox::Yes | QMessageBox::No);
 
-		if ( ret == QMessageBox::Yes )
+		if (ret == QMessageBox::Yes)
 		{
 			SaveFile();
 		}
@@ -2262,13 +2262,13 @@ int e2CmdWindow::CmdLastFile1()
 
 	if (verbose == verboseAll)
 	{
-		if ( IsBufChanged() && awip->IsBufferValid() )
+		if (IsBufChanged() && awip->IsBufferValid())
 		{
 			int ret = QMessageBox::warning(this, "PonyProg",
-			                               "Buffer changed. Save it before to close?",
-			                               QMessageBox::Yes | QMessageBox::No);
+										   "Buffer changed. Save it before to close?",
+										   QMessageBox::Yes | QMessageBox::No);
 
-			if ( ret == QMessageBox::Yes )
+			if (ret == QMessageBox::Yes)
 			{
 				awip->SetSaveType(ALL_TYPE);    //??
 				SaveFile();
@@ -2297,13 +2297,13 @@ int e2CmdWindow::CmdLastFile2()
 
 	if (verbose == verboseAll)
 	{
-		if ( IsBufChanged() && awip->IsBufferValid() )
+		if (IsBufChanged() && awip->IsBufferValid())
 		{
 			int ret = QMessageBox::warning(this, "PonyProg",
-			                               "Buffer changed. Save it before to close?",
-			                               QMessageBox::Yes | QMessageBox::No);
+										   "Buffer changed. Save it before to close?",
+										   QMessageBox::Yes | QMessageBox::No);
 
-			if ( ret == QMessageBox::Yes )
+			if (ret == QMessageBox::Yes)
 			{
 				awip->SetSaveType(ALL_TYPE);    //??
 				SaveFile();
@@ -2314,10 +2314,10 @@ int e2CmdWindow::CmdLastFile2()
 	int data_type;
 	QString s = E2Profile::GetPrevFile(data_type);
 
-	if ( s.length() > 0 )
+	if (s.length() > 0)
 	{
 		awip->SetLoadType(data_type);
-		awip->SetLoadAutoClearBuf( E2Profile::GetClearBufBeforeLoad() );
+		awip->SetLoadAutoClearBuf(E2Profile::GetClearBufBeforeLoad());
 
 		result = OpenFile(s);
 	}
@@ -2347,7 +2347,7 @@ int e2CmdWindow::CmdReload()
 
 	sp = E2Profile::GetLastFile(dt1);
 
-	if ( sp.length() && FileExist(sp) )
+	if (sp.length() && FileExist(sp))
 	{
 		sp = E2Profile::GetPrevFile(dt2);
 
@@ -2358,8 +2358,8 @@ int e2CmdWindow::CmdReload()
 		 * case of LastFile is ALL_TYPE there's no need to reload even
 		 * PrevFile
 		 */
-		if ( sp.length() && FileExist(sp) && dt1 != ALL_TYPE &&
-		                CmpExtension(sp.toLower(), ".e2p") != 0 )
+		if (sp.length() && FileExist(sp) && dt1 != ALL_TYPE &&
+				CmpExtension(sp.toLower(), ".e2p") != 0)
 		{
 			result = CmdLastFile2();
 
@@ -2446,11 +2446,11 @@ int e2CmdWindow::CmdHelp()
 int e2CmdWindow::CmdCalibration()
 {
 	int ret = QMessageBox::warning(this, "PonyProg",
-	                               QString(STR_BUSCALIBRA1) + QString(APPNAME) + QString(STR_BUSCALIBRA2),
-	                               QMessageBox::Yes | QMessageBox::No);
+								   QString(STR_BUSCALIBRA1) + QString(APPNAME) + QString(STR_BUSCALIBRA2),
+								   QMessageBox::Yes | QMessageBox::No);
 
 
-	if ( ret == QMessageBox::Yes )
+	if (ret == QMessageBox::Yes)
 	{
 		QMessageBox note;
 		note.setIcon(QMessageBox::Warning);
@@ -2494,13 +2494,13 @@ int e2CmdWindow::CmdCalibration()
 //====================>>> e2CmdWindow::CmdRead <<<====================
 int e2CmdWindow::CmdRead(int type)
 {
-	if ( IsBufChanged() && awip->IsBufferValid() && verbose == verboseAll)
+	if (IsBufChanged() && awip->IsBufferValid() && verbose == verboseAll)
 	{
 		int ret = QMessageBox::warning(this, "PonyProg",
-		                               QString(STR_BUFCHANGED3),
-		                               QMessageBox::Yes | QMessageBox::No);
+									   QString(STR_BUFCHANGED3),
+									   QMessageBox::Yes | QMessageBox::No);
 
-		if ( ret == QMessageBox::Yes )
+		if (ret == QMessageBox::Yes)
 		{
 			awip->SetSaveType(ALL_TYPE);    //???
 			SaveFile();
@@ -2533,7 +2533,7 @@ int e2CmdWindow::CmdRead(int type)
 		//e2Prg->close();
 		emit onEndProgress();
 
-		if ( rval > 0 )
+		if (rval > 0)
 		{
 			first_line = 0;
 			//curIndex = 0;
@@ -2610,7 +2610,7 @@ int e2CmdWindow::CmdWrite(int type, bool verify)
 		type &= ~CONFIG_TYPE;
 	}
 
-	if ( !awip->IsBufferValid() )
+	if (!awip->IsBufferValid())
 	{
 		if (verbose != verboseNo)
 		{
@@ -2625,9 +2625,9 @@ int e2CmdWindow::CmdWrite(int type, bool verify)
 	}
 	else
 	{
-		if ( (verbose != verboseAll) || (QMessageBox::warning(this, "PonyProg",
-		                                 QString(STR_ASKWRITE),
-		                                 QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes) )
+		if ((verbose != verboseAll) || (QMessageBox::warning(this, "PonyProg",
+										QString(STR_ASKWRITE),
+										QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes))
 		{
 			int rval;
 			int retry_flag = 1;
@@ -2657,8 +2657,8 @@ int e2CmdWindow::CmdWrite(int type, bool verify)
 						//e2Prg->setLabelText(STR_MSGVERIFING);
 						//e2Prg->setValue(0);
 
-						if ( (old_type & CONFIG_TYPE) &&
-						                !(awip->GetFuseBits() == 0 && awip->GetLockBits() == 0) )
+						if ((old_type & CONFIG_TYPE) &&
+								!(awip->GetFuseBits() == 0 && awip->GetLockBits() == 0))
 						{
 							rval = awip->Verify(type, false, true);
 
@@ -2684,7 +2684,7 @@ int e2CmdWindow::CmdWrite(int type, bool verify)
 
 					QMessageBox note;
 
-					if ( rval > 0 )   //23/10/1999
+					if (rval > 0)     //23/10/1999
 					{
 						//Aggiunto il 01/10/98
 						first_line = 0;
@@ -2812,8 +2812,8 @@ int e2CmdWindow::CmdReadCalibration(int idx)
 
 		if (rval >= 0)
 		{
-			if ( (size > 0 && size <= 4) &&
-			                (loc + size <= awip->GetBufSize())
+			if ((size > 0 && size <= 4) &&
+					(loc + size <= awip->GetBufSize())
 			   )
 			{
 				uint8_t *bp = awip->GetBufPtr() + loc;
@@ -2924,7 +2924,7 @@ int e2CmdWindow::CmdErase(int type)
 		//e2Prg->close();
 		emit onEndProgress();
 
-		if ( rval > 0 )
+		if (rval > 0)
 		{
 			//      CmdClearBuf();
 
@@ -2981,7 +2981,7 @@ int e2CmdWindow::CmdVerify(int type)
 {
 	int result = OK;
 
-	if ( !awip->IsBufferValid() )
+	if (!awip->IsBufferValid())
 	{
 		if (verbose != verboseNo)
 		{
@@ -3060,59 +3060,59 @@ int e2CmdWindow::CmdProgram()
 		verbose = verboseErr;        //Disable all ok messages
 	}
 
-	if ( result == OK && (prog_opt & RELOAD_YES) )
+	if (result == OK && (prog_opt & RELOAD_YES))
 	{
 		result = CmdReload();
 	}
 
-	if ( result == OK && (prog_opt & READFLASH_YES) )
+	if (result == OK && (prog_opt & READFLASH_YES))
 	{
 		result = CmdRead(PROG_TYPE);
 	}
 
-	if ( result == OK && (prog_opt & READEEP_YES) )
+	if (result == OK && (prog_opt & READEEP_YES))
 	{
 		result = CmdRead(DATA_TYPE);
 	}
 
-	if ( result == OK && (prog_opt & BYTESWAP_YES) )
+	if (result == OK && (prog_opt & BYTESWAP_YES))
 	{
 		result = CmdByteSwap();
 	}
 
-	if ( result == OK && (prog_opt & SETID_YES) )
+	if (result == OK && (prog_opt & SETID_YES))
 	{
 		result = CmdSetSerialNumber();
 	}
 
-	if ( result == OK && (prog_opt & READOSCAL_YES) )
+	if (result == OK && (prog_opt & READOSCAL_YES))
 	{
 		result = CmdReadCalibration(0);
 	}
 
-	if ( result == OK && (prog_opt & ERASE_YES) )
+	if (result == OK && (prog_opt & ERASE_YES))
 	{
 		result = CmdErase(ALL_TYPE);
 	}
 
-	if ( result == OK && (prog_opt & FLASH_YES) )
+	if (result == OK && (prog_opt & FLASH_YES))
 	{
 		result = CmdWrite(PROG_TYPE, true);
 	}
 
-	if ( result == OK && (prog_opt & EEPROM_YES) )
+	if (result == OK && (prog_opt & EEPROM_YES))
 	{
 		result = CmdWrite(DATA_TYPE, true);
 	}
 
-	if ( result == OK && (prog_opt & LOCK_YES) )
+	if (result == OK && (prog_opt & LOCK_YES))
 	{
 		result = CmdWriteSecurity();
 	}
 
 	verbose = old_verbose;
 
-	if ( result == OK )
+	if (result == OK)
 	{
 		QMessageBox note;
 
@@ -3144,7 +3144,7 @@ int e2CmdWindow::CmdProgram()
 }
 
 //**
-static char *mytokenizer(char *buf, char * &next)
+static char *mytokenizer(char *buf, char*&next)
 {
 	char *sp = buf;
 	char *spend = NULL;
@@ -3251,7 +3251,7 @@ static int myscantokenizer(char *buf, char *arg[], int arglen)
 
 	sp = buf;
 
-	for (k = 0; (sp = mytokenizer(sp, next)) != NULL && k < arglen; k++ )
+	for (k = 0; (sp = mytokenizer(sp, next)) != NULL && k < arglen; k++)
 	{
 		arg[k] = sp;
 		sp = next;
@@ -3281,7 +3281,7 @@ int e2CmdWindow::ScriptError(int line_number, int arg_index, char *arg, const QS
 	}
 	else if (arg == NULL || arg[0] == '\0')
 	{
-		str = QString("%1 %2: %3").arg(STR_MSGSCRIPTERROR).arg(line_number).arg( msg.length() ? msg : STR_MSGSCRIPTARGMISSING);
+		str = QString("%1 %2: %3").arg(STR_MSGSCRIPTERROR).arg(line_number).arg(msg.length() ? msg : STR_MSGSCRIPTARGMISSING);
 	}
 	else
 	{
@@ -3312,7 +3312,7 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 		verbose = verboseErr;        //Disable all ok messages
 	}
 
-	if ( script_name.length() == 0 )
+	if (script_name.length() == 0)
 	{
 		return BADPARAM;
 	}
@@ -3326,7 +3326,7 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 
 	linecounter = 0;
 
-	while(result == OK && !fh.atEnd())
+	while (result == OK && !fh.atEnd())
 	{
 		fh.readLine(buf, 511);
 		linecounter++;
@@ -3338,7 +3338,7 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 
 		n = myscantokenizer(buf, arg, 32);
 
-		if (n >= 1 )
+		if (n >= 1)
 		{
 			if (strcasecmp(cmdbuf, "SELECTDEVICE") == 0)
 			{
@@ -3375,7 +3375,7 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 						reloc_off = strtol(arg[2], NULL, 0);
 					}
 
-					if ( !FileExist(arg[1]) )
+					if (!FileExist(arg[1]))
 					{
 						result = ScriptError(linecounter, 1, arg[1], STR_MSGFILENOTFOUND);
 					}
@@ -3406,7 +3406,7 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 						reloc_off = strtol(arg[2], NULL, 0);
 					}
 
-					if ( !FileExist(arg[1]) )
+					if (!FileExist(arg[1]))
 					{
 						result = ScriptError(linecounter, 1, arg[1], STR_MSGFILENOTFOUND);
 					}
@@ -3437,7 +3437,7 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 						reloc_off = strtol(arg[2], NULL, 0);
 					}
 
-					if ( !FileExist(arg[1]) )
+					if (!FileExist(arg[1]))
 					{
 						result = ScriptError(linecounter, 1, arg[1], STR_MSGFILENOTFOUND);
 					}
@@ -3463,23 +3463,23 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 				{
 					if (n >= 3 && arg[2])
 					{
-						if ( strcasecmp(arg[2], "e2p") == 0 )
+						if (strcasecmp(arg[2], "e2p") == 0)
 						{
 							awip->SetFileBuf(E2P);
 						}
-						else if ( strcasecmp(arg[2], "bin") == 0 )
+						else if (strcasecmp(arg[2], "bin") == 0)
 						{
 							awip->SetFileBuf(BIN);
 						}
-						else if ( strcasecmp(arg[2], "csm") == 0 )
+						else if (strcasecmp(arg[2], "csm") == 0)
 						{
 							awip->SetFileBuf(CSM);
 						}
-						else if ( strcasecmp(arg[2], "intel-hex") == 0 )
+						else if (strcasecmp(arg[2], "intel-hex") == 0)
 						{
 							awip->SetFileBuf(INTEL);
 						}
-						else if ( strcasecmp(arg[2], "mot-srec") == 0 )
+						else if (strcasecmp(arg[2], "mot-srec") == 0)
 						{
 							awip->SetFileBuf(MOTOS);
 						}
@@ -3491,7 +3491,7 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 
 					if (result == OK && !test_mode)
 					{
-						if ( strcmp(arg[1], "--") == 0 )
+						if (strcmp(arg[1], "--") == 0)
 						{
 							result = CmdSaveAs(ALL_TYPE);
 						}
@@ -3515,23 +3515,23 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 				{
 					if (n >= 3 && arg[2])
 					{
-						if ( strcasecmp(arg[2], "e2p") == 0 )
+						if (strcasecmp(arg[2], "e2p") == 0)
 						{
 							awip->SetFileBuf(E2P);
 						}
-						else if ( strcasecmp(arg[2], "bin") == 0 )
+						else if (strcasecmp(arg[2], "bin") == 0)
 						{
 							awip->SetFileBuf(BIN);
 						}
-						else if ( strcasecmp(arg[2], "csm") == 0 )
+						else if (strcasecmp(arg[2], "csm") == 0)
 						{
 							awip->SetFileBuf(CSM);
 						}
-						else if ( strcasecmp(arg[2], "intel-hex") == 0 )
+						else if (strcasecmp(arg[2], "intel-hex") == 0)
 						{
 							awip->SetFileBuf(INTEL);
 						}
-						else if ( strcasecmp(arg[2], "mot-srec") == 0 )
+						else if (strcasecmp(arg[2], "mot-srec") == 0)
 						{
 							awip->SetFileBuf(MOTOS);
 						}
@@ -3543,7 +3543,7 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 
 					if (result == OK && !test_mode)
 					{
-						if ( strcmp(arg[1], "--") == 0 )
+						if (strcmp(arg[1], "--") == 0)
 						{
 							result = CmdSaveAs(PROG_TYPE);
 						}
@@ -3567,23 +3567,23 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 				{
 					if (n >= 3 && arg[2])
 					{
-						if ( strcasecmp(arg[2], "e2p") == 0 )
+						if (strcasecmp(arg[2], "e2p") == 0)
 						{
 							awip->SetFileBuf(E2P);
 						}
-						else if ( strcasecmp(arg[2], "bin") == 0 )
+						else if (strcasecmp(arg[2], "bin") == 0)
 						{
 							awip->SetFileBuf(BIN);
 						}
-						else if ( strcasecmp(arg[2], "csm") == 0 )
+						else if (strcasecmp(arg[2], "csm") == 0)
 						{
 							awip->SetFileBuf(CSM);
 						}
-						else if ( strcasecmp(arg[2], "intel-hex") == 0 )
+						else if (strcasecmp(arg[2], "intel-hex") == 0)
 						{
 							awip->SetFileBuf(INTEL);
 						}
-						else if ( strcasecmp(arg[2], "mot-srec") == 0 )
+						else if (strcasecmp(arg[2], "mot-srec") == 0)
 						{
 							awip->SetFileBuf(MOTOS);
 						}
@@ -3595,7 +3595,7 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 
 					if (result == OK && !test_mode)
 					{
-						if ( strcmp(arg[1], "--") == 0 )
+						if (strcmp(arg[1], "--") == 0)
 						{
 							result = CmdSaveAs(DATA_TYPE);
 						}
@@ -3846,7 +3846,7 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 
 						if (n >= 6 && arg[5])
 						{
-							if ( strcmp("LITTLEENDIAN", arg[5]) == 0 )
+							if (strcmp("LITTLEENDIAN", arg[5]) == 0)
 							{
 								fmt = FMT_LITTLE_ENDIAN;
 							}
@@ -3865,7 +3865,7 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 
 						if (n >= 7 && arg[6])
 						{
-							autoinc =  ( strcmp("NO", arg[6]) == 0 ) ? false : true;
+							autoinc = (strcmp("NO", arg[6]) == 0) ? false : true;
 						}
 
 						E2Profile::SetSerialNumAutoInc(autoinc);
@@ -4006,10 +4006,10 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 					if (!test_mode)
 					{
 						int ret = QMessageBox::warning(this, "PonyProg",
-						                               QString(s),
-						                               QMessageBox::Yes | QMessageBox::No);
+													   QString(s),
+													   QMessageBox::Yes | QMessageBox::No);
 
-						if ( ret == QMessageBox::Yes )
+						if (ret == QMessageBox::Yes)
 						{
 							result = OK;
 						}
@@ -4084,7 +4084,7 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 	QMessageBox note;
 	note.setWindowTitle("Script information");
 
-	if ( result == OK )
+	if (result == OK)
 	{
 		if (verbose == verboseAll)
 		{
@@ -4093,7 +4093,7 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 			note.exec();
 		}
 	}
-	else if ( result == OP_ABORTED)
+	else if (result == OP_ABORTED)
 	{
 		if (verbose == verboseAll)
 		{
@@ -4102,7 +4102,7 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 			note.exec();
 		}
 	}
-	else if ( result == CMD_SCRIPTERROR)
+	else if (result == CMD_SCRIPTERROR)
 	{
 		if (verbose == verboseAll)
 		{
@@ -4163,11 +4163,11 @@ int e2CmdWindow::CmdGetInfo()
 			{
 				//                              vYNReplyDialog yn(this);
 				int ret = QMessageBox::warning(this, "PonyProg",
-				                               QString(STR_MSGBANKROLLOVER),
-				                               QMessageBox::Yes | QMessageBox::No);
+											   QString(STR_MSGBANKROLLOVER),
+											   QMessageBox::Yes | QMessageBox::No);
 
 
-				if ( ret == QMessageBox::Yes )
+				if (ret == QMessageBox::Yes)
 				{
 					rlv = awip->BankRollOverDetect(1);
 				}
@@ -4210,7 +4210,7 @@ int e2CmdWindow::CmdDoubleSize()
 {
 	QMessageBox note;
 
-	if ( !awip->IsBufferValid() )
+	if (!awip->IsBufferValid())
 	{
 		note.setIcon(QMessageBox::Warning);
 		note.setWindowTitle("Double size");
@@ -4266,13 +4266,13 @@ int e2CmdWindow::CmdOpen(int type, char *file, long relocation, int clear_buffer
 {
 	int result = OK;
 
-	if ( IsBufChanged() && awip->IsBufferValid() && verbose == verboseAll)
+	if (IsBufChanged() && awip->IsBufferValid() && verbose == verboseAll)
 	{
 		int ret = QMessageBox::warning(this, "PonyProg",
-		                               QString(STR_BUFCHANGED2),
-		                               QMessageBox::Yes | QMessageBox::No);
+									   QString(STR_BUFCHANGED2),
+									   QMessageBox::Yes | QMessageBox::No);
 
-		if ( ret == QMessageBox::Yes )
+		if (ret == QMessageBox::Yes)
 		{
 			awip->SetSaveType(ALL_TYPE);
 			SaveFile();
@@ -4284,7 +4284,7 @@ int e2CmdWindow::CmdOpen(int type, char *file, long relocation, int clear_buffer
 
 	if (clear_buffer != -1)
 	{
-		awip->SetLoadAutoClearBuf( (clear_buffer == 0) ? false : true );
+		awip->SetLoadAutoClearBuf((clear_buffer == 0) ? false : true);
 	}
 
 	result = OpenFile(file);
@@ -4330,8 +4330,8 @@ int e2CmdWindow::CmdFillBuf()
 		else
 		{
 			int r = QMessageBox::warning(this, "Fill buffer",
-			                             QString(STR_MSGBADPARAM),
-			                             QMessageBox::Ok);
+										 QString(STR_MSGBADPARAM),
+										 QMessageBox::Ok);
 		}
 	}
 
@@ -4372,7 +4372,7 @@ int e2CmdWindow::SpecialBits()
 			{
 				qDebug() << "fuse " << res;
 
-				if ( res == 2 ) // read //e2Fuse.isRead() == true)
+				if (res == 2)   // read //e2Fuse.isRead() == true)
 				{
 					CmdReadSecurity(false);
 					repeat = true;
@@ -4422,7 +4422,7 @@ int e2CmdWindow::ProgramOptions()
 	//      fuse = awip->GetFuseBits();
 
 	progOptionDialog prog(this, awip->GetEEPId(), // BuildE2PType(awip->GetEEPPriType(), awip->GetEEPSubType()),
-	                      reload, reep, erase, flash, eeprom, lock);
+						  reload, reep, erase, flash, eeprom, lock);
 
 	if (prog.exec() == QDialog::Accepted)
 	{
@@ -4431,7 +4431,7 @@ int e2CmdWindow::ProgramOptions()
 
 #if 0
 	rval = prog.progAction(" ", BuildE2PType(awip->GetEEPPriType(), awip->GetEEPSubType()),
-	                       reload, reep, erase, flash, eeprom, lock);
+						   reload, reep, erase, flash, eeprom, lock);
 
 	if (rval != 0)   //OK
 	{
@@ -4460,7 +4460,7 @@ int e2CmdWindow::SerialNumberOptions()
 //==================>>> e2CmdWindow::OscCalibOption <<<=======================
 int e2CmdWindow::OscCalibOption()
 {
-	OscCalibDialog dlg(this, awip );
+	OscCalibDialog dlg(this, awip);
 	dlg.exec();
 
 	return OK;
@@ -4492,7 +4492,7 @@ int e2CmdWindow::CmdWriteSecurity()
 {
 	int result;
 
-	if ( awip->GetEEPId() == AT90S4433 || awip->GetEEPId() == AT90S2333 )
+	if (awip->GetEEPId() == AT90S4433 || awip->GetEEPId() == AT90S2333)
 	{
 		result = CmdWriteLock();
 
@@ -4670,7 +4670,7 @@ int e2CmdWindow::CmdReadLock()
 
 		rval = awip->SecurityRead(bits);
 
-		if ( rval == OK )
+		if (rval == OK)
 		{
 			// EK 2017
 			// TODO
@@ -4758,7 +4758,7 @@ int e2CmdWindow::CmdReadSpecial()
 			rval = awip->FusesRead(bits);
 		}
 
-		if ( rval == OK )
+		if (rval == OK)
 		{
 			//e2Prg->close();
 			emit onEndProgress();
@@ -4878,7 +4878,7 @@ int e2CmdWindow::CmdWriteSpecial()
 				rval = awip->FusesWrite(0, true);
 			}
 
-			if ( rval == OK )
+			if (rval == OK)
 			{
 				//e2Prg->close();
 				emit onEndProgress();
@@ -4934,7 +4934,7 @@ int e2CmdWindow::CmdByteSwap()
 {
 	int result = OK;
 
-	if ( !awip->IsBufferValid() )
+	if (!awip->IsBufferValid())
 	{
 		result = CMD_BUFFEREMPTY;
 
@@ -5053,7 +5053,7 @@ int e2CmdWindow::CmdSetSerialNumber()
 		loc += awip->GetSplittedInfo();
 	}
 
-	if ( (size > 0 && size <= 4) && (loc + size <= awip->GetBufSize()) )
+	if ((size > 0 && size <= 4) && (loc + size <= awip->GetBufSize()))
 	{
 		uint8_t *bp = awip->GetBufPtr() + loc;
 
@@ -5105,7 +5105,7 @@ int e2CmdWindow::CmdSetSerialNumber()
 		awip->RecalcCRC();
 		//      awip->BufChanged();
 
-		if ( E2Profile::GetSerialNumAutoInc() )
+		if (E2Profile::GetSerialNumAutoInc())
 		{
 			E2Profile::SetSerialNumVal(++val);
 		}
@@ -5310,13 +5310,13 @@ void e2CmdWindow::onDevSubType(int st)
 }
 
 
-menuToGroup* e2CmdWindow::searchMenuInDeviceVector(int type)
+menuToGroup *e2CmdWindow::searchMenuInDeviceVector(int type)
 {
 	menuToGroup *pM = NULL;
 
-	for(int i = 0; i < deviceMenu.count(); i++)
+	for (int i = 0; i < deviceMenu.count(); i++)
 	{
-		menuToGroup* mTmp = (menuToGroup*)&deviceMenu.at(i);
+		menuToGroup *mTmp = (menuToGroup *)&deviceMenu.at(i);
 
 		for (int t = 0; t < (*mTmp).type.count(); t++)
 		{
@@ -5345,7 +5345,7 @@ void e2CmdWindow::UpdateMenuType(long new_type, long old_type)
 	}
 
 	// reset checkboxes
-	static menuToGroup* m = 0;
+	static menuToGroup *m = 0;
 
 	int pre_pritype = GetE2PPriType(old_type);
 	int pre_subtype = GetE2PSubType(old_type);
@@ -5375,7 +5375,7 @@ void e2CmdWindow::UpdateMenuType(long new_type, long old_type)
 				cbxEEPType->setCurrentIndex(nt);
 				connect(cbxEEPType, SIGNAL(currentIndexChanged(int)), this, SLOT(onDevType(int)));
 
-				for(int i = 0; i < (*m).info.count(); i++)
+				for (int i = 0; i < (*m).info.count(); i++)
 				{
 					l << (*m).info.at(i).name;
 				}
@@ -5401,13 +5401,13 @@ void e2CmdWindow::UpdateMenuType(long new_type, long old_type)
 
 	if (new_subtype >= 0)
 	{
-		for(int i = 0;  i < (*m).info.count(); i++)
+		for (int i = 0;  i < (*m).info.count(); i++)
 		{
 			chipInfo c = (*m).info.at(i);
 
 			if (c.id  == new_type)
 			{
-				cbxEEPSubType->setCurrentIndex( i);
+				cbxEEPSubType->setCurrentIndex(i);
 				break;
 			}
 		}
@@ -5418,7 +5418,7 @@ void e2CmdWindow::UpdateMenuType(long new_type, long old_type)
 	// uncheck the old item
 	if (pre_pritype >= 0)
 	{
-		menuToGroup* mOld = searchMenuInDeviceVector(pre_pritype);
+		menuToGroup *mOld = searchMenuInDeviceVector(pre_pritype);
 
 		if (mOld != NULL)
 		{
@@ -5426,7 +5426,7 @@ void e2CmdWindow::UpdateMenuType(long new_type, long old_type)
 
 			if (pre_subtype >= 0)
 			{
-				for(int im = 0; im < (*mOld).info.count(); im++)
+				for (int im = 0; im < (*mOld).info.count(); im++)
 				{
 					if ((*mOld).info.at(im).id == old_type)
 					{
@@ -5445,7 +5445,7 @@ void e2CmdWindow::UpdateMenuType(long new_type, long old_type)
 
 		if (new_subtype >= 0)
 		{
-			for(int im = 0; im < (*m).info.count(); im++)
+			for (int im = 0; im < (*m).info.count(); im++)
 			{
 				if ((*m).info.at(im).id  == new_type)
 				{
@@ -5504,7 +5504,7 @@ void e2CmdWindow::UpdateMenuType(long new_type, long old_type)
  * @brief search the name in vectors
  *
  */
-long GetEEPTypeFromString(const QString & name)
+long GetEEPTypeFromString(const QString &name)
 {
 	foreach (menuToGroup m, deviceMenu)
 	{
@@ -5621,7 +5621,7 @@ int e2CmdWindow::OpenScript(const QString &file)
 
 	if (file.length() == 0)
 	{
-		if ( verbose == verboseNo )
+		if (verbose == verboseNo)
 		{
 			rval = BADPARAM;
 		}
@@ -5636,7 +5636,7 @@ int e2CmdWindow::OpenScript(const QString &file)
 
 	if (fileName.length() > 0)
 	{
-		if (FileExist(fileName.toLatin1()) )
+		if (FileExist(fileName.toLatin1()))
 		{
 			QString oldname;
 
@@ -5694,7 +5694,7 @@ HIDDEN void AddExtension(QString &name)
 {
 	int p = name.indexOf('.');  //look for extension
 
-	if ( p < 0 || (name.mid(p) != filter.at(filterIndex)) )
+	if (p < 0 || (name.mid(p) != filter.at(filterIndex)))
 	{
 		//not found
 		name += filter.at(filterIndex);
@@ -5708,7 +5708,7 @@ HIDDEN void AddExtension(QString &name)
 
 HIDDEN bool CmpExtension(const QString &name, const QString &ext)
 {
-	if ( (name.length() > 0) && (ext.length() > 0) )
+	if ((name.length() > 0) && (ext.length() > 0))
 	{
 		int pos = name.lastIndexOf('.');    //cerca l'estensione
 
@@ -5732,7 +5732,7 @@ int e2CmdWindow::OpenFile(const QString &file)
 
 	if (file.length() == 0)
 	{
-		if ( verbose == verboseNo )
+		if (verbose == verboseNo)
 		{
 			rval = BADPARAM;
 		}
@@ -5755,7 +5755,7 @@ int e2CmdWindow::OpenFile(const QString &file)
 				fileName = QFileDialog::getOpenFileName(this, STR_MSGOPENFILE, QDir::homePath(), fltr);
 			}
 
-			E2Profile::SetDefaultFileType( (FileType)filterIndex );
+			E2Profile::SetDefaultFileType((FileType)filterIndex);
 		}
 	}
 	else
@@ -5765,7 +5765,7 @@ int e2CmdWindow::OpenFile(const QString &file)
 
 	if (fileName.length() > 0)
 	{
-		if (FileExist(fileName) )
+		if (FileExist(fileName))
 		{
 			QString oldname;
 
@@ -5835,11 +5835,11 @@ QString e2CmdWindow::convertFilterListToString(const QStringList &lst)
 {
 	QString fltr;
 
-	for(int i = 0; i < lst.count(); i++)
+	for (int i = 0; i < lst.count(); i++)
 	{
 		if (i < lst.count() - 1)
 		{
-			fltr += QString (lst.at(i) + ";;");
+			fltr += QString(lst.at(i) + ";;");
 		}
 		else // the last element
 		{
@@ -5860,11 +5860,11 @@ int e2CmdWindow::SaveFile(int force_select)
 	int err = 0;
 	QMessageBox note;
 
-	if (!force_select && fnp.length() > 0 )
+	if (!force_select && fnp.length() > 0)
 	{
 		// Name validated
 		//              awip->SetNoOfBlock(awip->GetNoOfBank());
-		if ( (err = awip->Save()) <= 0 && verbose != verboseNo)
+		if ((err = awip->Save()) <= 0 && verbose != verboseNo)
 		{
 			QString str;
 			str = STR_MSGFILESAVEFAIL + QString(" (%d)\n").arg(err);
@@ -5911,7 +5911,7 @@ int e2CmdWindow::SaveFile(int force_select)
 
 		fn = QFileDialog::getOpenFileName(this, STR_MSGOPENPROGFILE, QDir::homePath(), fltr);
 
-		if ( fn.length() )
+		if (fn.length())
 		{
 			AddExtension(fn);
 
@@ -5924,10 +5924,10 @@ int e2CmdWindow::SaveFile(int force_select)
 			}
 
 			awip->SetFileBuf((enum FileType)filterIndex);   //????? Ci vorrebbe un controllo separato dall'estensione sul tipo di file (combobox)
-			E2Profile::SetDefaultFileType( awip->GetFileBuf() );
+			E2Profile::SetDefaultFileType(awip->GetFileBuf());
 			awip->SetFileName(fn);
 
-			if ( (err = awip->Save()) <= 0 )
+			if ((err = awip->Save()) <= 0)
 			{
 				QString str;
 
@@ -6001,7 +6001,7 @@ void e2CmdWindow::UpdateFileMenu()
 {
 	QString sp;
 
-	if ( !scriptMode )
+	if (!scriptMode)
 	{
 		sp = E2Profile::GetLastScript();
 
@@ -6016,7 +6016,7 @@ void e2CmdWindow::UpdateFileMenu()
 
 			str += script_name;
 
-			actionRunScript->setText( str);
+			actionRunScript->setText(str);
 			actionRunScript->setEnabled(true);
 		}
 	}
@@ -6099,13 +6099,13 @@ void e2CmdWindow::Draw()
 		return;        // ** Vlib 1.22 call Draw before the AppWinInfo is created ** 28/08/99
 	}
 
-	if ( !awip->IsBufferValid() )   // ** 01/05/1998 **
+	if (!awip->IsBufferValid())     // ** 01/05/1998 **
 	{
 		return;
 	}
 
 	QBuffer *b = new QBuffer(this);
-	b->setData(reinterpret_cast<char*>(awip->GetBufPtr()), awip->GetSize());
+	b->setData(reinterpret_cast<char *>(awip->GetBufPtr()), awip->GetSize());
 	//         dev.open();
 	//         dev.read(reinterpret_cast<char*>(awip->GetBufPtr()), awip->GetBufSize());
 
@@ -6169,18 +6169,18 @@ void e2CmdWindow::Draw()
 #ifdef  _NO_COLOR
 		e2Canvas->DrawText(awip->Dump(k));
 #else
-		e2Canvas->DrawAttrText(awip->Dump(k, 1), ChRed + ChDimColor );
+		e2Canvas->DrawAttrText(awip->Dump(k, 1), ChRed + ChDimColor);
 
 		if (k >= splitted_size)
 		{
-			e2Canvas->DrawAttrText(awip->Dump(k, 2), ChBlue + ChDimColor  );
+			e2Canvas->DrawAttrText(awip->Dump(k, 2), ChBlue + ChDimColor);
 		}
 		else
 		{
-			e2Canvas->DrawAttrText(awip->Dump(k, 2), ChGreen + ChDimColor );
+			e2Canvas->DrawAttrText(awip->Dump(k, 2), ChGreen + ChDimColor);
 		}
 
-		e2Canvas->DrawAttrText(awip->Dump(k, 3), ChMagenta + ChDimColor  );
+		e2Canvas->DrawAttrText(awip->Dump(k, 3), ChMagenta + ChDimColor);
 #endif
 	}
 
@@ -6253,7 +6253,7 @@ void e2CmdWindow::Print()
 	QPrinter printer(QPrinter::HighResolution); //create your QPrinter (don't need to be high resolution, anyway)
 	printer.setPageSize(QPrinter::A4);
 	printer.setOrientation(QPrinter::Portrait);
-	printer.setPageMargins (15, 15, 15, 15, QPrinter::Millimeter);
+	printer.setPageMargins(15, 15, 15, 15, QPrinter::Millimeter);
 	printer.setFullPage(false);
 	printer.setOutputFileName(def_print_name);
 	printer.setOutputFormat(QPrinter::PdfFormat); //you can use native format of system usin QPrinter::NativeFormat
@@ -6401,10 +6401,10 @@ void e2CmdWindow::Exit()
 			if (IsBufChanged())
 			{
 				int ret = QMessageBox::warning(this, "PonyProg",
-				                               STR_MSGCLOSEWINSAVE,
-				                               QMessageBox::Yes | QMessageBox::No);
+											   STR_MSGCLOSEWINSAVE,
+											   QMessageBox::Yes | QMessageBox::No);
 
-				if ( ret == QMessageBox::Yes )
+				if (ret == QMessageBox::Yes)
 				{
 					CmdSave();
 				}

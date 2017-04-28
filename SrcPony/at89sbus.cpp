@@ -79,31 +79,31 @@ void At89sBus::SetDelay()
 	int val = E2Profile::GetSPISpeed();
 	int n;
 
-	switch(val)
+	switch (val)
 	{
-	case TURBO:
-		n = 1;
-		break;
+		case TURBO:
+			n = 1;
+			break;
 
-	case FAST:
-		n = 5;
-		break;
+		case FAST:
+			n = 5;
+			break;
 
-	case SLOW:
-		n = 30;
-		break;
+		case SLOW:
+			n = 30;
+			break;
 
-	case VERYSLOW:
-		n = 100;
-		break;
+		case VERYSLOW:
+			n = 100;
+			break;
 
-	case ULTRASLOW:
-		n = 1000;
-		break;
+		case ULTRASLOW:
+			n = 1000;
+			break;
 
-	default:
-		n = 15;
-		break;
+		default:
+			n = 15;
+			break;
 	}
 
 	BusIO::SetDelay(n);
@@ -148,7 +148,7 @@ int At89sBus::ReadProgByte(long addr)
 {
 	if (oldmode)
 	{
-		SendDataByte(OldReadProgMem | ((addr >> 5) & 0xF8) | ((addr >> 11) & 0x04) );
+		SendDataByte(OldReadProgMem | ((addr >> 5) & 0xF8) | ((addr >> 11) & 0x04));
 	}
 	else
 	{
@@ -317,7 +317,7 @@ int At89sBus::Reset()
 	}
 
 	SPIBus::Reset();
-	WaitMsec( E2Profile::GetAT89DelayAfterReset() );   // Almeno 20msec dai datasheet AVR atmel
+	WaitMsec(E2Profile::GetAT89DelayAfterReset());     // Almeno 20msec dai datasheet AVR atmel
 
 	SendDataByte(EnableProg0);
 	SendDataByte(EnableProg1);
@@ -340,22 +340,22 @@ int At89sBus::WriteLockBits(uint32_t param, long model)
 
 	switch (model)
 	{
-	case AT89S8253:
-		val1 = WriteLockBits0;
-		val2 = WriteLockBits1 | (~param & 0x07);
-		break;
+		case AT89S8253:
+			val1 = WriteLockBits0;
+			val2 = WriteLockBits1 | (~param & 0x07);
+			break;
 
-	case AT89S51:
-	case AT89S52:
-		//Translate from B1-B2 code to LB1-LB2-LB3
-		//...
-		break;
+		case AT89S51:
+		case AT89S52:
+			//Translate from B1-B2 code to LB1-LB2-LB3
+			//...
+			break;
 
-	default:
-		val1 = WriteLockBits0;
-		val2 = OldWriteLockBits1;
-		val2 |= 0xff & ~param;
-		break;
+		default:
+			val1 = WriteLockBits0;
+			val2 = OldWriteLockBits1;
+			val2 |= 0xff & ~param;
+			break;
 	}
 
 	if (val1 != -1)
@@ -389,27 +389,27 @@ int At89sBus::ReadLockBits(uint32_t &res, long model)
 
 	switch (model)
 	{
-	case AT89S8253:
-		SendDataByte(ReadLockBits0);
-		SendDataByte(ReadLockBits1);
-		SendDataByte(0);
-		rv1 = RecDataByte();
-		res = ~rv1 & 0x07;
-		break;
+		case AT89S8253:
+			SendDataByte(ReadLockBits0);
+			SendDataByte(ReadLockBits1);
+			SendDataByte(0);
+			rv1 = RecDataByte();
+			res = ~rv1 & 0x07;
+			break;
 
-	case AT89S51:
-	case AT89S52:
-		//NB.Different polarity from other devices: 1 mean programmed (should update message in the dialog)
-		SendDataByte(ReadLockBits0);
-		SendDataByte(ReadLockBits1);
-		SendDataByte(0);
-		rv1 = RecDataByte();
-		res = rv1 & 0x1C;
-		break;
+		case AT89S51:
+		case AT89S52:
+			//NB.Different polarity from other devices: 1 mean programmed (should update message in the dialog)
+			SendDataByte(ReadLockBits0);
+			SendDataByte(ReadLockBits1);
+			SendDataByte(0);
+			rv1 = RecDataByte();
+			res = rv1 & 0x1C;
+			break;
 
-	default:
-		rval = NOTSUPPORTED;
-		break;
+		default:
+			rval = NOTSUPPORTED;
+			break;
 	}
 
 	return rval;
@@ -424,14 +424,14 @@ int At89sBus::WriteFuseBits(uint32_t param, long model)
 
 	switch (model)
 	{
-	case AT89S8253:
-		val1 = WriteUserFuses0;
-		val2 = WriteUserFuses1 | (~param & 0x0f);
-		break;
+		case AT89S8253:
+			val1 = WriteUserFuses0;
+			val2 = WriteUserFuses1 | (~param & 0x0f);
+			break;
 
-	default:
-		//No Fuses
-		break;
+		default:
+			//No Fuses
+			break;
 	}
 
 	if (val1 != -1)
@@ -457,17 +457,17 @@ int At89sBus::ReadFuseBits(uint32_t &res, long model)
 
 	switch (model)
 	{
-	case AT89S8253:
-		SendDataByte(ReadUserFuses0);
-		SendDataByte(ReadUserFuses1);
-		SendDataByte(0);
-		rv1 = RecDataByte();
-		res = ~rv1 & 0x0f;
-		break;
+		case AT89S8253:
+			SendDataByte(ReadUserFuses0);
+			SendDataByte(ReadUserFuses1);
+			SendDataByte(0);
+			rv1 = RecDataByte();
+			res = ~rv1 & 0x0f;
+			break;
 
-	default:        //No Fuses
-		rval = NOTSUPPORTED;
-		break;
+		default:        //No Fuses
+			rval = NOTSUPPORTED;
+			break;
 	}
 
 	return rval;
@@ -518,7 +518,7 @@ long At89sBus::Read(int addr, uint8_t *data, long length, int page_size)
 			{
 				ReadDataPage(addr, data, page_size);
 
-				if ( CheckAbort(len * 100 / length) )
+				if (CheckAbort(len * 100 / length))
 				{
 					break;
 				}
@@ -530,7 +530,7 @@ long At89sBus::Read(int addr, uint8_t *data, long length, int page_size)
 			{
 				*data++ = (uint8_t)ReadDataByte(addr++);
 
-				if ( CheckAbort(len * 100 / length) )
+				if (CheckAbort(len * 100 / length))
 				{
 					break;
 				}
@@ -548,7 +548,7 @@ long At89sBus::Read(int addr, uint8_t *data, long length, int page_size)
 			{
 				ReadProgPage(addr, data, page_size);
 
-				if ( CheckAbort(len * 100 / length) )
+				if (CheckAbort(len * 100 / length))
 				{
 					break;
 				}
@@ -560,7 +560,7 @@ long At89sBus::Read(int addr, uint8_t *data, long length, int page_size)
 			{
 				*data++ = (uint8_t)ReadProgByte(addr++);
 
-				if ( CheckAbort(len * 100 / length) )
+				if (CheckAbort(len * 100 / length))
 				{
 					break;
 				}
@@ -633,7 +633,7 @@ long At89sBus::Write(int addr, uint8_t const *data, long length, int page_size)
 					return E2ERR_WRITEFAILED;
 				}
 
-				if ( CheckAbort(len * 100 / length) )
+				if (CheckAbort(len * 100 / length))
 				{
 					break;
 				}
@@ -657,14 +657,14 @@ long At89sBus::Write(int addr, uint8_t const *data, long length, int page_size)
 						WaitUsec(100);
 
 						//Interrupt the writing and exit (device missing?)
-						if ( WaitReadyAfterWrite(1, addr, *data) != OK )
+						if (WaitReadyAfterWrite(1, addr, *data) != OK)
 						{
 							return E2ERR_WRITEFAILED;
 						}
 					}
 				}
 
-				if ( CheckAbort(len * 100 / length) )
+				if (CheckAbort(len * 100 / length))
 				{
 					break;
 				}
@@ -681,13 +681,13 @@ long At89sBus::Write(int addr, uint8_t const *data, long length, int page_size)
 			for (addr = 0, len = 0; len < length; len += page_size, addr += page_size, data += page_size)
 			{
 				//check for FF's page to skip blank pages
-				if ( !CheckBlankPage(data, page_size) )
+				if (!CheckBlankPage(data, page_size))
 					if (WriteProgPage(addr, data, page_size) != OK)
 					{
 						return E2ERR_WRITEFAILED;
 					}
 
-				if ( CheckAbort(len * 100 / length) )
+				if (CheckAbort(len * 100 / length))
 				{
 					break;
 				}
@@ -711,14 +711,14 @@ long At89sBus::Write(int addr, uint8_t const *data, long length, int page_size)
 						WaitUsec(100);
 
 						//Interrupt the writing and exit (device missing?)
-						if ( WaitReadyAfterWrite(0, addr, *data) != OK )
+						if (WaitReadyAfterWrite(0, addr, *data) != OK)
 						{
 							return E2ERR_WRITEFAILED;
 						}
 					}
 				}
 
-				if ( CheckAbort(len * 100 / length) )
+				if (CheckAbort(len * 100 / length))
 				{
 					break;
 				}

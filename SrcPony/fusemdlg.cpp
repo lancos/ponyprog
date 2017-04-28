@@ -38,7 +38,7 @@ using namespace Translator;
 
 
 //======================>>> fuseModalDialog::fuseModalDialog <<<==================
-fuseModalDialog::fuseModalDialog(e2CmdWindow* bw, e2AppWinInfo *p, bool readonly, const QString &msg) :
+fuseModalDialog::fuseModalDialog(e2CmdWindow *bw, e2AppWinInfo *p, bool readonly, const QString &msg) :
 	QDialog(bw)
 {
 	setupUi(this);
@@ -61,17 +61,17 @@ fuseModalDialog::fuseModalDialog(e2CmdWindow* bw, e2AppWinInfo *p, bool readonly
 
 	qDebug() << "fuseModalDialog::fuseModalDialog()";
 
-	chkFuse = (QVector<QCheckBox*>() << chk0_F0 << chk1_F0 << chk2_F0 << chk3_F0 << chk4_F0 << chk5_F0 << chk6_F0 << chk7_F0
-	           << chk0_F1 << chk1_F1 << chk2_F1 << chk3_F1 << chk4_F1 << chk5_F1 << chk6_F1 << chk7_F1
-	           << chk0_F2 << chk1_F2 << chk2_F2 << chk3_F2 << chk4_F2 << chk5_F2 << chk6_F2 << chk7_F2
-	           << chk0_F3 << chk1_F3 << chk2_F3 << chk3_F3 << chk4_F3 << chk5_F3 << chk6_F3 << chk7_F3
-	          );
+	chkFuse = (QVector<QCheckBox *>() << chk0_F0 << chk1_F0 << chk2_F0 << chk3_F0 << chk4_F0 << chk5_F0 << chk6_F0 << chk7_F0
+			   << chk0_F1 << chk1_F1 << chk2_F1 << chk3_F1 << chk4_F1 << chk5_F1 << chk6_F1 << chk7_F1
+			   << chk0_F2 << chk1_F2 << chk2_F2 << chk3_F2 << chk4_F2 << chk5_F2 << chk6_F2 << chk7_F2
+			   << chk0_F3 << chk1_F3 << chk2_F3 << chk3_F3 << chk4_F3 << chk5_F3 << chk6_F3 << chk7_F3
+			  );
 
-	chkLock = (QVector<QCheckBox*>() << chk0_L0 << chk1_L0 << chk2_L0 << chk3_L0 << chk4_L0 << chk5_L0 << chk6_L0 << chk7_L0
-	           << chk0_L1 << chk1_L1 << chk2_L1 << chk3_L1 << chk4_L1 << chk5_L1 << chk6_L1 << chk7_L1
-	           << chk0_L2 << chk1_L2 << chk2_L2 << chk3_L2 << chk4_L2 << chk5_L2 << chk6_L2 << chk7_L2
-	           << chk0_L3 << chk1_L3 << chk2_L3 << chk3_L3 << chk4_L3 << chk5_L3 << chk6_L3 << chk7_L3
-	          );
+	chkLock = (QVector<QCheckBox *>() << chk0_L0 << chk1_L0 << chk2_L0 << chk3_L0 << chk4_L0 << chk5_L0 << chk6_L0 << chk7_L0
+			   << chk0_L1 << chk1_L1 << chk2_L1 << chk3_L1 << chk4_L1 << chk5_L1 << chk6_L1 << chk7_L1
+			   << chk0_L2 << chk1_L2 << chk2_L2 << chk3_L2 << chk4_L2 << chk5_L2 << chk6_L2 << chk7_L2
+			   << chk0_L3 << chk1_L3 << chk2_L3 << chk3_L3 << chk4_L3 << chk5_L3 << chk6_L3 << chk7_L3
+			  );
 
 	read = write = false;
 
@@ -97,7 +97,7 @@ void fuseModalDialog::setTextWidgets()
 {
 	int i = 0;
 
-	foreach(QCheckBox* c, chkFuse)
+	foreach (QCheckBox *c, chkFuse)
 	{
 		c->setText(QString().sprintf(" %d", i));
 		i++;
@@ -110,7 +110,7 @@ void fuseModalDialog::setTextWidgets()
 
 	i = 0;
 
-	foreach(QCheckBox* c, chkLock)
+	foreach (QCheckBox *c, chkLock)
 	{
 		c->setText(QString().sprintf(" %d", i));
 		i++;
@@ -151,7 +151,7 @@ void fuseModalDialog::onOk()
 
 	if (read == true)
 	{
-		emit done (2);
+		emit done(2);
 	}
 	else
 	{
@@ -208,38 +208,38 @@ void fuseModalDialog::initWidgets(const QString &msg, long int type, bool readon
 	{
 		FuseBit fBit = eep_fusebits.at(j);
 
-		frmLock0->setHidden( fBit.lockenable3 == 0);
-		frmLock1->setHidden( fBit.lockenable2 == 0);
-		frmLock2->setHidden( fBit.lockenable1 == 0);
-		frmLock3->setHidden( fBit.lockenable0 == 0);
+		frmLock0->setHidden(fBit.lockenable3 == 0);
+		frmLock1->setHidden(fBit.lockenable2 == 0);
+		frmLock2->setHidden(fBit.lockenable1 == 0);
+		frmLock3->setHidden(fBit.lockenable0 == 0);
 
-		frmFuses0->setHidden( fBit.fuseenable3 == 0);
-		frmFuses1->setHidden( fBit.fuseenable2 == 0);
-		frmFuses2->setHidden( fBit.fuseenable1 == 0);
-		frmFuses3->setHidden( fBit.fuseenable0 == 0);
+		frmFuses0->setHidden(fBit.fuseenable3 == 0);
+		frmFuses1->setHidden(fBit.fuseenable2 == 0);
+		frmFuses2->setHidden(fBit.fuseenable1 == 0);
+		frmFuses3->setHidden(fBit.fuseenable0 == 0);
 
-		if ( fBit.lockenable3 == 0 &&
-		                fBit.lockenable2 == 0 &&
-		                fBit.lockenable1 == 0 &&
-		                fBit.lockenable0 == 0 )
+		if (fBit.lockenable3 == 0 &&
+				fBit.lockenable2 == 0 &&
+				fBit.lockenable1 == 0 &&
+				fBit.lockenable0 == 0)
 		{
-			frmLock->setHidden( true);
+			frmLock->setHidden(true);
 		}
 		else
 		{
-			frmLock->setHidden( false);
+			frmLock->setHidden(false);
 		}
 
-		if ( fBit.fuseenable3 == 0 &&
-		                fBit.fuseenable2 == 0 &&
-		                fBit.fuseenable1 == 0 &&
-		                fBit.fuseenable0 == 0 )
+		if (fBit.fuseenable3 == 0 &&
+				fBit.fuseenable2 == 0 &&
+				fBit.fuseenable1 == 0 &&
+				fBit.fuseenable0 == 0)
 		{
 			frmFuses->setHidden(true);
 		}
 		else
 		{
-			frmFuses->setHidden( false);
+			frmFuses->setHidden(false);
 		}
 
 
@@ -247,7 +247,7 @@ void fuseModalDialog::initWidgets(const QString &msg, long int type, bool readon
 		for (int k = 0; k < LOCKPACKSIZE; k++)
 		{
 			QString sp;
-			QString def = QString().sprintf( " %d", k);
+			QString def = QString().sprintf(" %d", k);
 
 			sp = fBit.locklabel3[k];
 
@@ -342,7 +342,7 @@ void fuseModalDialog::initWidgets(const QString &msg, long int type, bool readon
 		//Default (disable all)
 		for (int k = 0; k < LOCKPACKSIZE; k++)
 		{
-			QString def = QString().sprintf( " %d", k);
+			QString def = QString().sprintf(" %d", k);
 			//Label
 			chkLock.at(0 * 8 + k)->setText(def);
 			chkLock.at(1 * 8 + k)->setText(def);
@@ -400,7 +400,7 @@ void fuseModalDialog::initWidgets(const QString &msg, long int type, bool readon
 
 
 //=========================>>> blockDialog::blockDialog <<<====================
-blockDialog::blockDialog(e2CmdWindow* bw, e2AppWinInfo *p, bool readonly, const QString &msg) :
+blockDialog::blockDialog(e2CmdWindow *bw, e2AppWinInfo *p, bool readonly, const QString &msg) :
 	QDialog(bw)
 {
 	setupUi(this);
@@ -426,13 +426,13 @@ blockDialog::blockDialog(e2CmdWindow* bw, e2AppWinInfo *p, bool readonly, const 
 	lblTo->setText(STR_MSGNUMBLOCK);
 	lblVal->setText(STR_MSGHIGHENDBLK);
 
-	QString str1 = QString().sprintf( "%d", (int)((lock >> 4) & 0x0F) );
-	QString str2 = QString().sprintf( "%d", (int)(lock & 0x0F) );
-	QString str3 = QString().sprintf( "%d", (int)(fuse & 0x0F) );
+	QString str1 = QString().sprintf("%d", (int)((lock >> 4) & 0x0F));
+	QString str2 = QString().sprintf("%d", (int)(lock & 0x0F));
+	QString str3 = QString().sprintf("%d", (int)(fuse & 0x0F));
 
 	txiFrom->setText(str1);
-	txiTo->setText( str2);
-	txiVal->setText( str3);
+	txiTo->setText(str2);
+	txiVal->setText(str3);
 
 	pushOk->setText(STR_BTNOK);
 	pushCancel->setText(STR_BTNCANC);

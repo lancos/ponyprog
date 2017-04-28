@@ -107,14 +107,14 @@ int binFileBuf::Load(int loadtype, long relocation_offset)
 
 	QDataStream datastream(&fh);
 
-	rval = datastream.readRawData( (char*)ptr, fsize); 
+	rval = datastream.readRawData((char *)ptr, fsize);
 
 	fh.close();
 
 	//      SetStringID("");        //????
 	SetComment("");
 	SetRollOver(0);         //2 (che significa NO) ??
-	SetCRC( mcalc_crc(GetBufPtr(), GetBlockSize() * GetNoOfBlock()) );
+	SetCRC(mcalc_crc(GetBufPtr(), GetBlockSize() * GetNoOfBlock()));
 
 	//      rval = GetNoOfBlock();
 
@@ -167,7 +167,7 @@ int binFileBuf::Save(int savetype, long relocation_offset)
 	}
 
 	QDataStream datastream(&fh);
-	rval = datastream.writeRawData((const char*) ptr, buf_size);
+	rval = datastream.writeRawData((const char *) ptr, buf_size);
 
 	if (rval == 0)
 	{

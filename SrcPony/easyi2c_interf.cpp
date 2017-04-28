@@ -88,7 +88,7 @@ int EasyI2CInterface::Open(int port_no)
 
 	if (IsInstalled() != port_no)
 	{
-		if ( InDataPort(port_no) < 0 )
+		if (InDataPort(port_no) < 0)
 		{
 			ret_val = E2ERR_OPENFAILED;
 		}
@@ -120,7 +120,7 @@ void EasyI2CInterface::SetDataOut(int sda)
 
 	if (IsInstalled())
 	{
-		if ( (E2Profile::GetPolarityControl() & DOUTINV) != 0 )
+		if ((E2Profile::GetPolarityControl() & DOUTINV) != 0)
 		{
 			sda = !sda;
 		}
@@ -136,7 +136,7 @@ void EasyI2CInterface::SetClock(int scl)
 
 	if (IsInstalled())
 	{
-		if ( (E2Profile::GetPolarityControl() & CLOCKINV) != 0 )
+		if ((E2Profile::GetPolarityControl() & CLOCKINV) != 0)
 		{
 			scl = !scl;
 		}

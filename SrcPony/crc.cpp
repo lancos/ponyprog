@@ -24,7 +24,7 @@ uint16_t fcalc_crc(QFile &fh, long ini_ofs, long len)
 	}
 	else
 	{
-		while (fh.read( &ch, 1) > 0)	//while( (ch = getc(fh)) != EOF )
+		while (fh.read(&ch, 1) > 0)	//while( (ch = getc(fh)) != EOF )
 		{
 			crc16 = updcrcr(crc16, ch);
 		}

@@ -38,7 +38,7 @@
 
 class Nvm3060 : public Device
 {
-public:               //---------------------------------------- public
+  public:               //---------------------------------------- public
 
 	Nvm3060(e2AppWinInfo *wininfo = 0, BusIO *busp = 0);
 	virtual ~Nvm3060();
@@ -48,14 +48,14 @@ public:               //---------------------------------------- public
 	int Write(int probe = 1, int type = ALL_TYPE);
 	int Verify(int type = ALL_TYPE);
 
-protected:    //--------------------------------------- protected
+  protected:    //--------------------------------------- protected
 
 	IMBus *GetBus()
 	{
 		return (IMBus *)Device::GetBus();
 	}
 
-private:              //--------------------------------------- private
+  private:              //--------------------------------------- private
 
 };
 #endif

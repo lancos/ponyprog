@@ -34,7 +34,7 @@
 
 class JdmInterface : public SIProgInterface
 {
-public:                //------------------------------- public
+  public:                //------------------------------- public
 
 	//      virtual int Open(int com_no);
 	//      virtual void Close();
@@ -44,9 +44,9 @@ public:                //------------------------------- public
 		SIProgInterface::SetDataOut(sda);
 	}
 
-protected:             //------------------------------- protected
+  protected:             //------------------------------- protected
 
-private:               //------------------------------- private
+  private:               //------------------------------- private
 
 };
 

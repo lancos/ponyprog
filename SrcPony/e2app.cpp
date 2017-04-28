@@ -121,7 +121,7 @@ void e2App::initSettings()
 	//     str = "";
 	sp = getenv("HOME");
 
-	if (sp.length() > 0 )
+	if (sp.length() > 0)
 	{
 		str = sp + "/";
 		//         strncpy(str, sp, MAXPATH - (strlen(APPNAME) + 5) );
@@ -148,7 +148,7 @@ void e2App::initSettings()
 
 	helpfile = progName + ".html";
 
-	SetFileName(QString (progName + ".ini"));
+	SetFileName(QString(progName + ".ini"));
 
 	QString currentAppDir = qApp->applicationDirPath();
 
@@ -177,9 +177,9 @@ void e2App::initSettings()
 	{
 		str = sp2;
 
-		E2Profile::SetLanguageCode( str.toLatin1() );
+		E2Profile::SetLanguageCode(str.toLatin1());
 
-		if (str == "default" )
+		if (str == "default")
 		{
 			sp2 = "";
 		}
@@ -192,7 +192,7 @@ void e2App::initSettings()
 			sp2 = str;
 		}
 
-		setlocale(LC_ALL, sp2.toLatin1() );
+		setlocale(LC_ALL, sp2.toLatin1());
 	}
 
 	// Read parameters from INI file
@@ -201,10 +201,10 @@ void e2App::initSettings()
 
 	// EK 2017
 	// TODO to remove the read/write because of QSettings?
-	SetInterfaceType( (HInterfaceType) E2Profile::GetParInterfType() );
-	SetPort( E2Profile::GetParPortNo() );
+	SetInterfaceType((HInterfaceType) E2Profile::GetParInterfType());
+	SetPort(E2Profile::GetParPortNo());
 	E2Profile::GetPowerUpDelay() ; // E2Profile::SetPowerUpDelay( E2Profile::GetPowerUpDelay() );
-	SetPolarity( E2Profile::GetPolarityControl() );
+	SetPolarity(E2Profile::GetPolarityControl());
 	E2Profile::GetSPIResetPulse();//        E2Profile::SetSPIResetPulse( E2Profile::GetSPIResetPulse() );
 	E2Profile::GetSPIDelayAfterReset();//   E2Profile::SetSPIDelayAfterReset( E2Profile::GetSPIDelayAfterReset() );
 	E2Profile::GetSPIPageWrite();//         E2Profile::SetSPIPageWrite( E2Profile::GetSPIPageWrite() );
@@ -277,8 +277,8 @@ int e2App::TestPort(int port, int open_only)
 	qDebug() << "e2App::TestPort(port=" << port << ", open_only=" << open_only << ")";
 
 	int rv = (open_only) ?
-	         busIntp->TestOpen(port) :
-	         busIntp->TestPort(port);
+			 busIntp->TestOpen(port) :
+			 busIntp->TestPort(port);
 
 	qDebug() << "e2App::TestPort() = " << rv;
 
@@ -306,7 +306,7 @@ int e2App::OpenBus(BusIO *p)
 		qDebug() << "e2App::OpenBus() ** SetPower";
 
 		//Power up delay
-		iniBus->WaitMsec( E2Profile::GetPowerUpDelay() );
+		iniBus->WaitMsec(E2Profile::GetPowerUpDelay());
 
 		qDebug() << "e2App::OpenBus() ** Reset";
 
@@ -333,8 +333,8 @@ void e2App::SleepBus()
 // TODO to remove this to init function
 #if 0
 //=====================>>> e2App::NewAppWin <<<==========================
-vWindow* e2App::NewAppWin(vWindow* win, char* name,
-                          int w, int h, vAppWinInfo* winInfo)
+vWindow *e2App::NewAppWin(vWindow *win, char *name,
+						  int w, int h, vAppWinInfo *winInfo)
 {
 #ifdef WIN32            // Yes it's a dirty hack here but clean in Windows sense, heha 130406
 	HKEY key;       // But I wouldn't change the very incomplete V-lib source.
@@ -350,7 +350,7 @@ vWindow* e2App::NewAppWin(vWindow* win, char* name,
 			DWORD size = sizeof wp.rcNormalPosition;
 
 			if (!RegQueryValueEx(key, "WinPos", NULL, NULL, (LPBYTE)&wp.rcNormalPosition, &size)
-			                && size == sizeof wp.rcNormalPosition)
+					&& size == sizeof wp.rcNormalPosition)
 			{
 				SetWindowPlacement(w, &wp);
 			}
@@ -360,8 +360,8 @@ vWindow* e2App::NewAppWin(vWindow* win, char* name,
 	}
 
 #endif
-	vWindow* thisWin = win;                 //local copy to use
-	vAppWinInfo* awinfo = winInfo;
+	vWindow *thisWin = win;                 //local copy to use
+	vAppWinInfo *awinfo = winInfo;
 	char *appname = name;
 
 	if (!*name)
@@ -381,7 +381,7 @@ vWindow* e2App::NewAppWin(vWindow* win, char* name,
 
 	if (!awinfo)
 	{
-		awinfo = new e2AppWinInfo((vCmdWindow*)thisWin, name, busvetp);
+		awinfo = new e2AppWinInfo((vCmdWindow *)thisWin, name, busvetp);
 	}
 
 	return vApp::NewAppWin(thisWin, appname, w, h, awinfo);
@@ -405,7 +405,7 @@ int e2App::Calibration()
 #if 0
 // EK 2017
 //=====================>>> e2App::AppCommand <<<==============================
-void e2App::AppCommand(vWindow* win, ItemVal id, ItemVal val, CmdType cType)
+void e2App::AppCommand(vWindow *win, ItemVal id, ItemVal val, CmdType cType)
 {
 	// Commands not processed by the window will be passed here
 
@@ -417,7 +417,7 @@ void e2App::AppCommand(vWindow* win, ItemVal id, ItemVal val, CmdType cType)
 //=========================>>> e2App::KeyIn <<<==============================
 // EK 2017 key event filter
 #if 0
-void e2App::KeyIn(vWindow* win, vKey key, unsigned int shift)
+void e2App::KeyIn(vWindow *win, vKey key, unsigned int shift)
 {
 	// Key strokes not processed by the window will be passed here
 
@@ -430,78 +430,78 @@ void e2App::SetInterfaceType(HInterfaceType type)
 {
 	switch (type)
 	{
-	//Interface initializers
-	case SIPROG_API:
-		iType = SIPROG_API;
-		busIntp = &siprog_apiI;
-		break;
+		//Interface initializers
+		case SIPROG_API:
+			iType = SIPROG_API;
+			busIntp = &siprog_apiI;
+			break;
 
-	case SIPROG_IO:
-		iType = SIPROG_IO;
-		busIntp = &siprog_ioI;
-		break;
+		case SIPROG_IO:
+			iType = SIPROG_IO;
+			busIntp = &siprog_ioI;
+			break;
 
-	case EASYI2C_API:
-		iType = EASYI2C_API;
-		busIntp = &easyi2c_apiI;
-		easyi2c_apiI.SetIOmode(false);
-		easyi2c_apiI.Close();
-		break;
+		case EASYI2C_API:
+			iType = EASYI2C_API;
+			busIntp = &easyi2c_apiI;
+			easyi2c_apiI.SetIOmode(false);
+			easyi2c_apiI.Close();
+			break;
 
-	case EASYI2C_IO:
-		iType = EASYI2C_IO;
-		busIntp = &easyi2c_ioI;
-		easyi2c_ioI.SetIOmode(true);
-		easyi2c_ioI.Close();
-		break;
+		case EASYI2C_IO:
+			iType = EASYI2C_IO;
+			busIntp = &easyi2c_ioI;
+			easyi2c_ioI.SetIOmode(true);
+			easyi2c_ioI.Close();
+			break;
 
-	case AVRISP:
-		iType = AVRISP;
-		busIntp = &avrisp_apiI;
-		avrisp_apiI.SetIOmode(false);
-		avrisp_apiI.Close();
-		break;
+		case AVRISP:
+			iType = AVRISP;
+			busIntp = &avrisp_apiI;
+			avrisp_apiI.SetIOmode(false);
+			avrisp_apiI.Close();
+			break;
 
-	case AVRISP_IO:
-		iType = AVRISP_IO;
-		busIntp = &avrisp_ioI;
-		avrisp_ioI.SetIOmode(true);
-		avrisp_ioI.Close();
-		break;
+		case AVRISP_IO:
+			iType = AVRISP_IO;
+			busIntp = &avrisp_ioI;
+			avrisp_ioI.SetIOmode(true);
+			avrisp_ioI.Close();
+			break;
 
-	case JDM_API:
-		iType = JDM_API;
-		busIntp = &jdm_apiI;
-		jdm_apiI.SetCmd2CmdDelay( E2Profile::GetJDMCmd2CmdDelay() );
-		break;
+		case JDM_API:
+			iType = JDM_API;
+			busIntp = &jdm_apiI;
+			jdm_apiI.SetCmd2CmdDelay(E2Profile::GetJDMCmd2CmdDelay());
+			break;
 
-	//      case JDM_IO:
-	//              iType = JDM_IO;
-	//              busIntp = &jdm_ioI;
-	//              break;
-	case DT006_API:
-		iType = DT006_API;
-		busIntp = &dt006_apiI;
-		dt006_apiI.SetIOmode(false);
-		dt006_apiI.Close();
-		break;
+		//      case JDM_IO:
+		//              iType = JDM_IO;
+		//              busIntp = &jdm_ioI;
+		//              break;
+		case DT006_API:
+			iType = DT006_API;
+			busIntp = &dt006_apiI;
+			dt006_apiI.SetIOmode(false);
+			dt006_apiI.Close();
+			break;
 
-	case DT006_IO:
-		iType = DT006_IO;
-		busIntp = &dt006_ioI;
-		dt006_ioI.SetIOmode(true);
-		dt006_ioI.Close();
-		break;
+		case DT006_IO:
+			iType = DT006_IO;
+			busIntp = &dt006_ioI;
+			dt006_ioI.SetIOmode(true);
+			dt006_ioI.Close();
+			break;
 
-	case LINUXSYSFS_IO:
-		iType = LINUXSYSFS_IO;
-		busIntp = &linuxsysfs_ioI;
-		break;
+		case LINUXSYSFS_IO:
+			iType = LINUXSYSFS_IO;
+			busIntp = &linuxsysfs_ioI;
+			break;
 
-	default:
-		iType = SIPROG_API;             //20/07/99 -- to prevent crash
-		busIntp = &siprog_apiI;
-		break;
+		default:
+			iType = SIPROG_API;             //20/07/99 -- to prevent crash
+			busIntp = &siprog_apiI;
+			break;
 	}
 
 	int k;
@@ -566,7 +566,7 @@ void e2App::LookForBogoMips()
 		sum += ndel[k];
 	}
 
-	E2Profile::SetBogoMips( (int)(sum / (500 * N_SAMPLE)) );
+	E2Profile::SetBogoMips((int)(sum / (500 * N_SAMPLE)));
 #endif
 
 #ifdef  _WINDOWS
@@ -645,8 +645,8 @@ void e2App::LookForBogoMips()
 	{
 		int nv;
 
-		nv = (DWORD) ((float) GetBogoMips() * (MSLICE / (float)count) + 0.5);
-		SetBogoMips( nv );
+		nv = (DWORD)((float) GetBogoMips() * (MSLICE / (float)count) + 0.5);
+		SetBogoMips(nv);
 		w.SetBogoKips();
 
 		t0 = GetTickCount();
@@ -666,8 +666,8 @@ void e2App::LookForBogoMips()
 	{
 		int nv;
 
-		nv = (DWORD) ((float) GetBogoMips() * 1.01 + 0.5);
-		SetBogoMips( nv );
+		nv = (DWORD)((float) GetBogoMips() * 1.01 + 0.5);
+		SetBogoMips(nv);
 		w.SetBogoKips();
 
 		t0 = GetTickCount();

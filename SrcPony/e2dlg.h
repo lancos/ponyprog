@@ -50,13 +50,13 @@ class e2Dialog : public QDialog, public Ui::E2Dialog
 {
 	Q_OBJECT
 
-public:               //---------------------------------------- public
-	e2Dialog(QWidget* bw, const QString title = STR_MSGINTSETUP);
+  public:               //---------------------------------------- public
+	e2Dialog(QWidget *bw, const QString title = STR_MSGINTSETUP);
 	virtual ~e2Dialog();            // Destructor
 
-protected:    //--------------------------------------- protected
+  protected:    //--------------------------------------- protected
 
-private slots:
+  private slots:
 	void onOk();
 	void onTest();
 	void onChangePort(bool);
@@ -64,7 +64,7 @@ private slots:
 	void onSelectCOM(int i);
 	void onSelectLPT(int i);
 
-private:              //--------------------------------------- private
+  private:              //--------------------------------------- private
 	int Test(int p = 0, int open_only = 0) const;
 	void setWidgetsText();
 	void getSettings();

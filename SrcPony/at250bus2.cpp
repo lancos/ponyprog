@@ -57,9 +57,9 @@ long At250BigBus::Read(int addr, uint8_t *data, long length, int page_size)
 
 	long len;
 
-	SendDataByte( ReadData );
-	SendDataByte( (addr >> 8) & 0xFF );     //MSB
-	SendDataByte(  addr       & 0xFF );     //LSB
+	SendDataByte(ReadData);
+	SendDataByte((addr >> 8) & 0xFF);       //MSB
+	SendDataByte(addr       & 0xFF);        //LSB
 
 	WaitUsec(shot_delay);
 
@@ -67,8 +67,8 @@ long At250BigBus::Read(int addr, uint8_t *data, long length, int page_size)
 	{
 		*data++ = RecDataByte();
 
-		if ( (len % 10) == 0 )
-			if ( CheckAbort(len * 100 / length) )
+		if ((len % 10) == 0)
+			if (CheckAbort(len * 100 / length))
 			{
 				break;
 			}
@@ -104,9 +104,9 @@ long At250BigBus::Write(int addr, uint8_t const *data, long length, int page_siz
 		SendDataByte(WriteEnable);
 		EndCycle();
 
-		SendDataByte( WriteData );
-		SendDataByte( (addr >> 8) & 0xFF );     //MSB
-		SendDataByte(  addr       & 0xFF );     //LSB
+		SendDataByte(WriteData);
+		SendDataByte((addr >> 8) & 0xFF);       //MSB
+		SendDataByte(addr       & 0xFF);        //LSB
 
 		int j;
 
@@ -122,8 +122,8 @@ long At250BigBus::Write(int addr, uint8_t const *data, long length, int page_siz
 			return 0;        //Must return 0, because > 0 (and != length) means "Abort by user"
 		}
 
-		if ( (len & 1) )
-			if ( CheckAbort(len * 100 / length) )
+		if ((len & 1))
+			if (CheckAbort(len * 100 / length))
 			{
 				break;
 			}

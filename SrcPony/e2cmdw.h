@@ -86,7 +86,7 @@ class e2CmdWindow : public QMainWindow, public e2App, public Ui::MainWindow
 {
 	Q_OBJECT
 
-public:               //---------------------------------------- public
+  public:               //---------------------------------------- public
 	e2CmdWindow(QWidget *parent = 0);
 	virtual ~e2CmdWindow();
 	//      virtual int CloseAppWin();
@@ -161,7 +161,7 @@ public:               //---------------------------------------- public
 	}
 
 
-private slots:
+  private slots:
 	void onNew();
 	void onOpen(); //
 	void onSave(); //
@@ -215,34 +215,34 @@ private slots:
 	void onDevSubType(int i);
 
 	// EK 2017: slots for signals from group actions
-	void onSelectI2C8(QAction* a);
-	void onSelectI2C16(QAction* a);
-	void onSelectI2CAT17(QAction* a);
-	void onSelectMW16(QAction* a);
-	void onSelectMW8(QAction* a);
-	void onSelectSPI(QAction* a);
-	void onSelectAVR(QAction* a);
-	void onSelectAT89S(QAction* a);
-	void onSelectPIC16(QAction* a);
-	void onSelectPIC12(QAction* a);
-	void onSelectImBus(QAction* a);
-	void onSelectSDE2506(QAction* a);
-	void onSelectX244(QAction* a);
+	void onSelectI2C8(QAction *a);
+	void onSelectI2C16(QAction *a);
+	void onSelectI2CAT17(QAction *a);
+	void onSelectMW16(QAction *a);
+	void onSelectMW8(QAction *a);
+	void onSelectSPI(QAction *a);
+	void onSelectAVR(QAction *a);
+	void onSelectAT89S(QAction *a);
+	void onSelectPIC16(QAction *a);
+	void onSelectPIC12(QAction *a);
+	void onSelectImBus(QAction *a);
+	void onSelectSDE2506(QAction *a);
+	void onSelectX244(QAction *a);
 
 	void onEndProgress();
 
-	void selectFontSize(QAction* mnu);
+	void selectFontSize(QAction *mnu);
 
 	//      void setOverwriteMode(bool);
 	//      void dataChanged();
 
-public:
+  public:
 	int CmdHelp();
 
-protected:
+  protected:
 	//void CmdRemoteMode();
 
-private:
+  private:
 	//All commands
 	int CmdOpen(int type = ALL_TYPE, char *file = 0, long relocation = 0, int clear_buffer = -1);
 	int CmdSave(int type = ALL_TYPE, char *file = 0, long relocation = 0);
@@ -293,14 +293,14 @@ private:
 	int findItemInMenuVector(const QString &n);
 
 
-private:              //--------------------------------------- private
+  private:              //--------------------------------------- private
 	void createSignalSlotConnections();
 	QString convertFilterListToString(const QStringList &lst);
 
 	void doProgress(const QString &text);
 
 
-	menuToGroup* searchMenuInDeviceVector( int new_type );
+	menuToGroup *searchMenuInDeviceVector(int new_type);
 
 	void createDeviceMenues();
 	void addI2C8Struct();;
@@ -350,7 +350,7 @@ private:              //--------------------------------------- private
 	int ScriptError(int line_number, int arg_index, char *arg, const QString msg = "");
 
 
-private:
+  private:
 	int idxI2Cbus8;
 	int idxI2Cbus16;
 	int idxI2CbusAT17;
@@ -374,8 +374,8 @@ private:
 	QStringList arguments;
 	QString programStyleSheet;
 
-	QComboBox* cbxEEPType;
-	QComboBox* cbxEEPSubType;
+	QComboBox *cbxEEPType;
+	QComboBox *cbxEEPSubType;
 	QLabel *lblEEPInfo;
 	QLabel *lblStringID;
 
@@ -383,13 +383,13 @@ private:
 	QLineEdit *txtStringID;
 	//      QProgressBar *statusProgress;
 
-	QVector<QAction*> actLangSelect;
-	QVector<QAction*> actFSizeSelect;
+	QVector<QAction *> actLangSelect;
+	QVector<QAction *> actFSizeSelect;
 
 	QActionGroup *fsizeGroup;
 
 	// Standard elements
-	QHexEdit* e2HexEdit;             // For the canvas
+	QHexEdit *e2HexEdit;             // For the canvas
 
 	QProgressDialog *e2Prg;
 

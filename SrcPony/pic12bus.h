@@ -36,7 +36,7 @@
 
 class Pic12Bus : public BusIO
 {
-public:                //------------------------------- public
+  public:                //------------------------------- public
 	Pic12Bus(BusInterface *ptr = 0);
 	virtual ~Pic12Bus();
 
@@ -60,7 +60,7 @@ public:                //------------------------------- public
 	long BlankCheck(long length);
 	void IncAddress(int n);
 
-protected:             //------------------------------- protected
+  protected:             //------------------------------- protected
 
 	int SendDataWord(long wo, int wlen = 16);
 	long RecDataWord(int wlen = 16);
@@ -128,7 +128,7 @@ protected:             //------------------------------- protected
 	//      const uint8_t BeginProgOnlyCode;
 	const uint8_t EndProgCode;
 
-private:               //------------------------------- private
+  private:               //------------------------------- private
 
 	int SendDataBit(int b);
 	int RecDataBit();

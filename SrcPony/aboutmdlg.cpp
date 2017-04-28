@@ -41,7 +41,7 @@
 using namespace Translator;
 
 
-AboutModalDialog::AboutModalDialog(QWidget* bw, const QString title)
+AboutModalDialog::AboutModalDialog(QWidget *bw, const QString title)
 	: QDialog(bw)
 {
 	qDebug() << "AboutModalDialog::AboutModalDialog()";
@@ -59,11 +59,11 @@ AboutModalDialog::AboutModalDialog(QWidget* bw, const QString title)
 
 	lblAbout0->setText(APPNAME + " - " + APPNAME_EXT  + "<br>" + STR_MSGVERSION + "  " + APPVERSION + "  " __DATE__);
 	lblAbout1->setText("Copyright (C) " + COPYRIGHTYEAR + "  by  <a href=\"" + AUTHORMAIL + "\">" + AUTHORNAME + "</a><br><br>" +
-	                   "Porting to Qt4/Qt5 by <a href=\"" + PORTERMAIL + "\">" + PORTERGQT + "</a><br><br>" +
-	                   STR_APPDOWNLOAD1 + " " + APPNAME + " " + STR_APPDOWNLOAD2 + "<br>" +
-	                   "<a href=\"" + AUTHORWEB + "\">" + AUTHORWEB + "</a>" );
+					   "Porting to Qt4/Qt5 by <a href=\"" + PORTERMAIL + "\">" + PORTERGQT + "</a><br><br>" +
+					   STR_APPDOWNLOAD1 + " " + APPNAME + " " + STR_APPDOWNLOAD2 + "<br>" +
+					   "<a href=\"" + AUTHORWEB + "\">" + AUTHORWEB + "</a>");
 
-	chkSound->setChecked( E2Profile::GetSkipStartupDialog());
+	chkSound->setChecked(E2Profile::GetSkipStartupDialog());
 	chkSound->setText(STR_LBLSKIPMSG);
 
 	pushOk->setText(STR_BTNOK);

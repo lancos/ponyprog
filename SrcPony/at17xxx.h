@@ -34,7 +34,7 @@
 
 class At17xxx : public E24xx
 {
-public:               //---------------------------------------- public
+  public:               //---------------------------------------- public
 
 	At17xxx(e2AppWinInfo *wininfo = 0, BusIO *busp = 0);
 
@@ -43,12 +43,12 @@ public:               //---------------------------------------- public
 	int Write(int probe = 1, int type = ALL_TYPE);
 	int Verify(int type = ALL_TYPE);
 
-protected:    //--------------------------------------- protected
+  protected:    //--------------------------------------- protected
 
 	int WritePage(long addr, int addr_bytes, uint8_t *buf, int len);
 	int ReadPage(long addr, int addr_bytes, uint8_t *buf, int len);
 
-private:              //--------------------------------------- private
+  private:              //--------------------------------------- private
 
 };
 #endif

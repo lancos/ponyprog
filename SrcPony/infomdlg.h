@@ -48,17 +48,17 @@ using namespace Translator;
 class e24xx_infoModalDialog : public QDialog, public Ui::EditDialog
 {
 	Q_OBJECT
-public:               //---------------------------------------- public
-	e24xx_infoModalDialog(QWidget* bw, int rlv, uint16_t crc, long size, const QString title = STR_MSGDEVINFO);
+  public:               //---------------------------------------- public
+	e24xx_infoModalDialog(QWidget *bw, int rlv, uint16_t crc, long size, const QString title = STR_MSGDEVINFO);
 	virtual ~e24xx_infoModalDialog();               // Destructor
 	//      virtual int infoAction(char* msg = "Device Info");
 
-private slots:
+  private slots:
 	void onOk();
 
-protected:    //--------------------------------------- protected
+  protected:    //--------------------------------------- protected
 
-private:              //--------------------------------------- private
+  private:              //--------------------------------------- private
 
 };
 
@@ -67,17 +67,17 @@ private:              //--------------------------------------- private
 class other_infoModalDialog : public QDialog, public Ui::EditDialog
 {
 	Q_OBJECT
-public:               //---------------------------------------- public
-	other_infoModalDialog(QWidget* bw, long fsize, long esize, uint16_t crc, const QString title = STR_MSGDEVINFO);
+  public:               //---------------------------------------- public
+	other_infoModalDialog(QWidget *bw, long fsize, long esize, uint16_t crc, const QString title = STR_MSGDEVINFO);
 	virtual ~other_infoModalDialog();               // Destructor
 	//      virtual int infoAction(char* msg = "Device Info");
 
-private slots:
+  private slots:
 	void onOk();
 
-protected:    //--------------------------------------- protected
+  protected:    //--------------------------------------- protected
 
-private:              //--------------------------------------- private
+  private:              //--------------------------------------- private
 
 };
 
@@ -85,19 +85,19 @@ private:              //--------------------------------------- private
 class notesModalDialog : public QDialog, public Ui::NotesDialog
 {
 	Q_OBJECT
-public:               //---------------------------------------- public
-	notesModalDialog(QWidget* bw, QString &id, QString &cm, const QString title = STR_MSGDEVNOTE);
+  public:               //---------------------------------------- public
+	notesModalDialog(QWidget *bw, QString &id, QString &cm, const QString title = STR_MSGDEVNOTE);
 	virtual ~notesModalDialog();            // Destructor
 	//      QString GetId();
 	//      QString GetComment();
 	//      virtual int notesAction(char* msg = STR_MSGDEVNOTE);
 
-private slots:
+  private slots:
 	void onOk();
 
-protected:    //--------------------------------------- protected
+  protected:    //--------------------------------------- protected
 
-private:              //--------------------------------------- private
+  private:              //--------------------------------------- private
 	QString *id_ptr;
 	QString *cm_ptr;
 
@@ -110,19 +110,19 @@ private:              //--------------------------------------- private
 class editModalDialog : public QDialog, public Ui::EditDialog
 {
 	Q_OBJECT
-public:               //---------------------------------------- public
-	editModalDialog(QWidget* bw, int curval = 0, const QString title = STR_MSGEDITBUG);
+  public:               //---------------------------------------- public
+	editModalDialog(QWidget *bw, int curval = 0, const QString title = STR_MSGEDITBUG);
 	virtual ~editModalDialog();             // Destructor
 	//      virtual int editAction(char* msg, int &retval);
 	int GetVal();
 
-private slots:
+  private slots:
 	void onOk();
 	void onEdit();
 
-protected:    //--------------------------------------- protected
+  protected:    //--------------------------------------- protected
 
-private:              //--------------------------------------- private
+  private:              //--------------------------------------- private
 	int oldval;
 };
 
@@ -130,18 +130,18 @@ private:              //--------------------------------------- private
 class editModalDialog2 : public QDialog, public Ui::EditDialog
 {
 	Q_OBJECT
-public:               //---------------------------------------- public
-	editModalDialog2(QWidget* bw, const QString curval = "", const QString title = STR_MSGEDITBUG);
+  public:               //---------------------------------------- public
+	editModalDialog2(QWidget *bw, const QString curval = "", const QString title = STR_MSGEDITBUG);
 	virtual ~editModalDialog2();            // Destructor
 	//      virtual int editAction(char* msg, char *text, int len);
 	QString GetVal();
 
-private slots:
+  private slots:
 	void onOk();
 
-protected:    //--------------------------------------- protected
+  protected:    //--------------------------------------- protected
 
-private:              //--------------------------------------- private
+  private:              //--------------------------------------- private
 	QString val;
 };
 

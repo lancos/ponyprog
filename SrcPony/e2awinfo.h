@@ -96,9 +96,9 @@ class e2CmdWindow;
 
 class e2AppWinInfo // : public QObject
 {
-public:               //---------------------------------------- public
+  public:               //---------------------------------------- public
 
-	e2AppWinInfo(e2CmdWindow* p = 0, const QString &name = "", BusIO** busptr = 0);
+	e2AppWinInfo(e2CmdWindow *p = 0, const QString &name = "", BusIO **busptr = 0);
 	~e2AppWinInfo();
 
 	int Read(int type = ALL_TYPE, int raise_power = true, int leave_on = false);
@@ -163,7 +163,7 @@ public:               //---------------------------------------- public
 	}
 	int GetEEPSubType() const
 	{
-		return eep_subtype ? eep_subtype : GetE2PSubType( GetEEPTypeFromSize(eep_type, GetNoOfBlock()) );
+		return eep_subtype ? eep_subtype : GetE2PSubType(GetEEPTypeFromSize(eep_type, GetNoOfBlock()));
 	} //GetNoOfBlock(); }
 
 	int GetEEPType() const
@@ -285,10 +285,10 @@ public:               //---------------------------------------- public
 		return eep ? eep->GetDetectedSignatureStr() : 0;
 	}
 
-protected:    //--------------------------------------- protected
+  protected:    //--------------------------------------- protected
 //	e2CmdWindow* cmdWin;
 
-private:              //--------------------------------------- private
+  private:              //--------------------------------------- private
 	int OpenBus();
 	void SleepBus();
 	void SetBlockSize(int blk)

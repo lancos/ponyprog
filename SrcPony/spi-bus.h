@@ -35,7 +35,7 @@
 
 class SPIBus : public BusIO
 {
-public:                //------------------------------- public
+  public:                //------------------------------- public
 	SPIBus(BusInterface *ptr = 0, bool cpha = false);
 	virtual ~SPIBus();
 
@@ -47,7 +47,7 @@ public:                //------------------------------- public
 		fall_edge_sample = cpha;
 	}
 
-protected:             //------------------------------- protected
+  protected:             //------------------------------- protected
 
 	int SendDataByte(int by);
 	int RecDataByte();
@@ -74,7 +74,7 @@ protected:             //------------------------------- protected
 	int SendDataBit(int b);
 	int RecDataBit();
 
-private:
+  private:
 	void bitMOSI(int b)
 	{
 		busI->SetDataOut(b);

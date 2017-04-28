@@ -51,7 +51,7 @@ typedef struct
 
 class LPTInterface
 {
-public:                //------------------------------- public
+  public:                //------------------------------- public
 	LPTInterface();
 	virtual ~LPTInterface();
 
@@ -73,9 +73,9 @@ public:                //------------------------------- public
 		return last_ctrl;
 	}
 
-protected:             //------------------------------- protected
+  protected:             //------------------------------- protected
 
-private:               //------------------------------- private
+  private:               //------------------------------- private
 #ifdef  _WINDOWS
 	HANDLE  hLPTCONVxD;                     //Will be the handle to our VxD.
 #else

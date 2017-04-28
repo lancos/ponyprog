@@ -93,7 +93,7 @@ int I2CBus::SendStart()
 	{
 		int k;
 
-		for(k = SCLTIMEOUT; getSCL() == 0 && k > 0; k--)
+		for (k = SCLTIMEOUT; getSCL() == 0 && k > 0; k--)
 		{
 			WaitUsec(1);
 		}
@@ -108,7 +108,7 @@ int I2CBus::SendStart()
 	WaitUsec(shot_delay / 2);
 #endif
 
-	if ( (err = CheckBusy()) )
+	if ((err = CheckBusy()))
 	{
 		return err;
 	}
@@ -134,7 +134,7 @@ int I2CBus::SendStop()
 	{
 		int k;
 
-		for(k = SCLTIMEOUT; getSCL() == 0 && k > 0; k--)
+		for (k = SCLTIMEOUT; getSCL() == 0 && k > 0; k--)
 		{
 			WaitUsec(1);
 		}
@@ -178,7 +178,7 @@ int I2CBus::SendBitMast(int b)
 #ifdef  SCLTIMEOUT
 		int k;
 
-		for(k = SCLTIMEOUT; getSCL() == 0 && k > 0; k--)
+		for (k = SCLTIMEOUT; getSCL() == 0 && k > 0; k--)
 		{
 			WaitUsec(1);
 		}
@@ -221,7 +221,7 @@ int I2CBus::RecBitMast()
 #ifdef  SCLTIMEOUT
 		int k;
 
-		for(k = SCLTIMEOUT; getSCL() == 0 && k > 0; k--)
+		for (k = SCLTIMEOUT; getSCL() == 0 && k > 0; k--)
 		{
 			WaitUsec(1);
 		}
@@ -249,7 +249,7 @@ int I2CBus::SendByteMast(int by)
 	int lrb, k;
 
 	for (k = 7; k >= 0; k--)
-		if ( (lrb = SendBitMast(by & (1 << k))) )
+		if ((lrb = SendBitMast(by & (1 << k))))
 		{
 			return lrb;
 		}
@@ -274,7 +274,7 @@ int I2CBus::SendByteMastLSB(int by)
 	int lrb, k;
 
 	for (k = 0; k < 8; k++)
-		if ( (lrb = SendBitMast(by & (1 << k))) )
+		if ((lrb = SendBitMast(by & (1 << k))))
 		{
 			return lrb;
 		}
@@ -313,7 +313,7 @@ int I2CBus::RecByteMast(int ack)
 		}
 	}
 
-	if ( (k = SendBitMast(ack)) )   // send the ack
+	if ((k = SendBitMast(ack)))     // send the ack
 	{
 		return k;
 	}
@@ -342,7 +342,7 @@ int I2CBus::RecByteMastLSB(int ack)
 		}
 	}
 
-	if ( (k = SendBitMast(ack)) )   // send the ack
+	if ((k = SendBitMast(ack)))     // send the ack
 	{
 		return k;
 	}
@@ -357,31 +357,31 @@ void I2CBus::SetDelay()
 	int val = E2Profile::GetI2CSpeed();
 	int n;
 
-	switch(val)
+	switch (val)
 	{
-	case TURBO:
-		n = 0;          // as fast as your PC can
-		break;
+		case TURBO:
+			n = 0;          // as fast as your PC can
+			break;
 
-	case FAST:
-		n = 2;          // > 100 Khz, < 400 Khz
-		break;
+		case FAST:
+			n = 2;          // > 100 Khz, < 400 Khz
+			break;
 
-	case SLOW:
-		n = 20;         // (< 25 Khz)
-		break;
+		case SLOW:
+			n = 20;         // (< 25 Khz)
+			break;
 
-	case VERYSLOW:
-		n = 100;
-		break;
+		case VERYSLOW:
+			n = 100;
+			break;
 
-	case ULTRASLOW:
-		n = 1000;
-		break;
+		case ULTRASLOW:
+			n = 1000;
+			break;
 
-	default:
-		n = 5;          //Default (< 100KHz)
-		break;
+		default:
+			n = 5;          //Default (< 100KHz)
+			break;
 	}
 
 	BusIO::SetDelay(n);
@@ -393,11 +393,11 @@ long I2CBus::Read(int slave, uint8_t *data, long length, int page_size)
 {
 	long len;
 
-	qDebug() << "I2CBus::Read(" << slave << ", " << (void*) data << ", " << length << ") - IN";
+	qDebug() << "I2CBus::Read(" << slave << ", " << (void *) data << ", " << length << ") - IN";
 	len = StartRead(slave, data, length);
 
 	if (len == length)
-		if ( err_no || Stop() )
+		if (err_no || Stop())
 		{
 			len = 0;
 		}
@@ -416,7 +416,7 @@ long I2CBus::Write(int slave, uint8_t const *data, long length, int page_size)
 	len = StartWrite(slave, data, length);
 
 	if (len == length)
-		if ( err_no || Stop())
+		if (err_no || Stop())
 		{
 			len = 0;
 		}
@@ -455,13 +455,13 @@ int I2CBus::Start(uint8_t slave)
 	int temp;
 
 	// send Start
-	if ( (temp = SendStart()) )
+	if ((temp = SendStart()))
 	{
 		err_no = temp;
 		return err_no;
 	}
 
-	if ( (temp = SendByteMast(slave)) != 0 )
+	if ((temp = SendByteMast(slave)) != 0)
 	{
 		err_no = (temp == IICERR_NOTACK) ? IICERR_NOADDRACK : temp;
 		last_addr = slave;
@@ -486,13 +486,13 @@ long I2CBus::StartRead(uint8_t slave, uint8_t *data, long length)
 	if (len > 0)
 	{
 		// send Start
-		if ( (temp = SendStart()) )
+		if ((temp = SendStart()))
 		{
 			err_no = temp;
 			return 0;
 		}
 
-		if ( (temp = SendByteMast(slave | 1)) != 0 )
+		if ((temp = SendByteMast(slave | 1)) != 0)
 		{
 			err_no = (temp == IICERR_NOTACK) ? IICERR_NOADDRACK : temp;
 			last_addr = slave | 1;
@@ -542,13 +542,13 @@ long I2CBus::StartWrite(uint8_t slave, uint8_t const *data, long length)
 		return 0;
 	}
 
-	if ( (error = SendStart()) )
+	if ((error = SendStart()))
 	{
 		err_no = error;
 		return 0;
 	}
 
-	if ( (error = SendByteMast(slave & 0xFE)) )
+	if ((error = SendByteMast(slave & 0xFE)))
 	{
 		err_no = (error == IICERR_NOTACK) ? IICERR_NOADDRACK : error;
 		last_addr = slave & 0xFE;
@@ -557,7 +557,7 @@ long I2CBus::StartWrite(uint8_t slave, uint8_t const *data, long length)
 
 	while (len > 0)
 	{
-		if ( (error = SendByteMast(*data++)) != 0 )
+		if ((error = SendByteMast(*data++)) != 0)
 		{
 			err_no = error;
 			goto fineW;
@@ -616,7 +616,7 @@ int I2CBus::TestPort(int port)
 		// Send general call address 0x00
 		int err = Start(0x00 | 1);
 
-		if ( err != OK  &&  err != IICERR_NOADDRACK )
+		if (err != OK  &&  err != IICERR_NOADDRACK)
 		{
 			ret_val = err;
 		}

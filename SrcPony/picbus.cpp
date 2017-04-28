@@ -80,31 +80,31 @@ void PicBus::SetDelay()
 	int val = E2Profile::GetPICSpeed();
 	int n;
 
-	switch(val)
+	switch (val)
 	{
-	case TURBO:
-		n = 1;
-		break;
+		case TURBO:
+			n = 1;
+			break;
 
-	case FAST:
-		n = 2;
-		break;
+		case FAST:
+			n = 2;
+			break;
 
-	case SLOW:
-		n = 20;
-		break;
+		case SLOW:
+			n = 20;
+			break;
 
-	case VERYSLOW:
-		n = 150;
-		break;
+		case VERYSLOW:
+			n = 150;
+			break;
 
-	case ULTRASLOW:
-		n = 1000;
-		break;
+		case ULTRASLOW:
+			n = 1000;
+			break;
 
-	default:
-		n = 6;         //Default (< 100KHz)
-		break;
+		default:
+			n = 6;         //Default (< 100KHz)
+			break;
 	}
 
 	BusIO::SetDelay(n);
@@ -183,7 +183,7 @@ long PicBus::RecDataWord(int wlen)
 
 	//receive lsb first
 	for (k = 0; k < wlen; k++)
-		if ( RecDataBit() )
+		if (RecDataBit())
 		{
 			val |= 1 << k;
 		}
@@ -351,7 +351,7 @@ long PicBus::WriteConfig(uint16_t *data)
 			SendProgCode(val);
 			SendCmdCode(BeginEraseProgCode);
 
-			if ( WaitReadyAfterWrite() )
+			if (WaitReadyAfterWrite())
 			{
 				break;
 			}
@@ -359,7 +359,7 @@ long PicBus::WriteConfig(uint16_t *data)
 			//Verify while programming (10/11/99)
 			SendCmdCode(ReadProgCode);
 
-			if ( CompareSingleWord(val, RecvProgCode(), ProgMask) )
+			if (CompareSingleWord(val, RecvProgCode(), ProgMask))
 			{
 				return E2ERR_WRITEFAILED;
 			}
@@ -450,7 +450,7 @@ long PicBus::Read(int addr, uint8_t *data, long length, int page_size)
 			SendCmdCode(IncAddressCode);
 		}
 
-		if ( CheckAbort(len * 100 / length) )
+		if (CheckAbort(len * 100 / length))
 		{
 			break;
 		}
@@ -488,7 +488,7 @@ long PicBus::Write(int addr, uint8_t const *data, long length, int page_size)
 			SendDataCode(val);
 			SendCmdCode(BeginEraseProgCode);
 
-			if ( WaitReadyAfterWrite() )
+			if (WaitReadyAfterWrite())
 			{
 				break;
 			}
@@ -515,7 +515,7 @@ long PicBus::Write(int addr, uint8_t const *data, long length, int page_size)
 			SendProgCode(val);
 			SendCmdCode(BeginEraseProgCode);
 
-			if ( WaitReadyAfterWrite() )
+			if (WaitReadyAfterWrite())
 			{
 				break;
 			}
@@ -528,7 +528,7 @@ long PicBus::Write(int addr, uint8_t const *data, long length, int page_size)
 			SendCmdCode(IncAddressCode);
 		}
 
-		if ( CheckAbort(len * 100 / length) )
+		if (CheckAbort(len * 100 / length))
 		{
 			break;
 		}
@@ -553,7 +553,7 @@ int PicBus::CompareMultiWord(uint8_t *data1, uint8_t *data2, long length, int sp
 {
 	int retval = 0;
 
-	if ( data1 == 0 || data2 == 0 || (length & 1) != 0 )
+	if (data1 == 0 || data2 == 0 || (length & 1) != 0)
 	{
 		return BADPARAM;
 	}
@@ -580,7 +580,7 @@ int PicBus::CompareMultiWord(uint8_t *data1, uint8_t *data2, long length, int sp
 			val2 |= (uint16_t)(*data2++) << 8;
 #endif
 
-			if ( (retval = CompareSingleWord(val1, val2, ProgMask)) )
+			if ((retval = CompareSingleWord(val1, val2, ProgMask)))
 			{
 				break;        //Stop if a difference
 			}

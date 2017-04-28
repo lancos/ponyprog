@@ -101,7 +101,7 @@ int Pic168xx::QueryType(long &type)
 
 	id_locations[6] = 0;
 
-	if ( GetBus()->ReadConfig(id_locations) == OK )
+	if (GetBus()->ReadConfig(id_locations) == OK)
 	{
 		int code = id_locations[6];
 
@@ -139,8 +139,8 @@ int Pic168xx::Probe(int probe_size)
 	{
 		if (rv == OK)
 		{
-			SetNoOfBank( GetEEPTypeSize(type) );
-			SetSplitted( GetEEPTypeSplit(type) );
+			SetNoOfBank(GetEEPTypeSize(type));
+			SetSplitted(GetEEPTypeSplit(type));
 			rv = GetSize();
 		}
 	}
@@ -154,7 +154,7 @@ int Pic168xx::Probe(int probe_size)
 		{
 			if (rv == OK)
 			{
-				if ( GetE2PSubType(GetAWInfo()->GetEEPId()) == subtype )
+				if (GetE2PSubType(GetAWInfo()->GetEEPId()) == subtype)
 				{
 					rv = GetSize();
 				}
@@ -171,11 +171,11 @@ int Pic168xx::Probe(int probe_size)
 
 int Pic168xx::Write(int probe, int type)
 {
-	int rv = Probe( probe || GetNoOfBank() == 0 );
+	int rv = Probe(probe || GetNoOfBank() == 0);
 
 	if (rv > 0)
 	{
-		if ( (type & PROG_TYPE) && (type & DATA_TYPE) )
+		if ((type & PROG_TYPE) && (type & DATA_TYPE))
 		{
 			GetBus()->Erase(ALL_TYPE);
 		}
@@ -199,7 +199,7 @@ int Pic168xx::Write(int probe, int type)
 				}
 			}
 
-			if ( rv > 0 && (type & CONFIG_TYPE) )
+			if (rv > 0 && (type & CONFIG_TYPE))
 			{
 				// write the config locations
 				// this must be the LAST operation (to exit from config mode we have to clear Vpp)

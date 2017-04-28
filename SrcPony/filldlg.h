@@ -44,18 +44,18 @@ using namespace Translator;
 class FillDialog : public QDialog, public Ui::BlockDialog
 {
 	Q_OBJECT
-public:               //---------------------------------------- public
-	FillDialog(QWidget* bw, long &cfrom, long &cto, int &cval, long max_addr, const QString title = STR_LBLFILLBUF);
+  public:               //---------------------------------------- public
+	FillDialog(QWidget *bw, long &cfrom, long &cto, int &cval, long max_addr, const QString title = STR_LBLFILLBUF);
 	virtual ~FillDialog();          // Destructor
 
 
-protected:    //--------------------------------------- protected
+  protected:    //--------------------------------------- protected
 
-private slots:
+  private slots:
 	void onOk();
 
 
-private:              //--------------------------------------- private
+  private:              //--------------------------------------- private
 
 	long *pFrom, *pTo;
 	int *pVal;

@@ -178,8 +178,8 @@ long At93cBus::Read(int addr, uint8_t *data, long length, int page_size)
 			*data++ = (uint8_t)(val & 0xFF);
 		}
 
-		if ( (len % 4) == 0 )
-			if ( CheckAbort(len * 100 / length) )
+		if ((len % 4) == 0)
+			if (CheckAbort(len * 100 / length))
 			{
 				break;
 			}
@@ -241,7 +241,7 @@ long At93cBus::Write(int addr, uint8_t const *data, long length, int page_size)
 
 #if 1
 
-		if ( WaitReadyAfterWrite(loop_timeout) )
+		if (WaitReadyAfterWrite(loop_timeout))
 		{
 			return 0;        //- 07/08/99 a number >0 but != length mean "User abort"
 		}
@@ -252,8 +252,8 @@ long At93cBus::Write(int addr, uint8_t const *data, long length, int page_size)
 		clearCS();
 		setCS();
 
-		if ( (curaddr & 1) )
-			if ( CheckAbort(curaddr * 100 / length) )
+		if ((curaddr & 1))
+			if (CheckAbort(curaddr * 100 / length))
 			{
 				break;
 			}

@@ -39,9 +39,9 @@
 //=====>>> Costruttore <<<======
 mE2401::mE2401(e2AppWinInfo *wininfo, BusIO *busp, int def_banksize)
 	:       Device(wininfo, busp, def_banksize),
-	        timeout_loop(200),
-	        sequential_read(1),             // lettura di un banco alla volta
-	        writepage_size(1)               // scrittura di un byte alla volta (no page write)
+			timeout_loop(200),
+			sequential_read(1),             // lettura di un banco alla volta
+			writepage_size(1)               // scrittura di un byte alla volta (no page write)
 {
 }
 
@@ -59,7 +59,7 @@ int mE2401::Probe(int probe_size)
 	{
 		retval = GetBus()->Error();
 
-		if ( retval == IICERR_NOADDRACK )
+		if (retval == IICERR_NOADDRACK)
 		{
 			retval = 0;
 		}
@@ -103,7 +103,7 @@ int mE2401::Read(int probe, int type)
 					return GetBus()->Error();
 				}
 
-				if ( GetBus()->CheckAbort((k + 1) * 100 / size) )
+				if (GetBus()->CheckAbort((k + 1) * 100 / size))
 				{
 					return OP_ABORTED;
 				}
@@ -135,7 +135,7 @@ int mE2401::Write(int probe, int type)
 
 		for (j = 0; j < size; j += writepage_size)
 		{
-			if ( GetBus()->Write(j, GetBufPtr() + j, writepage_size) != writepage_size)
+			if (GetBus()->Write(j, GetBufPtr() + j, writepage_size) != writepage_size)
 			{
 				return GetBus()->Error();
 			}
@@ -150,7 +150,7 @@ int mE2401::Write(int probe, int type)
 				return E2P_TIMEOUT;
 			}
 
-			if ( GetBus()->CheckAbort((j + 1) * 100 / size) )
+			if (GetBus()->CheckAbort((j + 1) * 100 / size))
 			{
 				return OP_ABORTED;
 			}
@@ -199,7 +199,7 @@ int mE2401::Verify(int type)
 					break;
 				}
 
-				if ( GetBus()->CheckAbort((k + 1) * 100 / size) )
+				if (GetBus()->CheckAbort((k + 1) * 100 / size))
 				{
 					rval = OP_ABORTED;
 					break;
@@ -207,7 +207,7 @@ int mE2401::Verify(int type)
 			}
 		}
 
-		if ( memcmp(GetBufPtr(), localbuf, size) != 0 )
+		if (memcmp(GetBufPtr(), localbuf, size) != 0)
 		{
 			rval = 0;
 		}

@@ -69,31 +69,31 @@ void SPIBus::SetDelay()
 	int val = E2Profile::GetSPISpeed();
 	int n;
 
-	switch(val)
+	switch (val)
 	{
-	case TURBO:
-		n = 0;         // as fast as your PC can
-		break;
+		case TURBO:
+			n = 0;         // as fast as your PC can
+			break;
 
-	case FAST:
-		n = 1;
-		break;
+		case FAST:
+			n = 1;
+			break;
 
-	case SLOW:
-		n = 10;
-		break;
+		case SLOW:
+			n = 10;
+			break;
 
-	case VERYSLOW:
-		n = 80;
-		break;
+		case VERYSLOW:
+			n = 80;
+			break;
 
-	case ULTRASLOW:
-		n = 1000;
-		break;
+		case ULTRASLOW:
+			n = 1000;
+			break;
 
-	default:
-		n = 5;         //Default (< 100KHz)
-		break;
+		default:
+			n = 5;         //Default (< 100KHz)
+			break;
 	}
 
 	BusIO::SetDelay(n);
@@ -177,7 +177,7 @@ int SPIBus::RecDataByte()
 	clearSCK();
 
 	for (k = 7; k >= 0; k--)
-		if ( RecDataBit() )
+		if (RecDataBit())
 		{
 			val |= 1 << k;
 		}
@@ -197,10 +197,10 @@ int SPIBus::Reset(void)
 
 	WaitMsec(20);
 	ClearReset();   //One pulse on the reset (datasheet AVR)
-	WaitMsec( E2Profile::GetSPIResetPulse() ); //AppNote AVR910 suggest >100 msec
+	WaitMsec(E2Profile::GetSPIResetPulse());   //AppNote AVR910 suggest >100 msec
 	SetReset();
 
-	WaitMsec( E2Profile::GetSPIDelayAfterReset() );
+	WaitMsec(E2Profile::GetSPIDelayAfterReset());
 
 	qDebug() << "SPIBus::Reset() O";
 

@@ -47,20 +47,20 @@ using namespace Translator;
 class progOptionDialog : public QDialog, public Ui::ProgOptDialog
 {
 	Q_OBJECT
-public:               //---------------------------------------- public
-	progOptionDialog(QWidget* bw, long type, int &reload, int &reep, int &erase, int &flash, int &eeprom, int &lock, const QString title = STR_MSGPROGOPT);
+  public:               //---------------------------------------- public
+	progOptionDialog(QWidget *bw, long type, int &reload, int &reep, int &erase, int &flash, int &eeprom, int &lock, const QString title = STR_MSGPROGOPT);
 	virtual ~progOptionDialog();            // Destructor
 
-private slots:
+  private slots:
 	void onOk();
 
-protected:    //--------------------------------------- protected
+  protected:    //--------------------------------------- protected
 
-private:
+  private:
 	void setTextWidgets();
 
-private:              //--------------------------------------- private
-	QVector <QCheckBox*> chk;
+  private:              //--------------------------------------- private
+	QVector <QCheckBox *> chk;
 	e2CmdWindow *cmdw;
 };
 #endif

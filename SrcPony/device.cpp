@@ -34,13 +34,13 @@
 //=====>>> Costruttore <<<======
 Device::Device(e2AppWinInfo *wininfo, BusIO *busp, int b_size)
 	:       detected_type(0),
-	        awi(wininfo),
-	        bus(busp),
-	        def_bank_size(b_size),
-	        write_progpage_size(0),
-	        read_progpage_size(0),
-	        write_datapage_size(0),
-	        read_datapage_size(0)
+			awi(wininfo),
+			bus(busp),
+			def_bank_size(b_size),
+			write_progpage_size(0),
+			read_progpage_size(0),
+			write_datapage_size(0),
+			read_datapage_size(0)
 {
 	detected_signature = "";
 	DefaultBankSize();
@@ -178,7 +178,7 @@ int Device::ReadData()
 
 	retval = GetBus()->Read(1, GetBufPtr() + base, size, read_datapage_size);
 
-	if ( retval != size )
+	if (retval != size)
 	{
 		if (retval > 0)
 		{
@@ -199,7 +199,7 @@ int Device::WriteProg()
 	GetBus()->ClearLastProgrammedAddress();
 	rv = GetBus()->Write(0, GetBufPtr() + base, size, write_progpage_size);
 
-	if ( rv != size )
+	if (rv != size)
 	{
 		if (rv > 0)
 		{
@@ -219,7 +219,7 @@ int Device::WriteData()
 
 	rv = GetBus()->Write(1, GetBufPtr() + base, size, write_datapage_size);
 
-	if ( rv != size )
+	if (rv != size)
 	{
 		if (rv > 0)
 		{
@@ -239,7 +239,7 @@ int Device::VerifyProg(unsigned char *localbuf)
 	//Verify only programmed bytes (to save time in big devices)
 	long v_len = size;
 
-	if ( GetBus()->GetLastProgrammedAddress() > 0 && GetBus()->GetLastProgrammedAddress() < size )
+	if (GetBus()->GetLastProgrammedAddress() > 0 && GetBus()->GetLastProgrammedAddress() < size)
 	{
 		v_len = GetBus()->GetLastProgrammedAddress() + 1;
 		GetBus()->ClearLastProgrammedAddress(); //reset last_programmed_addr, so next verify not preceeded by write verify all the flash
@@ -258,7 +258,7 @@ int Device::VerifyProg(unsigned char *localbuf)
 		rval = GetBus()->Read(0, localbuf, v_len, 0);
 	}
 
-	if ( rval != v_len )
+	if (rval != v_len)
 	{
 		if (rval > 0)
 		{
@@ -282,7 +282,7 @@ int Device::VerifyData(unsigned char *localbuf)
 	//read current EEPROM content and
 	rval = GetBus()->Read(1, localbuf + base, size, read_datapage_size);
 
-	if ( rval != size )
+	if (rval != size)
 	{
 		if (rval > 0)
 		{

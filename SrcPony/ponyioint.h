@@ -35,7 +35,7 @@
 
 class PonyIOInterface : public BusInterface, public PortInterface
 {
-public:                //------------------------------- public
+  public:                //------------------------------- public
 	PonyIOInterface();
 	virtual ~PonyIOInterface();
 
@@ -56,10 +56,10 @@ public:                //------------------------------- public
 	int SetPower(int onoff);
 	void SetControlLine(int res = 1);
 
-protected:             //------------------------------- protected
+  protected:             //------------------------------- protected
 	int GetPresence() const;
 
-private:               //------------------------------- private
+  private:               //------------------------------- private
 
 };
 

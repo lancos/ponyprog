@@ -36,7 +36,7 @@
 
 class LptExtInterface : public BusInterface
 {
-public:                //------------------------------- public
+  public:                //------------------------------- public
 	LptExtInterface(bool use_io = false)
 	{
 		io_mode = use_io;
@@ -55,7 +55,7 @@ public:                //------------------------------- public
 		io_mode = use_io;
 	}
 
-protected:             //------------------------------- protected
+  protected:             //------------------------------- protected
 
 	int InDataPort(int port_no = 0)
 	{
@@ -92,7 +92,7 @@ protected:             //------------------------------- protected
 		return io_mode ? lptio.GetLastCtrl() : lpt.GetLastCtrl();
 	}
 
-private:               //------------------------------- private
+  private:               //------------------------------- private
 
 	static LPTInterface lpt;
 	static LPTIOInterface lptio;

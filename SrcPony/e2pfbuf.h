@@ -35,7 +35,7 @@
 
 class e2pFileBuf : public FileBuf
 {
-public:               //---------------------------------------- public
+  public:               //---------------------------------------- public
 
 	e2pFileBuf(e2AppWinInfo *wininfo = 0);
 	virtual ~e2pFileBuf();
@@ -43,9 +43,9 @@ public:               //---------------------------------------- public
 	virtual int Load(int loadtype = ALL_TYPE, long relocation_offfset = 0);
 	virtual int Save(int savetype = ALL_TYPE, long relocation_offfset = 0);
 
-protected:    //--------------------------------------- protected
+  protected:    //--------------------------------------- protected
 
-private:              //--------------------------------------- private
+  private:              //--------------------------------------- private
 	//      void check_offsets();
 };
 #endif

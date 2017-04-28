@@ -122,8 +122,8 @@ long X2444Bus::Read(int addr, uint8_t *data, long length, int page_size)
 
 		WaitUsec(1);
 
-		if ( (len & 1) )
-			if ( CheckAbort(len * 100 / length) )
+		if ((len & 1))
+			if (CheckAbort(len * 100 / length))
 			{
 				break;
 			}
@@ -194,8 +194,8 @@ long X2444Bus::Write(int addr, uint8_t const *data, long length, int page_size)
 		WaitUsec(shot_delay);
 		setCS();
 
-		if ( (curaddr & 1) )
-			if ( CheckAbort(curaddr * 100 / length) )
+		if ((curaddr & 1))
+			if (CheckAbort(curaddr * 100 / length))
 			{
 				break;
 			}

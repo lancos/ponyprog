@@ -35,7 +35,7 @@
 
 class LinuxSysFsInterface : public BusInterface
 {
-public:                //------------------------------- public
+  public:                //------------------------------- public
 	LinuxSysFsInterface();
 	virtual ~LinuxSysFsInterface();
 
@@ -56,10 +56,10 @@ public:                //------------------------------- public
 	int SetPower(int onoff);
 	void SetControlLine(int res = 1);
 
-protected:             //------------------------------- protected
+  protected:             //------------------------------- protected
 	//      int GetPresence() const;
 
-private:               //------------------------------- private
+  private:               //------------------------------- private
 	int InitPins();
 	void DeInitPins();
 

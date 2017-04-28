@@ -34,7 +34,7 @@
 
 class At250Bus : public SPIBus
 {
-public:                //------------------------------- public
+  public:                //------------------------------- public
 	At250Bus(BusInterface *ptr = 0);
 	//      virtual ~At250Bus();
 
@@ -43,7 +43,7 @@ public:                //------------------------------- public
 
 	int Reset();
 
-protected:             //------------------------------- protected
+  protected:             //------------------------------- protected
 
 	virtual int ReadEEPByte(int addr);
 	virtual void WriteEEPByte(int addr, int data);
@@ -68,7 +68,7 @@ protected:             //------------------------------- protected
 
 	const int loop_timeout;
 
-private:               //------------------------------- private
+  private:               //------------------------------- private
 
 	void setNCS()
 	{

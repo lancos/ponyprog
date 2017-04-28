@@ -48,18 +48,18 @@ using namespace Translator;
 class SerNumDialog : public QDialog, public Ui::SNCfgDialog
 {
 	Q_OBJECT
-public:               //---------------------------------------- public
-	SerNumDialog(QWidget* bw, const QString title = STR_MSGSERNUMCFG);
+  public:               //---------------------------------------- public
+	SerNumDialog(QWidget *bw, const QString title = STR_MSGSERNUMCFG);
 	virtual ~SerNumDialog();                // Destructor
 
-private slots:
+  private slots:
 	void onOk();
 
-protected:    //--------------------------------------- protected
+  protected:    //--------------------------------------- protected
 
-private:              //--------------------------------------- private
+  private:              //--------------------------------------- private
 	void setTextWidgets();
-private:
+  private:
 	long loc;
 	uint32_t val;
 	bool memtype;
@@ -72,17 +72,17 @@ private:
 class OscCalibDialog : public QDialog, public Ui::OscCalibrDialog
 {
 	Q_OBJECT
-public:               //---------------------------------------- public
-	OscCalibDialog(QWidget* bw, e2AppWinInfo* aw, const QString title = STR_MSGOSCCALIBCFG);
+  public:               //---------------------------------------- public
+	OscCalibDialog(QWidget *bw, e2AppWinInfo *aw, const QString title = STR_MSGOSCCALIBCFG);
 	virtual ~OscCalibDialog();              // Destructor
 
-private slots:
+  private slots:
 	void onOk();
 	void onRead();
 
-protected:    //--------------------------------------- protected
+  protected:    //--------------------------------------- protected
 
-private:              //--------------------------------------- private
+  private:              //--------------------------------------- private
 	long loc;
 	uint8_t val;
 	bool memtype;

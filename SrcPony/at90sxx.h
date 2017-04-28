@@ -38,7 +38,7 @@
 
 class At90sxx : public Device
 {
-public:               //---------------------------------------- public
+  public:               //---------------------------------------- public
 
 	At90sxx(e2AppWinInfo *wininfo = 0, BusIO *busp = 0);
 	virtual ~At90sxx();
@@ -61,11 +61,11 @@ public:               //---------------------------------------- public
 		return (At90sBus *)Device::GetBus();
 	}
 
-protected:    //--------------------------------------- protected
+  protected:    //--------------------------------------- protected
 
 	int QueryType(long &type);
 
-private:              //--------------------------------------- private
+  private:              //--------------------------------------- private
 
 };
 #endif

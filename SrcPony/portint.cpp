@@ -355,13 +355,13 @@ int PortInterface::OpenSerial(int no)
 			//Test if port is already in use
 			str.sprintf("COM%d", no);
 			hCom = CreateFile(str.toLatin1(),
-			                  GENERIC_READ | GENERIC_WRITE,
-			                  0,                    // comm devices must be opened w/exclusive-access
-			                  NULL,                 // no security attrs
-			                  OPEN_EXISTING,// comm devices must use OPEN_EXISTING
-			                  0,                    // not overlapped I/O
-			                  NULL                  // hTemplate must be NULL for comm devices
-			                 );
+							  GENERIC_READ | GENERIC_WRITE,
+							  0,                    // comm devices must be opened w/exclusive-access
+							  NULL,                 // no security attrs
+							  OPEN_EXISTING,// comm devices must use OPEN_EXISTING
+							  0,                    // not overlapped I/O
+							  NULL                  // hTemplate must be NULL for comm devices
+							 );
 
 			if (hCom != INVALID_HANDLE_VALUE)
 			{
@@ -452,13 +452,13 @@ int PortInterface::OpenParallel(int no)
 
 			str.sprintf("LPT%d", no);
 			hCom = CreateFile(str.toLatin1(),
-			                  GENERIC_READ | GENERIC_WRITE,
-			                  0,                    // comm devices must be opened w/exclusive-access
-			                  NULL,                 // no security attrs
-			                  OPEN_EXISTING,// comm devices must use OPEN_EXISTING
-			                  0,                    // not overlapped I/O
-			                  NULL                  // hTemplate must be NULL for comm devices
-			                 );
+							  GENERIC_READ | GENERIC_WRITE,
+							  0,                    // comm devices must be opened w/exclusive-access
+							  NULL,                 // no security attrs
+							  OPEN_EXISTING,// comm devices must use OPEN_EXISTING
+							  0,                    // not overlapped I/O
+							  NULL                  // hTemplate must be NULL for comm devices
+							 );
 
 			if (hCom != INVALID_HANDLE_VALUE)
 			{
@@ -580,13 +580,13 @@ static int winSystemVersion()
 
 	switch (osvi.dwPlatformId)
 	{
-	case VER_PLATFORM_WIN32_NT:
-		return 2;               //WINNT
-		break;
+		case VER_PLATFORM_WIN32_NT:
+			return 2;               //WINNT
+			break;
 
-	case VER_PLATFORM_WIN32_WINDOWS:
-		return 1;               //WIN9X
-		break;
+		case VER_PLATFORM_WIN32_WINDOWS:
+			return 1;               //WIN9X
+			break;
 	}
 
 #endif
@@ -671,7 +671,7 @@ void PortInterface::DetectPorts2k()
 			HKEY hKey;
 
 			if (CM_Open_DevNode_Key(devInfo.DevInst, KEY_QUERY_VALUE, 0,
-			                        RegDisposition_OpenExisting, &hKey, CM_REGISTRY_HARDWARE))
+									RegDisposition_OpenExisting, &hKey, CM_REGISTRY_HARDWARE))
 			{
 				continue;
 			}
@@ -743,7 +743,7 @@ void PortInterface::DetectPorts9x()
 	const char *HARDWARE_KEY = "HardwareKey";
 
 	const REGSAM KEY_PERMISSIONS = KEY_ENUMERATE_SUB_KEYS |
-	                               KEY_QUERY_VALUE;
+								   KEY_QUERY_VALUE;
 
 	HKEY CurKey;               // Current key when using the registry
 	char KeyName[MAX_PATH];    // A key name when using the registry
@@ -776,22 +776,22 @@ void PortInterface::DetectPorts9x()
 	KeyCount = 0;
 
 	while (RegEnumKeyEx(
-	                        CurKey, KeyCount++, KeyName, &DummyLength,
-	                        NULL, NULL, NULL, &DummyFileTime
-	                ) != ERROR_NO_MORE_ITEMS)
+				CurKey, KeyCount++, KeyName, &DummyLength,
+				NULL, NULL, NULL, &DummyFileTime
+			) != ERROR_NO_MORE_ITEMS)
 	{
 		DummyLength = MAX_PATH;
 	}
 
-	KeyList = new char*[KeyCount];
+	KeyList = new char *[KeyCount];
 
 	KeyCount = 0;
 	DummyLength = MAX_PATH;
 
 	while (RegEnumKeyEx(
-	                        CurKey, KeyCount, KeyName, &DummyLength,
-	                        NULL, NULL, NULL, &DummyFileTime
-	                ) != ERROR_NO_MORE_ITEMS)
+				CurKey, KeyCount, KeyName, &DummyLength,
+				NULL, NULL, NULL, &DummyFileTime
+			) != ERROR_NO_MORE_ITEMS)
 	{
 		KeyList[KeyCount] = new char[DummyLength + 1];
 		strcpy(KeyList[KeyCount], KeyName);
@@ -815,8 +815,8 @@ void PortInterface::DetectPorts9x()
 		strcat(KeyName, KeyList[KeyIndex]);
 
 		if (RegOpenKeyEx(
-		                        HKEY_DYN_DATA, KeyName, 0, KEY_PERMISSIONS, &CurKey
-		                ) != ERROR_SUCCESS)
+					HKEY_DYN_DATA, KeyName, 0, KEY_PERMISSIONS, &CurKey
+				) != ERROR_SUCCESS)
 		{
 			continue;
 		}
@@ -839,9 +839,9 @@ void PortInterface::DetectPorts9x()
 
 			// Read the data from the "Problem" sub-key
 			if (RegQueryValueEx(
-			                        CurKey, PROBLEM, NULL,
-			                        NULL, Data, &DataSize
-			                ) == ERROR_SUCCESS)
+						CurKey, PROBLEM, NULL,
+						NULL, Data, &DataSize
+					) == ERROR_SUCCESS)
 			{
 				// See if it has any problems
 				for (DWORD index = 0; index < DataSize; index++)
@@ -859,7 +859,7 @@ void PortInterface::DetectPorts9x()
 			// Now try and read the Hardware sub-key
 			DataSize = MAX_PATH;
 			RegQueryValueEx(
-			        CurKey, HARDWARE_KEY, NULL, &DataType, (uint8_t *)HardwareSubKey, &DataSize
+				CurKey, HARDWARE_KEY, NULL, &DataType, (uint8_t *)HardwareSubKey, &DataSize
 			);
 
 			if (DataType != REG_SZ)
@@ -877,8 +877,8 @@ void PortInterface::DetectPorts9x()
 				strcat(KeyName, HardwareSubKey);
 
 				if (RegOpenKeyEx(
-				                        HKEY_LOCAL_MACHINE, KeyName, 0, KEY_PERMISSIONS, &CurKey
-				                ) != ERROR_SUCCESS)
+							HKEY_LOCAL_MACHINE, KeyName, 0, KEY_PERMISSIONS, &CurKey
+						) != ERROR_SUCCESS)
 				{
 					continue;
 				}
@@ -887,7 +887,7 @@ void PortInterface::DetectPorts9x()
 				char PortName[MAX_PATH];
 				DataSize = MAX_PATH;
 				RegQueryValueEx(
-				        CurKey, PORTNAME, NULL, &DataType, (uint8_t *)PortName, &DataSize
+					CurKey, PORTNAME, NULL, &DataType, (uint8_t *)PortName, &DataSize
 				);
 
 				if (DataType != REG_SZ)
@@ -908,8 +908,8 @@ void PortInterface::DetectPorts9x()
 
 					memset(PortNumberStr, '\0', MAX_PATH);
 					strncpy(PortNumberStr,
-					        strstr(PortName, "COM") + 3,
-					        strlen(PortName) - (strstr(PortName, "COM") - PortName) - 2);
+							strstr(PortName, "COM") + 3,
+							strlen(PortName) - (strstr(PortName, "COM") - PortName) - 2);
 
 					// Find the port number
 					PortNumber = atoi(PortNumberStr);
@@ -924,8 +924,8 @@ void PortInterface::DetectPorts9x()
 
 					DataSize = sizeof(Allocation);
 					RegQueryValueEx(
-					        CurKey, ALLOCATION, NULL, &DataType,
-					        (unsigned char *)Allocation, &DataSize
+						CurKey, ALLOCATION, NULL, &DataType,
+						(unsigned char *)Allocation, &DataSize
 					);
 
 					if (DataType == REG_BINARY)
@@ -936,8 +936,8 @@ void PortInterface::DetectPorts9x()
 						for (int pos = 0; pos < 63; pos++)
 						{
 							if (Allocation[pos] == 0x000C &&
-							                Allocation[pos + 1] != 0x0000 &&
-							                PortNumber <= MAX_COMPORTS)
+									Allocation[pos + 1] != 0x0000 &&
+									PortNumber <= MAX_COMPORTS)
 							{
 								// Found a port; add it to the list
 								//      ser_ports_base[COMCount] = Allocation[pos+1];
@@ -972,8 +972,8 @@ void PortInterface::DetectPorts9x()
 
 					memset(PortNumberStr, '\0', MAX_PATH);
 					strncpy(PortNumberStr,
-					        strstr(PortName, "LPT") + 3,
-					        strlen(PortName) - (strstr(PortName, "LPT") - PortName) - 2);
+							strstr(PortName, "LPT") + 3,
+							strlen(PortName) - (strstr(PortName, "LPT") - PortName) - 2);
 
 					// Find the port number
 					PortNumber = atoi(PortNumberStr);
@@ -988,8 +988,8 @@ void PortInterface::DetectPorts9x()
 
 					DataSize = sizeof(Allocation);
 					RegQueryValueEx(
-					        CurKey, ALLOCATION, NULL, &DataType,
-					        (unsigned char *)Allocation, &DataSize
+						CurKey, ALLOCATION, NULL, &DataType,
+						(unsigned char *)Allocation, &DataSize
 					);
 
 					if (DataType == REG_BINARY)
@@ -1000,8 +1000,8 @@ void PortInterface::DetectPorts9x()
 						for (int pos = 0; pos < 63; pos++)
 						{
 							if (Allocation[pos] == 0x000C &&
-							                Allocation[pos + 1] != 0x0000 &&
-							                PortNumber <= MAX_LPTPORTS)
+									Allocation[pos + 1] != 0x0000 &&
+									PortNumber <= MAX_LPTPORTS)
 							{
 								// Found a port; add it to the list
 								par_ports[PortNumber - 1].base = Allocation[pos + 1];
@@ -1115,8 +1115,8 @@ static int DetectPortsNT(const QString &ServiceName, const QString &PortFormat, 
 							retval = RegQueryValueEx(hParams, "PortName", NULL, NULL, (PBYTE)buf, &Length);
 
 							if (retval == ERROR_SUCCESS
-							                && sscanf(buf, PortFormat, &Index) == 1
-							                && (unsigned)--Index < (unsigned)nports)        // Use zero-based index from here, avoid negative values
+									&& sscanf(buf, PortFormat, &Index) == 1
+									&& (unsigned)--Index < (unsigned)nports)        // Use zero-based index from here, avoid negative values
 							{
 								HKEY hControl;
 								_snprintf(buf, sizeof(buf), "Enum\\%s\\Control", PnpPath);
@@ -1134,9 +1134,9 @@ static int DetectPortsNT(const QString &ServiceName, const QString &PortFormat, 
 										DWORD *p = (DWORD *)buf + 4;
 
 										if ((p[0] == 2 || p[0] == 3 || p[0] == 4 || p[0] == 5)   // have ResType_IO
-										                && !HIWORD(p[2]) && p[2] > 0x100        // port address less than 64K and more than 0x100
-										                && !p[3]                                                        // no high DWORD part
-										                && p[4] >= 8 && p[4] < 16)              // length limited to 16
+												&& !HIWORD(p[2]) && p[2] > 0x100        // port address less than 64K and more than 0x100
+												&& !p[3]                                                        // no high DWORD part
+												&& p[4] >= 8 && p[4] < 16)              // length limited to 16
 										{
 											out << "p=" << (hex) << (void *)p << (dec) << " [0]=" << p[0] << ", [1]=" << p[1] << ", [2]=" << (hex) << p[2] << "h, [3]=" << p[3] << "h, [4]=" << (dec) << p[4] << "\n";
 

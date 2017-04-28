@@ -31,11 +31,11 @@
 
 BusIO::BusIO(BusInterface *p)
 	:       err_no(0),
-	        last_addr(0),
-	        shot_delay(5),
-	        busI(p),
-	        old_progress(0),
-	        last_programmed_addr(0)
+			last_addr(0),
+			shot_delay(5),
+			busI(p),
+			old_progress(0),
+			last_programmed_addr(0)
 {
 }
 
@@ -48,8 +48,8 @@ int BusIO::CheckAbort(int progress)
 
 	if (!abort)
 	{
-		if ( (progress == 0 && old_progress != 0) ||
-		                progress > old_progress + 4 )
+		if ((progress == 0 && old_progress != 0) ||
+				progress > old_progress + 4)
 		{
 			cmdWin->SetProgress(progress);
 			old_progress = progress;

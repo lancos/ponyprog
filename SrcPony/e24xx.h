@@ -46,7 +46,7 @@ class e2AppWinInfo;
 
 class E24xx : public Device
 {
-public:               //---------------------------------------- public
+  public:               //---------------------------------------- public
 
 	E24xx(e2AppWinInfo *wininfo = 0, BusIO *busp = 0, int max_no_of_bank = 8, int def_banksize = BANK_SIZE);
 	virtual ~E24xx();
@@ -60,7 +60,7 @@ public:               //---------------------------------------- public
 
 	int     const max_bank;         // max number of banks (max eeprom size)
 
-protected:    //--------------------------------------- protected
+  protected:    //--------------------------------------- protected
 
 	int const timeout_loop;         //eeprom timeout
 
@@ -82,7 +82,7 @@ protected:    //--------------------------------------- protected
 	int sequential_read;                    //1 --> legge un banco in una volta
 	int writepage_size;                             //se > 1 scrive una pagina alla volta
 
-private:              //--------------------------------------- private
+  private:              //--------------------------------------- private
 
 };
 #endif

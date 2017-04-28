@@ -150,7 +150,7 @@ static int gpio_open(unsigned int gpio, bool out_dir)
 		}
 	}
 
-	qDebug() << "gpio_open(" << gpio << ", " << (out_dir ? "out" : "in" ) << ") rval = " << rval;
+	qDebug() << "gpio_open(" << gpio << ", " << (out_dir ? "out" : "in") << ") rval = " << rval;
 
 	return rval;
 }
@@ -176,7 +176,7 @@ static int gpio_close(unsigned int gpio, int fd)
 
 		if (fd < 0)
 		{
-			fprintf (stderr, "Unable to open GPIO unexport interface: %s\n", strerror(errno));
+			fprintf(stderr, "Unable to open GPIO unexport interface: %s\n", strerror(errno));
 			rval = -1;
 		}
 		else
@@ -312,7 +312,7 @@ void LinuxSysFsInterface::SetDataOut(int sda)
 
 	if (IsInstalled())
 	{
-		if ( (E2Profile::GetPolarityControl() & DOUTINV) )
+		if ((E2Profile::GetPolarityControl() & DOUTINV))
 		{
 			sda = !sda;
 		}
@@ -345,7 +345,7 @@ void LinuxSysFsInterface::SetClock(int scl)
 
 	if (IsInstalled())
 	{
-		if ( (E2Profile::GetPolarityControl() & CLOCKINV) )
+		if ((E2Profile::GetPolarityControl() & CLOCKINV))
 		{
 			scl = !scl;
 		}

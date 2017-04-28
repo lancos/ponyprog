@@ -92,7 +92,7 @@ int SIProgInterface::Open(int com_no)
 
 	if (IsInstalled() != com_no)
 	{
-		if ( (ret_val = RS232Interface::OpenSerial(com_no)) == OK )
+		if ((ret_val = RS232Interface::OpenSerial(com_no)) == OK)
 		{
 			//      SetSerialEventMask(0);
 			//SetPower(1);  //08/02/1998 -- ora diamo alimentazione prima di ogni operazione e la togliamo subito dopo

@@ -85,7 +85,7 @@ enum
 class E2Profile
 {
 
-public:               //---------------------------------------- public
+  public:               //---------------------------------------- public
 	//      E2Profile(const QString &nm);
 	//      virtual ~E2Profile();
 
@@ -253,9 +253,9 @@ public:               //---------------------------------------- public
 	static bool GetEditBufferEnabled();
 	static void SetEditBufferEnabled(bool enable);
 
-protected:    //--------------------------------------- protected
+  protected:    //--------------------------------------- protected
 
-private:              //--------------------------------------- private
+  private:              //--------------------------------------- private
 	static QSettings *s;
 	static QString filename;       //name of .INI file
 };

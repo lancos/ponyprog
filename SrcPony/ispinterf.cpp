@@ -195,7 +195,7 @@ int AvrISPInterface::Open(int port_no)
 
 	if (IsInstalled() != port_no)
 	{
-		if ( InDataPort(port_no) < 0 )
+		if (InDataPort(port_no) < 0)
 		{
 			ret_val = E2ERR_OPENFAILED;
 		}
@@ -395,12 +395,12 @@ int AvrISPInterface::TestPort(int port)
 		OutDataMask(WF_TEST1, 1);
 		w.WaitMsec(50);
 
-		if ( (InDataPort() & RF_TEST1) )
+		if ((InDataPort() & RF_TEST1))
 		{
 			OutDataMask(WF_TEST1, 0);
 			w.WaitMsec(50);
 
-			if ( !(InDataPort() & RF_TEST1) )
+			if (!(InDataPort() & RF_TEST1))
 			{
 				test1 = true;
 			}
@@ -411,20 +411,20 @@ int AvrISPInterface::TestPort(int port)
 		OutDataMask(WF_TEST2, 0);
 		w.WaitMsec(50);
 
-		if ( (InDataPort() & RF_TEST2) )
+		if ((InDataPort() & RF_TEST2))
 		{
 			OutDataMask(WF_TEST2, 1);
 			w.WaitMsec(50);
 
-			if ( !(InDataPort() & RF_TEST2) )
+			if (!(InDataPort() & RF_TEST2))
 			{
 				test2 = true;
 			}
 		}
 
-		ret_val = ( test1 || test2 ) ?
-		          OK :
-		          E2ERR_OPENFAILED;
+		ret_val = (test1 || test2) ?
+				  OK :
+				  E2ERR_OPENFAILED;
 	}
 
 	TestRestore();

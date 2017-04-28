@@ -73,7 +73,7 @@ void LPTIOInterface::SetPort(int port_no)
 {
 	qDebug() << "LPTIOInterface::SetPort(" << port_no << ")";
 
-	if ( port_no >= 1 && port_no <= MAX_LPTPORTS )
+	if (port_no >= 1 && port_no <= MAX_LPTPORTS)
 	{
 		lpt_port = port_no;
 
@@ -96,8 +96,8 @@ int LPTIOInterface::InDataPort(int port_no)
 
 	int ret_val = OK;
 
-	if ( port_no >= 1 && port_no <= MAX_LPTPORTS &&
-	                port_no != lpt_port )
+	if (port_no >= 1 && port_no <= MAX_LPTPORTS &&
+			port_no != lpt_port)
 	{
 		lpt_port = port_no;
 
@@ -131,8 +131,8 @@ int LPTIOInterface::OutDataPort(int val, int port_no)
 
 	int ret_val = OK;
 
-	if ( port_no >= 1 && port_no <= MAX_LPTPORTS &&
-	                port_no != lpt_port )
+	if (port_no >= 1 && port_no <= MAX_LPTPORTS &&
+			port_no != lpt_port)
 	{
 		lpt_port = port_no;
 
@@ -169,8 +169,8 @@ int LPTIOInterface::OutControlPort(int val, int port_no)
 
 	int ret_val = OK;
 
-	if ( port_no >= 1 && port_no <= MAX_LPTPORTS &&
-	                port_no != lpt_port )
+	if (port_no >= 1 && port_no <= MAX_LPTPORTS &&
+			port_no != lpt_port)
 	{
 		lpt_port = port_no;
 

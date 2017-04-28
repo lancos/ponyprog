@@ -45,7 +45,7 @@ class e2CmdWindow;
 
 
 //======================>>> infoModalDialog::infoModalDialog <<<==================
-e24xx_infoModalDialog::e24xx_infoModalDialog(QWidget* bw, int rlv, uint16_t crc, long size, const QString title) :
+e24xx_infoModalDialog::e24xx_infoModalDialog(QWidget *bw, int rlv, uint16_t crc, long size, const QString title) :
 	QDialog(bw)
 {
 	setupUi(this);
@@ -110,7 +110,7 @@ void e24xx_infoModalDialog::onOk()
 
 
 //======================>>> infoModalDialog::infoModalDialog <<<==================
-other_infoModalDialog::other_infoModalDialog(QWidget* bw, long fsize, long esize, uint16_t crc, const QString title) :
+other_infoModalDialog::other_infoModalDialog(QWidget *bw, long fsize, long esize, uint16_t crc, const QString title) :
 	QDialog(bw)
 {
 	setupUi(this);
@@ -130,15 +130,15 @@ other_infoModalDialog::other_infoModalDialog(QWidget* bw, long fsize, long esize
 	lblTo->setText(STR_MSGEEPSIZE); // size label
 	lblVal->setText(STR_MSGFLASHSIZE); // flash size label
 
-	str = QString().sprintf( "%04Xh", crc);
+	str = QString().sprintf("%04Xh", crc);
 	txiFrom->setText(str);
 	txiFrom->setReadOnly(true);
 
-	str = QString().sprintf( "%ld Byte", fsize);
+	str = QString().sprintf("%ld Byte", fsize);
 	txiTo->setText(str);
 	txiTo->setReadOnly(true);
 
-	str = QString().sprintf( "%ld Byte", esize);
+	str = QString().sprintf("%ld Byte", esize);
 	txiVal->setText(str);
 	txiVal->setReadOnly(true);
 
@@ -163,7 +163,7 @@ void other_infoModalDialog::onOk()
 }
 
 
-notesModalDialog::notesModalDialog(QWidget* bw, QString &id, QString &cm, const QString title) :
+notesModalDialog::notesModalDialog(QWidget *bw, QString &id, QString &cm, const QString title) :
 	QDialog(bw)
 {
 	setupUi(this);
@@ -219,7 +219,7 @@ void notesModalDialog::onOk()
 }
 
 
-editModalDialog::editModalDialog(QWidget* bw, int curval, const QString title) :
+editModalDialog::editModalDialog(QWidget *bw, int curval, const QString title) :
 	QDialog(bw)
 {
 	setupUi(this);
@@ -290,7 +290,7 @@ void editModalDialog::onEdit()
 	int newval;
 	bool ok;
 
-	QLineEdit *l = static_cast<QLineEdit*>(sender());
+	QLineEdit *l = static_cast<QLineEdit *>(sender());
 	disconnect(txiFrom, SIGNAL(changed()), this, SLOT(onEdit())); // hex
 	disconnect(txiTo, SIGNAL(changed()), this, SLOT(onEdit())); // dec
 	disconnect(txiVal, SIGNAL(changed()), this, SLOT(onEdit()));  // char
@@ -373,7 +373,7 @@ void editModalDialog::onEdit()
 
 const unsigned int MAXLEN = 80;
 
-editModalDialog2::editModalDialog2(QWidget* bw, const QString curval, const QString title) :
+editModalDialog2::editModalDialog2(QWidget *bw, const QString curval, const QString title) :
 	QDialog(bw)
 {
 	setupUi(this);

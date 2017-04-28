@@ -151,7 +151,7 @@ int X2444::Verify(int type)
 		}
 		else
 		{
-			rval = ( memcmp(GetBufPtr(), localbuf, size) != 0 ) ? 0 : 1;
+			rval = (memcmp(GetBufPtr(), localbuf, size) != 0) ? 0 : 1;
 		}
 
 		delete localbuf;

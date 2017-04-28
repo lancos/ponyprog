@@ -408,7 +408,7 @@ static QVector<chipInfo> const eepAt89s_map =
 static QVector<chipInfo> const eep93x6_map =
 {
 	//      "93XX Auto", E9300
-	{"9306", E9306, 16 , -1, -1, 64},
+	{"9306", E9306, 16, -1, -1, 64},
 	{"9346", E9346, 64, -1, -1, 64},
 	{"9356", E9356, 128, -1, -1, 256},
 	{"9357", E9357, 128, -1, -1, 128},

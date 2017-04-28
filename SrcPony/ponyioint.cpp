@@ -161,7 +161,7 @@ int PonyIOInterface::Open(int com_no)
 
 	if (IsInstalled() != com_no)
 	{
-		if ( (ret_val = OpenSerial(com_no)) == OK )
+		if ((ret_val = OpenSerial(com_no)) == OK)
 		{
 			Install(com_no);
 		}
@@ -192,7 +192,7 @@ void PonyIOInterface::SetDataOut(int sda)
 
 	if (IsInstalled())
 	{
-		if ( (E2Profile::GetPolarityControl() & DOUTINV) )
+		if ((E2Profile::GetPolarityControl() & DOUTINV))
 		{
 			sda = !sda;
 		}
@@ -214,7 +214,7 @@ void PonyIOInterface::SetClock(int scl)
 
 	if (IsInstalled())
 	{
-		if ( (E2Profile::GetPolarityControl() & CLOCKINV) )
+		if ((E2Profile::GetPolarityControl() & CLOCKINV))
 		{
 			scl = !scl;
 		}

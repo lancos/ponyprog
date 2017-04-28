@@ -98,8 +98,8 @@ int e2pFileBuf::Load(int loadtype, long relocation_offset)
 	QDataStream datastream(&fh);
 
 	// Controlla il tipo di file
-	if (datastream.readRawData( (char*)&hdr, sizeof(e2pHeader)) &&
-	                strncmp(hdr.fileID, id_string, E2P_ID_SIZE) == 0 )
+	if (datastream.readRawData((char *)&hdr, sizeof(e2pHeader)) &&
+			strncmp(hdr.fileID, id_string, E2P_ID_SIZE) == 0)
 	{
 		unsigned char *localbuf;
 		localbuf = new unsigned char[hdr.e2pSize];
@@ -107,11 +107,11 @@ int e2pFileBuf::Load(int loadtype, long relocation_offset)
 		if (localbuf)
 		{
 			//Controlla il CRC dell'Header
-			if ( mcalc_crc(&hdr, sizeof(hdr) - sizeof(hdr.headCrc)) == hdr.headCrc &&
-			                //Check for CRC in memory
-			                fcalc_crc(fh, sizeof(e2pHeader), 0) == hdr.e2pCrc &&
-			                //read buffer
-			                datastream.readRawData( (char*)localbuf, hdr.e2pSize) )
+			if (mcalc_crc(&hdr, sizeof(hdr) - sizeof(hdr.headCrc)) == hdr.headCrc &&
+					//Check for CRC in memory
+					fcalc_crc(fh, sizeof(e2pHeader), 0) == hdr.e2pCrc &&
+					//read buffer
+					datastream.readRawData((char *)localbuf, hdr.e2pSize))
 				//                      fread(FileBuf::GetBufPtr(), hdr.e2pSize, 1, fh) )
 			{
 				SetEEpromType(hdr.e2pType);  //set eeprom device type (and block size too)
@@ -119,17 +119,17 @@ int e2pFileBuf::Load(int loadtype, long relocation_offset)
 
 				if (hdr.fversion > 0)
 				{
-					SetLockBits( ((uint32_t)hdr.e2pExtLockBits << 8) | hdr.e2pLockBits );
-					SetFuseBits( ((uint32_t)hdr.e2pExtFuseBits << 8) | hdr.e2pFuseBits );
+					SetLockBits(((uint32_t)hdr.e2pExtLockBits << 8) | hdr.e2pLockBits);
+					SetFuseBits(((uint32_t)hdr.e2pExtFuseBits << 8) | hdr.e2pFuseBits);
 				}
 				else
 				{
 					//Old file version
 					if (GetE2PPriType(hdr.e2pType) == PIC16XX ||
-					                GetE2PPriType(hdr.e2pType) == PIC168XX ||
-					                GetE2PPriType(hdr.e2pType) == PIC125XX )
+							GetE2PPriType(hdr.e2pType) == PIC168XX ||
+							GetE2PPriType(hdr.e2pType) == PIC125XX)
 					{
-						SetLockBits( ((uint32_t)hdr.e2pLockBits << 8) | hdr.e2pFuseBits );
+						SetLockBits(((uint32_t)hdr.e2pLockBits << 8) | hdr.e2pFuseBits);
 					}
 					else
 					{
@@ -141,7 +141,7 @@ int e2pFileBuf::Load(int loadtype, long relocation_offset)
 
 				if (hdr.fversion > 1)
 				{
-					SetSplitted( ((uint32_t)hdr.split_size_High << 16) | hdr.split_size_Low );
+					SetSplitted(((uint32_t)hdr.split_size_High << 16) | hdr.split_size_Low);
 				}
 				else
 				{
@@ -156,7 +156,7 @@ int e2pFileBuf::Load(int loadtype, long relocation_offset)
 				//Copy the content into the buffer
 				if (loadtype == ALL_TYPE)
 				{
-					if ( hdr.e2pSize <= GetBufSize() )
+					if (hdr.e2pSize <= GetBufSize())
 					{
 						memcpy(FileBuf::GetBufPtr(), localbuf, hdr.e2pSize);
 					}
@@ -165,13 +165,13 @@ int e2pFileBuf::Load(int loadtype, long relocation_offset)
 				{
 					long s = GetSplitted();
 
-					if ( s <= 0 )
+					if (s <= 0)
 					{
 						s = hdr.e2pSize;
 					}
 
 					//if splittedInfo == 0 then copy ALL
-					if ( s <= hdr.e2pSize && s <= GetBufSize() )
+					if (s <= hdr.e2pSize && s <= GetBufSize())
 					{
 						memcpy(FileBuf::GetBufPtr(), localbuf, s);
 					}
@@ -180,9 +180,9 @@ int e2pFileBuf::Load(int loadtype, long relocation_offset)
 				{
 					long s = GetSplitted();
 
-					if ( s >= 0 &&
-					                s < hdr.e2pSize &&
-					                hdr.e2pSize <= GetBufSize() )
+					if (s >= 0 &&
+							s < hdr.e2pSize &&
+							hdr.e2pSize <= GetBufSize())
 					{
 						memcpy(FileBuf::GetBufPtr() + s, localbuf + s, hdr.e2pSize - s);
 					}
@@ -256,11 +256,11 @@ int e2pFileBuf::Save(int savetype, long relocation_offset)
 			//Initialize local buffer
 			//  if the file already exist read the current content
 			//  otherwise set the localbuffer to 0xFF
-			rv = fh.seek( sizeof(hdr));
+			rv = fh.seek(sizeof(hdr));
 
 			if (rv == 0)
 			{
-				rv = datastream.readRawData( (char*)localbuf, hdr.e2pSize);
+				rv = datastream.readRawData((char *)localbuf, hdr.e2pSize);
 			}
 			else
 			{
@@ -303,7 +303,7 @@ int e2pFileBuf::Save(int savetype, long relocation_offset)
 
 		hdr.e2pType = GetEEpromType();
 		strncpy(hdr.e2pStringID, GetStringID().toLatin1().constData(), 28);
-		strncpy (hdr.e2pComment, GetComment().toLatin1().constData(), 85);
+		strncpy(hdr.e2pComment, GetComment().toLatin1().constData(), 85);
 		hdr.flags = GetRollOver() & 7;
 		hdr.split_size_Low = (uint16_t)GetSplitted();
 		hdr.split_size_High = (uint16_t)(GetSplitted() >> 16);
@@ -311,8 +311,8 @@ int e2pFileBuf::Save(int savetype, long relocation_offset)
 		hdr.headCrc = mcalc_crc(&hdr, sizeof(hdr) - sizeof(hdr.headCrc));
 
 		//Write to file
-		if (    datastream.writeRawData((char*)&hdr, sizeof(hdr)) &&             //Write the header
-		                datastream.writeRawData((char*)localbuf, hdr.e2pSize) )   //Write the buffer
+		if (datastream.writeRawData((char *)&hdr, sizeof(hdr)) &&                //Write the header
+				datastream.writeRawData((char *)localbuf, hdr.e2pSize))   //Write the buffer
 		{
 			rval = GetNoOfBlock();
 		}

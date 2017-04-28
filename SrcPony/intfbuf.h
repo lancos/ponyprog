@@ -37,7 +37,7 @@
 
 class IntelFileBuf : public FileBuf
 {
-public:               //---------------------------------------- public
+  public:               //---------------------------------------- public
 
 	IntelFileBuf(e2AppWinInfo *wininfo = 0);
 	virtual ~IntelFileBuf();
@@ -45,9 +45,9 @@ public:               //---------------------------------------- public
 	virtual int Load(int loadtype = ALL_TYPE, long relocation_offset = 0);
 	virtual int Save(int savetype = ALL_TYPE, long relocation_offset = 0);
 
-protected:    //--------------------------------------- protected
+  protected:    //--------------------------------------- protected
 
-private:              //--------------------------------------- private
+  private:              //--------------------------------------- private
 
 	int WriteRecord(QFile &fh, uint8_t *bptr, long curaddr, long recsize, int fmt);
 	int WriteAddressRecord(QFile &fh, long curaddr, bool linear_address = false);

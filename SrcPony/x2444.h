@@ -38,7 +38,7 @@
 
 class X2444 : public Device
 {
-public:               //---------------------------------------- public
+  public:               //---------------------------------------- public
 
 	X2444(e2AppWinInfo *wininfo = 0, BusIO *busp = 0);
 
@@ -48,14 +48,14 @@ public:               //---------------------------------------- public
 
 	virtual void DefaultBankSize();
 
-protected:    //--------------------------------------- protected
+  protected:    //--------------------------------------- protected
 
 	X2444Bus *GetBus()
 	{
 		return (X2444Bus *)Device::GetBus();
 	}
 
-private:              //--------------------------------------- private
+  private:              //--------------------------------------- private
 
 };
 #endif

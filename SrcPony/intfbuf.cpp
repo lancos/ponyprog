@@ -77,7 +77,7 @@ int IntelFileBuf::WriteRecord(QFile &fh, uint8_t *bptr, long curaddr, long recsi
 
 		for (j = 0; j < recsize; j++)
 		{
-			if ( bptr[curaddr + j] != 0xFF )
+			if (bptr[curaddr + j] != 0xFF)
 			{
 				discard = 0;
 				break;
@@ -107,12 +107,12 @@ int IntelFileBuf::WriteRecord(QFile &fh, uint8_t *bptr, long curaddr, long recsi
 		checksum += curaddr & 0xFF;
 
 		//record type
-		out << QString().sprintf( "%02X", fmt & 0xFF);
+		out << QString().sprintf("%02X", fmt & 0xFF);
 		checksum += fmt & 0xFF;
 
 		for (j = 0; j < recsize; j++)
 		{
-			out << QString().sprintf( "%02X", bptr[curaddr + j]);
+			out << QString().sprintf("%02X", bptr[curaddr + j]);
 			checksum += bptr[curaddr + j];
 		}
 
@@ -135,16 +135,16 @@ int IntelFileBuf::WriteAddressRecord(QFile &fh, long curaddr, bool linear_addres
 		int len = 2;
 
 		//byte count
-		out << QString().sprintf( "%02X", len & 0xFF);
+		out << QString().sprintf("%02X", len & 0xFF);
 		checksum += len & 0xFF;
 
 		//addr field
-		out << QString().sprintf( "%04X", 0);
+		out << QString().sprintf("%04X", 0);
 
 		if (linear_address)
 		{
 			//record type
-			out << QString().sprintf( "%02X", LIN_ADDR_RECORD & 0xFF);
+			out << QString().sprintf("%02X", LIN_ADDR_RECORD & 0xFF);
 			checksum += LIN_ADDR_RECORD & 0xFF;
 
 			//adjust extended linear address
@@ -160,11 +160,11 @@ int IntelFileBuf::WriteAddressRecord(QFile &fh, long curaddr, bool linear_addres
 			curaddr >>= 4;
 		}
 
-		out << QString().sprintf( "%04lX", curaddr & 0xFFFF);
+		out << QString().sprintf("%04lX", curaddr & 0xFFFF);
 		checksum += (curaddr >> 8) & 0xFF;
 		checksum += curaddr & 0xFF;
 
-		out << QString().sprintf( "%02X\n", (~checksum + 1) & 0xFF);
+		out << QString().sprintf("%02X\n", (~checksum + 1) & 0xFF);
 	}
 
 	return rval;
@@ -181,7 +181,7 @@ int IntelFileBuf::Save(int savetype, long relocation_offset)
 
 	(void)relocation_offset;
 
-	if (!fh.open(QIODevice::WriteOnly | QIODevice::Text ))
+	if (!fh.open(QIODevice::WriteOnly | QIODevice::Text))
 	{
 		return CREATEERROR;
 	}
@@ -191,7 +191,7 @@ int IntelFileBuf::Save(int savetype, long relocation_offset)
 	uint8_t *ptr = FileBuf::GetBufPtr();
 
 	//Remove FF's tail
-	while ( ptr[size - 1] == 0xFF )
+	while (ptr[size - 1] == 0xFF)
 	{
 		size--;
 	}
@@ -229,16 +229,16 @@ int IntelFileBuf::Save(int savetype, long relocation_offset)
 		while (curaddr < size)
 		{
 			//Write extended address record if needed
-			if ( (curaddr / 0x10000) > 0 && (curaddr % 0x10000) == 0 )
-				if ( !WriteAddressRecord(fh, curaddr) )
+			if ((curaddr / 0x10000) > 0 && (curaddr % 0x10000) == 0)
+				if (!WriteAddressRecord(fh, curaddr))
 				{
 					rval = WRITEERROR;
 					break;
 				}
 
-			int recsize = min( (size - curaddr), 16 );
+			int recsize = min((size - curaddr), 16);
 
-			if ( !WriteRecord(fh, ptr, curaddr, recsize, DATA_RECORD) )
+			if (!WriteRecord(fh, ptr, curaddr, recsize, DATA_RECORD))
 			{
 				rval = WRITEERROR;
 				break;
@@ -271,9 +271,9 @@ int IntelFileBuf::Load(int loadtype, long relocation_offset)
 	uint8_t *endp = GetBufPtr() + GetBufSize();
 	uint8_t *dp = GetBufPtr();
 
-	if ( loadtype == DATA_TYPE)
+	if (loadtype == DATA_TYPE)
 	{
-		if ( GetSplitted() >= 0 && GetSplitted() < GetBufSize() )
+		if (GetSplitted() >= 0 && GetSplitted() < GetBufSize())
 		{
 			dp += GetSplitted();
 		}
@@ -297,7 +297,7 @@ int IntelFileBuf::Load(int loadtype, long relocation_offset)
 
 	QFile fh(GetFileName());
 
-	if (!fh.open(QIODevice::ReadOnly | QIODevice::Text ))
+	if (!fh.open(QIODevice::ReadOnly | QIODevice::Text))
 	{
 		return FILENOTFOUND;
 	}
@@ -313,7 +313,7 @@ int IntelFileBuf::Load(int loadtype, long relocation_offset)
 		char *s;
 		int k;
 
-		if ( (s = strchr(riga, ':')) == NULL )
+		if ((s = strchr(riga, ':')) == NULL)
 		{
 			continue;
 		}
@@ -325,7 +325,7 @@ int IntelFileBuf::Load(int loadtype, long relocation_offset)
 		//Byte Count
 		uint16_t bcount;
 
-		if ( ScanHex(&s, 2, bcount) != OK )
+		if (ScanHex(&s, 2, bcount) != OK)
 		{
 			rval = BADFILETYPE;
 			break;
@@ -336,7 +336,7 @@ int IntelFileBuf::Load(int loadtype, long relocation_offset)
 		//Address
 		uint16_t addr;
 
-		if ( ScanHex(&s, 4, addr) != OK )
+		if (ScanHex(&s, 4, addr) != OK)
 		{
 			rval = BADFILETYPE;
 			break;
@@ -352,7 +352,7 @@ int IntelFileBuf::Load(int loadtype, long relocation_offset)
 		//Record Type
 		uint16_t rectype;
 
-		if ( ScanHex(&s, 2, rectype) != OK )
+		if (ScanHex(&s, 2, rectype) != OK)
 		{
 			rval = BADFILETYPE;
 			break;
@@ -377,7 +377,7 @@ int IntelFileBuf::Load(int loadtype, long relocation_offset)
 
 			for (k = 0, p = dp + laddr; k < bcount && ok; k++)
 			{
-				if ( ScanHex(&s, 2, data) != OK )
+				if (ScanHex(&s, 2, data) != OK)
 				{
 					ok = false;
 				}
@@ -406,7 +406,7 @@ int IntelFileBuf::Load(int loadtype, long relocation_offset)
 				//Address
 				uint16_t addr;
 
-				if ( ScanHex(&s, 4, addr) != OK )
+				if (ScanHex(&s, 4, addr) != OK)
 				{
 					rval = BADFILETYPE;
 					break;
@@ -430,7 +430,7 @@ int IntelFileBuf::Load(int loadtype, long relocation_offset)
 				//Address
 				uint16_t addr;
 
-				if ( ScanHex(&s, 4, addr) != OK )
+				if (ScanHex(&s, 4, addr) != OK)
 				{
 					rval = BADFILETYPE;
 					break;
@@ -469,7 +469,7 @@ int IntelFileBuf::Load(int loadtype, long relocation_offset)
 
 			while (bcount-- && ok)
 			{
-				if ( ScanHex(&s, 2, data) != OK )
+				if (ScanHex(&s, 2, data) != OK)
 				{
 					ok = false;
 				}
@@ -484,13 +484,13 @@ int IntelFileBuf::Load(int loadtype, long relocation_offset)
 			}
 		}
 
-		if ( ScanHex(&s, 2, data) != OK )
+		if (ScanHex(&s, 2, data) != OK)
 		{
 			rval = BADFILETYPE;
 			break;
 		}
 
-		if ( (uint8_t)data != (uint8_t)(~checksum + 1) )
+		if ((uint8_t)data != (uint8_t)(~checksum + 1))
 		{
 			rval = BADFILETYPE;
 			break;
@@ -555,7 +555,7 @@ int IntelFileBuf::ScanHex(char **sp, int len, uint32_t &result)
 	{
 		cifra[j] = *(*sp)++;
 
-		if ( !isxdigit(cifra[j]) )
+		if (!isxdigit(cifra[j]))
 		{
 			return -1;
 		}

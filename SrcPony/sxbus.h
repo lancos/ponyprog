@@ -35,7 +35,7 @@
 
 class SxBus : public BusIO
 {
-public:                //------------------------------- public
+  public:                //------------------------------- public
 	SxBus(BusInterface *ptr = 0);
 	virtual ~SxBus();
 
@@ -47,7 +47,7 @@ public:                //------------------------------- public
 	//      int Open(int port);
 	//      void Close();
 
-protected:             //------------------------------- protected
+  protected:             //------------------------------- protected
 
 	int SendDataWord(int wo, int wlen = 16);
 	int RecDataWord(int wlen = 16);
@@ -69,7 +69,7 @@ protected:             //------------------------------- protected
 		busI->SetControlLine(0);
 	}
 
-private:               //------------------------------- private
+  private:               //------------------------------- private
 
 	int SendDataBit(int b);
 	int RecDataBit();

@@ -38,7 +38,7 @@
 
 class binFileBuf : public FileBuf
 {
-public:               //---------------------------------------- public
+  public:               //---------------------------------------- public
 
 	binFileBuf(e2AppWinInfo *wininfo = 0);
 	virtual ~binFileBuf();
@@ -46,9 +46,9 @@ public:               //---------------------------------------- public
 	virtual int Load(int loadtype = ALL_TYPE, long relocation_offset = 0);
 	virtual int Save(int savetype = ALL_TYPE, long relocation_offset = 0);
 
-protected:    //--------------------------------------- protected
+  protected:    //--------------------------------------- protected
 
-private:              //--------------------------------------- private
+  private:              //--------------------------------------- private
 
 };
 #endif

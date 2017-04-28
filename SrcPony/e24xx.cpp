@@ -42,11 +42,11 @@
 //=====>>> Costruttore <<<======
 E24xx::E24xx(e2AppWinInfo *wininfo, BusIO *busp, int max_no_of_bank, int def_banksize)
 	:       Device(wininfo, busp, def_banksize),
-	        max_bank(max_no_of_bank),
-	        timeout_loop(200),
-	        n_bank(0),
-	        sequential_read(1),             // lettura di un banco alla volta
-	        writepage_size(1)               // scrittura di un byte alla volta (no page write)
+			max_bank(max_no_of_bank),
+			timeout_loop(200),
+			n_bank(0),
+			sequential_read(1),             // lettura di un banco alla volta
+			writepage_size(1)               // scrittura di un byte alla volta (no page write)
 {
 	//      qDebug() << "E24xx" << THEAPP;
 	base_addr = E2Profile::GetI2CBaseAddr();
@@ -82,7 +82,7 @@ int E24xx::Probe(int probe_size)
 	{
 		if (GetBus()->Read(addr, &ch, 1) != 1)
 		{
-			if ( (error = GetBus()->Error()) != IICERR_NOADDRACK )
+			if ((error = GetBus()->Error()) != IICERR_NOADDRACK)
 			{
 				//      GetBus()->Open(E2Profile::GetPort());
 				return error;
@@ -107,7 +107,7 @@ int E24xx::Probe(int probe_size)
 
 int E24xx::Read(int probe, int type)
 {
-	int error = Probe( probe || GetNoOfBank() == 0 );
+	int error = Probe(probe || GetNoOfBank() == 0);
 
 	if (error < 0)
 	{
@@ -127,13 +127,13 @@ int E24xx::Read(int probe, int type)
 		// capacita` correntemente selezionata
 		for (k = 0; k < n_bank; k++)
 		{
-			if ( (error = bank_in(GetBufPtr() + k * GetBankSize(), k)) )
+			if ((error = bank_in(GetBufPtr() + k * GetBankSize(), k)))
 			{
 				//      GetBus()->Open(E2Profile::GetPort());              //ormai obsoleta
 				return error;
 			}
 
-			if ( GetBus()->CheckAbort((k + 1) * 100 / n_bank) )
+			if (GetBus()->CheckAbort((k + 1) * 100 / n_bank))
 			{
 				return OP_ABORTED;
 			}
@@ -154,7 +154,7 @@ int E24xx::Read(int probe, int type)
 
 int E24xx::Write(int probe, int type)
 {
-	int error = Probe( probe || GetNoOfBank() == 0 );
+	int error = Probe(probe || GetNoOfBank() == 0);
 
 	if (error < 0)
 	{
@@ -170,13 +170,13 @@ int E24xx::Write(int probe, int type)
 
 		for (k = 0; k < GetNoOfBank(); k++)
 		{
-			if ( (error = bank_out(GetBufPtr() + k * GetBankSize(), k)) )
+			if ((error = bank_out(GetBufPtr() + k * GetBankSize(), k)))
 			{
 				//      GetBus()->Open(E2Profile::GetPort());
 				return error;
 			}
 
-			if ( GetBus()->CheckAbort((k + 1) * 100 / GetNoOfBank()) )
+			if (GetBus()->CheckAbort((k + 1) * 100 / GetNoOfBank()))
 			{
 				return OP_ABORTED;
 			}
@@ -217,20 +217,20 @@ int E24xx::Verify(int type)
 		{
 			int error;
 
-			if ( (error = bank_in(localbuf, k)) )
+			if ((error = bank_in(localbuf, k)))
 			{
 				//      GetBus()->Open(E2Profile::GetPort());
 				rval = error;
 				break;
 			}
 
-			if ( memcmp(GetBufPtr() + k * GetBankSize(), localbuf, GetBankSize()) != 0 )
+			if (memcmp(GetBufPtr() + k * GetBankSize(), localbuf, GetBankSize()) != 0)
 			{
 				rval = 0;
 				break;
 			}
 
-			if ( GetBus()->CheckAbort((k + 1) * 100 / GetNoOfBank()) )
+			if (GetBus()->CheckAbort((k + 1) * 100 / GetNoOfBank()))
 			{
 				rval = OP_ABORTED;
 				break;
@@ -399,12 +399,12 @@ int E24xx::BankRollOverDetect(int force)
 #else
 		int error;
 
-		if ( (error = bank_in(buf1, 0, CMP_LEN)) )
+		if ((error = bank_in(buf1, 0, CMP_LEN)))
 		{
 			return error;
 		}
 
-		if ( (error = bank_in(buf2, 1, CMP_LEN)) )
+		if ((error = bank_in(buf2, 1, CMP_LEN)))
 		{
 			return error;
 		}
@@ -431,7 +431,7 @@ int E24xx::BankRollOverDetect(int force)
 
 #else
 
-			if ( (error = bank_in(buf, 0, CMP_LEN + 1, GetBankSize() - 1)) )
+			if ((error = bank_in(buf, 0, CMP_LEN + 1, GetBankSize() - 1)))
 			{
 				return error;
 			}

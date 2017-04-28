@@ -58,7 +58,7 @@ int At17xxx::WritePage(long addr, int addr_bytes, uint8_t *buf, int len)
 
 	for (j = addr_bytes - 1; j >= 0; j--)
 	{
-		rval = GetBus()->WriteByte( (addr >> (j * 8)) & 0xFF, 0 );
+		rval = GetBus()->WriteByte((addr >> (j * 8)) & 0xFF, 0);
 
 		if (rval < 0)
 		{
@@ -68,7 +68,7 @@ int At17xxx::WritePage(long addr, int addr_bytes, uint8_t *buf, int len)
 
 	for (j = 0; j < len; j++)
 	{
-		rval = GetBus()->WriteByte( buf[j], 1 );
+		rval = GetBus()->WriteByte(buf[j], 1);
 
 		if (rval < 0)
 		{
@@ -92,7 +92,7 @@ int At17xxx::WritePage(long addr, int addr_bytes, uint8_t *buf, int len)
 
 int At17xxx::Write(int probe, int type)
 {
-	int error = Probe( probe || GetNoOfBank() == 0 );
+	int error = Probe(probe || GetNoOfBank() == 0);
 
 	if (error < 0)
 	{
@@ -132,7 +132,7 @@ int At17xxx::Write(int probe, int type)
 				break;
 			}
 
-			if ( GetBus()->CheckAbort(j * 100 / size) )
+			if (GetBus()->CheckAbort(j * 100 / size))
 			{
 				rval = OP_ABORTED;
 				break;
@@ -173,7 +173,7 @@ int At17xxx::ReadPage(long addr, int addr_bytes, uint8_t *buf, int len)
 
 	for (j = addr_bytes - 1; j >= 0; j--)
 	{
-		rval = GetBus()->WriteByte( (addr >> (j * 8)) & 0xFF, 0 );
+		rval = GetBus()->WriteByte((addr >> (j * 8)) & 0xFF, 0);
 
 		if (rval < 0)
 		{
@@ -218,7 +218,7 @@ int At17xxx::ReadPage(long addr, int addr_bytes, uint8_t *buf, int len)
 
 int At17xxx::Read(int probe, int type)
 {
-	int error = Probe( probe || GetNoOfBank() == 0 );
+	int error = Probe(probe || GetNoOfBank() == 0);
 
 	if (error < 0)
 	{
@@ -259,7 +259,7 @@ int At17xxx::Read(int probe, int type)
 				break;
 			}
 
-			if ( GetBus()->CheckAbort(k * 100 / size) )
+			if (GetBus()->CheckAbort(k * 100 / size))
 			{
 				error = OP_ABORTED;
 				break;
@@ -329,7 +329,7 @@ int At17xxx::Verify(int type)
 				break;
 			}
 
-			if ( memcmp(GetBufPtr() + k, localbuf, readpage_size) != 0 )
+			if (memcmp(GetBufPtr() + k, localbuf, readpage_size) != 0)
 			{
 				rval = 0;
 				break;
@@ -339,7 +339,7 @@ int At17xxx::Verify(int type)
 				rval = 1;
 			}
 
-			if ( GetBus()->CheckAbort(k * 100 / size) )
+			if (GetBus()->CheckAbort(k * 100 / size))
 			{
 				rval = OP_ABORTED;
 				break;

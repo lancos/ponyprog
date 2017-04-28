@@ -64,7 +64,7 @@ int Wait::CheckHwTimer()
 
 	htimer = 0;                                                             //Disable by default
 
-	if ( QueryPerformanceFrequency(&mlpf) )         //return ticks per second if hw support high resolution timer
+	if (QueryPerformanceFrequency(&mlpf))           //return ticks per second if hw support high resolution timer
 	{
 		long usec = (long)(8 * mlpf.QuadPart / 1000000);        //test with 5 usec
 
@@ -75,7 +75,7 @@ int Wait::CheckHwTimer()
 			QueryPerformanceCounter(&i1);
 			QueryPerformanceCounter(&i2);
 
-			if ( (i2.QuadPart - i1.QuadPart) < usec )
+			if ((i2.QuadPart - i1.QuadPart) < usec)
 			{
 				htimer = 1;             //Enable for fast computers
 				break;
@@ -181,7 +181,7 @@ void Wait::WaitUsec(int usec)
 		{
 			QueryPerformanceCounter(&i2);
 		}
-		while ( (long)(i2.QuadPart - i1.QuadPart) < i_usec );
+		while ((long)(i2.QuadPart - i1.QuadPart) < i_usec);
 
 #else
 		struct timeval t1, t2;
@@ -195,7 +195,7 @@ void Wait::WaitUsec(int usec)
 		{
 			gettimeofday(&t2, NULL);
 		}
-		while (timercmp(&t2, &t1, < )); // EK 2017 is it right???
+		while (timercmp(&t2, &t1, <));  // EK 2017 is it right???
 
 #endif
 	}

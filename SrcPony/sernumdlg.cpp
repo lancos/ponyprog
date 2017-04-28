@@ -39,7 +39,7 @@ using namespace Translator;
 
 
 //=========================>>> SerNumDialog::SerNumDialog <<<====================
-SerNumDialog::SerNumDialog(QWidget* bw, const QString title) :
+SerNumDialog::SerNumDialog(QWidget *bw, const QString title) :
 	QDialog(bw)
 {
 	setupUi(this);
@@ -112,8 +112,8 @@ void SerNumDialog::setTextWidgets()
 	pushCancel->setText(STR_BTNCANC);
 
 	lblLoc->setText(STR_MSGADDRESS);
-	lblLen->setText( STR_MSGSIZE2);
-	lblVal->setText( STR_MSGVALUE);
+	lblLen->setText(STR_MSGSIZE2);
+	lblVal->setText(STR_MSGVALUE);
 
 	chkMemOffset->setText(STR_MSGOFFSET);
 	chkAutoInc->setText(STR_MSGSNAUTOINC);
@@ -173,7 +173,7 @@ void SerNumDialog::onOk()
 		return;
 	}
 
-	if ( rdbLittleEnd->isChecked() == true)
+	if (rdbLittleEnd->isChecked() == true)
 	{
 		fmt = FMT_LITTLE_ENDIAN;
 	}
@@ -196,7 +196,7 @@ void SerNumDialog::onOk()
 
 
 //=========================>>> OscCalibDialog::OscCalibDialog <<<====================
-OscCalibDialog::OscCalibDialog(QWidget* bw, e2AppWinInfo* aw, const QString title) :
+OscCalibDialog::OscCalibDialog(QWidget *bw, e2AppWinInfo *aw, const QString title) :
 	QDialog(bw)
 {
 	setupUi(this);
@@ -228,7 +228,7 @@ OscCalibDialog::OscCalibDialog(QWidget* bw, e2AppWinInfo* aw, const QString titl
 	txiLoc->setText(str1);
 	txiVal->setText(str3);
 
-	chkMemOffset->setChecked( memtype);
+	chkMemOffset->setChecked(memtype);
 
 
 	pushOk->setText(STR_BTNOK);

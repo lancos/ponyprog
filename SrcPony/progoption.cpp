@@ -42,7 +42,7 @@ using namespace Translator;
 
 
 //======================>>> progOptionDialog::progOptionDialog <<<==================
-progOptionDialog::progOptionDialog(QWidget* bw, long type, int &reload, int &reep, int &erase, int &flash, int &eeprom, int &lock, const QString title) :
+progOptionDialog::progOptionDialog(QWidget *bw, long type, int &reload, int &reep, int &erase, int &flash, int &eeprom, int &lock, const QString title) :
 	QDialog(bw)
 {
 	setupUi(this);
@@ -51,8 +51,8 @@ progOptionDialog::progOptionDialog(QWidget* bw, long type, int &reload, int &ree
 
 	cmdw = (e2CmdWindow *)bw;
 
-	chk = (QVector<QCheckBox*>() << idRELOAD << idREADFLASH << idREADEEP << idBYTESWAP <<
-	       idSETID << idREADOSCCAL << idERASE << idFLASH << idEEPROM << idLOCK);
+	chk = (QVector<QCheckBox *>() << idRELOAD << idREADFLASH << idREADEEP << idBYTESWAP <<
+		   idSETID << idREADOSCCAL << idERASE << idFLASH << idEEPROM << idLOCK);
 
 	setTextWidgets();
 
@@ -80,7 +80,7 @@ progOptionDialog::~progOptionDialog()
 void progOptionDialog::setTextWidgets()
 {
 	QStringList txList = (QStringList() << STR_MSGRELOAD << STR_MSGREADPROG << STR_MSGREADDATA << STR_MSGBYTESWAP <<
-	                      STR_MSGSERNUM << STR_READOSCCALIB << STR_MSGERASE << STR_MSGWRITEPROG << STR_MSGWRITEDATA << STR_MSGWRITESEC);
+						  STR_MSGSERNUM << STR_READOSCCALIB << STR_MSGERASE << STR_MSGWRITEPROG << STR_MSGWRITEDATA << STR_MSGWRITESEC);
 
 	for (int i = 0; i < chk.size(); i++)
 	{

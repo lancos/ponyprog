@@ -67,31 +67,31 @@ void Sde2506Bus::SetDelay()
 	int val = E2Profile::GetSDESpeed();
 	int n;
 
-	switch(val)
+	switch (val)
 	{
-	case TURBO:
-		n = 1;         // as fast as your PC can
-		break;
+		case TURBO:
+			n = 1;         // as fast as your PC can
+			break;
 
-	case FAST:
-		n = 5;
-		break;
+		case FAST:
+			n = 5;
+			break;
 
-	case SLOW:
-		n = 30;
-		break;
+		case SLOW:
+			n = 30;
+			break;
 
-	case VERYSLOW:
-		n = 100;
-		break;
+		case VERYSLOW:
+			n = 100;
+			break;
 
-	case ULTRASLOW:
-		n = 1000;
-		break;
+		case ULTRASLOW:
+			n = 1000;
+			break;
 
-	default:
-		n = 10;         //Default (< 100KHz)
-		break;
+		default:
+			n = 10;         //Default (< 100KHz)
+			break;
 	}
 
 	BusIO::SetDelay(n);
@@ -153,7 +153,7 @@ int Sde2506Bus::RecDataWord(int wlen)
 	setDI();
 
 	for (k = 0; k < wlen; k++)
-		if ( RecDataBit() )
+		if (RecDataBit())
 		{
 			val |= 1 << k;
 		}
@@ -202,8 +202,8 @@ long Sde2506Bus::Read(int addr, uint8_t *data, long length, int page_size)
 		WaitUsec(shot_delay + 1);
 		setCE();
 
-		if ( (len % 4) == 0 )
-			if ( CheckAbort(len * 100 / length) )
+		if ((len % 4) == 0)
+			if (CheckAbort(len * 100 / length))
 			{
 				break;
 			}
@@ -246,8 +246,8 @@ long Sde2506Bus::Write(int addr, uint8_t const *data, long length, int page_size
 		WaitReadyAfterWrite();
 		setCE();                                //End write
 
-		if ( (curaddr & 1) )
-			if ( CheckAbort(curaddr * 100 / length) )
+		if ((curaddr & 1))
+			if (CheckAbort(curaddr * 100 / length))
 			{
 				break;
 			}

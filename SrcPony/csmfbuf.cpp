@@ -70,50 +70,50 @@ int csmFileBuf::Load(int loadtype, long relocation_offfset)
 
 		switch (state)
 		{
-		case 0:
+			case 0:
 
-			//look for header start
-			if ( (s = strchr(riga, '\"')) != NULL )
-			{
-				state++;
-
-				if ( (s = strstr(s + 1, "REFERENCE")) != NULL )
+				//look for header start
+				if ((s = strchr(riga, '\"')) != NULL)
 				{
 					state++;
 
-					if ( (s = strchr(s + 1, '\"')) != NULL )
+					if ((s = strstr(s + 1, "REFERENCE")) != NULL)
+					{
+						state++;
+
+						if ((s = strchr(s + 1, '\"')) != NULL)
+						{
+							state++;
+						}
+					}
+				}
+
+				break;
+
+			case 1:
+
+				//look for "REFERENCE"
+				if ((s = strstr(riga, "REFERENCE")) != NULL)
+				{
+					state++;
+
+					if ((s = strchr(s + 1, '\"')) != NULL)
 					{
 						state++;
 					}
 				}
-			}
 
-			break;
+				break;
 
-		case 1:
+			case 2:
 
-			//look for "REFERENCE"
-			if ( (s = strstr(riga, "REFERENCE")) != NULL )
-			{
-				state++;
-
-				if ( (s = strchr(s + 1, '\"')) != NULL )
+				//look for header terminator
+				if ((s = strchr(riga, '\"')) != NULL)
 				{
 					state++;
 				}
-			}
 
-			break;
-
-		case 2:
-
-			//look for header terminator
-			if ( (s = strchr(riga, '\"')) != NULL )
-			{
-				state++;
-			}
-
-			break;
+				break;
 		}
 	}
 
@@ -150,7 +150,7 @@ int csmFileBuf::Load(int loadtype, long relocation_offfset)
 				//carica valore nel buffer
 				if (loadtype == ALL_TYPE)
 				{
-					if ( addr < FileBuf::GetBufSize() )
+					if (addr < FileBuf::GetBufSize())
 					{
 						FileBuf::GetBufPtr()[addr] = (uint8_t)value;
 					}
@@ -159,12 +159,12 @@ int csmFileBuf::Load(int loadtype, long relocation_offfset)
 				{
 					long s = FileBuf::GetSplitted();
 
-					if ( s <= 0 )
+					if (s <= 0)
 					{
 						s = FileBuf::GetBufSize();
 					}
 
-					if ( addr < s )
+					if (addr < s)
 					{
 						FileBuf::GetBufPtr()[addr] = (uint8_t)value;
 					}
@@ -173,12 +173,12 @@ int csmFileBuf::Load(int loadtype, long relocation_offfset)
 				{
 					long s = FileBuf::GetSplitted();
 
-					if ( s <= 0 )
+					if (s <= 0)
 					{
 						s = 0;
 					}
 
-					if ( addr < FileBuf::GetBufSize() - s )
+					if (addr < FileBuf::GetBufSize() - s)
 					{
 						FileBuf::GetBufPtr()[addr + s] = (uint8_t)value;
 					}
@@ -203,18 +203,18 @@ int csmFileBuf::Load(int loadtype, long relocation_offfset)
 }
 
 static const char header[] =
-        "REFERENCE	=	=\n"
-        "CHASSIS	=	=\n"
-        "MODEL	=	=\n"
-        "SERIAL	=	=\n"
-        "CUSTOMER	NAME	=	=\n"
-        "DATE	=	=\n"
-        "STREET	=	=\n"
-        "CITY	=	=\n"
-        "STATE	=	=\n"
-        "ZIP	=	=\n"
-        "PHONE	NUMBER	=	=\n"
-        "CUSTOMER	COMPLAINT	=	=";
+	"REFERENCE	=	=\n"
+	"CHASSIS	=	=\n"
+	"MODEL	=	=\n"
+	"SERIAL	=	=\n"
+	"CUSTOMER	NAME	=	=\n"
+	"DATE	=	=\n"
+	"STREET	=	=\n"
+	"CITY	=	=\n"
+	"STATE	=	=\n"
+	"ZIP	=	=\n"
+	"PHONE	NUMBER	=	=\n"
+	"CUSTOMER	COMPLAINT	=	=";
 
 //======================>>> csmFileBuf::Save <<<=======================
 int csmFileBuf::Save(int savetype, long relocation_offfset)
@@ -254,7 +254,7 @@ int csmFileBuf::Save(int savetype, long relocation_offfset)
 	{
 		QFile fh(FileBuf::GetFileName());
 
-		if (!fh.open(QIODevice::WriteOnly | QIODevice::Text ))
+		if (!fh.open(QIODevice::WriteOnly | QIODevice::Text))
 		{
 			rval = CREATEERROR;
 		}

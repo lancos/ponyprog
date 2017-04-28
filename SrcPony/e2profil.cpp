@@ -40,7 +40,7 @@
 
 QString E2Profile::filename = "e2p.ini";
 
-QSettings* E2Profile::s = new QSettings("e2p.ini", QSettings::IniFormat);
+QSettings *E2Profile::s = new QSettings("e2p.ini", QSettings::IniFormat);
 
 
 
@@ -85,7 +85,7 @@ int E2Profile::GetBogoMips()
 void E2Profile::SetBogoMips(int value)
 {
 	//      QString str;
-	s->setValue ("BogoMipsX1000", QString::number(value));
+	s->setValue("BogoMipsX1000", QString::number(value));
 	//      if ( decnum2str(value, str, MAXNUMDIGIT) == OK )
 	//      {
 	//              return s->setValue("BogoMipsX1000", str);
@@ -163,7 +163,7 @@ int E2Profile::GetParPortNo()
 		bool ok;
 		rval = sp.toInt(&ok);
 
-		if (ok == false )
+		if (ok == false)
 		{
 			rval = -1;
 		}
@@ -380,19 +380,19 @@ void E2Profile::SetPolarityControl(uint8_t polarity_control)
 
 	if (rval == OK)
 		s->setValue("ResetPolarity",
-		            (polarity_control & RESETINV) ? "INV" : "TRUE");
+					(polarity_control & RESETINV) ? "INV" : "TRUE");
 
 	if (rval == OK)
 		s->setValue("ClockPolarity",
-		            (polarity_control & CLOCKINV) ? "INV" : "TRUE");
+					(polarity_control & CLOCKINV) ? "INV" : "TRUE");
 
 	if (rval == OK)
 		s->setValue("DOutPolarity",
-		            (polarity_control & DOUTINV) ? "INV" : "TRUE");
+					(polarity_control & DOUTINV) ? "INV" : "TRUE");
 
 	if (rval == OK)
 		s->setValue("DInPolarity",
-		            (polarity_control & DININV) ? "INV" : "TRUE");
+					(polarity_control & DININV) ? "INV" : "TRUE");
 }
 
 
@@ -478,23 +478,23 @@ int E2Profile::GetI2CSpeed()
 
 	if (sp.length())
 	{
-		if ( sp == "TURBO")
+		if (sp == "TURBO")
 		{
 			rval = TURBO;
 		}
-		else if ( sp == "FAST")
+		else if (sp == "FAST")
 		{
 			rval = FAST;
 		}
-		else if ( sp == "SLOW")
+		else if (sp == "SLOW")
 		{
 			rval = SLOW;
 		}
-		else if ( sp == "VERYSLOW")
+		else if (sp == "VERYSLOW")
 		{
 			rval = VERYSLOW;
 		}
-		else if ( sp == "ULTRASLOW")
+		else if (sp == "ULTRASLOW")
 		{
 			rval = ULTRASLOW;
 		}
@@ -632,23 +632,23 @@ int E2Profile::GetSPISpeed()
 
 	if (sp.length())
 	{
-		if ( sp == "TURBO")
+		if (sp == "TURBO")
 		{
 			rval = TURBO;
 		}
-		else if ( sp == "FAST")
+		else if (sp == "FAST")
 		{
 			rval = FAST;
 		}
-		else if ( sp == "SLOW")
+		else if (sp == "SLOW")
 		{
 			rval = SLOW;
 		}
-		else if ( sp == "VERYSLOW")
+		else if (sp == "VERYSLOW")
 		{
 			rval = VERYSLOW;
 		}
-		else if ( sp == "ULTRASLOW")
+		else if (sp == "ULTRASLOW")
 		{
 			rval = ULTRASLOW;
 		}
@@ -717,23 +717,23 @@ int E2Profile::GetMicroWireSpeed()
 
 	if (sp.length())
 	{
-		if ( sp == "TURBO")
+		if (sp == "TURBO")
 		{
 			rval = TURBO;
 		}
-		else if ( sp == "FAST")
+		else if (sp == "FAST")
 		{
 			rval = FAST;
 		}
-		else if ( sp == "SLOW")
+		else if (sp == "SLOW")
 		{
 			rval = SLOW;
 		}
-		else if ( sp == "VERYSLOW")
+		else if (sp == "VERYSLOW")
 		{
 			rval = VERYSLOW;
 		}
-		else if ( sp == "ULTRASLOW")
+		else if (sp == "ULTRASLOW")
 		{
 			rval = ULTRASLOW;
 		}
@@ -779,23 +779,23 @@ int E2Profile::GetPICSpeed()
 
 	if (sp.length())
 	{
-		if ( sp == "TURBO")
+		if (sp == "TURBO")
 		{
 			rval = TURBO;
 		}
-		else if ( sp == "FAST")
+		else if (sp == "FAST")
 		{
 			rval = FAST;
 		}
-		else if ( sp == "SLOW")
+		else if (sp == "SLOW")
 		{
 			rval = SLOW;
 		}
-		else if ( sp == "VERYSLOW")
+		else if (sp == "VERYSLOW")
 		{
 			rval = VERYSLOW;
 		}
-		else if ( sp == "ULTRASLOW")
+		else if (sp == "ULTRASLOW")
 		{
 			rval = ULTRASLOW;
 		}
@@ -841,23 +841,23 @@ int E2Profile::GetSDESpeed()
 
 	if (sp.length())
 	{
-		if ( sp == "TURBO")
+		if (sp == "TURBO")
 		{
 			rval = TURBO;
 		}
-		else if ( sp == "FAST")
+		else if (sp == "FAST")
 		{
 			rval = FAST;
 		}
-		else if ( sp == "SLOW")
+		else if (sp == "SLOW")
 		{
 			rval = SLOW;
 		}
-		else if ( sp == "VERYSLOW")
+		else if (sp == "VERYSLOW")
 		{
 			rval = VERYSLOW;
 		}
-		else if ( sp == "ULTRASLOW")
+		else if (sp == "ULTRASLOW")
 		{
 			rval = ULTRASLOW;
 		}
@@ -903,23 +903,23 @@ int E2Profile::GetIMBusSpeed()
 
 	if (sp.length())
 	{
-		if ( sp == "TURBO")
+		if (sp == "TURBO")
 		{
 			rval = TURBO;
 		}
-		else if ( sp == "FAST")
+		else if (sp == "FAST")
 		{
 			rval = FAST;
 		}
-		else if ( sp == "SLOW")
+		else if (sp == "SLOW")
 		{
 			rval = SLOW;
 		}
-		else if ( sp == "VERYSLOW")
+		else if (sp == "VERYSLOW")
 		{
 			rval = VERYSLOW;
 		}
-		else if ( sp == "ULTRASLOW")
+		else if (sp == "ULTRASLOW")
 		{
 			rval = ULTRASLOW;
 		}
@@ -1121,17 +1121,17 @@ int E2Profile::GetSerialNumAddress(long &start, int &size, bool &mtype)
 	size = 1;
 	mtype = false;
 
-	if ( (sp = s->value("SerialNumberAddr", "0").toString()).length() )
+	if ((sp = s->value("SerialNumberAddr", "0").toString()).length())
 	{
 		start = sp.toLong();
 	}
 
-	if ( (sp = s->value("SerialNumberSize", "1").toString()).length() )
+	if ((sp = s->value("SerialNumberSize", "1").toString()).length())
 	{
 		size = sp.toInt();
 	}
 
-	if ( (sp = s->value("SerialNumberType", "PROG").toString()).length() )
+	if ((sp = s->value("SerialNumberType", "PROG").toString()).length())
 	{
 		if (sp == "DATA")
 		{
@@ -1163,7 +1163,7 @@ FmtEndian E2Profile::GetSerialNumFormat()
 {
 	QString sp = s->value("SerialNumberFormat", "BIGENDIAN").toString();
 
-	if ( sp.length() && ("LITTLEENDIAN" == sp))
+	if (sp.length() && ("LITTLEENDIAN" == sp))
 	{
 		return FMT_LITTLE_ENDIAN;
 	}
@@ -1308,25 +1308,25 @@ long E2Profile::GetProgramOptions()
 void E2Profile::SetProgramOptions(long prog_option)
 {
 	s->setValue("ReloadOption",
-	            (prog_option & RELOAD_YES) ? "YES" : "NO");
+				(prog_option & RELOAD_YES) ? "YES" : "NO");
 	s->setValue("ReadFlashOption",
-	            (prog_option & READFLASH_YES) ? "YES" : "NO");
+				(prog_option & READFLASH_YES) ? "YES" : "NO");
 	s->setValue("ReadEEpromOption",
-	            (prog_option & READEEP_YES) ? "YES" : "NO");
+				(prog_option & READEEP_YES) ? "YES" : "NO");
 	s->setValue("ByteSwapOption",
-	            (prog_option & BYTESWAP_YES) ? "YES" : "NO");
+				(prog_option & BYTESWAP_YES) ? "YES" : "NO");
 	s->setValue("SetIDkeyOption",
-	            (prog_option & SETID_YES) ? "YES" : "NO");
+				(prog_option & SETID_YES) ? "YES" : "NO");
 	s->setValue("ReadOscCalibration",
-	            (prog_option & READOSCAL_YES) ? "YES" : "NO");
+				(prog_option & READOSCAL_YES) ? "YES" : "NO");
 	s->setValue("EraseOption",
-	            (prog_option & ERASE_YES) ? "YES" : "NO");
+				(prog_option & ERASE_YES) ? "YES" : "NO");
 	s->setValue("WriteFlashOption",
-	            (prog_option & FLASH_YES) ? "YES" : "NO");
+				(prog_option & FLASH_YES) ? "YES" : "NO");
 	s->setValue("WriteEEpromOption",
-	            (prog_option & EEPROM_YES) ? "YES" : "NO");
+				(prog_option & EEPROM_YES) ? "YES" : "NO");
 	s->setValue("WriteSecurityOption",
-	            (prog_option & LOCK_YES) ? "YES" : "NO");
+				(prog_option & LOCK_YES) ? "YES" : "NO");
 }
 
 
@@ -1653,17 +1653,17 @@ int E2Profile::GetCalibrationAddress(long &start, int &size, bool &mtype)
 	size = 1;
 	mtype = false;
 
-	if ( (sp = s->value("OscCalibrationAddr", "0").toString()).length() )
+	if ((sp = s->value("OscCalibrationAddr", "0").toString()).length())
 	{
 		start = sp.toLong();
 	}
 
-	if ( (sp = s->value("OscCalibrationSize", "1").toString()).length() )
+	if ((sp = s->value("OscCalibrationSize", "1").toString()).length())
 	{
 		size = sp.toInt();
 	}
 
-	if ( (sp = s->value("OscCalibrationMemType", "PROG").toString()).length() )
+	if ((sp = s->value("OscCalibrationMemType", "PROG").toString()).length())
 	{
 		if (sp == "DATA")
 		{
@@ -1809,12 +1809,12 @@ void E2Profile::SetCOMAddress(int com1, int com2, int com3, int com4)
 			}
 			else
 			{
-				str.sprintf( "%X,%X", com1, com2);
+				str.sprintf("%X,%X", com1, com2);
 			}
 		}
 		else
 		{
-			str.sprintf( "%X", com1);
+			str.sprintf("%X", com1);
 		}
 
 		s->setValue("COMPorts", str);
@@ -1873,23 +1873,23 @@ FileType E2Profile::GetDefaultFileType()
 
 	if (sp.length())
 	{
-		if ( sp == "e2p" )
+		if (sp == "e2p")
 		{
 			ft = E2P;
 		}
-		else if ( sp == "bin" )
+		else if (sp == "bin")
 		{
 			ft = BIN;
 		}
-		else if ( sp == "csm" )
+		else if (sp == "csm")
 		{
 			ft = CSM;
 		}
-		else if ( sp == "intel-hex")
+		else if (sp == "intel-hex")
 		{
 			ft = INTEL;
 		}
-		else if ( sp == "mot-srec")
+		else if (sp == "mot-srec")
 		{
 			ft = MOTOS;
 		}

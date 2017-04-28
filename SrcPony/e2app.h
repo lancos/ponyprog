@@ -76,7 +76,7 @@ enum AppStatus
 
 class e2App
 {
-public:               //---------------------------------------- public
+  public:               //---------------------------------------- public
 
 	e2App();
 	virtual ~e2App();
@@ -105,7 +105,7 @@ public:               //---------------------------------------- public
 			iniBus = p;
 		}
 	}
-	BusInterface* GetInterfPtr()
+	BusInterface *GetInterfPtr()
 	{
 		return busIntp;
 	}
@@ -166,7 +166,7 @@ public:               //---------------------------------------- public
 		//             qDebug() << "SetAWInfo" << awi;
 		awip = awi;
 	}
-	e2AppWinInfo* GetAWInfo() const
+	e2AppWinInfo *GetAWInfo() const
 	{
 		return awip;
 	}
@@ -176,11 +176,11 @@ public:               //---------------------------------------- public
 
 	QString script_name;
 
-protected:    //--------------------------------------- protected
+  protected:    //--------------------------------------- protected
 	// AppWinInfo associated with this window
-	e2AppWinInfo* awip;
+	e2AppWinInfo *awip;
 
-private:              //--------------------------------------- private
+  private:              //--------------------------------------- private
 	void initSettings();
 	void LookForBogoMips(); //should get bogomips
 

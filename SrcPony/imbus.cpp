@@ -105,31 +105,31 @@ void IMBus::SetDelay()
 	int val = E2Profile::GetIMBusSpeed();
 	int n;
 
-	switch(val)
+	switch (val)
 	{
-	case TURBO:
-		n = 1;         // as fast as your PC can
-		break;
+		case TURBO:
+			n = 1;         // as fast as your PC can
+			break;
 
-	case FAST:
-		n = 3;
-		break;
+		case FAST:
+			n = 3;
+			break;
 
-	case SLOW:
-		n = 18;
-		break;
+		case SLOW:
+			n = 18;
+			break;
 
-	case VERYSLOW:
-		n = 80;
-		break;
+		case VERYSLOW:
+			n = 80;
+			break;
 
-	case ULTRASLOW:
-		n = 500;
-		break;
+		case ULTRASLOW:
+			n = 500;
+			break;
 
-	default:
-		n = 5;         //Default (< 100KHz)
-		break;
+		default:
+			n = 5;         //Default (< 100KHz)
+			break;
 	}
 
 	BusIO::SetDelay(n);
@@ -216,7 +216,7 @@ int IMBus::RecDataWord(int wlen)
 	setDI();
 
 	for (k = 0; k < wlen; k++)
-		if ( RecDataBit() )
+		if (RecDataBit())
 		{
 			val |= 1 << k;
 		}
@@ -236,7 +236,7 @@ int IMBus::WaitReadyAfterWrite(int addr, int delay, long timeout)
 	{
 		uint8_t val = 0xff;
 
-		while ( (val & (1 << 1)) && timeout-- )
+		while ((val & (1 << 1)) && timeout--)
 		{
 			//Read status location at address 526
 
@@ -293,8 +293,8 @@ long IMBus::Read(int addr, uint8_t *data, long length, int page_size)
 		*data++ = (uint8_t)RecDataWord(Data16_mode ? 16 : 8);
 		IdentPulse();
 
-		if ( (len % 4) == 0 )
-			if ( CheckAbort(len * 100 / length) )
+		if ((len % 4) == 0)
+			if (CheckAbort(len * 100 / length))
 			{
 				break;
 			}
@@ -330,7 +330,7 @@ long IMBus::Write(int addr, uint8_t const *data, long length, int page_size)
 			SendDataWord(0xffff, Data16_mode ? 16 : 8);
 			IdentPulse();
 
-			if ( WaitReadyAfterWrite(addr, ProgDelay) != OK )
+			if (WaitReadyAfterWrite(addr, ProgDelay) != OK)
 			{
 				return E2P_TIMEOUT;
 			}
@@ -349,7 +349,7 @@ long IMBus::Write(int addr, uint8_t const *data, long length, int page_size)
 			SendDataWord(*data, Data16_mode ? 16 : 8);
 			IdentPulse();
 
-			if ( WaitReadyAfterWrite(addr, ProgDelay) != OK )
+			if (WaitReadyAfterWrite(addr, ProgDelay) != OK)
 			{
 				return E2P_TIMEOUT;
 			}
@@ -371,7 +371,7 @@ long IMBus::Write(int addr, uint8_t const *data, long length, int page_size)
 			return E2ERR_WRITEFAILED;
 		}
 
-		if ( CheckAbort(len * 100 / length) )
+		if (CheckAbort(len * 100 / length))
 		{
 			break;
 		}

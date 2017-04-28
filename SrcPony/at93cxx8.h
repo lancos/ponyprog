@@ -37,7 +37,7 @@
 
 class At93cxx8 : public Device
 {
-public:               //---------------------------------------- public
+  public:               //---------------------------------------- public
 
 	At93cxx8(e2AppWinInfo *wininfo = 0, BusIO *busp = 0);
 	virtual ~At93cxx8();
@@ -47,14 +47,14 @@ public:               //---------------------------------------- public
 	int Write(int probe = 1, int type = ALL_TYPE);
 	int Verify(int type = ALL_TYPE);
 
-protected:    //--------------------------------------- protected
+  protected:    //--------------------------------------- protected
 
 	At93cBus *GetBus()
 	{
 		return (At93cBus *)Device::GetBus();
 	}
 
-private:              //--------------------------------------- private
+  private:              //--------------------------------------- private
 
 };
 #endif

@@ -42,10 +42,10 @@
 //=====>>> Costruttore <<<======
 E24xx2::E24xx2(e2AppWinInfo *wininfo, BusIO *busp)
 	:       E24xx(wininfo, busp),
-	        SecurityReadCode(0xC0),
-	        SecurityWriteCode(0x80),
-	        HEnduranceReadCode(0x40),
-	        HEnduranceWriteCode(0x00)
+			SecurityReadCode(0xC0),
+			SecurityWriteCode(0x80),
+			HEnduranceReadCode(0x40),
+			HEnduranceWriteCode(0x00)
 {
 	writepage_size = E2Profile::GetI2CPageWrite();
 	E2Profile::SetI2CPageWrite(writepage_size);
@@ -69,7 +69,7 @@ int E24xx2::Probe(int probe_size)
 
 int E24xx2::Write(int probe, int type)
 {
-	int error = Probe( probe || GetNoOfBank() == 0 );
+	int error = Probe(probe || GetNoOfBank() == 0);
 
 	if (error < 0)
 	{
@@ -102,9 +102,9 @@ int E24xx2::Write(int probe, int type)
 			memcpy(localbuf + 2, GetBufPtr() + j, writepage_size);
 
 			localbuf[0] = (uint8_t)((j >> 8) & 0xFF);
-			localbuf[1] = (uint8_t)( j & 0xFF );
+			localbuf[1] = (uint8_t)(j & 0xFF);
 
-			if ( GetBus()->Write(eeprom_addr[0], localbuf, 2 + writepage_size) != (2 + writepage_size) )
+			if (GetBus()->Write(eeprom_addr[0], localbuf, 2 + writepage_size) != (2 + writepage_size))
 			{
 				rval = GetBus()->Error();
 				break;
@@ -121,7 +121,7 @@ int E24xx2::Write(int probe, int type)
 				break;
 			}
 
-			if ( GetBus()->CheckAbort(j * 100 / size) )
+			if (GetBus()->CheckAbort(j * 100 / size))
 			{
 				rval = OP_ABORTED;
 				break;
@@ -145,7 +145,7 @@ int E24xx2::Write(int probe, int type)
 
 int E24xx2::Read(int probe, int type)
 {
-	int error = Probe( probe || GetNoOfBank() == 0 );
+	int error = Probe(probe || GetNoOfBank() == 0);
 
 	if (error < 0)
 	{
@@ -168,7 +168,7 @@ int E24xx2::Read(int probe, int type)
 			//Scrive l'indice del sottoindirizzamento
 			// partiamo sempre da 0.
 			index[0] = (uint8_t)((k >> 8) & 0xFF);
-			index[1] = (uint8_t)( k & 0xFF );
+			index[1] = (uint8_t)(k & 0xFF);
 
 			if (GetBus()->StartWrite(eeprom_addr[0], index, 2) != 2)
 			{
@@ -182,7 +182,7 @@ int E24xx2::Read(int probe, int type)
 				break;
 			}
 
-			if ( GetBus()->CheckAbort(k * 100 / size) )
+			if (GetBus()->CheckAbort(k * 100 / size))
 			{
 				error = OP_ABORTED;
 				break;
@@ -234,7 +234,7 @@ int E24xx2::Verify(int type)
 			//Scrive l'indice del sottoindirizzamento
 			// partiamo sempre da 0.
 			index[0] = (uint8_t)((k >> 8) & 0xFF);
-			index[1] = (uint8_t)( k & 0xFF );
+			index[1] = (uint8_t)(k & 0xFF);
 
 			if (GetBus()->StartWrite(eeprom_addr[0], index, 2) != 2)
 			{
@@ -248,13 +248,13 @@ int E24xx2::Verify(int type)
 				break;
 			}
 
-			if ( memcmp(GetBufPtr() + k, localbuf, readpage_size) != 0 )
+			if (memcmp(GetBufPtr() + k, localbuf, readpage_size) != 0)
 			{
 				rval = 0;
 				break;
 			}
 
-			if ( GetBus()->CheckAbort(k * 100 / size) )
+			if (GetBus()->CheckAbort(k * 100 / size))
 			{
 				rval = OP_ABORTED;
 				break;
@@ -288,14 +288,14 @@ int E24xx2::SecurityRead(uint32_t &blocks)
 
 		int val;
 
-		if ( (val = GetBus()->ReadByte(0)) < 0 )
+		if ((val = GetBus()->ReadByte(0)) < 0)
 		{
 			return GetBus()->Error();
 		}
 
 		blocks = (val << 4) & 0xF0;
 
-		if ( (val = GetBus()->ReadByte(1)) < 0 )
+		if ((val = GetBus()->ReadByte(1)) < 0)
 		{
 			return GetBus()->Error();
 		}
@@ -363,7 +363,7 @@ int E24xx2::HighEnduranceRead(uint32_t &block_no)
 
 		int val;
 
-		if ( (val = GetBus()->ReadByte(1)) < 0 )
+		if ((val = GetBus()->ReadByte(1)) < 0)
 		{
 			return GetBus()->Error();
 		}

@@ -73,25 +73,25 @@ typedef struct
 class fuseModalDialog : public QDialog, public Ui::FuseDialog
 {
 	Q_OBJECT
-public:               //---------------------------------------- public
-	fuseModalDialog(e2CmdWindow* bw, e2AppWinInfo *p, bool readonly = false, const QString &msg = "");
+  public:               //---------------------------------------- public
+	fuseModalDialog(e2CmdWindow *bw, e2AppWinInfo *p, bool readonly = false, const QString &msg = "");
 	virtual ~fuseModalDialog();             // Destructor
 
-private slots:
+  private slots:
 	void onOk();
 	void onRead();
 	void onProg();
 
-protected:    //--------------------------------------- protected
+  protected:    //--------------------------------------- protected
 
-private:
+  private:
 	void setTextWidgets();
 	void initWidgets(const QString &msg, long type, bool readonly);
 	int eep_FindFuses(long type);
 
-private:              //--------------------------------------- private
-	QVector<QCheckBox*> chkFuse;
-	QVector<QCheckBox*> chkLock;
+  private:              //--------------------------------------- private
+	QVector<QCheckBox *> chkFuse;
+	QVector<QCheckBox *> chkLock;
 
 	uint32_t lock, fuse;
 
@@ -1120,16 +1120,16 @@ const QVector<FuseBit> eep_fusebits =
 class blockDialog : public QDialog, public Ui::BlockDialog
 {
 	Q_OBJECT
-public:               //---------------------------------------- public
-	blockDialog(e2CmdWindow* bw, e2AppWinInfo *p, bool readonly = false, const QString &msg = "");
+  public:               //---------------------------------------- public
+	blockDialog(e2CmdWindow *bw, e2AppWinInfo *p, bool readonly = false, const QString &msg = "");
 	virtual ~blockDialog();          // Destructor
 
-protected:    //--------------------------------------- protected
+  protected:    //--------------------------------------- protected
 
-private slots:
+  private slots:
 	void onOk();
 
-private:              //--------------------------------------- private
+  private:              //--------------------------------------- private
 	e2AppWinInfo *awip;
 	uint32_t lock, fuse;
 };

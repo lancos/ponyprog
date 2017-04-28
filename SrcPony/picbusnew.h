@@ -34,7 +34,7 @@
 
 class PicBusNew : public PicBus
 {
-public:                //------------------------------- public
+  public:                //------------------------------- public
 	PicBusNew(BusInterface *ptr = 0);
 
 	//      long Read(int addr, uint8_t *data, long length);
@@ -42,11 +42,11 @@ public:                //------------------------------- public
 
 	int Reset();
 
-protected:             //------------------------------- protected
+  protected:             //------------------------------- protected
 
 	int WaitReadyAfterWrite(long timeout = 5000);
 
-private:               //------------------------------- private
+  private:               //------------------------------- private
 
 };
 

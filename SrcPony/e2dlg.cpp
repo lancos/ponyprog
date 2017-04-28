@@ -45,7 +45,7 @@ using namespace Translator;
 
 
 //=========================>>> e2Dialog::e2Dialog <<<====================
-e2Dialog::e2Dialog(QWidget* bw, const QString title)
+e2Dialog::e2Dialog(QWidget *bw, const QString title)
 	: QDialog(bw),
 	  lpt_no(2),
 	  com_no(3)
@@ -68,10 +68,10 @@ e2Dialog::e2Dialog(QWidget* bw, const QString title)
 	connect(rdbComPort, SIGNAL(toggled(bool)), this, SLOT(onChangePort(bool)));
 	connect(rdbLptPort, SIGNAL(toggled(bool)), this, SLOT(onChangePort(bool)));
 
-	connect (cbxInterfCOM, SIGNAL(currentIndexChanged(int)), this, SLOT(onSelectCOM(int)));
-	connect (cbxInterfLPT, SIGNAL(currentIndexChanged(int)), this, SLOT(onSelectLPT(int)));
+	connect(cbxInterfCOM, SIGNAL(currentIndexChanged(int)), this, SLOT(onSelectCOM(int)));
+	connect(cbxInterfLPT, SIGNAL(currentIndexChanged(int)), this, SLOT(onSelectLPT(int)));
 
-	connect (cbxInterfNum, SIGNAL(currentIndexChanged(int)), this, SLOT(onSelectNum(int)));
+	connect(cbxInterfNum, SIGNAL(currentIndexChanged(int)), this, SLOT(onSelectNum(int)));
 
 	connect(pushOk, SIGNAL(clicked()), this, SLOT(onOk()));
 	connect(pushCancel, SIGNAL(clicked()), this, SLOT(reject()));
@@ -117,7 +117,7 @@ void e2Dialog::onSelectNum(int i)
 
 void e2Dialog::onChangePort(bool b)
 {
-	QRadioButton *s = static_cast<QRadioButton*>(sender());
+	QRadioButton *s = static_cast<QRadioButton *>(sender());
 	//      bool state = s->isChecked();
 
 	disconnect(rdbComPort, SIGNAL(toggled(bool)), this, SLOT(onChangePort(bool)));
@@ -128,10 +128,10 @@ void e2Dialog::onChangePort(bool b)
 		cbxInterfCOM->setEnabled(b);
 		cbxInterfLPT->setEnabled(!b);
 
-		disconnect (cbxInterfNum, SIGNAL(currentIndexChanged(int)), this, SLOT(onSelectNum(int)));
+		disconnect(cbxInterfNum, SIGNAL(currentIndexChanged(int)), this, SLOT(onSelectNum(int)));
 		cbxInterfNum->clear();
 		cbxInterfNum->addItems(usbList);
-		connect (cbxInterfNum, SIGNAL(currentIndexChanged(int)), this, SLOT(onSelectNum(int)));
+		connect(cbxInterfNum, SIGNAL(currentIndexChanged(int)), this, SLOT(onSelectNum(int)));
 
 		cbxInterfNum->setCurrentIndex(com_no);
 	}
@@ -140,10 +140,10 @@ void e2Dialog::onChangePort(bool b)
 		cbxInterfCOM->setEnabled(!b);
 		cbxInterfLPT->setEnabled(b);
 
-		disconnect (cbxInterfNum, SIGNAL(currentIndexChanged(int)), this, SLOT(onSelectNum(int)));
+		disconnect(cbxInterfNum, SIGNAL(currentIndexChanged(int)), this, SLOT(onSelectNum(int)));
 		cbxInterfNum->clear();
 		cbxInterfNum->addItems(lptList);
-		connect (cbxInterfNum, SIGNAL(currentIndexChanged(int)), this, SLOT(onSelectNum(int)));
+		connect(cbxInterfNum, SIGNAL(currentIndexChanged(int)), this, SLOT(onSelectNum(int)));
 
 		cbxInterfNum->setCurrentIndex(lpt_no);
 	}
@@ -183,7 +183,7 @@ void e2Dialog::getSettings()
 	}
 	else
 	{
-		cbxInterfLPT->setCurrentIndex(interf_type - 3 );
+		cbxInterfLPT->setCurrentIndex(interf_type - 3);
 		cbxInterfCOM->setCurrentIndex(0);
 
 		lpt_no = port_no;
@@ -275,21 +275,21 @@ void e2Dialog::setWidgetsText()
 	//Serial interfaces list
 	QStringList interfListC;
 	interfListC <<
-	            "SI Prog API" <<
-	            "SI Prog I/O" <<
-	            "  JDM API  ";
+				"SI Prog API" <<
+				"SI Prog I/O" <<
+				"  JDM API  ";
 	cbxInterfCOM->addItems(interfListC);
 
 	//Parallel interfaces list
 	QStringList interfListL;
 	interfListL <<
-	            "Avr ISP API" <<
-	            "Avr ISP I/O" <<
-	            "DT-006 API " <<
-	            "DT-006 I/O " <<
-	            "EasyI2C API" <<
-	            "EasyI2C I/O" <<
-	            "SysFs GPIO ";
+				"Avr ISP API" <<
+				"Avr ISP I/O" <<
+				"DT-006 API " <<
+				"DT-006 I/O " <<
+				"EasyI2C API" <<
+				"EasyI2C I/O" <<
+				"SysFs GPIO ";
 	cbxInterfLPT->addItems(interfListL);
 
 	rdbComPort->setText(STR_LBLSERIAL);
@@ -323,7 +323,7 @@ void e2Dialog::onTest()
 {
 	int test = Test();
 
-	if ( test )
+	if (test)
 	{
 		QMessageBox::critical(this, "Failed",  STR_MSGTEST + " " + STR_MSGFAILED);
 	}

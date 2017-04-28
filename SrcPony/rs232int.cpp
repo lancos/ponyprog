@@ -134,7 +134,7 @@ int RS232Interface::OpenSerial(QString devname)
 					  NULL    /* hTemplate must be NULL for comm devices */
 					 );
 
-	if ( hCom != INVALID_HANDLE_VALUE )
+	if (hCom != INVALID_HANDLE_VALUE)
 	{
 		GetCommState(hCom, &old_dcb);
 		GetCommTimeouts(hCom, &old_timeout);
@@ -271,7 +271,7 @@ void RS232Interface::CloseSerial()
 
 	if (fd != INVALID_HANDLE_VALUE)
 	{
-	//	tcsetattr(fd, TCSAFLUSH, &old_termios);         //This can raise the RTS line, so invalidating the PowerOff
+		//	tcsetattr(fd, TCSAFLUSH, &old_termios);         //This can raise the RTS line, so invalidating the PowerOff
 		close(fd);
 		fd = INVALID_HANDLE_VALUE;
 	}
@@ -335,14 +335,14 @@ void RS232Interface::SerialFlushRx()
 {
 #ifdef  _WINDOWS
 
-	if ( hCom != INVALID_HANDLE_VALUE )
+	if (hCom != INVALID_HANDLE_VALUE)
 	{
 		PurgeComm(hCom, PURGE_RXCLEAR);
 	}
 
 #elif defined(__linux__)
 
-	if ( fd != INVALID_HANDLE_VALUE )
+	if (fd != INVALID_HANDLE_VALUE)
 	{
 		tcflush(fd, TCIFLUSH);
 	}
@@ -354,14 +354,14 @@ void RS232Interface::SerialFlushTx()
 {
 #ifdef  _WINDOWS
 
-	if ( hCom != INVALID_HANDLE_VALUE )
+	if (hCom != INVALID_HANDLE_VALUE)
 	{
 		PurgeComm(hCom, PURGE_TXCLEAR);
 	}
 
 #elif defined(__linux__)
 
-	if ( fd != INVALID_HANDLE_VALUE )
+	if (fd != INVALID_HANDLE_VALUE)
 	{
 		tcflush(fd, TCOFLUSH);
 	}
@@ -374,18 +374,18 @@ void RS232Interface::WaitForTxEmpty()
 #ifdef  _WINDOWS
 	DWORD evento;
 
-	if ( hCom != INVALID_HANDLE_VALUE)
+	if (hCom != INVALID_HANDLE_VALUE)
 	{
 		do
 		{
 			WaitCommEvent(hCom, &evento, NULL);
 		}
-		while ( !(evento & EV_TXEMPTY) );
+		while (!(evento & EV_TXEMPTY));
 	}
 
 #elif defined(__linux__)
 
-	if ( fd != INVALID_HANDLE_VALUE )
+	if (fd != INVALID_HANDLE_VALUE)
 	{
 		tcdrain(fd);
 	}
@@ -399,11 +399,11 @@ long RS232Interface::ReadSerial(uint8_t *buffer, long len)
 
 #ifdef  _WINDOWS
 
-	if ( hCom != INVALID_HANDLE_VALUE )
+	if (hCom != INVALID_HANDLE_VALUE)
 	{
 		DWORD nread;
 
-		if ( ReadFile(hCom, buffer, len, &nread, NULL) )
+		if (ReadFile(hCom, buffer, len, &nread, NULL))
 		{
 			retval = nread;
 		}
@@ -411,7 +411,7 @@ long RS232Interface::ReadSerial(uint8_t *buffer, long len)
 
 #elif defined(__linux__)
 
-	if ( fd != INVALID_HANDLE_VALUE )
+	if (fd != INVALID_HANDLE_VALUE)
 	{
 		long nread, nleft;
 		uint8_t *ptr;
@@ -479,11 +479,11 @@ long RS232Interface::WriteSerial(uint8_t *buffer, long len)
 
 #ifdef  _WINDOWS
 
-	if ( hCom != INVALID_HANDLE_VALUE )
+	if (hCom != INVALID_HANDLE_VALUE)
 	{
 		DWORD nwrite;
 
-		if ( WriteFile(hCom, buffer, len, &nwrite, NULL) )
+		if (WriteFile(hCom, buffer, len, &nwrite, NULL))
 		{
 			retval = nwrite;
 		}
@@ -491,7 +491,7 @@ long RS232Interface::WriteSerial(uint8_t *buffer, long len)
 
 #elif defined(__linux__)
 
-	if ( fd != INVALID_HANDLE_VALUE )
+	if (fd != INVALID_HANDLE_VALUE)
 	{
 		long nleft, nwritten;
 		uint8_t *ptr;
@@ -562,12 +562,12 @@ int RS232Interface::SetSerialParams(long speed, int bits, int parity, int stops,
 		char dcb_str[256];
 		DCB com_dcb;
 
-		if ( GetCommState(hCom, &com_dcb) )
+		if (GetCommState(hCom, &com_dcb))
 		{
 			snprintf(dcb_str, 256, "baud=%ld parity=%c data=%d stop=%d", actual_speed, actual_parity, actual_bits, actual_stops);
 			dcb_str[255] = '\0';
 
-			if ( BuildCommDCB(dcb_str, &com_dcb) )
+			if (BuildCommDCB(dcb_str, &com_dcb))
 			{
 				if (actual_flowcontrol == 0)
 				{
@@ -575,7 +575,7 @@ int RS232Interface::SetSerialParams(long speed, int bits, int parity, int stops,
 					com_dcb.fRtsControl = RTS_CONTROL_DISABLE;
 				}
 
-				if ( SetCommState(hCom, &com_dcb) )
+				if (SetCommState(hCom, &com_dcb))
 				{
 					result = OK;
 				}
@@ -591,7 +591,7 @@ int RS232Interface::SetSerialParams(long speed, int bits, int parity, int stops,
 
 #elif defined(__linux__)
 
-	if ( fd != INVALID_HANDLE_VALUE )
+	if (fd != INVALID_HANDLE_VALUE)
 	{
 		if (speed >= 300 && speed <= 115200)
 		{
@@ -620,7 +620,7 @@ int RS232Interface::SetSerialParams(long speed, int bits, int parity, int stops,
 
 		struct termios termios;
 
-		if ( tcgetattr(fd, &termios) != 0 )
+		if (tcgetattr(fd, &termios) != 0)
 		{
 			return result;
 		}
@@ -696,53 +696,53 @@ int RS232Interface::SetSerialParams(long speed, int bits, int parity, int stops,
 
 		switch (speed)
 		{
-		case 300:
-			baudrate = B300;
-			break;
+			case 300:
+				baudrate = B300;
+				break;
 
-		case 600:
-			baudrate = B600;
-			break;
+			case 600:
+				baudrate = B600;
+				break;
 
-		case 1200:
-			baudrate = B1200;
-			break;
+			case 1200:
+				baudrate = B1200;
+				break;
 
-		case 2400:
-			baudrate = B2400;
-			break;
+			case 2400:
+				baudrate = B2400;
+				break;
 
-		case 4800:
-			baudrate = B4800;
-			break;
+			case 4800:
+				baudrate = B4800;
+				break;
 
-		case 9600:
-			baudrate = B9600;
-			break;
+			case 9600:
+				baudrate = B9600;
+				break;
 
-		case 19200:
-			baudrate = B19200;
-			break;
+			case 19200:
+				baudrate = B19200;
+				break;
 
-		case 38400:
-			baudrate = B38400;
-			break;
+			case 38400:
+				baudrate = B38400;
+				break;
 
-		case 57600:
-			baudrate = B57600;
-			break;
+			case 57600:
+				baudrate = B57600;
+				break;
 
-		case 115200:
-			baudrate = B115200;
-			break;
+			case 115200:
+				baudrate = B115200;
+				break;
 
-		case 230400:
-			baudrate = B230400;
-			break;
+			case 230400:
+				baudrate = B230400;
+				break;
 
-		default:
-			baudrate = B9600;
-			break;
+			default:
+				baudrate = B9600;
+				break;
 		}
 
 		cfsetispeed(&termios, baudrate);
@@ -751,7 +751,7 @@ int RS232Interface::SetSerialParams(long speed, int bits, int parity, int stops,
 		termios.c_cc[VMIN] = 1;
 		termios.c_cc[VTIME] = 0;
 
-		if ( tcsetattr(fd, TCSANOW, &termios) == 0 )
+		if (tcsetattr(fd, TCSANOW, &termios) == 0)
 		{
 			result = OK;
 		}
@@ -812,7 +812,7 @@ int RS232Interface::SetSerialTimeouts(long init_read, long while_read)
 		new_timeout.WriteTotalTimeoutMultiplier = 0;
 		new_timeout.WriteTotalTimeoutConstant = 0;
 
-		if ( SetCommTimeouts(hCom, &new_timeout) )
+		if (SetCommTimeouts(hCom, &new_timeout))
 		{
 			result = OK;
 		}
@@ -831,9 +831,9 @@ int RS232Interface::SetSerialDTR(int dtr)
 
 #ifdef  _WINDOWS
 
-	if ( hCom != INVALID_HANDLE_VALUE )
+	if (hCom != INVALID_HANDLE_VALUE)
 	{
-		if ( EscapeCommFunction(hCom, dtr ? SETDTR : CLRDTR) )
+		if (EscapeCommFunction(hCom, dtr ? SETDTR : CLRDTR))
 		{
 			result = OK;
 		}
@@ -865,9 +865,9 @@ int RS232Interface::SetSerialRTS(int rts)
 
 #ifdef  _WINDOWS
 
-	if ( hCom != INVALID_HANDLE_VALUE )
+	if (hCom != INVALID_HANDLE_VALUE)
 	{
-		if ( EscapeCommFunction(hCom, rts ? SETRTS : CLRRTS) )
+		if (EscapeCommFunction(hCom, rts ? SETRTS : CLRRTS))
 		{
 			result = OK;
 		}
@@ -899,7 +899,7 @@ int RS232Interface::SetSerialRTSDTR(int state)
 
 #ifdef  _WINDOWS
 
-	if ( hCom != INVALID_HANDLE_VALUE )
+	if (hCom != INVALID_HANDLE_VALUE)
 	{
 		if (state)
 		{
@@ -942,11 +942,11 @@ int RS232Interface::GetSerialDSR() const
 
 #ifdef  _WINDOWS
 
-	if ( hCom != INVALID_HANDLE_VALUE )
+	if (hCom != INVALID_HANDLE_VALUE)
 	{
 		DWORD status;
 
-		if ( GetCommModemStatus(hCom, &status) )
+		if (GetCommModemStatus(hCom, &status))
 		{
 			result = (status & MS_DSR_ON);
 		}
@@ -972,11 +972,11 @@ int RS232Interface::GetSerialCTS() const
 
 #ifdef  _WINDOWS
 
-	if ( hCom != INVALID_HANDLE_VALUE )
+	if (hCom != INVALID_HANDLE_VALUE)
 	{
 		DWORD status;
 
-		if ( GetCommModemStatus(hCom, &status) )
+		if (GetCommModemStatus(hCom, &status))
 		{
 			result = (status & MS_CTS_ON);
 		}
@@ -1001,14 +1001,14 @@ static int fd_clear_flag(int fd, int flags)
 {
 	int val;
 
-	if ( (val = fcntl(fd, F_GETFL, 0)) < 0 )
+	if ((val = fcntl(fd, F_GETFL, 0)) < 0)
 	{
 		return val;
 	}
 
 	val &= ~flags;
 
-	if ( fcntl(fd, F_SETFL, val) < 0 )
+	if (fcntl(fd, F_SETFL, val) < 0)
 	{
 		return -1;
 	}

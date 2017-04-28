@@ -38,19 +38,19 @@
 
 class At25xxx : public At250xx
 {
-public:               //---------------------------------------- public
+  public:               //---------------------------------------- public
 
 	At25xxx(e2AppWinInfo *wininfo = 0, BusIO *busp = 0);
 	virtual ~At25xxx();
 
-protected:    //--------------------------------------- protected
+  protected:    //--------------------------------------- protected
 
 	At250BigBus *GetBus()
 	{
 		return (At250BigBus *)Device::GetBus();
 	}
 
-private:              //--------------------------------------- private
+  private:              //--------------------------------------- private
 
 };
 #endif

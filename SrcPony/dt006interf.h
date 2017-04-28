@@ -34,7 +34,7 @@
 
 class Dt006Interface : public LptExtInterface
 {
-public:                //------------------------------- public
+  public:                //------------------------------- public
 	Dt006Interface(bool use_io = false);
 
 	virtual int Open(int port_no);
@@ -54,9 +54,9 @@ public:                //------------------------------- public
 	int SetPower(int onoff);
 	void SetControlLine(int res = 1);
 
-protected:             //------------------------------- protected
+  protected:             //------------------------------- protected
 
-private:               //------------------------------- private
+  private:               //------------------------------- private
 	//      int GetPresence();
 
 };

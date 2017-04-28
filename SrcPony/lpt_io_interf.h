@@ -35,7 +35,7 @@
 
 class LPTIOInterface : public PortInterface
 {
-public:                //------------------------------- public
+  public:                //------------------------------- public
 	LPTIOInterface();
 	virtual ~LPTIOInterface();
 
@@ -61,9 +61,9 @@ public:                //------------------------------- public
 		return last_ctrl;
 	}
 
-protected:             //------------------------------- protected
+  protected:             //------------------------------- protected
 
-private:               //------------------------------- private
+  private:               //------------------------------- private
 
 	int lpt_port;
 	uint8_t last_ctrl, last_data;

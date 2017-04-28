@@ -114,7 +114,7 @@ int Dt006Interface::Open(int port_no)
 
 	if (IsInstalled() != port_no)
 	{
-		if ( InDataPort(port_no) < 0 )
+		if (InDataPort(port_no) < 0)
 		{
 			ret_val = E2ERR_OPENFAILED;
 		}

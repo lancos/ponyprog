@@ -130,8 +130,8 @@ int Nvm3060::Write(int probe, int type)
 		if (size > 256)
 		{
 			//NVM3060
-			E2Profile::SetNVMProgDelay( E2Profile::GetNVMProgDelay() );
-			GetBus()->SetProgDelay( E2Profile::GetNVMProgDelay() );
+			E2Profile::SetNVMProgDelay(E2Profile::GetNVMProgDelay());
+			GetBus()->SetProgDelay(E2Profile::GetNVMProgDelay());
 			GetBus()->SetDataMode(16);
 			GetBus()->SetStatusLocation(526);
 			start_addr = 0;
@@ -139,8 +139,8 @@ int Nvm3060::Write(int probe, int type)
 		else
 		{
 			//MDA2062
-			E2Profile::SetMDAProgDelay( E2Profile::GetMDAProgDelay() );
-			GetBus()->SetProgDelay( E2Profile::GetMDAProgDelay() );
+			E2Profile::SetMDAProgDelay(E2Profile::GetMDAProgDelay());
+			GetBus()->SetProgDelay(E2Profile::GetMDAProgDelay());
 			GetBus()->SetDataMode(8);
 			GetBus()->SetStatusLocation(14);
 			start_addr = 128;
@@ -213,7 +213,7 @@ int Nvm3060::Verify(int type)
 		}
 		else
 		{
-			rval = ( memcmp(GetBufPtr(), localbuf, size) != 0 ) ? 0 : 1;
+			rval = (memcmp(GetBufPtr(), localbuf, size) != 0) ? 0 : 1;
 		}
 
 		delete localbuf;

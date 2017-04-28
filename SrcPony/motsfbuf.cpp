@@ -83,7 +83,7 @@ int MotorolaSFileBuf::WriteRecord(QTextStream &outs, uint8_t *bptr, long curaddr
 
 		for (j = 0; j < recsize; j++)
 		{
-			if ( bptr[curaddr + j] != 0xFF )
+			if (bptr[curaddr + j] != 0xFF)
 			{
 				discard = 0;
 				break;
@@ -100,51 +100,51 @@ int MotorolaSFileBuf::WriteRecord(QTextStream &outs, uint8_t *bptr, long curaddr
 		return rval;
 	}
 
-	switch(fmt)
+	switch (fmt)
 	{
-	case START_RECORD:              //starting record (optional)
-		len = recsize + 2 + 1;  //2 byte address + 1 byte checksum
-		break;
+		case START_RECORD:              //starting record (optional)
+			len = recsize + 2 + 1;  //2 byte address + 1 byte checksum
+			break;
 
-	case DATA_RECORD16:             //16 bit address data record
-		len = recsize + 2 + 1;  //2 byte address + 1 byte checksum
-		break;
+		case DATA_RECORD16:             //16 bit address data record
+			len = recsize + 2 + 1;  //2 byte address + 1 byte checksum
+			break;
 
-	case DATA_RECORD24:             //24 bit address data record
-		len = recsize + 3 + 1;  //3 byte address + 1 byte checksum
-		break;
+		case DATA_RECORD24:             //24 bit address data record
+			len = recsize + 3 + 1;  //3 byte address + 1 byte checksum
+			break;
 
-	case DATA_RECORD32:             //32 bit address data record
-		len = recsize + 4 + 1;  //4 byte address + 1 byte checksum
-		break;
+		case DATA_RECORD32:             //32 bit address data record
+			len = recsize + 4 + 1;  //4 byte address + 1 byte checksum
+			break;
 
-	case SYMBOL_RECORD:             //symbol record (LSI extension)
-		len = recsize + 2 + 1;  //2 byte address + 1 byte checksum
-		break;
+		case SYMBOL_RECORD:             //symbol record (LSI extension)
+			len = recsize + 2 + 1;  //2 byte address + 1 byte checksum
+			break;
 
-	case NBLOCK_RECORD:             //number of data records in preceeding block
-		len = recsize + 2 + 1;  //2 byte address + 1 byte checksum
-		break;
+		case NBLOCK_RECORD:             //number of data records in preceeding block
+			len = recsize + 2 + 1;  //2 byte address + 1 byte checksum
+			break;
 
-	case UNUSED_RECORD:             //unused
-		len = recsize + 2 + 1;  //2 byte address + 1 byte checksum
-		break;
+		case UNUSED_RECORD:             //unused
+			len = recsize + 2 + 1;  //2 byte address + 1 byte checksum
+			break;
 
-	case END_RECORD32:              //ending record for S3 records
-		len = recsize + 4 + 1;  //4 byte address + 1 byte checksum
-		break;
+		case END_RECORD32:              //ending record for S3 records
+			len = recsize + 4 + 1;  //4 byte address + 1 byte checksum
+			break;
 
-	case END_RECORD24:              //ending record for S2 records
-		len = recsize + 3 + 1;  //3 byte address + 1 byte checksum
-		break;
+		case END_RECORD24:              //ending record for S2 records
+			len = recsize + 3 + 1;  //3 byte address + 1 byte checksum
+			break;
 
-	case END_RECORD16:              //ending record for S1 records
-		len = recsize + 2 + 1;  //2 byte address + 1 byte checksum
-		break;
+		case END_RECORD16:              //ending record for S1 records
+			len = recsize + 2 + 1;  //2 byte address + 1 byte checksum
+			break;
 
-	default:
-		rval = 0;
-		break;
+		default:
+			rval = 0;
+			break;
 	}
 
 	if (rval)
@@ -215,7 +215,7 @@ int MotorolaSFileBuf::Save(int savetype, long relocation_offset)
 	uint8_t *ptr = FileBuf::GetBufPtr();
 
 	//Remove FF's tail
-	while ( ptr[size - 1] == 0xFF )
+	while (ptr[size - 1] == 0xFF)
 	{
 		size--;
 	}
@@ -255,7 +255,7 @@ int MotorolaSFileBuf::Save(int savetype, long relocation_offset)
 
 		while (curaddr < size)
 		{
-			int recsize = min( (size - curaddr), 16 );
+			int recsize = min((size - curaddr), 16);
 
 			rectype = DATA_RECORD16;
 
@@ -269,7 +269,7 @@ int MotorolaSFileBuf::Save(int savetype, long relocation_offset)
 				rectype = DATA_RECORD32;
 			}
 
-			if ( !WriteRecord(out, ptr, curaddr, recsize, rectype) )
+			if (!WriteRecord(out, ptr, curaddr, recsize, rectype))
 			{
 				rval = WRITEERROR;
 				break;
@@ -316,7 +316,7 @@ int MotorolaSFileBuf::Load(int loadtype, long relocation_offset)
 
 	if (loadtype == DATA_TYPE)
 	{
-		if ( GetSplitted() >= 0 && GetSplitted() < GetBufSize() )
+		if (GetSplitted() >= 0 && GetSplitted() < GetBufSize())
 		{
 			dp += GetSplitted();
 		}
@@ -356,7 +356,7 @@ int MotorolaSFileBuf::Load(int loadtype, long relocation_offset)
 	{
 		fh.readLine(riga, MAXLINE);
 
-		if ( (rval = ParseRecord(riga, dp, endp, 0, nocopy_mode)) != OK )
+		if ((rval = ParseRecord(riga, dp, endp, 0, nocopy_mode)) != OK)
 		{
 			if (rval == BUFFEROVERFLOW)
 			{
@@ -371,7 +371,7 @@ int MotorolaSFileBuf::Load(int loadtype, long relocation_offset)
 
 	if (nocopy_mode)
 	{
-		if ( (highestAddr - lowestAddr) > GetBufSize() )
+		if ((highestAddr - lowestAddr) > GetBufSize())
 		{
 			rval = BUFFEROVERFLOW;
 		}
@@ -390,11 +390,11 @@ int MotorolaSFileBuf::Load(int loadtype, long relocation_offset)
 
 			riga[MAXLINE] = '\0';
 
-			while ( !fh.atEnd())
+			while (!fh.atEnd())
 			{
 				fh.readLine(riga, MAXLINE);
 
-				if ( (rval = ParseRecord(riga, dp, endp, l_offset, nocopy_mode)) != OK )
+				if ((rval = ParseRecord(riga, dp, endp, l_offset, nocopy_mode)) != OK)
 				{
 					break;
 				}
@@ -440,10 +440,10 @@ int MotorolaSFileBuf::ParseRecord(char *lbufPC, uint8_t *buf_startP, uint8_t *bu
 {
 	long addrL;
 	uint8_t cksmB,              // checksum of addr, count, & data length
-	        *bufPC = 0;      // Pointer into memory array
+			*bufPC = 0;      // Pointer into memory array
 	int i, countN,           // Number of bytes represented in record
-	    oheadN = 0,      // Number of overhead (addr + chksum) bytes
-	    tvalN;           // Temp for check checksum
+		oheadN = 0,      // Number of overhead (addr + chksum) bytes
+		tvalN;           // Temp for check checksum
 	int unknow_rec = 0;
 
 	if (lbufPC[0] == '\n' || lbufPC[0] == '\r')
@@ -456,55 +456,55 @@ int MotorolaSFileBuf::ParseRecord(char *lbufPC, uint8_t *buf_startP, uint8_t *bu
 		return BADFILETYPE;
 	}
 
-	switch( lbufPC[1] )                             /* examine 2nd character on the line */
+	switch (lbufPC[1])                              /* examine 2nd character on the line */
 	{
-	case DATA_RECORD16:                             /* 16 bit address field */
-		if( sscanf(lbufPC, "S1%2X%4lX", &countN, &addrL ) != 2 )
-		{
-			return BADFILETYPE;        /* Flag error in S1 record */
-		}
+		case DATA_RECORD16:                             /* 16 bit address field */
+			if (sscanf(lbufPC, "S1%2X%4lX", &countN, &addrL) != 2)
+			{
+				return BADFILETYPE;        /* Flag error in S1 record */
+			}
 
-		oheadN = 2 + 1;                         /* 2 address + 1 checksum */
-		break;
+			oheadN = 2 + 1;                         /* 2 address + 1 checksum */
+			break;
 
-	case DATA_RECORD24:                             /* 24 bit address field */
-		if( sscanf(lbufPC, "S2%2X%6lX", &countN, &addrL ) != 2 )
-		{
-			return BADFILETYPE;        /* Flag error in S2 record */
-		}
+		case DATA_RECORD24:                             /* 24 bit address field */
+			if (sscanf(lbufPC, "S2%2X%6lX", &countN, &addrL) != 2)
+			{
+				return BADFILETYPE;        /* Flag error in S2 record */
+			}
 
-		oheadN = 3 + 1;                         /* 3 address + 1 checksum */
-		break;
+			oheadN = 3 + 1;                         /* 3 address + 1 checksum */
+			break;
 
-	case DATA_RECORD32:                             /* 32 bit address field */
-		if( sscanf(lbufPC, "S3%2X%8lX", &countN, &addrL ) != 2 )
-		{
-			return BADFILETYPE;        /* Flag error in S3 record */
-		}
+		case DATA_RECORD32:                             /* 32 bit address field */
+			if (sscanf(lbufPC, "S3%2X%8lX", &countN, &addrL) != 2)
+			{
+				return BADFILETYPE;        /* Flag error in S3 record */
+			}
 
-		oheadN = 4 + 1;                         /* 4 address + 1 checksum */
-		break;
+			oheadN = 4 + 1;                         /* 4 address + 1 checksum */
+			break;
 
-	/* ignore all but S1,2,3 records. */
-	case START_RECORD:      //starting record (optional)
-	case SYMBOL_RECORD:     //symbol record (LSI extension)
-	case NBLOCK_RECORD:     //number of data records in preceeding block
-	case UNUSED_RECORD:     //unused
-	case END_RECORD32:      //ending record for S3 records
-	case END_RECORD24:      //ending record for S2 records
-	case END_RECORD16:      //ending record for S1 records
+		/* ignore all but S1,2,3 records. */
+		case START_RECORD:      //starting record (optional)
+		case SYMBOL_RECORD:     //symbol record (LSI extension)
+		case NBLOCK_RECORD:     //number of data records in preceeding block
+		case UNUSED_RECORD:     //unused
+		case END_RECORD32:      //ending record for S3 records
+		case END_RECORD24:      //ending record for S2 records
+		case END_RECORD16:      //ending record for S1 records
 
-		//check only for correct checksum
-		if( sscanf(lbufPC + 2, "%2X", &countN ) != 1 )
-		{
-			return BADFILETYPE;        /* Flag error in SX record */
-		}
+			//check only for correct checksum
+			if (sscanf(lbufPC + 2, "%2X", &countN) != 1)
+			{
+				return BADFILETYPE;        /* Flag error in SX record */
+			}
 
-		unknow_rec = 1;
-		break;
+			unknow_rec = 1;
+			break;
 
-	default:                                // bad record
-		return BADFILETYPE;
+		default:                                // bad record
+			return BADFILETYPE;
 	}
 
 	if (unknow_rec)
@@ -512,25 +512,25 @@ int MotorolaSFileBuf::ParseRecord(char *lbufPC, uint8_t *buf_startP, uint8_t *bu
 		cksmB = 0;
 		countN++;                   /* Bump counter to read final checksum too */
 
-		for( i = 1; i <= countN; i++ )
+		for (i = 1; i <= countN; i++)
 		{
-			sscanf( lbufPC + i * 2, "%2X", &tvalN ); /* Scan a 2 hex digit byte  */
+			sscanf(lbufPC + i * 2, "%2X", &tvalN);   /* Scan a 2 hex digit byte  */
 			cksmB += (uint8_t)tvalN;
 		}
 
-		if( ++cksmB )
+		if (++cksmB)
 		{
 			return BADFILETYPE;        /* flag checksum error */
 		}
 	}
 	else
 	{
-		if ( addrL > highestAddr)
+		if (addrL > highestAddr)
 		{
 			highestAddr = addrL;
 		}
 
-		if ( addrL < lowestAddr)
+		if (addrL < lowestAddr)
 		{
 			lowestAddr = addrL;
 		}
@@ -551,12 +551,12 @@ int MotorolaSFileBuf::ParseRecord(char *lbufPC, uint8_t *buf_startP, uint8_t *bu
 		cksmB = 0;
 		countN++;                   /* Bump counter to read final checksum too */
 
-		for( i = 1; i <= countN; i++ )
+		for (i = 1; i <= countN; i++)
 		{
-			sscanf( lbufPC + i * 2, "%2X", &tvalN ); /* Scan a 2 hex digit byte  */
+			sscanf(lbufPC + i * 2, "%2X", &tvalN);   /* Scan a 2 hex digit byte  */
 			cksmB += (uint8_t)tvalN;
 
-			if( ( i > oheadN ) && ( i < countN ) )   /* If scanned a data byte */
+			if ((i > oheadN) && (i < countN))        /* If scanned a data byte */
 			{
 				if (!nocopy)
 				{
@@ -571,14 +571,14 @@ int MotorolaSFileBuf::ParseRecord(char *lbufPC, uint8_t *buf_startP, uint8_t *bu
 			}
 		}
 
-		if( ++cksmB )
+		if (++cksmB)
 		{
 			return BADFILETYPE;        /* flag checksum error */
 		}
 
 		if (!nocopy)
 		{
-			if( (bufPC - 1) > highestPC )
+			if ((bufPC - 1) > highestPC)
 			{
 				highestPC = bufPC - 1;        /* track highest address loaded */
 			}

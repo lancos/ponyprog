@@ -82,13 +82,13 @@ long PicBusNew::Write(int addr, uint8_t const *data, long length, int page_size)
 			//Write Data code
 			val  = (uint16_t)(*data++);
 
-			if ( CompareSingleWord(val, 0xffff, DataMask) != 0 )
+			if (CompareSingleWord(val, 0xffff, DataMask) != 0)
 			{
 				SendCmdCode(LoadDataCode);
 				SendDataCode(val);
 				SendCmdCode(BeginProgOnlyCode);
 
-				if ( WaitReadyAfterWrite() )
+				if (WaitReadyAfterWrite())
 				{
 					break;
 				}
@@ -111,14 +111,14 @@ long PicBusNew::Write(int addr, uint8_t const *data, long length, int page_size)
 			val |= (uint16_t)(*data++) << 8;
 #endif
 
-			if ( CompareSingleWord(val, 0xffff, ProgMask) != 0 )
+			if (CompareSingleWord(val, 0xffff, ProgMask) != 0)
 			{
 				//Write Program code
 				SendCmdCode(LoadProgCode);
 				SendProgCode(val);
 				SendCmdCode(BeginProgOnlyCode);
 
-				if ( WaitReadyAfterWrite() )
+				if (WaitReadyAfterWrite())
 				{
 					break;
 				}
@@ -132,7 +132,7 @@ long PicBusNew::Write(int addr, uint8_t const *data, long length, int page_size)
 			SendCmdCode(IncAddressCode);
 		}
 
-		if ( CheckAbort(len * 100 / length) )
+		if (CheckAbort(len * 100 / length))
 		{
 			break;
 		}

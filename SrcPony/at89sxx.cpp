@@ -123,7 +123,7 @@ int At89sxx::QueryType(long &type)
 		code[1] = GetBus()->ReadDeviceCode(0x100);
 		code[2] = GetBus()->ReadDeviceCode(0x200);
 
-		qDebug() << "At89sxx::ParseID(100) *** " <<  (hex) << code[0] << " - " << code[1] << " - " <<  code[2] << (dec);
+		qDebug() << "At89sxx::ParseID(100) *** " << (hex) << code[0] << " - " << code[1] << " - " <<  code[2] << (dec);
 
 		if (code[0] == 0x1E && code[1] == 0x51 && code[2] == 0x06)
 		{
@@ -158,9 +158,9 @@ int At89sxx::Probe(int probe_size)
 	{
 		switch (GetAWInfo()->GetEEPId())
 		{
-		case AT89S51:
-		case AT89S52:
-		case AT89S8253:
+			case AT89S51:
+			case AT89S52:
+			case AT89S8253:
 			{
 				long type;
 				rv = QueryType(type);
@@ -168,7 +168,7 @@ int At89sxx::Probe(int probe_size)
 
 				if (rv == OK)
 				{
-					if ( GetE2PSubType(GetAWInfo()->GetEEPId()) == subtype )
+					if (GetE2PSubType(GetAWInfo()->GetEEPId()) == subtype)
 					{
 						rv = GetSize();
 					}
@@ -180,9 +180,9 @@ int At89sxx::Probe(int probe_size)
 			}
 			break;
 
-		default:
-			rv = GetSize();
-			break;
+			default:
+				rv = GetSize();
+				break;
 		}
 	}
 
@@ -217,14 +217,14 @@ int At89sxx::Read(int probe, int type)
 				// read the fuses
 				uint32_t f = 0;
 
-				if ( GetBus()->ReadFuseBits(f, GetAWInfo()->GetEEPId()) == OK )
+				if (GetBus()->ReadFuseBits(f, GetAWInfo()->GetEEPId()) == OK)
 				{
 					GetAWInfo()->SetFuseBits(f);
 				}
 
 				f = 0;
 
-				if ( GetBus()->ReadLockBits(f, GetAWInfo()->GetEEPId()) == OK )
+				if (GetBus()->ReadLockBits(f, GetAWInfo()->GetEEPId()) == OK)
 				{
 					GetAWInfo()->SetLockBits(f);
 				}
@@ -312,8 +312,8 @@ int At89sxx::Verify(int type)
 			fret = GetBus()->ReadFuseBits(fval, GetAWInfo()->GetEEPId());
 			lret = GetBus()->ReadLockBits(lval, GetAWInfo()->GetEEPId());
 
-			if ( (lret == NOTSUPPORTED || GetAWInfo()->GetLockBits() == lval)
-			                && (fret == NOTSUPPORTED || GetAWInfo()->GetFuseBits() == fval) )
+			if ((lret == NOTSUPPORTED || GetAWInfo()->GetLockBits() == lval)
+					&& (fret == NOTSUPPORTED || GetAWInfo()->GetFuseBits() == fval))
 			{
 				v_config = OK;
 			}

@@ -42,7 +42,7 @@ using namespace Translator;
 class e2CmdWindow;
 
 //=========================>>> FillDialog::FillDialog <<<====================
-FillDialog::FillDialog(QWidget* bw, long &cfrom, long &cto, int &cval, long max_addr, const QString title) :
+FillDialog::FillDialog(QWidget *bw, long &cfrom, long &cto, int &cval, long max_addr, const QString title) :
 	QDialog(bw)
 {
 	setupUi(this);

@@ -72,31 +72,31 @@ void MicroWireBus::SetDelay()
 	int val = E2Profile::GetMicroWireSpeed();
 	int n;
 
-	switch(val)
+	switch (val)
 	{
-	case TURBO:
-		n = 0;         // as fast as your PC can
-		break;
+		case TURBO:
+			n = 0;         // as fast as your PC can
+			break;
 
-	case FAST:
-		n = 1;
-		break;
+		case FAST:
+			n = 1;
+			break;
 
-	case SLOW:
-		n = 10;
-		break;
+		case SLOW:
+			n = 10;
+			break;
 
-	case VERYSLOW:
-		n = 80;
-		break;
+		case VERYSLOW:
+			n = 80;
+			break;
 
-	case ULTRASLOW:
-		n = 500;
-		break;
+		case ULTRASLOW:
+			n = 500;
+			break;
 
-	default:
-		n = 5;         //Default (< 100KHz)
-		break;
+		default:
+			n = 5;         //Default (< 100KHz)
+			break;
 	}
 
 	BusIO::SetDelay(n);
@@ -185,7 +185,7 @@ int MicroWireBus::RecDataWord(int wlen, int lsb)
 	if (lsb)
 	{
 		for (k = 0; k < wlen; k++)
-			if ( RecDataBit() )
+			if (RecDataBit())
 			{
 				val |= (1 << k);
 			}
@@ -193,7 +193,7 @@ int MicroWireBus::RecDataWord(int wlen, int lsb)
 	else
 	{
 		for (k = wlen - 1; k >= 0; k--)
-			if ( RecDataBit() )
+			if (RecDataBit())
 			{
 				val |= (1 << k);
 			}
@@ -218,7 +218,7 @@ int MicroWireBus::RecDataWordShort(int wlen, int lsb)
 			val = RecDataBitShort() ? 1 : 0;
 
 			for (k = 1; k < wlen; k++)
-				if ( RecDataBit() )
+				if (RecDataBit())
 				{
 					val |= (1 << k);
 				}
@@ -228,7 +228,7 @@ int MicroWireBus::RecDataWordShort(int wlen, int lsb)
 			val = RecDataBitShort() ? 1 << (wlen - 1) : 0;
 
 			for (k = wlen - 2; k >= 0; k--)
-				if ( RecDataBit() )
+				if (RecDataBit())
 				{
 					val |= (1 << k);
 				}
@@ -293,7 +293,7 @@ int MicroWireBus::CalcAddressSize(int mem_size, int org) const
 	int k;
 
 	for (k = 15; k > 0; k--)
-		if ( mem_size & (1 << k) )
+		if (mem_size & (1 << k))
 		{
 			break;
 		}

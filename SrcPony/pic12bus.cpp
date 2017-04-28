@@ -85,31 +85,31 @@ void Pic12Bus::SetDelay()
 	int val = E2Profile::GetPICSpeed();
 	int n;
 
-	switch(val)
+	switch (val)
 	{
-	case TURBO:
-		n = 1;
-		break;
+		case TURBO:
+			n = 1;
+			break;
 
-	case FAST:
-		n = 3;
-		break;
+		case FAST:
+			n = 3;
+			break;
 
-	case SLOW:
-		n = 20;
-		break;
+		case SLOW:
+			n = 20;
+			break;
 
-	case VERYSLOW:
-		n = 100;
-		break;
+		case VERYSLOW:
+			n = 100;
+			break;
 
-	case ULTRASLOW:
-		n = 1000;
-		break;
+		case ULTRASLOW:
+			n = 1000;
+			break;
 
-	default:
-		n = 8;         //Default (< 100KHz)
-		break;
+		default:
+			n = 8;         //Default (< 100KHz)
+			break;
 	}
 
 	BusIO::SetDelay(n);
@@ -180,7 +180,7 @@ long Pic12Bus::RecDataWord(int wlen)
 
 	//receive lsb first
 	for (k = 0; k < wlen; k++)
-		if ( RecDataBit() )
+		if (RecDataBit())
 		{
 			val |= 1 << k;
 		}
@@ -294,12 +294,12 @@ long Pic12Bus::BlankCheck(long length)
 		//Read Program Code
 		SendCmdCode(ReadProgCode);
 
-		if ( CompareSingleWord(0xffff, RecvProgCode(), ProgMask) )
+		if (CompareSingleWord(0xffff, RecvProgCode(), ProgMask))
 		{
 			break;
 		}
 
-		if ( CheckAbort(len * 100 / length) )
+		if (CheckAbort(len * 100 / length))
 		{
 			break;
 		}
@@ -343,7 +343,7 @@ long Pic12Bus::Read(int addr, uint8_t *data, long length, int page_size)
 #endif
 		IncAddress(1);
 
-		if ( CheckAbort(len * 100 / length) )
+		if (CheckAbort(len * 100 / length))
 		{
 			break;
 		}
@@ -385,13 +385,13 @@ long Pic12Bus::Write(int addr, uint8_t const *data, long length, int page_size)
 #endif
 		rv = WriteProgWord(val, length - 1);
 
-		if ( rv != OK )
+		if (rv != OK)
 		{
 			len = rv;
 			break;
 		}
 
-		if ( CheckAbort(len * 100 / length) )
+		if (CheckAbort(len * 100 / length))
 		{
 			break;
 		}
@@ -424,14 +424,14 @@ int Pic12Bus::WriteProgWord(uint16_t val, long rc_addr)
 		// e il valore da pgrogrammare corrisponde ad una MOVLW xx (0x0Cxx)
 		SendCmdCode(ReadProgCode);
 
-		if ( CompareSingleWord(RecvProgCode(), 0xffff, ProgMask) == 0 &&
-		                CompareSingleWord(val, 0x0C00, (ProgMask & 0xff00)) == 0 )
+		if (CompareSingleWord(RecvProgCode(), 0xffff, ProgMask) == 0 &&
+				CompareSingleWord(val, 0x0C00, (ProgMask & 0xff00)) == 0)
 		{
 			SetLastProgrammedAddress(current_address << 1);
 
 			for (k = 1; k <= MAX_PROG_PULSES; k++)
 			{
-				if ( ProgramPulse(val, 1) == OK )
+				if (ProgramPulse(val, 1) == OK)
 				{
 					break;
 				}
@@ -462,20 +462,20 @@ int Pic12Bus::WriteProgWord(uint16_t val, long rc_addr)
 		//Check for blank (erased cells)
 		SendCmdCode(ReadProgCode);
 
-		if ( CompareSingleWord(RecvProgCode(), 0xffff, ProgMask) )
+		if (CompareSingleWord(RecvProgCode(), 0xffff, ProgMask))
 		{
 			rval = E2ERR_BLANKCHECKFAILED;
 		}
 		else
 		{
 			//Skip FFF words
-			if ( CompareSingleWord(val, 0xffff, ProgMask) != 0 )
+			if (CompareSingleWord(val, 0xffff, ProgMask) != 0)
 			{
 				SetLastProgrammedAddress(current_address << 1);
 
 				for (k = 1; k <= MAX_PROG_PULSES; k++)
 				{
-					if ( ProgramPulse(val, 1) == OK )
+					if (ProgramPulse(val, 1) == OK)
 					{
 						break;
 					}
@@ -557,7 +557,7 @@ int Pic12Bus::CompareMultiWord(uint8_t *data1, uint8_t *data2, long length, int 
 {
 	int retval = 0;
 
-	if ( data1 == 0 || data2 == 0 || (length & 1) != 0 )
+	if (data1 == 0 || data2 == 0 || (length & 1) != 0)
 	{
 		return BADPARAM;
 	}
@@ -584,7 +584,7 @@ int Pic12Bus::CompareMultiWord(uint8_t *data1, uint8_t *data2, long length, int 
 			val2 |= (uint16_t)(*data2++) << 8;
 #endif
 
-			if ( (retval = CompareSingleWord(val1, val2, ProgMask)) )
+			if ((retval = CompareSingleWord(val1, val2, ProgMask)))
 			{
 				break;        //Stop if a difference
 			}

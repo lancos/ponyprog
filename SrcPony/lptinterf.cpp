@@ -81,8 +81,8 @@ LPTInterface::LPTInterface()
 	lpt_control.LPPort = 1;         //by default use LPT1
 
 	hLPTCONVxD = CreateFile("\\\\.\\LPTCON.VXD", 0, 0, NULL, 0,
-	                        FILE_FLAG_DELETE_ON_CLOSE | FILE_FLAG_OVERLAPPED,
-	                        NULL);
+							FILE_FLAG_DELETE_ON_CLOSE | FILE_FLAG_OVERLAPPED,
+							NULL);
 #else
 	lpt_control.LPPort = 0;         //no used port
 
@@ -139,7 +139,7 @@ void LPTInterface::SetPort(int port_no)
 {
 	qDebug() << "LPTInterface::SetPort(" << port_no << ")";
 
-	if ( port_no >= 1 && port_no <= MAX_LPTPORTS )
+	if (port_no >= 1 && port_no <= MAX_LPTPORTS)
 	{
 		lpt_control.LPPort = port_no;
 
@@ -158,7 +158,7 @@ void LPTInterface::SetPort(int port_no)
 
 		if (hLpt != INVALID_HANDLE_VALUE)
 		{
-			if ( ioctl(hLpt, PPCLAIM, 0) )
+			if (ioctl(hLpt, PPCLAIM, 0))
 			{
 				close(hLpt);
 				hLpt = INVALID_HANDLE_VALUE;
@@ -185,18 +185,18 @@ int LPTInterface::InDataPort(int port_no)
 	int ret_val = E2ERR_NOTINSTALLED;
 #ifdef  _WINDOWS
 
-	if ( hLPTCONVxD != INVALID_HANDLE_VALUE )
+	if (hLPTCONVxD != INVALID_HANDLE_VALUE)
 	{
-		if ( port_no >= 1 && port_no <= MAX_LPTPORTS )
+		if (port_no >= 1 && port_no <= MAX_LPTPORTS)
 		{
 			lpt_control.LPPort = port_no;
 		}
 
 		uint8_t value;
 
-		if ( !DeviceIoControl(hLPTCONVxD, LPTCON_READ,
-		                      &lpt_control, sizeof(LPTCONDATA),
-		                      &value, sizeof(value), NULL, 0) )
+		if (!DeviceIoControl(hLPTCONVxD, LPTCON_READ,
+							 &lpt_control, sizeof(LPTCONDATA),
+							 &value, sizeof(value), NULL, 0))
 		{
 			ret_val = E2ERR_OPENFAILED;
 		}
@@ -208,8 +208,8 @@ int LPTInterface::InDataPort(int port_no)
 
 #else
 
-	if ( port_no >= 1 && port_no <= MAX_LPTPORTS
-	                && port_no != lpt_control.LPPort )
+	if (port_no >= 1 && port_no <= MAX_LPTPORTS
+			&& port_no != lpt_control.LPPort)
 	{
 		lpt_control.LPPort = port_no;
 
@@ -226,7 +226,7 @@ int LPTInterface::InDataPort(int port_no)
 
 		if (hLpt != INVALID_HANDLE_VALUE)
 		{
-			if ( ioctl(hLpt, PPCLAIM, 0) )
+			if (ioctl(hLpt, PPCLAIM, 0))
 			{
 				close(hLpt);
 				hLpt = INVALID_HANDLE_VALUE;
@@ -236,9 +236,9 @@ int LPTInterface::InDataPort(int port_no)
 		qDebug() << "LPTInterface::InDataPort() ** hLpt=" << hLpt << ", " << name;
 	}
 
-	if ( hLpt != INVALID_HANDLE_VALUE )
+	if (hLpt != INVALID_HANDLE_VALUE)
 	{
-		if ( ioctl(hLpt, PPRSTATUS, &lpt_control.LPByte) )
+		if (ioctl(hLpt, PPRSTATUS, &lpt_control.LPByte))
 		{
 			ret_val = E2ERR_ACCESSDENIED;
 		}
@@ -272,9 +272,9 @@ int LPTInterface::OutDataPort(int val, int port_no)
 
 #ifdef  _WINDOWS
 
-	if ( hLPTCONVxD != INVALID_HANDLE_VALUE )
+	if (hLPTCONVxD != INVALID_HANDLE_VALUE)
 	{
-		if ( port_no >= 1 && port_no <= MAX_LPTPORTS )
+		if (port_no >= 1 && port_no <= MAX_LPTPORTS)
 		{
 			lpt_control.LPPort = port_no;
 		}
@@ -282,14 +282,14 @@ int LPTInterface::OutDataPort(int val, int port_no)
 		lpt_control.LPByte = last_data = (uint8_t)val;
 
 		ret_val = DeviceIoControl(hLPTCONVxD, LPTCON_WRITE_DATA,
-		                          &lpt_control, sizeof(LPTCONDATA),
-		                          NULL, 0, NULL, 0) ? OK : E2ERR_NOTINSTALLED;
+								  &lpt_control, sizeof(LPTCONDATA),
+								  NULL, 0, NULL, 0) ? OK : E2ERR_NOTINSTALLED;
 	}
 
 #else
 
-	if ( port_no >= 1 && port_no <= MAX_LPTPORTS
-	                && port_no != lpt_control.LPPort )
+	if (port_no >= 1 && port_no <= MAX_LPTPORTS
+			&& port_no != lpt_control.LPPort)
 	{
 		lpt_control.LPPort = port_no;
 
@@ -306,7 +306,7 @@ int LPTInterface::OutDataPort(int val, int port_no)
 
 		if (hLpt != INVALID_HANDLE_VALUE)
 		{
-			if ( ioctl(hLpt, PPCLAIM, 0) )
+			if (ioctl(hLpt, PPCLAIM, 0))
 			{
 				close(hLpt);
 				hLpt = INVALID_HANDLE_VALUE;
@@ -314,11 +314,11 @@ int LPTInterface::OutDataPort(int val, int port_no)
 		}
 	}
 
-	if ( hLpt != INVALID_HANDLE_VALUE )
+	if (hLpt != INVALID_HANDLE_VALUE)
 	{
 		lpt_control.LPByte = last_data = (uint8_t)val;
 
-		if ( ioctl(hLpt, PPWDATA, &lpt_control.LPByte) )
+		if (ioctl(hLpt, PPWDATA, &lpt_control.LPByte))
 		{
 			ret_val = E2ERR_ACCESSDENIED;
 		}
@@ -354,9 +354,9 @@ int LPTInterface::OutControlPort(int val, int port_no)
 
 #ifdef  _WINDOWS
 
-	if ( hLPTCONVxD != INVALID_HANDLE_VALUE )
+	if (hLPTCONVxD != INVALID_HANDLE_VALUE)
 	{
-		if ( port_no >= 1 && port_no <= MAX_LPTPORTS )
+		if (port_no >= 1 && port_no <= MAX_LPTPORTS)
 		{
 			lpt_control.LPPort = port_no;
 		}
@@ -364,14 +364,14 @@ int LPTInterface::OutControlPort(int val, int port_no)
 		lpt_control.LPByte = last_ctrl = (uint8_t)val & 0x0F;
 
 		ret_val = DeviceIoControl(hLPTCONVxD, LPTCON_WRITE_CONTROL,
-		                          &lpt_control, sizeof(LPTCONDATA),
-		                          NULL, 0, NULL, 0) ? OK : E2ERR_NOTINSTALLED;
+								  &lpt_control, sizeof(LPTCONDATA),
+								  NULL, 0, NULL, 0) ? OK : E2ERR_NOTINSTALLED;
 	}
 
 #else
 
-	if ( port_no >= 1 && port_no <= MAX_LPTPORTS
-	                && port_no != lpt_control.LPPort )
+	if (port_no >= 1 && port_no <= MAX_LPTPORTS
+			&& port_no != lpt_control.LPPort)
 	{
 		lpt_control.LPPort = port_no;
 
@@ -388,7 +388,7 @@ int LPTInterface::OutControlPort(int val, int port_no)
 
 		if (hLpt != INVALID_HANDLE_VALUE)
 		{
-			if ( ioctl(hLpt, PPCLAIM, 0) )
+			if (ioctl(hLpt, PPCLAIM, 0))
 			{
 				close(hLpt);
 				hLpt = INVALID_HANDLE_VALUE;
@@ -396,11 +396,11 @@ int LPTInterface::OutControlPort(int val, int port_no)
 		}
 	}
 
-	if ( hLpt != INVALID_HANDLE_VALUE )
+	if (hLpt != INVALID_HANDLE_VALUE)
 	{
 		lpt_control.LPByte = last_ctrl = (uint8_t)val & 0x0F;
 
-		if ( ioctl(hLpt, PPWCONTROL, &lpt_control.LPByte) )
+		if (ioctl(hLpt, PPWCONTROL, &lpt_control.LPByte))
 		{
 			ret_val = E2ERR_ACCESSDENIED;
 		}
@@ -422,9 +422,9 @@ int LPTInterface::OutDataMask(int mask, int val)
 
 #ifdef  _WINDOWS
 
-	if ( hLPTCONVxD != INVALID_HANDLE_VALUE )
+	if (hLPTCONVxD != INVALID_HANDLE_VALUE)
 #else
-	if ( hLpt != INVALID_HANDLE_VALUE )
+	if (hLpt != INVALID_HANDLE_VALUE)
 #endif
 	{
 		if (val == 0)
@@ -459,9 +459,9 @@ int LPTInterface::OutControlMask(int mask, int val)
 
 #ifdef  _WINDOWS
 
-	if ( hLPTCONVxD != INVALID_HANDLE_VALUE )
+	if (hLPTCONVxD != INVALID_HANDLE_VALUE)
 #else
-	if ( hLpt != INVALID_HANDLE_VALUE )
+	if (hLpt != INVALID_HANDLE_VALUE)
 #endif
 	{
 		if (val == 0)

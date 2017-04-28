@@ -74,7 +74,7 @@ int At250Bus::ReadEEPByte(int addr)
 {
 	int rv;
 
-	SendDataByte( ReadData | (((addr >> 8) & 1) << 3) );
+	SendDataByte(ReadData | (((addr >> 8) & 1) << 3));
 	SendDataByte(addr);
 
 	WaitUsec(shot_delay);
@@ -88,7 +88,7 @@ int At250Bus::ReadEEPByte(int addr)
 
 void At250Bus::WriteEEPByte(int addr, int data)
 {
-	SendDataByte( WriteData | (((addr >> 8) & 1) << 3) );
+	SendDataByte(WriteData | (((addr >> 8) & 1) << 3));
 	SendDataByte(addr);
 	SendDataByte(data);
 
@@ -160,8 +160,8 @@ long At250Bus::Read(int addr, uint8_t *data, long length, int page_size)
 	{
 		*data++ = (uint8_t)ReadEEPByte(addr++);
 
-		if ( (len % 10) == 0 )
-			if ( CheckAbort(len * 100 / length) )
+		if ((len % 10) == 0)
+			if (CheckAbort(len * 100 / length))
 			{
 				break;
 			}
@@ -198,8 +198,8 @@ long At250Bus::Write(int addr, uint8_t const *data, long length, int page_size)
 			return 0;        //Must return 0, because > 0 (and != length) means "Abort by user"
 		}
 
-		if ( (len & 1) )
-			if ( CheckAbort(len * 100 / length) )
+		if ((len & 1))
+			if (CheckAbort(len * 100 / length))
 			{
 				break;
 			}

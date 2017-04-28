@@ -38,7 +38,7 @@
 
 class BusInterface
 {
-public:                //------------------------------- public
+  public:                //------------------------------- public
 	BusInterface()
 	{
 		cmd2cmd_delay = 0;
@@ -73,14 +73,14 @@ public:                //------------------------------- public
 
 		qDebug() << "BusInterface::TestSave(" << port << ") IN";
 
-		if ( (old_portno = installed) )
+		if ((old_portno = installed))
 		{
 			//                      old_cpreg = cpreg;
 		}
 
 		Close();
 
-		if ( (ret_val = Open(port)) == OK )
+		if ((ret_val = Open(port)) == OK)
 		{
 		}
 
@@ -149,7 +149,7 @@ public:                //------------------------------- public
 		return installed;
 	}
 
-protected:             //------------------------------- protected
+  protected:             //------------------------------- protected
 	void Install(int val)
 	{
 		installed = val;
@@ -157,7 +157,7 @@ protected:             //------------------------------- protected
 
 	int             old_portno;             // TestSave() save the status here
 
-private:               //------------------------------- private
+  private:               //------------------------------- private
 	int             installed;              // 0 --> not installed, <> 0 number if the installed port
 	int             cmd2cmd_delay;  // <> 0 if a delay between commands is needed
 };
