@@ -1766,16 +1766,12 @@ void e2CmdWindow::onWrite()
 		if (a == actionWriteAll)
 		{
 			CmdWrite(ALL_TYPE, verify );
-			return;
 		}
-
-		if (a == actionWriteFlash)
+		else if (a == actionWriteFlash)
 		{
 			CmdWrite(PROG_TYPE, verify );
-			return;
 		}
-
-		if (a == actionWriteEep)
+		else if (a == actionWriteEep)
 		{
 			CmdWrite(DATA_TYPE, verify );
 		}
@@ -2485,14 +2481,14 @@ int e2CmdWindow::CmdCalibration()
 }
 
 //====================>>> e2CmdWindow::CmdWrite <<<====================
-int e2CmdWindow::CmdWrite(int type)
-{
-	int res;
-	SetAppBusy();
-	res = CmdWrite(type, E2Profile::GetVerifyAfterWrite());
-	SetAppReady();
-	return res;
-}
+//int e2CmdWindow::CmdWrite(int type)
+//{
+//	int res;
+//	SetAppBusy();
+//	res = CmdWrite(type, E2Profile::GetVerifyAfterWrite());
+//	SetAppReady();
+//	return res;
+//}
 
 
 //====================>>> e2CmdWindow::CmdRead <<<====================

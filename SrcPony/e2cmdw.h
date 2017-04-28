@@ -258,7 +258,7 @@ private:
 	int CmdGetInfo();
 	int CmdReset();
 	int CmdReadLock();
-	int CmdWrite(int type);
+//	int CmdWrite(int type);
 	//      int CmdRunScript();
 	int CmdLoadScript();
 	int CmdWriteLock();
