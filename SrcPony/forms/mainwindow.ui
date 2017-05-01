@@ -127,7 +127,7 @@
    <addaction name="menuScript"/>
    <addaction name="menuUtility"/>
    <addaction name="menuSetup"/>
-   <addaction name="menu"/>
+   <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QToolBar" name="toolBarFiles">
