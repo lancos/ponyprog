@@ -1407,6 +1407,11 @@ void e2CmdWindow::selectFontSize(QAction *mnu)
 
 void e2CmdWindow::setFontForWidgets()
 {
+#ifdef Q_OS_WIN32
+	e2HexEdit->setFont(QFont("Courier", E2Profile::GetFontSize()));
+#else
+	e2HexEdit->setFont(QFont("Monospace", E2Profile::GetFontSize()));
+#endif
 	//     buttonsWidget->setStyleSheet(programStyleSheet);
 	//
 	//     for (int i = 0; i < 6; i++) {
