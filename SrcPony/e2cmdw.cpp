@@ -26,8 +26,6 @@
 //=========================================================================//
 
 
-#include <ctype.h>
-
 #include <QPainter>
 #include <QPrinter>
 #include <QFile>
@@ -55,18 +53,10 @@
 #include "errcode.h"
 #include "eeptypes.h"
 
-//#include "socksrv.h"
-
-//      Start defines for the main window with 100
-#include "string_table.h"
 
 #ifdef  WIN32
-static QString   DEF_TITLE = STR_NONAME;
-static QString   DEF_FNAME = STR_NONAME;
 static QString   STR_TITLE = " ";
 #else
-static QString   DEF_TITLE = APPNAME + " - " + STR_NONAME;
-static QString   DEF_FNAME = STR_NONAME;
 static QString   STR_TITLE = APPNAME + " - ";
 #endif
 
@@ -88,7 +78,7 @@ QVector<menuToGroup> deviceMenu;
 //==================>>> e2CmdWindow::About <<<=======================
 void e2CmdWindow::About()
 {
-	AboutModalDialog about(this, STR_ABOUT + " " + APPNAME);
+	AboutModalDialog about(this, translate(STR_ABOUT) + " " + APPNAME);
 
 	PlaySoundMsg(E2Profile::GetSoundEnabled());
 
@@ -107,6 +97,7 @@ e2CmdWindow::e2CmdWindow(QWidget *parent) :
 	cmdWin = this;
 
 	setupUi(this);
+
 	qDebug() << "e2CmdWindow::e2CmdWindow(" << APPNAME << ")";
 
 	cbxEEPType = NULL;
@@ -117,8 +108,15 @@ e2CmdWindow::e2CmdWindow(QWidget *parent) :
 
 	e2Prg = NULL;
 
+	// EK 2017
+	// TODO to remove this to E2Profile init?
 	//      QFont sysFont = qApp->font();
 	//      sysFont = sysFont;
+
+	if (readLangDir() == false)   // init from langFiles variable in format "filename:language"
+	{
+		QMessageBox::warning(this, "Warning", "Directory with other languages not found\nDefault GUI language is english", QMessageBox::Close);
+	}
 
 	// EK 2017
 	// to check this
@@ -182,7 +180,7 @@ e2CmdWindow::e2CmdWindow(QWidget *parent) :
 
 	// EK 2017
 	// TODO
-	// terminal modus
+	// terminal modus ??
 	if (scriptMode)
 	{
 		returnValue = CmdRunScript();
@@ -207,6 +205,25 @@ e2CmdWindow::e2CmdWindow(QWidget *parent) :
 
 	// create all signals, from e2HexEdit too
 	createSignalSlotConnections();
+
+	if (getLangTable() == false)
+	{
+		QMessageBox::warning(this, "Language file error",
+							 "Can't open language file!\nDefault GUI language is english", QMessageBox::Close);
+
+		E2Profile::SetCurrentLang("english");
+	}
+
+	foreach (QAction *itL, actLangSelect)
+	{
+		if ((*itL).text() == E2Profile::GetCurrentLang())
+		{
+			(*itL).setChecked(true);
+			break;
+		}
+	}
+
+	translateGUI();
 
 	//      if (!awip)
 	{
@@ -240,16 +257,16 @@ e2CmdWindow::e2CmdWindow(QWidget *parent) :
 
 	e2HexEdit->setReadOnly(!actionEditBuferEnabled->isChecked());
 
-//	e2HexEdit->setHighlightingColor(settings.value("Editor/HighlightingColor").value<QColor>());
-//	e2HexEdit->setSelectionColor(settings.value("Editor/SelectionColor").value<QColor>());
-//	e2HexEdit->setAddressAreaColor(settings.value("Editor/AddressAreaColor").value<QColor>());
-//	e2HexEdit->setAddressFontColor(settings.value("Editor/AddressFontColor").value<QColor>());
-//	e2HexEdit->setAsciiAreaColor(settings.value("Editor/AsciiAreaColor").value<QColor>());
-//	e2HexEdit->setAsciiFontColor(settings.value("Editor/AsciiFontColor").value<QColor>());
-//	e2HexEdit->setHexFontColor(settings.value("Editor/HexFontColor").value<QColor>());
-//	e2HexEdit->setFont(settings.value("Editor/Font").value<QFont>());
-//	e2HexEdit->setAddressWidth(settings.value("AddressAreaWidth").toInt());
-//	e2HexEdit->setBytesPerLine(settings.value("BytesPerLine").toInt());
+	//      e2HexEdit->setHighlightingColor(settings.value("Editor/HighlightingColor").value<QColor>());
+	//      e2HexEdit->setSelectionColor(settings.value("Editor/SelectionColor").value<QColor>());
+	//      e2HexEdit->setAddressAreaColor(settings.value("Editor/AddressAreaColor").value<QColor>());
+	//      e2HexEdit->setAddressFontColor(settings.value("Editor/AddressFontColor").value<QColor>());
+	//      e2HexEdit->setAsciiAreaColor(settings.value("Editor/AsciiAreaColor").value<QColor>());
+	//      e2HexEdit->setAsciiFontColor(settings.value("Editor/AsciiFontColor").value<QColor>());
+	//      e2HexEdit->setHexFontColor(settings.value("Editor/HexFontColor").value<QColor>());
+	//      e2HexEdit->setFont(settings.value("Editor/Font").value<QFont>());
+	//      e2HexEdit->setAddressWidth(settings.value("AddressAreaWidth").toInt());
+	//      e2HexEdit->setBytesPerLine(settings.value("BytesPerLine").toInt());
 
 	first_line = 0;
 	//curIndex = 0;
@@ -373,66 +390,275 @@ int e2CmdWindow::CloseAppWin()
 }
 #endif
 
-#if 0
-// EK 2017
-// TODO key events filter
-//====================>>> e2CmdWindow::KeyIn <<<====================
-void e2CmdWindow::KeyIn(vKey keysym, unsigned int shift)
+
+
+/**
+ * @brief scan the directory with translations. language files are with .utf extentions
+ *
+ */
+bool e2CmdWindow::readLangDir()
 {
-	switch (keysym)
+	bool found = false;
+	QString lngDirName;
+	QStringList dirsLang;
+	QDir dir;
+	// EK 2017
+	// this for linux
+	dirsLang << "/usr/share/ponyprog/" << "/usr/local/share/ponyprog/" << QDir::currentPath();
+
+	foreach (const QString entry, dirsLang)
 	{
-	case vk_Up:
-	{
-		PrevLine();
-		break;
+		lngDirName = entry + "/lang/";
+
+		dir = QDir(lngDirName);
+
+		if (dir.exists() == true)
+		{
+			E2Profile::SetLangDir(lngDirName);
+			found = true;
+			break;
+		}
+
+		lngDirName = entry + "/language/";
+		dir = QDir(lngDirName);
+
+		if (dir.exists() == true)
+		{
+			E2Profile::SetLangDir(lngDirName);
+			found = true;
+			break;
+		}
 	}
 
-	case vk_Down:
+	if (found == false)
 	{
-		NextLine();
-		break;
+		return false;
 	}
 
-	case vk_Page_Up:
+	langFiles.clear();
+
+	QStringList fList = dir.entryList(QStringList("*.utf"));
+
+	found = false;
+
+	QMenu *langMenu = new QMenu("Language");
+	QAction *actionLanguage = menuSetup->addMenu(langMenu);
+
+	langGroup = new QActionGroup(this);
+
+
+	foreach (const QString iL, fList)
 	{
-		PrevPage();
-		break;
+		QFile fLang(lngDirName + iL);
+
+		if (fLang.exists() == false)
+		{
+			continue;
+		}
+
+		QString iconName;
+
+		if (fLang.open(QIODevice::ReadOnly))        //load
+		{
+			QTextStream stream(&fLang);
+			stream.setCodec("UTF-8");
+			QString line, nm;
+
+			int lines = 0;
+
+			while (!stream.atEnd())
+			{
+				line = stream.readLine(); // line of text excluding '\n'
+				lines++;
+
+				if (line == "LANGUAGE_NAME")
+				{
+					line = stream.readLine();
+
+					selectedLang = line;
+					lines++;
+					nm = line;
+
+					found = true;
+
+					langFiles += iL + ":" + nm;
+					QAction *tmpAction = new QAction(nm, actionLanguage);
+					tmpAction->setCheckable(true);
+
+
+					langGroup->addAction(tmpAction);
+					langMenu->addAction(tmpAction);
+
+					if (E2Profile::GetCurrentLang() == nm)
+					{
+						tmpAction->setChecked(true);
+					}
+
+					actLangSelect.push_back(tmpAction);
+					break;
+				}
+
+				if (lines > 8)
+				{
+					break;
+				}
+			}
+
+			fLang.close();
+
+		}
+		else
+		{
+			continue;
+		}
 	}
 
-	case vk_Page_Down:
-	{
-		NextPage();
-		break;
-	}
+	connect(langGroup, SIGNAL(triggered(QAction *)), this, SLOT(setLang(QAction *)));
 
-	case vk_Home:
-	{
-		FirstPage();
-		break;
-	}
-
-	case vk_End:
-	{
-		LastPage();
-		break;
-	}
-
-	case vk_Return:
-	{
-		CharEdit();
-		break;
-	}
-
-	//      case vk_Left:
-	//      case vk_Right:
-	default:
-	{
-		vCmdWindow::KeyIn(keysym, shift);
-		break;
-	}
-	}
+	return (found);
 }
-#endif
+
+
+
+/**
+ * @brief set GUI to selected language and do the translation of all GUI widgets
+ *
+ */
+void e2CmdWindow::setLang(QAction *mnu)
+{
+	QString lngStr;
+	qDebug() << "setLang";
+	mnu = langGroup->checkedAction();
+
+	lngStr = mnu->text();
+	lngStr = lngStr.remove("&");
+
+	E2Profile::SetCurrentLang(lngStr);
+
+	if (getLangTable() == false)
+	{
+		qDebug() << "setLang" << false;
+	}
+
+	disconnect(langGroup, SIGNAL(triggered(QAction *)), this, SLOT(setLang(QAction *)));
+
+	mnu->setChecked(true);
+
+	connect(langGroup, SIGNAL(triggered(QAction *)), this, SLOT(setLang(QAction *)));
+
+	translateGUI();
+}
+
+
+/**
+ * @brief translate the GUI widgets
+ *
+ */
+void e2CmdWindow::translateGUI()
+{
+	menuFile->setTitle(translate(STR_MENUFILE));
+	actionNew->setText(translate(STR_NEWWIN)); // EK 2017 ???
+	// TODO translation for last files
+	actionOpen->setText(translate(STR_OPEN));
+	actionOpenFlash->setText(translate(STR_OPENFLASH));
+	actionOpenEep->setText(translate(STR_OPENDATA));
+	actionSave->setText(translate(STR_SAVE));
+	actionSaveAs->setText(translate(STR_SAVEAS));
+	actionSaveFlashAs->setText(translate(STR_SAVEFLASH));
+	actionSaveEepAs->setText(translate(STR_SAVEDATA));
+	actionReload->setText(translate(STR_RELOAD));
+	actionPrint->setText(translate(STR_PRINT));
+	actionClose->setText(translate(STR_CLOSE));
+	actionExit->setText(translate(STR_EXIT));
+
+	menuDevice->setTitle(translate(STR_MENUDEVICE)); // for all device and chip id's
+
+	menuCommand->setTitle(translate(STR_MENUCMD));
+	actionReadAll->setText(translate(STR_READALL));
+	actionReadFlash->setText(translate(STR_READPROG));
+	actionReadEep->setText(translate(STR_READDATA));
+	actionWriteAll->setText(translate(STR_WRITEALL));
+	actionWriteFlash->setText(translate(STR_WRITEPROG));
+	actionWriteEep->setText(translate(STR_WRITEDATA));
+	actionVerifyAll->setText(translate(STR_VERIFYALL));
+	actionVerifyFlash->setText(translate(STR_VERIFYPROG));
+	actionVerifyEep->setText(translate(STR_VERIFYDATA));
+	actionWriteSecurity->setText(translate(STR_WRITESECBITS));
+	actionErase->setText(translate(STR_ERASE));
+	actionReset->setText(translate(STR_RESET));
+	actionProgram->setText(translate(STR_PROGRAM));
+	actionProgramOptions->setText(translate(STR_PROGOPTION));
+	actionReadOscByte->setText(translate(STR_READOSCCALIB));
+	actionOscOptions->setText(translate(STR_OSCCALIBOPTION));
+
+	menuScript->setTitle(translate(STR_MENUSCRIPT));
+	// TODO translation for last scripts
+	actionLoadScript->setText(translate(STR_LOADSCR));
+	actionRunScript->setText(translate(STR_RUNSCR));
+	//     STR_EDITSCR
+	//      STR_AUTOLOADSCR
+
+	menuUtility->setTitle(translate(STR_MENUUTIL));
+	actionClearBuffer->setText(translate(STR_CLEARBUF));
+	actionFillBuffer->setText(translate(STR_FILLBUF));
+	actionDoubleBank->setText(translate(STR_DOUBLEBANK));
+	actionSetSN->setText(translate(STR_DOWNSERNUM));
+	actionSNConfig->setText(translate(STR_SERNUMCONF));
+	//      STR_BYTESWAP
+
+	menuSetup->setTitle(translate(STR_MENUSETUP));
+	// TODO translation for font size
+	actionInterfaceSetup->setText(translate(STR_INTERFSETUP));
+	actionCalibration->setText(translate(STR_CALIBRATION));
+	//     STR_REMOTEMODE
+
+	menuHelp->setTitle(translate(STR_MENUQMARK));
+	actionHelp->setText(translate(STR_MENUHELP));
+	actionAbout->setText(translate(STR_MENUABOUT));
+
+	menuEdit->setTitle(translate(STR_MENUEDIT));
+	actionEditNote->setText(translate(STR_EDITNOTE));
+	actionEditBuferEnabled->setText(translate(STR_EDITBUFENA));
+}
+
+
+/**
+ * @brief try to find the translation file
+ *
+ */
+bool e2CmdWindow::getLangTable()
+{
+	QString lang = E2Profile::GetCurrentLang();
+	QString fileLang = "";
+
+	foreach (const QString iLang, langFiles)
+	{
+		int pos = iLang.lastIndexOf(":" + lang);
+
+		if (pos > 0)
+		{
+			fileLang = iLang.left(pos);
+			break;
+		}
+	}
+
+	if (fileLang == "")
+	{
+		return (false);
+	}
+
+	if (QFile::exists(E2Profile::GetLangDir() + "/" + fileLang) == false)
+	{
+		QMessageBox::warning(this, "Warning", "Language file not exists!\n\n"
+							 + E2Profile::GetLangDir() + "\n\n" + fileLang, QMessageBox::Close);
+		// not found
+		return (false);
+	}
+
+	return loadTranslation(E2Profile::GetLangDir() + fileLang);
+}
+
+
 
 int e2CmdWindow::OnError(int err_no, const QString &msgerr)
 {
@@ -446,13 +672,13 @@ int e2CmdWindow::OnError(int err_no, const QString &msgerr)
 	switch (err_no)
 	{
 	case 0:
-		note.setText(STR_DEVNOTRESP);
+		note.setText(translate(STR_DEVNOTRESP));
 		note.exec();
 		break;
 
 	case BADPARAM:
 	{
-		rv = QMessageBox::question(this, "Error", STR_MSGBADPARAM, QMessageBox::Ignore | QMessageBox::Cancel  | QMessageBox::Ok);
+		rv = QMessageBox::question(this, "Error", translate(STR_MSGBADPARAM), QMessageBox::Ignore | QMessageBox::Cancel  | QMessageBox::Ok);
 		break;
 	}
 
@@ -462,11 +688,11 @@ int e2CmdWindow::OnError(int err_no, const QString &msgerr)
 
 		if (str.length() > 0)
 		{
-			msg = QString("%1 (%2)\nDetected type: %3").arg(STR_DEVBADTYPE).arg(err_no).arg(str);
+			msg = QString("%1 (%2)\nDetected type: %3").arg(translate(STR_DEVBADTYPE)).arg(err_no).arg(str);
 		}
 		else
 		{
-			msg = QString("%1 (%2)").arg(STR_DEVBADTYPE).arg(err_no);
+			msg = QString("%1 (%2)").arg(translate(STR_DEVBADTYPE)).arg(err_no);
 		}
 
 		rv = QMessageBox::question(this, "Error", msg, QMessageBox::Ignore | QMessageBox::Cancel  | QMessageBox::Ok);
@@ -480,11 +706,11 @@ int e2CmdWindow::OnError(int err_no, const QString &msgerr)
 
 		if (str.length() > 0)
 		{
-			msg = QString("%1 (%2)\nDetected signature: %3").arg(STR_DEVUNKNOWN).arg(err_no).arg(str);
+			msg = QString("%1 (%2)\nDetected signature: %3").arg(translate(STR_DEVUNKNOWN)).arg(err_no).arg(str);
 		}
 		else
 		{
-			msg = QString("%1 (%2)").arg(STR_DEVUNKNOWN).arg(err_no);
+			msg = QString("%1 (%2)").arg(translate(STR_DEVUNKNOWN)).arg(err_no);
 		}
 
 		rv = QMessageBox::question(this, "Error", msg, QMessageBox::Ignore | QMessageBox::Cancel  | QMessageBox::Ok);
@@ -502,26 +728,26 @@ int e2CmdWindow::OnError(int err_no, const QString &msgerr)
 	}
 
 	case OP_ABORTED:
-		note.setText(STR_OPABORTED);
+		note.setText(translate(STR_OPABORTED));
 		note.exec();
 		break;
 
 	case E2ERR_OPENFAILED:
-		msg = QString("%1 (%2)").arg(STR_OPENFAILED).arg(err_no);
+		msg = QString("%1 (%2)").arg(translate(STR_OPENFAILED)).arg(err_no);
 
 		note.setText(msg);
 		note.exec();
 		break;
 
 	case E2ERR_ACCESSDENIED:
-		msg = QString("%1 (%2)").arg(STR_ACCDENIED).arg(err_no);
+		msg = QString("%1 (%2)").arg(translate(STR_ACCDENIED)).arg(err_no);
 
 		note.setText(msg);
 		note.exec();
 		break;
 
 	case E2ERR_NOTINSTALLED:
-		msg = QString("%1 (%2)").arg(STR_NOTINST).arg(err_no);
+		msg = QString("%1 (%2)").arg(translate(STR_NOTINST)).arg(err_no);
 
 		note.setText(msg);
 		note.exec();
@@ -529,21 +755,21 @@ int e2CmdWindow::OnError(int err_no, const QString &msgerr)
 
 	case IICERR_SDACONFLICT:
 	case IICERR_SCLCONFLICT:
-		msg = QString("%1 (%2)").arg(STR_HWERROR).arg(err_no);
+		msg = QString("%1 (%2)").arg(translate(STR_HWERROR)).arg(err_no);
 
 		note.setText(msg);
 		note.exec();
 		break;
 
 	case IICERR_BUSBUSY:
-		msg = QString("%1 (%2)").arg(STR_BUSBUSY).arg(err_no);
+		msg = QString("%1 (%2)").arg(translate(STR_BUSBUSY)).arg(err_no);
 
 		note.setText(msg);
 		note.exec();
 		break;
 
 	case IICERR_NOTACK:
-		msg = QString("%1 (%2)").arg(STR_I2CNOACK).arg(err_no);
+		msg = QString("%1 (%2)").arg(translate(STR_I2CNOACK)).arg(err_no);
 
 		note.setText(msg);
 		note.exec();
@@ -551,42 +777,42 @@ int e2CmdWindow::OnError(int err_no, const QString &msgerr)
 
 	case IICERR_NOADDRACK:
 	{
-		msg = QString("%1 (%2)").arg(STR_I2CNODEV).arg(err_no);
+		msg = QString("%1 (%2)").arg(translate(STR_I2CNODEV)).arg(err_no);
 		rv = QMessageBox::question(this, "Error", msg, QMessageBox::Ignore | QMessageBox::Cancel  | QMessageBox::Ok);//retryModalDialog re(this, msg);
 
 		break;
 	}
 
 	case IICERR_TIMEOUT:
-		msg = QString("%1 (%2)").arg(STR_I2CTIMEOUT).arg(err_no);
+		msg = QString("%1 (%2)").arg(translate(STR_I2CTIMEOUT)).arg(err_no);
 
 		note.setText(msg);
 		note.exec();
 		break;
 
 	case IICERR_STOP:
-		msg = QString("%1 (%2)").arg(STR_I2CSTOPERR).arg(err_no);
+		msg = QString("%1 (%2)").arg(translate(STR_I2CSTOPERR)).arg(err_no);
 
 		note.setText(msg);
 		note.exec();
 		break;
 
 	case E2ERR_WRITEFAILED:
-		msg = QString("%1 (%2)").arg(STR_WRITEERR).arg(err_no);
+		msg = QString("%1 (%2)").arg(translate(STR_WRITEERR)).arg(err_no);
 
 		note.setText(msg);
 		note.exec();
 		break;
 
 	case E2ERR_BLANKCHECKFAILED:
-		msg = QString("%1 (%2)").arg(STR_BLANKCHECKERR).arg(err_no);
+		msg = QString("%1 (%2)").arg(translate(STR_BLANKCHECKERR)).arg(err_no);
 
 		note.setText(msg);
 		note.exec();
 		break;
 
 	case NOTSUPPORTED:
-		msg = QString("%1 (%2)").arg(STR_OPNOTSUP).arg(err_no);
+		msg = QString("%1 (%2)").arg(translate(STR_OPNOTSUP)).arg(err_no);
 
 		note.setText(msg);
 		note.exec();
@@ -599,7 +825,7 @@ int e2CmdWindow::OnError(int err_no, const QString &msgerr)
 		}
 		else
 		{
-			msg = QString("%1 (%2)").arg(STR_ERRNO).arg(err_no);
+			msg = QString("%1 (%2)").arg(translate(STR_ERRNO)).arg(err_no);
 		}
 
 		note.setText(msg);
@@ -609,6 +835,7 @@ int e2CmdWindow::OnError(int err_no, const QString &msgerr)
 
 	return rv;
 }
+
 
 /**
  * @brief
@@ -1412,6 +1639,7 @@ void e2CmdWindow::setFontForWidgets()
 #else
 	e2HexEdit->setFont(QFont("Monospace", E2Profile::GetFontSize()));
 #endif
+
 	//     buttonsWidget->setStyleSheet(programStyleSheet);
 	//
 	//     for (int i = 0; i < 6; i++) {
@@ -1640,7 +1868,7 @@ void e2CmdWindow::onInterfSetup()
 {
 	if (IsAppReady())
 	{
-		e2Dialog e2dlg(this, STR_DLGIOSETUP);
+		e2Dialog e2dlg(this, translate(STR_DLGIOSETUP));
 
 		if (e2dlg.exec() == QDialog::Accepted)
 		{
@@ -1771,10 +1999,12 @@ void e2CmdWindow::onWrite()
 		if (a == actionWriteAll)
 		{
 			CmdWrite(ALL_TYPE, verify);
+// 			return;
 		}
 		else if (a == actionWriteFlash)
 		{
 			CmdWrite(PROG_TYPE, verify);
+// 			return;
 		}
 		else if (a == actionWriteEep)
 		{
@@ -1882,7 +2112,7 @@ void e2CmdWindow::onLoadScript()
 		{
 			E2Profile::SetLastScript(script_name);
 
-			QString str = STR_RUNSCR;//[MAXPATH];
+			QString str = translate(STR_RUNSCR);//[MAXPATH];
 			str += script_name;
 
 			// TODO GUI submenu item
@@ -2081,7 +2311,7 @@ void e2CmdWindow::onAskToSave()
 	{
 		QString str;
 
-		str = STR_BUFCHANGED;
+		str = translate(STR_BUFCHANGED);
 		str.replace("%s", GetFileName());
 
 		int ret = QMessageBox::warning(this, "PonyProg",
@@ -2198,7 +2428,7 @@ HIDDEN int FileExist(const QString &name);
 HIDDEN bool CmpExtension(const QString &name, const QString &ext);
 
 //====================>>> e2CmdWindow::CmdSave <<<====================
-int e2CmdWindow::CmdSave(int type, char *file, long relocation)
+int e2CmdWindow::CmdSave(int type, const char *file, long relocation)
 {
 	int result = OK;
 
@@ -2223,7 +2453,7 @@ int e2CmdWindow::CmdSave(int type, char *file, long relocation)
 			QMessageBox note;
 			note.setIcon(QMessageBox::Warning);
 			note.setWindowTitle("Warning");
-			note.setText(STR_NOTHINGSAVE);
+			note.setText(translate(STR_NOTHINGSAVE));
 			note.exec();
 		}
 	}
@@ -2252,7 +2482,7 @@ int e2CmdWindow::CmdSaveAs(int type, long relocation)
 			QMessageBox note;
 			note.setIcon(QMessageBox::Warning);
 			note.setWindowTitle("Warning");
-			note.setText(STR_NOTHINGSAVE);
+			note.setText(translate(STR_NOTHINGSAVE));
 			note.exec();
 		}
 	}
@@ -2389,7 +2619,7 @@ int e2CmdWindow::CmdReload()
 			QMessageBox note;
 			note.setIcon(QMessageBox::Warning);
 			note.setWindowTitle("Warning");
-			note.setText(STR_NOTHINGLOAD);
+			note.setText(translate(STR_NOTHINGLOAD));
 			note.exec();
 		}
 	}
@@ -2409,7 +2639,7 @@ int e2CmdWindow::CmdPrint()
 		QMessageBox note;
 		note.setIcon(QMessageBox::Warning);
 		note.setWindowTitle("Warning");
-		note.setText(STR_NOTHINGPRINT);
+		note.setText(translate(STR_NOTHINGPRINT));
 		note.exec();
 	}
 
@@ -2466,14 +2696,14 @@ int e2CmdWindow::CmdCalibration()
 		{
 			note.setIcon(QMessageBox::Information);
 			note.setWindowTitle("Calibration");
-			note.setText(STR_BUSCALIBRAOK);
+			note.setText(translate(STR_BUSCALIBRAOK));
 			note.exec();
 			UpdateStatusBar();
 		}
 		else
 		{
 			QString str;
-			str = QString("%1 (%2)").arg(STR_BUSCALIBRAFAIL).arg(err);
+			str = QString("%1 (%2)").arg(translate(STR_BUSCALIBRAFAIL)).arg(err);
 
 			note.setIcon(QMessageBox::Critical);
 			note.setWindowTitle("Calibration");
@@ -2486,14 +2716,14 @@ int e2CmdWindow::CmdCalibration()
 }
 
 //====================>>> e2CmdWindow::CmdWrite <<<====================
-//int e2CmdWindow::CmdWrite(int type)
-//{
-//	int res;
-//	SetAppBusy();
-//	res = CmdWrite(type, E2Profile::GetVerifyAfterWrite());
-//	SetAppReady();
-//	return res;
-//}
+// int e2CmdWindow::CmdWrite(int type)
+// {
+// 	int res;
+// 	SetAppBusy();
+// 	res = CmdWrite(type, E2Profile::GetVerifyAfterWrite());
+// 	SetAppReady();
+// 	return res;
+// }
 
 
 //====================>>> e2CmdWindow::CmdRead <<<====================
@@ -2526,7 +2756,7 @@ int e2CmdWindow::CmdRead(int type)
 
 		if (!e2Prg)
 		{
-			doProgress(STR_MSGREADING);
+			doProgress(translate(STR_MSGREADING));
 			//e2Prg->setLabelText(STR_MSGREADING);
 			//e2Prg->setValue(0);
 		}
@@ -2553,7 +2783,7 @@ int e2CmdWindow::CmdRead(int type)
 			UpdateStatusBar();
 
 			QString str;
-			str = QString("%1 %2 Byte").arg(STR_MSGREADOK).arg(GetDevSize());
+			str = QString("%1 %2 Byte").arg(translate(STR_MSGREADOK)).arg(GetDevSize());
 
 			if (verbose == verboseAll)
 			{
@@ -2622,7 +2852,7 @@ int e2CmdWindow::CmdWrite(int type, bool verify)
 			QMessageBox note;
 			note.setIcon(QMessageBox::Warning);
 			note.setWindowTitle("Write");
-			note.setText(STR_NOTHINGWRITE);
+			note.setText(translate(STR_NOTHINGWRITE));
 			note.exec();
 		}
 
@@ -2647,7 +2877,7 @@ int e2CmdWindow::CmdWrite(int type, bool verify)
 
 				if (!e2Prg)
 				{
-					doProgress(STR_MSGWRITING);
+					doProgress(translate(STR_MSGWRITING));
 					//e2Prg->setLabelText(STR_MSGWRITING);
 					//e2Prg->setValue(0);
 				}
@@ -2658,7 +2888,7 @@ int e2CmdWindow::CmdWrite(int type, bool verify)
 				{
 					if (verify)
 					{
-						doProgress(STR_MSGVERIFING);
+						doProgress(translate(STR_MSGVERIFING));
 						//e2Prg->setLabelText(STR_MSGVERIFING);
 						//e2Prg->setValue(0);
 
@@ -2716,7 +2946,7 @@ int e2CmdWindow::CmdWrite(int type, bool verify)
 						{
 							note.setIcon(QMessageBox::Information);
 							note.setWindowTitle("Write");
-							note.setText(STR_MSGWRITEOK);
+							note.setText(translate(STR_MSGWRITEOK));
 							note.exec();
 						}
 					}
@@ -2726,7 +2956,7 @@ int e2CmdWindow::CmdWrite(int type, bool verify)
 						{
 							note.setIcon(QMessageBox::Warning);
 							note.setWindowTitle("Write");
-							note.setText(STR_MSGWRITEFAIL);
+							note.setText(translate(STR_MSGWRITEFAIL));
 							note.exec();
 						}
 
@@ -2736,7 +2966,7 @@ int e2CmdWindow::CmdWrite(int type, bool verify)
 					{
 						if (verbose != verboseNo)
 						{
-							OnError(rval, STR_MSGWRITEFAIL);
+							OnError(rval, translate(STR_MSGWRITEFAIL));
 						}
 
 						result = rval;
@@ -2752,7 +2982,7 @@ int e2CmdWindow::CmdWrite(int type, bool verify)
 
 					if (verbose != verboseNo)
 					{
-						rval = OnError(rval, STR_MSGWRITEFAIL);
+						rval = OnError(rval, translate(STR_MSGWRITEFAIL));
 
 						if (rval == QMessageBox::Cancel)   //Abort
 						{
@@ -2835,7 +3065,7 @@ int e2CmdWindow::CmdReadCalibration(int idx)
 				if (verbose == verboseAll)
 				{
 					QString str;
-					str = STR_MSGREADCALIBOK + QString().sprintf(": 0x%02X (%d)", rval, rval);
+					str = translate(STR_MSGREADCALIBOK) + QString().sprintf(": 0x%02X (%d)", rval, rval);
 
 					QMessageBox note;
 					note.setIcon(QMessageBox::Information);
@@ -2920,7 +3150,7 @@ int e2CmdWindow::CmdErase(int type)
 
 		if (!e2Prg)
 		{
-			doProgress(STR_MSGERASING);
+			doProgress(translate(STR_MSGERASING));
 			//e2Prg->setLabelText(STR_MSGERASING);
 			//e2Prg->setValue(0);
 		}
@@ -2938,7 +3168,7 @@ int e2CmdWindow::CmdErase(int type)
 				QMessageBox note;
 				note.setIcon(QMessageBox::Information);
 				note.setWindowTitle("Warning");
-				note.setText(STR_MSGERASEOK);
+				note.setText(translate(STR_MSGERASEOK));
 				note.exec();
 			}
 		}
@@ -2993,7 +3223,7 @@ int e2CmdWindow::CmdVerify(int type)
 			QMessageBox note;
 			note.setIcon(QMessageBox::Information);
 			note.setWindowTitle("Warning");
-			note.setText(STR_NOTHINGVERIFY);
+			note.setText(translate(STR_NOTHINGVERIFY));
 			note.exec();
 		}
 
@@ -3003,7 +3233,7 @@ int e2CmdWindow::CmdVerify(int type)
 	{
 		if (!e2Prg)
 		{
-			doProgress(STR_MSGVERIFING);
+			doProgress(translate(STR_MSGVERIFING));
 			//e2Prg->setLabelText(STR_MSGVERIFING);
 			//e2Prg->setValue(0);
 		}
@@ -3020,7 +3250,7 @@ int e2CmdWindow::CmdVerify(int type)
 
 			if (verbose != verboseNo)
 			{
-				OnError(rval, STR_MSGVERIFYFAIL1);
+				OnError(rval, translate(STR_MSGVERIFYFAIL1));
 			}
 		}
 		else if (rval == 0)
@@ -3031,7 +3261,7 @@ int e2CmdWindow::CmdVerify(int type)
 			{
 				note.setIcon(QMessageBox::Critical);
 				note.setWindowTitle("Verify");
-				note.setText(STR_MSGVERIFYFAIL2);
+				note.setText(translate(STR_MSGVERIFYFAIL2));
 				note.exec();
 			}
 		}
@@ -3043,7 +3273,7 @@ int e2CmdWindow::CmdVerify(int type)
 			{
 				note.setIcon(QMessageBox::Information);
 				note.setWindowTitle("Verify");
-				note.setText(STR_MSGVERIFYOK);
+				note.setText(translate(STR_MSGVERIFYOK));
 				note.exec();
 			}
 		}
@@ -3125,7 +3355,7 @@ int e2CmdWindow::CmdProgram()
 		{
 			note.setIcon(QMessageBox::Information);
 			note.setWindowTitle("Program");
-			note.setText(STR_MSGPROGRAMOK);
+			note.setText(translate(STR_MSGPROGRAMOK));
 			note.exec();
 		}
 	}
@@ -3136,7 +3366,7 @@ int e2CmdWindow::CmdProgram()
 		if (verbose != verboseNo)
 		{
 			QString str;
-			str = STR_MSGPROGRAMFAIL + QString().sprintf(" (%d)", result);
+			str = translate(STR_MSGPROGRAMFAIL) + QString().sprintf(" (%d)", result);
 
 			note.setIcon(QMessageBox::Critical);
 			note.setWindowTitle("Program");
@@ -3148,7 +3378,9 @@ int e2CmdWindow::CmdProgram()
 	return result;
 }
 
+#if 0
 //**
+// TODO to QString
 static char *mytokenizer(char *buf, char *&next)
 {
 	char *sp = buf;
@@ -3238,9 +3470,25 @@ static char *mytokenizer(char *buf, char *&next)
 
 	return sp;
 }
+#endif
 
-static int myscantokenizer(char *buf, char *arg[], int arglen)
+// TODO to QString
+static QStringList myscantokenizer(char *buf)//, char *arg[], int arglen)
 {
+	QString ln = buf;
+	ln = ln.simplified();
+	QStringList l;
+
+	if (ln.size() == 0)
+	{
+		return l;
+	}
+	else
+	{
+		l = ln.split(" ");
+	}
+
+#if 0
 	int k;
 	char *sp, *next;
 
@@ -3263,18 +3511,19 @@ static int myscantokenizer(char *buf, char *arg[], int arglen)
 	}
 
 	return k;
+#endif
 }
 
-#define cmdbuf  arg[0]
+// #define cmdbuf  arg[0]
 
-int e2CmdWindow::ScriptError(int line_number, int arg_index, char *arg, const QString msg)
+int e2CmdWindow::ScriptError(int line_number, int arg_index, const QString &s, const QString msg)
 {
 	QString str;
 
-	if (arg == NULL)
-	{
-		arg = "";
-	}
+	//      if (s.length() == 0)
+	//      {
+	//              arg = "";
+	//      }
 
 	QMessageBox note;
 	note.setIcon(QMessageBox::Critical);
@@ -3282,15 +3531,15 @@ int e2CmdWindow::ScriptError(int line_number, int arg_index, char *arg, const QS
 
 	if (arg_index == 0)
 	{
-		str = QString("%1 %2: %3 '%4'").arg(STR_MSGSCRIPTERROR).arg(line_number).arg(msg.length() ? msg : STR_MSGSCRIPTBADCOMMAND).arg(arg);
+		str = QString("%1 %2: %3 '%4'").arg(translate(STR_MSGSCRIPTERROR)).arg(line_number).arg(msg.length() ? msg : translate(STR_MSGSCRIPTBADCOMMAND)).arg(s);
 	}
-	else if (arg == NULL || arg[0] == '\0')
+	else if (s.length() == 0)
 	{
-		str = QString("%1 %2: %3").arg(STR_MSGSCRIPTERROR).arg(line_number).arg(msg.length() ? msg : STR_MSGSCRIPTARGMISSING);
+		str = QString("%1 %2: %3").arg(translate(STR_MSGSCRIPTERROR)).arg(line_number).arg(msg.length() ? msg : translate(STR_MSGSCRIPTARGMISSING));
 	}
 	else
 	{
-		str = QString("%1 %2: %3 '%4'").arg(STR_MSGSCRIPTERROR).arg(line_number).arg(msg.length() ? msg : STR_MSGSCRIPTBADARGUMENT).arg(arg);
+		str = QString("%1 %2: %3 '%4'").arg(translate(STR_MSGSCRIPTERROR)).arg(line_number).arg(msg.length() ? msg : translate(STR_MSGSCRIPTBADARGUMENT)).arg(s);
 	}
 
 	note.setText(str);
@@ -3300,14 +3549,15 @@ int e2CmdWindow::ScriptError(int line_number, int arg_index, char *arg, const QS
 }
 
 // EK 2017
-// TODO overwork it to remove "strcasecmp" calls
+// TODO overwork it to remove "strcasecmp" calls to QString
 //====================>>> e2CmdWindow::CmdRunScript <<<====================
 int e2CmdWindow::CmdRunScript(bool test_mode)
 {
 	int result = OK;
 	char buf[512];
-	char *arg[32];
-	int n;
+	QStringList lst;
+	//      char *lst.at(32];
+	//      int n;
 	int linecounter;
 
 	VerboseType old_verbose = verbose;
@@ -3341,743 +3591,757 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 			continue;
 		}
 
-		n = myscantokenizer(buf, arg, 32);
+		lst = myscantokenizer(buf);
+		int n = lst.count();
 
-		if (n >= 1)
+		if (lst.count() == 0)
 		{
-			if (strcasecmp(cmdbuf, "SELECTDEVICE") == 0)
-			{
-				if (n == 2 && arg[1])
-				{
-					long new_type;
-					new_type = GetEEPTypeFromString(arg[1]);
+			continue;
+		}
 
-					if (new_type <= 0)
+		QString cmdbuf = lst.at(0);
+		cmdbuf.toUpper();
+
+		if (cmdbuf == "SELECTDEVICE")
+		{
+			if (n == 2)
+			{
+				long new_type;
+				new_type = GetEEPTypeFromString(lst.at(1));
+
+				if (new_type <= 0)
+				{
+					result = ScriptError(linecounter, 1, lst.at(1));
+				}
+				else
+				{
+					if (!test_mode)
 					{
-						result = ScriptError(linecounter, 1, arg[1]);
+						result = CmdSelectDevice(new_type);
+					}
+				}
+			}
+			else     //Argument missing
+			{
+				result = ScriptError(linecounter, 1, lst.at(1));
+			}
+		}
+		else if (cmdbuf == "LOAD-ALL")
+		{
+			if (n >= 2)
+			{
+				long reloc_off = 0;
+
+				if (n >= 3)
+				{
+					reloc_off = lst.at(2).toLong();
+				}
+
+				if (!FileExist(lst.at(1)))
+				{
+					result = ScriptError(linecounter, 1, lst.at(1), translate(STR_MSGFILENOTFOUND));
+				}
+				else
+				{
+					if (!test_mode)
+					{
+						result = CmdOpen(ALL_TYPE, lst.at(1).toLatin1().constData(), reloc_off, 0);        //Don't clear buffer before load on script
+					}
+				}
+			}
+			else if (n == 1)
+			{
+				if (!test_mode)
+				{
+					result = CmdOpen(ALL_TYPE);
+				}
+			}
+		}
+		else if (cmdbuf == "LOAD-PROG")
+		{
+			if (n >= 2)
+			{
+				long reloc_off = 0;
+
+				if (n >= 3)
+				{
+					reloc_off = lst.at(2).toLong();
+				}
+
+				if (!FileExist(lst.at(1)))
+				{
+					result = ScriptError(linecounter, 1, lst.at(1), translate(STR_MSGFILENOTFOUND));
+				}
+				else
+				{
+					if (!test_mode)
+					{
+						result = CmdOpen(PROG_TYPE, lst.at(1).toLatin1().constData(), reloc_off, 0);        //Don't clear buffer before load on script
+					}
+				}
+			}
+			else if (n == 1)
+			{
+				if (!test_mode)
+				{
+					result = CmdOpen(PROG_TYPE);
+				}
+			}
+		}
+		else if (cmdbuf == "LOAD-DATA")
+		{
+			if (n >= 2)
+			{
+				long reloc_off = 0;
+
+				if (n >= 3)
+				{
+					reloc_off = lst.at(2).toLong();
+				}
+
+				if (!FileExist(lst.at(1)))
+				{
+					result = ScriptError(linecounter, 1, lst.at(1), translate(STR_MSGFILENOTFOUND));
+				}
+				else
+				{
+					if (!test_mode)
+					{
+						result = CmdOpen(DATA_TYPE, lst.at(1).toLatin1(), reloc_off, 0);        //Don't clear buffer before load on script
+					}
+				}
+			}
+			else if (n == 1)
+			{
+				if (!test_mode)
+				{
+					result = CmdOpen(DATA_TYPE);
+				}
+			}
+		}
+		else if (cmdbuf == "SAVE-ALL")
+		{
+			if (n >= 2)
+			{
+				if (n >= 3)
+				{
+					QString tp = lst.at(2).toLower();
+
+					if (tp == "e2p")
+					{
+						awip->SetFileBuf(E2P);
+					}
+					else if (tp == "bin")
+					{
+						awip->SetFileBuf(BIN);
+					}
+					else if (tp == "csm")
+					{
+						awip->SetFileBuf(CSM);
+					}
+					else if (tp == "intel-hex")
+					{
+						awip->SetFileBuf(INTEL);
+					}
+					else if (tp == "mot-srec")
+					{
+						awip->SetFileBuf(MOTOS);
 					}
 					else
 					{
-						if (!test_mode)
-						{
-							result = CmdSelectDevice(new_type);
-						}
+						result = ScriptError(linecounter, 2, lst.at(2));
 					}
 				}
-				else     //Argument missing
-				{
-					result = ScriptError(linecounter, 1, arg[1]);
-				}
-			}
-			else if (strcasecmp(cmdbuf, "LOAD-ALL") == 0)
-			{
-				if (n >= 2 && arg[1])
-				{
-					long reloc_off = 0;
 
-					if (n >= 3 && arg[2])
+				if (result == OK && !test_mode)
+				{
+					if (lst.at(1) == "--")
 					{
-						reloc_off = strtol(arg[2], NULL, 0);
-					}
-
-					if (!FileExist(arg[1]))
-					{
-						result = ScriptError(linecounter, 1, arg[1], STR_MSGFILENOTFOUND);
+						result = CmdSaveAs(ALL_TYPE);
 					}
 					else
 					{
-						if (!test_mode)
-						{
-							result = CmdOpen(ALL_TYPE, arg[1], reloc_off, 0);        //Don't clear buffer before load on script
-						}
-					}
-				}
-				else if (n == 1)
-				{
-					if (!test_mode)
-					{
-						result = CmdOpen(ALL_TYPE);
+						result = CmdSave(ALL_TYPE, lst.at(1).toLatin1());
 					}
 				}
 			}
-			else if (strcasecmp(cmdbuf, "LOAD-PROG") == 0)
+			else if (n == 1)
 			{
-				if (n >= 2 && arg[1])
+				if (!test_mode)
 				{
-					long reloc_off = 0;
+					result = CmdSave(ALL_TYPE);
+				}
+			}
+		}
+		else if (cmdbuf == "SAVE-PROG")
+		{
+			if (n >= 2)
+			{
+				if (n >= 3)
+				{
+					QString tp = lst.at(2).toLower();
 
-					if (n >= 3 && arg[2])
+					if (tp == "e2p")
 					{
-						reloc_off = strtol(arg[2], NULL, 0);
+						awip->SetFileBuf(E2P);
 					}
-
-					if (!FileExist(arg[1]))
+					else if (tp == "bin")
 					{
-						result = ScriptError(linecounter, 1, arg[1], STR_MSGFILENOTFOUND);
+						awip->SetFileBuf(BIN);
+					}
+					else if (tp == "csm")
+					{
+						awip->SetFileBuf(CSM);
+					}
+					else if (tp == "intel-hex")
+					{
+						awip->SetFileBuf(INTEL);
+					}
+					else if (tp == "mot-srec")
+					{
+						awip->SetFileBuf(MOTOS);
 					}
 					else
 					{
-						if (!test_mode)
-						{
-							result = CmdOpen(PROG_TYPE, arg[1], reloc_off, 0);        //Don't clear buffer before load on script
-						}
+						result = ScriptError(linecounter, 2, lst.at(2));
 					}
 				}
-				else if (n == 1)
-				{
-					if (!test_mode)
-					{
-						result = CmdOpen(PROG_TYPE);
-					}
-				}
-			}
-			else if (strcasecmp(cmdbuf, "LOAD-DATA") == 0)
-			{
-				if (n >= 2 && arg[1])
-				{
-					long reloc_off = 0;
 
-					if (n >= 3 && arg[2])
+				if (result == OK && !test_mode)
+				{
+					if (lst.at(1) == "--")
 					{
-						reloc_off = strtol(arg[2], NULL, 0);
-					}
-
-					if (!FileExist(arg[1]))
-					{
-						result = ScriptError(linecounter, 1, arg[1], STR_MSGFILENOTFOUND);
+						result = CmdSaveAs(PROG_TYPE);
 					}
 					else
 					{
-						if (!test_mode)
-						{
-							result = CmdOpen(DATA_TYPE, arg[1], reloc_off, 0);        //Don't clear buffer before load on script
-						}
-					}
-				}
-				else if (n == 1)
-				{
-					if (!test_mode)
-					{
-						result = CmdOpen(DATA_TYPE);
+						result = CmdSave(PROG_TYPE, lst.at(1).toLatin1().constData());
 					}
 				}
 			}
-			else if (strcasecmp(cmdbuf, "SAVE-ALL") == 0)
+			else if (n == 1)
 			{
-				if (n >= 2 && arg[1])
+				if (!test_mode)
 				{
-					if (n >= 3 && arg[2])
-					{
-						if (strcasecmp(arg[2], "e2p") == 0)
-						{
-							awip->SetFileBuf(E2P);
-						}
-						else if (strcasecmp(arg[2], "bin") == 0)
-						{
-							awip->SetFileBuf(BIN);
-						}
-						else if (strcasecmp(arg[2], "csm") == 0)
-						{
-							awip->SetFileBuf(CSM);
-						}
-						else if (strcasecmp(arg[2], "intel-hex") == 0)
-						{
-							awip->SetFileBuf(INTEL);
-						}
-						else if (strcasecmp(arg[2], "mot-srec") == 0)
-						{
-							awip->SetFileBuf(MOTOS);
-						}
-						else
-						{
-							result = ScriptError(linecounter, 2, arg[2]);
-						}
-					}
+					result = CmdSave(PROG_TYPE);
+				}
+			}
+		}
+		else if (cmdbuf == "SAVE-DATA")
+		{
+			if (n >= 2)
+			{
+				if (n >= 3)
+				{
+					QString tp = lst.at(2).toLower();
 
-					if (result == OK && !test_mode)
+					if (tp == "e2p")
 					{
-						if (strcmp(arg[1], "--") == 0)
-						{
-							result = CmdSaveAs(ALL_TYPE);
-						}
-						else
-						{
-							result = CmdSave(ALL_TYPE, arg[1]);
-						}
+						awip->SetFileBuf(E2P);
+					}
+					else if (tp == "bin")
+					{
+						awip->SetFileBuf(BIN);
+					}
+					else if (tp == "csm")
+					{
+						awip->SetFileBuf(CSM);
+					}
+					else if (tp == "intel-hex")
+					{
+						awip->SetFileBuf(INTEL);
+					}
+					else if (tp == "mot-srec")
+					{
+						awip->SetFileBuf(MOTOS);
+					}
+					else
+					{
+						result = ScriptError(linecounter, 2, lst.at(2));
 					}
 				}
-				else if (n == 1)
-				{
-					if (!test_mode)
-					{
-						result = CmdSave(ALL_TYPE);
-					}
-				}
-			}
-			else if (strcasecmp(cmdbuf, "SAVE-PROG") == 0)
-			{
-				if (n >= 2 && arg[1])
-				{
-					if (n >= 3 && arg[2])
-					{
-						if (strcasecmp(arg[2], "e2p") == 0)
-						{
-							awip->SetFileBuf(E2P);
-						}
-						else if (strcasecmp(arg[2], "bin") == 0)
-						{
-							awip->SetFileBuf(BIN);
-						}
-						else if (strcasecmp(arg[2], "csm") == 0)
-						{
-							awip->SetFileBuf(CSM);
-						}
-						else if (strcasecmp(arg[2], "intel-hex") == 0)
-						{
-							awip->SetFileBuf(INTEL);
-						}
-						else if (strcasecmp(arg[2], "mot-srec") == 0)
-						{
-							awip->SetFileBuf(MOTOS);
-						}
-						else
-						{
-							result = ScriptError(linecounter, 2, arg[2]);
-						}
-					}
 
-					if (result == OK && !test_mode)
-					{
-						if (strcmp(arg[1], "--") == 0)
-						{
-							result = CmdSaveAs(PROG_TYPE);
-						}
-						else
-						{
-							result = CmdSave(PROG_TYPE, arg[1]);
-						}
-					}
-				}
-				else if (n == 1)
+				if (result == OK && !test_mode)
 				{
-					if (!test_mode)
+					if (lst.at(1) == "--")
 					{
-						result = CmdSave(PROG_TYPE);
+						result = CmdSaveAs(DATA_TYPE);
+					}
+					else
+					{
+						result = CmdSave(DATA_TYPE, lst.at(1).toLatin1());
 					}
 				}
 			}
-			else if (strcasecmp(cmdbuf, "SAVE-DATA") == 0)
+			else if (n == 1)
 			{
-				if (n >= 2 && arg[1])
+				if (!test_mode)
 				{
-					if (n >= 3 && arg[2])
-					{
-						if (strcasecmp(arg[2], "e2p") == 0)
-						{
-							awip->SetFileBuf(E2P);
-						}
-						else if (strcasecmp(arg[2], "bin") == 0)
-						{
-							awip->SetFileBuf(BIN);
-						}
-						else if (strcasecmp(arg[2], "csm") == 0)
-						{
-							awip->SetFileBuf(CSM);
-						}
-						else if (strcasecmp(arg[2], "intel-hex") == 0)
-						{
-							awip->SetFileBuf(INTEL);
-						}
-						else if (strcasecmp(arg[2], "mot-srec") == 0)
-						{
-							awip->SetFileBuf(MOTOS);
-						}
-						else
-						{
-							result = ScriptError(linecounter, 2, arg[2]);
-						}
-					}
+					result = CmdSave(DATA_TYPE);
+				}
+			}
+		}
+		else if (cmdbuf == "READ-ALL")
+		{
+			if (!test_mode)
+			{
+				result = CmdRead(ALL_TYPE);
+			}
+		}
+		else if (cmdbuf == "READ-PROG")
+		{
+			if (!test_mode)
+			{
+				result = CmdRead(PROG_TYPE);
+			}
+		}
+		else if (cmdbuf == "READ-DATA")
+		{
+			if (!test_mode)
+			{
+				result = CmdRead(DATA_TYPE);
+			}
+		}
+		else if (cmdbuf == "WRITE&VERIFY-ALL")
+		{
+			if (!test_mode)
+			{
+				result = CmdWrite(ALL_TYPE, true);
+			}
+		}
+		else if (cmdbuf == "WRITE&VERIFY-PROG")
+		{
+			if (!test_mode)
+			{
+				result = CmdWrite(PROG_TYPE, true);
+			}
+		}
+		else if (cmdbuf == "WRITE&VERIFY-DATA")
+		{
+			if (!test_mode)
+			{
+				result = CmdWrite(DATA_TYPE, true);
+			}
+		}
+		else if (cmdbuf == "WRITE-ALL")
+		{
+			if (!test_mode)
+			{
+				result = CmdWrite(ALL_TYPE, false);
+			}
+		}
+		else if (cmdbuf == "WRITE-PROG")
+		{
+			if (!test_mode)
+			{
+				result = CmdWrite(PROG_TYPE, false);
+			}
+		}
+		else if (cmdbuf == "WRITE-DATA")
+		{
+			if (!test_mode)
+			{
+				result = CmdWrite(DATA_TYPE, false);
+			}
+		}
+		else if (cmdbuf == "ERASE-ALL")
+		{
+			if (!test_mode)
+			{
+				result = CmdErase(ALL_TYPE);
+			}
+		}
+		else if (cmdbuf == "VERIFY-ALL")
+		{
+			if (!test_mode)
+			{
+				result = CmdVerify(ALL_TYPE);
+			}
+		}
+		else if (cmdbuf == "VERIFY-PROG")
+		{
+			if (!test_mode)
+			{
+				result = CmdVerify(PROG_TYPE);
+			}
+		}
+		else if (cmdbuf == "VERIFY-DATA")
+		{
+			if (!test_mode)
+			{
+				result = CmdVerify(DATA_TYPE);
+			}
+		}
+		else if (cmdbuf == "WRITE-FUSE")
+		{
+			if (n >= 2)
+			{
+				if (!test_mode)
+				{
+					int fuse;
+					fuse = lst.at(1).toLong();
+					awip->SetFuseBits(fuse);
+					result = CmdWriteSpecial();
+				}
+			}
+			else if (n == 1)
+			{
+				if (!test_mode)
+				{
+					result = CmdWriteSpecial();
+				}
+			}
+		}
+		else if (cmdbuf == "SET-FUSE")
+		{
+			if (n >= 2)
+			{
+				if (!test_mode)
+				{
+					int fuse;
+					fuse = lst.at(1).toLong();
+					awip->SetFuseBits(fuse);
+					result = OK;
+				}
+			}
+			else     //Argument missing
+			{
+				result = ScriptError(linecounter, 1, lst.at(1));
+			}
+		}
+		else if (cmdbuf == "WRITE-LOCK")
+		{
+			if (n >= 2)
+			{
+				if (!test_mode)
+				{
+					int lock;
+					lock = lst.at(1).toLong();
+					awip->SetLockBits(lock);
+					result = CmdWriteLock();
+				}
+			}
+			else if (n == 1)
+			{
+				if (!test_mode)
+				{
+					result = CmdWriteLock();
+				}
+			}
+		}
+		else if (cmdbuf == "SET-LOCK")
+		{
+			if (n >= 2)
+			{
+				if (!test_mode)
+				{
+					int lock;
+					lock = lst.at(1).toLong();
+					awip->SetLockBits(lock);
+				}
+			}
+			else     //Argument missing
+			{
+				result = ScriptError(linecounter, 1, lst.at(1));
+			}
+		}
+		else if (cmdbuf == "EDIT-SECURITY")
+		{
+			if (!test_mode)
+			{
+				result = SpecialBits();
+			}
+		}
+		else if (cmdbuf == "READ-FUSE")
+		{
+			if (!test_mode)
+			{
+				result = CmdReadSpecial();
+			}
+		}
+		else if (cmdbuf == "READ-LOCK")
+		{
+			if (!test_mode)
+			{
+				result = CmdReadLock();
+			}
+		}
+		else if (cmdbuf == "SERIALNUMBER")
+		{
+			if (!test_mode)
+			{
+				if (n >= 2)
+				{
+					int sernum = lst.at(1).toLong();
+					E2Profile::SetSerialNumVal(sernum);
+				}
 
-					if (result == OK && !test_mode)
-					{
-						if (strcmp(arg[1], "--") == 0)
-						{
-							result = CmdSaveAs(DATA_TYPE);
-						}
-						else
-						{
-							result = CmdSave(DATA_TYPE, arg[1]);
-						}
-					}
-				}
-				else if (n == 1)
+				if (n >= 3)
 				{
-					if (!test_mode)
-					{
-						result = CmdSave(DATA_TYPE);
-					}
-				}
-			}
-			else if (strcasecmp(cmdbuf, "READ-ALL") == 0)
-			{
-				if (!test_mode)
-				{
-					result = CmdRead(ALL_TYPE);
-				}
-			}
-			else if (strcasecmp(cmdbuf, "READ-PROG") == 0)
-			{
-				if (!test_mode)
-				{
-					result = CmdRead(PROG_TYPE);
-				}
-			}
-			else if (strcasecmp(cmdbuf, "READ-DATA") == 0)
-			{
-				if (!test_mode)
-				{
-					result = CmdRead(DATA_TYPE);
-				}
-			}
-			else if (strcasecmp(cmdbuf, "WRITE&VERIFY-ALL") == 0)
-			{
-				if (!test_mode)
-				{
-					result = CmdWrite(ALL_TYPE, true);
-				}
-			}
-			else if (strcasecmp(cmdbuf, "WRITE&VERIFY-PROG") == 0)
-			{
-				if (!test_mode)
-				{
-					result = CmdWrite(PROG_TYPE, true);
-				}
-			}
-			else if (strcasecmp(cmdbuf, "WRITE&VERIFY-DATA") == 0)
-			{
-				if (!test_mode)
-				{
-					result = CmdWrite(DATA_TYPE, true);
-				}
-			}
-			else if (strcasecmp(cmdbuf, "WRITE-ALL") == 0)
-			{
-				if (!test_mode)
-				{
-					result = CmdWrite(ALL_TYPE, false);
-				}
-			}
-			else if (strcasecmp(cmdbuf, "WRITE-PROG") == 0)
-			{
-				if (!test_mode)
-				{
-					result = CmdWrite(PROG_TYPE, false);
-				}
-			}
-			else if (strcasecmp(cmdbuf, "WRITE-DATA") == 0)
-			{
-				if (!test_mode)
-				{
-					result = CmdWrite(DATA_TYPE, false);
-				}
-			}
-			else if (strcasecmp(cmdbuf, "ERASE-ALL") == 0)
-			{
-				if (!test_mode)
-				{
-					result = CmdErase(ALL_TYPE);
-				}
-			}
-			else if (strcasecmp(cmdbuf, "VERIFY-ALL") == 0)
-			{
-				if (!test_mode)
-				{
-					result = CmdVerify(ALL_TYPE);
-				}
-			}
-			else if (strcasecmp(cmdbuf, "VERIFY-PROG") == 0)
-			{
-				if (!test_mode)
-				{
-					result = CmdVerify(PROG_TYPE);
-				}
-			}
-			else if (strcasecmp(cmdbuf, "VERIFY-DATA") == 0)
-			{
-				if (!test_mode)
-				{
-					result = CmdVerify(DATA_TYPE);
-				}
-			}
-			else if (strcasecmp(cmdbuf, "WRITE-FUSE") == 0)
-			{
-				if (n >= 2 && arg[1])
-				{
-					if (!test_mode)
-					{
-						int fuse;
-						fuse = strtol(arg[1], NULL, 0);
-						awip->SetFuseBits(fuse);
-						result = CmdWriteSpecial();
-					}
-				}
-				else if (n == 1)
-				{
-					if (!test_mode)
-					{
-						result = CmdWriteSpecial();
-					}
-				}
-			}
-			else if (strcasecmp(cmdbuf, "SET-FUSE") == 0)
-			{
-				if (n >= 2 && arg[1])
-				{
-					if (!test_mode)
-					{
-						int fuse;
-						fuse = strtol(arg[1], NULL, 0);
-						awip->SetFuseBits(fuse);
-						result = OK;
-					}
-				}
-				else     //Argument missing
-				{
-					result = ScriptError(linecounter, 1, arg[1]);
-				}
-			}
-			else if (strcasecmp(cmdbuf, "WRITE-LOCK") == 0)
-			{
-				if (n >= 2 && arg[1])
-				{
-					if (!test_mode)
-					{
-						int lock;
-						lock = strtol(arg[1], NULL, 0);
-						awip->SetLockBits(lock);
-						result = CmdWriteLock();
-					}
-				}
-				else if (n == 1)
-				{
-					if (!test_mode)
-					{
-						result = CmdWriteLock();
-					}
-				}
-			}
-			else if (strcasecmp(cmdbuf, "SET-LOCK") == 0)
-			{
-				if (n >= 2 && arg[1])
-				{
-					if (!test_mode)
-					{
-						int lock;
-						lock = strtol(arg[1], NULL, 0);
-						awip->SetLockBits(lock);
-					}
-				}
-				else     //Argument missing
-				{
-					result = ScriptError(linecounter, 1, arg[1]);
-				}
-			}
-			else if (strcasecmp(cmdbuf, "EDIT-SECURITY") == 0)
-			{
-				if (!test_mode)
-				{
-					result = SpecialBits();
-				}
-			}
-			else if (strcasecmp(cmdbuf, "READ-FUSE") == 0)
-			{
-				if (!test_mode)
-				{
-					result = CmdReadSpecial();
-				}
-			}
-			else if (strcasecmp(cmdbuf, "READ-LOCK") == 0)
-			{
-				if (!test_mode)
-				{
-					result = CmdReadLock();
-				}
-			}
-			else if (strcasecmp(cmdbuf, "SERIALNUMBER") == 0)
-			{
-				if (!test_mode)
-				{
-					if (n >= 2 && arg[1])
-					{
-						int sernum = strtol(arg[1], NULL, 0);
-						E2Profile::SetSerialNumVal(sernum);
-					}
+					long start;
+					int size;
+					bool mtype;
+					start = 0;
+					size = 1;
+					mtype = false;
+					E2Profile::GetSerialNumAddress(start, size, mtype);
 
 					if (n >= 3)
+					{
+						start = lst.at(2).toLong();       //address location
+					}
+
+					if (n >= 4)
+					{
+						size = lst.at(3).toInt();                            //address size
+					}
+
+					if (n >= 5)
+					{
+						if (lst.at(4) == "DATA")               //offset
+						{
+							mtype = true;
+						}
+					}
+
+					E2Profile::SetSerialNumAddress(start, size, mtype);
+				}
+
+				if (n >= 6)
+				{
+					FmtEndian fmt;
+					fmt = E2Profile::GetSerialNumFormat();
+
+					if (n >= 6)
+					{
+						if ("LITTLEENDIAN" == lst.at(5))
+						{
+							fmt = FMT_LITTLE_ENDIAN;
+						}
+						else
+						{
+							fmt = FMT_BIG_ENDIAN;
+						}
+					}
+
+					E2Profile::SetSerialNumFormat(fmt);
+				}
+
+				if (n >= 7)
+				{
+					bool autoinc = E2Profile::GetSerialNumAutoInc();
+
+					if (n >= 7)
+					{
+						autoinc = ("NO" == lst.at(6)) ? false : true;
+					}
+
+					E2Profile::SetSerialNumAutoInc(autoinc);
+				}
+
+				result = CmdSetSerialNumber();
+			}
+		}
+		else
+		{
+			//READ-CALIBRATION <address>[mem][osc_index]
+			if (cmdbuf == "READ-CALIBRATION")
+			{
+				if (!test_mode)
+				{
+					if (n >= 2)
 					{
 						long start;
 						int size;
 						bool mtype;
+
 						start = 0;
 						size = 1;
 						mtype = false;
-						E2Profile::GetSerialNumAddress(start, size, mtype);
+						E2Profile::GetCalibrationAddress(start, size, mtype);
 
-						if (n >= 3 && arg[2])
+						if (n >= 2)
 						{
-							start = strtol(arg[2], NULL, 0);        //address location
+							start = lst.at(1).toLong();      //address location
 						}
 
-						if (n >= 4 && arg[3])
+						if (n >= 3)
 						{
-							size = atoi(arg[3]);                            //address size
-						}
-
-						if (n >= 5 && arg[4])
-						{
-							if (strcmp(arg[4], "DATA") == 0)                //offset
+							if (lst.at(2) == "DATA")        //offset
 							{
 								mtype = true;
 							}
 						}
 
-						E2Profile::SetSerialNumAddress(start, size, mtype);
+						E2Profile::SetCalibrationAddress(start, size, mtype);
 					}
 
-					if (n >= 6)
+					int osc_index = 0;
+
+					if (n >= 4)
 					{
-						FmtEndian fmt;
-						fmt = E2Profile::GetSerialNumFormat();
-
-						if (n >= 6 && arg[5])
-						{
-							if (strcmp("LITTLEENDIAN", arg[5]) == 0)
-							{
-								fmt = FMT_LITTLE_ENDIAN;
-							}
-							else
-							{
-								fmt = FMT_BIG_ENDIAN;
-							}
-						}
-
-						E2Profile::SetSerialNumFormat(fmt);
+						osc_index = lst.at(3).toInt();                               //address size
 					}
 
-					if (n >= 7)
-					{
-						bool autoinc = E2Profile::GetSerialNumAutoInc();
-
-						if (n >= 7 && arg[6])
-						{
-							autoinc = (strcmp("NO", arg[6]) == 0) ? false : true;
-						}
-
-						E2Profile::SetSerialNumAutoInc(autoinc);
-					}
-
-					result = CmdSetSerialNumber();
+					result = CmdReadCalibration(osc_index);
 				}
 			}
-			else
+			else if (cmdbuf == "BYTESWAP")
 			{
-				//READ-CALIBRATION <address>[mem][osc_index]
-				if (strcasecmp(cmdbuf, "READ-CALIBRATION") == 0)
+				if (!test_mode)
 				{
-					if (!test_mode)
-					{
-						if (n >= 2)
-						{
-							long start;
-							int size;
-							bool mtype;
-
-							start = 0;
-							size = 1;
-							mtype = false;
-							E2Profile::GetCalibrationAddress(start, size, mtype);
-
-							if (n >= 2 && arg[1])
-							{
-								start = strtol(arg[1], NULL, 0);        //address location
-							}
-
-							if (n >= 3 && arg[2])
-							{
-								if (strcmp(arg[2], "DATA") == 0)        //offset
-								{
-									mtype = true;
-								}
-							}
-
-							E2Profile::SetCalibrationAddress(start, size, mtype);
-						}
-
-						int osc_index = 0;
-
-						if (n >= 4 && arg[3])
-						{
-							osc_index = atoi(arg[3]);                               //address size
-						}
-
-						result = CmdReadCalibration(osc_index);
-					}
+					result = CmdByteSwap();
 				}
-				else if (strcasecmp(cmdbuf, "BYTESWAP") == 0)
+			}
+			else if (cmdbuf == "RESET")
+			{
+				if (!test_mode)
 				{
-					if (!test_mode)
-					{
-						result = CmdByteSwap();
-					}
+					result = CmdReset();
 				}
-				else if (strcasecmp(cmdbuf, "RESET") == 0)
+			}
+			else if (cmdbuf == "CLEARBUFFER" || cmdbuf == "CLEARBUF-ALL")
+			{
+				if (!test_mode)
 				{
-					if (!test_mode)
-					{
-						result = CmdReset();
-					}
+					result = CmdClearBuf(ALL_TYPE);
 				}
-				else if (strcasecmp(cmdbuf, "CLEARBUFFER") == 0 || strcasecmp(cmdbuf, "CLEARBUF-ALL") == 0)
+			}
+			else if (cmdbuf == "CLEARBUF-PROG")
+			{
+				if (!test_mode)
 				{
-					if (!test_mode)
-					{
-						result = CmdClearBuf(ALL_TYPE);
-					}
+					result = CmdClearBuf(PROG_TYPE);
 				}
-				else if (strcasecmp(cmdbuf, "CLEARBUF-PROG") == 0)
+			}
+			else if (cmdbuf == "CLEARBUF-DATA")
+			{
+				if (!test_mode)
 				{
-					if (!test_mode)
-					{
-						result = CmdClearBuf(PROG_TYPE);
-					}
+					result = CmdClearBuf(DATA_TYPE);
 				}
-				else if (strcasecmp(cmdbuf, "CLEARBUF-DATA") == 0)
+			}
+			else if (cmdbuf == "FILLBUFFER")
+			{
+				if (n >= 4)
 				{
-					if (!test_mode)
-					{
-						result = CmdClearBuf(DATA_TYPE);
-					}
-				}
-				else if (strcasecmp(cmdbuf, "FILLBUFFER") == 0)
-				{
-					if (n >= 4 && arg[1] && arg[2] && arg[3])
-					{
-						int from, val, to;
-						val = strtol(arg[1], NULL, 0);
-						from = strtol(arg[2], NULL, 0);
-						to = strtol(arg[3], NULL, 0);
+					int from, val, to;
+					val = lst.at(1).toLong();
+					from = lst.at(2).toLong();
+					to = lst.at(3).toLong();
 
-						if (from < to && from >= 0)
-						{
-							if (!test_mode)
-							{
-								awip->FillBuffer(from, val, to - from + 1);
-								// EK 2017
-								// TODO
-								Draw();
-								UpdateStatusBar();
-							}
-						}
-						else
-						{
-							result = ScriptError(linecounter, 2, arg[2]);
-						}
-					}
-					else if (n == 1)
+					if (from < to && from >= 0)
 					{
 						if (!test_mode)
 						{
-							result = CmdFillBuf();
-						}
-					}
-					else
-					{
-						result = ScriptError(linecounter, 3, arg[3]);
-					}
-				}
-				else if (strcasecmp(cmdbuf, "PAUSE") == 0)
-				{
-					QString s;
-
-					if (n >= 2 && arg[1])
-					{
-						s = arg[1];
-					}
-					else
-					{
-						s = STR_MSGDEFAULTPAUSE;
-					}
-
-					if (!test_mode)
-					{
-						int ret = QMessageBox::warning(this, "PonyProg",
-													   QString(s),
-													   QMessageBox::Yes | QMessageBox::No);
-
-						if (ret == QMessageBox::Yes)
-						{
-							result = OK;
-						}
-						else
-						{
-							result = OP_ABORTED;
-						}
-					}
-				}
-				else if (strcasecmp(cmdbuf, "CALL") == 0)
-				{
-					if (n >= 2 && arg[1])
-					{
-						if (!test_mode)
-						{
+							awip->FillBuffer(from, val, to - from + 1);
 							// EK 2017
-							// TODO arg[1] is the script name
-#if 0
-							vOS os;
-							result = os.vRunProcess(arg[1], 0, 0, /*Wait*/ 1, /*minimize*/ 0);
-
-							if (result == 99)
-							{
-								result = ScriptError(linecounter, 1, arg[1], STR_MSGFILENOTFOUND);
-							}
-
-#endif
+							// TODO
+							Draw();
+							UpdateStatusBar();
 						}
-					}
-					else     //Argument missing
-					{
-						result = ScriptError(linecounter, 1, arg[1]);
-					}
-				}
-				else if (strcasecmp(cmdbuf, "DELAY") == 0)
-				{
-					if (n >= 2 && arg[1])
-					{
-						if (!test_mode)
-						{
-							Wait w;
-							int msec = atoi(arg[1]);
-							w.WaitMsec(msec);
-						}
-
-						result = OK;
 					}
 					else
 					{
-						//Bad argument
-						result = ScriptError(linecounter, 1, arg[1]);
+						result = ScriptError(linecounter, 2, lst.at(2));
+					}
+				}
+				else if (n == 1)
+				{
+					if (!test_mode)
+					{
+						result = CmdFillBuf();
 					}
 				}
 				else
 				{
-					result = ScriptError(linecounter, 0, arg[0]);   //Bad command
+					result = ScriptError(linecounter, 3, lst.at(3));
 				}
 			}
+			else if (cmdbuf == "PAUSE")
+			{
+				QString s;
+
+				if (n >= 2)
+				{
+					s = lst.at(1);
+				}
+				else
+				{
+					s = translate(STR_MSGDEFAULTPAUSE);
+				}
+
+				if (!test_mode)
+				{
+					int ret = QMessageBox::warning(this, "PonyProg",
+												   QString(s),
+												   QMessageBox::Yes | QMessageBox::No);
+
+					if (ret == QMessageBox::Yes)
+					{
+						result = OK;
+					}
+					else
+					{
+						result = OP_ABORTED;
+					}
+				}
+			}
+			else if (cmdbuf == "CALL")
+			{
+				if (n >= 2)
+				{
+					if (!test_mode)
+					{
+						// EK 2017
+						// TODO lst.at(1) is the script name
+#if 0
+						vOS os;
+						result = os.vRunProcess(lst.at(1), 0, 0, /*Wait*/ 1, /*minimize*/ 0);
+
+						if (result == 99)
+						{
+							result = ScriptError(linecounter, 1, lst.at(1), STR_MSGFILENOTFOUND);
+						}
+
+#endif
+					}
+				}
+				else     //Argument missing
+				{
+					result = ScriptError(linecounter, 1, lst.at(1));
+				}
+			}
+			else if (cmdbuf == "DELAY")
+			{
+				if (n >= 2)
+				{
+					if (!test_mode)
+					{
+						Wait w;
+						int msec = lst.at(1).toInt();
+						w.WaitMsec(msec);
+					}
+
+					result = OK;
+				}
+				else
+				{
+					//Bad argument
+					result = ScriptError(linecounter, 1, lst.at(1));
+				}
+			}
+			else
+			{
+				result = ScriptError(linecounter, 0, lst.at(0));   //Bad command
+			}
 		}
-		else
-		{
-			//Line empty: do nothing
-		}
+
+		//              }
+		//              else
+		//              {
+		//                      //Line empty: do nothing
+		//              }
 	} //while
 
 	//If in scriptMode don't restore the normal verbose yet
@@ -4094,7 +4358,7 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 		if (verbose == verboseAll)
 		{
 			note.setIcon(QMessageBox::Information);
-			note.setText(STR_MSGPROGRAMOK);
+			note.setText(translate(STR_MSGPROGRAMOK));
 			note.exec();
 		}
 	}
@@ -4103,7 +4367,7 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 		if (verbose == verboseAll)
 		{
 			note.setIcon(QMessageBox::Warning);
-			note.setText(STR_OPABORTED);
+			note.setText(translate(STR_OPABORTED));
 			note.exec();
 		}
 	}
@@ -4112,7 +4376,7 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 		if (verbose == verboseAll)
 		{
 			note.setIcon(QMessageBox::Critical);
-			note.setText(STR_SCRIPTERROR);
+			note.setText(translate(STR_SCRIPTERROR));
 			note.exec();
 		}
 	}
@@ -4121,7 +4385,7 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 		if (verbose != verboseNo)
 		{
 			QString str;
-			str = STR_MSGPROGRAMFAIL + QString().sprintf(" (%d)", result);
+			str = translate(STR_MSGPROGRAMFAIL) + QString().sprintf(" (%d)", result);
 
 			note.setIcon(QMessageBox::Critical);
 			note.setText(str);
@@ -4203,7 +4467,7 @@ int e2CmdWindow::CmdReset()
 		QMessageBox note;
 		note.setIcon(QMessageBox::Warning);
 		note.setWindowTitle("Reset");
-		note.setText(STR_MSGDEVRESET);
+		note.setText(translate(STR_MSGDEVRESET));
 		note.exec();
 	}
 
@@ -4219,7 +4483,7 @@ int e2CmdWindow::CmdDoubleSize()
 	{
 		note.setIcon(QMessageBox::Warning);
 		note.setWindowTitle("Double size");
-		note.setText(STR_BUFEMPTY);
+		note.setText(translate(STR_BUFEMPTY));
 		note.exec();
 	}
 	else
@@ -4236,7 +4500,7 @@ int e2CmdWindow::CmdDoubleSize()
 		else
 		{
 			note.setIcon(QMessageBox::Warning);
-			note.setText(STR_OPNOTSUP);
+			note.setText(translate(STR_OPNOTSUP));
 			note.exec();
 		}
 	}
@@ -4267,7 +4531,7 @@ int e2CmdWindow::CmdSetDeviceSubType(int val)
 }
 
 //====================>>> e2CmdWindow::CmdOpen <<<====================
-int e2CmdWindow::CmdOpen(int type, char *file, long relocation, int clear_buffer)
+int e2CmdWindow::CmdOpen(int type, const char *file, long relocation, int clear_buffer)
 {
 	int result = OK;
 
@@ -4319,7 +4583,7 @@ int e2CmdWindow::CmdFillBuf()
 	static long fromAddr = 0, toAddr = 0xFFFF;
 	static int val = 0xFF;
 
-	FillDialog e2Fill(this, fromAddr, toAddr, val, awip->GetBufSize(), STR_MSGINSPARAM);
+	FillDialog e2Fill(this, fromAddr, toAddr, val, awip->GetBufSize(), translate(STR_MSGINSPARAM));
 
 	if (e2Fill.exec() == QDialog::Accepted)
 	{
@@ -4588,7 +4852,7 @@ int e2CmdWindow::CmdWriteLock()
 
 			if (!e2Prg)
 			{
-				doProgress(STR_MSGWRITINGSEC);
+				doProgress(translate(STR_MSGWRITINGSEC));
 				//e2Prg->setLabelText(STR_MSGWRITINGSEC);
 				//e2Prg->setValue(0);
 			}
@@ -4619,7 +4883,7 @@ int e2CmdWindow::CmdWriteLock()
 
 				if (verbose != verboseNo)
 				{
-					rval = OnError(rval, STR_MSGWRITESECFAIL);
+					rval = OnError(rval, translate(STR_MSGWRITESECFAIL));
 
 					if (rval == QMessageBox::Cancel)   //Abort
 					{
@@ -4668,7 +4932,7 @@ int e2CmdWindow::CmdReadLock()
 
 		if (!e2Prg)
 		{
-			doProgress(STR_MSGREADINGSEC);
+			doProgress(translate(STR_MSGREADINGSEC));
 			//e2Prg->setLabelText(STR_MSGREADINGSEC);
 			//e2Prg->setValue(0);
 		}
@@ -4701,7 +4965,7 @@ int e2CmdWindow::CmdReadLock()
 
 			if (verbose != verboseNo)
 			{
-				rval = OnError(rval, STR_MSGREADSECFAIL);
+				rval = OnError(rval, translate(STR_MSGREADSECFAIL));
 
 				if (rval == QMessageBox::Cancel)   //Abort
 				{
@@ -4749,7 +5013,7 @@ int e2CmdWindow::CmdReadSpecial()
 
 		if (!e2Prg)
 		{
-			doProgress(STR_MSGREADINGFUSE);
+			doProgress(translate(STR_MSGREADINGFUSE));
 			//e2Prg->setLabelText(STR_MSGREADINGFUSE);
 			//e2Prg->setValue(0);
 		}
@@ -4785,7 +5049,7 @@ int e2CmdWindow::CmdReadSpecial()
 
 			if (verbose != verboseNo)
 			{
-				rval = OnError(rval, STR_MSGREADFUSEFAIL);
+				rval = OnError(rval, translate(STR_MSGREADFUSEFAIL));
 
 				if (rval == QMessageBox::Cancel)   //Abort
 				{
@@ -4869,7 +5133,7 @@ int e2CmdWindow::CmdWriteSpecial()
 
 			if (!e2Prg)
 			{
-				doProgress(STR_MSGWRITINGFUSE);
+				doProgress(translate(STR_MSGWRITINGFUSE));
 				//e2Prg->setLabelText(STR_MSGWRITINGFUSE);
 				//e2Prg->setValue(0);
 			}
@@ -4906,7 +5170,7 @@ int e2CmdWindow::CmdWriteSpecial()
 
 				if (verbose != verboseNo)
 				{
-					rval = OnError(rval, STR_MSGWRITEFUSEFAIL);
+					rval = OnError(rval, translate(STR_MSGWRITEFUSEFAIL));
 
 					if (rval == QMessageBox::Cancel)   //Abort
 					{
@@ -4948,7 +5212,7 @@ int e2CmdWindow::CmdByteSwap()
 			QMessageBox note;
 			note.setIcon(QMessageBox::Information);
 			note.setWindowTitle("Byte swap");
-			note.setText(STR_BUFEMPTY);
+			note.setText(translate(STR_BUFEMPTY));
 			note.exec();
 		}
 	}
@@ -5670,7 +5934,7 @@ int e2CmdWindow::OpenScript(const QString &file)
 				QMessageBox note;
 				note.setIcon(QMessageBox::Warning);
 				note.setWindowTitle("Open script");
-				note.setText(STR_MSGFILENOTFOUND);
+				note.setText(translate(STR_MSGFILENOTFOUND));
 				note.exec();
 			}
 
@@ -5749,15 +6013,15 @@ int e2CmdWindow::OpenFile(const QString &file)
 
 			if (awip->GetLoadType() == PROG_TYPE)
 			{
-				fileName = QFileDialog::getOpenFileName(this, STR_MSGOPENPROGFILE, QDir::homePath(), fltr);
+				fileName = QFileDialog::getOpenFileName(this, translate(STR_MSGOPENPROGFILE), QDir::homePath(), fltr);
 			}
 			else if (awip->GetLoadType() == DATA_TYPE)
 			{
-				fileName = QFileDialog::getOpenFileName(this, STR_MSGOPENDATAFILE, QDir::homePath(), fltr);
+				fileName = QFileDialog::getOpenFileName(this, translate(STR_MSGOPENDATAFILE), QDir::homePath(), fltr);
 			}
 			else
 			{
-				fileName = QFileDialog::getOpenFileName(this, STR_MSGOPENFILE, QDir::homePath(), fltr);
+				fileName = QFileDialog::getOpenFileName(this, translate(STR_MSGOPENFILE), QDir::homePath(), fltr);
 			}
 
 			E2Profile::SetDefaultFileType((FileType)filterIndex);
@@ -5822,7 +6086,7 @@ int e2CmdWindow::OpenFile(const QString &file)
 				QMessageBox note;
 				note.setIcon(QMessageBox::Critical);
 				note.setWindowTitle("Open file");
-				note.setText(STR_MSGFILENOTFOUND);
+				note.setText(translate(STR_MSGFILENOTFOUND));
 				note.exec();
 			}
 
@@ -5872,7 +6136,7 @@ int e2CmdWindow::SaveFile(int force_select)
 		if ((err = awip->Save()) <= 0 && verbose != verboseNo)
 		{
 			QString str;
-			str = STR_MSGFILESAVEFAIL + QString(" (%d)\n").arg(err);
+			str = translate(STR_MSGFILESAVEFAIL) + QString(" (%d)\n").arg(err);
 
 			note.setIcon(QMessageBox::Critical);
 			note.setWindowTitle("Save");
@@ -5898,15 +6162,15 @@ int e2CmdWindow::SaveFile(int force_select)
 
 		if (awip->GetSaveType() == PROG_TYPE)
 		{
-			s = STR_MSGFILESAVEPROG;
+			s = translate(STR_MSGFILESAVEPROG);
 		}
 		else if (awip->GetSaveType() == DATA_TYPE)
 		{
-			s = STR_MSGFILESAVEDATA;
+			s = translate(STR_MSGFILESAVEDATA);
 		}
 		else
 		{
-			s = STR_MSGFILESAVEAS;
+			s = translate(STR_MSGFILESAVEAS);
 		}
 
 		filterIndex = (int)awip->GetFileBuf(); // ???
@@ -5914,7 +6178,7 @@ int e2CmdWindow::SaveFile(int force_select)
 
 		QString fltr = convertFilterListToString(filterInfo);
 
-		fn = QFileDialog::getOpenFileName(this, STR_MSGOPENPROGFILE, QDir::homePath(), fltr);
+		fn = QFileDialog::getOpenFileName(this, translate(STR_MSGOPENPROGFILE), QDir::homePath(), fltr);
 
 		if (fn.length())
 		{
@@ -5936,7 +6200,7 @@ int e2CmdWindow::SaveFile(int force_select)
 			{
 				QString str;
 
-				str = QString("%1 %2 (%3)\n").arg(STR_MSGFILESAVEFAIL).arg(fn).arg(err);
+				str = QString("%1 %2 (%3)\n").arg(translate(STR_MSGFILESAVEFAIL)).arg(fn).arg(err);
 
 				note.setIcon(QMessageBox::Information);
 				note.setWindowTitle("Save");
@@ -5985,9 +6249,11 @@ void e2CmdWindow::SetTitle()
 	}
 	else
 	{
+		QString   DEF_TITLE = APPNAME + " - " + translate(STR_NONAME);
 		setWindowTitle(DEF_TITLE);
 	}
 }
+
 
 QString e2CmdWindow::GetFileName()
 {
@@ -5997,7 +6263,7 @@ QString e2CmdWindow::GetFileName()
 	}
 	else
 	{
-		return DEF_FNAME;
+		return translate(STR_NONAME);
 	}
 }
 
@@ -6015,7 +6281,7 @@ void e2CmdWindow::UpdateFileMenu()
 			script_name = sp;
 
 			QString str;
-			str = STR_RUNSCR + " ";
+			str = translate(STR_RUNSCR) + " ";
 
 			int flen = script_name.length();
 
@@ -6229,7 +6495,7 @@ void e2CmdWindow::PostInit()
 		QMessageBox note;
 		note.setIcon(QMessageBox::Information);
 		note.setWindowTitle("Calibration");
-		note.setText(STR_MSGNEEDCALIB);
+		note.setText(translate(STR_MSGNEEDCALIB));
 		note.exec();
 	}
 
@@ -6238,7 +6504,7 @@ void e2CmdWindow::PostInit()
 		QMessageBox note;
 		note.setIcon(QMessageBox::Information);
 		note.setWindowTitle("Setup");
-		note.setText(STR_MSGNEEDSETUP);
+		note.setText(translate(STR_MSGNEEDSETUP));
 		note.exec();
 	}
 }
@@ -6406,7 +6672,7 @@ void e2CmdWindow::Exit()
 			if (IsBufChanged())
 			{
 				int ret = QMessageBox::warning(this, "PonyProg",
-											   STR_MSGCLOSEWINSAVE,
+											   translate(STR_MSGCLOSEWINSAVE),
 											   QMessageBox::Yes | QMessageBox::No);
 
 				if (ret == QMessageBox::Yes)

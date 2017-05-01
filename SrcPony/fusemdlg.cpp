@@ -33,17 +33,13 @@
 #include <QDebug>
 
 
-
-using namespace Translator;
-
-
 //======================>>> fuseModalDialog::fuseModalDialog <<<==================
 fuseModalDialog::fuseModalDialog(e2CmdWindow *bw, e2AppWinInfo *p, bool readonly, const QString &msg) :
 	QDialog(bw)
 {
 	setupUi(this);
 
-	setWindowTitle(STR_MSGFUSEDLG);
+	setWindowTitle(translate(STR_MSGFUSEDLG));
 
 	awip = p;
 
@@ -121,10 +117,10 @@ void fuseModalDialog::setTextWidgets()
 		}
 	}
 
-	pushRead->setText(STR_BTNREAD);
-	pushWrite->setText(STR_BTNWRITE);
-	pushOk->setText(STR_BTNOK);
-	pushCancel->setText(STR_BTNCANC);
+	pushRead->setText(translate(STR_BTNREAD));
+	pushWrite->setText(translate(STR_BTNWRITE));
+	pushOk->setText(translate(STR_BTNOK));
+	pushCancel->setText(translate(STR_BTNCANC));
 }
 
 
@@ -381,9 +377,9 @@ void fuseModalDialog::initWidgets(const QString &msg, long int type, bool readon
 		chkFuse.at(3 * 8 + k)->setChecked(((fuse) & (0x80 >> k)) ? true : false);     // F3
 	}
 
-	chkHlp1->setText(STR_FUSEDLGNOTESET + " (bit = 0)");
+	chkHlp1->setText(translate(STR_FUSEDLGNOTESET) + " (bit = 0)");
 	chkHlp1->setEnabled(false);
-	chkHlp0->setText(STR_FUSEDLGNOTECLR + " (bit = 1)");
+	chkHlp0->setText(translate(STR_FUSEDLGNOTECLR) + " (bit = 1)");
 	chkHlp0->setEnabled(false);
 
 	if (readonly)
@@ -405,7 +401,7 @@ blockDialog::blockDialog(e2CmdWindow *bw, e2AppWinInfo *p, bool readonly, const 
 {
 	setupUi(this);
 
-	setWindowTitle(STR_MSGFUSEDLG);
+	setWindowTitle(translate(STR_MSGFUSEDLG));
 
 	awip = p;
 
@@ -422,9 +418,9 @@ blockDialog::blockDialog(e2CmdWindow *bw, e2AppWinInfo *p, bool readonly, const 
 	qDebug() << "blockDialog::blockDialog()";
 
 
-	lblFrom->setText(STR_MSGFIRSTBLK);
-	lblTo->setText(STR_MSGNUMBLOCK);
-	lblVal->setText(STR_MSGHIGHENDBLK);
+	lblFrom->setText(translate(STR_MSGFIRSTBLK));
+	lblTo->setText(translate(STR_MSGNUMBLOCK));
+	lblVal->setText(translate(STR_MSGHIGHENDBLK));
 
 	QString str1 = QString().sprintf("%d", (int)((lock >> 4) & 0x0F));
 	QString str2 = QString().sprintf("%d", (int)(lock & 0x0F));
@@ -434,8 +430,8 @@ blockDialog::blockDialog(e2CmdWindow *bw, e2AppWinInfo *p, bool readonly, const 
 	txiTo->setText(str2);
 	txiVal->setText(str3);
 
-	pushOk->setText(STR_BTNOK);
-	pushCancel->setText(STR_BTNCANC);
+	pushOk->setText(translate(STR_BTNOK));
+	pushCancel->setText(translate(STR_BTNCANC));
 
 	if (readonly)
 	{

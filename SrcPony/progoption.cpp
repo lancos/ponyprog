@@ -36,9 +36,6 @@
 #include "eeptypes.h"
 #include "globals.h"
 
-#include "string_table.h"
-
-using namespace Translator;
 
 
 //======================>>> progOptionDialog::progOptionDialog <<<==================
@@ -79,16 +76,16 @@ progOptionDialog::~progOptionDialog()
 
 void progOptionDialog::setTextWidgets()
 {
-	QStringList txList = (QStringList() << STR_MSGRELOAD << STR_MSGREADPROG << STR_MSGREADDATA << STR_MSGBYTESWAP <<
-						  STR_MSGSERNUM << STR_READOSCCALIB << STR_MSGERASE << STR_MSGWRITEPROG << STR_MSGWRITEDATA << STR_MSGWRITESEC);
+	QStringList txList = (QStringList() << translate(STR_MSGRELOAD) << translate(STR_MSGREADPROG) << translate(STR_MSGREADDATA) << translate(STR_MSGBYTESWAP) <<
+						  translate(STR_MSGSERNUM) << translate(STR_READOSCCALIB) << translate(STR_MSGERASE) << translate(STR_MSGWRITEPROG) << translate(STR_MSGWRITEDATA) << translate(STR_MSGWRITESEC));
 
 	for (int i = 0; i < chk.size(); i++)
 	{
 		chk[i]->setText(txList.at(i));
 	}
 
-	pushOk->setText(STR_BTNOK);
-	pushCancel->setText(STR_BTNCANC);
+	pushOk->setText(translate(STR_BTNOK));
+	pushCancel->setText(translate(STR_BTNCANC));
 }
 
 void progOptionDialog::onOk()

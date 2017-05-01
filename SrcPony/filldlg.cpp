@@ -34,10 +34,6 @@
 #include "e2cmdw.h"
 #include "types.h"
 #include "filldlg.h"
-#include "string_table.h"
-
-
-using namespace Translator;
 
 class e2CmdWindow;
 
@@ -67,12 +63,12 @@ FillDialog::FillDialog(QWidget *bw, long &cfrom, long &cto, int &cval, long max_
 	mTo = (cto < 0) ? mMax : cto;
 	mVal = (cval < 0) ? 0xFF : cval;
 
-	lblFrom->setText(STR_LBLFROM);
-	lblTo->setText(STR_LBLTO);
-	lblVal->setText(STR_LBLVALUE);
+	lblFrom->setText(translate(STR_LBLFROM));
+	lblTo->setText(translate(STR_LBLTO));
+	lblVal->setText(translate(STR_LBLVALUE));
 
-	pushOk->setText(STR_BTNOK);
-	pushCancel->setText(STR_BTNCANC);
+	pushOk->setText(translate(STR_BTNOK));
+	pushCancel->setText(translate(STR_BTNCANC));
 
 	//TODO: should get strings from E2Profile settings, not local variables
 	QString str;

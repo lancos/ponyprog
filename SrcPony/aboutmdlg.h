@@ -40,7 +40,7 @@
 
 class e2CmdWindow;
 
-class AboutModalDialog :  public QDialog, public Ui::AboutDialog
+class AboutModalDialog :  public QDialog, public cTranslator, public Ui::AboutDialog
 {
 	Q_OBJECT
   public:               //---------------------------------------- public

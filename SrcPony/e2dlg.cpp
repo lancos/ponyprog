@@ -41,7 +41,6 @@
 
 class e2CmdWindow;
 
-using namespace Translator;
 
 
 //=========================>>> e2Dialog::e2Dialog <<<====================
@@ -290,25 +289,59 @@ void e2Dialog::setWidgetsText()
 				"EasyI2C API" <<
 				"EasyI2C I/O" <<
 				"SysFs GPIO ";
+
 	cbxInterfLPT->addItems(interfListL);
 
-	rdbComPort->setText(STR_LBLSERIAL);
-	rdbLptPort->setText(STR_LBLPARALLEL);
+	rdbComPort->setText(translate(STR_LBLSERIAL));
+	rdbLptPort->setText(translate(STR_LBLPARALLEL));
 
-	lptList << STR_LBLLPT1 << STR_LBLLPT2 << STR_LBLLPT3;
-	comList << STR_LBLCOM1 << STR_LBLCOM2 << STR_LBLCOM3 << STR_LBLCOM4;
-	usbList << STR_LBLUSB1 << STR_LBLUSB2 << STR_LBLUSB3 << STR_LBLUSB4 << STR_LBLUSB5 << STR_LBLUSB6 << STR_LBLUSB7 << STR_LBLUSB8;
 
-	lblPol1->setText(STR_LBLSELPOLARITY);
+#ifndef __linux__
 
-	chkPol1->setText(STR_LBLINVRESET);
-	chkPol2->setText(STR_LBLINVSCK);
-	chkPol3->setText(STR_LBLINVDATAIN);
-	chkPol4->setText(STR_LBLINVDATAOUT);
+	for (int i = 1; i < 4; i++)
+	{
+		lptList << translate(STR_LBLLPT1) + QString::number(i);
+	}
 
-	pushOk->setText(STR_BTNOK);
-	pushTest->setText(STR_BTNPROBE);
-	pushCancel->setText(STR_BTNCANC);
+	for (int i = 1; i < 5; i++)
+	{
+		comList << translate(STR_LBLCOM1) + QString::number(i);
+	}
+
+	for (int i = 1; i < 9; i++)
+	{
+		usbList << translate(STR_LBLUSB1) + QString::number(i);
+	}
+
+#else
+
+	for (int i = 0; i < 3; i++)
+	{
+		lptList << translate(STR_LBLLPT1) + QString::number(i);
+	}
+
+	for (int i = 0; i < 4; i++)
+	{
+		comList << translate(STR_LBLCOM1) + QString::number(i);
+	}
+
+	for (int i = 0; i < 8; i++)
+	{
+		usbList << translate(STR_LBLUSB1) + QString::number(i);
+	}
+
+#endif
+
+	lblPol1->setText(translate(STR_LBLSELPOLARITY));
+
+	chkPol1->setText(translate(STR_LBLINVRESET));
+	chkPol2->setText(translate(STR_LBLINVSCK));
+	chkPol3->setText(translate(STR_LBLINVDATAIN));
+	chkPol4->setText(translate(STR_LBLINVDATAOUT));
+
+	pushOk->setText(translate(STR_BTNOK));
+	pushTest->setText(translate(STR_BTNPROBE));
+	pushCancel->setText(translate(STR_BTNCANC));
 }
 
 
@@ -325,11 +358,11 @@ void e2Dialog::onTest()
 
 	if (test)
 	{
-		QMessageBox::critical(this, "Failed",  STR_MSGTEST + " " + STR_MSGFAILED);
+		QMessageBox::critical(this, "Failed",  translate(STR_MSGTEST) + " " + translate(STR_MSGFAILED));
 	}
 	else
 	{
-		QMessageBox::information(this, "Info", STR_MSGTEST + " " + STR_MSGOK);
+		QMessageBox::information(this, "Info", translate(STR_MSGTEST) + " " + translate(STR_MSGOK));
 	}
 }
 

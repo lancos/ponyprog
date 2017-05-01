@@ -34,18 +34,17 @@
 #include <QDialog>
 #include <QObject>
 
+#include "Translator.h"
+
 #include "ui_blockdlg.h"
 
-#include "string_table.h"
-
-using namespace Translator;
 
 
-class FillDialog : public QDialog, public Ui::BlockDialog
+class FillDialog : public QDialog, public cTranslator, public Ui::BlockDialog
 {
 	Q_OBJECT
   public:               //---------------------------------------- public
-	FillDialog(QWidget *bw, long &cfrom, long &cto, int &cval, long max_addr, const QString title = STR_LBLFILLBUF);
+	FillDialog(QWidget *bw, long &cfrom, long &cto, int &cval, long max_addr, const QString title = translate(STR_LBLFILLBUF));
 	virtual ~FillDialog();          // Destructor
 
 

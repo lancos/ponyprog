@@ -34,9 +34,6 @@
 
 #include <QString>
 
-#include "string_table.h"
-
-using namespace Translator;
 
 #define AUTOSIZE_ID     64768
 
@@ -52,7 +49,7 @@ static QString AUTHORNAME    = "Claudio Lanconelli";
 static QString AUTHORMAIL    = "PonyProg2000@gmail.com";
 static QString AUTHORWEB     = "http://www.LancOS.com";
 static QString COPYRIGHTYEAR = "1997-2017";
-static QString APPNAME_EXT   = STR_APPNAME_EXT;
+// static QString APPNAME_EXT   = STR_APPNAME_EXT;
 static QString PORTERGQT     = "Eduard Kalinowski";
 static QString PORTERMAIL    = "eduard_kalinowski@yahoo.de";
 

@@ -40,18 +40,15 @@
 
 #include "ui_e2dlg.h"
 
-#include "string_table.h"
-
-using namespace Translator;
 
 class e2CmdWindow;
 
-class e2Dialog : public QDialog, public Ui::E2Dialog
+class e2Dialog : public QDialog, public cTranslator, public Ui::E2Dialog
 {
 	Q_OBJECT
 
   public:               //---------------------------------------- public
-	e2Dialog(QWidget *bw, const QString title = STR_MSGINTSETUP);
+	e2Dialog(QWidget *bw, const QString title = translate(STR_MSGINTSETUP));
 	virtual ~e2Dialog();            // Destructor
 
   protected:    //--------------------------------------- protected
@@ -74,7 +71,7 @@ class e2Dialog : public QDialog, public Ui::E2Dialog
 	QStringList comList;
 	QStringList usbList;
 
-//	e2CmdWindow* cmdWin;
+	//      e2CmdWindow* cmdWin;
 	int port_no;                    // Numero della porta utilizzata
 	int lpt_no, com_no;
 	HInterfaceType interf_type;

@@ -39,16 +39,14 @@
 #include "ui_progoption.h"
 
 #include "e2cmdw.h"
-#include "string_table.h"
 
-using namespace Translator;
 
 // TODO to check modal
-class progOptionDialog : public QDialog, public Ui::ProgOptDialog
+class progOptionDialog : public QDialog, public cTranslator, public Ui::ProgOptDialog
 {
 	Q_OBJECT
   public:               //---------------------------------------- public
-	progOptionDialog(QWidget *bw, long type, int &reload, int &reep, int &erase, int &flash, int &eeprom, int &lock, const QString title = STR_MSGPROGOPT);
+	progOptionDialog(QWidget *bw, long type, int &reload, int &reep, int &erase, int &flash, int &eeprom, int &lock, const QString title = translate(STR_MSGPROGOPT));
 	virtual ~progOptionDialog();            // Destructor
 
   private slots:

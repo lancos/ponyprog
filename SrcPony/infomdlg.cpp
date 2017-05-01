@@ -27,19 +27,13 @@
 //-------------------------------------------------------------------------//
 //=========================================================================//
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <ctype.h>
 
 #include <QDebug>
 #include <QString>
 
 #include "e2cmdw.h"
-#include "string_table.h"
 #include "globals.h"
 #include "infomdlg.h"
-
-using namespace Translator;
 
 class e2CmdWindow;
 
@@ -61,20 +55,20 @@ e24xx_infoModalDialog::e24xx_infoModalDialog(QWidget *bw, int rlv, uint16_t crc,
 
 	if (rlv == 1)
 	{
-		txiFrom->setText(STR_MSGYES);// SetCommandLabel(txtRllBnk, STR_MSGYES, e24xxCmds);
+		txiFrom->setText(translate(STR_MSGYES));// SetCommandLabel(txtRllBnk, STR_MSGYES, e24xxCmds);
 	}
 	else if (rlv == 2)
 	{
-		txiFrom->setText(STR_MSGNO);//SetCommandLabel(txtRllBnk, STR_MSGNO, e24xxCmds);
+		txiFrom->setText(translate(STR_MSGNO));//SetCommandLabel(txtRllBnk, STR_MSGNO, e24xxCmds);
 	}
 	else
 	{
-		txiFrom->setText(STR_MSGUNKNOWN);//SetCommandLabel(txtRllBnk, STR_MSGUNKNOWN, e24xxCmds);
+		txiFrom->setText(translate(STR_MSGUNKNOWN));//SetCommandLabel(txtRllBnk, STR_MSGUNKNOWN, e24xxCmds);
 	}
 
-	lblFrom->setText(STR_MSGCRC); // crc label
-	lblTo->setText(STR_MSGEEPSIZE); // size label
-	lblVal->setText(STR_MSGFLASHSIZE); // flash size label
+	lblFrom->setText(translate(STR_MSGCRC)); // crc label
+	lblTo->setText(translate(STR_MSGEEPSIZE)); // size label
+	lblVal->setText(translate(STR_MSGFLASHSIZE)); // flash size label
 
 	QString str;
 	str = QString().sprintf("%04Xh", crc);
@@ -88,7 +82,7 @@ e24xx_infoModalDialog::e24xx_infoModalDialog(QWidget *bw, int rlv, uint16_t crc,
 	lblVal->setHidden(true);
 	txiVal->setHidden(true);
 
-	pushOk->setText(STR_BTNCLOSE);
+	pushOk->setText(translate(STR_BTNCLOSE));
 	pushCancel->setHidden(true);
 
 	connect(pushOk, SIGNAL(clicked()), this, SLOT(onOk()));
@@ -126,9 +120,9 @@ other_infoModalDialog::other_infoModalDialog(QWidget *bw, long fsize, long esize
 
 	QString str;
 
-	lblFrom->setText(STR_MSGCRC); // crc label
-	lblTo->setText(STR_MSGEEPSIZE); // size label
-	lblVal->setText(STR_MSGFLASHSIZE); // flash size label
+	lblFrom->setText(translate(STR_MSGCRC)); // crc label
+	lblTo->setText(translate(STR_MSGEEPSIZE)); // size label
+	lblVal->setText(translate(STR_MSGFLASHSIZE)); // flash size label
 
 	str = QString().sprintf("%04Xh", crc);
 	txiFrom->setText(str);
@@ -142,7 +136,7 @@ other_infoModalDialog::other_infoModalDialog(QWidget *bw, long fsize, long esize
 	txiVal->setText(str);
 	txiVal->setReadOnly(true);
 
-	pushOk->setText(STR_BTNCLOSE);
+	pushOk->setText(translate(STR_BTNCLOSE));
 	pushCancel->setHidden(true);
 
 	connect(pushOk, SIGNAL(clicked()), this, SLOT(onOk()));
@@ -182,8 +176,8 @@ notesModalDialog::notesModalDialog(QWidget *bw, QString &id, QString &cm, const 
 	id_ptr = &id;
 	cm_ptr = &cm;
 
-	lblStrID->setText(STR_MSGCHIPID);
-	lblCommnt->setText(STR_MSGNOTE);
+	lblStrID->setText(translate(STR_MSGCHIPID));
+	lblCommnt->setText(translate(STR_MSGNOTE));
 
 	if (id.length() && cm.length())
 	{
@@ -193,8 +187,8 @@ notesModalDialog::notesModalDialog(QWidget *bw, QString &id, QString &cm, const 
 		txiCommnt->setText(cmt_txt);
 	}
 
-	pushOk->setText(STR_BTNOK);
-	pushCancel->setText(STR_BTNCANC);
+	pushOk->setText(translate(STR_BTNOK));
+	pushCancel->setText(translate(STR_BTNCANC));
 
 	connect(pushOk, SIGNAL(clicked()), this, SLOT(onOk()));
 	connect(pushCancel, SIGNAL(clicked()), this, SLOT(reject()));
@@ -240,9 +234,9 @@ editModalDialog::editModalDialog(QWidget *bw, int curval, const QString title) :
 		curval = 0;
 	}
 
-	lblFrom->setText(STR_MSGHEX);
-	lblTo->setText(STR_MSGDECIMAL);
-	lblVal->setText(STR_MSGCHAR);
+	lblFrom->setText(translate(STR_MSGHEX));
+	lblTo->setText(translate(STR_MSGDECIMAL));
+	lblVal->setText(translate(STR_MSGCHAR));
 
 	oldval = curval;
 
@@ -260,8 +254,8 @@ editModalDialog::editModalDialog(QWidget *bw, int curval, const QString title) :
 	txiVal->setText(str);
 	connect(txiVal, SIGNAL(changed()), this, SLOT(onEdit()));
 
-	pushOk->setText(STR_BTNOK);
-	pushCancel->setText(STR_BTNCANC);
+	pushOk->setText(translate(STR_BTNOK));
+	pushCancel->setText(translate(STR_BTNCANC));
 
 	connect(pushOk, SIGNAL(clicked()), this, SLOT(onOk()));
 	connect(pushCancel, SIGNAL(clicked()), this, SLOT(reject()));
@@ -393,7 +387,7 @@ editModalDialog2::editModalDialog2(QWidget *bw, const QString curval, const QStr
 	lblTo->setHidden(true);
 	txiTo->setHidden(true);
 
-	lblVal->setText(STR_MSGCHAR);
+	lblVal->setText(translate(STR_MSGCHAR));
 
 	qDebug() << "editModalDialog::editModalDialog()";
 
@@ -406,8 +400,8 @@ editModalDialog2::editModalDialog2(QWidget *bw, const QString curval, const QStr
 
 	txiVal->setText(val);
 
-	pushOk->setText(STR_BTNOK);
-	pushCancel->setText(STR_BTNCANC);
+	pushOk->setText(translate(STR_BTNOK));
+	pushCancel->setText(translate(STR_BTNCANC));
 
 	connect(pushOk, SIGNAL(clicked()), this, SLOT(onOk()));
 	connect(pushCancel, SIGNAL(clicked()), this, SLOT(reject()));

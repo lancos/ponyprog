@@ -27,15 +27,11 @@
 //-------------------------------------------------------------------------//
 //=========================================================================//
 
-#include <stdio.h>
-#include <stdlib.h>
 
 #include <QDebug>
 
 #include "types.h"
 #include "sernumdlg.h"
-
-using namespace Translator;
 
 
 //=========================>>> SerNumDialog::SerNumDialog <<<====================
@@ -65,9 +61,9 @@ SerNumDialog::SerNumDialog(QWidget *bw, const QString title) :
 	size = (size < 0 || size > 4) ? 4 : size;
 	memtype = (memtype == 0 || memtype == 1) ? memtype : 0;
 
-	lblLoc->setText(STR_MSGADDRESS);
-	lblLen->setText(STR_MSGSIZE2);
-	lblVal->setText(STR_MSGVALUE);
+	lblLoc->setText(translate(STR_MSGADDRESS));
+	lblLen->setText(translate(STR_MSGSIZE2));
+	lblVal->setText(translate(STR_MSGVALUE));
 
 	QString str;
 	str = QString().sprintf("0x%04lX", loc);
@@ -108,20 +104,20 @@ SerNumDialog::~SerNumDialog()
 
 void SerNumDialog::setTextWidgets()
 {
-	pushOk->setText(STR_BTNOK);
-	pushCancel->setText(STR_BTNCANC);
+	pushOk->setText(translate(STR_BTNOK));
+	pushCancel->setText(translate(STR_BTNCANC));
 
-	lblLoc->setText(STR_MSGADDRESS);
-	lblLen->setText(STR_MSGSIZE2);
-	lblVal->setText(STR_MSGVALUE);
+	lblLoc->setText(translate(STR_MSGADDRESS));
+	lblLen->setText(translate(STR_MSGSIZE2));
+	lblVal->setText(translate(STR_MSGVALUE));
 
-	chkMemOffset->setText(STR_MSGOFFSET);
-	chkAutoInc->setText(STR_MSGSNAUTOINC);
+	chkMemOffset->setText(translate(STR_MSGOFFSET));
+	chkAutoInc->setText(translate(STR_MSGSNAUTOINC));
 
-	frmFormat->setTitle(STR_MSGFORMAT);
+	frmFormat->setTitle(translate(STR_MSGFORMAT));
 
-	rdbLittleEnd->setText(STR_MSGLITTLEEND);
-	rdbBigEnd->setText(STR_MSGBIGENDIAN);
+	rdbLittleEnd->setText(translate(STR_MSGLITTLEEND));
+	rdbBigEnd->setText(translate(STR_MSGBIGENDIAN));
 }
 
 
@@ -212,10 +208,10 @@ OscCalibDialog::OscCalibDialog(QWidget *bw, e2AppWinInfo *aw, const QString titl
 
 	E2Profile::GetCalibrationAddress(loc, size, memtype);
 
-	lblLoc->setText(STR_MSGADDRESS);
-	lblVal->setText(STR_MSGVALUE);
+	lblLoc->setText(translate(STR_MSGADDRESS));
+	lblVal->setText(translate(STR_MSGVALUE));
 
-	chkMemOffset->setText(STR_MSGOFFSET);
+	chkMemOffset->setText(translate(STR_MSGOFFSET));
 
 	QString str1;
 	QString str3;
@@ -231,9 +227,9 @@ OscCalibDialog::OscCalibDialog(QWidget *bw, e2AppWinInfo *aw, const QString titl
 	chkMemOffset->setChecked(memtype);
 
 
-	pushOk->setText(STR_BTNOK);
-	pushCancel->setText(STR_BTNCANC);
-	pushRead->setText(STR_BTNREAD);
+	pushOk->setText(translate(STR_BTNOK));
+	pushCancel->setText(translate(STR_BTNCANC));
+	pushRead->setText(translate(STR_BTNREAD));
 
 	connect(pushOk, SIGNAL(clicked()), this, SLOT(onOk()));
 	connect(pushCancel, SIGNAL(clicked()), this, SLOT(reject()));

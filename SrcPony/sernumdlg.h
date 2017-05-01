@@ -36,20 +36,18 @@
 #include <QString>
 #include <QDialog>
 
+#include "Translator.h"
 
 #include "types.h"
 #include "e2profil.h"
 #include "e2awinfo.h"
 
-#include "string_table.h"
 
-using namespace Translator;
-
-class SerNumDialog : public QDialog, public Ui::SNCfgDialog
+class SerNumDialog : public QDialog, public cTranslator, public Ui::SNCfgDialog
 {
 	Q_OBJECT
   public:               //---------------------------------------- public
-	SerNumDialog(QWidget *bw, const QString title = STR_MSGSERNUMCFG);
+	SerNumDialog(QWidget *bw, const QString title = translate(STR_MSGSERNUMCFG));
 	virtual ~SerNumDialog();                // Destructor
 
   private slots:
@@ -69,11 +67,11 @@ class SerNumDialog : public QDialog, public Ui::SNCfgDialog
 };
 
 
-class OscCalibDialog : public QDialog, public Ui::OscCalibrDialog
+class OscCalibDialog : public QDialog, public cTranslator, public Ui::OscCalibrDialog
 {
 	Q_OBJECT
   public:               //---------------------------------------- public
-	OscCalibDialog(QWidget *bw, e2AppWinInfo *aw, const QString title = STR_MSGOSCCALIBCFG);
+	OscCalibDialog(QWidget *bw, e2AppWinInfo *aw, const QString title = translate(STR_MSGOSCCALIBCFG));
 	virtual ~OscCalibDialog();              // Destructor
 
   private slots:

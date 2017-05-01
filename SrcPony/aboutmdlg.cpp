@@ -38,9 +38,6 @@
 #include "e2profil.h"
 
 
-using namespace Translator;
-
-
 AboutModalDialog::AboutModalDialog(QWidget *bw, const QString title)
 	: QDialog(bw)
 {
@@ -57,17 +54,17 @@ AboutModalDialog::AboutModalDialog(QWidget *bw, const QString title)
 		setStyleSheet(cmdw->getStyleSheet());
 	}
 
-	lblAbout0->setText(APPNAME + " - " + APPNAME_EXT  + "<br>" + STR_MSGVERSION + "  " + APPVERSION + "  " __DATE__);
+	lblAbout0->setText(APPNAME + " - " + translate(STR_APPNAME_EXT)  + "<br>" + translate(STR_MSGVERSION) + "  " + APPVERSION + "  " __DATE__);
 	lblAbout1->setText("Copyright (C) " + COPYRIGHTYEAR + "  by  <a href=\"" + AUTHORMAIL + "\">" + AUTHORNAME + "</a><br><br>" +
 					   "Porting to Qt4/Qt5 by <a href=\"" + PORTERMAIL + "\">" + PORTERGQT + "</a><br><br>" +
-					   STR_APPDOWNLOAD1 + " " + APPNAME + " " + STR_APPDOWNLOAD2 + "<br>" +
+					   translate(STR_APPDOWNLOAD1) + " " + APPNAME + " " + translate(STR_APPDOWNLOAD2) + "<br>" +
 					   "<a href=\"" + AUTHORWEB + "\">" + AUTHORWEB + "</a>");
 
 	chkSound->setChecked(E2Profile::GetSkipStartupDialog());
-	chkSound->setText(STR_LBLSKIPMSG);
+	chkSound->setText(translate(STR_LBLSKIPMSG));
 
-	pushOk->setText(STR_BTNOK);
-	pushHelp->setText(STR_BTNHELP);
+	pushOk->setText(translate(STR_BTNOK));
+	pushHelp->setText(translate(STR_BTNHELP));
 
 	icoPonyProg->setPixmap(QPixmap(":/icons/ponyprog.png"));
 

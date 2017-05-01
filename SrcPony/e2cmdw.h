@@ -48,7 +48,7 @@
 
 
 #include "device.h"
-
+#include "Translator.h"
 #include "e2app.h"
 #include "e2awinfo.h"
 
@@ -233,6 +233,7 @@ class e2CmdWindow : public QMainWindow, public e2App, public Ui::MainWindow
 
 	void selectFontSize(QAction *mnu);
 
+	void setLang(QAction *mnu);
 	//      void setOverwriteMode(bool);
 	//      void dataChanged();
 
@@ -244,8 +245,8 @@ class e2CmdWindow : public QMainWindow, public e2App, public Ui::MainWindow
 
   private:
 	//All commands
-	int CmdOpen(int type = ALL_TYPE, char *file = 0, long relocation = 0, int clear_buffer = -1);
-	int CmdSave(int type = ALL_TYPE, char *file = 0, long relocation = 0);
+	int CmdOpen(int type = ALL_TYPE, const char *file = 0, long relocation = 0, int clear_buffer = -1);
+	int CmdSave(int type = ALL_TYPE, const char *file = 0, long relocation = 0);
 	int CmdSaveAs(int type = ALL_TYPE, long relocation = 0);
 	int CmdLastFile1();
 	int CmdLastFile2();
@@ -258,7 +259,7 @@ class e2CmdWindow : public QMainWindow, public e2App, public Ui::MainWindow
 	int CmdGetInfo();
 	int CmdReset();
 	int CmdReadLock();
-//	int CmdWrite(int type);
+// 	int CmdWrite(int type);
 	//      int CmdRunScript();
 	int CmdLoadScript();
 	int CmdWriteLock();
@@ -291,6 +292,11 @@ class e2CmdWindow : public QMainWindow, public e2App, public Ui::MainWindow
 	void createStatusWidgets();
 
 	int findItemInMenuVector(const QString &n);
+
+	bool readLangDir();
+	bool getLangTable();
+	void setLangGUI();
+	void translateGUI();
 
 
   private:              //--------------------------------------- private
@@ -347,7 +353,7 @@ class e2CmdWindow : public QMainWindow, public e2App, public Ui::MainWindow
 	//      void IndexToCoord(int index, int &row, int &col);
 	void setMenuIndexes();
 	void selectTypeSubtype(const QString &t, const QString &st);
-	int ScriptError(int line_number, int arg_index, char *arg, const QString msg = "");
+	int ScriptError(int line_number, int arg_index, const QString &s, const QString msg = "");
 
 
   private:
@@ -364,6 +370,10 @@ class e2CmdWindow : public QMainWindow, public e2App, public Ui::MainWindow
 	int idxImBus;
 	int idxSDE2506;
 	int idxX244;
+
+	QString selectedLang;
+	QStringList lastScripts;
+	QStringList lastFiles;
 
 	QFont sysFont;
 	short fontSize;
@@ -387,6 +397,9 @@ class e2CmdWindow : public QMainWindow, public e2App, public Ui::MainWindow
 	QVector<QAction *> actFSizeSelect;
 
 	QActionGroup *fsizeGroup;
+	QActionGroup *langGroup;
+
+	QStringList langFiles;
 
 	// Standard elements
 	QHexEdit *e2HexEdit;             // For the canvas

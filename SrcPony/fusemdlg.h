@@ -70,7 +70,7 @@ typedef struct
 
 
 
-class fuseModalDialog : public QDialog, public Ui::FuseDialog
+class fuseModalDialog : public QDialog, public cTranslator, public Ui::FuseDialog
 {
 	Q_OBJECT
   public:               //---------------------------------------- public
@@ -1117,7 +1117,7 @@ const QVector<FuseBit> eep_fusebits =
 };
 
 
-class blockDialog : public QDialog, public Ui::BlockDialog
+class blockDialog : public QDialog, public cTranslator, public Ui::BlockDialog
 {
 	Q_OBJECT
   public:               //---------------------------------------- public

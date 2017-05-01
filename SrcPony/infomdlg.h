@@ -34,22 +34,20 @@
 #include <QObject>
 #include <QDialog>
 
+#include "Translator.h"
+
 #include "types.h"
 
 #include "ui_notesdlg.h"
 #include "ui_editdlg.h"
 #include "ui_blockdlg.h"
 
-#include "string_table.h"
 
-using namespace Translator;
-
-
-class e24xx_infoModalDialog : public QDialog, public Ui::EditDialog
+class e24xx_infoModalDialog : public QDialog, public cTranslator, public Ui::EditDialog
 {
 	Q_OBJECT
   public:               //---------------------------------------- public
-	e24xx_infoModalDialog(QWidget *bw, int rlv, uint16_t crc, long size, const QString title = STR_MSGDEVINFO);
+	e24xx_infoModalDialog(QWidget *bw, int rlv, uint16_t crc, long size, const QString title = translate(STR_MSGDEVINFO));
 	virtual ~e24xx_infoModalDialog();               // Destructor
 	//      virtual int infoAction(char* msg = "Device Info");
 
@@ -64,11 +62,11 @@ class e24xx_infoModalDialog : public QDialog, public Ui::EditDialog
 
 
 
-class other_infoModalDialog : public QDialog, public Ui::EditDialog
+class other_infoModalDialog : public QDialog, public cTranslator, public Ui::EditDialog
 {
 	Q_OBJECT
   public:               //---------------------------------------- public
-	other_infoModalDialog(QWidget *bw, long fsize, long esize, uint16_t crc, const QString title = STR_MSGDEVINFO);
+	other_infoModalDialog(QWidget *bw, long fsize, long esize, uint16_t crc, const QString title = translate(STR_MSGDEVINFO));
 	virtual ~other_infoModalDialog();               // Destructor
 	//      virtual int infoAction(char* msg = "Device Info");
 
@@ -82,11 +80,11 @@ class other_infoModalDialog : public QDialog, public Ui::EditDialog
 };
 
 
-class notesModalDialog : public QDialog, public Ui::NotesDialog
+class notesModalDialog : public QDialog, public cTranslator, public Ui::NotesDialog
 {
 	Q_OBJECT
   public:               //---------------------------------------- public
-	notesModalDialog(QWidget *bw, QString &id, QString &cm, const QString title = STR_MSGDEVNOTE);
+	notesModalDialog(QWidget *bw, QString &id, QString &cm, const QString title = translate(STR_MSGDEVNOTE));
 	virtual ~notesModalDialog();            // Destructor
 	//      QString GetId();
 	//      QString GetComment();
@@ -107,11 +105,11 @@ class notesModalDialog : public QDialog, public Ui::NotesDialog
 };
 
 
-class editModalDialog : public QDialog, public Ui::EditDialog
+class editModalDialog : public QDialog, public cTranslator, public Ui::EditDialog
 {
 	Q_OBJECT
   public:               //---------------------------------------- public
-	editModalDialog(QWidget *bw, int curval = 0, const QString title = STR_MSGEDITBUG);
+	editModalDialog(QWidget *bw, int curval = 0, const QString title = translate(STR_MSGEDITBUG));
 	virtual ~editModalDialog();             // Destructor
 	//      virtual int editAction(char* msg, int &retval);
 	int GetVal();
@@ -127,11 +125,11 @@ class editModalDialog : public QDialog, public Ui::EditDialog
 };
 
 
-class editModalDialog2 : public QDialog, public Ui::EditDialog
+class editModalDialog2 : public QDialog, public cTranslator, public Ui::EditDialog
 {
 	Q_OBJECT
   public:               //---------------------------------------- public
-	editModalDialog2(QWidget *bw, const QString curval = "", const QString title = STR_MSGEDITBUG);
+	editModalDialog2(QWidget *bw, const QString curval = "", const QString title = translate(STR_MSGEDITBUG));
 	virtual ~editModalDialog2();            // Destructor
 	//      virtual int editAction(char* msg, char *text, int len);
 	QString GetVal();

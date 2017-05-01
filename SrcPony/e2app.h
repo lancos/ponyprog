@@ -34,7 +34,7 @@
 #include <QApplication>
 #include <QCoreApplication>
 
-
+#include "Translator.h"
 // #include "busio.h"
 
 //Include Bus Classes
@@ -74,7 +74,7 @@ enum AppStatus
 	AppBusy
 };
 
-class e2App
+class e2App : public cTranslator
 {
   public:               //---------------------------------------- public
 
