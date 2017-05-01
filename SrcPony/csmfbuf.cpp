@@ -25,8 +25,9 @@
 //-------------------------------------------------------------------------//
 //=========================================================================//
 
-//#include <stdio.h>
 #include <QString>
+#include <QStringList>
+#include <QTextStream>
 #include <QFile>
 
 #include "csmfbuf.h"            // Header file
@@ -49,13 +50,11 @@ int csmFileBuf::Load(int loadtype, long relocation_offfset)
 	extern int GetE2PSubType(unsigned long x);
 	extern int GetE2PPriType(unsigned long x);
 
-	(void)relocation_offfset;	//unused
+	(void)relocation_offfset;       //unused
 
 	QFile fh(FileBuf::GetFileName());
 
-	char *s;//, *s1;
 	int rval = OK;
-	char riga[MAXLINE + 1];
 
 	if (!fh.open(QIODevice::ReadOnly | QIODevice::Text))
 	{
@@ -64,24 +63,27 @@ int csmFileBuf::Load(int loadtype, long relocation_offfset)
 
 	int state = 0;
 
+	QTextStream stream(&fh);
+
 	while (!fh.atEnd() && state < 3)
 	{
-		fh.readLine(riga, MAXLINE);
+		QString riga = stream.readLine();
+		int pos = -1;
 
 		switch (state)
 		{
 		case 0:
 
 			//look for header start
-			if ((s = strchr(riga, '\"')) != NULL)
+			if ((pos = riga.indexOf('\"')) >= 0)
 			{
 				state++;
 
-				if ((s = strstr(s + 1, "REFERENCE")) != NULL)
+				if ((pos = riga.indexOf("REFERENCE", pos + 1)) >= 0)
 				{
 					state++;
 
-					if ((s = strchr(s + 1, '\"')) != NULL)
+					if ((pos = riga.indexOf('\"', pos + 1)) >= 0)
 					{
 						state++;
 					}
@@ -93,11 +95,11 @@ int csmFileBuf::Load(int loadtype, long relocation_offfset)
 		case 1:
 
 			//look for "REFERENCE"
-			if ((s = strstr(riga, "REFERENCE")) != NULL)
+			if ((pos = riga.indexOf("REFERENCE")) >= 0)
 			{
 				state++;
 
-				if ((s = strchr(s + 1, '\"')) != NULL)
+				if ((pos = riga.indexOf('\"', pos + 1)) >= 0)
 				{
 					state++;
 				}
@@ -108,7 +110,7 @@ int csmFileBuf::Load(int loadtype, long relocation_offfset)
 		case 2:
 
 			//look for header terminator
-			if ((s = strchr(riga, '\"')) != NULL)
+			if ((pos = riga.indexOf('\"')) >= 0)
 			{
 				state++;
 			}
@@ -117,33 +119,51 @@ int csmFileBuf::Load(int loadtype, long relocation_offfset)
 		}
 	}
 
-	if (state < 3)				//Header not found
+	if (state < 3)                          //Header not found
 	{
 		rval = BADFILETYPE;
 	}
 	else
 	{
 		int okline_counter = 0;
-		int addr, value, n;
+		int addr, value;
 
 		addr = 0;
 
 		//read all remaining file (body)
 		while (!fh.atEnd())
 		{
-			fh.readLine(riga, MAXLINE);
+			QString riga = stream.readLine();
 
-			if (strlen(riga) > 0)   // salta righe vuote
+			if (riga.length() > 0)   // salta righe vuote
 			{
-				n = sscanf(riga, "%x %x", &addr, &value);
+				QStringList list = riga.split(" ");
 
-				if (n != 2)
+				if (list.count() != 2)
 				{
 					rval = BADFILETYPE;
 					break;
 				}
 				else
 				{
+					//  n = sscanf(riga, "%x %x", &addr, &value);
+					bool ok;
+					addr = list.at(0).toInt(&ok, 16);
+
+					if (ok == false)
+					{
+						rval = BADFILETYPE;
+						break;
+					}
+
+					value = list.at(1).toInt(&ok, 16);
+
+					if (ok == false)
+					{
+						rval = BADFILETYPE;
+						break;
+					}
+
 					okline_counter++;
 				}
 
@@ -195,6 +215,7 @@ int csmFileBuf::Load(int loadtype, long relocation_offfset)
 	}
 
 	fh.close();
+
 	return rval;
 
 
@@ -221,7 +242,7 @@ int csmFileBuf::Save(int savetype, long relocation_offfset)
 {
 	int rval = 0;
 
-	(void) relocation_offfset;		//unused
+	(void) relocation_offfset;              //unused
 
 	long size = FileBuf::GetBlockSize() * FileBuf::GetNoOfBlock();
 	uint8_t *ptr = FileBuf::GetBufPtr();
