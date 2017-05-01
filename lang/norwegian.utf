@@ -1,0 +1,343 @@
+LANGUAGE_NAME
+norwegian
+LANGUAGE_CHARSET
+UTF-8
+t0=nprwegian
+//Fill this with your reference, if it's empty""it will be invisible
+t1=Oversatt av:
+t2=NPF-tax555 tax555@hotmail.com
+t3=Seriell Programmerer
+t4=Last ned siste versjon av
+t5=på addressen:
+t6=Ingen Navn
+//Button captions
+t7=OK
+t8=Avbryt
+t9=Hjelp
+t10=Test
+t11=Sjekk Hardware
+t12=Merk
+t13=Rediger
+//Dialog messages
+t14=Versjon
+t15=Ja
+t16=Nei
+t17=Ok
+t18=Test
+t19=Mislykkes
+t20=Om
+t21=Side
+t22=Ukjent
+t23=Buffer \"%s\"endret. Lagre før du avslutter?
+t24=Buffer endret. Lagre den før du åpner?
+t25=Ingenting å lagre
+t26=Ingenting å åpne
+t27=Ingenting å skrive ut
+t28=Ingenting å skrive
+t29=Ingenting å verifisere
+t30=Buss tids Kalibrering.\nKontroller at det ikke er andre applikasjoneron son kjører før
+t31=\n(CPU'n og hard disken må være i hvilemodus)\nKalibreringen  kan ta noen sekunder.\nVil du starte kalibreringen nå?
+t32=Kalibrering OK
+t33=Kalibrering misslyktes
+t34=Du må kjøre Kalibreringen fra Alternativ menyen\nfør noen lese/skrive operasjoner
+t35=Oppsett må kjøres fra Alternativ menyen\nfør noen lese/skrive operasjoner
+t36=Leser...
+t37=Lesing vellykket\nStørrelse:
+t38=Er du sikker på at du vil skrive til enheten?\nAlt tidligere innhold vil gå tapt
+t39=skriver...
+t40=Veifiserer...
+t41=Skriving vellykket
+t42=Skrivingen mislykket
+t43=Sletter...
+t44=Sletting vellykket
+t45=Kan ikke verifisere, enheten mangler eller den er defekt
+t46=Verifisering Mislykket
+t47=Verifisering vellykket
+t48=Programmering vellykket
+t49=Programmering Mislykket
+t50=Nullstill enhet
+t51=Skriver sikkerhets bits...
+t52=Sikkerhets bits skriving mislykket
+t53=Leser sikkerhets bits...
+t54=Sikkerhets bits lesing mislykket
+t55=Leser konfigurerings bits...
+t56=Konfigurerings bits lesing mislykket
+t57=Skriver konfigurerings bits...
+t58=Konfigurerings bits skriving mislykket
+t59=Skript feil på linje
+t60=Feil kommando
+t61=Feil parameter
+t62=Parameter savnes
+t63=Vil du fortsette?
+t64=Buffer tom
+t65=Handlingen støttes ikke
+t66=Sett inn parametere
+t67=Feil parametere
+t68=Tillater kommandoer...
+t69=Åpne fil
+t70=Åpne programfil (FLASH)
+t71=Åpne datafil (EEPROM)
+t72=Fil ikke funnet
+t73=Kunne ikke lagre fil
+t74=Lagre som
+t75=Lagre Programfil (FLASH) som
+t76=Lagre Datafil (EEPROM) som
+t77=Steng forrige vindo: Vil du avslutte?
+t78=Buffer endret. Lagre før du avslutter?
+t79=Åpne skript fil
+//Menu entries
+//Main Menu
+t80=&Fil
+t81=&Rediger
+t82=&Enhet
+t83=&Kommando
+t84=Skri&pt
+t85=&Verktøy
+t86=&Oppsett
+t87=&Alternativ
+t88=&?
+//Menu File
+t89=&Nytt vindu
+t90=&Åpne Fil...
+t91=Åpne &Programfil (FLASH)...
+t92=Åpne &Datafil (EEPROM)...
+t93=&Lagre Fil
+t94=Lagre Fil &Som...
+t95=Lagre Programfil (&FLASH) Som...
+t96=Lagre Datafil (&EEPROM) Som...
+t97=Åpne ig&jen
+t98=Skriv &ut...
+t99=&Lukk
+t100=A&vslutt
+//Menu Edit
+t101=&Redigeringsbemerkning...
+t102=Aktiver &bufferredigering
+//Menu Command
+t103=&Les Alt
+t104=Les Program (FLASH)
+t105=Les Data (EEPROM)
+t106=Les &Sikkerhets og Konfigurerings Bits
+t107=&Skriv Alt
+t108=Skriv Program (&FLASH)
+t109=Skriv Data (EEPROM)
+t110=Sk&riv Sikkerhets og Konfigurerings Bits
+t111=&Verifiser Alt
+t112=Verifiser Program (FLASH)
+t113=Verifiser Data (EEPROM)
+t114=Verif&iser Sikkerhets og Konfigurerings Bits
+t115=&Slett
+t116=&Informasjon
+t117=Null&still
+t118=&Program
+t119=Program Alternativ...
+//Menu Options
+t120=&Grensesnitt...
+t121=&Kalibrering
+t122=&Fjern Modus
+//Menu Utility
+t123=&Slett Buffer
+t124=&Fyll Buffer...
+t125=&Dobbel Bank
+t126=&Byte Bytte
+t127=Velg Serie&Nummer
+t128=SeriNummer K&onfigurering...
+//Menu Help
+t129=&Hjelp
+t130=&Om
+//Menu Options
+t131=&Logg Fil...
+//Menu Script
+t132=&Rediger...
+t133=&Åpne og Kjør...
+t134=&Auto Åpne
+t135=&Kjør
+//Tool Bar
+//Dialog Messages
+t136=Enhets Type
+//Tool tips
+t137=Åpne Fil
+t138=Lagre Fil
+t139=Skriv ut Buffer
+t140=ReÅpne Filer
+t141=Les Enhet
+t142=Les Program Minne (FLASH)
+t143=Les Data Minne (EEPROM)
+t144=Les Sikkerhets og Konfigurerings Bits
+t145=Skriv Enhet
+t146=Skriv Program Minne (FLASH)
+t147=Skriv Data Minne (EEPROM)
+//
+t148=Verifiser Program Minne (FLASH)
+t149=Verifiser Data Minne (EEPROM)
+t150=Verifiser Sikkerhets og Konfigurerings Bits
+t151=Velg enhets familie
+t152=Velg enhets type
+t153=Rediger enhetsbemerkninger
+//Error Messages
+t154=Enhet Svarer Ukke
+t155=Feil Enhet, velg korrekt type
+t156=Enheten savnes eller ukjent enhet
+t157=Kunne ikke teste, feil enhet eller enhet låst
+t158=Avbrutt av Bruker
+t159=Kommunikasjons port ikke tilgjengelig
+t160=I/O tilgang nektes. Du må være root for å utføre I/O
+t161=Programmererkortet ikke funnet
+t162=Hardware feil, er kortet ordentlig tilkoblet?
+t163=Buss opptatt eller hardware feil
+t164=Savner Bekreftelse fra enheten
+t165=Savner enhet
+t166=Timeout på bussen
+t167=I2CBus Stop feil (feil timing?)
+t168=Skrive feil
+t169=Blank sjekk feil
+t170=Feil n.
+t171=Skript feil
+//----Setup dialog
+//Dialog title
+t172=I/O port Oppsett
+t173=Kort Oppsett
+//Dialog messages
+t174=COM/LPT grensesnitt
+t175=Seriell
+t176=Parallell
+t177=Grensesnitt alternativ
+t178=Grensesnitt type
+t179=COM Port valg
+t180=COM
+t183=LPT Port valg
+t184=LPT
+t185=Velg Polaritet på Kontroll linjene
+t186=Inverter Reset
+t187=Inverter SCKL
+t188=Inverter D-IN
+t189=Inverter D-OUT
+//Tool tips
+t190=Velg seriell port COM
+t192=Velg parallell port LPT
+//----Fill dialog
+//Dialog title
+t193=Fyll Buffer
+//Dialog messages: NB should be of the same size (number of char)
+t194=Fra.
+t195=Til
+t196=Verdi
+//----Fuse dialog
+//Button captions
+t197=Slett Alt
+t198=Velg Alt
+t199=Skriv
+t200=Les
+//Dialog title
+t201=Konfigurerings og Sikkerhets bits
+//Dialog messages: NB should be of the same size (number of char)
+t202=Første Blokk å Låse
+t203=N.av Blokker å Låse
+t204=Høyt varighets blokk
+//Tool tips
+t205=Alle bits til '0'
+t206=Alle bits til '1'
+t207=Skriv bits til enheten
+t208=Les bits fra enheten
+//----Info dialog
+//Button captions
+t209=Lukk
+//Dialog title
+t210=Enhets Info
+//Dialog messages
+t211=Bank roll-over dugelighet:
+t212=Størrelse:
+t213=CRC:
+t214=Sikkerhets blokk:
+t215=Høyt varighets blokk:
+//----Char Edit dialog
+//Dialog title
+t216=Rediger Buffer
+//Dialog messages: NB should be of the same size (number of char)
+t217=Hex
+t218=Desimal
+t219=Char
+t220=Sett inn ny verdi
+t221=Skriv tekst fra addressen
+//Tool tips
+t222=Hexadesimal verdi
+t223=Desimal verdi
+t224=Char verdi
+//----Program Option dialog
+//Dialog title
+t225=Program Alternativ
+//Dialog messages
+t226=ReÅpne Filer
+t227=Les Program minne (FLASH)
+t228=Les Data minne (EEPROM)
+t229=Les Serie Nummer
+t230=Byte Bytte
+t231=Velg Serie Nummer
+t232=Slett
+t233=Skriv Program minne (FLASH)
+t234=Skriv Data minne (EEPROM)
+t235=Skriv Sikkerhets og Konfig bits
+t236=Verifiser Sikkerhets og Konfig bits
+//----Serial Number dialog
+//Dialog title
+t237=Serie Nummer Konfig
+//Dialog messages: NB should be of the same size (number of char)
+t238=Adresse
+t239=Str.
+t240=Verdi
+t241=Format
+//next 2 probably can't be translated
+t242=Little endian
+t243=Big endian
+t244=Data minne offset
+//Tool tips
+t245=Minne adresse
+t246=Størrelse i bytes
+t247=Neste verdi som brukes
+t248=Anta Adressen relativt til Data minnet i stedet for Program minnet
+t249=Mest signifikante Byte at høy adresse
+t250=Mest signifikante Byte på lav adresse
+//----Retry dialog
+//Button captions
+t251=Avbryt
+t252=Prøv Igjen
+t253=Ignorer
+//Dialog title
+t254=Alarm
+//----Notes dialog
+//Dialog title
+t255=Rediger Enhetsbemerkninger
+//----Progress dialog
+//Dialog title
+t256=Status
+//----Hardware check dialog
+t257=Hardware Sjekk
+//----About dialog
+t258=Deaktiver lyd
+//---- Oscillator Calibration Byte
+t260=Oscillator kalibrerings Byte
+t261=Les Osc.Kalibrerings Byte
+t262=Osc. Kalibrerings Alternativ...
+t263=Lest Osc.Kalibreringd Byte vellykket
+t264=Chip Id
+t265=Bemerk
+t266=EEPROM Størrelse
+t267=FLASH Størrelse
+t268=Automatisk Økning
+t269=Øk serie nummeret etter hvert 'valgte serie nummer' handling
+t270=Kan ikke vete bank roll-over uten å modifisere og skrive, Vil du fortsette å skrive?
+t271=Buffer endret. Lagre det før lesing?
+t272=Åpne Program Minne (FLASH) Fil
+t273=Åpne Data Minne (EEPROM) Fil
+t274=Lagre Program Minne (FLASH) Fil
+t275=Lagre Data Minne (EEPROM) Fil
+t276=Nytt vindu
+t277=Start program syklus
+t278=Kjør skript
+t279=Åpne oppsett dialog
+t280=Slett alt fra enheten til FF
+t281=Sikkerhets og Konfigurerings &Bits...
+t282=Sikkerhets og Konfigurerings Bits
+//These strings are added to the 'Configuration and security bits' dialog to explain
+t283=Vennligst konfigurer med databladet, takk
+t284=Merkede enheter betyr at de er programert.
+t285=Umerkede enheter betyr at de ikke er programet.

@@ -1,0 +1,338 @@
+LANGUAGE_NAME
+deutsch
+LANGUAGE_CHARSET
+UTF-8
+t0=Deutsch
+t1=Translator Credits:
+t2=Thilo Lauer
+t3=Serieller Device-Programmierer
+t4=Laden Sie die aktuelle Version von
+t5=unter der Adresse:
+t6=Kein Name
+//Button captions
+t7=OK
+t8=Abbruch
+t9=Hilfe
+t10=Test
+t12=Bemerkung
+t13=Bearbeiten
+//Dialog messages
+t14=Version
+t15=Ja
+t16=Nein
+t17=Ok
+t18=Test
+t19=Fehler
+t20=Über
+t21=Seite
+t22=Unbekannt
+t23=Puffer \"%s\"geändert. Speichern vor dem Beenden?
+t24=Puffer geändert. Speichern vor dem Beenden?
+t25=Nichts zu speichern
+t26=Nichts zu laden
+t27=Nichts zu drucken
+t28=Nichts zu schreiben
+t29=Nichts zu vergleichen
+t30=Bus-Timing-Kalibrierung. \nStellen Sie sicher, dass keine Anwendung läuft, außer
+t31=\n(CPU und Festplatte sollten im Leerlauf sein)\nDie Kalibrierung kann einige Sekunden dauern.\nWollen Sie die Kalibrierung jetzt starten?
+t32=Kalibrierung OK
+t33=Kalibrierung fehlgeschlagen
+t34=Sie müssen Kalibrieren im Optionen-Menü ausführen\nbevor Sie irgendwelche Lese/Schreib-Vorgänge starten
+t35=Sie müssen Setup im Optionen-Menü ausführen\nbevor Sie irgendwelche Lese/Schreib-Vorgänge starten
+t36=Lesen...
+t37=Lesen erfolgreich\nDevice-Größe:
+t38=Sind Sie sicher, das Device beschreiben zu wollen?\nJeglicher Inhalt geht verloren
+t39=Schreiben...
+t40=Vergleichen...
+t41=Schreiben erfolgreich
+t42=Schreiben fehlgeschlagen
+t43=Löschen...
+t44=Löschen erfolgreich
+//t40=Vergleichen...
+t45=Kein vergleichen möglich, falsches oder fehlendes Device
+t46=Vergleichen fehlgeschlagen
+t47=Vergleichen erfolgreich
+t48=Programmierung erfolgreich
+t49=Programmierung fehlgeschlagen
+t50=Device zurückgesetzt
+t51=Schreibe Security Bits...
+t52=Schreiben der Security Bits fehlgeschlagen
+t53=Lese Security Bits...
+t54=Lesen der Konfigurationsbits fehlgeschlagen
+t55=Lese Konfigurationsbits...
+t56=Lesen der Konfigurationsbits fehlgeschlagen
+t57=Schreibe Konfigurationsbits...
+t58=Schreiben der Konfigurationsbits fehlgeschlagen
+t64=Puffer leer
+t65=Aktion nicht unterstützt
+t66=Parameter einfügen
+t67=Falsche Parameter
+t68=Befehl akzeptiert...
+t69=Datei mit Device-Inhalt öffnen
+t72=Datei nicht gefunden
+t73=Datei sichern fehlgeschlagen
+t74=Datei speichern unter
+t75=Speichere Programm (FLASH) Inhalt unter
+t76=Speichere Data (EEPROM) Inhalt unter
+t77=Fenster schließen: Wollen sie beenden?
+t78=Puffer geändert. Speichern vor dem Beenden?
+//Menu entries
+//Main Menu
+t80=&Datei
+t81=&Bearbeiten
+t82=&Device
+t83=&Befehl
+t85=&Tools
+t86=&Setup
+t87=&Optionen
+t88=&?
+//Menu File
+t89=&Neues Fenster
+t90=&Öffne Device Datei...
+t91=Öffne &Programm (FLASH) Datei...
+t92=Öffne &Daten (EEPROM) Datei...
+t93=&Speichere Device Datei
+t94=Speichere Device Datei &unter...
+t95=Speichere Programm (&FLASH) Datei unter...
+t96=Speichere Daten (&EEPROM) Datei unter...
+t97=&Dateien wiederherstellen
+t98=Drucken...
+t99=&Schließen
+t100=&Beenden
+//Menu Edit
+t101=Edit &Note...
+t102=Edit Bu&ffer eingeschaltet
+//Menu Command
+t103=&Lese alles
+t104=Lese Program (FLASH)
+t105=Lese Data (EEPROM)
+t106=Lese &Security und Konfigurationsbits
+t107=&Schreibe alles
+t108=Schreibe Program (&FLASH)
+t109=Schreibe Data (EEPROM)
+t110=Schre&ibe Security and Konfigurationsbits
+t111=&Vergleiche alles
+t112=Vergleiche Program (FLASH)
+t113=Vergleiche Data (EEPROM)
+t114=Vergleiche Security and Konfigurationsbits
+t115=&Löschen
+t116=&Info holen
+t117=Rese&t
+t118=&Programm
+t119=Programm Optionen...
+//Menu Options
+t120=&Hardware Setup...
+t121=&Kalibrierung
+t122=&Fernbedienungs-Modus
+//Menu Utility
+t123=&Lösche Puffer
+t124=&Fülle Puffer...
+t125=&Double Bank
+t126=&Byte Tausch
+t127=Setze Serien&nummer
+t128=Seriennummer konfigurieren...
+//Menu Help
+t129=&Hilfe
+t130=&Über
+//Menu Options
+t131=&Log Datei...
+//Tool Bar
+//Dialog Messages
+t136=Dev.Type
+//Tool tips
+t137=Öffne Device Datei
+t138=Speichere Device Datei
+t139=Drucke Puffer
+t140=Dateien wiederherstellen
+t141=Lese Device
+t142=Lese Programmspeicher (FLASH)
+t143=Lese Data Speicher (EEPROM)
+t144=Lese Security und Konfigurationsbits
+t145=Schreibe Device
+t146=Schreibe Programmspeicher (FLASH)
+t147=Schreibe Datenspeicher (EEPROM)
+t148=Vergleiche Programmspeicher (FLASH)
+t149=Vergleiche Datenspeicher (EEPROM)
+t150=Vergleiche Security und Konfigurationsbits
+t151=Wähle Device-Familie
+t152=Wähle Device-Typ
+t153=Bearbeite Device-Beschreibung
+//Error Messages
+t154=Device antwortet nicht
+t155=Falsches Device, bitte den richtigen Typ wählen
+t156=Falsches oder fehlendes Device
+t157=Kein Zugriff, Device defekt oder gesperrt
+t158=Abbruch durch Benutzer
+t159=Kommunikationsport nicht verfügbar
+t160=I/O-Zugriff verweigert. Administrator-Rechte erforderlich
+t161=Programmer nicht gefunden
+t162=Hardware-Fehler, richtig angeschlossen?
+t163=Bus-Leitung besetzt oder Hardware-Fehler
+t164=Fehlende Bestätigung vom Device
+t165=Fehlendes Device
+t166=Zeitüberschreitung der Bus-Leitung
+t167=I2CBus Stop Fehler (falsches Timing?)
+t168=Fehler beim schreiben
+t169=Fehler beim Leertest
+t170=unbekannter Fehler
+//----Setup dialog
+//Dialog title
+t172=I/O-Port-Setup
+t173=Hardware Setup
+//Dialog messages
+t174=COM/LPT Hardware
+t175=Seriell
+t176=Parallel
+t177=Hardware-Auswahl
+t178=Hardware-Typ
+t179=COM-Port-Auswahl
+t180=COM
+t183=LPT-Port-Auswahl
+t184=LPT
+t185=Polaritätswahl der Kontroll-Leitungen
+t186=Invertiere Reset
+t187=Invertiere SCKL
+t188=Invertiere D-IN
+t189=Invertiere D-OUT
+//Tool tips
+t190=Wähle Seriellen Port COM
+t192=Wähle Parallelen Port LPT
+//----Fill dialog
+//Dialog title
+t193=Fülle Puffer
+//Dialog messages: NB should be of the same size (number of char)
+t194=Von
+t195=Bis
+t196=Wert
+//----Fuse dialog
+//Button captions
+t197=Lösche alle
+t198=Setze alle
+t199=Schreiben
+t200=Lesen
+//Dialog title
+t201=Security und Konfigurationsbits
+//Dialog messages: NB should be of the same size (number of char)
+t202=Erster zu sperrender Block
+t203=Nr. der zu sperrenden Blöcke
+t204=High endurance block
+//Tool tips
+t205=Alle Bits auf '0'
+t206=Alle Bits auf '1'
+t207=Schreibe Bits in Device
+t208=Lese Bits aus Device
+//----Info dialog
+//Button captions
+t209=Schließen
+//Dialog title
+t210=Device Information
+//Dialog messages
+t211=Fähigkeit zu Bank roll-over:
+t212=Größe:
+t213=CRC:
+t214=Security Block:
+t215=High endurance block:
+//----Char Edit dialog
+//Dialog title
+t216=Editiere Puffer
+//Dialog messages: NB should be of the same size (number of char)
+t217=Hex
+t218=Dezimal
+t219=Ascii
+//Tool tips
+t222=Hexadezimal-Wert
+t223=Dezimal-Wert
+t224=ASCII-Wert
+//----Program Option dialog
+//Dialog title
+t225=Programm-Optionen
+//Dialog messages
+t226=Dateien wiederherstellen
+t227=Lese Programmspeicher (FLASH)
+t228=Lese Datenspeicher (EEPROM)
+t229=Lese Seriennummer
+t230=Byte-Tausch
+t231=Setze Seriennummer
+t232=Löschen
+t233=Schreibe Programmspeicher (FLASH)
+t234=Schreibe Datenspeicher (EEPROM)
+t235=Schreibe Security- und Konfigurationsbits
+t236=Vergleiche Security- und Konfigurationsbits
+//----Serial Number dialog
+//Dialog title
+t237=Seriennummer-Konfiguration
+//Dialog messages: NB should be of the same size (number of char)
+t238=Addresse
+t239=Größe
+t240=Wert
+t241=Format
+//next 2 probably can't be translated
+t242=Little endian
+t243=Big endian
+t244=Datenspeicher-Offset
+//Tool tips
+t245=Speicher-Addressen
+t246=Größe in Bytes
+t247=Nächster benutzter Wert
+t248=Verwenden Sie die Addresse relativ zum Datenspeicher anstelle des Programmspeichers
+t249=Höherwertiges Byte an hohe Adresse
+t250=Höherwertiges Byte an niedrige Adresse
+//----Retry dialog
+//Button captions
+t251=Abbruch
+t252=Wiederholen
+t253=Ignorieren
+//Dialog title
+t254=Alarm
+//----Notes dialog
+//Dialog title
+t255=Editiere Device-Beschreibung
+//----Progress dialog
+//Dialog title
+t256=Status
+//Script
+t84=Scri&pt
+t132=&Editieren...
+t133=&Laden und Ausführen...
+t134=A&utomatisch ausführen
+t135=&Ausführen
+t59=Script-Fehler in Zeile
+t60=Falsches Kommando
+t61=Falsches Argument
+t62=Fehlendes Argument
+t63=Wollen Sie weiterarbeiten?
+t79=Script-Datei öffnen
+t171=Script-Fehler
+t70=Öffne Programmspeicher-Datei (FLASH)
+t71=Öffne Datenspeicher-Datei (EEPROM)
+t220=Geben Sie den neuen Wert ein
+t221=Geben Sie den neuen Text ein
+t258=Sound deaktivieren
+//---- Oscillator Calibration Byte
+t260=Kalibrierungsbyte für Oszillator
+t261=Lese Kalibrierungsbyte für Oszillator
+t262=Optionen für Oszillator-Kalibrierung...
+t263=Lesen des Kalibrierungsbytes für Oszillator erfolgreich
+t264=Chip-Kennung
+t265=Bemerkung
+t266=EEPROM-Größe
+t267=FLASH-Größe
+t268=Autoinkrementalmodus
+t269=Erhöhe die Seriennummer nach jeder 'Setze Seriennummer'-Operation
+t270=EEPROM Bank Roll-over-Test erfordert Schreibzugriff. Zugriff durchführen?
+t271=Buffer wurde modifiziert. Vor dem Lesen sichern?
+t272=Programmdatei öffnen (FLASH)
+t273=Datendatei öffnen (EEPROM)
+t274=Programmdatei speichern (FLASH)
+t275=Datendatei speichern (EEPROM)
+t276=Neues Fenster
+t277=Programmierung starten
+t278=Script ausführen
+t279=Setup-Dialog öffnen
+t280=Komplettes Device mit FF löschen
+t281=Sicherheit- und Konfigurations&bits...
+t282=Sicherheit- und Konfigurationsbits
+//These strings are added to the 'Configuration and security bits' dialog to explain
+t283=Bitte mit Datenblatt vergleichen
+t284=markierte Kästchen bedeuten Programmiert
+t285=leere Kästchen bedeuten Unprogrammiert

@@ -1,0 +1,342 @@
+LANGUAGE_NAME
+chinese
+LANGUAGE_CHARSET
+UTF-8
+t0=Chinese(simplified)
+//Fill this with your reference, if it's empty""it will be invisible
+t1=简体中文汉化：
+t2=中国科学技术大学 荣新华\nE-mail: bd6cr@qsl.net\nhttp://www.qsl.net/bd6cr/hampic\n汉化更新:杨永胜 <ysyang@cs.ust.hk>
+t3=串行器件编程器
+t4=最新版本的
+t5=下载地址：
+t6=未命名
+//Button captions
+t7=确认
+t8=取消
+t9=帮助
+t10=测试
+t11=硬件检查
+t12=注解
+t13=编辑
+//Dialog messages
+t14=版本
+t15=是
+t16=否
+t17=OK
+t18=测试
+t19=失败
+t20=关于
+t21=页
+t22=未知
+t23=缓冲 \"%s\"已更改。在关闭之前保存？
+t24=缓冲已更加。在关闭之前保存？
+t25=无可保存
+t26=无可装载
+t27=无可打印
+t28=无可写入
+t29=无可验证
+t30=总线时序(bus timing)校准。\n请确认无别的程序运行，只运行
+t31=\n（CPU和硬盘必须空闲）\n此校准过程可能需要几秒钟。\n现在运行校准吗？
+t32=校准完成
+t33=校准失败
+t34=在任何读/写操作以前，\n您应从选项菜单中运行校准。
+t35=在任何读/写操作以前，\n您应从选项菜单中运行设置。
+t36=读出...
+t37=读出成功\n器件容量:
+t38=您确认对器件写入吗？\n所有以前的内容都将丢失
+t39=写入...
+t40=验证...
+t41=写入成功
+t42=写入失败
+t43=擦除...
+t44=擦除成功
+t45=无法验证，器件不存在或不正确
+t46=验证失败
+t47=验证成功
+t48=编程成功
+t49=编程失败
+t50=器件复位
+t51=写入保密位...
+t52=写入保密位失败
+t53=读出保密位...
+t54=读出保密位失败
+t55=读出配置位...
+t56=读出配置位失败
+t57=写入配置位...
+t58=写入配置位失败
+t59=脚本错误，行号：
+t60=错误的命令
+t61=错误的参数
+t62=缺少参数
+t63=继续吗？
+t64=缓冲为空
+t65=操作不支持
+t66=插入参数
+t67=错误的参数
+t68=正在接受命令...
+t69=打开器件内容文件
+t70=打开程序(FLASH)内容文件
+t71=打开数据(EEPROM)内容文件
+t72=文件没有找到
+t73=保存文件失败！
+t74=另存器件内容文件为
+t75=另存程序(FLASH)内容文件为
+t76=另存数据(EEPROM)内容文件为
+t77=关闭最后一个窗口：您想退出吗？
+t78=缓冲区已更改。在关闭之前保存？
+t79=打开脚本文件
+//Menu entries
+//Main Menu
+t80=文件&F
+t81=编辑&E
+t82=器件&D
+t83=命令&C
+t84=脚本&p
+t85=工具&U
+t86=设置&S
+t87=选项&O
+t88=&?
+//Menu File
+t89=新建窗口&N
+t90=打开器件文件&O...
+t91=打开程序(FLASH)文件&P...
+t92=打开数据(EEPROM)文件&D...
+t93=保存器件文件&S
+t94=另存器件文件为&A...
+t95=另存程序(&FLASH)文件为...
+t96=另存数据(&EEPROM)文件为...
+t97=重新加载文件&L
+t98=打印&T...
+t99=关闭&C
+t100=退出&x
+//Menu Edit
+t101=编辑注解&N...
+t102=允许编辑缓冲&F
+//Menu Command
+t103=读出所有&R
+t104=读出程序(FLASH)
+t105=读出数据(EEPROM)
+t106=读出保密位与配置位&B
+t107=写入所有&W
+t108=写入程序(&FLASH)
+t109=写入数据(EEPROM)
+t110=写入保密位与配置位&S
+t111=验证所有&V
+t112=验证程序(FLASH)
+t113=验证数据(EEPROM)
+t114=验证保密位与配置位&Y
+t115=擦除&E
+t116=获取信息&G
+t117=复位&T
+t118=编程&P
+t119=编程选项...
+//Menu Options
+t120=接口设置&I...
+t121=校准&C
+t122=远程模式&R
+//Menu Utility
+t123=清除缓冲&C
+t124=填充缓冲&F...
+t125=倍增容量
+t126=字节互换&B
+t127=设置序列号&N
+t128=序列号配置&O...
+//Menu Help
+t129=帮助&H
+t130=关于&A
+//Menu Options
+t131=日志文件&L...
+//Menu Script
+t132=编辑&E...
+t133=加载并运行&L...
+t134=自动加载&A
+t135=运行&I
+//Tool Bar
+//Dialog Messages
+t136=类型
+//Tool tips
+t137=打开器件文件
+t138=保存器件文件
+t139=打印缓冲
+t140=重新加载文件
+t141=读器件
+t142=读程序存储器(FLASH)
+t143=读数据存储器(EEPROM)
+t144=读保密位与配置位
+t145=写器件
+t146=写程序存储器(FLASH)
+t147=写数据存储器(EEPROM)
+t148=验证程序存储器(FLASH)
+t149=验证数据存储器(EEPROM)
+t150=验证保密位与配置位
+t151=选择器件家族
+t152=选择器件类型
+t153=编辑器件注解
+//Error Messages
+t154=器件没有响应
+t155=器件不正确，选择正确的类型
+t156=没有器件或未知器件
+t157=无法测试，器件不正确或器件被锁
+t158=用户放弃
+t159=通信端口不可用
+t160=I/O访问拒绝。只有root才能进行I/O操作
+t161=没有找到编程器板
+t162=硬件错误，板子是否正确连接？
+t163=总线忙或硬件错误
+t164=器件没有给出确认
+t165=没有器件
+t166=总线上超时
+t167=I2C总线停止条件错误(时序不对？)
+t168=写入出错
+t169=验空出错
+t170=错误 n.
+t171=脚本错误
+//----Setup dialog
+//Dialog title
+t172=I/O端口设置
+t173=接口板设置
+//Dialog messages
+t174=COM/LPT接口
+t175=串行
+t176=并行
+t177=接口选择
+t178=接口类型
+t179=COM端口选择
+t180=COM
+t183=LPT端口选择
+t184=LPT
+t185=选择控制线的极性
+t186=取反Reset
+t187=取反SCKL
+t188=取反D-IN
+t189=取反D-OUT
+//Tool tips
+t190=选择串口COM
+t192=选择并口LPT
+//----Fill dialog
+//Dialog title
+t193=填充缓冲
+//Dialog messages: NB should be of the same size (number of char)
+t194=从
+t195=到
+t196=值
+//----Fuse dialog
+//Button captions
+t197=清除所有
+t198=设置所有
+t199=写入
+t200=读出
+//Dialog title
+t201=配置位与保密位
+//Dialog messages: NB should be of the same size (number of char)
+t202=锁定的第一块
+t203=锁定的第N.块
+t204=高耐用块
+//Tool tips
+t205=所有位设置为'0'
+t206=所有位设置为'1'
+t207=写入位到器件
+t208=从器件读出位
+//----Info dialog
+//Button captions
+t209=关闭
+//Dialog title
+t210=器件信息
+//Dialog messages
+t211=Bank循环能力:
+t212=容量:
+t213=CRC:
+t214=保密块:
+t215=高耐用块:
+//----Char Edit dialog
+//Dialog title
+t216=编辑缓冲
+//Dialog messages: NB should be of the same size (number of char)
+t217=十六进制
+t218=十进制
+t219=字符
+t220=插入新值
+t221=输入文本，从地址
+//Tool tips
+t222=十六进制值
+t223=十进制值
+t224=字符值
+//----Program Option dialog
+//Dialog title
+t225=编程选项
+//Dialog messages
+t226=重新加载文件
+t227=读程序存储器(FLASH)
+t228=读数据存储器(EEPROM)
+t229=读序列号
+t230=字节互换
+t231=设置序列号
+t232=擦除
+t233=写程序存储器(FLASH)
+t234=写数据存储器(EEPROM)
+t235=写保密位与配置位
+t236=验证保密位与配置位
+//----Serial Number dialog
+//Dialog title
+t237=序列号配置
+//Dialog messages: NB should be of the same size (number of char)
+t238=地址
+t239=大小
+t240=值
+t241=格式
+//next 2 probably can't be translated
+t242=小尾数法
+t243=大尾数法
+t244=数据存储器偏移
+//Tool tips
+t245=存储器地址
+t246=字节数
+t247=下一个使用的值
+t248=假定地址相对于数据存储器而不是程序存储器
+t249=高位在高地址
+t250=高位在低地址
+//----Retry dialog
+//Button captions
+t251=放弃
+t252=重试
+t253=忽略
+//Dialog title
+t254=警告
+//----Notes dialog
+//Dialog title
+t255=编辑器件注解
+//----Progress dialog
+//Dialog title
+t256=状态
+//----Hardware check dialog
+t257=硬件检查
+//----About dialog
+t258=关闭声音
+//---- Oscillator Calibration Byte
+t260=振荡器校准字节
+t261=读振荡器校准字节&O
+t262=振荡器校准选项...
+t263=读振荡器校准字节成功
+t264=芯片ID
+t265=注解
+t266=EEPROM容量
+t267=FLASH容量
+t268=自动增量
+t269=每次设置序列号操作后增量序列号
+t270=不进行写操作无法知道bank循环能力，您想写吗？
+t271=缓冲已更改。在读之前保存？
+t272=打开程序内存(FLASH)文件
+t273=打开数据内存(EEPROM)文件
+t274=保存程序内存(FLASH)文件
+t275=保存数据内存(EEPROM)文件
+t276=新建窗口
+t277=开始编程
+t278=执行脚本
+t279=打开设置对话框
+t280=将所有器件擦除为FF
+t281=保密位与配置位&B...
+t282=保密位与配置位
+//These strings are added to the 'Configuration and security bits' dialog to explain
+t283=Refer to device datasheet, please
+t284=Checked items means programmed
+t285=UnChecked items means unprogrammed

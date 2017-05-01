@@ -1,0 +1,338 @@
+LANGUAGE_NAME
+spanish
+LANGUAGE_CHARSET
+UTF-8
+t0=español
+t1=Traductor:
+t2=Daniel Lebrero\nJuan Pluma Avila\nAlejandro Segade\nJose Enríquez\n
+t3=Programador de Dispositivos Serie
+t4=Descargar la última versión de
+t5=en la dirección:
+t6=Sin Nombre
+//Button captions
+t7=Aceptar
+t8=Cancelar
+t9=Ayuda
+t10=Probar
+t12=Nota
+t13=Editar
+//Dialog messages
+t14=Versión
+t15=Si
+t16=No
+t17=Ok
+t18=Probar
+t19=Falló
+t20=Acerca de
+t21=Página
+t22=Desconocido
+t23=El buffer \"%s\"ha cambiado. ¿Guardar antes de cerrar?
+t24=El buffer \"%s\"ha cambiado. ¿Guardar antes de abrir?
+t25=Nada que guardar
+t26=Nada que cargar
+t27=Nada que imprimir
+t28=Nada que escribir
+t29=Nada que verificar
+t30=Calibración velocidad Bus.\nAsegurate que no haya otras aplicaciones arrancadas
+t31=\n(La CPU y el disco duro tienen que estar sin actividad\nLa calibración puede tardar unos segundos.\n¿Quieres hacer la calibración ahora?
+t32=Calibrado
+t33=Falló la Calibración
+t34=Necesitas hacer la Calibración (que está en el menu de Opciones)\nantes de poder leer o escribir
+t35=Necesitas Configurar (que está en el menu Opciones)\nantes de poder leer o escribir
+t36=Leyendo...
+t37=Leído correctamente\nTamaño dispositivo:
+t38=¿Estas seguro de que quieres escribir el dispositivo?\nEl contenido que tuviera se perderá
+t39=Escribiendo...
+t40=Verificando...
+t41=Escrito correctamente
+t42=Fallo la escritura
+t43=Borrando...
+t44=Borrado correctamente
+//t40=Verificando...
+t45=No puedo verificar, no encuentro el dispositivo o falla
+t46=Falló la verificación
+t47=Verificado correctamente
+t48=Programado correctamente
+t49=Falló la programación
+t50=Dispositivo reiniciado
+t51=Escribiendo bits de seguridad...
+t52=Falló la escritura de los bits de seguridad
+t53=Leyendo bits de seguridad
+t54=Falló la lectura de los bits de configuración
+t55=Leyendo bits configuración
+t56=Falló la lectura de los bits de configuración
+t57=Escribiendo bits configuración
+t58=Falló la escritura de los bits de configuración
+t64=Buffer vacío
+t65=Operación no implementada
+t66=Introduzca los parámetros
+t67=Parámetros incorrectos
+t68=Aceptando los comandos...
+t69=Abriendo archivo de contenido del dispositivo
+t72=Archivo no encontrado
+t73=No pude guardar
+t74=Guardar contenido del dispositivo en archivo como
+t75=Guardar contenido del programa (FLASH) en archivo como
+t76=Guardar contenido de datos (EEPROM) en archivo como
+t77=Has cerrado la ultima ventana: ¿Quieres salir del programa?""Close last window: do you want to exit?
+t78=El buffer cambió. ¿Lo guardo antes de cerrar?
+//Menu entries
+//Main Menu
+t80=&Archivo
+t81=&Edición
+t82=&Dispositivo
+t83=&Comando
+t85=&Utilidad
+t86=Con&figuración
+t87=&Opciones
+t88=&?
+//Menu File
+t89=&Nueva Ventana
+t90=&Abrir archivo de dispositivo...
+t91=Abrir archivo de &Programa (FLASH)...
+t92=Abrir archivo de &Datos (EEPROM)...
+t93=&Guardar archivo de dispositivo
+t94=Guardar archivo de dispositivo &como...
+t95=Guardar archivo de Programa (&FLASH) como...
+t96=Guardar archivo de Datos (&EEPROM) como...
+t97=&Reabrir archivos
+t98=&Imprimir...
+t99=&Cerrar
+t100=&Salir
+//Menu Edit
+t101=Editar &Nota...
+t102=Editar bu&ffer
+//Menu Command
+t103=&Leer todo
+t104=Leer Programa (FLASH)
+t105=Leer Datos (EEPROM)
+t106=Leer Bits Seguridad y Configuración
+t107=&Escribir Todo
+t108=Escribir Programa (&FLASH)
+t109=Escribir Datos (EEPROM)
+t110=Escribir Bits Seguridad y Configuración
+t111=&Verificar todo
+t112=Verificar Programa (FLASH)
+t113=Verificar Datos (EEPROM)
+t114=Verific&ar Bits Seguridad y Configuración
+t115=&Borrar
+t116=&Obtener Información
+t117=Reini&ciar
+t118=&Programar
+t119=Opciones del Programa...
+//Menu Options
+t120=Conf&iguración de Interfaz...
+t121=Calibración
+t122=Modo &Remoto
+//Menu Utility
+t123=&Borrar Buffer
+t124=&Llenar Buffer...
+t125=&Doble Banco
+t126=&Intercambiar Byte
+t127=Poner &Número de Serie
+t128=C&onfiguración Número de serie...
+//Menu Help
+t129=&Ayuda
+t130=Acerca de
+//Menu Options
+t131=Archivo &Log...
+//Tool Bar
+//Dialog Messages
+t136=Tipo Disp.
+//Tool tips
+t137=Abrir Fichero Dispositivo
+t138=Guardar Fichero Dispositivo
+t139=Imprimir Buffer
+t140=Reabrir archivos
+t141=Leer Dispositivo
+t142=Leer Memoria Programa (FLASH)
+t143=Leer Memoria Datos (EEPROM)
+t144=Leer Bits Seguridad y Configuración
+t145=Grabar Dispositivo
+t146=Grabar Memoria de Programa (FLASH)
+t147=Grabar Memoria de Datos (EEPROM)
+t148=Verificar Memoria de Programa (FLASH)
+t149=Verificar Memoria de Datos (EEPROM)
+t150=Verificar Bits Seguridad y Configuración
+t151=Seleccionar familia dispositivo
+t152=Seleccionar tipo dispositivo
+t153=Editar notas de dispositivo
+//Error Messages
+t154=El dispositivo no responde
+t155=Dispositivo erróneo, selecciona el tipo correcto
+t156=Dispositivo desconectado o desconocido
+t157=No puedo probar, dispositivo estropeado o bloqueado
+t158=Cancelado por el Usuario
+t159=Puerto de Comunicaciones no disponible
+t160=Denegado acceso a E/S. Debes ser 'root' para acceder a las E/S
+t161=Placa de programador no encontrada
+t162=Error de Hardware, ¿Está la placa bien conectada?
+t163=Bus ocupado o error de Hardware
+t164=No he recibido Acknowledge desde el dispositivo
+t165=Dispositivo no encontrado
+t166='Timeout' en el bus
+t167=Error en condición 'I2CBus Stop' (¿'Timing' erroneo?)
+t168=Error Grabando
+t169=Error durante chequeo si esta vacío
+t170=Error n.
+//----Setup dialog
+//Dialog title
+t172=Configuración del puerto E/S
+t173=Configuración de la placa de Interfaz
+//Dialog messages
+t174=interfaz COM/LPT
+t175=Serie
+t176=Paralelo
+t177=Selección Interfaz
+t178=Tipo interfaz
+t179=Selección Puerto COM
+t180=COM
+t183=Selección Puerto LPT
+t184=LPT
+t185=Seleccionar Polaridad de las líneas de control
+t186=Invertir Reset
+t187=Invertir SCKL
+t188=Invertir D-IN
+t189=Invertir D-OUT
+//Tool tips
+t190=Seleccionar puerto serie COM
+t192=Seleccionar puerto paralelo LPT
+//----Fill dialog
+//Dialog title
+t193=Llenar Buffer
+//Dialog messages: NB should be of the same size (number of char)
+t194=Desde
+t195=a
+t196=Valor
+//----Fuse dialog
+//Button captions
+t197=Borrar Todo
+t198=Marcar Todo
+t199=Escribir
+t200=Leer
+//Dialog title
+t201=Bits Configuración y Seguridad
+//Dialog messages: NB should be of the same size (number of char)
+t202=Primer Bloque a proteger
+t203=N. de Bloques a proteger
+t204=Bloque de alta duración
+//Tool tips
+t205=Todos los bits a '0'
+t206=Todos los bits a '1'
+t207=Grabar bits en el dispositivo
+t208=Leer bits del dispositivo
+//----Info dialog
+//Button captions
+t209=Cerrar
+//Dialog title
+t210=Información Dispositivo
+//Dialog messages
+t211=Capacidad 'Bank roll-over':
+t212=Tamaño:
+t213=CRC:
+t214=Bloque Seguridad:
+t215=Bloque alta duración:
+//----Char Edit dialog
+//Dialog title
+t216=Editar Buffer
+//Dialog messages: NB should be of the same size (number of char)
+t217=Hex
+t218=Decimal
+t219=Caracter
+//Tool tips
+t222=Valor Hexadecimal
+t223=Valor Decimal
+t224=Valor Caracter
+//----Program Option dialog
+//Dialog title
+t225=Opciones de Programa
+//Dialog messages
+t226=Reabrir Archivos
+t227=Leer Memoria de Programa (FLASH)
+t228=Leer Memoria de Datos (EEPROM)
+t229=Leer Número de Serie
+t230='Swap' de Byte
+t231=Poner Número de Serie
+t232=Borrar
+t233=Escribir Memoria de Programa (FLASH)
+t234=Escribir Memoria de Datos (EEPROM)
+t235=Escribir Bits Seguridad y Configuración
+t236=Verificar Bits Seguridad y Configuración
+//----Serial Number dialog
+//Dialog title
+t237=Configurar Número de Serie
+//Dialog messages: NB should be of the same size (number of char)
+t238=Dirección
+t239=Tamaño
+t240=Valor
+t241=Formato
+//next 2 probably can't be translated
+t242=Little endian
+t243=Big endian
+t244=Offset Memoria de Datos
+//Tool tips
+t245=Dirección de Memoria
+t246=Tamaño en bytes
+t247=Próximo valor a usar
+t248=Asumir la dirección relativa a Memoria de Datos en vez de Memoria de Programa
+t249=Byte más significativo en dirección alta
+t250=Byte más significativo en dirección baja
+//----Retry dialog
+//Button captions
+t251=Parar
+t252=Reintentar
+t253=Ignorar
+//Dialog title
+t254=Alerta
+//----Notes dialog
+//Dialog title
+t255=Editar Notas de Dispositivo
+//----Progress dialog
+//Dialog title
+t256=Estado
+//Script
+t84=Scri&pt
+t132=&Editar...
+t133=&Cargar y Ejecutar...
+t134=&AutoEjecución
+t135=&Ejectuar
+t59=Error de Script en la línea
+t60=Comando erroneo
+t61=Arguneto erroneo
+t62=Falta argumento
+t63=Aun así quiere continuar?
+t79=Open script file
+t171=Error en el Script
+t70=Abrir programa (FLASH) contendio en archivo
+t71=Abrir Datos (EEPROM) contenidos file
+t220=Insertar un nuevo valor
+t221=Introduzca texto en el lugar
+t258=Desabilitar Sonido
+//---- Oscillator Calibration Byte
+t260=Calibración del Byte de Oscilador
+t261=Leer el Byte de Oscilador
+t262=Optiones del Byte de Oscilador
+t263=Lectura del Byte de Oscilador Exitosa
+t264=Id Chip
+t265=Nota
+t266=Tamaño EEPROM
+t267=Tamaño FLASH
+t268=Auto Incremento
+t269=Incrementar número de serie después de cada operación 'Poner Número de Serie'
+t270=No puedo hacer 'Bank roll-over' sin modificar y escribir ¿Quieres escribir?
+t271=Buffer cambiado. ¿Guardar lo antes de leer?
+t272=Abrir Archivo Memoria de Programa (FLASH)
+t273=Abrir Archivo Memoria de Datos (EEPROM)
+t274=Guardar Archivo Memoria de Programa (FLASH)
+t275=Guardar Archivo Memoria de Datos (EEPROM)
+t276=Nueva Ventana
+t277=Lanzar Ciclo de Programa
+t278=Ejecutar script
+t279=Abrir Diálogo de Setup
+t280=Borrar Todo el Dispositivo a FF
+t281=Configuración de Seguridad &Bits...
+t282=Bits de Configuración y Seguridad
+//These strings are added to the 'Configuration and security bits' dialog to explain
+t283=Por favor refiérase a la hoja de datos del dispositivo
+t284=Elementos seleccionados significan programados
+t285=Elementos no seleccionados significan no programados

@@ -1,0 +1,343 @@
+LANGUAGE_NAME
+japanese
+LANGUAGE_CHARSET
+UTF-8
+t0=japanese
+//Fill this with your reference, if it's empty""it will be invisible
+t1=Translator Credits:
+t2=Shouji Hirata(shouji@microft.co.jp)
+t3=シリアルデバイスプログラマー
+t4=最新バージョン
+t5=ここから:
+t6=未定義
+//Button captions
+t7=OK
+t8=Cancel
+t9=Help
+t10=Probe
+t11=ハードウエアチェック
+t12=注
+t13=編集
+//Dialog messages
+t14=Version
+t15=Yes
+t16=No
+t17=Ok
+t18=テスト
+t19=失敗
+t20=About
+t21=Page
+t22=未定義
+t23=ﾊﾞｯﾌｧｰ \"%s\"の内容が変更されています。終了前にｾｰﾌﾞしますか?
+t24=ﾊﾞｯﾌｧｰが変更されています。ｵｰﾌﾟﾝする前にｾｰﾌﾞしますか?
+t25=ｾｰﾌﾞすべき物がありません
+t26=ﾛｰﾄﾞするものがありません
+t27=印刷するものがありません
+t28=書き込みデータがありません
+t29=ﾍﾞﾘﾌｧｲデータがありません
+t30=ﾊﾞｽﾀｲﾐﾝｸﾞを調整します\n他のｱﾌﾟﾘｹｰｼｮﾝを走らせないでください
+t31=\n(CPUとﾊｰﾄﾞﾃﾞｨｽｸはｱｲﾄﾞﾙ状態に保ってください)\n調整に、数秒かかります.\n調整をしますか?
+t32=調整は正常に終了しました
+t33=調整に失敗しました
+t34=読み込み／書き込み作業をする前に、\nｵﾌﾟｼｮﾝﾒﾆｭｰの調整(Calibration)を実行してください
+t35=読み込み／書き込み作業をする前に、\nｵﾌﾟｼｮﾝﾒﾆｭｰのｾｯﾄｱｯﾌﾟを実行してください
+t36=読み込み中...
+t37=読み込み終了\nDevice Size:
+t38=ﾃﾞﾊﾞｲｽに書き込みしますか?\n以前の内容はすべて消去されます
+t39=書き込み中...
+t40=読み込み中...
+t41=書き込み成功
+t42=書き込み失敗
+t43=消去中...
+t44=消去成功
+t45=ﾍﾞﾘﾌｧｲできません, ﾃﾞﾊﾞｲｽがｾｯﾄされていないか、不良です
+t46=ﾍﾞﾘﾌｧｲ失敗
+t47=ﾍﾞﾘﾌｧｲ成功
+t48=ﾌﾟﾛｸﾞﾗﾑ成功
+t49=ﾌﾟﾛｸﾞﾗﾑ失敗
+t50=ﾃﾞﾊﾞｲｽリｾｯﾄ
+t51=ｾｷｭﾘﾃｨｰﾋﾞｯﾄの書き込み...
+t52=ｾｷｭﾘﾃｨｰﾋﾞｯﾄ書き込み失敗
+t53=ｾｷｭﾘﾃｨｰﾋﾞｯﾄ読み込み...
+t54=ｾｷｭﾘﾃｨｰﾋﾞｯﾄ読み込み失敗
+t55=ｺﾝﾌｨｸﾞﾚｰｼｮﾝﾋﾞｯﾄ読み込み...
+t56=ｺﾝﾌｨｸﾞﾚｰｼｮﾝﾋﾞｯﾄ読み込み失敗
+t57=ｺﾝﾌｨｸﾞﾚｰｼｮﾝﾋﾞｯﾄ書き込みs...
+t58=ｺﾝﾌｨｸﾞﾚｰｼｮﾝﾋﾞｯﾄ書き込み失敗
+t59=ｽｸﾘﾌﾟﾄｴﾗｰ line
+t60=不正なｺﾏﾝﾄﾞ
+t61=不正な引数
+t62=引数がありません
+t63=継続しますか?
+t64=ﾊﾞｯﾌｧｰがからです
+t65=この操作はｻﾎﾟｰﾄされていません
+t66=ﾊﾟﾗﾒｰﾀ挿入
+t67=不正なﾊﾟﾗﾒｰﾀです
+t68=ｺﾏﾝﾄﾞの実行中...
+t69=ﾃﾞﾊﾞｲｽﾌｧｲﾙ　Open
+t70=ﾌﾟﾛｸﾞﾗﾑ(FLASH)ﾌｧｲﾙ Open
+t71=データ(EEPROM)ﾌｧｲﾙ Open
+t72=ﾌｧｲﾙが見つかりません
+t73=ﾌｧｲﾙの保存に失敗しました
+t74=ﾃﾞﾊﾞｲｽﾌｧｲﾙを保存します
+t75=Save Program (FLASH) Content File As
+t76=Save Data (EEPROM) Content File As
+t77=Close last window: do you want to exit?
+t78=Buffer changed. Save it before closing?
+t79=Open script file
+//Menu entries
+//Main Menu
+t80=ﾌｧｲﾙ(&F)
+t81=編集(&E)
+t82=ﾃﾞﾊﾞｲｽ(&D)
+t83=ｺﾏﾝﾄﾞ(&C)
+t84=スクリプト(&p)
+t85=ﾕｰﾃｨﾘﾃｨｰ(&U)
+t86=ｾｯﾄｱｯﾌﾟ(&S)
+t87=ｵﾌﾟｼｮﾝ(&O)
+t88=&?
+//Menu File
+t89=新しいｳｲﾝﾄﾞｰ(&N)
+t90=ｵｰﾌﾟﾝﾃﾞﾊﾞｲｽﾌｧｲﾙ(&O)...
+t91=ｵｰﾌﾟﾝ &Program(FLASH) File...
+t92=ｵｰﾌﾟﾝﾃﾞｰﾀ &Data (EEPROM) File...
+t93=ｾｰﾌﾞﾃﾞﾊﾞｲｽﾌｧｲﾙ(&S)
+t94=ｾｰﾌﾞﾃﾞﾊﾞｲｽﾌｧｲﾙ(&As)...
+t95=ｾｰﾌﾞ ﾌﾟﾛｸﾞﾗﾑ(&FLASH) File As...
+t96=ｾｰﾌﾞﾃﾞｰﾀ(&EEPROM) File As...
+t97=ﾘﾛｰﾄﾞ(&R)
+t98=印刷(&t)...
+t99=ｸﾛｰｽﾞ(&C)
+t100=終了(&x)
+//Menu Edit
+t101=編集(&N)...
+t102=ﾊﾞｯﾌｧｰの編集(&f)
+//Menu Command
+t103=すべて読込(&R)
+t104=ﾌﾟﾛｸﾞﾗﾑ読込 (FLASH)
+t105=ﾃﾞｰﾀ読込 (EEPROM)
+t106=ｾｷｭﾘﾃｨｰ/ｺﾝﾌｨｸﾞﾚｰｼｮﾝﾋﾞｯﾄ読込(&S)
+t107=すべて書込(&W)
+t108=ﾌﾟﾛｸﾞﾗﾑ書込 (&FLASH)
+t109=ﾃﾞｰﾀ書込 (EEPROM)
+t110=ｾｷｭﾘﾃｨｰ/ｺﾝﾌｨｸﾞﾚｰｼｮﾝﾋﾞｯﾄ書込(&i)
+t111=全ﾍﾞﾘﾌｧｲ(&V)
+t112=ﾌﾟﾛｸﾞﾗﾑﾍﾞﾘﾌｧｲ (FLASH)
+t113=ﾃﾞｰﾀﾍﾞﾘﾌｧｲ (EEPROM)
+t114=ｾｷｭﾘﾃｨｰ/ｺﾝﾌｨｸﾞﾚｰｼｮﾝﾋﾞｯﾄﾍﾞﾘﾌｧｲ
+t115=消去(&E)
+t116=情報読込(&G)
+t117=ﾘｾｯﾄ(&t)
+t118=ﾌﾟﾛｸﾞﾗﾑ(&P)
+t119=ﾌﾟﾛｸﾞﾗﾑｵﾌﾟｼｮﾝ...
+//Menu Options
+t120=ｲﾝﾀｰﾌｪｰｽ設定(&I)...
+t121=調整(&C)
+t122=ﾘﾓｰﾄﾓｰﾄﾞ(&R)
+//Menu Utility
+t123=ﾊﾞｯﾌｧｸﾘｱ(&C)
+t124=ﾊﾞｯﾌｧｰﾌｨﾙ(&F)...
+t125=ﾀﾞﾌﾞﾙﾊﾞﾝｸ(&D)
+t126=ﾊﾞｲﾄｽﾜｯﾌﾟ(&B)
+t127=ｼﾘｱﾙﾅﾝﾊﾞｰｾｯﾄ(&N)
+t128=ｼﾘｱﾙﾅﾝﾊﾞｰ設定(&o)...
+//Menu Help
+t129=&Help
+t130=&About
+//Menu Options
+t131=ﾛｸﾞﾌｧｲﾙ(&L)...
+//Menu Script
+t132=編集(&E)...
+t133=ﾛｰﾄﾞ/実行(&L)...
+t134=自動ﾛｰﾄﾞ(&A)
+t135=&Run
+//Tool Bar
+//Dialog Messages
+t136=ﾃﾞﾊﾞｲｽType
+//Tool tips
+t137=ﾃﾞﾊﾞｲｽﾌｧｲﾙｵｰﾌﾟﾝ
+t138=ﾃﾞﾊﾞｲｽﾌｧｲﾙｾｰﾌﾞ
+t139=ﾊﾞｯﾌｧｰ印刷
+t140=ﾌｧｲﾙﾘﾛｰﾄﾞ
+t141=ﾃﾞﾊﾞｲｽﾘﾛｰﾄﾞ
+t142=ﾌﾟﾛｸﾞﾗﾑ(FLASH)ﾘﾛｰﾄﾞ
+t143=ﾃﾞｰﾀ(EEPROM)ﾘﾛｰﾄﾞ
+t144=ｾｷｭﾘﾃｨｰ/ｺﾝﾌｨｸﾞﾚｰｼｮﾝﾋﾞｯﾄ ﾘｰﾄﾞ
+t145=ﾃﾞﾊﾞｲｽ書込
+t146=ﾌﾟﾛｸﾞﾗﾑﾒﾓﾘｰ書込 (FLASH)
+t147=ﾃﾞｰﾀﾒﾓﾘｰ書込 (EEPROM)
+//
+t148=ﾌﾟﾛｸﾞﾗﾑﾒﾓﾘｰﾍﾞﾘﾌｧｲ (FLASH)
+t149=ﾃﾞｰﾀﾒﾓﾘｰﾍﾞﾘﾌｧｲ (EEPROM)
+t150=ｾｷｭﾘﾃｨｰ/ｺﾝﾌｨｸﾞﾚｰｼｮﾝﾋﾞｯﾄﾍﾞﾘﾌｧｲ
+t151=ﾃﾞﾊﾞｲｽﾌｧﾐﾘｰ選択
+t152=ﾃﾞﾊﾞｲｽﾀｲﾌﾟ選択
+t153=ﾃﾞﾊﾞｲｽﾉｰﾄ編集
+//Error Messages
+t154=ﾃﾞﾊﾞｲｽが応答しません
+t155=ﾃﾞﾊﾞｲｽ不正。正しいﾃﾞﾊﾞｲｽを選択してください
+t156=ﾃﾞﾊﾞｲｽが見つからないか、未知のﾃﾞﾊﾞｲｽです
+t157=検出できません。不正なﾃﾞﾊﾞｲｽか、ロックされています
+t158=ユーザー中断
+t159=COMポートが存在ません
+t160=I/O アクセスが拒否されました. I/Oアクセスにはrootになってください
+t161=ﾌﾟﾛｸﾞﾗﾑボードが見つかりません
+t162=ハードウエアエラーです。ボードは正しいですか?
+t163=ﾊﾞｽビジーか、ハードウエアエラーです
+t164=ﾃﾞﾊﾞｲｽからのAckが返りません
+t165=ﾃﾞﾊﾞｲｽがありません
+t166=タイムアウトしました
+t167=I2CBus Stop condition エラー (bad timing?)
+t168=書き込みエラー
+t169=ブランクチェックエラー
+t170=エラー n.
+t171=ｽｸﾘﾌﾟﾄｴﾗｰ
+//----Setup dialog
+//Dialog title
+t172=I/O port setup
+t173=Interface board Setup
+//Dialog messages
+t174=COM/LPT ｲﾝﾀｰﾌｪｰｽ
+t175=ｼﾘｱﾙ
+t176=ﾊﾟﾗﾚﾙ
+t177=ｲﾝﾀｰﾌｪｰｽ選択
+t178=ｲﾝﾀｰﾌｪｰｽﾀｲﾌﾟ
+t179=COM Port 選択
+t180=COM
+t183=LPT Port 選択
+t184=LPT
+t185=コントロールラインの極性選択
+t186=Invert Reset
+t187=Invert SCKL
+t188=Invert D-IN
+t189=Invert D-OUT
+//Tool tips
+t190=Select serial port COM
+t192=Select parallel port LPT
+//----Fill dialog
+//Dialog title
+t193=Fill Buffer
+//Dialog messages: NB should be of the same size (number of char)
+t194=From
+t195=To
+t196=Value
+//----Fuse dialog
+//Button captions
+t197=Clear All
+t198=Set All
+t199=Write
+t200=Read
+//Dialog title
+t201=ｺﾝﾌｨｸﾞﾚｰｼｮﾝとｾｷｭﾘﾃｨｰﾋﾞｯﾄ
+//Dialog messages: NB should be of the same size (number of char)
+t202=First Block to Lock
+t203=N.of Blocks to Lock
+t204=高耐久性 block
+//Tool tips
+t205=All bits to '0'
+t206=All bits to '1'
+t207=ﾃﾞﾊﾞｲｽに書込
+t208=ﾃﾞﾊﾞｲｽ読込
+//----Info dialog
+//Button captions
+t209=Close
+//Dialog title
+t210=ﾃﾞﾊﾞｲｽ Info
+//Dialog messages
+t211=Bank roll-over capability:
+t212=Size:
+t213=CRC:
+t214=Security block:
+t215=High endurance block:
+//----Char Edit dialog
+//Dialog title
+t216=ﾊﾞｯﾌｧｰの編集
+//Dialog messages: NB should be of the same size (number of char)
+t217=Hex
+t218=Decimal
+t219=Char
+t220=新しい値を挿入
+t221=文字列を挿入
+//Tool tips
+t222=16進数
+t223=10進数
+t224=Char value
+//----Program Option dialog
+//Dialog title
+t225=ﾌﾟﾛｸﾞﾗﾑｵﾌﾟｼｮﾝ
+//Dialog messages
+t226=ﾘﾛｰﾄﾞ
+t227=ﾘｰﾄﾞﾒﾓﾘｰ(FLASH)
+t228=ﾘｰﾄﾞﾒﾓﾘｰ(EEPROM)
+t229=ﾘｰﾄﾞ ｼﾘｱﾙﾅﾝﾊﾞｰ
+t230=Byte Swap
+t231=ｼﾘｱﾙﾅﾝﾊﾞｰ設定
+t232=Erase
+t233=メモリ書込 (FLASH)
+t234=メモリ書込 (EEPROM)
+t235=ｾｷｭﾘﾃｨｰ/ｺﾝﾌｨｸﾞﾋﾞｯﾄ書込
+t236=ｾｷｭﾘﾃｨｰ/ｺﾝﾌｨｸﾞﾋﾞｯﾄﾍﾞﾘﾌｧｲ
+//----Serial Number dialog
+//Dialog title
+t237=ｼﾘｱﾙﾅﾝﾊﾞｰ設定
+//Dialog messages: NB should be of the same size (number of char)
+t238=Address
+t239=Size
+t240=Value
+t241=Format
+//next 2 probably can't be translated
+t242=Little endian
+t243=Big endian
+t244=Data memory offset
+//Tool tips
+t245=Memory address
+t246=Size in bytes
+t247=Next value to be used
+t248=Assume the Address relative to Data memory instead of Program memory
+t249=Most significant Byte at high address
+t250=Most significant Byte at low address
+//----Retry dialog
+//Button captions
+t251=Abort
+t252=Retry
+t253=Ignore
+//Dialog title
+t254=警告
+//----Notes dialog
+//Dialog title
+t255=Edit Device Notes
+//----Progress dialog
+//Dialog title
+t256=ｽﾃｰﾀｽ
+//----Hardware check dialog
+t257=ﾊｰﾄﾞｳｴｱﾁｪｯｸ
+//----About dialog
+t258=音を無効にする
+//---- Oscillator Calibration Byte
+t260=ｵｼﾚｰﾀ調整用ﾃﾞｰﾀ
+t261=ｵｼﾚｰﾀ調整用ﾃﾞｰﾀ読込
+t262=ｵｼﾚｰﾀ調整ｵﾌﾟｼｮﾝ...
+t263=ｵｼﾚｰﾀ調整用ﾃﾞｰﾀ読込　成功
+t264=ﾁｯﾌﾟID
+t265=Note
+t266=EEPROM Size
+t267=FLASH Size
+t268=Auto Increment
+t269=ｼﾘｱﾙﾅﾝﾊﾞｰは'set serial number'操作をしたとき+1する
+t270=Can't know bank roll-over without modify and write, do you want to write?
+t271=ﾊﾞｯﾌｧｰが変更されました.ｾｰﾌﾞしますか?
+t272=ﾌﾟﾛｸﾞﾗﾑﾒﾓﾘｰ(FLASH)ｵｰﾌﾟﾝ
+t273=ﾃﾞｰﾀﾒﾓﾘｰ(EEPROM) ｵｰﾌﾟﾝ
+t274=ﾌﾟﾛｸﾞﾗﾑﾒﾓﾘ(FLASH) 保存
+t275=ﾃﾞｰﾀﾒﾓﾘｰ (EEPROM) 保存
+t276=新しいｳｲﾝﾄﾞｰ
+t277=Launch program cycle
+t278=ｽｸﾘﾌﾟﾄ実行
+t279=ｾｯﾄｱｯﾌﾟﾀﾞｲｱﾛｸﾞ
+t280=ﾃﾞﾊﾞｲｽ消去(FF)
+t281=ｾｷｭﾘﾃｨｰ/ｺﾝﾌｨｸﾞﾚｰｼｮﾝﾋﾞｯﾄ(&B)...
+t282=ｾｷｭﾘﾃｨｰ/ｺﾝﾌｨｸﾞﾚｰｼｮﾝﾋﾞｯﾄ
+//These strings are added to the 'Configuration and security bits' dialog to explain
+t283=Refer to device datasheet, please
+t284=Checked items means programmed
+t285=UnChecked items means unprogrammed

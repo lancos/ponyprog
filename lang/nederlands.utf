@@ -1,0 +1,339 @@
+LANGUAGE_NAME
+nederlands
+LANGUAGE_CHARSET
+UTF-8
+t0=Nederlands
+t1=Vertaald door:
+t2=Roel Aerts\nFrank Hamaekers
+t3=Serieel Device Programmer
+t4=Download laatste versie van
+t5=op het adres:
+t6=Zonder Naam
+//Button captionsate
+t7=OK
+t8=Afbreken
+t9=Help
+t10=Test
+t12=Note
+t13=Bewerken
+//Dialog messages
+t14=Versie
+t15=Ja
+t16=Nee
+t17=Ok
+t18=Test
+t19=Mislukt
+t20=Over
+t21=Pagina
+t22=Onbekend
+t23=Buffer \"%s\"verandert. Schrijf het weg voor het sluiten?
+t24=Buffer verandert. Schrijf het weg voor het openen?
+t25=Niets weg te schrijven
+t26=Niets te laden
+t27=Niets te printen
+t28=Niets te schrijven
+t29=Niets te vergelijken
+t30=Bus timing calibreren.\nLet op dat er geen applikaties lopen behalve
+t31=\n(de CPU en de hard disk niet inbedrijf)\nDe calibratie duurt enkele seconden.\nWil je nu calibreren?
+t32=Calibratie OK
+t33=Calibratie mislukt
+t34=Je moet calibreren van uit het Opties menu\nvoor enige lees/schrijf operatie
+t35=Je moet eerst Setup uitvoeren in het Opties menu\nvoor enige lees/schrijf operatie
+t36=Lezen...
+t37=Lezen geslaagd\nDevice grootte:
+t38=Weet je zeker het device te beschrijven?\nDe huidige inhoud gaat verloren
+t39=Schrijven...
+t40=Vegelijken...
+t41=Beschrijven gelukt
+t42=Beschrijven mislukt
+t43=Wissen...
+t44=Wissen gelukt
+//t40=Vergelijken...
+t45=Kan niet vergelijken, device weg of slecht device
+t46=Vergelijken mislukt
+t47=Vergelijken gelukt
+t48=Programma gelukt
+t49=Programma mislukt
+t50=Device resetten
+t51=Schrijf beveiliging bits...
+t52=Beveiliging bits schrijven mislukt
+t53=Lees security bits...
+t54=Configuratie bits lezen mislukt
+t55=Lees configuratie bits...
+t56=Configuratie bits lezen mislukt
+t57=Schrijf configuratie bits...
+t58=Configuratie bits schrijven mislukt
+t64=Buffer leeg
+t65=Operatie niet ondersteunt
+t66=Geef parameters in
+t67=Verkeerde parameters
+t68=Accepteer commando...
+t69=Open device inhouds file
+t72=File niet gevonden
+t73=File save mislukt
+t74=Schrijf Device inhouds file weg als
+t75=Schrijf Programma (FLASH) inhouds file weg als
+t76=Schrijf Data (EEPROM) inhouds file weg  als
+t77=Sluit laatste venster: wil je sluiten?
+t78=Buffer verandert. Eerst weg schrijven dan sluiten?
+//Menu entries
+//Main Menu
+t80=&Bestand
+t81=&Bewerken
+t82=&Device
+t83=&Commando
+t85=&Utility
+t86=&Instellingen
+t87=&Opties
+t88=&?
+//Menu File
+t89=&Nieuw Venster
+t90=&Open device bestand...
+t91=Open &programma (FLASH) bestand...
+t92=Open &data (EEPROM) bestand...
+t93=&Schrijf device bestand weg
+t94=Schrijf device bestand weg &als...
+t95=Schrijf programma (&FLASH) bestand weg als...
+t96=Schrijf data (&EEPROM) bestand weg als...
+t97=&Herlaad bestand
+t98=&Afdrukken...
+t99=&Sluiten
+t100=&Einde
+//Menu Edit
+t101=Bewerken &Noteer...
+t102=Bewerken Bu&ffer mogelijk
+//Menu Command
+t103=&Lees alles
+t104=Lees programma (FLASH)
+t105=Lees data (EEPROM)
+t106=Lees &beveiliging en configuratie bits
+t107=&Beschrijf alles
+t108=Beschrijf programma (&FLASH)
+t109=Beschrijf data (EEPROM)
+t110=Be&schrijf beveiliging and configuratie bits
+t111=&Vergelijk Alles
+t112=Vergelijk Programma (FLASH)
+t113=Vergelijk Data (EEPROM)
+t114=Vergelijk& Beveiliging en Configuratie Bits
+t115=&Wissen
+t116=&Haal Info
+t117=Rese&t
+t118=&Programma
+t119=Programma Opties...
+//Menu Options
+t120=&Interface instellingen...
+t121=&Calibratie
+t122=&Bedien op afstand
+//Menu Utility
+t123=&Maak Buffer leeg
+t124=&Vull Buffer...
+t125=&Doubleer Bank
+t126=&Byte Omruilen
+t127=Zet Serie&nummer
+t128=Serienummer Instellen...
+//Menu Help
+t129=&Help
+t130=&Info
+//Menu Options
+t131=&Logbestand...
+//Tool Bar
+//Dialog Messages
+t136=Dev.Type
+//Tool tips
+t137=Open Device bestand
+t138=Schrijf Device bestand weg
+t139=Print Buffer
+t140=Herlaad bestanden
+t141=Lees Device
+t142=Lees Programma Geheugen (FLASH)
+t143=Lees Data Geheugen (EEPROM)
+t144=Lees Beveiliging en Configuratie Bits
+t145=Beschrijf Device
+t146=Beschrijf Programma Geheugen (FLASH)
+t147=Beschrijf Data Geheugen (EEPROM)
+t148=Vergelijk Programma Geheugen (FLASH)
+t149=Vergelijk Data Geheugen (EEPROM)
+t150=Vergelijk Beveiliging en Configuratie Bits
+t151=Selecteer device family
+t152=Selecteer device type
+t153=Bewerk device notities
+//Error Messages
+t154=Device Antwoord Niet
+t155=Slecht device, selecteer het goede type
+t156=Device niet aanwezig of onbekend device
+t157=Geen toegang, slecht device of device gesloten
+t158=Door Gebruiker gestopt
+t159=Communicatie poort niet beschikbaar
+t160=I/O toegang afgewezen. Je moet Administrator zijn voor I/O toegang
+t161=Programmeer hardware niet gevonden
+t162=Hardware fout, is het goed aangesloten?
+t163=Bus bezig of hardware fout
+t164=Geen terugmelding van het device
+t165=Device niet aanwezig
+t166=Timeout van de bus
+t167=I2CBus Stop conditie fout (slechte timing?)
+t168=Schrijf fout
+t169=Leeg check fout
+t170=Fout nr.
+//----Setup dialog
+//Dialog title
+t172=I/O poort instelling
+t173=Interface board instelling
+//Dialog messages
+t174=COM/LPT interface
+t175=Serieel
+t176=Parallel
+t177=Interface selectie
+t178=Interface type
+t179=COM Poort selectie
+t180=COM
+t183=LPT Poort selectie
+t184=LPT
+t185=Selecteer Polariteit van de besturingslijnen
+t186=Invert Reset
+t187=Invert SCKL
+t188=Invert D-IN
+t189=Invert D-OUT
+//Tool tips
+t190=Selecteer seriële poort COM
+t192=Selecteer parallelle poort LPT
+//----Fill dialog
+//Dialog title
+t193=Vul Buffer
+//Dialog messages: NB should be of the same size (number of char)
+t194=Van
+t195=Naar
+t196=Waarde
+//----Fuse dialog
+//Button captions
+t197=Wis Alles
+t198=Zet Alles
+t199=Schrijf
+t200=Lees
+//Dialog title
+t201=Configuratie en Beveiliging bits
+//Dialog messages: NB should be of the same size (number of char)
+t202=Eerste Blok op Slot
+t203=N. Bloks op Slot
+t204=High endurance blok
+//Tool tips
+t205=Alle bits op '0'
+t206=Alle bits op '1'
+t207=Schrijf bits naar het device
+t208=Lees bits van het device
+//----Info dialog
+//Button captions
+t209=Sluit
+//Dialog title
+t210=Device Info
+//Dialog messages
+t211=Bank verwissel mogelijkheid:
+t212=Grootte:
+t213=CRC:
+t214=Beveiliging blok:
+t215=High endurance blok:
+//----Char Edit dialog
+//Dialog title
+t216=Bewerk Buffer
+//Dialog messages: NB should be of the same size (number of char)
+t217=Hex
+t218=Decimaal
+t219=Karakter
+//Tool tips
+t222=Hexadecimale waarde
+t223=Decimale waarde
+t224=Kar. waaarde
+//----Program Option dialog
+//Dialog title
+t225=Programma keuze's
+//Dialog messages
+t226=Herlaad bestanden
+t227=Lees programma geheugen (FLASH)
+t228=Lees data geheugen (EEPROM)
+t229=Lees serienummer
+t230=Byte verruilen
+t231=Zet serienummer
+t232=Wis
+t233=Beschrijf programma geheugen (FLASH)
+t234=Beschrijf bata geheugen (EEPROM)
+t235=Beschrijf beveiliging en configuratie bits
+t236=Vergelijk beveiliging en configuratie bits
+//----Serial Number dialog
+//Dialog title
+t237=Serienummer configuratie
+//Dialog messages: NB should be of the same size (number of char)
+t238=Adres
+t239=Grootte
+t240=Waarde
+t241=Formaat
+//next 2 probably can't be translated
+t242=Lage ending
+t243=Hoge ending
+t244=Data Geheugen offset
+//Tool tips
+t245=Geheugen adres
+t246=Grootte in bytes
+t247=Volgende Waarde om te gebruiken
+t248=Neem het Adres relatief aan Data geheugen in plaats van Programma geheugen
+t249=Meest significante Byte op hoge adres
+t250=Meest significante Byte op laag adres
+//----Retry dialog
+//Button captions
+t251=Afbreken
+t252=Opnieuw
+t253=Negeren
+//Dialog title
+t254=Let op
+//----Notes dialog
+//Dialog title
+t255=Bewerk Device Notities
+//----Progress dialog
+//Dialog title
+t256=Status
+//Script
+t84=Scri&pt
+t132=&Bewerken...
+t133=&Laden en uitvoeren...
+t134=&Automatisch laden
+t135=&Uitvoeren
+t59=Script-fout op regel
+t60=Verkeerde opdracht
+t61=Verkeerd argument
+t62=Argument niet aanwezig
+t63=Wilt u doorgaan?
+t79=Script-bestand openen
+t171=Script-fout
+t70=Inhoud programma-bestand (FLASH) openen
+t71=Inhoud data-bestand (EEPROM) openen
+t220=Vul de nieuwe waarde in
+t221=Geef de tekst op van positie
+t258=Geen geluid
+//---- Oscillator Calibration Byte
+t260=Oscillator kalibratie-byte
+t261=Osc. kalibratie-byte lezen
+t262=Osc. kalibratie opties...
+t263=Osc. kalibratie-byte succesvol gelezen
+t264=Chip Identificatie
+t265=Notitie
+t266=EEPROM grootte
+t267=FLASH grootte
+t268=Automatisch ophogen
+t269=Verhoog het serienummer na elke 'set serial number' operatie
+t270=Bank roll-over onbekend zonder modificeren en schrijven, wilt u schrijven?
+t271=Buffer veranderd. Opslaan voor lezen?
+t272=Laad Programma Geheugen (FLASH) Bestand
+t273=Laad Data Geheugen (EEPROM) Bestand
+t274=Bewaar Programma Geheugen (FLASH) Bestand
+t275=Bewaar Data Geheugen (EEPROM) Bestand
+t276=Nieuw venster
+t277=Start programmeer cyclus
+t278=Uitvoeren script
+t279=Open instellingen dialoog
+t280=Wis hele device naar FF
+//"Device"can be translated to"apparaat", however earlier translations speak of device, so I did the same here.
+t281=Beveiliging en Configuratie &Bits...
+t282=Beveiliging en Configuratie Bits
+//These strings are added to the 'Configuration and security bits' dialog to explain
+t283=Zie gegevensblad van device a.u.b.
+t284=Aangevinkt betekent geprogrammeerd
+t285=Niet aangevinkt betekent niet geprogrammeerd

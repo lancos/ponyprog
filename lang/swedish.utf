@@ -1,0 +1,342 @@
+LANGUAGE_NAME
+swedish
+LANGUAGE_CHARSET
+UTF-8
+t0=swedish
+//Fill this with your reference, if it's empty""it will be invisible
+t1=Översättning av:
+t2=R. Sundquist & T. Backlund, reviderad av HE
+t3=Seriell programmerare
+t4=Ladda hem den senaste versionen av
+t5=på adressen:
+t6=Inget namn
+//Button captions
+t7=OK
+t8=Avbryt
+t9=Help
+t10=Testa
+t11=Testar hårdvara
+t12=Anmärkning
+t13=Ändra
+//Dialog messages
+t14=Version
+t15=Ja
+t16=Nej
+t17=Ok
+t18=Testa
+t19=Misslyckades
+t20=Om
+t21=Sida
+t22=Okänt
+t23=Buffert \"%s\"ändrad. Spara innan avslut?
+t24=Buffert ändrad. Spara innan öppning?
+t25=Inget att spara
+t26=Inget att öppna
+t27=Inget att skriva ut
+t28=Inget att skriva
+t29=Inget att verifiera
+t30=Busstidskalibrering.\nKontrollera att inga andra applikationer körs förutom
+t31=\n(CPU:n och hårddisken måste vara i viloläge)\nKalibreringen kan ta några sekunder.\nVill du starta kalibreringen nu?
+t32=Kalibrering OK
+t33=Kalibreringen misslyckades
+t34=Kalibreringen måste köras från menyn Alternativ\nföre någon läs/skriv-operation
+t35=Setup måste köras från menyn Alternativ\nföre någon läs/skriv-operation
+t36=Läser...
+t37=Inläsning lyckades\nStorlek:
+t38=Är du säker på att du vill göra en inläsning?\nAll tidigare information kommer att förstöras
+t39=Skriver...
+t40=Verifierar...
+t41=Skrivningen lyckades
+t42=Skrivningen misslyckades
+t43=Raderar...
+t44=Raderingen lyckades
+t45=Kan inte verifiera, enheten saknas eller defekt
+t46=Verifieringen misslyckades
+t47=Verifieringen lyckades
+t48=Programmeringen lyckades
+t49=Programmeringen misslyckades
+t50=Enhet återställd
+t51=Skriver säkerhetsbitar...
+t52=Skrivning av säkerhetsbitar misslyckades
+t53=Läser säkerhetsbitar...
+t54=Inläsning av säkerhetsbitar misslyckades
+t55=Läser konfigurationsbitar...
+t56=Inläsning av konfigurationsbitar misslyckades
+t57=Skriver konfigurationsbitar...
+t58=Skrivning av konfigurationsbitar misslyckades
+t59=Skriptfel på rad
+t60=Felaktigt kommando
+t61=Felaktig parameter
+t62=Parameter saknas
+t63=Vill du fortsätta?
+t64=Buffert tom
+t65=Stöd saknas för operationen
+t66=Infoga parameter
+t67=Felaktig parameter
+t68=Kommandon accepterade...
+t69=Öppna Fil
+t70=Öppna Programfil (FLASH)
+t71=Öppna Datafil (EEPROM)
+t72=Filen hittades inte
+t73=Filen gick inte att spara
+t74=Spara Fil som...
+t75=Spara Programfilen (FLASH) som...
+t76=Spara Datafilen (EEPROM) som...
+t77=Stäng senaste fönster: vill du avsluta?
+t78=Buffert ändrad. Spara innan avslut?
+t79=Öppnar skriptfil
+//Menu entries
+//Main Menu
+t80=&Arkiv
+t81=&Redigera
+t82=&Enhet
+t83=&Kör
+t84=Skri&pt
+t85=&Verktyg
+t86=&Setup
+t87=&Alternativ
+t88=&?
+//Menu File
+t89=&Nytt Fönster
+t90=&Öppna Fil...
+t91=Öppna &Programfil (FLASH)...
+t92=Öppna &Datafil (EEPROM)...
+t93=&Spara Fil
+t94=Spara Fil so&m...
+t95=Spara Programfil (&FLASH) som...
+t96=Spara Datafil (&EEPROM) som...
+t97=Öppna i&gen
+t98=Skriv &ut...
+t99=St&äng
+t100=A&vsluta
+//Menu Edit
+t101=&Redigeringsanteckning...
+t102=Aktivera &bufferredigering
+//Menu Command
+t103=&Läs alla
+t104=Läs Program (FLASH)
+t105=Läs Data (EEPROM)
+t106=Läs säkerhets- och ko&nfigurationsbitar
+t107=Skr&iv alla
+t108=Skriv Program (&FLASH)
+t109=Skriv Data (EEPROM)
+t110=Skriv säkerhets- och konfig&urationsbitar
+t111=&Verifiera alla
+t112=Verifiera Program (FLASH)
+t113=Verifiera Data (EEPROM)
+t114=Verif&iera säkerhets- och konfigurationsbitar
+t115=&Radera
+t116=&Information
+t117=&Återställ
+t118=&Program
+t119=Programalternativ...
+//Menu Options
+t120=&Gränssnitt...
+t121=&Kalibrering
+t122=&Fjärrläge
+//Menu Utility
+t123=&Radera buffert
+t124=&Fyll buffert...
+t125=&Dubbla bank
+t126=&Byte swap
+t127=Välj serialnu&mmer
+t128=Serienummer k&onfiguration...
+//Menu Help
+t129=&Hjälp
+t130=&Om
+//Menu Options
+t131=&Loggfil...
+//Menu Script
+t132=&Redigera...
+t133=&Ladda och kör...
+t134=&Autoladda
+t135=&Kör
+//Tool Bar
+//Dialog Messages
+t136=Enhetstyp
+//Tool tips
+t137=Öppna fil
+t138=Spara fil
+t139=Skriv ut buffert
+t140=Ladda om filer
+t141=Läs enhet
+t142=Läs Programminne (FLASH)
+t143=Läs Dataminne (EEPROM)
+t144=Läs säkerhets- och konfigurationsbitar
+t145=Skriv enhet
+t146=Skriv Programminne (FLASH)
+t147=Skriv Dataminne (EEPROM)
+t148=Verifiera Programminne (FLASH)
+t149=Verifiera Dataminne (EEPROM)
+t150=Verifiera säkerhets- och konfigurationsbitar
+t151=Välj enhetsfamilj
+t152=Välj enhetstyp
+t153=Redigera enhetsnotering
+//Error Messages
+t154=Enheten svarar inte
+t155=Felaktig enhet, välj rätt typ
+t156=Enheten är okänd eller saknas
+t157=Går ej att testa, felaktig enhet eller låst
+t158=Användaren avbryter
+t159=Kommunikationsporten otillgänglig
+t160=I/O-tillträde saknas. Du måste vara root för att tillgå I/O
+t161=Programmeringskortet hittades ej
+t162=Hårdvarufel, är kortet korrekt kopplat?
+t163=Bussen upptagen eller hårdvarufel
+t164=Saknar bekräftelse från enheten
+t165=Saknar enhet
+t166=Timeout på bussen
+t167=I2CBus error (felaktig timing?)
+t168=Skrivfel
+t169=Tomt checkfel
+t170=Fel n.
+t171=Skriptfel
+//----Setup dialog
+//Dialog title
+t172=I/O portsetup
+t173=Kortsetup
+//Dialog messages
+t174=COM/LPT gränssnitt
+t175=Seriell
+t176=Parallel
+t177=Gränssnitt
+t178=Gränssnittstyp
+t179=COM-portsval
+t180=COM
+t183=LPT-portsval
+t184=LPT
+t185=Välj polaritet på kontrolllinorna
+t186=Invertera Reset
+t187=Invertera SCKL
+t188=Invertera D-IN
+t189=Invertera D-OUT
+//Tool tips
+t190=Välj COM
+t192=Välj LPT
+//----Fill dialog
+//Dialog title
+t193=Fyll buffert
+//Dialog messages: NB should be of the same size (number of char)
+t194=Från
+t195=Till
+t196=Värde
+//----Fuse dialog
+//Button captions
+t197=Radera allt
+t198=Välj allt
+t199=Skriv
+t200=Läs
+//Dialog title
+t201=Konfigurations- och säkerhetsbitar
+//Dialog messages: NB should be of the same size (number of char)
+t202=Första blocket att låsa
+t203=Antal block att låsa
+t204=High endurance block
+//Tool tips
+t205=Alla bitar till '0'
+t206=Alla bitat till '1'
+t207=Skriv bitar till enhet
+t208=Läs bitar från enhet
+//----Info dialog
+//Button captions
+t209=Stäng
+//Dialog title
+t210=Enhetsinformation
+//Dialog messages
+t211=Bank roll-over-förmåga:
+t212=Storlek:
+t213=CRC:
+t214=Säkerhetsblock:
+t215=High endurance block:
+//----Char Edit dialog
+//Dialog title
+t216=Redigera buffert
+//Dialog messages: NB should be of the same size (number of char)
+t217=Hex
+t218=Decimal
+t219=Char
+t220=Infoga nytt värde
+t221=Skriv text från adressen
+//Tool tips
+t222=Hexadecimalt värde
+t223=Decimalt värde
+t224=Char-värde
+//----Program Option dialog
+//Dialog title
+t225=Programalternativ
+//Dialog messages
+t226=Ladda om filer
+t227=Läs programminne (FLASH)
+t228=Läs dataminne (EEPROM)
+t229=Läs serienummer
+t230=Byte Swap
+t231=Välj serienummer
+t232=Radera
+t233=Skriv programminne (FLASH)
+t234=Skriv dataminne (EEPROM)
+t235=Skriv säkerhets- och konfigurationsbitar
+t236=Verifiera säkerhets- och konfigurationsbitar
+//----Serial Number dialog
+//Dialog title
+t237=Serienummerinställning
+//Dialog messages: NB should be of the same size (number of char)
+t238=Adress
+t239=Storlek
+t240=Värde
+t241=Format
+//next 2 probably can't be translated
+t242=Little endian
+t243=Big endian
+t244=Dataminnes-offset
+//Tool tips
+t245=Minnnesadress
+t246=Storlek i bytes
+t247=Nästa värde
+t248=Antag Adressen relativt till Dataminnet iställetför Programminnet
+t249=Mest signifikanta bit på hög adress
+t250=Mest signifikanta bit på låg adress
+//----Retry dialog
+//Button captions
+t251=Avbryt
+t252=Försök igen
+t253=Ignorera
+//Dialog title
+t254=Varning
+//----Notes dialog
+//Dialog title
+t255=Redigera enhetsnotering
+//----Progress dialog
+//Dialog title
+t256=Status
+//----Hardware check dialog
+t257=Hårdvarukontroll
+//----About dialog
+t258=Koppla bort ljud
+//---- Oscillator Calibration Byte
+t260=Oscillator-kalibreringsbyte
+t261=Läs Osc.kalibreringsbyte
+t262=Osc.kalibrering Alternativ...
+t263=Läsning av Osc.kalibreringsbyte lyckades
+t264=Chip Id
+t265=Notering
+t266=EEPROM-storlek
+t267=FLASH-storlek
+t268=Automatisk ökning
+t269=Öka serienumret efter varje 'Välj serienummer'-operation
+t270=Kan inte veta 'bank roll-over' utan att skriva, vill du skriva?
+t271=Buffert ändrad. Spara innan läsning?
+t272=Öppna Program Minnes (FLASH) Fil
+t273=Öppna Data Minnes (EEPROM) Fil
+t274=Spara Program Minnes (FLASH) Fil
+t275=Spara Data Minnes (&EEPROM) Fil
+t276=Nytt Fönster
+t277=Kör program cycle
+t278=Kör script
+t279=Instälningar
+t280=Radera Hela enheten (till FF)
+t281=Säkerhet och Konfigurations&bitar...
+t282=Säkerhet och Konfigurationsbitar
+//These strings are added to the 'Configuration and security bits' dialog to explain
+t283=Referera till enhetens datablad, tack
+t284=Markerade objekt är programmerade
+t285=Omarkerade objekt är ej programmerade

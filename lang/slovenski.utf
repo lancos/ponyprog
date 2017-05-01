@@ -1,0 +1,338 @@
+LANGUAGE_NAME
+slovenski
+LANGUAGE_CHARSET
+UTF-8
+t0=Slovenski
+t1=Translator Credits:
+t2=
+t3=Programator Serijskih Naprav
+t4=Zadnjo razlièico
+t5=snemite na naslovu:
+t6=No Name
+//Button captions
+t7=V redu
+t8=Preklièi
+t9=Pomoè
+t10=Preizkus
+t12=Opomba
+t13=Uredi
+//Dialog messages
+t14=Razlièica
+t15=Da
+t16=Ne
+t17=V redu
+t18=Test
+t19=Ni uspel
+t20=Vizitka
+t21=Stran
+t22=Neznan
+t23=Vsebina \"%s\"je spremenjena. Ali elite shraniti spremembe pred zapiranjem?
+t24=Vsebina je spremenjena. Ali elite shraniti spremembe pred odpiranjem?
+t25=Niè ni za shranit
+t26=Niè ni za naloit
+t27=Niè ni za natisnit
+t28=Niè ni za vpisat
+t29=Niè ni za preverit
+t30=Èasovno kalibriranje vodila.\nPreprièajte se, da trenutno ne teèe noben drug program razen
+t31=\n(CPE in trdi disk morata biti v reimu mirovanja)\nKalibriranje lahko traja nekaj sekund.\nAli elite sedaj zagnati kalibriranje?
+t32=Kalibriranje uspelo
+t33=Kalibriranje ni uspelo
+t34=Pred postopkom Branja/Pisanja morate zagnati\nKalibriranje iz menuja Monosti
+t35=Pred postopkom Branja/Pisanja morate zagnati\nNastavitve iz menuja Monosti
+t36=Berem...
+t37=Branje uspeno\nVelikost Naprave:
+t38=Ali ste preprièani, da elite pisati v napravo ?\nVsa predhodna vsebina bo izgubljena
+t39=Vpisujem...
+t40=Preverjam...
+t41=Vpis uspeen
+t42=Vpis neuspeen
+t43=Briem...
+t44=Brisanje uspeno
+//t40=Preverjam...
+t45=Ne morem preveriti, naprava manjka ali pa je pokvarjena
+t46=Preverjanje neuspeno
+t47=Preverjanje uspeno
+t48=Programiranje uspeno
+t49=Programiranje neuspeno
+t50=Naprava resetirana
+t51=Vpisujem varnostne bite...
+t52=Vpis varnostnih bitov neuspeen
+t53=Berem varnostne bite...
+t54=Branje konfiguracijskih bitov neuspeno
+t55=Berem konfiguracijske bite...
+t56=Branje konfiguracijskih bitov neuspeno
+t57=Vpisujem konfiguracijske bite...
+t58=Vpisovanje konfiguracijskih bitov neuspeno
+t64=Prazen pomnilnik
+t65=Operacija ni podprta
+t66=Vstavi parametre
+t67=Slabi parametri
+t68=Sprejemam ukaze...
+t69=Odpri datoteko z vsebino naprave
+t72=Datoteke ni mogoèe najti
+t73=Ne morem shraniti datoteke
+t74=Shrani Datoteko z Vsebino Naprave kot
+t75=Shrani Datoteko s Programom (FLASH) kot
+t76=Shrani Datoteko s Podatki (EEPROM) kot
+t77=Zapirate zadnje okno: ali elite konèati?
+t78=Vsebina pomnilnika je spremenjena. Ali elite shraniti spremembe pred zapiranjem?
+//Menu entries
+//Main Menu
+t80=&Datoteka
+t81=&Uredi
+t82=&Naprava
+t83=U&kaz
+t85=&Orodja
+t86=N&astavitve
+t87=&Monosti
+t88=&Pomoè
+//Menu File
+t89=&Novo Okno
+t90=&Odpri Datoteko Naprave...
+t91=Odpri datoteko s &Programom (FLASH) ...
+t92=Odpri datoteko s &Po&datki (EEPROM) ...
+t93=&Shrani Datoteko z Vsebino Naprave
+t94=Shrani Datoteko z Vsebino Naprave &kot...
+t95=Shrani Datoteko s Programom (&FLASH) kot...
+t96=Shrani Datoteko s Podatki (&EEPROM) kot...
+t97=&Ponovno naloi Datoteke
+t98=Na&tisni...
+t99=&Zapri
+t100=Iz&hod
+//Menu Edit
+t101=Uredi &Opombo...
+t102=Urejanje Po&mnilnika omogoèeno
+//Menu Command
+t103=&Preberi Vse
+t104=Beri Program (FLASH)
+t105=Beri Data (EEPROM)
+t106=Beri V&arnostne in Konfiguracijske Bite
+t107=&Vpii Vse
+t108=Vpii Program (&FLASH)
+t109=Vpii Podatke (&EEPROM)
+t110=Vp&ii Varnostne in Konfiguracijske Bite
+t111=P&reveri Vse
+t112=Preveri Program (FLASH)
+t113=Preveri Podatke (EEPROM)
+t114=Preveri Varnostne in Konfiguracijske Bite
+t115=&Zbrii
+t116=Pridobi Po&datke
+t117=Rese&tiraj
+t118=&Programiraj
+t119=Monosti Programiranja...
+//Menu Options
+t120=&Nastavitve Vmesnika...
+t121=&Kalibriranje
+t122=&Oddaljen reim
+//Menu Utility
+t123=&Zbrii Pomnilnik
+t124=&Napolni Pomnilnik...
+t125=&Podvoji Banko
+t126=&Zamenjaj Bajta
+t127=Doloèi &Serijsko tevilko
+t128=N&astavitve serijske tevilke...
+//Menu Help
+t129=&Vsebina
+t130=V&izitka
+//Menu Options
+t131=&Dnevnik...
+//Tool Bar
+//Dialog Messages
+t136=Tip Naprave
+//Tool tips
+t137=Odpri Datoteko Naprave
+t138=Shrani Datoteko naprave
+t139=Natisni Vsebino pomnilnika
+t140=Ponovno naloi Datoteke
+t141=Beri Napravo
+t142=Beri Programski Pomnilnik (FLASH)
+t143=Beri Podatkovni Pomnilnik (EEPROM)
+t144=Beri Varnostne in Konfiguracijske Bite
+t145=Pii v Napravo
+t146=Pii v Programski Pomnilnik (FLASH)
+t147=Pii v Podatkovni pomnilnik (EEPROM)
+t148=Preveri Programski pomnilnik (FLASH)
+t149=Preveri Podatkovni pomnilnik (EEPROM)
+t150=Preveri Varnostne in Konfiguracijske Bite
+t151=Izberi druino naprave
+t152=Izberi tip naprave
+t153=Uredi opombe naprav
+//Error Messages
+t154=Naprava se ne odziva
+t155=Slaba naprava, izberite pravilen tip
+t156=Naprava ni prisotna ali pa je tip neznan
+t157=Ne morem preizkusiti, naprava je slaba ali pa je zaklenjena
+t158=Prekinitev s strani uporabnika
+t159=Komunikacijska vrata niso na voljo
+t160=V/I dostop zavrnjen. Za to operacijo morate biti administrator
+t161=Ne morem zaznati ploèe programatorja
+t162=Napaka v aparaturni opremi, ali je ploèa prikljuèena pravilno?
+t163=Vodilo zasedene ali pa je napaka v aparaturni opremi
+t164=Manjka Potrditev (Acknowledge) iz naprave
+t165=Naprava ni prisotna
+t166=Èas na vodilu je potekel
+t167=Napaka v I2CBus Stop pogoju (slaba èasovna sinhronizacija?)
+t168=Napaka pri vpisu
+t169=Napaka pri vpisu
+t170=Napaka t.
+//----Setup dialog
+//Dialog title
+t172=Nastavitve V/I vrat
+t173=Nastavitve vmesnike Ploèe
+//Dialog messages
+t174=COM/LPT vrata
+t175=Serijsko
+t176=Paralelno
+t177=Izbira vmesnika
+t178=Tip vmesnika
+t179=Izbira COM vrat
+t180=COM
+t183=Izbira LPT vrat
+t184=LPT
+t185=Izbira Polaritete Kontrolnih linij
+t186=Invertiraj Reset
+t187=Invertiraj SCKL
+t188=Invertiraj D-IN
+t189=Invertiraj D-OUT
+//Tool tips
+t190=Izberi serijska vrata COM
+t192=Izberi paralelna vrata LPT
+//----Fill dialog
+//Dialog title
+t193=Napolni Pomnilnik
+//Dialog messages: NB should be of the same size (number of char)
+t194=Od
+t195=Do
+t196=Vrednost
+//----Fuse dialog
+//Button captions
+t197=Zbrii Vse
+t198=Postavi Vse
+t199=Pii
+t200=Beri
+//Dialog title
+t201=Konfiguracijski in Varnostni biti
+//Dialog messages: NB should be of the same size (number of char)
+t202=Prvi Blok za Zaklep
+t203=t. Blokov za Zaklep
+t204=Blok visoke trajnosti
+//Tool tips
+t205=Vse bite na '0'
+t206=Vse bite na '1'
+t207=Vpii bite v napravo
+t208=Beri bite iz naprave
+//----Info dialog
+//Button captions
+t209=Zapri
+//Dialog title
+t210=Podatki o napravi
+//Dialog messages
+t211=Bank roll-over kapaciteta:
+t212=Velikost:
+t213=CRC:
+t214=Varnostni blok:
+t215=Blok visoke trajnosti:
+//----Char Edit dialog
+//Dialog title
+t216=Uredi Pomnilnik
+//Dialog messages: NB should be of the same size (number of char)
+t217=Hex
+t218=Decimal
+t219=Char
+//Tool tips
+t222=Heksadecimalna vrednost
+t223=Decimalna vrednost
+t224=Znakovna vrednost
+//----Program Option dialog
+//Dialog title
+t225=Monosti Programiranja
+//Dialog messages
+t226=Ponovno naloi Datoteke
+t227=Beri Programski Pomnilnik (FLASH)
+t228=Beri Podatkovni Pomnilnik (EEPROM)
+t229=Beri serijsko tevilko
+t230=Zamenjaj Bajta
+t231=Doloèi Serijsko tevilko
+t232=Zbrii
+t233=Pii v Programski Pomnilnik (FLASH)
+t234=Pii v Podatkovni Pomnilnik (EEPROM)
+t235=Vpii Varnostne in Konfiguracijske Bite
+t236=Preveri Varnostne in Konfiguracijske Bite
+//----Serial Number dialog
+//Dialog title
+t237=Nastavitev Serijske tevilke
+//Dialog messages: NB should be of the same size (number of char)
+t238=Naslov
+t239=Velikost
+t240=Vrednost
+t241=Format
+//next 2 probably can't be translated
+t242=Little endian
+t243=Big endian
+t244=Odmik Podatkovnega pomnilnika
+//Tool tips
+t245=Naslov pomnilnika
+t246=Velikost v bajtih
+t247=Naslednja vrednost za uporabo
+t248=Privzemite, da je Naslov relativen glede na Podatkovni in ne na Programski pomnilnik
+t249=Najpomembneji Bajt pri visokem naslovu
+t250=Najpomembneji Bajt pri nizkem naslovu
+//----Retry dialog
+//Button captions
+t251=Prekini
+t252=Ponovi
+t253=Prezri
+//Dialog title
+t254=Opozori
+//----Notes dialog
+//Dialog title
+t255=Uredi opombe naprav
+//----Progress dialog
+//Dialog title
+t256=Stanje
+//Script
+t84=Scri&pt
+t132=&Edit...
+t133=&Load and Run...
+t134=&Auto Load
+t135=&Run
+t59=Script error at line
+t60=Bad command
+t61=Bad argument
+t62=Argument missing
+t63=Do you want to continue?
+t79=Open script file
+t171=Script error
+t70=Open program (FLASH) content file
+t71=Open data (EEPROM) content file
+t220=Insert the new value
+t221=Enter text from location
+t258=Disable sound
+//---- Oscillator Calibration Byte
+t260=Oscillator Calibration Byte
+t261=Read Osc.Calibration Byte
+t262=Osc. Calibration Options...
+t263=Read Osc.Calibration Byte successful
+t264=Chip Id
+t265=Note
+t266=EEPROM Size
+t267=FLASH Size
+t268=Auto Increment
+t269=Increment the serial number after every 'set serial number' operation
+t270=Can't know bank roll-over without modify and write, do you want to write?
+t271=Buffer changed. Save it before reading?
+t272=Open Program Memory (FLASH) File
+t273=Open Data Memory (EEPROM) File
+t274=Save Program Memory (FLASH) File
+t275=Save Data Memory (EEPROM) File
+t276=New Window
+t277=Launch program cycle
+t278=Execute script
+t279=Open setup dialog
+t280=Erase all the device to FF
+t281=Security and Configuration &Bits...
+t282=Security and Configuration Bits
+//These strings are added to the 'Configuration and security bits' dialog to explain
+t283=Refer to device datasheet, please
+t284=Checked items means programmed
+t285=UnChecked items means unprogrammed

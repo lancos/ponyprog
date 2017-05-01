@@ -1,0 +1,338 @@
+LANGUAGE_NAME
+ukrainian
+LANGUAGE_CHARSET
+UTF-8
+t0=ukrainian
+t1=Translator Credits:
+t2=
+t3=Serial Device Programmer
+t4=Download last version of
+t5=at the address:
+t6=No Name
+//Button captions
+t7=OK
+t8=Cancel
+t9=Help
+t10=Probe
+t12=Note
+t13=Edit
+//Dialog messages
+t14=Version
+t15=Yes
+t16=No
+t17=Ok
+t18=Test
+t19=Failed
+t20=About
+t21=Page
+t22=Unknown
+t23=Buffer \"%s\"changed. Save it before to close?
+t24=Buffer changed. Save it before to open?
+t25=Nothing to save
+t26=Nothing to load
+t27=Nothing to print
+t28=Nothing to write
+t29=Nothing to verify
+t30=Bus timing calibration.\nBe sure there're no application running other than
+t31=\n(the CPU and hard disk have to be idle)\nThe calibration may take a couple of seconds.\nDo you want to run calibration now?
+t32=Calibration OK
+t33=Calibration failed
+t34=You need to run Calibration from the Options menu\nbefore any read/write operations
+t35=You need to run Setup from the Options menu\nbefore any read/write operations
+t36=Reading...
+t37=Read successful\nDevice Size:
+t38=Are you sure to write the device?\nAll previous content will be lost
+t39=Writing...
+t40=Verifing...
+t41=Write successful
+t42=Write failed
+t43=Erasing...
+t44=Erase successful
+//t40=Verifing...
+t45=Cannot verify, device missing or bad device
+t46=Verify Failed
+t47=Verify successful
+t48=Program succesfull
+t49=Program Failed
+t50=Device resetted
+t51=Writing security bits...
+t52=Security bits write failed
+t53=Reading security bits...
+t54=Configuration bits read failed
+t55=Reading configuration bits...
+t56=Configuration bits read failed
+t57=Writing configuration bits...
+t58=Configuration bits write failed
+t64=Buffer empty
+t65=Operation not supported
+t66=Insert parameters
+t67=Bad parameters
+t68=Accepting commands...
+t69=Open device content file
+t72=File not found
+t73=File save failed
+t74=Save Device Content File As
+t75=Save Program (FLASH) Content File As
+t76=Save Data (EEPROM) Content File As
+t77=Close last window: do you want to exit?
+t78=Buffer changed. Save it before to close?
+//Menu entries
+//Main Menu
+t80=&Файл
+t81=&Правка
+t82=П&рилад
+t83=&Команди
+t85=У&тиліти
+t86=У&становки
+t87=&Опції
+t88=&?
+//Menu File
+t89=&Нове вікно
+t90=&Відкрити файл приладу
+t91=Відкрити програмний (&FLASH) файл...
+t92=Відкрити файл даних (&EEPROM)...
+t93=&Зберегти файл
+t94=Зберегти файл приладу &як
+t95=Зберегти программный (&FLASH) файл як...
+t96=Зберегти файл данных (&EEPROM) як...
+t97=Пе&резавантажити файли
+t98=&Друк...
+t99=&Закрити
+t100=В&ихід
+//Menu Edit
+t101=Змінити &нотатки
+t102=Змінити &дозволеність буфера
+//Menu Command
+t103=&Читати все
+t104=Читати програму (&FLASH)
+t105=Читати данні (&EEPROM)
+t106=Читати &біти конфигурації та безпеки
+t107=&Записати все
+t108=Записати програму (&FLASH)
+t109=Записати данні (&EEPROM)
+t110=Записати &біти конфигурації та безпеки
+t111=&Перевірити все
+t112=Перевірити програму (&FLASH)
+t113=Перевірити данні (&EEPROM)
+t114=Перевірити &біти конфигурації та безпеки
+t115=О&чистити
+t116=&GetInfo
+t117=&Сброс
+t118=&Пограма
+t119=&Опції програми...
+//Menu Options
+t120=&Налагодження інтерфейса...
+t121=&Калібровка
+t122=&Віддаленний режим
+//Menu Utility
+t123=&Очистити буфер
+t124=&Заполнити буфер...
+t125=&Подвійний банк
+t126=&Перестановка байт
+t127=&Установити Серійний Номер
+t128=&Налагодження Серійного Номера...
+//Menu Help
+t129=&Справка
+t130=&О
+//Menu Options
+t131=&Лог файл...
+//Tool Bar
+//Dialog Messages
+t136=Dev.Type
+//Tool tips
+t137=Open Device File
+t138=Save Device File
+t139=Print Buffer
+t140=Reload Files
+t141=Read Device
+t142=Read Program Memory (FLASH)
+t143=Read Data Memory (EEPROM)
+t144=Read Security and Configuration Bits
+t145=Write Device
+t146=Write Program Memory (FLASH)
+t147=Write Data Memory (EEPROM)
+t148=Verify Program Memory (FLASH)
+t149=Verify Data Memory (EEPROM)
+t150=Verify Security and Configuration Bits
+t151=Select device family
+t152=Select device type
+t153=Edit device notes
+//Error Messages
+t154=Device Not Responding
+t155=Bad device, select the correct type
+t156=Device missing or unknown device
+t157=Unable to probe, bad device or device locked
+t158=User abort
+t159=Communication port not available
+t160=I/O access denied. You must be root to perform I/O
+t161=Programmer board not found
+t162=Hardware error, is the board properly connected?
+t163=Bus busy or hardware error
+t164=Missing Acknowledge from the device
+t165=Missing device
+t166=Timeout on the bus
+t167=I2CBus Stop condition error (bad timing?)
+t168=Write error
+t169=Blank check error
+t170=Error n.
+//----Setup dialog
+//Dialog title
+t172=Налагодження портів ввода/вивода
+t173=Налагодження интерфейсної плати
+//Dialog messages
+t174=COM/LPT інтерфейс
+t175=Послідовный
+t176=Паралельний
+t177=Вибір інтерфейса
+t178=Тип інтерфейса
+t179=Вибір COM порта
+t180=COM
+t183=Вибір LPT порта
+t184=LPT
+t185=Вибір полярности керуючих линій
+t186=Інвертувати Reset
+t187=Інвертувати SCKL
+t188=Інвертувати D-IN
+t189=Інвертувати D-OUT
+//Tool tips
+t190=Select serial port COM
+t192=Select parallel port LPT
+//----Fill dialog
+//Dialog title
+t193=Fill Buffer
+//Dialog messages: NB should be of the same size (number of char)
+t194=From
+t195=To
+t196=Value
+//----Fuse dialog
+//Button captions
+t197=Clear All
+t198=Set All
+t199=Write
+t200=Read
+//Dialog title
+t201=Configuration and Security bits
+//Dialog messages: NB should be of the same size (number of char)
+t202=First Block to Lock
+t203=N.of Blocks to Lock
+t204=High endurance block
+//Tool tips
+t205=All bits to '0'
+t206=All bits to '1'
+t207=Write bits to the device
+t208=Read bits from the device
+//----Info dialog
+//Button captions
+t209=Close
+//Dialog title
+t210=Device Info
+//Dialog messages
+t211=Bank roll-over capability:
+t212=Size:
+t213=CRC:
+t214=Security block:
+t215=High endurance block:
+//----Char Edit dialog
+//Dialog title
+t216=Edit Buffer
+//Dialog messages: NB should be of the same size (number of char)
+t217=Hex
+t218=Decimal
+t219=Char
+//Tool tips
+t222=Hexadecimal value
+t223=Decimal value
+t224=Char value
+//----Program Option dialog
+//Dialog title
+t225=Program Options
+//Dialog messages
+t226=Reload Files
+t227=Read Program memory (FLASH)
+t228=Read Data memory (EEPROM)
+t229=Read Seriial Number
+t230=Byte Swap
+t231=Set Serial Number
+t232=Erase
+t233=Write Program memory (FLASH)
+t234=Write Data memory (EEPROM)
+t235=Write Security and Config bits
+t236=Verify Security and Config bits
+//----Serial Number dialog
+//Dialog title
+t237=Serial Number Config
+//Dialog messages: NB should be of the same size (number of char)
+t238=Address
+t239=Size
+t240=Value
+t241=Format
+//next 2 probably can't be translated
+t242=Little endian
+t243=Big endian
+t244=Data memory offset
+//Tool tips
+t245=Memory address
+t246=Size in bytes
+t247=Next value to be used
+t248=Assume the Address relative to Data memory instead of Program memory
+t249=Most significant Byte at high address
+t250=Most significant Byte at low address
+//----Retry dialog
+//Button captions
+t251=Abort
+t252=Retry
+t253=Ignore
+//Dialog title
+t254=Alert
+//----Notes dialog
+//Dialog title
+t255=Edit Device Notes
+//----Progress dialog
+//Dialog title
+t256=Status
+//Script
+t84=Scri&pt
+t132=&Edit...
+t133=&Load and Run...
+t134=&Auto Load
+t135=&Run
+t59=Script error at line
+t60=Bad command
+t61=Bad argument
+t62=Argument missing
+t63=Do you want to continue?
+t79=Open script file
+t171=Script error
+t70=Open program (FLASH) content file
+t71=Open data (EEPROM) content file
+t220=Insert the new value
+t221=Enter text from location
+t258=Disable sound
+//---- Oscillator Calibration Byte
+t260=Oscillator Calibration Byte
+t261=Read Osc.Calibration Byte
+t262=Osc. Calibration Options...
+t263=Read Osc.Calibration Byte successful
+t264=Chip Id
+t265=Note
+t266=EEPROM Size
+t267=FLASH Size
+t268=Auto Increment
+t269=Increment the serial number after every 'set serial number' operation
+t270=Can't know bank roll-over without modify and write, do you want to write?
+t271=Buffer changed. Save it before reading?
+t272=Open Program Memory (FLASH) File
+t273=Open Data Memory (EEPROM) File
+t274=Save Program Memory (FLASH) File
+t275=Save Data Memory (EEPROM) File
+t276=New Window
+t277=Launch program cycle
+t278=Execute script
+t279=Open setup dialog
+t280=Erase all the device to FF
+t281=Security and Configuration &Bits...
+t282=Security and Configuration Bits
+//These strings are added to the 'Configuration and security bits' dialog to explain
+t283=Refer to device datasheet, please
+t284=Checked items means programmed
+t285=UnChecked items means unprogrammed

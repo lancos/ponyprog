@@ -1,0 +1,343 @@
+LANGUAGE_NAME
+francais
+LANGUAGE_CHARSET
+UTF-8
+t0=Français
+t1=Traduction de :
+t2=Michael Mathieu\nJean-Jacques Michel\nChauvet Christophe\nJean-Paul Brodier\n
+t3=Programmateur de composants par liaison série
+t4=Télécharger la dernière version
+t5=à l'adresse :
+t6=Sans nom
+//Button captions
+t7=OK
+t8=Annuler
+t9=Aide
+t10=Tester
+t12=Note
+t13=Editer
+//Dialog messages
+t14=Version
+t15=Oui
+t16=Non
+t17=Ok
+t18=Test
+t19=Echec
+t20=A propos
+t21=Page
+t22=Inconnu
+t23=Le tampon \"%s\"a changé. Le sauver avant de quitter ?
+t24=Le tampon a changé. Le sauver avant d'ouvrir ?
+t25=Rien à enregistrer
+t26=Rien à lire
+t27=Rien à imprimer
+t28=Rien à écrire
+t29=Rien à vérifier
+t30=Calibrage temporel du PC.\nAssurez-vous qu'aucune application ne tourne autre que
+t31=\n(le processeur et le disque dur doivent être inoccupés)\nLe calibrage dure quelques secondes.\nVoulez-vous la lancer maintenant?
+t32=Calibrage réussi
+t33=Echec calibrage
+t34=Vous devez lancer un calibrage depuis le menu Options \navant d'effectuer des opérations de lecture ou d'écriture
+t35=Vous devez configurer le système depuis le menu Options \navant d'effectuer des opérations de lecture ou d'écriture
+t36=Lecture...
+t37=Lecture réussie\nTaille composant:
+t38=Etes vous sûr de vouloir écrire le composant?\nSon contenu sera définitivement perdu
+t39=Ecriture...
+t40=Vérification...
+t41=Ecriture réussie
+t42=Echec écriture
+t43=Effacement...
+t44=Effacement réussi
+//t40=Vérification
+t45=Vérification impossible, composant absent ou mauvais composant
+t46=Vérification réussie
+t47=Echec vérification
+t48=Programmation réussie
+t49=Echec programmation
+t50=Mise à zéro composant
+t51=Ecriture bits de sécurité...
+t52=Echec écriture bits de sécurité
+t53=Lecture bits de sécurité...
+t54=Echec lecture bits de configuration
+t55=Lecture bits de configuration ...
+t56=Echec lecture bits de configuration
+t57=Ecriture bits de configuration ...
+t58=Echec écriture bits de configuration
+t64=Tampon vide
+t65=Opération non supportée
+t66=Insérer paramètres
+t67=Mauvais paramètres
+t68=Commande acceptée...
+t69=Ouvrir fichier composant
+t72=Fichier non trouvé
+t73=Echec sauvegarde fichier
+t74=Sauvegarder fichier composant sous
+t75=Sauvegarder fichier programme (FLASH) sous
+t76=Sauvegarder fichier données (EEPROM) sous
+t77=Dernière fenêtre fermée : Voulez-vous quitter ?
+t78=Le tampon a changé. Le sauvegarder avant de fermer ?
+//Menu entries
+//Main Menu
+t80=&Fichier
+t81=&Edition
+t82=Co&mposant
+t83=C&ommande
+t85=&Utilitaire
+t86=&Configuration
+t87=&Options
+t88=&?
+//Menu File
+t89=&Nouvelle fenêtre
+t90=&Ouvrir ...
+t91=Ouvrir fichier &programme (FLASH)...
+t92=Ouvrir fichier &données (EEPROM)...
+t93=&Sauvegarder
+t94=Sa&uvegarder sous ...
+t95=Sauvegarder fichier programme (F&LASH) sous...
+t96=Sauvegarder fichier données (&EEPROM) sous...
+t97=&Recharger fichier
+t98=&Imprimer...
+t99=&Fermer
+t100=&Quitter
+//Menu Edit
+t101=Edition &note...
+t102=Edition &tampon activée
+//Menu Command
+t103=&Lire tout
+t104=Lecture programme (FLASH)
+t105=Lecture données (EEPROM)
+t106=Lecture bits de &sécurité et de configuration
+t107=E&crire tout
+t108=Ecrire programme (&FLASH)
+t109=Ecrire données (EEPROM)
+t110=Ecr&ire bits de sécurité et de configuration
+t111=&Vérifier tout
+t112=Vérifier programme (FLASH)
+t113=Vérifier données (EEPROM)
+t114=Vé&rifier bits de sécurité et de configuration
+t115=&Effacer
+t116=&Obtenir infos
+t117=Rese&t
+t118=&Programme
+t119=Programme Options...
+//Menu Options
+t120=Configuration &interface ...
+t121=&Calibrage
+t122=&Mode commande
+//Menu Utility
+t123=&Effacer tampon
+t124=&Remplir tampon...
+t125=&Double Bank
+t126=&Byte Swap
+t127=Définir &numéro de série
+t128=C&onfigurer numéro de série...
+//Menu Help
+t129=A&ide
+t130=&A propos
+//Menu Options
+t131=&Log Fichier...
+//Tool Bar
+//Dialog Messages
+t136=Type de composant
+//Tool tips
+t137=Ouvrir fichier composant
+t138=Sauvegarder fichier composant
+t139=Imprimer tampon
+t140=Recharger fichier
+t141=Lire composant
+t142=Lire mémoire programme (FLASH)
+t143=Lire mémoire données (EEPROM)
+t144=Lire bits de sécurité et de configuration
+t145=Ecrire composant
+t146=Ecrire mémoire composant (FLASH)
+t147=Ecrire mémoire données (EEPROM)
+t148=Vérifier mémoire programme (FLASH)
+t149=Vérifier mémoire données (EEPROM)
+t150=Vérifier bits de sécurité et de configuration
+t151=Sélection famille de composants
+t152=Sélection type de composant
+t153=Edition notes composant
+//Error Messages
+t154=Le composant ne répond pas
+t155=Mauvais composant, sélectionner le bon type
+t156=Composant introuvable ou inconnu
+t157=Impossible de tester, mauvais composant ou composant protégé
+t158=Abandon par l'utilisateur
+t159=Port de communication non disponible
+t160=Accès E/S impossible. Vous devez être root pour opérer sur les E/S
+t161=Programmateur introuvable
+t162=Erreur matériel, le programmateur est-il correctement branché ?
+t163=Bus occupé ou erreur matériel
+t164=Pas d'acquittement du composant
+t165=Pas de composant
+t166=Timeout sur le bus I2C
+t167=Erreur de condition Stop sur le bus I2C (mauvais timing?)
+t168=Erreur d'écriture
+t169=Erreur test de virginité
+t170=Erreur N°
+//----Setup dialog
+//Dialog title
+t172=Configuration port E/S
+t173=Configuration carte interface
+//Dialog messages
+t174=Interface COM/LPT
+t175=Série
+t176=Parallèle
+t177=Sélection interface
+t178=Type d'interface
+t179=Sélectionner port série
+t180=COM
+t183=Sélectionner port parallèle
+t184=LPT
+t185=Sélectionner la polarité des lignes de contrôle
+t186=Inversion Reset
+t187=Inversion SCKL
+t188=Inversion D-IN
+t189=Inversion D-OUT
+//Tool tips
+t190=Sélectionner port série COM
+t192=Sélectionner port parallèle LPT
+//----Fill dialog
+//Dialog title
+t193=Remplir tampon
+//Dialog messages: NB should be of the same size (number of char)
+t194=Depuis
+t195=Jusqu'à
+t196=Valeur
+//----Fuse dialog
+//Button captions
+t197=Effacer tout
+t198=Sélectionner tout
+t199=Ecriture
+t200=Lecture
+//Dialog title
+t201=Bits de configuration et de sécurité
+//Dialog messages: NB should be of the same size (number of char)
+t202=Premier bloc à verrouiller
+t203=Nbre de bloc à verrouiller
+t204=High endurance block
+//Tool tips
+t205=Tous les bits à '0'
+t206=Tous les bits à '1'
+t207=Ecrire bits dans le composant
+t208=Lire bits depuis le composant
+//----Info dialog
+//Button captions
+t209=Fermer
+//Dialog title
+t210=Info composant
+//Dialog messages
+t211=Bank roll-over capability:
+t212=Taille:
+t213=CRC:
+t214=Bloc de sécurité:
+t215=High endurance block:
+//----Char Edit dialog
+//Dialog title
+t216=Edition tampon
+//Dialog messages: NB should be of the same size (number of char)
+t217=Hex
+t218=Décimal
+t219=Caractère
+//Tool tips
+t222=Valeur hexadécimale
+t223=Valeur décimale
+t224=Valeur caractère
+//----Program Option dialog
+//Dialog title
+t225=Options de programmation
+//Dialog messages
+t226=Recharger fichiers
+t227=Lecture mémoire programme (FLASH)
+t228=Lecture mémoire données (EEPROM)
+t229=Lecture numéro de série
+t230=Swap octet
+t231=Mettre numéro de série
+t232=Effacement
+t233=Ecriture mémoire programme (FLASH)
+t234=Ecriture mémoire données (EEPROM)
+t235=Ecriture bits de configuration et de sécurité
+t236=Vérification bits de configuration et de sécurité
+//----Serial Number dialog
+//Dialog title
+t237=Configuration numéro de série
+//Dialog messages: NB should be of the same size (number of char)
+t238=Adresse
+t239=Taille
+t240=Valeur
+t241=Format
+//next 2 probably can't be translated
+t242=Little endian
+t243=Big endian
+t244=Décalage mémoire données
+//Tool tips
+t245=Adresse mémoire
+t246=Taille en octets
+t247=Prochaine valeur utilisée
+t248=En supposant l'adresse relative à la mémoire donnée au lieu de la mémoire programme
+t249=Octet le plus important à l'adresse haute
+t250=Octet le moins important à l'adresse basse
+//----Retry dialog
+//Button captions
+t251=Annuler
+t252=Recommencer
+t253=Ignorer
+//Dialog title
+t254=Alerte !
+//----Notes dialog
+//Dialog title
+t255=Edition notes composant
+//----Progress dialog
+//Dialog title
+t256=Etat
+//Script
+t84=Scri&pt
+t132=&Editer...
+t133=&Charger et Executer...
+t134=&AutoChargement
+t135=E&xecuter
+t59=Erreur dans le script à la ligne
+t60=Commande erronée
+t61=Mauvais argument
+t62=Argument absent
+t63=Voulez vous continuer ?
+t79=Ouvrir le fichier script
+t171=Erreur dans le script
+t70=Ouvrir le fichier programme (FLASH)
+t71=Ouvrir le fichier données (EEPROM)
+t220=Insérer la nouvelle valeur
+t221=Entrer le texte à la position
+t258=Désactiver le son
+//---- Oscillator Calibration Byte
+t260=Octet de calibrage d'oscillateur
+t261=Lire l'octet de Calibr.d'Osc.
+t262=Options de Calibr.d'Osc...
+t263=Lecture de l'octet de Calibrage d'Osc. réussie
+t264=Identification Composant
+t265=Info
+t266=Taille EEPROM
+t267=Taille FLASH
+t268=Incrémentation automatique
+t269=Incrémenter le numéro de série après sa phase d'écriture
+t270=Saut de banc impossible sans modification et écriture. Voulez-vous écrire ?
+t271=Tampon modifié. Le sauvegarder avant la lecture ?
+t272=Ouvrir fichier programme  (FLASH)
+t273=Ouvrir fichier (EEPROM)
+t274=Sauvegarder fichier programme (FLASH)
+t275=Sauvegarder fichier données  (EEPROM)
+t276=Nouvelle fenêtre
+t277=Lancer le cycle de programmation
+t278=Exécuter le script
+t279=Ouvrir la boîte setup
+t280=Effacer le composant entier (FF)
+t281=Bits de Sécurité et Configuration
+t282=Bits de Sécurité et Configuration
+//These strings are added to the 'Configuration and security bits' dialog to explain
+t283=Reportez-vous à la feuille de caractéristiques du composant, svp
+t284=Les points cochés sont programmés
+t285=Les points non cochés ne sont pas programmés
+//2003/06/19 
+//Jean-Paul Brodier
+//Minor spelling corrections
+//Replaced"calibration", which is not a French word, with"calibrage", which is; accordingly corrected the gender of adjectives and participles
+//Added my name to the credits list
