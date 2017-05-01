@@ -161,6 +161,11 @@ class E2Profile
 	static int GetFontSize();
 	static void SetFontSize(int sz = 9);
 
+	static QStringList GetLastFiles();
+	static void SetLastFiles(const QStringList &l);
+
+	static QStringList GetLastScripts();
+	static void SetLastScripts(const QStringList &l);
 
 	static int GetAVREraseDelay();
 	static void SetAVREraseDelay(int delay = 30);
@@ -187,6 +192,12 @@ class E2Profile
 
 	static QString GetLogFileName();
 	static void SetLogFileName(const QString &name);
+
+	static QString GetLangDir();
+	static void SetLangDir(const QString &name);
+
+	static QString GetCurrentLang();
+	static void SetCurrentLang(const QString &name);
 
 	static bool GetLogEnabled();
 	static void SetLogEnabled(bool enabled = false);

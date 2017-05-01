@@ -332,6 +332,59 @@ QString E2Profile::GetPrevFile(int &data)
 }
 
 
+
+QStringList E2Profile::GetLastFiles()
+{
+	QStringList res;
+
+	for (int i = 0; i < 8; i++)
+	{
+		QString sp = s->value(QString().sprintf("LastFile%d", i), "").toString();
+		res << sp;
+	}
+
+	return res;
+}
+
+
+void E2Profile::SetLastFiles(const QStringList &l)
+{
+	int i = 0;
+
+	foreach (QString t, l)
+	{
+		s->setValue(QString().sprintf("LastFile%d", i), t);
+		i++;
+	}
+}
+
+
+QStringList E2Profile::GetLastScripts()
+{
+	QStringList res;
+
+	for (int i = 0; i < 8; i++)
+	{
+		QString sp = s->value(QString().sprintf("LastScript%d", i), "").toString();
+		res << sp;
+	}
+
+	return res;
+}
+
+
+void E2Profile::SetLastScripts(const QStringList &l)
+{
+	int i = 0;
+
+	foreach (QString t, l)
+	{
+		s->setValue(QString().sprintf("LastScript%d", i), t);
+		i++;
+	}
+}
+
+
 uint8_t E2Profile::GetPolarityControl()
 {
 	uint8_t res;
@@ -1327,6 +1380,40 @@ void E2Profile::SetProgramOptions(long prog_option)
 				(prog_option & EEPROM_YES) ? "YES" : "NO");
 	s->setValue("WriteSecurityOption",
 				(prog_option & LOCK_YES) ? "YES" : "NO");
+}
+
+
+QString E2Profile::GetLangDir()
+{
+	QString sp = s->value("LangDir", "").toString();
+
+	return sp;
+}
+
+
+void E2Profile::SetLangDir(const QString &name)
+{
+	if (name.length())
+	{
+		s->setValue("LangDir", name);
+	}
+}
+
+
+QString E2Profile::GetCurrentLang()
+{
+	QString sp = s->value("CurrentLang", "English").toString();
+
+	return sp;
+}
+
+
+void E2Profile::SetCurrentLang(const QString &name)
+{
+	if (name.length())
+	{
+		s->setValue("CurrentLang", name);
+	}
 }
 
 

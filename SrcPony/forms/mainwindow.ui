@@ -104,11 +104,11 @@
     <addaction name="actionInterfaceSetup"/>
     <addaction name="actionCalibration"/>
    </widget>
-   <widget class="QMenu" name="menu">
+   <widget class="QMenu" name="menuHelp">
     <property name="title">
      <string>?</string>
     </property>
-    <addaction name="actionHelp_2"/>
+    <addaction name="actionHelp"/>
     <addaction name="actionAbout"/>
     <addaction name="actionAboutQt"/>
    </widget>
@@ -511,11 +511,6 @@
   <action name="actionSNConfig">
    <property name="text">
     <string>SerialNumber Config...</string>
-   </property>
-  </action>
-  <action name="actionHelp_2">
-   <property name="text">
-    <string>Help</string>
    </property>
   </action>
   <action name="actionAbout">
