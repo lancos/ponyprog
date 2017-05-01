@@ -158,31 +158,31 @@ int At89sxx::Probe(int probe_size)
 	{
 		switch (GetAWInfo()->GetEEPId())
 		{
-			case AT89S51:
-			case AT89S52:
-			case AT89S8253:
-			{
-				long type;
-				rv = QueryType(type);
-				int subtype = GetE2PSubType(type);
+		case AT89S51:
+		case AT89S52:
+		case AT89S8253:
+		{
+			long type;
+			rv = QueryType(type);
+			int subtype = GetE2PSubType(type);
 
-				if (rv == OK)
+			if (rv == OK)
+			{
+				if (GetE2PSubType(GetAWInfo()->GetEEPId()) == subtype)
 				{
-					if (GetE2PSubType(GetAWInfo()->GetEEPId()) == subtype)
-					{
-						rv = GetSize();
-					}
-					else
-					{
-						rv = DEVICE_BADTYPE;
-					}
+					rv = GetSize();
+				}
+				else
+				{
+					rv = DEVICE_BADTYPE;
 				}
 			}
-			break;
+		}
+		break;
 
-			default:
-				rv = GetSize();
-				break;
+		default:
+			rv = GetSize();
+			break;
 		}
 	}
 

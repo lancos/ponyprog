@@ -107,29 +107,29 @@ void IMBus::SetDelay()
 
 	switch (val)
 	{
-		case TURBO:
-			n = 1;         // as fast as your PC can
-			break;
+	case TURBO:
+		n = 1;         // as fast as your PC can
+		break;
 
-		case FAST:
-			n = 3;
-			break;
+	case FAST:
+		n = 3;
+		break;
 
-		case SLOW:
-			n = 18;
-			break;
+	case SLOW:
+		n = 18;
+		break;
 
-		case VERYSLOW:
-			n = 80;
-			break;
+	case VERYSLOW:
+		n = 80;
+		break;
 
-		case ULTRASLOW:
-			n = 500;
-			break;
+	case ULTRASLOW:
+		n = 500;
+		break;
 
-		default:
-			n = 5;         //Default (< 100KHz)
-			break;
+	default:
+		n = 5;         //Default (< 100KHz)
+		break;
 	}
 
 	BusIO::SetDelay(n);

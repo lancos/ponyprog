@@ -580,13 +580,13 @@ static int winSystemVersion()
 
 	switch (osvi.dwPlatformId)
 	{
-		case VER_PLATFORM_WIN32_NT:
-			return 2;               //WINNT
-			break;
+	case VER_PLATFORM_WIN32_NT:
+		return 2;               //WINNT
+		break;
 
-		case VER_PLATFORM_WIN32_WINDOWS:
-			return 1;               //WIN9X
-			break;
+	case VER_PLATFORM_WIN32_WINDOWS:
+		return 1;               //WIN9X
+		break;
 	}
 
 #endif

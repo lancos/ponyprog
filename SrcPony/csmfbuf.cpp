@@ -70,30 +70,14 @@ int csmFileBuf::Load(int loadtype, long relocation_offfset)
 
 		switch (state)
 		{
-			case 0:
+		case 0:
 
-				//look for header start
-				if ((s = strchr(riga, '\"')) != NULL)
-				{
-					state++;
+			//look for header start
+			if ((s = strchr(riga, '\"')) != NULL)
+			{
+				state++;
 
-					if ((s = strstr(s + 1, "REFERENCE")) != NULL)
-					{
-						state++;
-
-						if ((s = strchr(s + 1, '\"')) != NULL)
-						{
-							state++;
-						}
-					}
-				}
-
-				break;
-
-			case 1:
-
-				//look for "REFERENCE"
-				if ((s = strstr(riga, "REFERENCE")) != NULL)
+				if ((s = strstr(s + 1, "REFERENCE")) != NULL)
 				{
 					state++;
 
@@ -102,18 +86,34 @@ int csmFileBuf::Load(int loadtype, long relocation_offfset)
 						state++;
 					}
 				}
+			}
 
-				break;
+			break;
 
-			case 2:
+		case 1:
 
-				//look for header terminator
-				if ((s = strchr(riga, '\"')) != NULL)
+			//look for "REFERENCE"
+			if ((s = strstr(riga, "REFERENCE")) != NULL)
+			{
+				state++;
+
+				if ((s = strchr(s + 1, '\"')) != NULL)
 				{
 					state++;
 				}
+			}
 
-				break;
+			break;
+
+		case 2:
+
+			//look for header terminator
+			if ((s = strchr(riga, '\"')) != NULL)
+			{
+				state++;
+			}
+
+			break;
 		}
 	}
 

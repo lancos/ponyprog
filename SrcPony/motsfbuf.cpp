@@ -102,49 +102,49 @@ int MotorolaSFileBuf::WriteRecord(QTextStream &outs, uint8_t *bptr, long curaddr
 
 	switch (fmt)
 	{
-		case START_RECORD:              //starting record (optional)
-			len = recsize + 2 + 1;  //2 byte address + 1 byte checksum
-			break;
+	case START_RECORD:              //starting record (optional)
+		len = recsize + 2 + 1;  //2 byte address + 1 byte checksum
+		break;
 
-		case DATA_RECORD16:             //16 bit address data record
-			len = recsize + 2 + 1;  //2 byte address + 1 byte checksum
-			break;
+	case DATA_RECORD16:             //16 bit address data record
+		len = recsize + 2 + 1;  //2 byte address + 1 byte checksum
+		break;
 
-		case DATA_RECORD24:             //24 bit address data record
-			len = recsize + 3 + 1;  //3 byte address + 1 byte checksum
-			break;
+	case DATA_RECORD24:             //24 bit address data record
+		len = recsize + 3 + 1;  //3 byte address + 1 byte checksum
+		break;
 
-		case DATA_RECORD32:             //32 bit address data record
-			len = recsize + 4 + 1;  //4 byte address + 1 byte checksum
-			break;
+	case DATA_RECORD32:             //32 bit address data record
+		len = recsize + 4 + 1;  //4 byte address + 1 byte checksum
+		break;
 
-		case SYMBOL_RECORD:             //symbol record (LSI extension)
-			len = recsize + 2 + 1;  //2 byte address + 1 byte checksum
-			break;
+	case SYMBOL_RECORD:             //symbol record (LSI extension)
+		len = recsize + 2 + 1;  //2 byte address + 1 byte checksum
+		break;
 
-		case NBLOCK_RECORD:             //number of data records in preceeding block
-			len = recsize + 2 + 1;  //2 byte address + 1 byte checksum
-			break;
+	case NBLOCK_RECORD:             //number of data records in preceeding block
+		len = recsize + 2 + 1;  //2 byte address + 1 byte checksum
+		break;
 
-		case UNUSED_RECORD:             //unused
-			len = recsize + 2 + 1;  //2 byte address + 1 byte checksum
-			break;
+	case UNUSED_RECORD:             //unused
+		len = recsize + 2 + 1;  //2 byte address + 1 byte checksum
+		break;
 
-		case END_RECORD32:              //ending record for S3 records
-			len = recsize + 4 + 1;  //4 byte address + 1 byte checksum
-			break;
+	case END_RECORD32:              //ending record for S3 records
+		len = recsize + 4 + 1;  //4 byte address + 1 byte checksum
+		break;
 
-		case END_RECORD24:              //ending record for S2 records
-			len = recsize + 3 + 1;  //3 byte address + 1 byte checksum
-			break;
+	case END_RECORD24:              //ending record for S2 records
+		len = recsize + 3 + 1;  //3 byte address + 1 byte checksum
+		break;
 
-		case END_RECORD16:              //ending record for S1 records
-			len = recsize + 2 + 1;  //2 byte address + 1 byte checksum
-			break;
+	case END_RECORD16:              //ending record for S1 records
+		len = recsize + 2 + 1;  //2 byte address + 1 byte checksum
+		break;
 
-		default:
-			rval = 0;
-			break;
+	default:
+		rval = 0;
+		break;
 	}
 
 	if (rval)
@@ -458,53 +458,53 @@ int MotorolaSFileBuf::ParseRecord(char *lbufPC, uint8_t *buf_startP, uint8_t *bu
 
 	switch (lbufPC[1])                              /* examine 2nd character on the line */
 	{
-		case DATA_RECORD16:                             /* 16 bit address field */
-			if (sscanf(lbufPC, "S1%2X%4lX", &countN, &addrL) != 2)
-			{
-				return BADFILETYPE;        /* Flag error in S1 record */
-			}
+	case DATA_RECORD16:                             /* 16 bit address field */
+		if (sscanf(lbufPC, "S1%2X%4lX", &countN, &addrL) != 2)
+		{
+			return BADFILETYPE;        /* Flag error in S1 record */
+		}
 
-			oheadN = 2 + 1;                         /* 2 address + 1 checksum */
-			break;
+		oheadN = 2 + 1;                         /* 2 address + 1 checksum */
+		break;
 
-		case DATA_RECORD24:                             /* 24 bit address field */
-			if (sscanf(lbufPC, "S2%2X%6lX", &countN, &addrL) != 2)
-			{
-				return BADFILETYPE;        /* Flag error in S2 record */
-			}
+	case DATA_RECORD24:                             /* 24 bit address field */
+		if (sscanf(lbufPC, "S2%2X%6lX", &countN, &addrL) != 2)
+		{
+			return BADFILETYPE;        /* Flag error in S2 record */
+		}
 
-			oheadN = 3 + 1;                         /* 3 address + 1 checksum */
-			break;
+		oheadN = 3 + 1;                         /* 3 address + 1 checksum */
+		break;
 
-		case DATA_RECORD32:                             /* 32 bit address field */
-			if (sscanf(lbufPC, "S3%2X%8lX", &countN, &addrL) != 2)
-			{
-				return BADFILETYPE;        /* Flag error in S3 record */
-			}
+	case DATA_RECORD32:                             /* 32 bit address field */
+		if (sscanf(lbufPC, "S3%2X%8lX", &countN, &addrL) != 2)
+		{
+			return BADFILETYPE;        /* Flag error in S3 record */
+		}
 
-			oheadN = 4 + 1;                         /* 4 address + 1 checksum */
-			break;
+		oheadN = 4 + 1;                         /* 4 address + 1 checksum */
+		break;
 
-		/* ignore all but S1,2,3 records. */
-		case START_RECORD:      //starting record (optional)
-		case SYMBOL_RECORD:     //symbol record (LSI extension)
-		case NBLOCK_RECORD:     //number of data records in preceeding block
-		case UNUSED_RECORD:     //unused
-		case END_RECORD32:      //ending record for S3 records
-		case END_RECORD24:      //ending record for S2 records
-		case END_RECORD16:      //ending record for S1 records
+	/* ignore all but S1,2,3 records. */
+	case START_RECORD:      //starting record (optional)
+	case SYMBOL_RECORD:     //symbol record (LSI extension)
+	case NBLOCK_RECORD:     //number of data records in preceeding block
+	case UNUSED_RECORD:     //unused
+	case END_RECORD32:      //ending record for S3 records
+	case END_RECORD24:      //ending record for S2 records
+	case END_RECORD16:      //ending record for S1 records
 
-			//check only for correct checksum
-			if (sscanf(lbufPC + 2, "%2X", &countN) != 1)
-			{
-				return BADFILETYPE;        /* Flag error in SX record */
-			}
+		//check only for correct checksum
+		if (sscanf(lbufPC + 2, "%2X", &countN) != 1)
+		{
+			return BADFILETYPE;        /* Flag error in SX record */
+		}
 
-			unknow_rec = 1;
-			break;
+		unknow_rec = 1;
+		break;
 
-		default:                                // bad record
-			return BADFILETYPE;
+	default:                                // bad record
+		return BADFILETYPE;
 	}
 
 	if (unknow_rec)

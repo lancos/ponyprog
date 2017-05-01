@@ -81,29 +81,29 @@ void At89sBus::SetDelay()
 
 	switch (val)
 	{
-		case TURBO:
-			n = 1;
-			break;
+	case TURBO:
+		n = 1;
+		break;
 
-		case FAST:
-			n = 5;
-			break;
+	case FAST:
+		n = 5;
+		break;
 
-		case SLOW:
-			n = 30;
-			break;
+	case SLOW:
+		n = 30;
+		break;
 
-		case VERYSLOW:
-			n = 100;
-			break;
+	case VERYSLOW:
+		n = 100;
+		break;
 
-		case ULTRASLOW:
-			n = 1000;
-			break;
+	case ULTRASLOW:
+		n = 1000;
+		break;
 
-		default:
-			n = 15;
-			break;
+	default:
+		n = 15;
+		break;
 	}
 
 	BusIO::SetDelay(n);
@@ -340,22 +340,22 @@ int At89sBus::WriteLockBits(uint32_t param, long model)
 
 	switch (model)
 	{
-		case AT89S8253:
-			val1 = WriteLockBits0;
-			val2 = WriteLockBits1 | (~param & 0x07);
-			break;
+	case AT89S8253:
+		val1 = WriteLockBits0;
+		val2 = WriteLockBits1 | (~param & 0x07);
+		break;
 
-		case AT89S51:
-		case AT89S52:
-			//Translate from B1-B2 code to LB1-LB2-LB3
-			//...
-			break;
+	case AT89S51:
+	case AT89S52:
+		//Translate from B1-B2 code to LB1-LB2-LB3
+		//...
+		break;
 
-		default:
-			val1 = WriteLockBits0;
-			val2 = OldWriteLockBits1;
-			val2 |= 0xff & ~param;
-			break;
+	default:
+		val1 = WriteLockBits0;
+		val2 = OldWriteLockBits1;
+		val2 |= 0xff & ~param;
+		break;
 	}
 
 	if (val1 != -1)
@@ -389,27 +389,27 @@ int At89sBus::ReadLockBits(uint32_t &res, long model)
 
 	switch (model)
 	{
-		case AT89S8253:
-			SendDataByte(ReadLockBits0);
-			SendDataByte(ReadLockBits1);
-			SendDataByte(0);
-			rv1 = RecDataByte();
-			res = ~rv1 & 0x07;
-			break;
+	case AT89S8253:
+		SendDataByte(ReadLockBits0);
+		SendDataByte(ReadLockBits1);
+		SendDataByte(0);
+		rv1 = RecDataByte();
+		res = ~rv1 & 0x07;
+		break;
 
-		case AT89S51:
-		case AT89S52:
-			//NB.Different polarity from other devices: 1 mean programmed (should update message in the dialog)
-			SendDataByte(ReadLockBits0);
-			SendDataByte(ReadLockBits1);
-			SendDataByte(0);
-			rv1 = RecDataByte();
-			res = rv1 & 0x1C;
-			break;
+	case AT89S51:
+	case AT89S52:
+		//NB.Different polarity from other devices: 1 mean programmed (should update message in the dialog)
+		SendDataByte(ReadLockBits0);
+		SendDataByte(ReadLockBits1);
+		SendDataByte(0);
+		rv1 = RecDataByte();
+		res = rv1 & 0x1C;
+		break;
 
-		default:
-			rval = NOTSUPPORTED;
-			break;
+	default:
+		rval = NOTSUPPORTED;
+		break;
 	}
 
 	return rval;
@@ -424,14 +424,14 @@ int At89sBus::WriteFuseBits(uint32_t param, long model)
 
 	switch (model)
 	{
-		case AT89S8253:
-			val1 = WriteUserFuses0;
-			val2 = WriteUserFuses1 | (~param & 0x0f);
-			break;
+	case AT89S8253:
+		val1 = WriteUserFuses0;
+		val2 = WriteUserFuses1 | (~param & 0x0f);
+		break;
 
-		default:
-			//No Fuses
-			break;
+	default:
+		//No Fuses
+		break;
 	}
 
 	if (val1 != -1)
@@ -457,17 +457,17 @@ int At89sBus::ReadFuseBits(uint32_t &res, long model)
 
 	switch (model)
 	{
-		case AT89S8253:
-			SendDataByte(ReadUserFuses0);
-			SendDataByte(ReadUserFuses1);
-			SendDataByte(0);
-			rv1 = RecDataByte();
-			res = ~rv1 & 0x0f;
-			break;
+	case AT89S8253:
+		SendDataByte(ReadUserFuses0);
+		SendDataByte(ReadUserFuses1);
+		SendDataByte(0);
+		rv1 = RecDataByte();
+		res = ~rv1 & 0x0f;
+		break;
 
-		default:        //No Fuses
-			rval = NOTSUPPORTED;
-			break;
+	default:        //No Fuses
+		rval = NOTSUPPORTED;
+		break;
 	}
 
 	return rval;

@@ -381,55 +381,55 @@ void e2CmdWindow::KeyIn(vKey keysym, unsigned int shift)
 {
 	switch (keysym)
 	{
-		case vk_Up:
-		{
-			PrevLine();
-			break;
-		}
+	case vk_Up:
+	{
+		PrevLine();
+		break;
+	}
 
-		case vk_Down:
-		{
-			NextLine();
-			break;
-		}
+	case vk_Down:
+	{
+		NextLine();
+		break;
+	}
 
-		case vk_Page_Up:
-		{
-			PrevPage();
-			break;
-		}
+	case vk_Page_Up:
+	{
+		PrevPage();
+		break;
+	}
 
-		case vk_Page_Down:
-		{
-			NextPage();
-			break;
-		}
+	case vk_Page_Down:
+	{
+		NextPage();
+		break;
+	}
 
-		case vk_Home:
-		{
-			FirstPage();
-			break;
-		}
+	case vk_Home:
+	{
+		FirstPage();
+		break;
+	}
 
-		case vk_End:
-		{
-			LastPage();
-			break;
-		}
+	case vk_End:
+	{
+		LastPage();
+		break;
+	}
 
-		case vk_Return:
-		{
-			CharEdit();
-			break;
-		}
+	case vk_Return:
+	{
+		CharEdit();
+		break;
+	}
 
-		//      case vk_Left:
-		//      case vk_Right:
-		default:
-		{
-			vCmdWindow::KeyIn(keysym, shift);
-			break;
-		}
+	//      case vk_Left:
+	//      case vk_Right:
+	default:
+	{
+		vCmdWindow::KeyIn(keysym, shift);
+		break;
+	}
 	}
 }
 #endif
@@ -445,166 +445,166 @@ int e2CmdWindow::OnError(int err_no, const QString &msgerr)
 
 	switch (err_no)
 	{
-		case 0:
-			note.setText(STR_DEVNOTRESP);
-			note.exec();
-			break;
+	case 0:
+		note.setText(STR_DEVNOTRESP);
+		note.exec();
+		break;
 
-		case BADPARAM:
+	case BADPARAM:
+	{
+		rv = QMessageBox::question(this, "Error", STR_MSGBADPARAM, QMessageBox::Ignore | QMessageBox::Cancel  | QMessageBox::Ok);
+		break;
+	}
+
+	case DEVICE_BADTYPE:
+	{
+		QString str = awip ? awip->GetDetectedTypeStr() : "";
+
+		if (str.length() > 0)
 		{
-			rv = QMessageBox::question(this, "Error", STR_MSGBADPARAM, QMessageBox::Ignore | QMessageBox::Cancel  | QMessageBox::Ok);
-			break;
+			msg = QString("%1 (%2)\nDetected type: %3").arg(STR_DEVBADTYPE).arg(err_no).arg(str);
+		}
+		else
+		{
+			msg = QString("%1 (%2)").arg(STR_DEVBADTYPE).arg(err_no);
 		}
 
-		case DEVICE_BADTYPE:
+		rv = QMessageBox::question(this, "Error", msg, QMessageBox::Ignore | QMessageBox::Cancel  | QMessageBox::Ok);
+
+		break;
+	}
+
+	case DEVICE_UNKNOWN:
+	{
+		QString str = awip ? awip->GetDetectedSignatureStr() : "";
+
+		if (str.length() > 0)
 		{
-			QString str = awip ? awip->GetDetectedTypeStr() : "";
-
-			if (str.length() > 0)
-			{
-				msg = QString("%1 (%2)\nDetected type: %3").arg(STR_DEVBADTYPE).arg(err_no).arg(str);
-			}
-			else
-			{
-				msg = QString("%1 (%2)").arg(STR_DEVBADTYPE).arg(err_no);
-			}
-
-			rv = QMessageBox::question(this, "Error", msg, QMessageBox::Ignore | QMessageBox::Cancel  | QMessageBox::Ok);
-
-			break;
+			msg = QString("%1 (%2)\nDetected signature: %3").arg(STR_DEVUNKNOWN).arg(err_no).arg(str);
+		}
+		else
+		{
+			msg = QString("%1 (%2)").arg(STR_DEVUNKNOWN).arg(err_no);
 		}
 
-		case DEVICE_UNKNOWN:
+		rv = QMessageBox::question(this, "Error", msg, QMessageBox::Ignore | QMessageBox::Cancel  | QMessageBox::Ok);
+
+		break;
+	}
+
+	case DEVICE_LOCKED:
+	{
+		msg = QString("%1 (%2)").arg(STR_DEVLOCKED).arg(err_no);
+
+		rv = QMessageBox::question(this, "Error", msg, QMessageBox::Ignore | QMessageBox::Cancel  | QMessageBox::Ok);
+
+		break;
+	}
+
+	case OP_ABORTED:
+		note.setText(STR_OPABORTED);
+		note.exec();
+		break;
+
+	case E2ERR_OPENFAILED:
+		msg = QString("%1 (%2)").arg(STR_OPENFAILED).arg(err_no);
+
+		note.setText(msg);
+		note.exec();
+		break;
+
+	case E2ERR_ACCESSDENIED:
+		msg = QString("%1 (%2)").arg(STR_ACCDENIED).arg(err_no);
+
+		note.setText(msg);
+		note.exec();
+		break;
+
+	case E2ERR_NOTINSTALLED:
+		msg = QString("%1 (%2)").arg(STR_NOTINST).arg(err_no);
+
+		note.setText(msg);
+		note.exec();
+		break;
+
+	case IICERR_SDACONFLICT:
+	case IICERR_SCLCONFLICT:
+		msg = QString("%1 (%2)").arg(STR_HWERROR).arg(err_no);
+
+		note.setText(msg);
+		note.exec();
+		break;
+
+	case IICERR_BUSBUSY:
+		msg = QString("%1 (%2)").arg(STR_BUSBUSY).arg(err_no);
+
+		note.setText(msg);
+		note.exec();
+		break;
+
+	case IICERR_NOTACK:
+		msg = QString("%1 (%2)").arg(STR_I2CNOACK).arg(err_no);
+
+		note.setText(msg);
+		note.exec();
+		break;
+
+	case IICERR_NOADDRACK:
+	{
+		msg = QString("%1 (%2)").arg(STR_I2CNODEV).arg(err_no);
+		rv = QMessageBox::question(this, "Error", msg, QMessageBox::Ignore | QMessageBox::Cancel  | QMessageBox::Ok);//retryModalDialog re(this, msg);
+
+		break;
+	}
+
+	case IICERR_TIMEOUT:
+		msg = QString("%1 (%2)").arg(STR_I2CTIMEOUT).arg(err_no);
+
+		note.setText(msg);
+		note.exec();
+		break;
+
+	case IICERR_STOP:
+		msg = QString("%1 (%2)").arg(STR_I2CSTOPERR).arg(err_no);
+
+		note.setText(msg);
+		note.exec();
+		break;
+
+	case E2ERR_WRITEFAILED:
+		msg = QString("%1 (%2)").arg(STR_WRITEERR).arg(err_no);
+
+		note.setText(msg);
+		note.exec();
+		break;
+
+	case E2ERR_BLANKCHECKFAILED:
+		msg = QString("%1 (%2)").arg(STR_BLANKCHECKERR).arg(err_no);
+
+		note.setText(msg);
+		note.exec();
+		break;
+
+	case NOTSUPPORTED:
+		msg = QString("%1 (%2)").arg(STR_OPNOTSUP).arg(err_no);
+
+		note.setText(msg);
+		note.exec();
+		break;
+
+	default:
+		if (msgerr.length())
 		{
-			QString str = awip ? awip->GetDetectedSignatureStr() : "";
-
-			if (str.length() > 0)
-			{
-				msg = QString("%1 (%2)\nDetected signature: %3").arg(STR_DEVUNKNOWN).arg(err_no).arg(str);
-			}
-			else
-			{
-				msg = QString("%1 (%2)").arg(STR_DEVUNKNOWN).arg(err_no);
-			}
-
-			rv = QMessageBox::question(this, "Error", msg, QMessageBox::Ignore | QMessageBox::Cancel  | QMessageBox::Ok);
-
-			break;
+			msg = msgerr;
+		}
+		else
+		{
+			msg = QString("%1 (%2)").arg(STR_ERRNO).arg(err_no);
 		}
 
-		case DEVICE_LOCKED:
-		{
-			msg = QString("%1 (%2)").arg(STR_DEVLOCKED).arg(err_no);
-
-			rv = QMessageBox::question(this, "Error", msg, QMessageBox::Ignore | QMessageBox::Cancel  | QMessageBox::Ok);
-
-			break;
-		}
-
-		case OP_ABORTED:
-			note.setText(STR_OPABORTED);
-			note.exec();
-			break;
-
-		case E2ERR_OPENFAILED:
-			msg = QString("%1 (%2)").arg(STR_OPENFAILED).arg(err_no);
-
-			note.setText(msg);
-			note.exec();
-			break;
-
-		case E2ERR_ACCESSDENIED:
-			msg = QString("%1 (%2)").arg(STR_ACCDENIED).arg(err_no);
-
-			note.setText(msg);
-			note.exec();
-			break;
-
-		case E2ERR_NOTINSTALLED:
-			msg = QString("%1 (%2)").arg(STR_NOTINST).arg(err_no);
-
-			note.setText(msg);
-			note.exec();
-			break;
-
-		case IICERR_SDACONFLICT:
-		case IICERR_SCLCONFLICT:
-			msg = QString("%1 (%2)").arg(STR_HWERROR).arg(err_no);
-
-			note.setText(msg);
-			note.exec();
-			break;
-
-		case IICERR_BUSBUSY:
-			msg = QString("%1 (%2)").arg(STR_BUSBUSY).arg(err_no);
-
-			note.setText(msg);
-			note.exec();
-			break;
-
-		case IICERR_NOTACK:
-			msg = QString("%1 (%2)").arg(STR_I2CNOACK).arg(err_no);
-
-			note.setText(msg);
-			note.exec();
-			break;
-
-		case IICERR_NOADDRACK:
-		{
-			msg = QString("%1 (%2)").arg(STR_I2CNODEV).arg(err_no);
-			rv = QMessageBox::question(this, "Error", msg, QMessageBox::Ignore | QMessageBox::Cancel  | QMessageBox::Ok);//retryModalDialog re(this, msg);
-
-			break;
-		}
-
-		case IICERR_TIMEOUT:
-			msg = QString("%1 (%2)").arg(STR_I2CTIMEOUT).arg(err_no);
-
-			note.setText(msg);
-			note.exec();
-			break;
-
-		case IICERR_STOP:
-			msg = QString("%1 (%2)").arg(STR_I2CSTOPERR).arg(err_no);
-
-			note.setText(msg);
-			note.exec();
-			break;
-
-		case E2ERR_WRITEFAILED:
-			msg = QString("%1 (%2)").arg(STR_WRITEERR).arg(err_no);
-
-			note.setText(msg);
-			note.exec();
-			break;
-
-		case E2ERR_BLANKCHECKFAILED:
-			msg = QString("%1 (%2)").arg(STR_BLANKCHECKERR).arg(err_no);
-
-			note.setText(msg);
-			note.exec();
-			break;
-
-		case NOTSUPPORTED:
-			msg = QString("%1 (%2)").arg(STR_OPNOTSUP).arg(err_no);
-
-			note.setText(msg);
-			note.exec();
-			break;
-
-		default:
-			if (msgerr.length())
-			{
-				msg = msgerr;
-			}
-			else
-			{
-				msg = QString("%1 (%2)").arg(STR_ERRNO).arg(err_no);
-			}
-
-			note.setText(msg);
-			note.exec();
-			break;
+		note.setText(msg);
+		note.exec();
+		break;
 	}
 
 	return rv;
@@ -3144,7 +3144,7 @@ int e2CmdWindow::CmdProgram()
 }
 
 //**
-static char *mytokenizer(char *buf, char*&next)
+static char *mytokenizer(char *buf, char *&next)
 {
 	char *sp = buf;
 	char *spend = NULL;

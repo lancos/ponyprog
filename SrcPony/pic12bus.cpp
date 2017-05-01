@@ -87,29 +87,29 @@ void Pic12Bus::SetDelay()
 
 	switch (val)
 	{
-		case TURBO:
-			n = 1;
-			break;
+	case TURBO:
+		n = 1;
+		break;
 
-		case FAST:
-			n = 3;
-			break;
+	case FAST:
+		n = 3;
+		break;
 
-		case SLOW:
-			n = 20;
-			break;
+	case SLOW:
+		n = 20;
+		break;
 
-		case VERYSLOW:
-			n = 100;
-			break;
+	case VERYSLOW:
+		n = 100;
+		break;
 
-		case ULTRASLOW:
-			n = 1000;
-			break;
+	case ULTRASLOW:
+		n = 1000;
+		break;
 
-		default:
-			n = 8;         //Default (< 100KHz)
-			break;
+	default:
+		n = 8;         //Default (< 100KHz)
+		break;
 	}
 
 	BusIO::SetDelay(n);

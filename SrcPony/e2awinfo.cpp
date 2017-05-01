@@ -295,225 +295,225 @@ void e2AppWinInfo::SetEEProm(unsigned long id)
 
 	switch (eep_type)
 	{
-		//AutoTag
-		//Setting the device pointer to selected type
-		case E24XX:
-			eep = eep24xx;
-			break;
+	//AutoTag
+	//Setting the device pointer to selected type
+	case E24XX:
+		eep = eep24xx;
+		break;
 
-		case E24XX1_A:
-			eep = eep24xx1;
+	case E24XX1_A:
+		eep = eep24xx1;
 
-			if (eep_subtype == 0)
-			{
-				//no autodetect: set a reasonable default
-				eep_subtype = GetE2PSubType(E2401_A);
-			}
-
-			break;
-
-		case E24XX1_B:
-			eep = eep2401;
-
-			if (eep_subtype == 0)
-			{
-				//no autodetect: set a reasonable default
-				eep_subtype = GetE2PSubType(E2401_B);
-			}
-
-			break;
-
-		case E24XX2:
-			eep = eep24xx2;
-
-			if (eep_subtype == 0)
-			{
-				//no autodetect: set a reasonable default
-				eep_subtype = GetE2PSubType(E2432);
-			}
-
-			eep->DefaultBankSize();
-			break;
-
-		case E24XX5:
-			eep = eep24xx5;
-			break;
-
-		case AT90SXX:
+		if (eep_subtype == 0)
 		{
-			eep = eepAt90s;
-
-			if (eep_subtype == 0)
-			{
-				//no autodetect: set a reasonable default
-				eep_subtype = GetE2PSubType(AT90S1200);
-			}
-
-			long xtype = GetEEPId();
-			eep->SetProgPageSize(GetEEPTypeWPageSize(xtype), false);
-			At90sBus *b = (At90sBus *)eep->GetBus();
-			b->SetFlashPagePolling((xtype != ATmega603) && (xtype != ATmega103));
-			b->SetOld1200Mode((xtype == AT90S1200));
-			break;
+			//no autodetect: set a reasonable default
+			eep_subtype = GetE2PSubType(E2401_A);
 		}
 
-		case AT89SXX:
+		break;
+
+	case E24XX1_B:
+		eep = eep2401;
+
+		if (eep_subtype == 0)
 		{
-			eep = eepAt89s;
-
-			if (eep_subtype == 0)
-			{
-				//no autodetect: set a reasonable default
-				eep_subtype = GetE2PSubType(AT89S8252);
-			}
-
-			long xtype = GetEEPId();
-
-			if (E2Profile::GetAt89PageOp())
-			{
-				eep->SetProgPageSize(GetEEPTypeWPageSize(GetEEPId()), false);        //write prog page size
-				eep->SetProgPageSize(GetEEPTypeWPageSize(GetEEPId()), true);         //read prog page size
-				eep->SetDataPageSize(GetEEPTypeWPageSize(GetEEPId()) / 2, false);    //write data page size
-				eep->SetDataPageSize(GetEEPTypeWPageSize(GetEEPId()) / 2, true);     //read data page size
-			}
-
-			At89sBus *b = (At89sBus *)eep->GetBus();
-			b->SetCompatibilityMode((xtype == AT89S8252 || xtype == AT89S53));
-			b->SetFallingPhase((xtype == AT89S8253) && E2Profile::Get8253FallEdge());
-			b->SetPagePolling(true, (xtype == AT89S8253 || xtype == AT89S51 || xtype == AT89S52));
-			b->SetPagePolling(false, (xtype == AT89S8253));
-			break;
+			//no autodetect: set a reasonable default
+			eep_subtype = GetE2PSubType(E2401_B);
 		}
 
-		case E93X6:
-			eep = eep93xx16;
+		break;
 
-			if (eep_subtype == 0)
-			{
-				//no autodetect: set a reasonable default
-				eep_subtype = GetE2PSubType(E9306);
-			}
+	case E24XX2:
+		eep = eep24xx2;
 
-			break;
+		if (eep_subtype == 0)
+		{
+			//no autodetect: set a reasonable default
+			eep_subtype = GetE2PSubType(E2432);
+		}
 
-		case E93XX_8:
-			eep = eep93xx8;
+		eep->DefaultBankSize();
+		break;
 
-			if (eep_subtype == 0)
-			{
-				//no autodetect: set a reasonable default
-				eep_subtype = GetE2PSubType(E9306_8);
-			}
+	case E24XX5:
+		eep = eep24xx5;
+		break;
 
-			break;
+	case AT90SXX:
+	{
+		eep = eepAt90s;
 
-		case PIC16XX:
-			eep = eepPic16;
+		if (eep_subtype == 0)
+		{
+			//no autodetect: set a reasonable default
+			eep_subtype = GetE2PSubType(AT90S1200);
+		}
 
-			if (eep_subtype == 0)
-			{
-				//no autodetect: set a reasonable default
-				eep_subtype = GetE2PSubType(PIC1684);
-			}
+		long xtype = GetEEPId();
+		eep->SetProgPageSize(GetEEPTypeWPageSize(xtype), false);
+		At90sBus *b = (At90sBus *)eep->GetBus();
+		b->SetFlashPagePolling((xtype != ATmega603) && (xtype != ATmega103));
+		b->SetOld1200Mode((xtype == AT90S1200));
+		break;
+	}
 
-			break;
+	case AT89SXX:
+	{
+		eep = eepAt89s;
 
-		case PIC168XX:
-			eep = eepPic168xx;
-			//      if (eep_subtype == 0)
-			//      {
-			//              eep_subtype = GetE2PSubType(PIC1684A);
-			//      }
-			break;
+		if (eep_subtype == 0)
+		{
+			//no autodetect: set a reasonable default
+			eep_subtype = GetE2PSubType(AT89S8252);
+		}
 
-		case PIC125XX:
-			eep = eepPic125xx;
+		long xtype = GetEEPId();
 
-			if (eep_subtype == 0)
-			{
-				//no autodetect: set a reasonable default
-				eep_subtype = GetE2PSubType(PIC12508);
-			}
+		if (E2Profile::GetAt89PageOp())
+		{
+			eep->SetProgPageSize(GetEEPTypeWPageSize(GetEEPId()), false);        //write prog page size
+			eep->SetProgPageSize(GetEEPTypeWPageSize(GetEEPId()), true);         //read prog page size
+			eep->SetDataPageSize(GetEEPTypeWPageSize(GetEEPId()) / 2, false);    //write data page size
+			eep->SetDataPageSize(GetEEPTypeWPageSize(GetEEPId()) / 2, true);     //read data page size
+		}
 
-			break;
+		At89sBus *b = (At89sBus *)eep->GetBus();
+		b->SetCompatibilityMode((xtype == AT89S8252 || xtype == AT89S53));
+		b->SetFallingPhase((xtype == AT89S8253) && E2Profile::Get8253FallEdge());
+		b->SetPagePolling(true, (xtype == AT89S8253 || xtype == AT89S51 || xtype == AT89S52));
+		b->SetPagePolling(false, (xtype == AT89S8253));
+		break;
+	}
 
-		case E250XX:
-			eep = eep250xx;
+	case E93X6:
+		eep = eep93xx16;
 
-			if (eep_subtype == 0)
-			{
-				//no autodetect: set a reasonable default
-				eep_subtype = GetE2PSubType(E25010);
-			}
+		if (eep_subtype == 0)
+		{
+			//no autodetect: set a reasonable default
+			eep_subtype = GetE2PSubType(E9306);
+		}
 
-			break;
+		break;
 
-		case E25XXX:
-			eep = eep25xxx;
+	case E93XX_8:
+		eep = eep93xx8;
 
-			if (eep_subtype == 0)
-			{
-				//no autodetect: set a reasonable default
-				eep_subtype = GetE2PSubType(E25080);
-			}
+		if (eep_subtype == 0)
+		{
+			//no autodetect: set a reasonable default
+			eep_subtype = GetE2PSubType(E9306_8);
+		}
 
-			//eep->SetBus(GetBusVectorPtr()[AT250BIG-1]);
-			break;
+		break;
 
-		case E2506XX:
-			eep = eep2506;
+	case PIC16XX:
+		eep = eepPic16;
 
-			if (eep_subtype == 0)
-			{
-				//no autodetect: set a reasonable default
-				eep_subtype = GetE2PSubType(E2506);
-			}
+		if (eep_subtype == 0)
+		{
+			//no autodetect: set a reasonable default
+			eep_subtype = GetE2PSubType(PIC1684);
+		}
 
-			break;
+		break;
 
-		case ENVMXXX:
-			eep = eep3060;
+	case PIC168XX:
+		eep = eepPic168xx;
+		//      if (eep_subtype == 0)
+		//      {
+		//              eep_subtype = GetE2PSubType(PIC1684A);
+		//      }
+		break;
 
-			if (eep_subtype == 0)
-			{
-				//no autodetect: set a reasonable default
-				eep_subtype = GetE2PSubType(ENVM3060);
-			}
+	case PIC125XX:
+		eep = eepPic125xx;
 
-			break;
+		if (eep_subtype == 0)
+		{
+			//no autodetect: set a reasonable default
+			eep_subtype = GetE2PSubType(PIC12508);
+		}
 
-		case AT17XXX:
-			eep = eep17xxx;
+		break;
 
-			if (eep_subtype == 0)
-			{
-				//no autodetect: set a reasonable default
-				eep_subtype = GetE2PSubType(AT1765);
-			}
+	case E250XX:
+		eep = eep250xx;
 
-			break;
+		if (eep_subtype == 0)
+		{
+			//no autodetect: set a reasonable default
+			eep_subtype = GetE2PSubType(E25010);
+		}
 
-		case X24C44XX:
-			if (eep_subtype == 0)
-			{
-				//no autodetect: set a reasonable default
-				eep_subtype = GetE2PSubType(S24H30);
-			}
+		break;
 
-			if (GetEEPId() == S24H30)
-			{
-				eep = eep2430;
-			}
-			else
-			{
-				eep = eep2444;
-			}
+	case E25XXX:
+		eep = eep25xxx;
 
-			break;
+		if (eep_subtype == 0)
+		{
+			//no autodetect: set a reasonable default
+			eep_subtype = GetE2PSubType(E25080);
+		}
 
-		default:
-			eep = eep24xx;         //20/07/99      -- to prevent crash
-			break;
+		//eep->SetBus(GetBusVectorPtr()[AT250BIG-1]);
+		break;
+
+	case E2506XX:
+		eep = eep2506;
+
+		if (eep_subtype == 0)
+		{
+			//no autodetect: set a reasonable default
+			eep_subtype = GetE2PSubType(E2506);
+		}
+
+		break;
+
+	case ENVMXXX:
+		eep = eep3060;
+
+		if (eep_subtype == 0)
+		{
+			//no autodetect: set a reasonable default
+			eep_subtype = GetE2PSubType(ENVM3060);
+		}
+
+		break;
+
+	case AT17XXX:
+		eep = eep17xxx;
+
+		if (eep_subtype == 0)
+		{
+			//no autodetect: set a reasonable default
+			eep_subtype = GetE2PSubType(AT1765);
+		}
+
+		break;
+
+	case X24C44XX:
+		if (eep_subtype == 0)
+		{
+			//no autodetect: set a reasonable default
+			eep_subtype = GetE2PSubType(S24H30);
+		}
+
+		if (GetEEPId() == S24H30)
+		{
+			eep = eep2430;
+		}
+		else
+		{
+			eep = eep2444;
+		}
+
+		break;
+
+	default:
+		eep = eep24xx;         //20/07/99      -- to prevent crash
+		break;
 	}
 
 	fuse_ok = false;                //invalidate current fuse settings

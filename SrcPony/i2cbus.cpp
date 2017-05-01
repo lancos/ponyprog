@@ -359,29 +359,29 @@ void I2CBus::SetDelay()
 
 	switch (val)
 	{
-		case TURBO:
-			n = 0;          // as fast as your PC can
-			break;
+	case TURBO:
+		n = 0;          // as fast as your PC can
+		break;
 
-		case FAST:
-			n = 2;          // > 100 Khz, < 400 Khz
-			break;
+	case FAST:
+		n = 2;          // > 100 Khz, < 400 Khz
+		break;
 
-		case SLOW:
-			n = 20;         // (< 25 Khz)
-			break;
+	case SLOW:
+		n = 20;         // (< 25 Khz)
+		break;
 
-		case VERYSLOW:
-			n = 100;
-			break;
+	case VERYSLOW:
+		n = 100;
+		break;
 
-		case ULTRASLOW:
-			n = 1000;
-			break;
+	case ULTRASLOW:
+		n = 1000;
+		break;
 
-		default:
-			n = 5;          //Default (< 100KHz)
-			break;
+	default:
+		n = 5;          //Default (< 100KHz)
+		break;
 	}
 
 	BusIO::SetDelay(n);

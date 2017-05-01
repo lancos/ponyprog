@@ -696,53 +696,53 @@ int RS232Interface::SetSerialParams(long speed, int bits, int parity, int stops,
 
 		switch (speed)
 		{
-			case 300:
-				baudrate = B300;
-				break;
+		case 300:
+			baudrate = B300;
+			break;
 
-			case 600:
-				baudrate = B600;
-				break;
+		case 600:
+			baudrate = B600;
+			break;
 
-			case 1200:
-				baudrate = B1200;
-				break;
+		case 1200:
+			baudrate = B1200;
+			break;
 
-			case 2400:
-				baudrate = B2400;
-				break;
+		case 2400:
+			baudrate = B2400;
+			break;
 
-			case 4800:
-				baudrate = B4800;
-				break;
+		case 4800:
+			baudrate = B4800;
+			break;
 
-			case 9600:
-				baudrate = B9600;
-				break;
+		case 9600:
+			baudrate = B9600;
+			break;
 
-			case 19200:
-				baudrate = B19200;
-				break;
+		case 19200:
+			baudrate = B19200;
+			break;
 
-			case 38400:
-				baudrate = B38400;
-				break;
+		case 38400:
+			baudrate = B38400;
+			break;
 
-			case 57600:
-				baudrate = B57600;
-				break;
+		case 57600:
+			baudrate = B57600;
+			break;
 
-			case 115200:
-				baudrate = B115200;
-				break;
+		case 115200:
+			baudrate = B115200;
+			break;
 
-			case 230400:
-				baudrate = B230400;
-				break;
+		case 230400:
+			baudrate = B230400;
+			break;
 
-			default:
-				baudrate = B9600;
-				break;
+		default:
+			baudrate = B9600;
+			break;
 		}
 
 		cfsetispeed(&termios, baudrate);

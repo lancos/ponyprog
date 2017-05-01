@@ -8,31 +8,37 @@ if [ ! -x "$CMD" ]; then
    exit 1
 fi
 
-ASTYLE_VERSION="Artistic Style Version 3."
+ASTYLE2_VERSION="Artistic Style Version 2."
+ASTYLE3_VERSION="Artistic Style Version 3."
 
-if [[ "`$CMD --version 2>&1`" != ${ASTYLE_VERSION}* ]]; then
-        echo "Requested ${ASTYLE_VERSION}"
-	exit 2
-fi
-
-set -e
- 
-export ARTISTIC_STYLE_OPTIONS="\
+ARTISTIC_STYLE_OPTIONS="\
 --mode=c \
 --style=allman \
 --indent=force-tab=4 \
 --indent-modifiers \
---indent-switches \
 --indent-preproc-define \
 --pad-oper \
---pad-comma \
 --unpad-paren \
 --pad-header \
 --align-pointer=name \
 --align-reference=name \
---add-braces \
 --formatted \
 --lineend=linux"
+
+if [[ "`$CMD --version 2>&1`" == ${ASTYLE3_VERSION}* ]]; then
+
+ARTISTIC_STYLE_OPTIONS="$ARTISTIC_STYLE_OPTIONS --pad-comma --add-braces"
+
+elif [[ "`$CMD --version 2>&1`" == ${ASTYLE2_VERSION}* ]]; then
+
+ARTISTIC_STYLE_OPTIONS="$ARTISTIC_STYLE_OPTIONS --add-brackets"
+
+else
+	echo "Requested version 2 or 3"
+	exit 2
+fi
+
+set -e
 
 $CMD $ARTISTIC_STYLE_OPTIONS --suffix=none --recursive  "SrcPony/*.cpp" "SrcPony/*.h"
 

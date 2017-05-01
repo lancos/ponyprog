@@ -92,83 +92,83 @@ static QVector<chipInfo> const GetMap(int pritype)
 {
 	switch (pritype)
 	{
-		//AutoTag
-		//Returns vector
-		case E24XX:
-			return eep24xx_map;
-			break;
+	//AutoTag
+	//Returns vector
+	case E24XX:
+		return eep24xx_map;
+		break;
 
-		case E24XX1_A:
-			return eep24xx1A_map;
-			break;
+	case E24XX1_A:
+		return eep24xx1A_map;
+		break;
 
-		case E24XX1_B:
-			return eep24xx1B_map;
-			break;
+	case E24XX1_B:
+		return eep24xx1B_map;
+		break;
 
-		case E24XX2:
-			return eep24xx2_map;
-			break;
+	case E24XX2:
+		return eep24xx2_map;
+		break;
 
-		case E24XX5:
-			return eep24xx5_map;
-			break;
+	case E24XX5:
+		return eep24xx5_map;
+		break;
 
-		case AT90SXX:
-			return eepAt90s_map;
-			break;
+	case AT90SXX:
+		return eepAt90s_map;
+		break;
 
-		case AT89SXX:
-			return eepAt89s_map;
-			break;
+	case AT89SXX:
+		return eepAt89s_map;
+		break;
 
-		case E93X6:
-			return eep93x6_map;
-			break;
+	case E93X6:
+		return eep93x6_map;
+		break;
 
-		case E93XX_8:
-			return eep93xx8_map;
-			break;
+	case E93XX_8:
+		return eep93xx8_map;
+		break;
 
-		case PIC16XX:
-			return eepPic16_map;
-			break;
+	case PIC16XX:
+		return eepPic16_map;
+		break;
 
-		case PIC168XX:
-			return eepPic168xx_map;
-			break;
+	case PIC168XX:
+		return eepPic168xx_map;
+		break;
 
-		case PIC125XX:
-			return eepPic125_map;
-			break;
+	case PIC125XX:
+		return eepPic125_map;
+		break;
 
-		case E250XX:
-			return eep250xx_map;
-			break;
+	case E250XX:
+		return eep250xx_map;
+		break;
 
-		case E25XXX:
-			return eep25xxx_map;
-			break;
+	case E25XXX:
+		return eep25xxx_map;
+		break;
 
-		case E2506XX:
-			return eep2506_map;
-			break;
+	case E2506XX:
+		return eep2506_map;
+		break;
 
-		case ENVMXXX:
-			return eepnvm3060_map;
-			break;
+	case ENVMXXX:
+		return eepnvm3060_map;
+		break;
 
-		case AT17XXX:
-			return eep17xxx_map;
-			break;
+	case AT17XXX:
+		return eep17xxx_map;
+		break;
 
-		case X24C44XX:
-			return eep2444_map;
-			break;
+	case X24C44XX:
+		return eep2444_map;
+		break;
 
-		default:
-			return QVector<chipInfo>();
-			break;
+	default:
+		return QVector<chipInfo>();
+		break;
 	}
 }
 

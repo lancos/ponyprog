@@ -430,78 +430,78 @@ void e2App::SetInterfaceType(HInterfaceType type)
 {
 	switch (type)
 	{
-		//Interface initializers
-		case SIPROG_API:
-			iType = SIPROG_API;
-			busIntp = &siprog_apiI;
-			break;
+	//Interface initializers
+	case SIPROG_API:
+		iType = SIPROG_API;
+		busIntp = &siprog_apiI;
+		break;
 
-		case SIPROG_IO:
-			iType = SIPROG_IO;
-			busIntp = &siprog_ioI;
-			break;
+	case SIPROG_IO:
+		iType = SIPROG_IO;
+		busIntp = &siprog_ioI;
+		break;
 
-		case EASYI2C_API:
-			iType = EASYI2C_API;
-			busIntp = &easyi2c_apiI;
-			easyi2c_apiI.SetIOmode(false);
-			easyi2c_apiI.Close();
-			break;
+	case EASYI2C_API:
+		iType = EASYI2C_API;
+		busIntp = &easyi2c_apiI;
+		easyi2c_apiI.SetIOmode(false);
+		easyi2c_apiI.Close();
+		break;
 
-		case EASYI2C_IO:
-			iType = EASYI2C_IO;
-			busIntp = &easyi2c_ioI;
-			easyi2c_ioI.SetIOmode(true);
-			easyi2c_ioI.Close();
-			break;
+	case EASYI2C_IO:
+		iType = EASYI2C_IO;
+		busIntp = &easyi2c_ioI;
+		easyi2c_ioI.SetIOmode(true);
+		easyi2c_ioI.Close();
+		break;
 
-		case AVRISP:
-			iType = AVRISP;
-			busIntp = &avrisp_apiI;
-			avrisp_apiI.SetIOmode(false);
-			avrisp_apiI.Close();
-			break;
+	case AVRISP:
+		iType = AVRISP;
+		busIntp = &avrisp_apiI;
+		avrisp_apiI.SetIOmode(false);
+		avrisp_apiI.Close();
+		break;
 
-		case AVRISP_IO:
-			iType = AVRISP_IO;
-			busIntp = &avrisp_ioI;
-			avrisp_ioI.SetIOmode(true);
-			avrisp_ioI.Close();
-			break;
+	case AVRISP_IO:
+		iType = AVRISP_IO;
+		busIntp = &avrisp_ioI;
+		avrisp_ioI.SetIOmode(true);
+		avrisp_ioI.Close();
+		break;
 
-		case JDM_API:
-			iType = JDM_API;
-			busIntp = &jdm_apiI;
-			jdm_apiI.SetCmd2CmdDelay(E2Profile::GetJDMCmd2CmdDelay());
-			break;
+	case JDM_API:
+		iType = JDM_API;
+		busIntp = &jdm_apiI;
+		jdm_apiI.SetCmd2CmdDelay(E2Profile::GetJDMCmd2CmdDelay());
+		break;
 
-		//      case JDM_IO:
-		//              iType = JDM_IO;
-		//              busIntp = &jdm_ioI;
-		//              break;
-		case DT006_API:
-			iType = DT006_API;
-			busIntp = &dt006_apiI;
-			dt006_apiI.SetIOmode(false);
-			dt006_apiI.Close();
-			break;
+	//      case JDM_IO:
+	//              iType = JDM_IO;
+	//              busIntp = &jdm_ioI;
+	//              break;
+	case DT006_API:
+		iType = DT006_API;
+		busIntp = &dt006_apiI;
+		dt006_apiI.SetIOmode(false);
+		dt006_apiI.Close();
+		break;
 
-		case DT006_IO:
-			iType = DT006_IO;
-			busIntp = &dt006_ioI;
-			dt006_ioI.SetIOmode(true);
-			dt006_ioI.Close();
-			break;
+	case DT006_IO:
+		iType = DT006_IO;
+		busIntp = &dt006_ioI;
+		dt006_ioI.SetIOmode(true);
+		dt006_ioI.Close();
+		break;
 
-		case LINUXSYSFS_IO:
-			iType = LINUXSYSFS_IO;
-			busIntp = &linuxsysfs_ioI;
-			break;
+	case LINUXSYSFS_IO:
+		iType = LINUXSYSFS_IO;
+		busIntp = &linuxsysfs_ioI;
+		break;
 
-		default:
-			iType = SIPROG_API;             //20/07/99 -- to prevent crash
-			busIntp = &siprog_apiI;
-			break;
+	default:
+		iType = SIPROG_API;             //20/07/99 -- to prevent crash
+		busIntp = &siprog_apiI;
+		break;
 	}
 
 	int k;

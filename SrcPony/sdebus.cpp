@@ -69,29 +69,29 @@ void Sde2506Bus::SetDelay()
 
 	switch (val)
 	{
-		case TURBO:
-			n = 1;         // as fast as your PC can
-			break;
+	case TURBO:
+		n = 1;         // as fast as your PC can
+		break;
 
-		case FAST:
-			n = 5;
-			break;
+	case FAST:
+		n = 5;
+		break;
 
-		case SLOW:
-			n = 30;
-			break;
+	case SLOW:
+		n = 30;
+		break;
 
-		case VERYSLOW:
-			n = 100;
-			break;
+	case VERYSLOW:
+		n = 100;
+		break;
 
-		case ULTRASLOW:
-			n = 1000;
-			break;
+	case ULTRASLOW:
+		n = 1000;
+		break;
 
-		default:
-			n = 10;         //Default (< 100KHz)
-			break;
+	default:
+		n = 10;         //Default (< 100KHz)
+		break;
 	}
 
 	BusIO::SetDelay(n);
