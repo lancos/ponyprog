@@ -2,6 +2,7 @@
 
 SET(PONY_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/aboutmdlg.cpp
                  ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
+                 ${CMAKE_CURRENT_SOURCE_DIR}/Translator.cpp
                  ${CMAKE_CURRENT_SOURCE_DIR}/e2app.cpp
                  ${CMAKE_CURRENT_SOURCE_DIR}/at25xxx.cpp
                  ${CMAKE_CURRENT_SOURCE_DIR}/at93cbus.cpp
@@ -76,6 +77,7 @@ SET(PONY_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/aboutmdlg.cpp
 
 SET(PONY_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/e2app.h 
                  ${CMAKE_CURRENT_SOURCE_DIR}/e2awinfo.h
+                 ${CMAKE_CURRENT_SOURCE_DIR}/Translator.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/e2cmdw.h 
                  ${CMAKE_CURRENT_SOURCE_DIR}/globals.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/device.h
@@ -152,7 +154,7 @@ SET(PONY_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/e2app.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/pic16xx.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/ppuser.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/rs232int.h
-                 ${CMAKE_CURRENT_SOURCE_DIR}/string_table.h
+#                  ${CMAKE_CURRENT_SOURCE_DIR}/string_table.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/x2444.h)
 
 SET(PONY_FORMS  ${CMAKE_CURRENT_SOURCE_DIR}/forms/aboutdlg.ui
