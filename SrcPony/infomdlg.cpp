@@ -7,8 +7,6 @@
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id: infomdlg.cpp,v 1.7 2009/11/16 23:40:43 lancos Exp $
-//-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
 // modify it under the terms of the GNU  General Public License            //
@@ -365,7 +363,7 @@ void editModalDialog::onEdit()
 }
 
 
-const unsigned int MAXLEN = 80;
+const int MAXLEN = 80;
 
 editModalDialog2::editModalDialog2(QWidget *bw, const QString curval, const QString title) :
 	QDialog(bw)

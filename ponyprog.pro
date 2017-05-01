@@ -128,6 +128,7 @@ SOURCES  += SrcPony/aboutmdlg.cpp \
             SrcPony/pic16xx.cpp \
             SrcPony/x2444bus.cpp \
             SrcPony/sdebus.cpp \
+            SrcPony/Translator.cpp \
             qhexedit2/src/chunks.cpp \
             qhexedit2/src/commands.cpp \
             qhexedit2/src/qhexedit.cpp \
@@ -205,8 +206,8 @@ HEADERS  += SrcPony/e2app.h \
             SrcPony/pic16xx.h \
             SrcPony/ppuser.h \
             SrcPony/rs232int.h \
-            SrcPony/string_table.h \
             SrcPony/x2444.h \
+            SrcPony/Translator.h \
             qhexedit2/src/chunks.h \
             qhexedit2/src/commands.h \
             qhexedit2/src/qhexedit.h
