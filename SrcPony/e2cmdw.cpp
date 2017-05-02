@@ -678,7 +678,7 @@ int e2CmdWindow::OnError(int err_no, const QString &msgerr)
 
 	case BADPARAM:
 	{
-		rv = QMessageBox::question(this, "Error", translate(STR_MSGBADPARAM), QMessageBox::Ignore | QMessageBox::Cancel  | QMessageBox::Ok);
+		rv = QMessageBox::question(this, "Error", translate(STR_MSGBADPARAM), QMessageBox::Ignore | QMessageBox::Abort | QMessageBox::Retry);
 		break;
 	}
 
@@ -695,8 +695,7 @@ int e2CmdWindow::OnError(int err_no, const QString &msgerr)
 			msg = QString("%1 (%2)").arg(translate(STR_DEVBADTYPE)).arg(err_no);
 		}
 
-		rv = QMessageBox::question(this, "Error", msg, QMessageBox::Ignore | QMessageBox::Cancel  | QMessageBox::Ok);
-
+		rv = QMessageBox::question(this, "Error", msg, QMessageBox::Ignore | QMessageBox::Abort | QMessageBox::Retry);
 		break;
 	}
 
@@ -713,8 +712,7 @@ int e2CmdWindow::OnError(int err_no, const QString &msgerr)
 			msg = QString("%1 (%2)").arg(translate(STR_DEVUNKNOWN)).arg(err_no);
 		}
 
-		rv = QMessageBox::question(this, "Error", msg, QMessageBox::Ignore | QMessageBox::Cancel  | QMessageBox::Ok);
-
+		rv = QMessageBox::question(this, "Error", msg, QMessageBox::Ignore | QMessageBox::Abort | QMessageBox::Retry);
 		break;
 	}
 
@@ -722,12 +720,13 @@ int e2CmdWindow::OnError(int err_no, const QString &msgerr)
 	{
 		msg = QString("%1 (%2)").arg(STR_DEVLOCKED).arg(err_no);
 
-		rv = QMessageBox::question(this, "Error", msg, QMessageBox::Ignore | QMessageBox::Cancel  | QMessageBox::Ok);
-
+		rv = QMessageBox::question(this, "Error", msg, QMessageBox::Ignore | QMessageBox::Abort | QMessageBox::Retry);
 		break;
 	}
 
 	case OP_ABORTED:
+		note.setWindowTitle(translate(STR_OPABORTED));
+		note.setIcon(QMessageBox::Information);
 		note.setText(translate(STR_OPABORTED));
 		note.exec();
 		break;
@@ -778,8 +777,7 @@ int e2CmdWindow::OnError(int err_no, const QString &msgerr)
 	case IICERR_NOADDRACK:
 	{
 		msg = QString("%1 (%2)").arg(translate(STR_I2CNODEV)).arg(err_no);
-		rv = QMessageBox::question(this, "Error", msg, QMessageBox::Ignore | QMessageBox::Cancel  | QMessageBox::Ok);//retryModalDialog re(this, msg);
-
+		rv = QMessageBox::question(this, "Error", msg, QMessageBox::Ignore | QMessageBox::Abort | QMessageBox::Retry);
 		break;
 	}
 
@@ -1312,30 +1310,37 @@ void e2CmdWindow::doProgress(const QString &text)
 {
 	if (e2Prg)
 	{
-		qDebug() << "something is running";
-		return;
+		qDebug() << "e2Prg alread exist";
+		e2Prg->setLabelText(text);
+		e2Prg->reset();
+	//	e2Prg->setValue(0);
 	}
-
-	e2Prg = new QProgressDialog(text, "Abort", 0, 100, this);
-	e2Prg->setWindowModality(Qt::WindowModal);
-	connect(e2Prg, SIGNAL(canceled()), this,  SLOT(onEndProgress()));
+	else
+	{
+		e2Prg = new QProgressDialog(text, translate(STR_BTNABORT), 0, 100, this);
+		e2Prg->setWindowModality(Qt::WindowModal);
+		e2Prg->setMinimumDuration(100);
+		e2Prg->setAutoReset(true);
+		e2Prg->setAutoClose(true);
+	//	connect(e2Prg, SIGNAL(canceled()), this,  SLOT(onEndProgress()));
+	}
 }
 
 /**
  * @brief SLOT from "cancel" of ProgressDialog
  *
  */
-void e2CmdWindow::onEndProgress()
-{
-	if (e2Prg)
-	{
-		e2Prg->close();
-		delete e2Prg;
-		e2Prg = NULL;
-	}
+//void e2CmdWindow::onEndProgress()
+//{
+//	if (e2Prg)
+//	{
+//		e2Prg->close();
+//		delete e2Prg;
+//		e2Prg = NULL;
+//	}
 
-	qDebug() << "progress dialog finished";
-}
+//	qDebug() << "progress dialog finished";
+//}
 
 
 int e2CmdWindow::findItemInMenuVector(const QString &n)
@@ -2332,12 +2337,11 @@ void e2CmdWindow::onAskToSave()
 // }
 
 
-void e2CmdWindow::onCloseAllDialog()
-{
+//void e2CmdWindow::onCloseAllDialog()
+//{
 	//e2Prg->close();
-	emit onEndProgress();
-	//      e2Dlg->CloseDialog();
-}
+	//e2Dlg->CloseDialog();
+//}
 
 
 void e2CmdWindow::onOscCalibOption()
@@ -2731,8 +2735,8 @@ int e2CmdWindow::CmdRead(int type)
 {
 	if (IsBufChanged() && awip->IsBufferValid() && verbose == verboseAll)
 	{
-		int ret = QMessageBox::warning(this, "PonyProg",
-									   QString(STR_BUFCHANGED3),
+		int ret = QMessageBox::warning(this, APPNAME,
+									   QString(translate(STR_BUFCHANGED3)),
 									   QMessageBox::Yes | QMessageBox::No);
 
 		if (ret == QMessageBox::Yes)
@@ -2754,19 +2758,13 @@ int e2CmdWindow::CmdRead(int type)
 
 		retry_flag = 0;
 
-		if (!e2Prg)
-		{
-			doProgress(translate(STR_MSGREADING));
-			//e2Prg->setLabelText(STR_MSGREADING);
-			//e2Prg->setValue(0);
-		}
+		doProgress(translate(STR_MSGREADING));
 
 		awip->SetFileName(0);
 		SetTitle();
 
 		rval = awip->Read(type);
 		//e2Prg->close();
-		emit onEndProgress();
 
 		if (rval > 0)
 		{
@@ -2775,9 +2773,9 @@ int e2CmdWindow::CmdRead(int type)
 			Draw();
 
 			QString sp;
-			//                      sp = GetEEPTypeString(awip->GetEEPPriType(), awip->GetEEPSubType());
+			//sp = GetEEPTypeString(awip->GetEEPPriType(), awip->GetEEPSubType());
 			sp = GetEEPTypeString(awip->GetEEPId());
-			//             qDebug() << "CmdRead" << awip->GetEEPPriType() << awip->GetEEPSubType() << sp;
+			//qDebug() << "CmdRead" << awip->GetEEPPriType() << awip->GetEEPSubType() << sp;
 			UpdateStrFromStr(sp, "");
 			awip->RecalcCRC();
 			UpdateStatusBar();
@@ -2808,13 +2806,13 @@ int e2CmdWindow::CmdRead(int type)
 			{
 				rval = OnError(rval);
 
-				if (rval == QMessageBox::Cancel)   //Abort
+				if (rval == QMessageBox::Abort)   //Abort
 				{
 					retry_flag = 0;
 					ClearIgnoreFlag();
 				}
 
-				if (rval == QMessageBox::Ok)   //Retry
+				if (rval == QMessageBox::Retry)   //Retry
 				{
 					retry_flag = 1;
 					ClearIgnoreFlag();
@@ -2860,8 +2858,8 @@ int e2CmdWindow::CmdWrite(int type, bool verify)
 	}
 	else
 	{
-		if ((verbose != verboseAll) || (QMessageBox::warning(this, "PonyProg",
-										QString(STR_ASKWRITE),
+		if ((verbose != verboseAll) || (QMessageBox::warning(this, APPNAME,
+										QString(translate(STR_ASKWRITE)),
 										QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes))
 		{
 			int rval;
@@ -2875,12 +2873,7 @@ int e2CmdWindow::CmdWrite(int type, bool verify)
 
 				retry_flag = 0;
 
-				if (!e2Prg)
-				{
-					doProgress(translate(STR_MSGWRITING));
-					//e2Prg->setLabelText(STR_MSGWRITING);
-					//e2Prg->setValue(0);
-				}
+				doProgress(translate(STR_MSGWRITING));
 
 				rval = awip->Write(type, true, verify ? true : false);
 
@@ -2889,8 +2882,6 @@ int e2CmdWindow::CmdWrite(int type, bool verify)
 					if (verify)
 					{
 						doProgress(translate(STR_MSGVERIFING));
-						//e2Prg->setLabelText(STR_MSGVERIFING);
-						//e2Prg->setValue(0);
 
 						if ((old_type & CONFIG_TYPE) &&
 								!(awip->GetFuseBits() == 0 && awip->GetLockBits() == 0))
@@ -2899,7 +2890,7 @@ int e2CmdWindow::CmdWrite(int type, bool verify)
 
 							if (rval > 0)
 							{
-								//      e2Prg->UpdateDialog(0, STR_MSGWRITINGFUSE);
+								//e2Prg->UpdateDialog(0, STR_MSGWRITINGFUSE);
 								rval = awip->Write(CONFIG_TYPE, false, true);
 
 								if (rval > 0)
@@ -2915,7 +2906,6 @@ int e2CmdWindow::CmdWrite(int type, bool verify)
 					}
 
 					//e2Prg->close();
-					emit onEndProgress();
 
 					QMessageBox note;
 
@@ -2975,8 +2965,7 @@ int e2CmdWindow::CmdWrite(int type, bool verify)
 				else
 				{
 					//e2Prg->close();
-					emit onEndProgress();
-					//                                      CheckEvents();
+					//CheckEvents();
 
 					result = rval;
 
@@ -2984,13 +2973,13 @@ int e2CmdWindow::CmdWrite(int type, bool verify)
 					{
 						rval = OnError(rval, translate(STR_MSGWRITEFAIL));
 
-						if (rval == QMessageBox::Cancel)   //Abort
+						if (rval == QMessageBox::Abort)   //Abort
 						{
 							retry_flag = 0;
 							ClearIgnoreFlag();
 						}
 
-						if (rval == QMessageBox::Ok)   //Retry
+						if (rval == QMessageBox::Retry)   //Retry
 						{
 							retry_flag = 1;
 							ClearIgnoreFlag();
@@ -3007,7 +2996,6 @@ int e2CmdWindow::CmdWrite(int type, bool verify)
 			ClearIgnoreFlag();
 
 			//e2Prg->close();
-			emit onEndProgress();
 		} // if ( yn.AskYN(...
 	} //else
 
@@ -3056,7 +3044,7 @@ int e2CmdWindow::CmdReadCalibration(int idx)
 				*bp = (uint8_t)rval;
 
 				awip->RecalcCRC();
-				//      awip->BufChanged();
+				//awip->BufChanged();
 				// EK 2017
 				// TODO
 				Draw();
@@ -3082,13 +3070,13 @@ int e2CmdWindow::CmdReadCalibration(int idx)
 				{
 					rval = OnError(result);
 
-					if (rval == QMessageBox::Cancel)   //Abort
+					if (rval == QMessageBox::Abort)   //Abort
 					{
 						retry_flag = 0;
 						ClearIgnoreFlag();
 					}
 
-					if (rval == QMessageBox::Ok)   //Retry
+					if (rval == QMessageBox::Retry)   //Retry
 					{
 						retry_flag = 1;
 						ClearIgnoreFlag();
@@ -3109,13 +3097,13 @@ int e2CmdWindow::CmdReadCalibration(int idx)
 			{
 				rval = OnError(rval);
 
-				if (rval == QMessageBox::Cancel)   //Abort
+				if (rval == QMessageBox::Abort)   //Abort
 				{
 					retry_flag = 0;
 					ClearIgnoreFlag();
 				}
 
-				if (rval == QMessageBox::Ok)   //Retry
+				if (rval == QMessageBox::Retry)   //Retry
 				{
 					retry_flag = 1;
 					ClearIgnoreFlag();
@@ -3148,20 +3136,14 @@ int e2CmdWindow::CmdErase(int type)
 
 		retry_flag = 0;
 
-		if (!e2Prg)
-		{
-			doProgress(translate(STR_MSGERASING));
-			//e2Prg->setLabelText(STR_MSGERASING);
-			//e2Prg->setValue(0);
-		}
+		doProgress(translate(STR_MSGERASING));
 
 		rval = awip->Erase(type);
 		//e2Prg->close();
-		emit onEndProgress();
 
 		if (rval > 0)
 		{
-			//      CmdClearBuf();
+			//CmdClearBuf();
 
 			if (verbose == verboseAll)
 			{
@@ -3174,9 +3156,9 @@ int e2CmdWindow::CmdErase(int type)
 		}
 		else
 		{
-			/*      first_line = 0;
-			        curIndex = 0;
-			        Draw(); */
+			//first_line = 0;
+			//curIndex = 0;
+			//Draw();
 
 			qDebug() << "CmdWindow->Erase -- Error";
 
@@ -3186,13 +3168,13 @@ int e2CmdWindow::CmdErase(int type)
 			{
 				rval = OnError(rval);
 
-				if (rval == QMessageBox::Cancel)   //Abort
+				if (rval == QMessageBox::Abort)   //Abort
 				{
 					retry_flag = 0;
 					ClearIgnoreFlag();
 				}
 
-				if (rval == QMessageBox::Ok)   //Retry
+				if (rval == QMessageBox::Retry)   //Retry
 				{
 					retry_flag = 1;
 					ClearIgnoreFlag();
@@ -3231,18 +3213,12 @@ int e2CmdWindow::CmdVerify(int type)
 	}
 	else
 	{
-		if (!e2Prg)
-		{
-			doProgress(translate(STR_MSGVERIFING));
-			//e2Prg->setLabelText(STR_MSGVERIFING);
-			//e2Prg->setValue(0);
-		}
+		doProgress(translate(STR_MSGVERIFING));
 
 		QMessageBox note;
 
 		int rval = awip->Verify(type);
 		//e2Prg->close();
-		emit onEndProgress();
 
 		if (rval < 0)
 		{
@@ -3479,14 +3455,12 @@ static QStringList myscantokenizer(char *buf)//, char *arg[], int arglen)
 	ln = ln.simplified();
 	QStringList l;
 
-	if (ln.size() == 0)
-	{
-		return l;
-	}
-	else
+	if (ln.size() > 0)
 	{
 		l = ln.split(" ");
 	}
+
+	return l;
 
 #if 0
 	int k;
@@ -3555,7 +3529,6 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 {
 	int result = OK;
 	char buf[512];
-	QStringList lst;
 	//      char *lst.at(32];
 	//      int n;
 	int linecounter;
@@ -3583,7 +3556,7 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 
 	while (result == OK && !fh.atEnd())
 	{
-		fh.readLine(buf, 511);
+		fh.readLine(buf, sizeof(buf) - 1);
 		linecounter++;
 
 		if (buf[0] == '#')              //Skip comments
@@ -3591,7 +3564,7 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 			continue;
 		}
 
-		lst = myscantokenizer(buf);
+		QStringList lst = myscantokenizer(buf);
 		int n = lst.count();
 
 		if (lst.count() == 0)
@@ -4850,34 +4823,26 @@ int e2CmdWindow::CmdWriteLock()
 
 			retry_flag = 0;
 
-			if (!e2Prg)
-			{
-				doProgress(translate(STR_MSGWRITINGSEC));
-				//e2Prg->setLabelText(STR_MSGWRITINGSEC);
-				//e2Prg->setValue(0);
-			}
+			doProgress(translate(STR_MSGWRITINGSEC));
 
 			rval = awip->SecurityWrite(0, true);
 
 			if (rval == OK)
 			{
 				//e2Prg->close();
-				emit onEndProgress();
 
-				//      if (verbose == verboseAll)
-				//              note.setText("Security bits write successful");
+				//if (verbose == verboseAll)
+				//	note.setText("Security bits write successful");
 
 			} // if ( (rval = ...
 			else if (rval == NOTSUPPORTED)
 			{
 				//e2Prg->close();
-				emit onEndProgress();
 			}
 			else
 			{
 				//e2Prg->close();
-				emit onEndProgress();
-				//                              CheckEvents();
+				//CheckEvents();
 
 				result = rval;
 
@@ -4885,13 +4850,13 @@ int e2CmdWindow::CmdWriteLock()
 				{
 					rval = OnError(rval, translate(STR_MSGWRITESECFAIL));
 
-					if (rval == QMessageBox::Cancel)   //Abort
+					if (rval == QMessageBox::Abort)   //Abort
 					{
 						retry_flag = 0;
 						ClearIgnoreFlag();
 					}
 
-					if (rval == QMessageBox::Ok)   //Retry
+					if (rval == QMessageBox::Retry)   //Retry
 					{
 						retry_flag = 1;
 						ClearIgnoreFlag();
@@ -4930,12 +4895,7 @@ int e2CmdWindow::CmdReadLock()
 
 		retry_flag = 0;
 
-		if (!e2Prg)
-		{
-			doProgress(translate(STR_MSGREADINGSEC));
-			//e2Prg->setLabelText(STR_MSGREADINGSEC);
-			//e2Prg->setValue(0);
-		}
+		doProgress(translate(STR_MSGREADINGSEC));
 
 		rval = awip->SecurityRead(bits);
 
@@ -4947,19 +4907,17 @@ int e2CmdWindow::CmdReadLock()
 			UpdateStatusBar();
 
 			//e2Prg->close();
-			emit onEndProgress();
 
 			// orig deactivated     SpecialBits();
 		} // if ( (rval = ...
 		else if (rval == NOTSUPPORTED)
 		{
 			//e2Prg->close();
-			emit onEndProgress();
 		}
 		else
 		{
-			e2Prg->close();
-			//                      CheckEvents();
+			//e2Prg->close();
+			//CheckEvents();
 
 			result = rval;
 
@@ -4967,13 +4925,13 @@ int e2CmdWindow::CmdReadLock()
 			{
 				rval = OnError(rval, translate(STR_MSGREADSECFAIL));
 
-				if (rval == QMessageBox::Cancel)   //Abort
+				if (rval == QMessageBox::Abort)   //Abort
 				{
 					retry_flag = 0;
 					ClearIgnoreFlag();
 				}
 
-				if (rval == QMessageBox::Ok)   //Retry
+				if (rval == QMessageBox::Retry)   //Retry
 				{
 					retry_flag = 1;
 					ClearIgnoreFlag();
@@ -5008,15 +4966,9 @@ int e2CmdWindow::CmdReadSpecial()
 	while (retry_flag)
 	{
 		result = OK;
-
 		retry_flag = 0;
 
-		if (!e2Prg)
-		{
-			doProgress(translate(STR_MSGREADINGFUSE));
-			//e2Prg->setLabelText(STR_MSGREADINGFUSE);
-			//e2Prg->setValue(0);
-		}
+		doProgress(translate(STR_MSGREADINGFUSE));
 
 		if (type == E2464)
 		{
@@ -5030,20 +4982,17 @@ int e2CmdWindow::CmdReadSpecial()
 		if (rval == OK)
 		{
 			//e2Prg->close();
-			emit onEndProgress();
 
 			// orig deactivated     SpecialBits(1);
 		} // if ( (rval = ...
 		else if (rval == NOTSUPPORTED)
 		{
 			//e2Prg->close();
-			emit onEndProgress();
 		}
 		else
 		{
 			//e2Prg->close();
-			emit onEndProgress();
-			//                      CheckEvents();
+			//CheckEvents();
 
 			result = rval;
 
@@ -5051,13 +5000,13 @@ int e2CmdWindow::CmdReadSpecial()
 			{
 				rval = OnError(rval, translate(STR_MSGREADFUSEFAIL));
 
-				if (rval == QMessageBox::Cancel)   //Abort
+				if (rval == QMessageBox::Abort)   //Abort
 				{
 					retry_flag = 0;
 					ClearIgnoreFlag();
 				}
 
-				if (rval == QMessageBox::Ok)   //Retry
+				if (rval == QMessageBox::Retry)   //Retry
 				{
 					retry_flag = 1;
 					ClearIgnoreFlag();
@@ -5128,15 +5077,9 @@ int e2CmdWindow::CmdWriteSpecial()
 		while (retry_flag)
 		{
 			result = OK;
-
 			retry_flag = 0;
 
-			if (!e2Prg)
-			{
-				doProgress(translate(STR_MSGWRITINGFUSE));
-				//e2Prg->setLabelText(STR_MSGWRITINGFUSE);
-				//e2Prg->setValue(0);
-			}
+			doProgress(translate(STR_MSGWRITINGFUSE));
 
 			if (type == E2464)
 			{
@@ -5150,21 +5093,18 @@ int e2CmdWindow::CmdWriteSpecial()
 			if (rval == OK)
 			{
 				//e2Prg->close();
-				emit onEndProgress();
 
-				//      if (verbose == verboseAll)
-				//              note.setText("Special write successful");
+				//if (verbose == verboseAll)
+				//	note.setText("Special write successful");
 			} // if ( (rval = ...
 			else if (rval == NOTSUPPORTED)
 			{
 				//e2Prg->close();
-				emit onEndProgress();
 			}
 			else
 			{
 				//e2Prg->close();
-				emit onEndProgress();
-				//                              CheckEvents();
+				//CheckEvents();
 
 				result = rval;
 
@@ -5172,13 +5112,13 @@ int e2CmdWindow::CmdWriteSpecial()
 				{
 					rval = OnError(rval, translate(STR_MSGWRITEFUSEFAIL));
 
-					if (rval == QMessageBox::Cancel)   //Abort
+					if (rval == QMessageBox::Abort)   //Abort
 					{
 						retry_flag = 0;
 						ClearIgnoreFlag();
 					}
 
-					if (rval == QMessageBox::Ok)   //Retry
+					if (rval == QMessageBox::Retry)   //Retry
 					{
 						retry_flag = 1;
 						ClearIgnoreFlag();
@@ -6584,7 +6524,7 @@ HIDDEN int FileExist(const QString &name)
 
 bool e2CmdWindow::GetAbortFlag()
 {
-	//CheckEvents();
+	qApp->processEvents();
 
 	if (e2Prg && e2Prg->wasCanceled())
 	{

@@ -7,8 +7,6 @@
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id: e24xx-2.cpp,v 1.4 2009/11/16 23:40:43 lancos Exp $
-//-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
 // modify it under the terms of the GNU  General Public License            //
@@ -81,7 +79,7 @@ int E24xx2::Write(int probe, int type)
 		return BADPARAM;
 	}
 
-	GetBus()->CheckAbort(0);
+	GetBus()->WriteStart();
 
 	long size = GetSize();
 	unsigned char *localbuf = new unsigned char[writepage_size + 2];
@@ -121,7 +119,7 @@ int E24xx2::Write(int probe, int type)
 				break;
 			}
 
-			if (GetBus()->CheckAbort(j * 100 / size))
+			if (GetBus()->WriteProgress(j * 100 / size))
 			{
 				rval = OP_ABORTED;
 				break;
@@ -129,7 +127,7 @@ int E24xx2::Write(int probe, int type)
 		}
 	}
 
-	GetBus()->CheckAbort(100);
+	GetBus()->WriteEnd();
 
 	delete localbuf;
 
@@ -152,7 +150,7 @@ int E24xx2::Read(int probe, int type)
 		return error;
 	}
 
-	GetBus()->CheckAbort(0);
+	GetBus()->ReadStart();
 
 	error = OK;
 
@@ -182,7 +180,7 @@ int E24xx2::Read(int probe, int type)
 				break;
 			}
 
-			if (GetBus()->CheckAbort(k * 100 / size))
+			if (GetBus()->ReadProgress(k * 100 / size))
 			{
 				error = OP_ABORTED;
 				break;
@@ -190,7 +188,7 @@ int E24xx2::Read(int probe, int type)
 		}
 	}
 
-	GetBus()->CheckAbort(100);
+	GetBus()->ReadEnd();
 
 	if (error == OK)
 	{
@@ -219,7 +217,7 @@ int E24xx2::Verify(int type)
 		return OUTOFMEMORY;
 	}
 
-	GetBus()->CheckAbort(0);
+	GetBus()->ReadStart();
 
 	rval = 1;               //true
 
@@ -254,7 +252,7 @@ int E24xx2::Verify(int type)
 				break;
 			}
 
-			if (GetBus()->CheckAbort(k * 100 / size))
+			if (GetBus()->ReadProgress(k * 100 / size))
 			{
 				rval = OP_ABORTED;
 				break;
@@ -262,7 +260,7 @@ int E24xx2::Verify(int type)
 		}
 	}
 
-	GetBus()->CheckAbort(100);
+	GetBus()->ReadEnd();
 
 	delete localbuf;
 	return rval;

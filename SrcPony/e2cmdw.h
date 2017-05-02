@@ -192,8 +192,8 @@ class e2CmdWindow : public QMainWindow, public e2App, public Ui::MainWindow
 	//     void onOverwriteMode(bool b);
 	void onWriteHEndurance();
 	void onAskToSave();
-	//      void onProgress(int val);
-	void onCloseAllDialog();
+	//void onProgress(int val);
+	//void onCloseAllDialog();
 
 	void onSelectEEPType(int val);
 	void onEEPSubType(int val);
@@ -229,13 +229,13 @@ class e2CmdWindow : public QMainWindow, public e2App, public Ui::MainWindow
 	void onSelectSDE2506(QAction *a);
 	void onSelectX244(QAction *a);
 
-	void onEndProgress();
+	//void onEndProgress();
 
 	void selectFontSize(QAction *mnu);
 
 	void setLang(QAction *mnu);
-	//      void setOverwriteMode(bool);
-	//      void dataChanged();
+	//void setOverwriteMode(bool);
+	//void dataChanged();
 
   public:
 	int CmdHelp();

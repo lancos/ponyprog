@@ -7,8 +7,6 @@
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id: globals.h,v 1.16 2016/05/27 11:22:52 lancos Exp $
-//-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
 // modify it under the terms of the GNU  General Public License            //
@@ -44,7 +42,7 @@
 
 #define ALL_TYPE        0x7 // (PROG_TYPE|DATA_TYPE|CONFIG_TYPE)
 
-static QString APPNAME       = "PonyProg2000";
+static QString APPNAME       = "PonyProg";
 static QString AUTHORNAME    = "Claudio Lanconelli";
 static QString AUTHORMAIL    = "PonyProg2000@gmail.com";
 static QString AUTHORWEB     = "http://www.LancOS.com";
@@ -53,7 +51,7 @@ static QString COPYRIGHTYEAR = "1997-2017";
 static QString PORTERGQT     = "Eduard Kalinowski";
 static QString PORTERMAIL    = "eduard_kalinowski@yahoo.de";
 
-static QString APPVERSION    = "2.08d Beta";
+static QString APPVERSION    = "3.0.0 Alpha";
 
 
 // #ifdef  MAX_PATH

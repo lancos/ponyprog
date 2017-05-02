@@ -7,8 +7,6 @@
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id: pic12bus.cpp,v 1.10 2009/11/16 23:40:43 lancos Exp $
-//-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
 // modify it under the terms of the GNU  General Public License            //
@@ -284,6 +282,7 @@ long Pic12Bus::BlankCheck(long length)
 {
 	length >>= 1;   //contatore da byte a word
 
+	ReadStart();
 	//Point to first location
 	//      SendCmdCode(IncAddressCode);
 
@@ -299,7 +298,7 @@ long Pic12Bus::BlankCheck(long length)
 			break;
 		}
 
-		if (CheckAbort(len * 100 / length))
+		if (ReadProgress(len * 100 / length))
 		{
 			break;
 		}
@@ -307,7 +306,7 @@ long Pic12Bus::BlankCheck(long length)
 		IncAddress(1);
 	}
 
-	CheckAbort(100);
+	ReadEnd();
 
 	return (len == length);
 }
@@ -317,7 +316,7 @@ long Pic12Bus::Read(int addr, uint8_t *data, long length, int page_size)
 	long len;
 
 	qDebug() << "Pic12Bus::Read(" << addr << ", " << (hex) << data << ", " << (dec) <<  length << ") IN";
-
+	ReadStart();
 	length >>= 1;   //contatore da byte a word
 
 	//Point to first location
@@ -343,13 +342,13 @@ long Pic12Bus::Read(int addr, uint8_t *data, long length, int page_size)
 #endif
 		IncAddress(1);
 
-		if (CheckAbort(len * 100 / length))
+		if (ReadProgress(len * 100 / length))
 		{
 			break;
 		}
 	}
 
-	CheckAbort(100);
+	ReadEnd();
 
 	len <<= 1;      //contatore da word a byte
 
@@ -364,7 +363,7 @@ long Pic12Bus::Write(int addr, uint8_t const *data, long length, int page_size)
 	int rv = OK;
 
 	qDebug() << "Pic12Bus::Write(" << addr << ", " << (hex) << data << ", " << (dec) << length << ") IN";
-
+	WriteStart();
 	length >>= 1;   //contatore da byte a word
 
 	//The address pointer should already point to first address
@@ -391,13 +390,13 @@ long Pic12Bus::Write(int addr, uint8_t const *data, long length, int page_size)
 			break;
 		}
 
-		if (CheckAbort(len * 100 / length))
+		if (WriteProgress(len * 100 / length))
 		{
 			break;
 		}
 	}
 
-	CheckAbort(100);
+	WriteEnd();
 
 	if (len > 0)
 	{

@@ -7,8 +7,6 @@
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id: x2444bus.cpp,v 1.6 2009/11/16 23:40:43 lancos Exp $
-//-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
 // modify it under the terms of the GNU  General Public License            //
@@ -67,12 +65,11 @@ void X2444Bus::SendCmdAddr(int cmd, int addr)
 long X2444Bus::Read(int addr, uint8_t *data, long length, int page_size)
 {
 	qDebug() << "X2444Bus::Read(" << (hex) << addr << ", " << data << ", " << (dec) << length << ")";
+	ReadStart();
 
 	long len;
-
-	addr = 0;
-
 	int inc;
+	addr = 0;
 
 	if (organization == ORG16)
 	{
@@ -123,16 +120,17 @@ long X2444Bus::Read(int addr, uint8_t *data, long length, int page_size)
 		WaitUsec(1);
 
 		if ((len & 1))
-			if (CheckAbort(len * 100 / length))
+		{
+			if (ReadProgress(len * 100 / length))
 			{
 				break;
 			}
+		}
 	}
-
-	CheckAbort(100);
 
 	clearCS();
 
+	ReadEnd();
 	qDebug() << "X2444Bus::Read() = " << len;
 
 	return len;
@@ -141,6 +139,8 @@ long X2444Bus::Read(int addr, uint8_t *data, long length, int page_size)
 long X2444Bus::Write(int addr, uint8_t const *data, long length, int page_size)
 {
 	long curaddr;
+
+	WriteStart();
 
 	clearCS();                      //17/08/98 -- may be it's not needed
 	WaitUsec(shot_delay);
@@ -195,17 +195,19 @@ long X2444Bus::Write(int addr, uint8_t const *data, long length, int page_size)
 		setCS();
 
 		if ((curaddr & 1))
-			if (CheckAbort(curaddr * 100 / length))
+		{
+			if (WriteProgress(curaddr * 100 / length))
 			{
 				break;
 			}
+		}
 	}
 
 	SendCmdAddr(StoreCode, 0xff);
 	clearCS();
 	WaitMsec(10);
 
-	CheckAbort(100);
+	WriteEnd();
 
 	if (organization == ORG16)
 	{

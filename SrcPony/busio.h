@@ -7,8 +7,6 @@
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id: busio.h,v 1.9 2009/11/16 23:40:43 lancos Exp $
-//-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
 // modify it under the terms of the GNU  General Public License            //
@@ -68,6 +66,40 @@ class BusIO : public Wait
 		return NOTSUPPORTED;
 	}
 
+	void ReadStart()
+	{
+		CheckAbort(0);
+	}
+	void ReadEnd()
+	{
+		CheckAbort(100);
+	}
+	int ReadProgress(int progress)
+	{
+		return CheckAbort(progress);
+	}
+
+	void WriteStart()
+	{
+		CheckAbort(0);
+	}
+	void WriteEnd()
+	{
+		CheckAbort(100);
+	}
+	int WriteProgress(int progress)
+	{
+		return CheckAbort(progress);
+	}
+	void EraseStart()
+	{
+		CheckAbort(0);
+	}
+	void EraseEnd()
+	{
+		CheckAbort(100);
+	}
+
 	virtual int ReadDeviceCode(int addr)
 	{
 		(void)addr;
@@ -125,8 +157,6 @@ class BusIO : public Wait
 		}
 	}
 
-	int CheckAbort(int progress = 0);
-
 	virtual void SetDelay();
 	virtual void SetDelay(int delay);
 	int GetDelay() const
@@ -162,6 +192,8 @@ class BusIO : public Wait
 	BusInterface *busI;
 
   private:               //------------------------------- private
+
+	int CheckAbort(int progress = 0);
 
 	int old_progress;
 	long last_programmed_addr;      //record last programmed address for verify

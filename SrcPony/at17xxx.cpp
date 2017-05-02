@@ -7,8 +7,6 @@
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id: at17xxx.cpp,v 1.3 2009/11/16 23:40:43 lancos Exp $
-//-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
 // modify it under the terms of the GNU  General Public License            //
@@ -99,7 +97,7 @@ int At17xxx::Write(int probe, int type)
 		return error;
 	}
 
-	GetBus()->CheckAbort(0);
+	GetBus()->WriteStart();
 
 	int addr_bytes;
 	long size = GetSize();
@@ -132,7 +130,7 @@ int At17xxx::Write(int probe, int type)
 				break;
 			}
 
-			if (GetBus()->CheckAbort(j * 100 / size))
+			if (GetBus()->WriteProgress(j * 100 / size))
 			{
 				rval = OP_ABORTED;
 				break;
@@ -140,7 +138,7 @@ int At17xxx::Write(int probe, int type)
 		}
 	}
 
-	GetBus()->CheckAbort(100);
+	GetBus()->WriteEnd();
 
 	if (rval == OK)
 	{
@@ -225,7 +223,7 @@ int At17xxx::Read(int probe, int type)
 		return error;
 	}
 
-	GetBus()->CheckAbort(0);
+	GetBus()->ReadStart();
 
 	int readpage_size;
 	int addr_bytes;
@@ -259,7 +257,7 @@ int At17xxx::Read(int probe, int type)
 				break;
 			}
 
-			if (GetBus()->CheckAbort(k * 100 / size))
+			if (GetBus()->ReadProgress(k * 100 / size))
 			{
 				error = OP_ABORTED;
 				break;
@@ -267,7 +265,7 @@ int At17xxx::Read(int probe, int type)
 		}
 	}
 
-	GetBus()->CheckAbort(100);
+	GetBus()->ReadEnd();
 
 	if (error == OK)
 	{
@@ -312,7 +310,7 @@ int At17xxx::Verify(int type)
 		return OUTOFMEMORY;
 	}
 
-	GetBus()->CheckAbort(0);
+	GetBus()->ReadStart();
 
 	rval = 1;               //true
 
@@ -339,7 +337,7 @@ int At17xxx::Verify(int type)
 				rval = 1;
 			}
 
-			if (GetBus()->CheckAbort(k * 100 / size))
+			if (GetBus()->ReadProgress(k * 100 / size))
 			{
 				rval = OP_ABORTED;
 				break;
@@ -347,7 +345,7 @@ int At17xxx::Verify(int type)
 		}
 	}
 
-	GetBus()->CheckAbort(100);
+	GetBus()->ReadEnd();
 
 	delete localbuf;
 	return rval;

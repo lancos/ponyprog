@@ -7,8 +7,6 @@
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id: sdebus.cpp,v 1.8 2009/11/16 22:29:18 lancos Exp $
-//-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
 // modify it under the terms of the GNU  General Public License            //
@@ -184,6 +182,7 @@ int Sde2506Bus::Reset(void)
 long Sde2506Bus::Read(int addr, uint8_t *data, long length, int page_size)
 {
 	qDebug() << "Sde2506Bus::Read(" << (hex) << addr << ", " << data << ", " << (dec) << length << ")";
+	ReadStart();
 
 	long len;
 
@@ -203,14 +202,15 @@ long Sde2506Bus::Read(int addr, uint8_t *data, long length, int page_size)
 		setCE();
 
 		if ((len % 4) == 0)
-			if (CheckAbort(len * 100 / length))
+		{
+			if (ReadProgress(len * 100 / length))
 			{
 				break;
 			}
+		}
 	}
 
-	CheckAbort(100);
-
+	ReadEnd();
 	qDebug() << "Sde2506Bus::Read() = " << len;
 
 	return len;
@@ -219,6 +219,8 @@ long Sde2506Bus::Read(int addr, uint8_t *data, long length, int page_size)
 long Sde2506Bus::Write(int addr, uint8_t const *data, long length, int page_size)
 {
 	long curaddr;
+
+	WriteStart();
 
 	for (curaddr = addr; curaddr < length; curaddr++)
 	{
@@ -247,13 +249,15 @@ long Sde2506Bus::Write(int addr, uint8_t const *data, long length, int page_size
 		setCE();                                //End write
 
 		if ((curaddr & 1))
-			if (CheckAbort(curaddr * 100 / length))
+		{
+			if (WriteProgress(curaddr * 100 / length))
 			{
 				break;
 			}
+		}
 	}
 
-	CheckAbort(100);
+	WriteEnd();
 
 	return curaddr;
 }

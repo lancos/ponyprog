@@ -39,22 +39,17 @@ BusIO::BusIO(BusInterface *p)
 {
 }
 
-// EK 2017
-// TODO to implement the connection for SetProgress()
-// it's possible only from one QObject
 int BusIO::CheckAbort(int progress)
 {
 	int abort = cmdWin->GetAbortFlag();
 
 	if (!abort)
 	{
-		if ((progress == 0 && old_progress != 0) ||
+		if ((progress == 0 /* && old_progress != 0*/) ||
 				progress > old_progress + 4)
 		{
 			cmdWin->SetProgress(progress);
 			old_progress = progress;
-			//if (progress == 100)
-			//  THEAPP->CheckEvents();
 		}
 	}
 

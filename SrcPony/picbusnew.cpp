@@ -7,8 +7,6 @@
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id: picbusnew.cpp,v 1.6 2009/11/16 23:40:43 lancos Exp $
-//-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
 // modify it under the terms of the GNU  General Public License            //
@@ -66,6 +64,8 @@ int PicBusNew::Reset(void)
 long PicBusNew::Write(int addr, uint8_t const *data, long length, int page_size)
 {
 	long len;
+
+	WriteStart();
 
 	if (addr == 0)
 	{
@@ -132,13 +132,13 @@ long PicBusNew::Write(int addr, uint8_t const *data, long length, int page_size)
 			SendCmdCode(IncAddressCode);
 		}
 
-		if (CheckAbort(len * 100 / length))
+		if (WriteProgress(len * 100 / length))
 		{
 			break;
 		}
 	}
 
-	CheckAbort(100);
+	WriteEnd();
 
 	if (addr == 0)
 	{

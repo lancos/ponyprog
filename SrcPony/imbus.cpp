@@ -7,8 +7,6 @@
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id: imbus.cpp,v 1.7 2009/11/16 23:40:43 lancos Exp $
-//-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
 // modify it under the terms of the GNU  General Public License            //
@@ -279,6 +277,7 @@ long IMBus::Read(int addr, uint8_t *data, long length, int page_size)
 {
 	qDebug() << "IMBus::Read(" << (hex) << addr << ", " << data << ", " << (dec) <<  length << ")";
 
+	ReadStart();
 	long len;
 
 	for (len = 0; len < length; len++, addr++)
@@ -294,13 +293,15 @@ long IMBus::Read(int addr, uint8_t *data, long length, int page_size)
 		IdentPulse();
 
 		if ((len % 4) == 0)
-			if (CheckAbort(len * 100 / length))
+		{
+			if (ReadProgress(len * 100 / length))
 			{
 				break;
 			}
+		}
 	}
 
-	CheckAbort(100);
+	ReadEnd();
 
 	qDebug() << "IMBus::Read() = " << len;
 
@@ -312,6 +313,8 @@ long IMBus::Write(int addr, uint8_t const *data, long length, int page_size)
 	long len;
 	uint8_t bval;
 	int loop_timeout;
+
+	WriteStart();
 
 	for (len = 0; len < length; len++, addr++, data++)
 	{
@@ -371,13 +374,13 @@ long IMBus::Write(int addr, uint8_t const *data, long length, int page_size)
 			return E2ERR_WRITEFAILED;
 		}
 
-		if (CheckAbort(len * 100 / length))
+		if (WriteProgress(len * 100 / length))
 		{
 			break;
 		}
 	}
 
-	CheckAbort(100);
+	WriteEnd();
 
 	return len;
 }

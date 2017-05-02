@@ -7,8 +7,6 @@
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id: pgminter.cpp,v 1.4 2008/01/06 18:45:21 lancos Exp $
-//-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
 // modify it under the terms of the GNU  General Public License            //
@@ -125,7 +123,7 @@ void SIProgInterface::Close()
 
 void SIProgInterface::SetDataOut(int sda)
 {
-	qDebug() << "SIProgInterface::SetSDA(" << sda << ") *** Inst=" << IsInstalled();
+//	qDebug() << "SIProgInterface::SetDataOut(" << sda << ") *** Inst=" << IsInstalled();
 
 	if (IsInstalled())
 	{
@@ -140,7 +138,7 @@ void SIProgInterface::SetDataOut(int sda)
 
 void SIProgInterface::SetClock(int scl)
 {
-	qDebug() << "SIProgInterface::SetSCL(" << scl << ") *** Inst=" << IsInstalled();
+//	qDebug() << "SIProgInterface::SetClock(" << scl << ") *** Inst=" << IsInstalled();
 
 	if (IsInstalled())
 	{
@@ -155,7 +153,7 @@ void SIProgInterface::SetClock(int scl)
 
 void SIProgInterface::SetClockData()
 {
-	qDebug() << "SIProgInterface::SetSCLSDA() *** Inst=" << IsInstalled();
+//	qDebug() << "SIProgInterface::SetClockData() *** Inst=" << IsInstalled();
 
 	if (IsInstalled())
 	{
@@ -188,7 +186,7 @@ void SIProgInterface::SetClockData()
 
 void SIProgInterface::ClearClockData()  //aggiunto il 06/03/98
 {
-	qDebug() << "SIProgInterface::ClearSCLSDA() *** Inst=%" << IsInstalled();
+//	qDebug() << "SIProgInterface::ClearClockData() *** Inst=%" << IsInstalled();
 
 	if (IsInstalled())
 	{
@@ -220,7 +218,7 @@ void SIProgInterface::ClearClockData()  //aggiunto il 06/03/98
 
 int SIProgInterface::GetDataIn()
 {
-	qDebug() << "SIProgInterface::GetSDA() *** Inst=" << IsInstalled();
+//	qDebug() << "SIProgInterface::GetDataIn() *** Inst=" << IsInstalled();
 
 	if (IsInstalled())
 	{
@@ -246,14 +244,14 @@ int SIProgInterface::GetClock()
 
 int SIProgInterface::IsClockDataUP()
 {
-	qDebug() << "SIProgInterface::GetSCLSDAup() *** Inst=" << IsInstalled();
+//	qDebug() << "SIProgInterface::GetSCLSDAup() *** Inst=" << IsInstalled();
 
 	return GetDataIn();
 }
 
 int SIProgInterface::IsClockDataDOWN()
 {
-	qDebug() << "SIProgInterface::GetSCLSDAdown() *** Inst=" << IsInstalled();
+//	qDebug() << "SIProgInterface::GetSCLSDAdown() *** Inst=" << IsInstalled();
 
 	return !GetDataIn();
 }

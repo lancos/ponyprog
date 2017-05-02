@@ -7,8 +7,6 @@
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id: at93cbus.cpp,v 1.8 2009/11/16 23:40:43 lancos Exp $
-//-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
 // modify it under the terms of the GNU  General Public License            //
@@ -130,6 +128,8 @@ long At93cBus::Read(int addr, uint8_t *data, long length, int page_size)
 
 	qDebug() << "At93cBus::Read(" << (hex) << addr << ", " << data << ", " << (dec) << length;
 
+	ReadStart();
+
 	long len;
 
 	if (addr > 0)
@@ -179,13 +179,15 @@ long At93cBus::Read(int addr, uint8_t *data, long length, int page_size)
 		}
 
 		if ((len % 4) == 0)
-			if (CheckAbort(len * 100 / length))
+		{
+			if (ReadProgress(len * 100 / length))
 			{
 				break;
 			}
+		}
 	}
 
-	CheckAbort(100);
+	ReadEnd();
 
 	qDebug() << "At93cBus::Read() = " << len;
 
@@ -195,6 +197,8 @@ long At93cBus::Read(int addr, uint8_t *data, long length, int page_size)
 long At93cBus::Write(int addr, uint8_t const *data, long length, int page_size)
 {
 	long curaddr;
+
+	WriteStart();
 
 	if (addr > 0)
 	{
@@ -253,7 +257,7 @@ long At93cBus::Write(int addr, uint8_t const *data, long length, int page_size)
 		setCS();
 
 		if ((curaddr & 1))
-			if (CheckAbort(curaddr * 100 / length))
+			if (WriteProgress(curaddr * 100 / length))
 			{
 				break;
 			}
@@ -262,7 +266,7 @@ long At93cBus::Write(int addr, uint8_t const *data, long length, int page_size)
 	SendCmdOpcode(WriteEnableCode);
 	SendDataWord(0, address_len);
 
-	CheckAbort(100);
+	WriteEnd();
 
 	if (organization == ORG16)
 	{

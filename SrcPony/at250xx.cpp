@@ -7,8 +7,6 @@
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id: at250xx.cpp,v 1.3 2007/04/20 10:58:22 lancos Exp $
-//-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
 // modify it under the terms of the GNU  General Public License            //
@@ -53,10 +51,10 @@ int At250xx::Probe(int probe_size)
 {
 	qDebug() << "At250xx::Probe("  << probe_size << ")";
 
-	//      if (probe_size)
-	//      {
-	//              SetNoOfBank(n_bank);
-	//      }
+	//if (probe_size)
+	//{
+	//    SetNoOfBank(n_bank);
+	//}
 
 	return OK;
 }

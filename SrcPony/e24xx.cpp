@@ -7,8 +7,6 @@
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id: e24xx.cpp,v 1.5 2009/11/16 23:40:43 lancos Exp $
-//-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
 // modify it under the terms of the GNU  General Public License            //
@@ -114,7 +112,7 @@ int E24xx::Read(int probe, int type)
 		return error;
 	}
 
-	GetBus()->CheckAbort(0);
+	GetBus()->ReadStart();
 
 	if (type & PROG_TYPE)
 	{
@@ -133,14 +131,14 @@ int E24xx::Read(int probe, int type)
 				return error;
 			}
 
-			if (GetBus()->CheckAbort((k + 1) * 100 / n_bank))
+			if (GetBus()->ReadProgress((k + 1) * 100 / n_bank))
 			{
 				return OP_ABORTED;
 			}
 		}
 	}
 
-	GetBus()->CheckAbort(100);
+	GetBus()->ReadEnd();
 
 	if (n_bank > 0)
 	{
@@ -161,7 +159,7 @@ int E24xx::Write(int probe, int type)
 		return error;
 	}
 
-	GetBus()->CheckAbort(0);
+	GetBus()->WriteStart();
 
 	if (type & PROG_TYPE)
 	{
@@ -176,14 +174,14 @@ int E24xx::Write(int probe, int type)
 				return error;
 			}
 
-			if (GetBus()->CheckAbort((k + 1) * 100 / GetNoOfBank()))
+			if (GetBus()->WriteProgress((k + 1) * 100 / GetNoOfBank()))
 			{
 				return OP_ABORTED;
 			}
 		}
 	}
 
-	GetBus()->CheckAbort(100);
+	GetBus()->WriteEnd();
 
 	return GetNoOfBank();
 }
@@ -204,7 +202,7 @@ int E24xx::Verify(int type)
 		return OUTOFMEMORY;
 	}
 
-	GetBus()->CheckAbort(0);
+	GetBus()->ReadStart();
 
 	int rval = 1;
 
@@ -230,7 +228,7 @@ int E24xx::Verify(int type)
 				break;
 			}
 
-			if (GetBus()->CheckAbort((k + 1) * 100 / GetNoOfBank()))
+			if (GetBus()->ReadProgress((k + 1) * 100 / GetNoOfBank()))
 			{
 				rval = OP_ABORTED;
 				break;
@@ -238,8 +236,7 @@ int E24xx::Verify(int type)
 		}
 	}
 
-	GetBus()->CheckAbort(100);
-
+	GetBus()->ReadEnd();
 	delete localbuf;
 	return rval;
 }

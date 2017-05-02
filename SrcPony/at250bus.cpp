@@ -7,8 +7,6 @@
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id: at250bus.cpp,v 1.7 2009/11/16 22:29:18 lancos Exp $
-//-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
 // modify it under the terms of the GNU  General Public License            //
@@ -156,18 +154,22 @@ long At250Bus::Read(int addr, uint8_t *data, long length, int page_size)
 
 	long len;
 
+	ReadStart();
+
 	for (len = 0; len < length; len++)
 	{
 		*data++ = (uint8_t)ReadEEPByte(addr++);
 
 		if ((len % 10) == 0)
-			if (CheckAbort(len * 100 / length))
+		{
+			if (ReadProgress(len * 100 / length))
 			{
 				break;
 			}
+		}
 	}
 
-	CheckAbort(100);
+	ReadEnd();
 
 	qDebug() << "At250Bus::Read() = " << len;
 
@@ -178,6 +180,7 @@ long At250Bus::Write(int addr, uint8_t const *data, long length, int page_size)
 {
 	long len;
 
+	WriteStart();
 	WriteEEPStatus(0);
 
 	// 07/08/99 *** bug fix suggested by Atmel Product engineer
@@ -199,13 +202,15 @@ long At250Bus::Write(int addr, uint8_t const *data, long length, int page_size)
 		}
 
 		if ((len & 1))
-			if (CheckAbort(len * 100 / length))
+		{
+			if (WriteProgress(len * 100 / length))
 			{
 				break;
 			}
+		}
 	}
 
-	CheckAbort(100);
+	WriteEnd();
 
 	return len;
 }

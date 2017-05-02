@@ -7,8 +7,6 @@
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id: at89sbus.cpp,v 1.14 2009/11/16 23:40:43 lancos Exp $
-//-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
 // modify it under the terms of the GNU  General Public License            //
@@ -509,6 +507,8 @@ long At89sBus::Read(int addr, uint8_t *data, long length, int page_size)
 {
 	long len;
 
+	ReadStart();
+
 	if (addr)
 	{
 		//Data
@@ -518,7 +518,7 @@ long At89sBus::Read(int addr, uint8_t *data, long length, int page_size)
 			{
 				ReadDataPage(addr, data, page_size);
 
-				if (CheckAbort(len * 100 / length))
+				if (ReadProgress(len * 100 / length))
 				{
 					break;
 				}
@@ -530,14 +530,12 @@ long At89sBus::Read(int addr, uint8_t *data, long length, int page_size)
 			{
 				*data++ = (uint8_t)ReadDataByte(addr++);
 
-				if (CheckAbort(len * 100 / length))
+				if (ReadProgress(len * 100 / length))
 				{
 					break;
 				}
 			}
 		}
-
-		CheckAbort(100);
 	}
 	else
 	{
@@ -548,7 +546,7 @@ long At89sBus::Read(int addr, uint8_t *data, long length, int page_size)
 			{
 				ReadProgPage(addr, data, page_size);
 
-				if (CheckAbort(len * 100 / length))
+				if (ReadProgress(len * 100 / length))
 				{
 					break;
 				}
@@ -560,15 +558,15 @@ long At89sBus::Read(int addr, uint8_t *data, long length, int page_size)
 			{
 				*data++ = (uint8_t)ReadProgByte(addr++);
 
-				if (CheckAbort(len * 100 / length))
+				if (ReadProgress(len * 100 / length))
 				{
 					break;
 				}
 			}
 		}
-
-		CheckAbort(100);
 	}
+
+	ReadEnd();
 
 	return len;
 }
@@ -621,6 +619,8 @@ long At89sBus::Write(int addr, uint8_t const *data, long length, int page_size)
 {
 	long len;
 
+	WriteStart();
+
 	if (addr)
 	{
 		//Data
@@ -633,7 +633,7 @@ long At89sBus::Write(int addr, uint8_t const *data, long length, int page_size)
 					return E2ERR_WRITEFAILED;
 				}
 
-				if (CheckAbort(len * 100 / length))
+				if (WriteProgress(len * 100 / length))
 				{
 					break;
 				}
@@ -664,14 +664,12 @@ long At89sBus::Write(int addr, uint8_t const *data, long length, int page_size)
 					}
 				}
 
-				if (CheckAbort(len * 100 / length))
+				if (WriteProgress(len * 100 / length))
 				{
 					break;
 				}
 			}
 		}
-
-		CheckAbort(100);
 	}
 	else
 	{
@@ -687,7 +685,7 @@ long At89sBus::Write(int addr, uint8_t const *data, long length, int page_size)
 						return E2ERR_WRITEFAILED;
 					}
 
-				if (CheckAbort(len * 100 / length))
+				if (WriteProgress(len * 100 / length))
 				{
 					break;
 				}
@@ -718,15 +716,15 @@ long At89sBus::Write(int addr, uint8_t const *data, long length, int page_size)
 					}
 				}
 
-				if (CheckAbort(len * 100 / length))
+				if (WriteProgress(len * 100 / length))
 				{
 					break;
 				}
 			}
 		}
-
-		CheckAbort(100);
 	}
+
+	WriteEnd();
 
 	return len;
 }

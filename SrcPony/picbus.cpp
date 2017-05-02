@@ -7,8 +7,6 @@
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id: picbus.cpp,v 1.15 2009/11/16 23:40:43 lancos Exp $
-//-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
 // modify it under the terms of the GNU  General Public License            //
@@ -411,6 +409,8 @@ long PicBus::Read(int addr, uint8_t *data, long length, int page_size)
 {
 	long len;
 
+	ReadStart();
+
 	//Data is 8 bit, while Program is 14 bit (i.e. 16 bit)
 	if (addr == 0)
 	{
@@ -450,13 +450,13 @@ long PicBus::Read(int addr, uint8_t *data, long length, int page_size)
 			SendCmdCode(IncAddressCode);
 		}
 
-		if (CheckAbort(len * 100 / length))
+		if (ReadProgress(len * 100 / length))
 		{
 			break;
 		}
 	}
 
-	CheckAbort(100);
+	ReadEnd();
 
 	if (addr == 0)
 	{
@@ -469,6 +469,8 @@ long PicBus::Read(int addr, uint8_t *data, long length, int page_size)
 long PicBus::Write(int addr, uint8_t const *data, long length, int page_size)
 {
 	long len;
+
+	WriteStart();
 
 	if (addr == 0)
 	{
@@ -528,13 +530,13 @@ long PicBus::Write(int addr, uint8_t const *data, long length, int page_size)
 			SendCmdCode(IncAddressCode);
 		}
 
-		if (CheckAbort(len * 100 / length))
+		if (WriteProgress(len * 100 / length))
 		{
 			break;
 		}
 	}
 
-	CheckAbort(100);
+	WriteEnd();
 
 	if (addr == 0)
 	{

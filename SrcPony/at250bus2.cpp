@@ -7,8 +7,6 @@
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id: at250bus2.cpp,v 1.7 2009/11/16 22:29:18 lancos Exp $
-//-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
 // modify it under the terms of the GNU  General Public License            //
@@ -54,6 +52,7 @@ At250BigBus::At250BigBus(BusInterface *ptr)
 long At250BigBus::Read(int addr, uint8_t *data, long length, int page_size)
 {
 	qDebug() << "At250BigBus::Read(" << (hex) << addr << ", " << data << ", " << (dec) << length << ")";
+	ReadStart();
 
 	long len;
 
@@ -68,16 +67,17 @@ long At250BigBus::Read(int addr, uint8_t *data, long length, int page_size)
 		*data++ = RecDataByte();
 
 		if ((len % 10) == 0)
-			if (CheckAbort(len * 100 / length))
+		{
+			if (ReadProgress(len * 100 / length))
 			{
 				break;
 			}
+		}
 	}
 
 	EndCycle();
 
-	CheckAbort(100);
-
+	ReadEnd();
 	qDebug() << "At250BigBus::Read() = " << len;
 
 	return len;
@@ -88,8 +88,10 @@ long At250BigBus::Write(int addr, uint8_t const *data, long length, int page_siz
 {
 	long len;
 
+	WriteStart();
+
 	int writepage_size = E2Profile::GetSPIPageWrite();
-	E2Profile::SetSPIPageWrite(writepage_size);
+//	E2Profile::SetSPIPageWrite(writepage_size);
 
 	WriteEEPStatus(0);
 
@@ -99,6 +101,7 @@ long At250BigBus::Write(int addr, uint8_t const *data, long length, int page_siz
 		return 0;
 	}
 
+	long count = 0;
 	for (len = 0; len < length; len += writepage_size, addr += writepage_size)
 	{
 		SendDataByte(WriteEnable);
@@ -122,14 +125,16 @@ long At250BigBus::Write(int addr, uint8_t const *data, long length, int page_siz
 			return 0;        //Must return 0, because > 0 (and != length) means "Abort by user"
 		}
 
-		if ((len & 1))
-			if (CheckAbort(len * 100 / length))
+		if ((++count & 1))
+		{
+			if (WriteProgress(len * 100 / length))
 			{
 				break;
 			}
+		}
 	}
 
-	CheckAbort(100);
+	WriteEnd();
 
 	return len;
 }
