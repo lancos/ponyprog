@@ -39,15 +39,15 @@
 
 class retryModalDialog : public QDialog
 {
-public:               //---------------------------------------- public
-	retryModalDialog(QWidget* bw, char* msg, char* title = STR_MSGALERT);
+  public:               //---------------------------------------- public
+	retryModalDialog(QWidget *bw, char *msg, char *title = STR_MSGALERT);
 	virtual ~retryModalDialog();            // Destructor
 	virtual void DialogCommand(ItemVal, ItemVal, CmdType); // action selected
 	virtual int retryAction();
 
-protected:    //--------------------------------------- protected
+  protected:    //--------------------------------------- protected
 
-private:              //--------------------------------------- private
+  private:              //--------------------------------------- private
 
 };
 

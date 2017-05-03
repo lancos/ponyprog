@@ -69,7 +69,7 @@ QString Profile::StripSpace(const QString &sp)
 #if 0
 	sp.re
 
-	while( *sp && isspace(*sp) )
+	while (*sp && isspace(*sp))
 	{
 		sp++;
 	}
@@ -79,13 +79,13 @@ QString Profile::StripSpace(const QString &sp)
 	//si posiziona in fondo
 	char *p = strbuf;
 
-	while( *p )
+	while (*p)
 	{
 		p++;
 	}
 
 	//toglie
-	while( isspace(*--p) )
+	while (isspace(*--p))
 	{
 		*p = '\0';
 	}
@@ -153,7 +153,7 @@ int Profile::WriteVet()
 			linebuffer = sp;
 			linebuffer += "\n";                       //appende il new-line
 
-			if ( fputs(linebuffer.toLatin1(), fh) == EOF )
+			if (fputs(linebuffer.toLatin1(), fh) == EOF)
 			{
 				rval = WRITEERROR;
 				break;
@@ -230,13 +230,13 @@ int Profile::ReadVet()
 QString Profile::GetParameter(const QString &id)
 {
 	//Controllo parametri
-	if ( id == 0 || id.length() == 0 )
+	if (id == 0 || id.length() == 0)
 	{
 		return 0;
 	}
 
 	//Legge i parametri dal file
-	if ( ReadVet() )
+	if (ReadVet())
 	{
 		return 0;
 	}
@@ -281,7 +281,7 @@ QString Profile::GetParameter(const QString &id)
 
 int Profile::SetParameter(const QString &id, const QString &value)
 {
-	if ( id == 0 || id.length() == 0 || value == 0)
+	if (id == 0 || id.length() == 0 || value == 0)
 	{
 		return BADPARAM;
 	}

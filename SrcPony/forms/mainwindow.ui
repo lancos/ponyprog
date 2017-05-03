@@ -43,9 +43,6 @@
     <addaction name="separator"/>
     <addaction name="actionClose"/>
     <addaction name="actionExit"/>
-    <addaction name="separator"/>
-    <addaction name="actionFile1"/>
-    <addaction name="actionFile2"/>
    </widget>
    <widget class="QMenu" name="menuDevice">
     <property name="title">
@@ -539,16 +536,6 @@
   <action name="actionAboutQt">
    <property name="text">
     <string>About Qt</string>
-   </property>
-  </action>
-  <action name="actionFile1">
-   <property name="text">
-    <string>File1</string>
-   </property>
-  </action>
-  <action name="actionFile2">
-   <property name="text">
-    <string>File2</string>
    </property>
   </action>
  </widget>

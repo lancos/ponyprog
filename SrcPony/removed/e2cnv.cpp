@@ -31,7 +31,7 @@
 #include "e2cmdw.h"
 
 //=================>>> e2TextCanvasPane::e2TextCanvasPane <<<================
-e2TextCanvasPane::e2TextCanvasPane(e2CmdWindow* win)
+e2TextCanvasPane::e2TextCanvasPane(e2CmdWindow *win)
 {
 	cmdWin = win;
 }
@@ -77,7 +77,7 @@ void e2TextCanvasPane::VScroll(int step)
 }
 
 //===================>>> e2TextCanvasPane::FontChanged <<<==================
-void e2TextCanvasPane::FontChanged(vFont& newFont)
+void e2TextCanvasPane::FontChanged(vFont &newFont)
 {
 	vTextCanvasPane::FontChanged(newFont);
 }

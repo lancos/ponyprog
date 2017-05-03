@@ -36,8 +36,8 @@ class e2CmdWindow;
 
 class e2TextCanvasPane : public vTextCanvasPane
 {
-public:               //---------------------------------------- public
-	e2TextCanvasPane(e2CmdWindow* win);
+  public:               //---------------------------------------- public
+	e2TextCanvasPane(e2CmdWindow *win);
 	virtual ~e2TextCanvasPane();
 
 	// Scrolling
@@ -48,16 +48,16 @@ public:               //---------------------------------------- public
 	virtual void VScroll(int);
 
 	// Events
-	virtual void FontChanged(vFont& newFont);
+	virtual void FontChanged(vFont &newFont);
 	virtual void ResizeText(const int rows, const int cols);
 	virtual void Redraw(int x, int y, int w , int h);
 	virtual void TextMouseDown(int row, int col, int button);
 	virtual void TextMouseUp(int row, int col, int button);
 	virtual void TextMouseMove(int row, int col, int button);
 
-protected:    //--------------------------------------- protected
-private:              //--------------------------------------- private
-	e2CmdWindow* cmdWin;
+  protected:    //--------------------------------------- protected
+  private:              //--------------------------------------- private
+	e2CmdWindow *cmdWin;
 };
 #endif
 
