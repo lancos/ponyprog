@@ -230,19 +230,19 @@ void E2Profile::SetLastScript(const QString &name)
 void E2Profile::SetLastFile(const QString &name, int data)
 {
 	QStringList l = GetLastFiles();
-        QString n = name;
-        if (data == PROG_TYPE)
-        {
-            n += "(FLASH)";
-        }
-        else if (data == DATA_TYPE)
-        {
-            n += "(DATA)"; 
-        }
-        else
-        {
-            n += "(ALL)"; 
-        }
+	QString n = name;
+	if (data == PROG_TYPE)
+	{
+		n += "(FLASH)";
+	}
+	else if (data == DATA_TYPE)
+	{
+		n += "(DATA)";
+	}
+	else
+	{
+		n += "(ALL)";
+	}
 	l.insert(0, n);
 	SetLastFiles(l);
 #if 0

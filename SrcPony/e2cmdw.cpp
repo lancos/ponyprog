@@ -514,7 +514,7 @@ void e2CmdWindow::onSelectFile(QAction *a)
 
 		// EK 2017
 		// to implement
-//                 CmdOpen();
+		// CmdOpen();
 	}
 	else
 	{
