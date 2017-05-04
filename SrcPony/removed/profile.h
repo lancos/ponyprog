@@ -39,7 +39,7 @@
 
 class Profile
 {
-public:               //---------------------------------------- public
+  public:               //---------------------------------------- public
 
 	Profile(const QString &name = 0);
 	virtual ~Profile();
@@ -48,7 +48,7 @@ public:               //---------------------------------------- public
 	int SetParameter(const QString &id, const QString &value = "");
 	void SetFileName(const QString &name = "");
 
-protected:    //--------------------------------------- protected
+  protected:    //--------------------------------------- protected
 
 	QString StripSpace(const QString &sp);
 	//      int decnum2str(int value, char *str, int len);
@@ -56,7 +56,7 @@ protected:    //--------------------------------------- protected
 	//      int hexnum2str(int value, char *str, int len);
 	//      int hexnum2str(unsigned long value, char *str, int len);
 
-private:              //--------------------------------------- private
+  private:              //--------------------------------------- private
 
 	void FlushVet(int force = 0);
 	int ReadVet();

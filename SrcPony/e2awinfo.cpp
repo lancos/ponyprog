@@ -569,7 +569,7 @@ int e2AppWinInfo::Read(int type, int raise_power, int leave_on)
 		{
 			qDebug() << "e2AppWinInfo::Read() ** Read = " << rval;
 
-			SetFileName(0);                         //Questo per evitare che al prossimo save() si utilizzi il nome vecchio
+			SetFileName("");                         //Questo per evitare che al prossimo save() si utilizzi il nome vecchio
 			buf_ok = true;
 			buf_changed = false;
 

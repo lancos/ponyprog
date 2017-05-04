@@ -212,20 +212,40 @@ QString &E2Profile::GetPrevFile()
 **/
 
 
-QString E2Profile::GetLastScript()
-{
-	return s->value("LastScript", "").toString();
-}
+// QString E2Profile::GetLastScript()
+// {
+// 	return s->value("LastScript", "").toString();
+// }
 
 
 void E2Profile::SetLastScript(const QString &name)
 {
-	s->setValue("LastScript", name);
+	QStringList l = GetLastScripts();
+	l.insert(0, name);
+	SetLastScripts(l);
+// 	s->setValue("LastScript", name);
 }
 
 
 void E2Profile::SetLastFile(const QString &name, int data)
 {
+	QStringList l = GetLastFiles();
+	QString n = name;
+	if (data == PROG_TYPE)
+	{
+		n += "(FLASH)";
+	}
+	else if (data == DATA_TYPE)
+	{
+		n += "(DATA)";
+	}
+	else
+	{
+		n += "(ALL)";
+	}
+	l.insert(0, n);
+	SetLastFiles(l);
+#if 0
 	if (name.length())
 	{
 		QString str;
@@ -269,8 +289,10 @@ void E2Profile::SetLastFile(const QString &name, int data)
 
 		s->setValue("LastFile", str.toLatin1());
 	}
+#endif
 }
 
+#if 0
 QString param_copy;
 
 
@@ -331,6 +353,7 @@ QString E2Profile::GetPrevFile(int &data)
 	return sp;
 }
 
+#endif
 
 
 QStringList E2Profile::GetLastFiles()
@@ -355,6 +378,10 @@ void E2Profile::SetLastFiles(const QStringList &l)
 	{
 		s->setValue(QString().sprintf("LastFile%d", i), t);
 		i++;
+	}
+	for (; i < 8; i++)
+	{
+		s->setValue(QString().sprintf("LastFile%d", i), "");
 	}
 }
 
@@ -381,6 +408,10 @@ void E2Profile::SetLastScripts(const QStringList &l)
 	{
 		s->setValue(QString().sprintf("LastScript%d", i), t);
 		i++;
+	}
+	for (; i < 8; i++)
+	{
+		s->setValue(QString().sprintf("LastFile%d", i), "");
 	}
 }
 

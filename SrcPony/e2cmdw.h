@@ -186,8 +186,8 @@ class e2CmdWindow : public QMainWindow, public e2App, public Ui::MainWindow
 	void onCalibration(); //
 	void onProgram(); //
 	void onByteSwap();
-	void onLastFile1();
-	void onLastFile2();
+// 	void onLastFile1();
+// 	void onLastFile2();
 	void onDoubleSize();
 	//     void onOverwriteMode(bool b);
 	void onWriteHEndurance();
@@ -237,6 +237,9 @@ class e2CmdWindow : public QMainWindow, public e2App, public Ui::MainWindow
 	//void setOverwriteMode(bool);
 	//void dataChanged();
 
+	void onSelectScript(QAction *a);
+	void onSelectFile(QAction *a);
+
   public:
 	int CmdHelp();
 
@@ -248,8 +251,9 @@ class e2CmdWindow : public QMainWindow, public e2App, public Ui::MainWindow
 	int CmdOpen(int type = ALL_TYPE, const char *file = 0, long relocation = 0, int clear_buffer = -1);
 	int CmdSave(int type = ALL_TYPE, const char *file = 0, long relocation = 0);
 	int CmdSaveAs(int type = ALL_TYPE, long relocation = 0);
-	int CmdLastFile1();
-	int CmdLastFile2();
+	int CmdLastFile();
+// 	int CmdLastFile1();
+// 	int CmdLastFile2();
 	int CmdReload();
 	int CmdPrint();
 	int CmdRead(int type = ALL_TYPE);
@@ -297,6 +301,9 @@ class e2CmdWindow : public QMainWindow, public e2App, public Ui::MainWindow
 	bool getLangTable();
 	void setLangGUI();
 	void translateGUI();
+
+	void createScriptList();
+	void createFileList();
 
 
   private:              //--------------------------------------- private
@@ -372,8 +379,8 @@ class e2CmdWindow : public QMainWindow, public e2App, public Ui::MainWindow
 	int idxX244;
 
 	QString selectedLang;
-	QStringList lastScripts;
-	QStringList lastFiles;
+	QStringList lastScriptsList;
+	QStringList lastFilesList;
 
 	QFont sysFont;
 	short fontSize;
@@ -392,6 +399,14 @@ class e2CmdWindow : public QMainWindow, public e2App, public Ui::MainWindow
 	QLineEdit *txtEEPInfo;
 	QLineEdit *txtStringID;
 	//      QProgressBar *statusProgress;
+	QMenu *scrptsMenu;
+	QMenu *filesMenu;
+
+	QActionGroup *fileListAction;
+	QActionGroup *scrListAction;
+
+	QAction *actionScriptList;
+	QAction *actionFileList;
 
 	QVector<QAction *> actLangSelect;
 	QVector<QAction *> actFSizeSelect;

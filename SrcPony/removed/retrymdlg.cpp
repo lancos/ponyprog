@@ -54,7 +54,7 @@ static DialogCmd DefaultCmds[] =
 
 
 //======================>>> retryModalDialog::retryModalDialog <<<==================
-retryModalDialog::retryModalDialog(QWidget* bw, char* msg, char* title) :
+retryModalDialog::retryModalDialog(QWidget *bw, char *msg, char *title) :
 	QDialog(bw)
 {
 	setupUi(this);

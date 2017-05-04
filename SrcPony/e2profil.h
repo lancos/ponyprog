@@ -100,11 +100,11 @@ class E2Profile
 	static long GetLastDevType();
 	static void SetLastDevType(long devtype);
 
-	static QString GetLastFile(int &data);
-	static QString GetPrevFile(int &data);
+// 	static QString GetLastFile(int &data);
+// 	static QString GetPrevFile(int &data);
 	static void SetLastFile(const QString &name, int data = ALL_TYPE);
 
-	static QString GetLastScript();
+// 	static QString GetLastScript();
 	static void SetLastScript(const QString &name);
 
 	static uint8_t GetPolarityControl();

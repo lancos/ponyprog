@@ -31,9 +31,9 @@
 // #include "modaldlg_utilities.h"
 
 //========================>>> SetCommandObject <<<==============================
-int SetCommandObject(const int id, const int val, CommandObject* CmdList)
+int SetCommandObject(const int id, const int val, CommandObject *CmdList)
 {
-	for (CommandObject* cur = CmdList ; cur->cmdType != C_EndOfList ; ++cur)
+	for (CommandObject *cur = CmdList ; cur->cmdType != C_EndOfList ; ++cur)
 	{
 		if (cur->cmdId == id)
 		{
@@ -48,12 +48,12 @@ int SetCommandObject(const int id, const int val, CommandObject* CmdList)
 }
 
 //========================>>> SetCBellow <<<==============================
-int SetCBelow(const int id, const ItemVal val, CommandObject* CmdList)
+int SetCBelow(const int id, const ItemVal val, CommandObject *CmdList)
 {
 	int rval = 0;
 #ifdef  _WINDOWS
 
-	for (CommandObject* cur = CmdList ; cur->cmdType != C_EndOfList ; ++cur)
+	for (CommandObject *cur = CmdList ; cur->cmdType != C_EndOfList ; ++cur)
 	{
 		if (cur->cmdId == id)
 		{
@@ -74,11 +74,11 @@ int SetCBelow(const int id, const ItemVal val, CommandObject* CmdList)
 }
 
 //========================>>> SetCommandHidden <<<==============================
-int SetCommandHidden(const int id, const bool val, CommandObject* CmdList)
+int SetCommandHidden(const int id, const bool val, CommandObject *CmdList)
 {
 	int rval = 0;
 
-	for (CommandObject* cur = CmdList ; cur->cmdType != C_EndOfList ; ++cur)
+	for (CommandObject *cur = CmdList ; cur->cmdType != C_EndOfList ; ++cur)
 	{
 		if (cur->cmdId == id)
 		{
@@ -106,14 +106,14 @@ int SetCommandHidden(const int id, const bool val, CommandObject* CmdList)
 }
 
 //========================>>> SetCommandArrayHidden <<<==============================
-int SetCommandArrayHidden(const int id, const int n, const bool val, CommandObject* CmdList)
+int SetCommandArrayHidden(const int id, const int n, const bool val, CommandObject *CmdList)
 {
 	int k;
 	int rval = 0;
 
 	for (k = 0; k < n; k++)
 	{
-		for (CommandObject* cur = CmdList ; cur->cmdType != C_EndOfList ; ++cur)
+		for (CommandObject *cur = CmdList ; cur->cmdType != C_EndOfList ; ++cur)
 		{
 			if (cur->cmdId == id + k)
 			{
@@ -141,9 +141,9 @@ int SetCommandArrayHidden(const int id, const int n, const bool val, CommandObje
 }
 
 //========================>>> SetCommandSensitive <<<==============================
-int SetCommandSensitive(const int id, const int val, CommandObject* CmdList)
+int SetCommandSensitive(const int id, const int val, CommandObject *CmdList)
 {
-	for (CommandObject* cur = CmdList ; cur->cmdType != C_EndOfList ; ++cur)
+	for (CommandObject *cur = CmdList ; cur->cmdType != C_EndOfList ; ++cur)
 	{
 		if (cur->cmdId == id)
 		{
@@ -158,9 +158,9 @@ int SetCommandSensitive(const int id, const int val, CommandObject* CmdList)
 }
 
 //========================>>> SetCommandLabel <<<==============================
-int SetCommandLabel(const int id, char *str, CommandObject* CmdList)
+int SetCommandLabel(const int id, char *str, CommandObject *CmdList)
 {
-	for (CommandObject* cur = CmdList ; cur->cmdType != C_EndOfList ; ++cur)
+	for (CommandObject *cur = CmdList ; cur->cmdType != C_EndOfList ; ++cur)
 	{
 		if (cur->cmdId == id)
 		{
@@ -175,9 +175,9 @@ int SetCommandLabel(const int id, char *str, CommandObject* CmdList)
 }
 
 //========================>>> GetCommandObject <<<==============================
-int GetCommandObject(const int id, CommandObject* CmdList)
+int GetCommandObject(const int id, CommandObject *CmdList)
 {
-	for (CommandObject* cur = CmdList ; cur->cmdType != C_EndOfList ; ++cur)
+	for (CommandObject *cur = CmdList ; cur->cmdType != C_EndOfList ; ++cur)
 	{
 		if (cur->cmdId == id)
 		{

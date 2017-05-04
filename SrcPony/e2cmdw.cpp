@@ -135,7 +135,6 @@ e2CmdWindow::e2CmdWindow(QWidget *parent) :
 		setStyleSheet(programStyleSheet);
 	}
 
-
 	createFontSizeMenu();
 
 	// reading of arguments
@@ -187,6 +186,10 @@ e2CmdWindow::e2CmdWindow(QWidget *parent) :
 
 		exit(returnValue);  //Se AppMain ritorna un valore != 0 esce immediatamente
 	}
+
+	createScriptList();
+
+	createFileList();
 
 	// menu creation for all devices
 	createDeviceMenues();
@@ -390,6 +393,158 @@ int e2CmdWindow::CloseAppWin()
 }
 #endif
 
+
+/**
+ * @brief create the list of loaded data files
+ *
+ */
+void e2CmdWindow::createFileList()
+{
+	//EK 2017
+	// TODO to extract datatype from name
+	lastFilesList = E2Profile::GetLastFiles();
+
+	if (lastFilesList.count() == 0)
+	{
+		return;
+	}
+
+	filesMenu = new QMenu("Last files"); // TODO translate this
+	actionFileList = menuFile->insertMenu(actionOpen, filesMenu);
+
+	fileListAction = new QActionGroup(this);
+
+	foreach (QString entry, lastFilesList)
+	{
+		if (entry.length() > 0)
+		{
+			int pos_and = entry.lastIndexOf("[");
+			QString fname;
+			QString e;
+			if (pos_and > 0)
+			{
+				fname = entry.left(pos_and);
+				fname = fname.replace(QDir().homePath(), "~/");
+				e = fname + "[" + entry.mid(pos_and + 1) + "]";
+			}
+			else
+			{
+				fname = entry;
+				fname = fname.replace(QDir().homePath(), "~/");
+				e = fname;
+			}
+
+			if (QFile().exists(fname) == true)
+			{
+				QAction *tmpAction = new QAction(e, actionFileList);
+
+				filesMenu->addAction(tmpAction);
+				fileListAction->addAction(tmpAction);
+			}
+		}
+	}
+
+	connect(fileListAction, SIGNAL(triggered(QAction *)), this, SLOT(onSelectFile(QAction *)));
+}
+
+
+/**
+ * @brief create the list of used scripts
+ *
+ */
+void e2CmdWindow::createScriptList()
+{
+	lastScriptsList = E2Profile::GetLastScripts();
+
+	if (lastScriptsList.count() == 0)
+	{
+		return;
+	}
+
+	scrptsMenu = new QMenu("Last scripts"); // TODO translate this
+	actionScriptList = menuScript->addMenu(scrptsMenu);
+
+	scrListAction = new QActionGroup(this);
+
+	foreach (QString entry, lastScriptsList)
+	{
+		if (entry.length() > 0)
+		{
+			QAction *tmpAction = new QAction(entry, actionScriptList);
+
+			scrptsMenu->addAction(tmpAction);
+			scrListAction->addAction(tmpAction);
+		}
+	}
+
+	connect(scrListAction, SIGNAL(triggered(QAction *)), this, SLOT(onSelectScript(QAction *)));
+}
+
+
+/**
+ * @brief slot from flAction
+ * EK 2017
+ * TODO to implement
+ */
+void e2CmdWindow::onSelectFile(QAction *a)
+{
+	QString sp = a->text();
+
+	int pos_and = sp.lastIndexOf("[");
+	QString fname;
+	QString e;
+	if (pos_and > 0)
+	{
+		fname = sp.left(pos_and);
+//                 fname = fname.replace(QDir().homePath(), "~/");
+		e = fname + "[" + sp.mid(pos_and + 1) + "]";
+	}
+	else
+	{
+		fname = sp;
+//                 fname = fname.replace(QDir().homePath(), "~/");
+		e = fname;
+	}
+
+	if (QFile().exists(fname) == true)
+	{
+		E2Profile::SetLastFile(sp);
+		// load file
+		// TODO Ask about sure or not?
+
+		// EK 2017
+		// to implement
+		// CmdOpen();
+	}
+	else
+	{
+		QMessageBox::critical(this, "File error", translate(STR_MSGFILENOTFOUND), QMessageBox::Close);
+	}
+}
+
+
+/**
+ * @brief slot from scrAction
+ *
+ */
+void e2CmdWindow::onSelectScript(QAction *a)
+{
+	if (IsAppReady())
+	{
+		SetAppBusy();
+
+		QString sp = a->text();
+
+		if (sp.length() > 0)
+		{
+			script_name = sp;
+
+			CmdRunScript();
+		}
+
+		SetAppReady();
+	}
+}
 
 
 /**
@@ -2086,13 +2241,16 @@ void e2CmdWindow::onVerify()
 }
 
 
+/**
+ * @brief slot to run the last script
+ */
 void e2CmdWindow::onRunScript()
 {
 	if (IsAppReady())
 	{
 		SetAppBusy();
 
-		QString sp = E2Profile::GetLastScript();
+		QString sp = E2Profile::GetLastScripts().at(0);
 
 		if (sp.length() > 0)
 		{
@@ -2408,7 +2566,7 @@ void e2CmdWindow::onByteSwap()
 	}
 }
 
-
+#if 0
 void e2CmdWindow::onLastFile1()
 {
 
@@ -2426,7 +2584,7 @@ void e2CmdWindow::onLastFile2()
 		CmdLastFile2();
 	}
 }
-
+#endif
 
 HIDDEN int FileExist(const QString &name);
 HIDDEN bool CmpExtension(const QString &name, const QString &ext);
@@ -2494,6 +2652,43 @@ int e2CmdWindow::CmdSaveAs(int type, long relocation)
 	return result;
 }
 
+int e2CmdWindow::CmdLastFile()
+{
+	int result = OK;
+
+	if (verbose == verboseAll)
+	{
+		if (IsBufChanged() && awip->IsBufferValid())
+		{
+			int ret = QMessageBox::warning(this, "PonyProg",
+										   "Buffer changed. Save it before to close?",
+										   QMessageBox::Yes | QMessageBox::No);
+
+			if (ret == QMessageBox::Yes)
+			{
+				awip->SetSaveType(ALL_TYPE);    //??
+				SaveFile();
+			}
+		}
+	}
+
+	int data_type;
+	//EK 2017
+	// TODO to extract datatype from name
+	QString s = E2Profile::GetLastFiles().at(0);
+
+	if (s.length())
+	{
+		awip->SetLoadType(data_type);
+		awip->SetLoadAutoClearBuf(E2Profile::GetClearBufBeforeLoad());
+
+		result = OpenFile(s);
+	}
+
+	return result;
+}
+
+#if 0
 //====================>>> e2CmdWindow::CmdLastFile1 <<<====================
 int e2CmdWindow::CmdLastFile1()
 {
@@ -2563,7 +2758,7 @@ int e2CmdWindow::CmdLastFile2()
 
 	return result;
 }
-
+#endif
 
 //====================>>> e2CmdWindow::CmdReload <<<====================
 int e2CmdWindow::CmdReload()
@@ -2584,10 +2779,14 @@ int e2CmdWindow::CmdReload()
 	QString sp;
 	int dt1, dt2;
 
-	sp = E2Profile::GetLastFile(dt1);
+	//EK 2017
+	// TODO to extract datatype from name
+	sp = E2Profile::GetLastFiles().at(0);
 
 	if (sp.length() && FileExist(sp))
 	{
+
+#if 0
 		sp = E2Profile::GetPrevFile(dt2);
 
 		/*
@@ -2613,6 +2812,7 @@ int e2CmdWindow::CmdReload()
 		{
 			result = CmdLastFile1();
 		}
+#endif
 	}
 	else
 	{
@@ -6210,12 +6410,35 @@ QString e2CmdWindow::GetFileName()
 
 void e2CmdWindow::UpdateFileMenu()
 {
-	QString sp;
+// 	QString sp;
 
 	if (!scriptMode)
 	{
-		sp = E2Profile::GetLastScript();
+		QStringList sl = E2Profile::GetLastScripts();
 
+		disconnect(scrListAction, SIGNAL(triggered(QAction *)), this, SLOT(onSelectScript(QAction *)));
+
+		scrptsMenu->clear();
+		// removeAllActions()
+		while (scrListAction->actions().count())
+		{
+			scrListAction->removeAction(scrListAction->actions().first());
+		}
+
+		foreach (QString entry, sl)
+		{
+			if (entry.length())
+			{
+				QAction *tmpAction = new QAction(entry, actionScriptList);
+
+				scrptsMenu->addAction(tmpAction);
+				scrListAction->addAction(tmpAction);
+			}
+		}
+
+		connect(scrListAction, SIGNAL(triggered(QAction *)), this, SLOT(onSelectScript(QAction *)));
+
+#if 0
 		if (sp.length() > 0)
 		{
 			script_name = sp;
@@ -6230,8 +6453,54 @@ void e2CmdWindow::UpdateFileMenu()
 			actionRunScript->setText(str);
 			actionRunScript->setEnabled(true);
 		}
+#endif
 	}
 
+	//EK 2017
+	// TODO to extract datatype from name?
+	QStringList sf = E2Profile::GetLastFiles();
+	disconnect(fileListAction, SIGNAL(triggered(QAction *)), this, SLOT(onSelectFile(QAction *)));
+
+	filesMenu->clear();
+	// removeAllActions()
+	while (fileListAction->actions().count())
+	{
+		fileListAction->removeAction(fileListAction->actions().first());
+	}
+
+	foreach (QString entry, sf)
+	{
+		if (entry.length())
+		{
+			int pos_and = entry.lastIndexOf("[");
+			QString fname;
+			QString e;
+			if (pos_and > 0)
+			{
+				fname = entry.left(pos_and);
+				fname = fname.replace(QDir().homePath(), "~/");
+				e = fname + "[" + entry.mid(pos_and + 1) + "]";
+			}
+			else
+			{
+				fname = entry;
+				fname = fname.replace(QDir().homePath(), "~/");
+				e = fname;
+			}
+
+			if (QFile().exists(fname) == true)
+			{
+				QAction *tmpAction = new QAction(entry, actionFileList);
+
+				filesMenu->addAction(tmpAction);
+				fileListAction->addAction(tmpAction);
+			}
+		}
+	}
+
+	connect(fileListAction, SIGNAL(triggered(QAction *)), this, SLOT(onSelectFile(QAction *)));
+
+#if 0
 	int data_type;
 	sp = E2Profile::GetLastFile(data_type);
 
@@ -6258,14 +6527,15 @@ void e2CmdWindow::UpdateFileMenu()
 			str += " PROG";
 		}
 
-		actionFile1->setEnabled(true);
-		actionFile1->setText(str);
+// 		actionFile1->setEnabled(true);
+// 		actionFile1->setText(str);
+		lastFiles.insert(0, str);
 	}
-	else
-	{
-		actionFile1->setText("");
-		actionFile1->setEnabled(false);
-	}
+// 	else
+// 	{
+// 		actionFile1->setText("");
+// 		actionFile1->setEnabled(false);
+// 	}
 
 	sp = E2Profile::GetPrevFile(data_type);
 
@@ -6300,6 +6570,7 @@ void e2CmdWindow::UpdateFileMenu()
 		actionFile2->setText("");
 		actionFile2->setEnabled(false);
 	}
+#endif
 }
 
 

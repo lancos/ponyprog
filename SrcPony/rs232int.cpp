@@ -25,9 +25,10 @@
 //-------------------------------------------------------------------------//
 //=========================================================================//
 
-#include <stdio.h>
+// #include <stdio.h>
 
 #include <QDebug>
+#include <QString>
 
 #include "e2profil.h"
 #include "rs232int.h"
@@ -559,15 +560,15 @@ int RS232Interface::SetSerialParams(long speed, int bits, int parity, int stops,
 			actual_flowcontrol = flow_control;
 		}
 
-		char dcb_str[256];
+		QString dcb_str;
 		DCB com_dcb;
 
 		if (GetCommState(hCom, &com_dcb))
 		{
-			snprintf(dcb_str, 256, "baud=%ld parity=%c data=%d stop=%d", actual_speed, actual_parity, actual_bits, actual_stops);
-			dcb_str[255] = '\0';
+			dcb_str.sprintf("baud=%ld parity=%c data=%d stop=%d", actual_speed, actual_parity, actual_bits, actual_stops);
+// 			dcb_str[255] = '\0';
 
-			if (BuildCommDCB(dcb_str, &com_dcb))
+			if (BuildCommDCB(dcb_str.toLatin1().data(), &com_dcb))
 			{
 				if (actual_flowcontrol == 0)
 				{
