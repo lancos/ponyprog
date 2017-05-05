@@ -380,7 +380,6 @@ class e2CmdWindow : public QMainWindow, public e2App, public Ui::MainWindow
 
 	QString selectedLang;
 	QStringList lastScriptsList;
-	QStringList lastFilesList;
 
 	QFont sysFont;
 	short fontSize;
@@ -402,7 +401,7 @@ class e2CmdWindow : public QMainWindow, public e2App, public Ui::MainWindow
 	QMenu *scrptsMenu;
 	QMenu *filesMenu;
 
-	QActionGroup *fileListAction;
+	QActionGroup *fileListgrp;
 	QActionGroup *scrListAction;
 
 	QAction *actionScriptList;

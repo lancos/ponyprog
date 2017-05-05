@@ -162,7 +162,6 @@ class E2Profile
 	static void SetFontSize(int sz = 9);
 
 	static QStringList GetLastFiles();
-	static void SetLastFiles(const QStringList &l);
 
 	static QStringList GetLastScripts();
 	static void SetLastScripts(const QStringList &l);
@@ -265,6 +264,7 @@ class E2Profile
 	static void SetEditBufferEnabled(bool enable);
 
   protected:    //--------------------------------------- protected
+	static void SetLastFiles(const QStringList &l);
 
   private:              //--------------------------------------- private
 	static QSettings *s;

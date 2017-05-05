@@ -138,9 +138,7 @@ e2CmdWindow::e2CmdWindow(QWidget *parent) :
 	createFontSizeMenu();
 
 	// reading of arguments
-
 	arguments = QCoreApplication::arguments();
-
 
 	// The first parameter of the command line is the file to open (optional)
 	if (arguments.count() > 1 && arguments.at(1).length() > 0)
@@ -237,7 +235,7 @@ e2CmdWindow::e2CmdWindow(QWidget *parent) :
 			exit(-1);
 		}
 
-		awip = new e2AppWinInfo(this, "No Name", b);
+		awip = new e2AppWinInfo(this, "", b);
 		//              qDebug() << b << a;
 		PostInit(); // removed from e2AppWinInfo
 	}
@@ -400,53 +398,11 @@ int e2CmdWindow::CloseAppWin()
  */
 void e2CmdWindow::createFileList()
 {
-	//EK 2017
-	// TODO to extract datatype from name
-	lastFilesList = E2Profile::GetLastFiles();
-
-	if (lastFilesList.count() == 0)
-	{
-		return;
-	}
-
 	filesMenu = new QMenu("Last files"); // TODO translate this
 	actionFileList = menuFile->insertMenu(actionOpen, filesMenu);
 
-	fileListAction = new QActionGroup(this);
-
-	foreach (QString entry, lastFilesList)
-	{
-		if (entry.length() > 0)
-		{
-			int pos_and = entry.lastIndexOf("[");
-			QString fname;
-			QString e;
-			if (pos_and > 0)
-			{
-				fname = entry.left(pos_and);
-				fname = fname.replace(QDir().homePath(), "~/");
-				e = fname + "[" + entry.mid(pos_and + 1) + "]";
-			}
-			else
-			{
-				fname = entry;
-				fname = fname.replace(QDir().homePath(), "~/");
-				e = fname;
-			}
-
-			if (QFile().exists(fname) == true)
-			{
-				QAction *tmpAction = new QAction(e, actionFileList);
-
-				filesMenu->addAction(tmpAction);
-				fileListAction->addAction(tmpAction);
-			}
-		}
-	}
-
-	connect(fileListAction, SIGNAL(triggered(QAction *)), this, SLOT(onSelectFile(QAction *)));
+	fileListgrp = new QActionGroup(this);
 }
-
 
 /**
  * @brief create the list of used scripts
@@ -492,29 +448,34 @@ void e2CmdWindow::onSelectFile(QAction *a)
 
 	int pos_and = sp.lastIndexOf("[");
 	QString fname;
-	QString e;
 	if (pos_and > 0)
 	{
 		fname = sp.left(pos_and);
-//                 fname = fname.replace(QDir().homePath(), "~/");
-		e = fname + "[" + sp.mid(pos_and + 1) + "]";
 	}
 	else
 	{
 		fname = sp;
-//                 fname = fname.replace(QDir().homePath(), "~/");
-		e = fname;
 	}
+	fname.replace("~", QDir().homePath());
 
-	if (QFile().exists(fname) == true)
+	if (QFile().exists(fname))
 	{
-		E2Profile::SetLastFile(sp);
-		// load file
-		// TODO Ask about sure or not?
+		//QStringList sl = E2Profile::GetLastFiles();
+		//Search the entry in the list, remove and insert it at position 0
 
-		// EK 2017
-		// to implement
-		// CmdOpen();
+		QString stype = sp.mid(pos_and);
+		if (stype.length() > 0 && stype == "[PROG]")
+		{
+			CmdOpen(PROG_TYPE, fname.toLatin1().constData());
+		}
+		else if (stype.length() > 0 && stype == "[DATA]")
+		{
+			CmdOpen(DATA_TYPE, fname.toLatin1().constData());
+		}
+		else
+		{
+			CmdOpen(ALL_TYPE, fname.toLatin1().constData());
+		}
 	}
 	else
 	{
@@ -4729,7 +4690,8 @@ int e2CmdWindow::CmdOpen(int type, const char *file, long relocation, int clear_
 		awip->SetLoadAutoClearBuf((clear_buffer == 0) ? false : true);
 	}
 
-	result = OpenFile(file);
+	QString fname = file;
+	result = OpenFile(fname);
 
 	return result;
 }
@@ -6364,7 +6326,7 @@ int e2CmdWindow::SaveFile(int force_select)
 	{
 		awip->BufChanged(false);
 		UpdateStatusBar();
-		UpdateFileMenu();
+	//	UpdateFileMenu();
 
 		err = OK;
 	}
@@ -6406,7 +6368,6 @@ QString e2CmdWindow::GetFileName()
 		return translate(STR_NONAME);
 	}
 }
-
 
 void e2CmdWindow::UpdateFileMenu()
 {
@@ -6456,49 +6417,51 @@ void e2CmdWindow::UpdateFileMenu()
 #endif
 	}
 
-	//EK 2017
-	// TODO to extract datatype from name?
-	QStringList sf = E2Profile::GetLastFiles();
-	disconnect(fileListAction, SIGNAL(triggered(QAction *)), this, SLOT(onSelectFile(QAction *)));
+	//Remove any previous menu and create it again with updated list
+	disconnect(fileListgrp, SIGNAL(triggered(QAction *)), this, SLOT(onSelectFile(QAction *)));
 
 	filesMenu->clear();
 	// removeAllActions()
-	while (fileListAction->actions().count())
+	while (fileListgrp->actions().count())
 	{
-		fileListAction->removeAction(fileListAction->actions().first());
+		fileListgrp->removeAction(fileListgrp->actions().first());
 	}
 
-	foreach (QString entry, sf)
+	QStringList lflist = E2Profile::GetLastFiles();
+
+	foreach (QString entry, lflist)
 	{
-		if (entry.length())
+		if (entry.length() > 0)
 		{
-			int pos_and = entry.lastIndexOf("[");
+			int pos_and = entry.lastIndexOf("?");
 			QString fname;
-			QString e;
 			if (pos_and > 0)
 			{
 				fname = entry.left(pos_and);
-				fname = fname.replace(QDir().homePath(), "~/");
-				e = fname + "[" + entry.mid(pos_and + 1) + "]";
 			}
 			else
 			{
 				fname = entry;
-				fname = fname.replace(QDir().homePath(), "~/");
-				e = fname;
 			}
 
-			if (QFile().exists(fname) == true)
+			if (QFile().exists(fname))
 			{
-				QAction *tmpAction = new QAction(entry, actionFileList);
+				QString e = fname.replace(QDir().homePath(), "~");
+
+				if (pos_and > 0)
+				{
+					e += "[" + entry.mid(pos_and + 1) + "]";
+				}
+
+				QAction *tmpAction = new QAction(e, actionFileList);
 
 				filesMenu->addAction(tmpAction);
-				fileListAction->addAction(tmpAction);
+				fileListgrp->addAction(tmpAction);
 			}
 		}
 	}
 
-	connect(fileListAction, SIGNAL(triggered(QAction *)), this, SLOT(onSelectFile(QAction *)));
+	connect(fileListgrp, SIGNAL(triggered(QAction *)), this, SLOT(onSelectFile(QAction *)));
 
 #if 0
 	int data_type;
@@ -6572,7 +6535,6 @@ void e2CmdWindow::UpdateFileMenu()
 	}
 #endif
 }
-
 
 void e2CmdWindow::Draw()
 {
