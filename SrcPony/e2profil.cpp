@@ -36,13 +36,8 @@
 
 #include "globals.h"
 
-
-
-QString E2Profile::filename = "e2p.ini";
-
-QSettings *E2Profile::s = new QSettings("e2p.ini", QSettings::IniFormat);
-
-
+//QSettings *E2Profile::s = new QSettings("ponyprog.ini", QSettings::IniFormat);
+QSettings *E2Profile::s = new QSettings(APPNAME);
 
 //=====>>> Costruttore <<<======
 #if 0
@@ -115,13 +110,14 @@ long E2Profile::GetLastDevType()
 }
 
 
-void E2Profile::SetConfigFile(const QString &nm)
-{
-	if (nm.length())
-	{
-		filename = nm;
-	}
-}
+//void E2Profile::SetConfigFile(const QString &nm)
+//{
+//	if (nm.length())
+//	{
+//		delete s;
+//		s = new QSettings(nm, QSettings::IniFormat);
+//	}
+//}
 
 
 void E2Profile::SetLastDevType(long devtype)
@@ -184,34 +180,6 @@ void E2Profile::SetParPortNo(int port)
 }
 
 
-/**
-void E2Profile::SetLastFile(QString &name)
-{
-        int rval = -1;
-        if (name && strlen(name))
-        {
-                char *sp = (char *)GetLastFile();
-                if (sp && strcasecmp(name, sp) != 0)
-                        s->setValue("PreviousFile", sp);
-                s->setValue("LastFile", (char *)name);
-        }
-        return rval;
-}
-
-
-QString &E2Profile::GetLastFile()
-{
-        return s->value("LastFile");
-}
-
-
-QString &E2Profile::GetPrevFile()
-{
-        return s->value("PreviousFile");
-
-**/
-
-
 // QString E2Profile::GetLastScript()
 // {
 // 	return s->value("LastScript", "").toString();
@@ -226,44 +194,47 @@ void E2Profile::SetLastScript(const QString &name)
 // 	s->setValue("LastScript", name);
 }
 
-
-void E2Profile::SetLastFile(const QString &name, int data)
+//Check if the entry is already in the list, in this case remove
+//then insert the entry in the head of the list
+void E2Profile::SetLastFile(const QString &name, int data_type)
 {
 	if (name.length() > 0)
 	{
 		QStringList l = GetLastFiles();
-		QString n = name;
-		if (data == PROG_TYPE)
+		QString item_name = name;
+		if (data_type == PROG_TYPE)
 		{
-			n += "?PROG";
+			item_name += "?PROG";
 		}
-		else if (data == DATA_TYPE)
+		else if (data_type == DATA_TYPE)
 		{
-			n += "?DATA";
+			item_name += "?DATA";
 		}
 		else
 		{
-			n += "?ALL";
+			item_name += "?ALL";
 		}
-		l.insert(0, n);
+		//int pos = l.indexOf(item_name);
+		l.insert(0, item_name);
+		l.removeDuplicates();
 		SetLastFiles(l);
 	}
 }
 
-#if 0
-QString param_copy;
 
-
-QString E2Profile::GetLastFile(int &data)
+QString E2Profile::GetLastFile(int &data, int index)
 {
-	QString sp = s->value("LastFile", "").toString();
+	QString sp = "";
+
+	if (index < 0 || index >= GetLastFiles().count())
+		return sp;
+
+	sp = GetLastFiles().at(index);
 
 	data = ALL_TYPE;
 
 	if (sp.length())
 	{
-		param_copy = sp;
-
 		int p = sp.indexOf('?');
 
 		if (p >= 0)
@@ -276,42 +247,18 @@ QString E2Profile::GetLastFile(int &data)
 			{
 				data = PROG_TYPE;
 			}
+			sp = sp.left(p);
 		}
 	}
 
 	return sp;
 }
 
+//QString E2Profile::GetPrevFile(int &data)
+//{
+//	return GetLastFile(data, 1);
+//}
 
-QString E2Profile::GetPrevFile(int &data)
-{
-	QString sp = s->value("PreviousFile", "").toString();
-
-	data = ALL_TYPE;
-
-	if (sp.length())
-	{
-		param_copy = sp;
-
-		int p = sp.indexOf('?');
-
-		if (p >= 0)
-		{
-			if (sp.mid(p + 1) == "DATA")
-			{
-				data = DATA_TYPE;
-			}
-			else if (sp.mid(p + 1) == "PROG")
-			{
-				data = PROG_TYPE;
-			}
-		}
-	}
-
-	return sp;
-}
-
-#endif
 
 QStringList E2Profile::GetLastFiles()
 {

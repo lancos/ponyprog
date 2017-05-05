@@ -444,18 +444,30 @@ void e2CmdWindow::createScriptList()
  */
 void e2CmdWindow::onSelectFile(QAction *a)
 {
-	QString sp = a->text();
+	//Check the Icon to set the load type
+	int load_type;
+//	QString stype = sp.mid(pos_and);
+	QString stype;
 
-	int pos_and = sp.lastIndexOf("[");
-	QString fname;
-	if (pos_and > 0)
+//	qDebug() << "Ico name: " + QString(a->icon().cacheKey()) + " - " + actionOpenFlash->icon().cacheKey() + " - " + actionOpenEep->icon().cacheKey() + " - " + actionOpen->icon().cacheKey();
+
+	if (a->icon().cacheKey() == actionOpenFlash->icon().cacheKey())
 	{
-		fname = sp.left(pos_and);
+		load_type = PROG_TYPE;
+		stype = "PROG";
+	}
+	else if (a->icon().cacheKey() == actionOpenEep->icon().cacheKey())
+	{
+		load_type = DATA_TYPE;
+		stype = "DATA";
 	}
 	else
 	{
-		fname = sp;
+		load_type = ALL_TYPE;
+		stype = "ALL";
 	}
+
+	QString fname = a->text();
 	fname.replace("~", QDir().homePath());
 
 	if (QFile().exists(fname))
@@ -463,18 +475,17 @@ void e2CmdWindow::onSelectFile(QAction *a)
 		//QStringList sl = E2Profile::GetLastFiles();
 		//Search the entry in the list, remove and insert it at position 0
 
-		QString stype = sp.mid(pos_and);
-		if (stype.length() > 0 && stype == "[PROG]")
+		if (stype.length() > 0 && stype == "PROG")
 		{
-			CmdOpen(PROG_TYPE, fname.toLatin1().constData());
+			CmdOpen(PROG_TYPE, fname);
 		}
-		else if (stype.length() > 0 && stype == "[DATA]")
+		else if (stype.length() > 0 && stype == "DATA")
 		{
-			CmdOpen(DATA_TYPE, fname.toLatin1().constData());
+			CmdOpen(DATA_TYPE, fname);
 		}
 		else
 		{
-			CmdOpen(ALL_TYPE, fname.toLatin1().constData());
+			CmdOpen(ALL_TYPE, fname);
 		}
 	}
 	else
@@ -2033,16 +2044,12 @@ void e2CmdWindow::onOpen()
 		if (a == actionOpen)
 		{
 			CmdOpen(ALL_TYPE);
-			return;
 		}
-
-		if (a == actionOpenFlash)
+		else if (a == actionOpenFlash)
 		{
 			CmdOpen(PROG_TYPE);
-			return;
 		}
-
-		if (a == actionOpenEep)
+		else if (a == actionOpenEep)
 		{
 			CmdOpen(DATA_TYPE);
 		}
@@ -2496,7 +2503,7 @@ void e2CmdWindow::onDoubleSize()
 {
 	if (IsAppReady())
 	{
-		//      CmdDoubleSize(val, cType);
+		//CmdDoubleSize(val, cType);
 		CmdDoubleSize();
 	}
 }
@@ -2527,42 +2534,25 @@ void e2CmdWindow::onByteSwap()
 	}
 }
 
-#if 0
-void e2CmdWindow::onLastFile1()
-{
-
-	if (IsAppReady())
-	{
-		CmdLastFile1();
-	}
-}
-
-
-void e2CmdWindow::onLastFile2()
-{
-	if (IsAppReady())
-	{
-		CmdLastFile2();
-	}
-}
-#endif
 
 HIDDEN int FileExist(const QString &name);
 HIDDEN bool CmpExtension(const QString &name, const QString &ext);
 
 //====================>>> e2CmdWindow::CmdSave <<<====================
-int e2CmdWindow::CmdSave(int type, const char *file, long relocation)
+int e2CmdWindow::CmdSave(int type, const QString &fname, long relocation)
 {
 	int result = OK;
+	QString oldfname = "";
 
 	if (awip->IsBufferValid())
 	{
+		oldfname = awip->GetFileName();
 		awip->SetSaveRelocation(relocation);
 		awip->SetSaveType(type);
 
-		if (file != 0)
+		if (fname.length())
 		{
-			awip->SetFileName(file);
+			awip->SetFileName(fname);
 		}
 
 		result = SaveFile(0);
@@ -2581,6 +2571,12 @@ int e2CmdWindow::CmdSave(int type, const char *file, long relocation)
 		}
 	}
 
+	if (result == OK && oldfname != awip->GetFileName())
+	{
+		E2Profile::SetLastFile(awip->GetFileName(), awip->GetSaveType());
+		UpdateFileMenu();
+	}
+
 	return result;
 }
 
@@ -2588,9 +2584,11 @@ int e2CmdWindow::CmdSave(int type, const char *file, long relocation)
 int e2CmdWindow::CmdSaveAs(int type, long relocation)
 {
 	int result = OK;
+	QString oldfname = "";
 
 	if (awip->IsBufferValid())
 	{
+		oldfname = awip->GetFileName();
 		awip->SetSaveRelocation(relocation);
 		awip->SetSaveType(type);
 
@@ -2610,10 +2608,17 @@ int e2CmdWindow::CmdSaveAs(int type, long relocation)
 		}
 	}
 
+	if (result == OK && oldfname != awip->GetFileName())
+	{
+		E2Profile::SetLastFile(awip->GetFileName(), awip->GetSaveType());
+		UpdateFileMenu();
+	}
+
 	return result;
 }
 
-int e2CmdWindow::CmdLastFile()
+//====================>>> e2CmdWindow::CmdLastFile <<<====================
+int e2CmdWindow::CmdLastFile(int index)
 {
 	int result = OK;
 
@@ -2621,8 +2626,8 @@ int e2CmdWindow::CmdLastFile()
 	{
 		if (IsBufChanged() && awip->IsBufferValid())
 		{
-			int ret = QMessageBox::warning(this, "PonyProg",
-										   "Buffer changed. Save it before to close?",
+			int ret = QMessageBox::warning(this, APPNAME,
+										   "Buffer changed. Save it before to close?",		//TODO: translate message
 										   QMessageBox::Yes | QMessageBox::No);
 
 			if (ret == QMessageBox::Yes)
@@ -2634,9 +2639,7 @@ int e2CmdWindow::CmdLastFile()
 	}
 
 	int data_type;
-	//EK 2017
-	// TODO to extract datatype from name
-	QString s = E2Profile::GetLastFiles().at(0);
+	QString s = E2Profile::GetLastFile(data_type, index);
 
 	if (s.length())
 	{
@@ -2649,131 +2652,72 @@ int e2CmdWindow::CmdLastFile()
 	return result;
 }
 
-#if 0
-//====================>>> e2CmdWindow::CmdLastFile1 <<<====================
-int e2CmdWindow::CmdLastFile1()
-{
-	int result = OK;
-
-	if (verbose == verboseAll)
-	{
-		if (IsBufChanged() && awip->IsBufferValid())
-		{
-			int ret = QMessageBox::warning(this, "PonyProg",
-										   "Buffer changed. Save it before to close?",
-										   QMessageBox::Yes | QMessageBox::No);
-
-			if (ret == QMessageBox::Yes)
-			{
-				awip->SetSaveType(ALL_TYPE);    //??
-				SaveFile();
-			}
-		}
-	}
-
-	int data_type;
-	QString s = E2Profile::GetLastFile(data_type);
-
-	if (s.length())
-	{
-		awip->SetLoadType(data_type);
-		awip->SetLoadAutoClearBuf(E2Profile::GetClearBufBeforeLoad());
-
-		result = OpenFile(s);
-	}
-
-	return result;
-}
-
-//====================>>> e2CmdWindow::CmdLastFile2 <<<====================
-int e2CmdWindow::CmdLastFile2()
-{
-	int result = OK;
-
-	if (verbose == verboseAll)
-	{
-		if (IsBufChanged() && awip->IsBufferValid())
-		{
-			int ret = QMessageBox::warning(this, "PonyProg",
-										   "Buffer changed. Save it before to close?",
-										   QMessageBox::Yes | QMessageBox::No);
-
-			if (ret == QMessageBox::Yes)
-			{
-				awip->SetSaveType(ALL_TYPE);    //??
-				SaveFile();
-			}
-		}
-	}
-
-	int data_type;
-	QString s = E2Profile::GetPrevFile(data_type);
-
-	if (s.length() > 0)
-	{
-		awip->SetLoadType(data_type);
-		awip->SetLoadAutoClearBuf(E2Profile::GetClearBufBeforeLoad());
-
-		result = OpenFile(s);
-	}
-
-	return result;
-}
-#endif
 
 //====================>>> e2CmdWindow::CmdReload <<<====================
 int e2CmdWindow::CmdReload()
 {
 	int result = OK;
 
+	if (verbose == verboseAll)
+	{
+		if (IsBufChanged() && awip->IsBufferValid())
+		{
+			int ret = QMessageBox::warning(this, APPNAME,
+										   "Buffer changed. Save it before to close?",		//TODO: translate message
+										   QMessageBox::Yes | QMessageBox::No);
+
+			if (ret == QMessageBox::Yes)
+			{
+				awip->SetSaveType(ALL_TYPE);    //??
+				SaveFile();
+			}
+		}
+	}
 
 	/**
-	        //solo nel caso in cui il penultimo file era un .hex e l'ultimo
-	        //  un .eep (caso dell'AVR con caricamento Flash+eeprom), ricarica
-	        //  entrambi i file in sequenza, in caso contrario ricarica solo
-	        //  l'ultimo.
-	        int data_type;
-	        if ( GetPrevFile(data_type) && FileExist(GetPrevFile(data_type))
-	                 && CmpExtension(GetLastFile(data_type), ".eep") == 0
-	                 && CmpExtension(GetPrevFile(data_type), ".hex") == 0 )
+		//solo nel caso in cui il penultimo file era un .hex e l'ultimo
+		//  un .eep (caso dell'AVR con caricamento Flash+eeprom), ricarica
+		//  entrambi i file in sequenza, in caso contrario ricarica solo
+		//  l'ultimo.
+		int data_type;
+		if ( GetPrevFile(data_type) && FileExist(GetPrevFile(data_type))
+				 && CmpExtension(GetLastFile(data_type), ".eep") == 0
+				 && CmpExtension(GetPrevFile(data_type), ".hex") == 0 )
 	**/
-	QString sp;
 	int dt1, dt2;
 
-	//EK 2017
-	// TODO to extract datatype from name
-	sp = E2Profile::GetLastFiles().at(0);
+	QString sp1 = E2Profile::GetLastFile(dt1, 0);
 
-	if (sp.length() && FileExist(sp))
+	if (sp1.length() && FileExist(sp1))
 	{
+		QString sp2 = E2Profile::GetLastFile(dt2, 1);
 
-#if 0
-		sp = E2Profile::GetPrevFile(dt2);
-
-		/*
-		 * We reload both files only if PrevFile is not E2P and last file is
-		 * not ALL_TYPE
-		 * because we don't want PrevFile change the selected device. In
-		 * case of LastFile is ALL_TYPE there's no need to reload even
-		 * PrevFile
-		 */
-		if (sp.length() && FileExist(sp) && dt1 != ALL_TYPE &&
-				CmpExtension(sp.toLower(), ".e2p") != 0)
+		// We reload both files only if PrevFile is not E2P and last file is
+		// not ALL_TYPE
+		// because we don't want PrevFile change the selected device. In
+		// case of LastFile is ALL_TYPE there's no need to reload even
+		// PrevFile
+		if (sp2.length() && FileExist(sp2) && dt1 != ALL_TYPE &&
+				CmpExtension(sp2.toLower(), ".e2p") != 0)
 		{
-			result = CmdLastFile2();
+			awip->SetLoadType(dt2);
+			awip->SetLoadAutoClearBuf(E2Profile::GetClearBufBeforeLoad());
 
-			//A questo punto il last e` diventato Prev!!
-			//Now Last become Prev
-			if (E2Profile::GetPrevFile(dt1).length())
+			result = OpenFile(sp2);
+
+			if (result == OK)
 			{
-				result = CmdLastFile2();
+				awip->SetLoadType(dt1);
+				result = OpenFile(sp1);
 			}
 		}
 		else
 		{
-			result = CmdLastFile1();
+			awip->SetLoadType(dt1);
+			awip->SetLoadAutoClearBuf(E2Profile::GetClearBufBeforeLoad());
+
+			result = OpenFile(sp1);
 		}
-#endif
 	}
 	else
 	{
@@ -2921,7 +2865,7 @@ int e2CmdWindow::CmdRead(int type)
 
 		doProgress(translate(STR_MSGREADING));
 
-		awip->SetFileName(0);
+		awip->SetFileName("");
 		SetTitle();
 
 		rval = awip->Read(type);
@@ -4665,13 +4609,14 @@ int e2CmdWindow::CmdSetDeviceSubType(int val)
 }
 
 //====================>>> e2CmdWindow::CmdOpen <<<====================
-int e2CmdWindow::CmdOpen(int type, const char *file, long relocation, int clear_buffer)
+int e2CmdWindow::CmdOpen(int type, const QString &fname, long relocation, int clear_buffer)
 {
 	int result = OK;
+	QString oldfname = awip->GetFileName();
 
 	if (IsBufChanged() && awip->IsBufferValid() && verbose == verboseAll)
 	{
-		int ret = QMessageBox::warning(this, "PonyProg",
+		int ret = QMessageBox::warning(this, APPNAME,
 									   QString(STR_BUFCHANGED2),
 									   QMessageBox::Yes | QMessageBox::No);
 
@@ -4690,8 +4635,13 @@ int e2CmdWindow::CmdOpen(int type, const char *file, long relocation, int clear_
 		awip->SetLoadAutoClearBuf((clear_buffer == 0) ? false : true);
 	}
 
-	QString fname = file;
 	result = OpenFile(fname);
+
+	if (result == OK && oldfname != awip->GetFileName())
+	{
+		E2Profile::SetLastFile(awip->GetFileName(), awip->GetLoadType());
+		UpdateFileMenu();
+	}
 
 	return result;
 }
@@ -4733,9 +4683,9 @@ int e2CmdWindow::CmdFillBuf()
 		}
 		else
 		{
-			int r = QMessageBox::warning(this, "Fill buffer",
-										 QString(STR_MSGBADPARAM),
-										 QMessageBox::Ok);
+			QMessageBox::warning(this, "Fill buffer",
+								 QString(STR_MSGBADPARAM),
+								 QMessageBox::Ok);
 		}
 	}
 
@@ -6110,20 +6060,21 @@ int e2CmdWindow::OpenFile(const QString &file)
 		else
 		{
 			filterIndex = (int)awip->GetFileBuf(); // ???
+			QString open_path = QDir::homePath();			//TODO: load from settings
 
 			QString fltr = convertFilterListToString(filterInfo);
 
 			if (awip->GetLoadType() == PROG_TYPE)
 			{
-				fileName = QFileDialog::getOpenFileName(this, translate(STR_MSGOPENPROGFILE), QDir::homePath(), fltr);
+				fileName = QFileDialog::getOpenFileName(this, translate(STR_MSGOPENPROGFILE), open_path, fltr);
 			}
 			else if (awip->GetLoadType() == DATA_TYPE)
 			{
-				fileName = QFileDialog::getOpenFileName(this, translate(STR_MSGOPENDATAFILE), QDir::homePath(), fltr);
+				fileName = QFileDialog::getOpenFileName(this, translate(STR_MSGOPENDATAFILE), open_path, fltr);
 			}
 			else
 			{
-				fileName = QFileDialog::getOpenFileName(this, translate(STR_MSGOPENFILE), QDir::homePath(), fltr);
+				fileName = QFileDialog::getOpenFileName(this, translate(STR_MSGOPENFILE), open_path, fltr);
 			}
 
 			E2Profile::SetDefaultFileType((FileType)filterIndex);
@@ -6138,30 +6089,23 @@ int e2CmdWindow::OpenFile(const QString &file)
 	{
 		if (FileExist(fileName))
 		{
-			QString oldname;
-
-			if (awip->GetFileName().length())
-			{
-				oldname = awip->GetFileName();
-			}
-			else
-			{
-				oldname = "";
-			}
-
-			awip->SetFileName(fileName);                    //Set FileName, update LastFile and PrevFile
-			long old_type = awip->GetEEPId();               //EEP type can be changed by E2P file load
+			QString oldfname = awip->GetFileName();
+			awip->SetFileName(fileName);
+			long old_type = awip->GetEEPId();			//EEP type can be changed by E2P file load
 
 			rval = awip->Load();
 
 			if (rval <= 0)
 			{
+				awip->SetFileName(oldfname);
+
+				//If we go here there is a serious problem!! If file exist awip->Load() should succeded
 				if (verbose != verboseNo)
 				{
 					QMessageBox note;
 					note.setIcon(QMessageBox::Critical);
 					note.setWindowTitle("Open file");
-					note.setText("Unable to load the file");
+					note.setText("Unable to load the file");	//TODO: translate message
 					note.exec();
 				}
 			}
@@ -6174,7 +6118,7 @@ int e2CmdWindow::OpenFile(const QString &file)
 				UpdateMenuType(awip->GetEEPId(), old_type);
 
 				first_line = 0;
-				//      curIndex = 0;
+				//curIndex = 0;
 				Draw();
 				UpdateStatusBar();
 
@@ -6195,8 +6139,6 @@ int e2CmdWindow::OpenFile(const QString &file)
 			rval = FILENOTFOUND;
 		}
 	}
-
-	UpdateFileMenu();
 
 	return rval;
 }
@@ -6226,15 +6168,13 @@ QString e2CmdWindow::convertFilterListToString(const QStringList &lst)
 //====================>>> e2CmdWindow::SaveFile <<<====================
 int e2CmdWindow::SaveFile(int force_select)
 {
-	QString fn;
-	QString fnp = awip->GetFileName();
 	int err = 0;
 	QMessageBox note;
 
-	if (!force_select && fnp.length() > 0)
+	if (!force_select && awip->GetFileName().length() > 0)
 	{
 		// Name validated
-		//              awip->SetNoOfBlock(awip->GetNoOfBank());
+		//awip->SetNoOfBlock(awip->GetNoOfBank());
 		if ((err = awip->Save()) <= 0 && verbose != verboseNo)
 		{
 			QString str;
@@ -6253,13 +6193,6 @@ int e2CmdWindow::SaveFile(int force_select)
 	else
 	{
 		// Invalid name: select and save the file
-		fn = "";
-
-		if (fnp.length() > 0)
-		{
-			fn = fnp;
-		}
-
 		QString s;
 
 		if (awip->GetSaveType() == PROG_TYPE)
@@ -6279,20 +6212,15 @@ int e2CmdWindow::SaveFile(int force_select)
 
 
 		QString fltr = convertFilterListToString(filterInfo);
-
-		fn = QFileDialog::getOpenFileName(this, translate(STR_MSGOPENPROGFILE), QDir::homePath(), fltr);
+		//fn = awip->GetFileName();	//should be the filename proposed by the dialog by default
+		QString fn = QFileDialog::getSaveFileName(this, translate(STR_MSGFILESAVEAS), QDir::homePath(), fltr);
 
 		if (fn.length())
 		{
 			AddExtension(fn);
 
 			//Save the old name in case some error occurs, so it can restore it
-			QString oldname;
-
-			if (awip->GetFileName().length())
-			{
-				oldname = awip->GetFileName();
-			}
+			QString oldname = awip->GetFileName();
 
 			awip->SetFileBuf((enum FileType)filterIndex);   //????? Ci vorrebbe un controllo separato dall'estensione sul tipo di file (combobox)
 			E2Profile::SetDefaultFileType(awip->GetFileBuf());
@@ -6308,10 +6236,9 @@ int e2CmdWindow::SaveFile(int force_select)
 				note.setWindowTitle("Save");
 				note.setText(str);
 				note.exec();
-				//ripristina il nome precedente
 
-				awip->SetFileName(oldname.toLatin1());
-
+				//restore previous name
+				awip->SetFileName(oldname);
 			}
 			else
 			{
@@ -6326,7 +6253,6 @@ int e2CmdWindow::SaveFile(int force_select)
 	{
 		awip->BufChanged(false);
 		UpdateStatusBar();
-	//	UpdateFileMenu();
 
 		err = OK;
 	}
@@ -6435,28 +6361,33 @@ void e2CmdWindow::UpdateFileMenu()
 		{
 			int pos_and = entry.lastIndexOf("?");
 			QString fname;
+			QString stype;
 			if (pos_and > 0)
 			{
 				fname = entry.left(pos_and);
+				stype = entry.mid(pos_and + 1);
 			}
 			else
 			{
 				fname = entry;
+				stype = "";
 			}
 
 			if (QFile().exists(fname))
 			{
 				QString e = fname.replace(QDir().homePath(), "~");
-
-				if (pos_and > 0)
-				{
-					e += "[" + entry.mid(pos_and + 1) + "]";
-				}
-
+				//e += "[" + stype + "]";
 				QAction *tmpAction = new QAction(e, actionFileList);
 
 				filesMenu->addAction(tmpAction);
 				fileListgrp->addAction(tmpAction);
+
+				if (stype == "PROG")
+					tmpAction->setIcon(actionOpenFlash->icon());
+				else if (stype == "DATA")
+					tmpAction->setIcon(actionOpenEep->icon());
+				else
+					tmpAction->setIcon(actionOpen->icon());
 			}
 		}
 	}

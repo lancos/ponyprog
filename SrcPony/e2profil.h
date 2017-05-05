@@ -86,8 +86,8 @@ class E2Profile
 {
 
   public:               //---------------------------------------- public
-	//      E2Profile(const QString &nm);
-	//      virtual ~E2Profile();
+	//E2Profile(const QString &nm);
+	//virtual ~E2Profile();
 
 	static HInterfaceType GetParInterfType();
 	static void SetParInterfType(HInterfaceType type);
@@ -100,7 +100,7 @@ class E2Profile
 	static long GetLastDevType();
 	static void SetLastDevType(long devtype);
 
-// 	static QString GetLastFile(int &data);
+	static QString GetLastFile(int &data, int index = 0);
 // 	static QString GetPrevFile(int &data);
 	static void SetLastFile(const QString &name, int data = ALL_TYPE);
 
@@ -235,7 +235,11 @@ class E2Profile
 	static int GetLPTAddress(int &lpt1, int &lpt2, int &lpt3);
 	static void SetLPTAddress(int lpt1, int lpt2, int lpt3);
 
-	static void SetConfigFile(const QString &n);
+//	static void SetConfigFile(const QString &n);
+	static QString GetConfigFile()
+	{
+		return s->fileName();
+	}
 
 	static QString GetLockDir();
 	static void SetLockDir(const QString &name);
@@ -265,10 +269,10 @@ class E2Profile
 
   protected:    //--------------------------------------- protected
 	static void SetLastFiles(const QStringList &l);
+	static QSettings *s;
 
   private:              //--------------------------------------- private
-	static QSettings *s;
-	static QString filename;       //name of .INI file
+//	static QString filename;       //name of .INI file
 };
 
 #endif

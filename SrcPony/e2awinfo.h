@@ -136,7 +136,7 @@ class e2AppWinInfo // : public QObject
 	void SetFileBuf(FileType type);
 	FileType GetFileBuf() const;
 
-	void SetFileName(const QString &name);
+	bool SetFileName(const QString &name);
 
 	QString GetFileName()
 	{

@@ -248,12 +248,10 @@ class e2CmdWindow : public QMainWindow, public e2App, public Ui::MainWindow
 
   private:
 	//All commands
-	int CmdOpen(int type = ALL_TYPE, const char *file = 0, long relocation = 0, int clear_buffer = -1);
-	int CmdSave(int type = ALL_TYPE, const char *file = 0, long relocation = 0);
+	int CmdOpen(int type = ALL_TYPE, const QString &file = 0, long relocation = 0, int clear_buffer = -1);
+	int CmdSave(int type = ALL_TYPE, const QString &file = 0, long relocation = 0);
 	int CmdSaveAs(int type = ALL_TYPE, long relocation = 0);
-	int CmdLastFile();
-// 	int CmdLastFile1();
-// 	int CmdLastFile2();
+	int CmdLastFile(int index = 0);
 	int CmdReload();
 	int CmdPrint();
 	int CmdRead(int type = ALL_TYPE);

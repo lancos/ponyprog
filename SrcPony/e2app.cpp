@@ -125,7 +125,9 @@ void e2App::initSettings()
 	//     strcat(str, "." APPNAME "rc");
 	//      str[MAXPATH - 1] = '\0';
 
-	E2Profile::SetConfigFile(str);
+	//E2Profile::SetConfigFile(str);
+
+	qDebug() << "Settings file: " << E2Profile::GetConfigFile();	// << " - Format: " << E2Profile::s->format();
 #else
 	//The profile file is called "ponyprog.ini"
 	//while the help file "ponyprog.html"
@@ -141,7 +143,7 @@ void e2App::initSettings()
 
 	helpfile = progName + ".html";
 
-	SetFileName(QString(progName + ".ini"));
+	//E2Profile::SetConfigFile(QString(progName + ".ini"));
 
 	QString currentAppDir = qApp->applicationDirPath();
 
@@ -160,8 +162,6 @@ void e2App::initSettings()
 
 	ok_soundfile = currentAppDir + "oksound.wav";
 	err_soundfile = currentAppDir + "errsound.wav";
-
-
 #endif
 
 	QString sp2 = E2Profile::GetLanguageCode();

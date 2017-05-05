@@ -62,11 +62,11 @@ e2AppWinInfo::e2AppWinInfo(e2CmdWindow *p, const QString &name, BusIO **busvptr)
 	// Constructor
 //	cmdWin = static_cast<e2CmdWindow*>(p);
 
-	fname = "",
+	fname = "";
 
-	qDebug() << "e2awinfo" << p << this;
+	//qDebug() << "e2awinfo" << p << this;
 
-	//      p->SetAWInfo(this);
+	//p->SetAWInfo(this);
 
 	eep24xx = new E24xx(this, busvptr[I2C - 1]);
 	eep2401 = new mE2401(this, busvptr[I2C - 1]);
@@ -133,12 +133,7 @@ e2AppWinInfo::e2AppWinInfo(e2CmdWindow *p, const QString &name, BusIO **busvptr)
 	//      eep2430.SetBus(busvptr[S2430B - 1]);
 	//      eep2430.DefaultBankSize();
 
-	QString nm = name;
-
-	if (nm.length())
-	{
-		SetFileName(nm);
-	}
+	SetFileName(name);
 
 	//Initialize File Formats vector
 	fbufvet[E2P] = &e2pfbuf;
@@ -152,8 +147,8 @@ e2AppWinInfo::e2AppWinInfo(e2CmdWindow *p, const QString &name, BusIO **busvptr)
 		fbufvet[k]->SetAWInfo(this);
 	}
 
-	eeprom_string = ""; //[0] = '\0';        //eeprom string ID
-	eeprom_comment = ""; //[0] = '\0';       //eeprom comment
+	eeprom_string = "";						//eeprom string ID
+	eeprom_comment = "";					//eeprom comment
 
 	ClearBuffer();                          //Clear the new buffer
 
@@ -182,7 +177,7 @@ e2AppWinInfo::e2AppWinInfo(e2CmdWindow *p, const QString &name, BusIO **busvptr)
 
 		if (err != OK)
 		{
-			int r = QMessageBox::critical(NULL, "Error", "Load I/O driver failed.");
+			QMessageBox::critical(NULL, "Error", "Load I/O driver failed.");	//TODO: translate message
 		}
 
 		//imposta il bus iniziale (relativo al tipo di eeprom)
@@ -196,16 +191,16 @@ e2AppWinInfo::e2AppWinInfo(e2CmdWindow *p, const QString &name, BusIO **busvptr)
 				SetFileName("");
 			}
 		}
-		else
+		else	//Why we call OpenPort only if name is "" ???
 		{
 			err = cmdWin->OpenPort();
 
 			if (err == E2ERR_ACCESSDENIED)
 			{
 #ifdef  _WINDOWS
-				int r = QMessageBox::critical(NULL, QString("Error"), QString("I/O access denied. Driver not found, try to install the software again"));
+				QMessageBox::critical(NULL, QString("Error"), QString("I/O access denied. Driver not found, try to install the software again"));		//TODO: translate message
 #else
-				int r = QMessageBox::critical(NULL,  QString("Error"),  QString("I/O access denied. Run as root, or change the interface"));
+				QMessageBox::critical(NULL,  QString("Error"),  QString("I/O access denied. Run as root, or change the interface"));		//TODO: translate message
 #endif
 			}
 
@@ -217,7 +212,7 @@ e2AppWinInfo::e2AppWinInfo(e2CmdWindow *p, const QString &name, BusIO **busvptr)
 	{
 		if (Load() <= 0)
 		{
-			SetFileName(0);
+			SetFileName("");
 		}
 	}
 
@@ -237,17 +232,24 @@ e2AppWinInfo::~e2AppWinInfo()
 }
 
 
-void e2AppWinInfo::SetFileName(const QString &name)
+bool e2AppWinInfo::SetFileName(const QString &name)
 {
+	bool rval = false;
+
 	if (name.length())
 	{
-		E2Profile::SetLastFile(name, load_type);
-		fname = name;
+		if (name != fname)
+		{
+			fname = name;
+			rval = true;
+		}
 	}
 	else
 	{
 		fname = "";
 	}
+
+	return rval;
 }
 
 
@@ -569,7 +571,7 @@ int e2AppWinInfo::Read(int type, int raise_power, int leave_on)
 		{
 			qDebug() << "e2AppWinInfo::Read() ** Read = " << rval;
 
-			SetFileName("");                         //Questo per evitare che al prossimo save() si utilizzi il nome vecchio
+			SetFileName("");          //avoid to use old name on next save()
 			buf_ok = true;
 			buf_changed = false;
 
