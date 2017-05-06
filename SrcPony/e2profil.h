@@ -28,7 +28,7 @@
 #ifndef _E2PROFILE_H
 #define _E2PROFILE_H
 
-
+#include <QPrinter>
 #include <QSettings>
 #include "types.h"
 #include "globals.h"
@@ -130,6 +130,9 @@ class E2Profile
 
 	static int GetAT89DelayAfterReset();
 	static void SetAT89DelayAfterReset(int delay = 50);
+
+	static void GetPrinterSettings(QPrinter &p);
+	static void SetPrinterSettings(QPrinter &p);
 
 	static int GetAVRDelayAfterReset();
 	static void SetAVRDelayAfterReset(int delay = 50);

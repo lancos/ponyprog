@@ -90,7 +90,7 @@ static int gpio_open(unsigned int gpio, bool out_dir)
 
 		if (fd < 0)
 		{
-			qFatal("Unable to open GPIO export interface: %s\n", strerror(errno));
+			qWarning("Unable to open GPIO export interface: %s\n", strerror(errno));
 			rval = -1;
 		}
 		else
@@ -111,7 +111,7 @@ static int gpio_open(unsigned int gpio, bool out_dir)
 
 			if (fd < 0)
 			{
-				qFatal("Unable to open GPIO direction interface: %s\n", strerror(errno));
+				qWarning("Unable to open GPIO direction interface: %s\n", strerror(errno));
 				rval = -1;
 			}
 			else
@@ -145,7 +145,7 @@ static int gpio_open(unsigned int gpio, bool out_dir)
 
 		if (fd < 0)
 		{
-			qFatal("Unable to open GPIO set-value interface: %s\n", strerror(errno));
+			qWarning("Unable to open GPIO set-value interface: %s\n", strerror(errno));
 			rval = -1;
 		}
 		else
@@ -181,7 +181,7 @@ static int gpio_close(unsigned int gpio, int fd)
 
 		if (fd < 0)
 		{
-			qFatal("Unable to open GPIO unexport interface: %s\n", strerror(errno));
+			qWarning("Unable to open GPIO unexport interface: %s\n", strerror(errno));
 			rval = -1;
 		}
 		else
@@ -304,7 +304,7 @@ void LinuxSysFsInterface::SetControlLine(int res)
 
 		if (ret != 2)
 		{
-			qFatal("LinuxSysFsInterface::SetControlLine() write failed (%d)\n", ret);
+			qWarning("LinuxSysFsInterface::SetControlLine() write failed (%d)\n", ret);
 			exit(1);
 		}
 
@@ -337,7 +337,7 @@ void LinuxSysFsInterface::SetDataOut(int sda)
 
 		if (ret != 2)
 		{
-			qFatal("LinuxSysFsInterface::SetDataOut() write failed (%d)\n", ret);
+			qWarning("LinuxSysFsInterface::SetDataOut() write failed (%d)\n", ret);
 			exit(1);
 		}
 
@@ -370,7 +370,7 @@ void LinuxSysFsInterface::SetClock(int scl)
 
 		if (ret != 2)
 		{
-			qFatal("LinuxSysFsInterface::SetClock() write failed (%d)\n", ret);
+			qWarning("LinuxSysFsInterface::SetClock() write failed (%d)\n", ret);
 			exit(1);
 		}
 
@@ -416,7 +416,7 @@ int LinuxSysFsInterface::GetDataIn()
 
 		if (ret < 1)
 		{
-			qFatal("LinuxSysFsInterface::GetDataIn() read failed (%d)\n", ret);
+			qWarning("LinuxSysFsInterface::GetDataIn() read failed (%d)\n", ret);
 			exit(1);
 		}
 

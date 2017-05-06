@@ -28,6 +28,7 @@
 
 #include <QPainter>
 #include <QPrinter>
+#include <QPrintDialog>
 #include <QFile>
 #include <QComboBox>
 #include <QFileDialog>
@@ -2439,8 +2440,8 @@ void e2CmdWindow::onAskToSave()
 
 //void e2CmdWindow::onCloseAllDialog()
 //{
-	//e2Prg->close();
-	//e2Dlg->CloseDialog();
+//	e2Prg->close();
+//	e2Dlg->CloseDialog();
 //}
 
 
@@ -6572,6 +6573,7 @@ void e2CmdWindow::PostInit()
 
 // EK 2017
 // TODO to check this
+// TODO QPainter convert to QTextDocument ??
 //====================>>> e2CmdWindow::Print <<<====================
 void e2CmdWindow::Print()
 {
@@ -6580,59 +6582,61 @@ void e2CmdWindow::Print()
 	//      int a, b, cHeight;
 	int curRow = 0, curPage = 0;
 
-	QString def_print_name = "ponyprog.pdf";
+	QPrinter printer(QPrinter::PrinterResolution);
 
-	QPrinter printer(QPrinter::HighResolution); //create your QPrinter (don't need to be high resolution, anyway)
-	printer.setPageSize(QPrinter::A4);
-	printer.setOrientation(QPrinter::Portrait);
-	printer.setPageMargins(15, 15, 15, 15, QPrinter::Millimeter);
-	printer.setFullPage(false);
-	printer.setOutputFileName(def_print_name);
-	printer.setOutputFormat(QPrinter::PdfFormat); //you can use native format of system usin QPrinter::NativeFormat
+	QPrintDialog printDialog(&printer, this);
 
-	QPainter pdc(&printer); // create a painter which will paint 'on printer'.
-	// TODO font and fontsize as option
-	pdc.setFont(QFont("Tahoma", 12));
+	E2Profile::GetPrinterSettings(printer);
 
-
-	printer.setPrinterName(def_print_name);
-
-	QString str;
-
-	k = 0;
-
-	while (k < no_line)
+	if (printDialog.exec() == QDialog::Accepted)
 	{
-		curRow = 0;
-		str = QString(STR_MSGPAGE + " " + APPNAME + " by " + AUTHORNAME + " %1   ---   ").arg(++curPage);
 
-		pdc.drawText(rect(), str);
+		E2Profile::SetPrinterSettings(printer);
 
-		if (curPage == 1)
+		QPainter pdc(&printer); // create a painter which will paint 'on printer'.
+		// TODO font and fontsize as option
+		pdc.setFont(QFont("Tahoma", 12));
+	//	options() from dialog and save params
+
+	//	printer.setPrinterName(def_print_name);
+
+		QString str;
+
+		k = 0;
+
+		while (k < no_line)
 		{
-			curRow++;
-			pdc.drawText(rect(), "File: " + GetFileName());
+			curRow = 0;
+			str = QString(STR_MSGPAGE + " " + APPNAME + " by " + AUTHORNAME + " %1   ---   ").arg(++curPage);
 
-			pdc.drawText(rect(), "Device: " + awip->GetStringID());
-
-			pdc.drawText(rect(), "Note: " + awip->GetComment());
-
-			str.sprintf("Size  : %ld Bytes    CRC: %04X", GetDevSize(), awip->GetCRC());
 			pdc.drawText(rect(), str);
+
+			if (curPage == 1)
+			{
+				curRow++;
+				pdc.drawText(rect(), "File: " + GetFileName());
+
+				pdc.drawText(rect(), "Device: " + awip->GetStringID());
+
+				pdc.drawText(rect(), "Note: " + awip->GetComment());
+
+				str.sprintf("Size  : %ld Bytes    CRC: %04X", GetDevSize(), awip->GetCRC());
+				pdc.drawText(rect(), str);
+			}
+
+			curRow++;
+
+			// TODO number of line as option
+			for (; k < no_line && curRow < 66; k++)
+			{
+				pdc.drawText(rect(), awip->Dump(k));
+			}
+
+			printer.newPage();
 		}
 
-		curRow++;
-
-		// TODO number of line as option
-		for (; k < no_line && curRow < 66; k++)
-		{
-			pdc.drawText(rect(), awip->Dump(k));
-		}
-
-		printer.newPage();
+		pdc.end();
 	}
-
-	pdc.end();
 
 }
 
