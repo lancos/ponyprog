@@ -211,7 +211,9 @@ QString E2Profile::GetLastFile(int &data, int index)
 	QString sp = "";
 
 	if (index < 0 || index >= GetLastFiles().count())
+	{
 		return sp;
+	}
 
 	sp = GetLastFiles().at(index);
 

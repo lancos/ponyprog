@@ -1415,7 +1415,7 @@ void e2CmdWindow::doProgress(const QString &text)
 		qDebug() << "e2Prg alread exist";
 		e2Prg->setLabelText(text);
 		e2Prg->reset();
-	//	e2Prg->setValue(0);
+		//e2Prg->setValue(0);
 	}
 	else
 	{
@@ -1424,7 +1424,7 @@ void e2CmdWindow::doProgress(const QString &text)
 		e2Prg->setMinimumDuration(100);
 		e2Prg->setAutoReset(true);
 		e2Prg->setAutoClose(true);
-	//	connect(e2Prg, SIGNAL(canceled()), this,  SLOT(onEndProgress()));
+		//connect(e2Prg, SIGNAL(canceled()), this,  SLOT(onEndProgress()));
 	}
 }
 
@@ -6341,11 +6341,17 @@ void e2CmdWindow::UpdateFileMenu()
 				fileListgrp->addAction(tmpAction);
 
 				if (stype == "PROG")
+				{
 					tmpAction->setIcon(actionOpenFlash->icon());
+				}
 				else if (stype == "DATA")
+				{
 					tmpAction->setIcon(actionOpenEep->icon());
+				}
 				else
+				{
 					tmpAction->setIcon(actionOpen->icon());
+				}
 			}
 		}
 	}
@@ -6596,9 +6602,9 @@ void e2CmdWindow::Print()
 		QPainter pdc(&printer); // create a painter which will paint 'on printer'.
 		// TODO font and fontsize as option
 		pdc.setFont(QFont("Tahoma", 12));
-	//	options() from dialog and save params
+		//options() from dialog and save params
 
-	//	printer.setPrinterName(def_print_name);
+		//printer.setPrinterName(def_print_name);
 
 		QString str;
 
