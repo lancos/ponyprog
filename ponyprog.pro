@@ -23,40 +23,15 @@ UI_DIR = $$DESTDIR/.ui
 
 # TODO: please check this
 win32:INCLUDEPATH += $$PWD/windows 
-# win32:INCLUDEPATH += C:/libusb-1.0.19/libusb
-# win32:INCLUDEPATH += C:/Program Files (x86)/libusb-1.0.19
-# win32:DEPENDPATH += C:/Program Files (x86)/libusb-1.0.19/libusb
-# win32:DEPENDPATH += C:/libusb-1.0.19/libusb
 win32:DEPENDPATH += $$PWD/windows
 
 win64:INCLUDEPATH += $$PWD/windows 
-# win64:INCLUDEPATH += C:/libusb-1.0.19/libusb
-# win64:INCLUDEPATH += C:/libusb-1.0.19/libusb
-# win64:INCLUDEPATH +=C:/Program Files/libusb-1.0.19
-# win64:DEPENDPATH += C:/Program Files/libusb-1.0.19/libusb
-# win64:DEPENDPATH += C:/libusb-1.0.19/libusb
-
-# contains(QT_ARCH, i386) {
-#     win32:INCLUDEPATH += C:/libusb-1.0.19/libusb
-#     win32:INCLUDEPATH += C:/Program Files (x86)/libusb-1.0.19
-#     win32:DEPENDPATH += C:/Program Files (x86)/libusb-1.0.19/libusb
-#     win32:DEPENDPATH += C:/libusb-1.0.19/libusb
-#     win32:message("32-bit")
-# } else {
-#     win32:INCLUDEPATH += C:/libusb-1.0.19/libusb
-#     win32:INCLUDEPATH +=C:/Program Files/libusb-1.0.19
-#     win32:DEPENDPATH += C:/Program Files/libusb-1.0.19/libusb
-#     win32:DEPENDPATH += C:/libusb-1.0.19/libusb
-#     win32:message("64-bit")
-# }
 
 
 # TODO: please add this for macx
 # macx
 
 unix:INCLUDEPATH +=/usr/local/include/
-# unix:INCLUDEPATH +=/usr/local/include/libusb-1.0/
-# unix:INCLUDEPATH +=/usr/include/libusb-1.0/
 
 INCLUDEPATH += qhexedit2/src
 
@@ -224,22 +199,8 @@ FORMS    += SrcPony/forms/aboutdlg.ui \
             SrcPony/forms/sernumcfg.ui
 
 	    
-# TRANSLATIONS = sources/translations/cnc_qt_en.ts \
-# 	    sources/translations/cnc_qt_ru.ts \
-# 	    sources/translations/cnc_qt_de.ts
-               
-	    
 # TODO: please check this
 win32:LIBS += -L$$PWD/windows/ 
-# contains(QT_ARCH, i386) {
-#     win32:LIBS += -LC:/Program Files (x86)/\libusb-1.0.19\Win32\Debug\lib\libusb-1.0
-#     win32:LIBS += -LC:\libusb-1.0.19\Win32\Debug\lib\libusb-1.0
-#     win32:message("32-bit")
-# } else {
-#     win32:LIBS += -LC:/Program Files/\libusb-1.0.19\Win32\Debug\lib\libusb-1.0
-#     win32:LIBS += -LC:\libusb-1.0.19\Win32\Debug\lib\libusb-1.0
-#     win32:message("64-bit")
-# }
 
 
 # TODO: please add this for macx
