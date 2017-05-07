@@ -1374,7 +1374,7 @@ uint16_t e2AppWinInfo::RecalcCRC()
 }
 
 
-#include <ctype.h>
+// #include <ctype.h>
 
 //======================>>> e2AppWinInfo::Dump <<<=======================
 QString e2AppWinInfo::Dump(int line, int type)

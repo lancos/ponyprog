@@ -52,7 +52,7 @@ class IntelFileBuf : public FileBuf
 	int WriteRecord(QFile &fh, uint8_t *bptr, long curaddr, long recsize, int fmt);
 	int WriteAddressRecord(QFile &fh, long curaddr, bool linear_address = false);
 
-	int ScanHex(char **sp, int len, uint32_t &result);
-	int ScanHex(char **sp, int len, uint16_t &result);
+	bool ScanHex(const QString &s, uint32_t &result);
+	bool ScanHex(const QString &s, uint16_t &result);
 };
 #endif

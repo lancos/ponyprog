@@ -29,7 +29,7 @@
 #include <QString>
 #include <QTextStream>
 
-#include <stdlib.h>
+// #include <stdlib.h>
 
 #define MAXLINE 520
 

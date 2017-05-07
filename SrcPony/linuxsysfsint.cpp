@@ -33,13 +33,14 @@
 #include "e2cmdw.h"
 
 #include <QDebug>
+#include <QString>
 
 #define GPIO_OUT                        true
 #define GPIO_IN                         false
 
 #ifdef  __linux__
-# include <stdio.h>
-# include <stdlib.h>
+// # include <stdio.h>
+// # include <stdlib.h>
 # include <errno.h>
 # include <unistd.h>
 # include <fcntl.h>
@@ -73,12 +74,13 @@ LinuxSysFsInterface::~LinuxSysFsInterface()
 
 static int gpio_open(unsigned int gpio, bool out_dir)
 {
-	char buf[MAX_BUF];
+// 	char buf[MAX_BUF];
+	QString buf;
 	int rval;
 
 	//trying with gpio command (you need wiringPi installed)
-	snprintf(buf, sizeof(buf), "gpio export %u %s", gpio, out_dir ? "out" : "in");
-	rval = system(buf);
+	buf.sprintf("gpio export %u %s", gpio, out_dir ? "out" : "in");
+	rval = system(buf.toLatin1().data());
 
 	if (rval != 0)
 	{
@@ -88,27 +90,28 @@ static int gpio_open(unsigned int gpio, bool out_dir)
 
 		if (fd < 0)
 		{
-			fprintf(stderr, "Unable to open GPIO export interface: %s\n", strerror(errno));
+			qFatal("Unable to open GPIO export interface: %s\n", strerror(errno));
 			rval = -1;
 		}
 		else
 		{
 			int ret, len;
 
-			len = snprintf(buf, sizeof(buf), "%d", gpio);
-			ret = write(fd, buf, len);
+			buf = QString().number(gpio);
+			len = buf.length();
+			ret = write(fd, buf.toLatin1().data(), len);
 			close(fd);
 			rval = (ret == len) ? 0 : -1;
 		}
 
 		if (rval == 0)
 		{
-			snprintf(buf, sizeof(buf), SYSFS_GPIO_DIR  "/gpio%d/direction", gpio);
-			fd = open(buf, O_WRONLY);
+			buf.sprintf("%s/gpio%d/direction", SYSFS_GPIO_DIR, gpio);
+			fd = open(buf.toLatin1().data(), O_WRONLY);
 
 			if (fd < 0)
 			{
-				fprintf(stderr, "Unable to open GPIO direction interface: %s\n", strerror(errno));
+				qFatal("Unable to open GPIO direction interface: %s\n", strerror(errno));
 				rval = -1;
 			}
 			else
@@ -117,14 +120,15 @@ static int gpio_open(unsigned int gpio, bool out_dir)
 
 				if (out_dir)
 				{
-					len = snprintf(buf, sizeof(buf), "out");
+					buf = "out";
 				}
 				else
 				{
-					len = snprintf(buf, sizeof(buf), "in");
+					buf = "in";
 				}
 
-				ret = write(fd, buf, len);
+				len = buf.length();
+				ret = write(fd, buf.toLatin1().data(), len);
 				close(fd);
 				rval = (ret == len) ? 0 : -1;
 			}
@@ -136,12 +140,12 @@ static int gpio_open(unsigned int gpio, bool out_dir)
 	{
 		int fd;
 
-		snprintf(buf, sizeof(buf), SYSFS_GPIO_DIR "/gpio%d/value", gpio);
-		fd = open(buf, out_dir ? O_WRONLY : O_RDONLY);
+		buf.sprintf("%s/gpio%d/value", SYSFS_GPIO_DIR, gpio);
+		fd = open(buf.toLatin1().data(), out_dir ? O_WRONLY : O_RDONLY);
 
 		if (fd < 0)
 		{
-			fprintf(stderr, "Unable to open GPIO set-value interface: %s\n", strerror(errno));
+			qFatal("Unable to open GPIO set-value interface: %s\n", strerror(errno));
 			rval = -1;
 		}
 		else
@@ -157,7 +161,8 @@ static int gpio_open(unsigned int gpio, bool out_dir)
 
 static int gpio_close(unsigned int gpio, int fd)
 {
-	char buf[MAX_BUF];
+// 	char buf[MAX_BUF];
+	QString buf;
 	int rval = 0;
 
 	//close value interface
@@ -167,8 +172,8 @@ static int gpio_close(unsigned int gpio, int fd)
 	}
 
 	//trying with gpio command (you need wiringPi installed)
-	snprintf(buf, sizeof(buf), "gpio unexport %u", gpio);
-	rval = system(buf);
+	buf.sprintf("gpio unexport %u", gpio);
+	rval = system(buf.toLatin1().data());
 
 	if (rval != 0)
 	{
@@ -176,15 +181,16 @@ static int gpio_close(unsigned int gpio, int fd)
 
 		if (fd < 0)
 		{
-			fprintf(stderr, "Unable to open GPIO unexport interface: %s\n", strerror(errno));
+			qFatal("Unable to open GPIO unexport interface: %s\n", strerror(errno));
 			rval = -1;
 		}
 		else
 		{
 			int ret, len;
 
-			len = snprintf(buf, sizeof(buf), "%d", gpio);
-			ret = write(fd, buf, len);
+			buf = QString().number(gpio);
+			len = buf.length();
+			ret = write(fd, buf.toLatin1().data(), len);
 			close(fd);
 			rval = (ret == len) ? 0 : -1;
 		}
@@ -298,7 +304,7 @@ void LinuxSysFsInterface::SetControlLine(int res)
 
 		if (ret != 2)
 		{
-			fprintf(stderr, "LinuxSysFsInterface::SetControlLine() write failed (%d)\n", ret);
+			qFatal("LinuxSysFsInterface::SetControlLine() write failed (%d)\n", ret);
 			exit(1);
 		}
 
@@ -331,7 +337,7 @@ void LinuxSysFsInterface::SetDataOut(int sda)
 
 		if (ret != 2)
 		{
-			fprintf(stderr, "LinuxSysFsInterface::SetDataOut() write failed (%d)\n", ret);
+			qFatal("LinuxSysFsInterface::SetDataOut() write failed (%d)\n", ret);
 			exit(1);
 		}
 
@@ -364,7 +370,7 @@ void LinuxSysFsInterface::SetClock(int scl)
 
 		if (ret != 2)
 		{
-			fprintf(stderr, "LinuxSysFsInterface::SetClock() write failed (%d)\n", ret);
+			qFatal("LinuxSysFsInterface::SetClock() write failed (%d)\n", ret);
 			exit(1);
 		}
 
@@ -410,7 +416,7 @@ int LinuxSysFsInterface::GetDataIn()
 
 		if (ret < 1)
 		{
-			fprintf(stderr, "LinuxSysFsInterface::GetDataIn() read failed (%d)\n", ret);
+			qFatal("LinuxSysFsInterface::GetDataIn() read failed (%d)\n", ret);
 			exit(1);
 		}
 

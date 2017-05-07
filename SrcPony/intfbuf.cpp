@@ -31,8 +31,8 @@
 #include <QTextStream>
 #include <QString>
 
-#include <stdlib.h>
-#include <ctype.h>
+// #include <stdlib.h>
+// #include <ctype.h>
 
 #define MAXLINE 520
 
@@ -303,32 +303,39 @@ int IntelFileBuf::Load(int loadtype, long relocation_offset)
 	}
 
 	int img_size = 0;
-	char riga[MAXLINE + 1];
-	riga[MAXLINE] = '\0';
+	QString riga; //[MAXLINE + 1];
+// 	riga[MAXLINE] = '\0';
+
+	QTextStream stream(&fh);
 
 	while (!fh.atEnd())
 	{
-		fh.readLine(riga, MAXLINE);
+		riga = stream.readLine();
 
-		char *s;
+// 		char *s;
+		int pos;
 		int k;
 
-		if ((s = strchr(riga, ':')) == NULL)
+		if ((pos = riga.indexOf(":")) < 0)
 		{
 			continue;
 		}
 		else
 		{
-			s++;
+			pos++;
 		}
 
 		//Byte Count
 		uint16_t bcount;
 
-		if (ScanHex(&s, 2, bcount) != OK)
+		if (!ScanHex(riga.mid(pos, 2), bcount))
 		{
 			rval = BADFILETYPE;
 			break;
+		}
+		else
+		{
+			pos += 2;
 		}
 
 		uint8_t checksum = (uint8_t)bcount;
@@ -336,10 +343,14 @@ int IntelFileBuf::Load(int loadtype, long relocation_offset)
 		//Address
 		uint16_t addr;
 
-		if (ScanHex(&s, 4, addr) != OK)
+		if (!ScanHex(riga.mid(pos, 4), addr))
 		{
 			rval = BADFILETYPE;
 			break;
+		}
+		else
+		{
+			pos += 4;
 		}
 
 		checksum += (uint8_t)(addr >> 8);
@@ -352,10 +363,14 @@ int IntelFileBuf::Load(int loadtype, long relocation_offset)
 		//Record Type
 		uint16_t rectype;
 
-		if (ScanHex(&s, 2, rectype) != OK)
+		if (!ScanHex(riga.mid(pos, 2), rectype))
 		{
 			rval = BADFILETYPE;
 			break;
+		}
+		else
+		{
+			pos += 2;
 		}
 
 		checksum += (uint8_t)rectype;
@@ -377,9 +392,13 @@ int IntelFileBuf::Load(int loadtype, long relocation_offset)
 
 			for (k = 0, p = dp + laddr; k < bcount && ok; k++)
 			{
-				if (ScanHex(&s, 2, data) != OK)
+				if (!ScanHex(riga.mid(pos, 2), data))
 				{
 					ok = false;
+				}
+				else
+				{
+					pos += 2;
 				}
 
 				checksum += (uint8_t)data;
@@ -406,10 +425,14 @@ int IntelFileBuf::Load(int loadtype, long relocation_offset)
 				//Address
 				uint16_t addr;
 
-				if (ScanHex(&s, 4, addr) != OK)
+				if (!ScanHex(riga.mid(pos, 4), addr))
 				{
 					rval = BADFILETYPE;
 					break;
+				}
+				else
+				{
+					pos += 4;
 				}
 
 				checksum += (uint8_t)(addr >> 8);
@@ -430,10 +453,14 @@ int IntelFileBuf::Load(int loadtype, long relocation_offset)
 				//Address
 				uint16_t addr;
 
-				if (ScanHex(&s, 4, addr) != OK)
+				if (!ScanHex(riga.mid(pos, 4), addr))
 				{
 					rval = BADFILETYPE;
 					break;
+				}
+				else
+				{
+					pos += 4;
 				}
 
 				checksum += (uint8_t)(addr >> 8);
@@ -469,9 +496,13 @@ int IntelFileBuf::Load(int loadtype, long relocation_offset)
 
 			while (bcount-- && ok)
 			{
-				if (ScanHex(&s, 2, data) != OK)
+				if (!ScanHex(riga.mid(pos, 2), data))
 				{
 					ok = false;
+				}
+				else
+				{
+					pos += 2;
 				}
 
 				checksum += (uint8_t)data;
@@ -484,10 +515,14 @@ int IntelFileBuf::Load(int loadtype, long relocation_offset)
 			}
 		}
 
-		if (ScanHex(&s, 2, data) != OK)
+		if (!ScanHex(riga.mid(pos, 2), data))
 		{
 			rval = BADFILETYPE;
 			break;
+		}
+		else
+		{
+			pos += 2;
 		}
 
 		if ((uint8_t)data != (uint8_t)(~checksum + 1))
@@ -541,8 +576,14 @@ int IntelFileBuf::Load(int loadtype, long relocation_offset)
 * Attenzione! Poiche` il numero restituito e` uint32_t (4Byte), il numero max
 * di <len> e` 8 (8 cifre esadecimali 0xABCDEF12).
 */
-int IntelFileBuf::ScanHex(char **sp, int len, uint32_t &result)
+bool IntelFileBuf::ScanHex(const QString &sp, uint32_t &result)
 {
+	bool ok;
+	result = sp.toInt(&ok, 16);
+
+	return ok;
+
+#if 0
 	char cifra[20];
 	int j;
 
@@ -563,15 +604,21 @@ int IntelFileBuf::ScanHex(char **sp, int len, uint32_t &result)
 
 	cifra[j] = '\0';
 	result = strtoul(cifra, NULL, 16);
-
+#endif
 	return 0;
 }
 
-int IntelFileBuf::ScanHex(char **sp, int len, uint16_t &result)
+bool IntelFileBuf::ScanHex(const QString &sp, uint16_t &result)
 {
+	bool ok;
+	result = sp.toInt(&ok, 16);
+
+	return ok;
+#if 0
 	uint32_t res;
 	int rval = ScanHex(sp, len, res);
 	result = (uint16_t)res;
 
 	return rval;
+#endif
 }
