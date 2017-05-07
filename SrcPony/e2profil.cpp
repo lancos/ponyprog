@@ -151,29 +151,13 @@ void E2Profile::SetParInterfType(HInterfaceType type)
 
 int E2Profile::GetParPortNo()
 {
-	QString sp = s->value("PortNumber", "0").toString();
-	int rval = -1;
-
-	if (sp.length() > 0)
-	{
-		bool ok;
-		rval = sp.toInt(&ok);
-
-		if (ok == false)
-		{
-			rval = -1;
-		}
-	}
-
-	return rval;
+	return s->value("PortNumber", "-1").toInt();
 }
 
 
 void E2Profile::SetParPortNo(int port)
 {
-	//      int rval = BADPARAM;
-
-	if (port >= 1 && port <= 4)
+	if (port >= 1 /* && port <= 4 */)
 	{
 		s->setValue("PortNumber", QString::number(port));
 	}

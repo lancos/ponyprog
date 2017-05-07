@@ -54,13 +54,6 @@
 #include "eeptypes.h"
 
 
-#ifdef  WIN32
-static QString   STR_TITLE = " ";
-#else
-static QString   STR_TITLE = APPNAME + " - ";
-#endif
-
-
 #define STATUSBAR_FORM  "    Size     0 Bytes     CRC  0000h      "
 #define STATUSBAR_PRINT "    Size %5ld Bytes     CRC  %04Xh     %c"
 
@@ -446,25 +439,20 @@ void e2CmdWindow::onSelectFile(QAction *a)
 {
 	//Check the Icon to set the load type
 	int load_type;
-//	QString stype = sp.mid(pos_and);
-	QString stype;
 
 //	qDebug() << "Ico name: " + QString(a->icon().cacheKey()) + " - " + actionOpenFlash->icon().cacheKey() + " - " + actionOpenEep->icon().cacheKey() + " - " + actionOpen->icon().cacheKey();
 
 	if (a->icon().cacheKey() == actionOpenFlash->icon().cacheKey())
 	{
 		load_type = PROG_TYPE;
-		stype = "PROG";
 	}
 	else if (a->icon().cacheKey() == actionOpenEep->icon().cacheKey())
 	{
 		load_type = DATA_TYPE;
-		stype = "DATA";
 	}
 	else
 	{
 		load_type = ALL_TYPE;
-		stype = "ALL";
 	}
 
 	QString fname = a->text();
@@ -472,21 +460,7 @@ void e2CmdWindow::onSelectFile(QAction *a)
 
 	if (QFile().exists(fname))
 	{
-		//QStringList sl = E2Profile::GetLastFiles();
-		//Search the entry in the list, remove and insert it at position 0
-
-		if (stype.length() > 0 && stype == "PROG")
-		{
-			CmdOpen(PROG_TYPE, fname);
-		}
-		else if (stype.length() > 0 && stype == "DATA")
-		{
-			CmdOpen(DATA_TYPE, fname);
-		}
-		else
-		{
-			CmdOpen(ALL_TYPE, fname);
-		}
+		CmdOpen(load_type, fname);
 	}
 	else
 	{
@@ -1782,7 +1756,7 @@ void e2CmdWindow::setFontForWidgets()
 void e2CmdWindow::createFontSizeMenu()
 {
 	QMenu *m = new QMenu("Font size");
-	QAction *fontSizeMenu = menuSetup->addMenu(m);
+	/*QAction *fontSizeMenu = */ menuSetup->addMenu(m);
 	//     QMenu *fontSizeMenu = new QMenu();
 	fsizeGroup = new QActionGroup(this);
 	QStringList szList;
@@ -2789,10 +2763,9 @@ int e2CmdWindow::CmdHelp()
 //====================>>> e2CmdWindow::CmdCalibration <<<====================
 int e2CmdWindow::CmdCalibration()
 {
-	int ret = QMessageBox::warning(this, "PonyProg",
-								   QString(STR_BUSCALIBRA1) + QString(APPNAME) + QString(STR_BUSCALIBRA2),
+	int ret = QMessageBox::warning(this, APPNAME,
+								   QString(translate(STR_BUSCALIBRA1)) + QString(APPNAME) + QString(translate(STR_BUSCALIBRA2)),
 								   QMessageBox::Yes | QMessageBox::No);
-
 
 	if (ret == QMessageBox::Yes)
 	{
@@ -5613,7 +5586,6 @@ void e2CmdWindow::onDevType(int t)
  */
 void e2CmdWindow::onDevSubType(int st)
 {
-
 	// search id
 	int t = cbxEEPType->currentIndex();
 	QString nm = cbxEEPSubType->currentText();
@@ -6263,23 +6235,8 @@ int e2CmdWindow::SaveFile(int force_select)
 
 void e2CmdWindow::SetTitle()
 {
-	if (awip->GetFileName().length() > 0)
-	{
-		QString str;
-
-		str = STR_TITLE;
-
-		int flen = awip->GetFileName().length();
-
-		str += awip->GetFileName();
-
-		setWindowTitle(str);
-	}
-	else
-	{
-		QString   DEF_TITLE = APPNAME + " - " + translate(STR_NONAME);
-		setWindowTitle(DEF_TITLE);
-	}
+	QString str = APPNAME + " - " + GetFileName();
+	setWindowTitle(str);
 }
 
 
