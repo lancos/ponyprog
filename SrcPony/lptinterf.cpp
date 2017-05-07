@@ -32,19 +32,15 @@
 
 #include <QDebug>
 
-#ifdef  _WINDOWS
+#ifdef  WIN32
 #include <windows.h>
-#else
+#endif
 
-//#include <linux/parport.h>
+#ifdef __linux__
+
 //If you use latest kernel (2.4.xx) you should use standard ppdev.o module and include ppdev.h
 //otherwise install the ppuser module, and include the file ppuser.h
-#define USE_K2_4_PPDEV  0
-
-// #include <sys/types.h>
-// #include <linux/hdreg.h>
-// #include <sys/ioctl.h>
-// #include <fcntl.h>
+#define USE_K2_4_PPDEV  1
 
 // #include <stdio.h>
 #include <termios.h>
@@ -62,7 +58,6 @@
 //N.B. be sure to issue a "chmod 666 /dev/ppuser?"
 #endif
 
-
 #endif
 
 
@@ -77,13 +72,7 @@ LPTInterface::LPTInterface()
 	qDebug() << "LPTInterface::LPTInterface()";
 
 	last_ctrl = last_data = 0;
-#ifdef  _WINDOWS
-	lpt_control.LPPort = 1;         //by default use LPT1
-
-	hLPTCONVxD = CreateFile("\\\\.\\LPTCON.VXD", 0, 0, NULL, 0,
-							FILE_FLAG_DELETE_ON_CLOSE | FILE_FLAG_OVERLAPPED,
-							NULL);
-#else
+#ifdef __linux__
 	lpt_control.LPPort = 0;         //no used port
 
 	hLpt = INVALID_HANDLE_VALUE;
@@ -103,6 +92,8 @@ LPTInterface::LPTInterface()
 	                }
 	        }
 	**/
+#else
+	lpt_control.LPPort = 1;         //by default use LPT1
 #endif
 }
 
@@ -110,17 +101,12 @@ LPTInterface::~LPTInterface()
 {
 	qDebug() <<  "LPTInterface::~LPTInterface()";
 
-#ifdef  _WINDOWS
-	CloseHandle(hLPTCONVxD);
-	hLPTCONVxD = INVALID_HANDLE_VALUE;
-#else
 	Close();
-#endif
 }
 
 void LPTInterface::Close()
 {
-#ifndef _WINDOWS
+#ifdef __linux__
 	qDebug() << "LPTInterface::Close() I ** hLpt = " << hLpt;
 
 	if (hLpt != INVALID_HANDLE_VALUE)
@@ -144,17 +130,16 @@ void LPTInterface::SetPort(int port_no)
 		lpt_control.LPPort = port_no;
 
 #ifdef __linux__
-
 		if (hLpt != INVALID_HANDLE_VALUE)
 		{
 			ioctl(hLpt, PPRELEASE, 0);
 			close(hLpt);
 		}
 
-		//              char name[MAXPATH];
+		//char name[MAXPATH];
 		QString name = QString().sprintf(PARPORTDEVNAME, lpt_control.LPPort - 1);
-		//              sprintf(name, PARPORTDEVNAME, lpt_control.LPPort - 1);
-		hLpt = open(name.toLatin1(), O_RDWR);
+		//sprintf(name, PARPORTDEVNAME, lpt_control.LPPort - 1);
+		hLpt = open(name.toLatin1().constData(), O_RDWR);
 
 		if (hLpt != INVALID_HANDLE_VALUE)
 		{
@@ -183,31 +168,8 @@ int LPTInterface::InDataPort(int port_no)
 	qDebug() << "LPTInterface::InDataPort(" << port_no << ") ** lp=" << lpt_control.LPPort;
 
 	int ret_val = E2ERR_NOTINSTALLED;
-#ifdef  _WINDOWS
 
-	if (hLPTCONVxD != INVALID_HANDLE_VALUE)
-	{
-		if (port_no >= 1 && port_no <= MAX_LPTPORTS)
-		{
-			lpt_control.LPPort = port_no;
-		}
-
-		uint8_t value;
-
-		if (!DeviceIoControl(hLPTCONVxD, LPTCON_READ,
-							 &lpt_control, sizeof(LPTCONDATA),
-							 &value, sizeof(value), NULL, 0))
-		{
-			ret_val = E2ERR_OPENFAILED;
-		}
-		else
-		{
-			ret_val = value;
-		}
-	}
-
-#else
-
+#ifdef __linux__
 	if (port_no >= 1 && port_no <= MAX_LPTPORTS
 			&& port_no != lpt_control.LPPort)
 	{
@@ -219,10 +181,10 @@ int LPTInterface::InDataPort(int port_no)
 			close(hLpt);
 		}
 
-		//              char name[MAXPATH];
+		//char name[MAXPATH];
 		QString name = QString().sprintf(PARPORTDEVNAME, lpt_control.LPPort - 1);
-		//              sprintf(name, PARPORTDEVNAME, lpt_control.LPPort - 1);
-		hLpt = open(name.toLatin1(), O_RDWR);
+		//sprintf(name, PARPORTDEVNAME, lpt_control.LPPort - 1);
+		hLpt = open(name.toLatin1().constData(), O_RDWR);
 
 		if (hLpt != INVALID_HANDLE_VALUE)
 		{
@@ -270,23 +232,7 @@ int LPTInterface::OutDataPort(int val, int port_no)
 
 	int ret_val = E2ERR_NOTINSTALLED;
 
-#ifdef  _WINDOWS
-
-	if (hLPTCONVxD != INVALID_HANDLE_VALUE)
-	{
-		if (port_no >= 1 && port_no <= MAX_LPTPORTS)
-		{
-			lpt_control.LPPort = port_no;
-		}
-
-		lpt_control.LPByte = last_data = (uint8_t)val;
-
-		ret_val = DeviceIoControl(hLPTCONVxD, LPTCON_WRITE_DATA,
-								  &lpt_control, sizeof(LPTCONDATA),
-								  NULL, 0, NULL, 0) ? OK : E2ERR_NOTINSTALLED;
-	}
-
-#else
+#ifdef __linux__
 
 	if (port_no >= 1 && port_no <= MAX_LPTPORTS
 			&& port_no != lpt_control.LPPort)
@@ -299,10 +245,10 @@ int LPTInterface::OutDataPort(int val, int port_no)
 			close(hLpt);
 		}
 
-		//              char name[MAXPATH];
+		//char name[MAXPATH];
 		QString name = QString().sprintf(PARPORTDEVNAME, lpt_control.LPPort - 1);
-		//              sprintf(name, PARPORTDEVNAME, lpt_control.LPPort - 1);
-		hLpt = open(name.toLatin1(), O_RDWR);
+		//sprintf(name, PARPORTDEVNAME, lpt_control.LPPort - 1);
+		hLpt = open(name.toLatin1().constData(), O_RDWR);
 
 		if (hLpt != INVALID_HANDLE_VALUE)
 		{
@@ -335,8 +281,6 @@ int LPTInterface::OutDataPort(int val, int port_no)
 }
 
 
-
-
 //
 //   Bit
 //    0 - Pin 1
@@ -352,23 +296,7 @@ int LPTInterface::OutControlPort(int val, int port_no)
 
 	int ret_val = E2ERR_NOTINSTALLED;
 
-#ifdef  _WINDOWS
-
-	if (hLPTCONVxD != INVALID_HANDLE_VALUE)
-	{
-		if (port_no >= 1 && port_no <= MAX_LPTPORTS)
-		{
-			lpt_control.LPPort = port_no;
-		}
-
-		lpt_control.LPByte = last_ctrl = (uint8_t)val & 0x0F;
-
-		ret_val = DeviceIoControl(hLPTCONVxD, LPTCON_WRITE_CONTROL,
-								  &lpt_control, sizeof(LPTCONDATA),
-								  NULL, 0, NULL, 0) ? OK : E2ERR_NOTINSTALLED;
-	}
-
-#else
+#ifdef __linux__
 
 	if (port_no >= 1 && port_no <= MAX_LPTPORTS
 			&& port_no != lpt_control.LPPort)
@@ -381,10 +309,10 @@ int LPTInterface::OutControlPort(int val, int port_no)
 			close(hLpt);
 		}
 
-		//              char name[MAXPATH];
+		//char name[MAXPATH];
 		QString name = QString().sprintf(PARPORTDEVNAME, lpt_control.LPPort - 1);
-		//              sprintf(name, PARPORTDEVNAME, lpt_control.LPPort - 1);
-		hLpt = open(name.toLatin1(), O_RDWR);
+		//sprintf(name, PARPORTDEVNAME, lpt_control.LPPort - 1);
+		hLpt = open(name.toLatin1().constData(), O_RDWR);
 
 		if (hLpt != INVALID_HANDLE_VALUE)
 		{
@@ -420,12 +348,7 @@ int LPTInterface::OutDataMask(int mask, int val)
 {
 	int ret_val = E2ERR_NOTINSTALLED;
 
-#ifdef  _WINDOWS
-
-	if (hLPTCONVxD != INVALID_HANDLE_VALUE)
-#else
 	if (hLpt != INVALID_HANDLE_VALUE)
-#endif
 	{
 		if (val == 0)
 		{
@@ -441,13 +364,6 @@ int LPTInterface::OutDataMask(int mask, int val)
 		}
 
 		ret_val = OutDataPort(last_data);
-		/***
-		                lpt_control.LPByte = last_data;
-
-		                ret_val = DeviceIoControl(hLPTCONVxD, LPTCON_WRITE_DATA,
-		                                        &lpt_control, sizeof(LPTCONDATA),
-		                                        NULL, 0, NULL, 0) ? OK : E2ERR_NOTINSTALLED;
-		****/
 	}
 
 	return ret_val;
@@ -457,12 +373,7 @@ int LPTInterface::OutControlMask(int mask, int val)
 {
 	int ret_val = E2ERR_NOTINSTALLED;
 
-#ifdef  _WINDOWS
-
-	if (hLPTCONVxD != INVALID_HANDLE_VALUE)
-#else
 	if (hLpt != INVALID_HANDLE_VALUE)
-#endif
 	{
 		if (val == 0)
 		{
@@ -478,15 +389,7 @@ int LPTInterface::OutControlMask(int mask, int val)
 		}
 
 		ret_val = OutControlPort(last_ctrl);
-		/****
-		                lpt_control.LPByte = last_ctrl;
-
-		                ret_val = DeviceIoControl(hLPTCONVxD, LPTCON_WRITE_CONTROL,
-		                                        &lpt_control, sizeof(LPTCONDATA),
-		                                        NULL, 0, NULL, 0) ? OK : E2ERR_NOTINSTALLED;
-		****/
 	}
 
 	return ret_val;
 }
-

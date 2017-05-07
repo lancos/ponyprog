@@ -144,7 +144,7 @@ void Wait::WaitMsec(int msec)
 #ifdef __linux__
 	usleep(msec * 1000);
 #else
-# ifdef _WINDOWS
+# ifdef WIN32
 
 	if (msec > 30)
 	{

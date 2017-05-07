@@ -46,15 +46,6 @@
 #define INVALID_HANDLE_VALUE    -1
 #endif
 
-// #ifdef  WIN32
-// #  ifdef        __BORLANDC__
-// #    define     strcasecmp stricmp
-// #  else // _MICROSOFT_ VC++
-// #    define strcasecmp  _stricmp
-// #    define snprintf    _snprintf
-// #  endif
-// #endif
-
 RS232Interface::RS232Interface()
 {
 	qDebug() << "RS232Interface::RS232Interface()";
@@ -74,7 +65,7 @@ RS232Interface::RS232Interface()
 
 	wait_endTX_mode = false;
 
-#ifdef  _WINDOWS
+#ifdef  WIN32
 	hCom = INVALID_HANDLE_VALUE;
 #elif defined(__linux__)
 	fd = INVALID_HANDLE_VALUE;
@@ -105,7 +96,7 @@ int RS232Interface::OpenSerial(int no)
 
 	if (no >= 1 && no <= 256)
 	{
-#ifdef  _WINDOWS
+#ifdef  WIN32
 		devname.sprintf("%s%d", E2Profile::GetDevName(), no);
 #elif defined(__linux__)
 		no--;           //linux call ttyS0 --> COM1, ttyS1 --> COM2, etc..
@@ -125,7 +116,7 @@ int RS232Interface::OpenSerial(QString devname)
 
 	m_devname = devname;
 
-#ifdef  _WINDOWS
+#ifdef  WIN32
 	hCom = CreateFile(m_devname.toLatin1().constData(),
 					  GENERIC_READ | GENERIC_WRITE,
 					  0,              /* comm devices must be opened w/exclusive-access */
@@ -255,7 +246,7 @@ void RS232Interface::CloseSerial()
 {
 	qDebug() << "RS232Interface::CloseSerial()";
 
-#ifdef  _WINDOWS
+#ifdef  WIN32
 
 	if (hCom != INVALID_HANDLE_VALUE)
 	{
@@ -284,7 +275,7 @@ int RS232Interface::SetSerialBreak(int state)
 {
 	int result = E2ERR_OPENFAILED;
 
-#ifdef  _WINDOWS
+#ifdef  WIN32
 
 	if (hCom != INVALID_HANDLE_VALUE)
 	{
@@ -325,7 +316,7 @@ int RS232Interface::SetSerialBreak(int state)
 /**
 void RS232Interface::SetSerialEventMask(long mask)
 {
-#ifdef  _WINDOWS
+#ifdef  WIN32
         if (hCom != INVALID_HANDLE_VALUE )
                 SetCommMask(hCom, mask);
 #endif
@@ -334,7 +325,7 @@ void RS232Interface::SetSerialEventMask(long mask)
 
 void RS232Interface::SerialFlushRx()
 {
-#ifdef  _WINDOWS
+#ifdef  WIN32
 
 	if (hCom != INVALID_HANDLE_VALUE)
 	{
@@ -353,7 +344,7 @@ void RS232Interface::SerialFlushRx()
 
 void RS232Interface::SerialFlushTx()
 {
-#ifdef  _WINDOWS
+#ifdef  WIN32
 
 	if (hCom != INVALID_HANDLE_VALUE)
 	{
@@ -372,7 +363,7 @@ void RS232Interface::SerialFlushTx()
 
 void RS232Interface::WaitForTxEmpty()
 {
-#ifdef  _WINDOWS
+#ifdef  WIN32
 	DWORD evento;
 
 	if (hCom != INVALID_HANDLE_VALUE)
@@ -398,7 +389,7 @@ long RS232Interface::ReadSerial(uint8_t *buffer, long len)
 {
 	long retval = E2ERR_OPENFAILED;
 
-#ifdef  _WINDOWS
+#ifdef  WIN32
 
 	if (hCom != INVALID_HANDLE_VALUE)
 	{
@@ -478,7 +469,7 @@ long RS232Interface::WriteSerial(uint8_t *buffer, long len)
 {
 	long retval = E2ERR_OPENFAILED;
 
-#ifdef  _WINDOWS
+#ifdef  WIN32
 
 	if (hCom != INVALID_HANDLE_VALUE)
 	{
@@ -531,7 +522,7 @@ int RS232Interface::SetSerialParams(long speed, int bits, int parity, int stops,
 {
 	int result = E2ERR_OPENFAILED;
 
-#ifdef  _WINDOWS
+#ifdef  WIN32
 
 	if (hCom != INVALID_HANDLE_VALUE)
 	{
@@ -778,7 +769,7 @@ int RS232Interface::SetSerialTimeouts(long init_read, long while_read)
 		read_total_timeout = init_read;
 	}
 
-#ifdef  _WINDOWS
+#ifdef  WIN32
 
 	if (hCom != INVALID_HANDLE_VALUE)
 	{
@@ -830,7 +821,7 @@ int RS232Interface::SetSerialDTR(int dtr)
 {
 	int result = E2ERR_OPENFAILED;
 
-#ifdef  _WINDOWS
+#ifdef  WIN32
 
 	if (hCom != INVALID_HANDLE_VALUE)
 	{
@@ -864,7 +855,7 @@ int RS232Interface::SetSerialRTS(int rts)
 {
 	int result = E2ERR_OPENFAILED;
 
-#ifdef  _WINDOWS
+#ifdef  WIN32
 
 	if (hCom != INVALID_HANDLE_VALUE)
 	{
@@ -898,7 +889,7 @@ int RS232Interface::SetSerialRTSDTR(int state)
 {
 	int result = E2ERR_OPENFAILED;
 
-#ifdef  _WINDOWS
+#ifdef  WIN32
 
 	if (hCom != INVALID_HANDLE_VALUE)
 	{
@@ -941,7 +932,7 @@ int RS232Interface::GetSerialDSR() const
 {
 	int result = E2ERR_OPENFAILED;
 
-#ifdef  _WINDOWS
+#ifdef  WIN32
 
 	if (hCom != INVALID_HANDLE_VALUE)
 	{
@@ -971,7 +962,7 @@ int RS232Interface::GetSerialCTS() const
 {
 	int result = E2ERR_OPENFAILED;
 
-#ifdef  _WINDOWS
+#ifdef  WIN32
 
 	if (hCom != INVALID_HANDLE_VALUE)
 	{

@@ -279,7 +279,7 @@ QString cTranslator::engText[] =
 	"Interface select",
 	"Interface type",
 	"COM Port select",
-#ifdef _WINDOWS
+#ifdef WIN32
 	"COM",
 	// STR_LBLCOM2             = "COM2",
 	// STR_LBLCOM3             = "COM3",
@@ -291,7 +291,7 @@ QString cTranslator::engText[] =
 	// STR_LBLCOM4             = "ttyS3",
 #endif
 	"USB Port select",
-#ifdef _WINDOWS
+#ifdef WIN32
 	"USB",
 	// STR_LBLUSB2             = "USB2",
 	// STR_LBLUSB3             = "USB3",

@@ -32,7 +32,7 @@
 
 #include <QDebug>
 
-#ifdef  _WINDOWS
+#ifdef  WIN32
 #include <windows.h>
 #endif
 

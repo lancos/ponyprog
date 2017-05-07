@@ -2736,7 +2736,7 @@ int e2CmdWindow::PlaySoundMsg(bool val)
 	{
 		// EK 2017
 		// TODO to use QSound
-#ifdef  _WINDOWS
+#ifdef  WIN32
 		::PlaySound(GetOkSound(), NULL, SND_FILENAME | SND_ASYNC);
 #endif
 	}
@@ -2747,15 +2747,15 @@ int e2CmdWindow::PlaySoundMsg(bool val)
 //====================>>> e2CmdWindow::CmdHelp <<<====================
 int e2CmdWindow::CmdHelp()
 {
-
-#ifdef  _WINDOWS
-	ShellExecute(NULL, "open", GetHelpFile(), NULL, NULL, SW_SHOWNORMAL);
-#endif
-
-#ifdef  __linux__
+#ifdef __linux__
 	QString str;
-	str = E2Profile::GetHtmlBrowseApp() + " \"http://www.lancos.com/e2p/ponyprog2000.html\" &";
+	//str = E2Profile::GetHtmlBrowseApp();
+	str = "xdg-open";
+	str += " \"http://www.lancos.com/e2p/ponyprog2000.html\" ";
+	//str += "&";
 	system(str.toLatin1().constData());
+#else
+	ShellExecute(NULL, "open", GetHelpFile(), NULL, NULL, SW_SHOWNORMAL);
 #endif
 
 	return OK;

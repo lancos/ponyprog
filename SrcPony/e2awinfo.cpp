@@ -197,7 +197,7 @@ e2AppWinInfo::e2AppWinInfo(e2CmdWindow *p, const QString &name, BusIO **busvptr)
 
 			if (err == E2ERR_ACCESSDENIED)
 			{
-#ifdef  _WINDOWS
+#ifdef  WIN32
 				QMessageBox::critical(NULL, QString("Error"), QString("I/O access denied. Driver not found, try to install the software again"));		//TODO: translate message
 #else
 				QMessageBox::critical(NULL,  QString("Error"),  QString("I/O access denied. Run as root, or change the interface"));		//TODO: translate message

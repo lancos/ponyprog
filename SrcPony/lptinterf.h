@@ -45,7 +45,7 @@
 //Define the structure used to communicate to the VxD.
 typedef struct
 {
-	int             LPPort;           //Port can be 1-3
+	int     LPPort;           //Port can be 1-3
 	uint8_t LPByte;           //Data can be any value between 00 and FFh
 } LPTCONDATA;
 
@@ -76,11 +76,7 @@ class LPTInterface
   protected:             //------------------------------- protected
 
   private:               //------------------------------- private
-#ifdef  _WINDOWS
-	HANDLE  hLPTCONVxD;                     //Will be the handle to our VxD.
-#else
 	int hLpt;
-#endif
 
 	LPTCONDATA lpt_control;
 	uint8_t last_ctrl, last_data;

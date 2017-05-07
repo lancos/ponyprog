@@ -61,13 +61,6 @@
 #ifdef  __linux__
 # include <sys/io.h>
 # include <unistd.h>
-#else
-# ifdef __BORLANDC__
-#   define      __inline__
-# else // MICROSOFT VC++
-#   define      __inline__ __inline
-#   define _export
-# endif
 #endif
 
 enum UartRegs
@@ -114,21 +107,24 @@ void PonyIOInterface::SetControlLine(int res)
 
 		qDebug() << "PonyIOInterface::SetControlLine() " << (hex) << lcrOfst  << (dec);
 
+#ifdef  WIN32
 		if (res)
-#ifdef  _WINDOWS
+		{
 			SetCommBreak(hCom);
+		}
 		else
 		{
 			ClearCommBreak(hCom);
 		}
-
 #else
+		if (res)
+		{
 			OutPort(BREAK_MASK, lcrOfst);
+		}
 		else
 		{
 			OutPort(0, lcrOfst);
 		}
-
 #endif
 	}
 }

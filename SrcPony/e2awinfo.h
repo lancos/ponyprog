@@ -75,13 +75,6 @@
 //At the moment the bigger device is ATmega2560 (256KiB + 4KiB)
 #define BUFFER_SIZE (1024 * 260)
 
-#ifdef  _WINDOWS
-# ifndef WIN32
-#  undef        BUFFER_SIZE
-#  define       BUFFER_SIZE     (1024 * 16)
-# endif
-#endif
-
 
 #define STRINGID_SIZE   E2P_STRID_SIZE
 #define COMMENT_SIZE    E2P_COMM_SIZE

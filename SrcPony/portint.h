@@ -32,7 +32,7 @@
 
 #include "types.h"
 
-#ifdef  _WINDOWS
+#ifdef  WIN32
 #include <windows.h>
 
 typedef void (__stdcall *lpOut32)(short, short);
@@ -88,7 +88,7 @@ class PortInterface
 		return cpwreg;
 	}
 
-#ifdef  _WINDOWS
+#ifdef  WIN32
 	HANDLE  hCom;
 #endif
 
@@ -101,7 +101,7 @@ class PortInterface
 
 	void DetectPorts();
 
-#ifdef  _WINDOWS
+#ifdef  WIN32
 	void DetectPorts9x();   // Win9x version
 	void DetectLPTPortsNT();        // WinNT/2000 version
 	void DetectCOMPortsNT();        // WinNT/2000 version

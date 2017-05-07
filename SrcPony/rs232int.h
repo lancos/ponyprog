@@ -32,7 +32,7 @@
 #include <termios.h>
 #endif
 
-#ifdef  _WINDOWS
+#ifdef  WIN32
 #include <windows.h>
 #endif
 
@@ -83,14 +83,13 @@ class RS232Interface
 	bool wait_endTX_mode;
 
 	//      E2Profile *profile;
-#ifdef  _WINDOWS
+#ifdef  WIN32
 	HANDLE hCom;
 
 	DWORD old_mask;
 	COMMTIMEOUTS old_timeout;
 	DCB old_dcb;
-#endif
-#ifdef  __linux__
+#elif defined(__linux__)
 	int fd;
 	struct termios old_termios;
 #endif

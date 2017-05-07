@@ -109,57 +109,23 @@ void e2App::initSettings()
 	QString str;
 
 #ifdef  __unix__
-	QString sp;
+	//QString sp;
 
-	//     str = "";
-	sp = getenv("HOME");
+	//sp = getenv("HOME");
 
-	if (sp.length() > 0)
-	{
-		str = sp + "/";
-		//         strncpy(str, sp, MAXPATH - (strlen(APPNAME) + 5) );
-		//         strcat(str, "/");
-	}
+	//if (sp.length() > 0)
+	//{
+	//	str = sp + "/";
+	//}
 
-	str += QString("." + APPNAME + "rc");
-	//     strcat(str, "." APPNAME "rc");
-	//      str[MAXPATH - 1] = '\0';
-
+	//str += QString("." + APPNAME + "rc");
 	//E2Profile::SetConfigFile(str);
 
 	qDebug() << "Settings file: " << E2Profile::GetConfigFile();	// << " - Format: " << E2Profile::s->format();
 #else
-	//The profile file is called "ponyprog.ini"
-	//while the help file "ponyprog.html"
-	QString sp = arguments.at(0);
-	QString progName = sp;
-	int p = QString(sp.lastIndexOf('.'));
-
-	if (p > 0)
-	{
-		sp = sp.left(p);
-		progName = sp;
-	}
-
-	helpfile = progName + ".html";
-
-	//E2Profile::SetConfigFile(QString(progName + ".ini"));
-
 	QString currentAppDir = qApp->applicationDirPath();
 
-	//     sp = strrchr(argv[0], '\\');
-	//
-	//     if (sp)
-	//     {
-	//     sp[1] = '\0';
-	//         strncpy(str, argv[0], MAXPATH);
-	// //         str[MAXPATH - 1] = '\0';
-	//     }
-	//     else
-	//     {
-	//         str[0] = '\0';
-	//     }
-
+	helpfile = currentAppDir + "ponyprog.html";
 	ok_soundfile = currentAppDir + "oksound.wav";
 	err_soundfile = currentAppDir + "errsound.wav";
 #endif
@@ -189,13 +155,13 @@ void e2App::initSettings()
 	}
 
 	// Read parameters from INI file
-	// Make sure all parameters (even default values) are written
-	//   to the INI file.
-
 	SetInterfaceType((HInterfaceType) E2Profile::GetParInterfType());
 	SetPort(E2Profile::GetParPortNo());
-	E2Profile::GetPowerUpDelay();
 	SetPolarity(E2Profile::GetPolarityControl());
+#if 0
+	// Make sure all parameters (even default values) are written
+	//   to the INI file.
+	E2Profile::GetPowerUpDelay();
 	E2Profile::GetSPIResetPulse();
 	E2Profile::GetSPIDelayAfterReset();
 	E2Profile::GetSPIPageWrite();
@@ -221,13 +187,10 @@ void e2App::initSettings()
 	E2Profile::GetAt89PageOp();
 	E2Profile::Get8253FallEdge();
 
-#ifdef  __unix__
+#ifdef  __linux__
 	E2Profile::GetHtmlBrowseApp();
 	E2Profile::GetLockDir();
 	E2Profile::GetDevDir();
-#endif
-
-#ifdef  __linux__
 	E2Profile::GetGpioPinClock();
 	E2Profile::GetGpioPinCtrl();
 	E2Profile::GetGpioPinDataIn();
@@ -235,6 +198,7 @@ void e2App::initSettings()
 #endif
 
 	E2Profile::GetDevName();
+#endif
 
 	scriptMode = false;
 	returnValue = 0;
@@ -558,9 +522,7 @@ void e2App::LookForBogoMips()
 	}
 
 	E2Profile::SetBogoMips((int)(sum / (500 * N_SAMPLE)));
-#endif
-
-#ifdef  _WINDOWS
+#else
 	DWORD t0;
 	DWORD count;
 	DWORD multiplier = 1;
@@ -686,7 +648,6 @@ void e2App::LookForBogoMips()
 	}
 
 	fh.close();
-
 #endif
 }
 
