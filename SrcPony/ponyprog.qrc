@@ -8,6 +8,7 @@
         <file>icons/open_eep20x20.png</file>
         <file>icons/print.png</file>
 	<file>icons/rd_eep.png</file>
+        <file>icons/ver_eep.png</file>
 	<file>icons/read.png</file>
 	<file>icons/save20x20.png</file>
 	<file>icons/icon1.png</file>
@@ -23,6 +24,7 @@
 	<file>icons/open_flash20x20.png</file>
 	<file>icons/program20x20.png</file>
         <file>icons/rd_flash20x20.png</file>
+        <file>icons/ver_flash20x20.png</file>
         <file>icons/reload20x20.png</file>
         <file>icons/save20.png</file>
         <file>icons/script20x20.png</file>
@@ -35,6 +37,7 @@
         <file>icons/open.png</file>
         <file>icons/print20x20.png</file>
         <file>icons/rd_all20x20.png</file>
+        <file>icons/ver_all20x20.png</file>
         <file>icons/read20x20.png</file>
         <file>icons/reload20.png</file>
         <file>icons/save_eep20x20.png</file>
@@ -49,6 +52,7 @@
         <file>icons/paste.png</file>
         <file>icons/print20.png</file>
         <file>icons/rd_eep20x20.png</file>
+        <file>icons/ver_eep20x20.png</file>
         <file>icons/read20.png</file>
         <file>icons/reload.png</file>
         <file>icons/save_flash20x20.png</file>
