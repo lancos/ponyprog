@@ -3646,7 +3646,7 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 		QStringList lst = myscantokenizer(buf);
 		int n = lst.count();
 
-		if (lst.count() == 0)
+		if (n == 0)
 		{
 			continue;
 		}
@@ -5804,14 +5804,14 @@ long GetEEPTypeFromString(const QString &name)
 	{
 		foreach (chipInfo c, m.info)
 		{
-			if (c.name == name)
+			if (QString::compare(c.name, name, Qt::CaseInsensitive) == 0)
 			{
 				return c.id;
 			}
 		}
 	}
 
-	return -1;
+	return EID_INVALID;
 }
 
 
@@ -5923,25 +5923,15 @@ int e2CmdWindow::OpenScript(const QString &file)
 		{
 			QString fltr = convertFilterListToString(script_filter);
 
-			fileName = QFileDialog::getOpenFileName(this, "Open Script", QDir::homePath(), fltr);
+			fileName = QFileDialog::getOpenFileName(this, translate(STR_MSGOPENSCRIPT), QDir::homePath(), fltr);
 		}
 	}
 
-
 	if (fileName.length() > 0)
 	{
-		if (FileExist(fileName.toLatin1()))
+		if (FileExist(fileName))
 		{
-			QString oldname;
-
-			if (script_name.length() > 0)
-			{
-				oldname = script_name;
-			}
-			else
-			{
-				oldname = "";
-			}
+			QString oldname = script_name;
 
 			script_name = fileName;
 
