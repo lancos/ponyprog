@@ -226,6 +226,6 @@ CONFIG(debug, debug|release) {
 }
 
 
-QMAKE_CXXFLAGS += -std=c++11
+QMAKE_CXXFLAGS += -std=c++11 -Wno-unused-parameter
 
 
