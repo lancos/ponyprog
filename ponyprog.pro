@@ -9,7 +9,7 @@ QT       += core gui
 
 # TRANSLATIONS = cnc-qt.ts 
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport multimedia
 
 TARGET = ponyprog
 TEMPLATE = app
