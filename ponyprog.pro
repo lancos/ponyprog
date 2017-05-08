@@ -214,6 +214,18 @@ win32:LIBS += -L$$PWD/windows/
 RESOURCES += SrcPony/ponyprog.qrc
 
 
+CONFIG(debug, debug|release) {
+    # debug configuration
+    # QMAKE_CXXFLAGS_DEBUG += ...
+} else {
+    # release configuration
+    QMAKE_CXXFLAGS_RELEASE -= -O2
+    QMAKE_CXXFLAGS_RELEASE += -O3
+    QMAKE_CXXFLAGS_RELEASE += -fno-exceptions -fno-rtti
+    DEFINES += QT_NO_DEBUG_OUTPUT
+}
+
+
 QMAKE_CXXFLAGS += -std=c++11
-QMAKE_CXXFLAGS_RELEASE += -DQT_NO_DEBUG_OUTPUT
+
 
