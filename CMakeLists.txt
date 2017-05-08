@@ -29,9 +29,9 @@ IF(NOT ${USE_QT_VERSION} MATCHES "4" AND NOT ${USE_QT_VERSION} MATCHES "5")
 ENDIF()
 
 #debug or release
-SET(USE_DEBUGGER false)
 
 OPTION (USE_DEBUGGER "Include in binary file debug information" OFF)
+SET(USE_DEBUGGER false)
 
 #enable or disable profiling info
 # SET(USE_PROFILER false)

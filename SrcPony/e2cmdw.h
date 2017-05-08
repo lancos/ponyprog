@@ -32,6 +32,7 @@
 #include <QMainWindow>
 #include <QMessageBox>
 #include <QTimer>
+#include <QTextDocument>
 #include <QLabel>
 #include <QLineEdit>
 #include <QProgressBar>
@@ -327,6 +328,7 @@ class e2CmdWindow : public QMainWindow, public e2App, public Ui::MainWindow
 	void addIMBUSStruct();
 	void addSDEStruct();
 	void addX24CStruct();
+
 
 	int SaveFile(int force_select = 0);
 	int OpenFile(const QString &file = 0);

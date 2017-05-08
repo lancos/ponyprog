@@ -893,7 +893,7 @@ void E2Profile::GetPrinterSettings(QPrinter &p)
 	p.setPaperSource(QPrinter::PaperSource(s->value("PaperSource").toInt()));
 	p.setPrintProgram(s->value("PrintProg", "").toString());
 	p.setPrintRange(QPrinter::PrintRange(s->value("PrintRange").toInt()));
-	p.setResolution(s->value("Resolution", 300).toInt());
+	p.setResolution(s->value("Resolution", 96).toInt());
 
 	qreal left, top, right, bottom;
 	left = (s->value("LeftMargin", 15).toFloat());

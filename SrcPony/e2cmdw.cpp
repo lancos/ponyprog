@@ -33,9 +33,11 @@
 #include <QComboBox>
 #include <QFileDialog>
 #include <QProgressDialog>
+#include <QAbstractTextDocumentLayout>
 #include <QIODevice>
 #include <QBuffer>
 #include <QSound>
+#include <QTextDocument>
 
 #include <QDebug>
 #include <QMessageBox>  // from vNoticeDialog
@@ -6584,7 +6586,7 @@ void e2CmdWindow::PostInit()
 void e2CmdWindow::Print()
 {
 	int no_line = (awip->GetSize() + awip->GetHexPerLine() - 1) / awip->GetHexPerLine();
-	int k;
+// 	int k;
 	//      int a, b, cHeight;
 	int curRow = 0, curPage = 0;
 
@@ -6596,54 +6598,46 @@ void e2CmdWindow::Print()
 
 	if (printDialog.exec() == QDialog::Accepted)
 	{
-
 		E2Profile::SetPrinterSettings(printer);
-
-		QPainter pdc(&printer); // create a painter which will paint 'on printer'.
-		// TODO font and fontsize as option
-		pdc.setFont(QFont("Tahoma", 12));
-		//options() from dialog and save params
-
-		//printer.setPrinterName(def_print_name);
 
 		QString str;
 
-		k = 0;
+		QString title = APPNAME + " by " + AUTHORNAME + " " + translate(STR_MSGPAGE) + " " + QString::number(++curPage);
+
+		int k = 0;
 
 		while (k < no_line)
 		{
 			curRow = 0;
-			str = QString(STR_MSGPAGE + " " + APPNAME + " by " + AUTHORNAME + " %1   ---   ").arg(++curPage);
+			QStringList t;
+			t << QString("File: " + GetFileName());
+			t << QString("Device: " + awip->GetStringID());
+			t << QString("Note: " + awip->GetComment());
+			t << QString().sprintf("Size  : %ld Bytes    CRC: %04X", GetDevSize(), awip->GetCRC());
 
-			pdc.drawText(rect(), str);
-
-			if (curPage == 1)
-			{
-				curRow++;
-				pdc.drawText(rect(), "File: " + GetFileName());
-
-				pdc.drawText(rect(), "Device: " + awip->GetStringID());
-
-				pdc.drawText(rect(), "Note: " + awip->GetComment());
-
-				str.sprintf("Size  : %ld Bytes    CRC: %04X", GetDevSize(), awip->GetCRC());
-				pdc.drawText(rect(), str);
-			}
-
-			curRow++;
-
-			// TODO number of line as option
 			for (; k < no_line && curRow < 66; k++)
 			{
-				pdc.drawText(rect(), awip->Dump(k));
+				t << awip->Dump(k);
 			}
+			curRow++;
+			curPage++;
 
-			printer.newPage();
+			QString body = t.join("<br>");
+
+			str = "<table width=\"100%\" border=1 cellspacing=0><br>"
+				  "<tr><td bgcolor=\"lightgray\"><font size=\"+1\">"
+				  "<b><i>" + title + "</i></b></font><br><tr><td>"
+				  + body + "<br></table></font><br><br><br>";
+
+			QTextDocument doc;
+
+			doc.documentLayout()->setPaintDevice(&printer);
+
+			doc.setPageSize(printer.pageRect().size()); // This is necessary if you want to hide the page number
+			doc.setHtml(str);
+			doc.print(&printer);
 		}
-
-		pdc.end();
 	}
-
 }
 
 
