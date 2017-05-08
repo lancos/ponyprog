@@ -1380,9 +1380,7 @@ void E2Profile::SetProgramOptions(long prog_option)
 
 QString E2Profile::GetLangDir()
 {
-	QString sp = s->value("LangDir", "").toString();
-
-	return sp;
+	return s->value("LangDir", "").toString();
 }
 
 
@@ -1397,7 +1395,7 @@ void E2Profile::SetLangDir(const QString &name)
 
 QString E2Profile::GetCurrentLang()
 {
-	QString sp = s->value("CurrentLang", "English").toString();
+	QString sp = s->value("CurrentLang", "english").toString();
 
 	return sp;
 }

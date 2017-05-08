@@ -120,15 +120,14 @@ void e2App::initSettings()
 
 	//str += QString("." + APPNAME + "rc");
 	//E2Profile::SetConfigFile(str);
-
+#endif
 	qDebug() << "Settings file: " << E2Profile::GetConfigFile();	// << " - Format: " << E2Profile::s->format();
-#else
+
 	QString currentAppDir = qApp->applicationDirPath();
 
-	helpfile = currentAppDir + "ponyprog.html";
-	ok_soundfile = currentAppDir + "oksound.wav";
-	err_soundfile = currentAppDir + "errsound.wav";
-#endif
+	helpfile = currentAppDir + "/ponyprog.html";
+	ok_soundfile = currentAppDir + "/oksound.wav";
+	err_soundfile = currentAppDir + "/errsound.wav";
 
 	QString sp2 = E2Profile::GetLanguageCode();
 

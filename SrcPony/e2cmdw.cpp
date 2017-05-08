@@ -513,18 +513,25 @@ bool e2CmdWindow::readLangDir()
 	// EK 2017
 	// this for linux
 	QString path = QDir::currentPath();
-	if (path.indexOf("/build") > 0)
+	QString bdir = "/build";
+	if (path.endsWith(bdir))
 	{
-		path.remove("/build");
+		int pos = path.lastIndexOf(bdir);
+		path.remove(pos, bdir.length());
 	}
-	else
-	{
-		path += "/lang/";
-	}
+	path += "/lang";
 
-	qDebug() << "readLangDir" << path;
+	lngDirName = E2Profile::GetLangDir();
+	if (lngDirName.length() == 0)
+		lngDirName = qApp->applicationDirPath() + "/lang";
 
-	dirsLang << "/usr/share/ponyprog/lang" << "/usr/local/share/ponyprog/lang" << path;
+	qDebug() << "readLangDir path:" << path << ", Saved: " << lngDirName;
+
+#ifdef __linux__
+	dirsLang << lngDirName << "/usr/share/ponyprog/lang" << "/usr/local/share/ponyprog/lang" << path;
+#else
+	dirsLang << lngDirName << path;
+#endif
 
 	foreach (const QString entry, dirsLang)
 	{
@@ -532,12 +539,11 @@ bool e2CmdWindow::readLangDir()
 
 		if (dir.exists() == true)
 		{
-			lngDirName = entry;
-			E2Profile::SetLangDir(lngDirName);
-
 			trList = dir.entryList(QStringList("*.utf"));
 			if (trList.count() > 0)
 			{
+				E2Profile::SetLangDir(entry);
+				lngDirName = entry + "/";
 				found = true;
 				break;
 			}
