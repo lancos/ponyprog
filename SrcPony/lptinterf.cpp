@@ -7,8 +7,6 @@
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id: lptinterf.cpp,v 1.5 2009/11/16 22:29:18 lancos Exp $
-//-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
 // modify it under the terms of the GNU  General Public License            //
@@ -348,6 +346,7 @@ int LPTInterface::OutDataMask(int mask, int val)
 {
 	int ret_val = E2ERR_NOTINSTALLED;
 
+#ifdef __linux__
 	if (hLpt != INVALID_HANDLE_VALUE)
 	{
 		if (val == 0)
@@ -365,6 +364,7 @@ int LPTInterface::OutDataMask(int mask, int val)
 
 		ret_val = OutDataPort(last_data);
 	}
+#endif
 
 	return ret_val;
 }
@@ -373,6 +373,7 @@ int LPTInterface::OutControlMask(int mask, int val)
 {
 	int ret_val = E2ERR_NOTINSTALLED;
 
+#ifdef __linux__
 	if (hLpt != INVALID_HANDLE_VALUE)
 	{
 		if (val == 0)
@@ -390,6 +391,7 @@ int LPTInterface::OutControlMask(int mask, int val)
 
 		ret_val = OutControlPort(last_ctrl);
 	}
+#endif
 
 	return ret_val;
 }

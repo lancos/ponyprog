@@ -7,8 +7,6 @@
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id: portint.h,v 1.11 2013/05/09 16:20:29 lancos Exp $
-//-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
 // modify it under the terms of the GNU  General Public License            //
@@ -92,8 +90,8 @@ class PortInterface
 	HANDLE  hCom;
 #endif
 
-	int             write_port,             // Number of output port (write I/O port address)
-					read_port;              // Number of input port (read I/O port address)
+	int write_port,             // Number of output port (write I/O port address)
+		read_port;              // Number of input port (read I/O port address)
 	uint8_t cpwreg;                 // write register image in memory (the content is the same of the hardware register)
 
   private:               //------------------------------- private
@@ -102,7 +100,7 @@ class PortInterface
 	void DetectPorts();
 
 #ifdef  WIN32
-	void DetectPorts9x();   // Win9x version
+	//void DetectPorts9x();         // Win9x version
 	void DetectLPTPortsNT();        // WinNT/2000 version
 	void DetectCOMPortsNT();        // WinNT/2000 version
 

@@ -7,8 +7,6 @@
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id: lptinterf.h,v 1.5 2009/11/16 22:29:18 lancos Exp $
-//-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
 // modify it under the terms of the GNU  General Public License            //
@@ -76,8 +74,9 @@ class LPTInterface
   protected:             //------------------------------- protected
 
   private:               //------------------------------- private
+#ifdef __linux__
 	int hLpt;
-
+#endif
 	LPTCONDATA lpt_control;
 	uint8_t last_ctrl, last_data;
 };

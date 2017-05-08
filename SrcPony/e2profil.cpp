@@ -1798,7 +1798,7 @@ void E2Profile::SetJDMCmd2CmdDelay(int delay)
 
 bool E2Profile::GetVerifyAfterWrite()
 {
-	QString sp = s->value("VerifyAfterWrite", "").toString();
+	QString sp = s->value("VerifyAfterWrite", "YES").toString();
 
 	if (sp.length() && (sp == "NO"))
 	{
@@ -1826,7 +1826,7 @@ void E2Profile::SetVerifyAfterWrite(bool enabled)
 
 bool E2Profile::GetAutoDetectPorts()
 {
-	QString sp = s->value("AutoDetectPorts", "").toString();
+	QString sp = s->value("AutoDetectPorts", "YES").toString();
 
 	if (sp.length() && (sp == "NO"))
 	{
@@ -1863,7 +1863,7 @@ int E2Profile::GetCOMAddress(int &com1, int &com2, int &com3, int &com4)
 
 	if (sp.length())
 	{
-		sscanf(sp.toLatin1(), "%x,%x,%x,%x", &com1, &com2, &com3, &com4);
+		sscanf(sp.toLatin1().constData(), "%x,%x,%x,%x", &com1, &com2, &com3, &com4);
 	}
 
 	return OK;
@@ -1872,7 +1872,7 @@ int E2Profile::GetCOMAddress(int &com1, int &com2, int &com3, int &com4)
 
 void E2Profile::SetCOMAddress(int com1, int com2, int com3, int com4)
 {
-	QString str;//[STRBUFSIZE];
+	QString str;
 
 	if (com1 > 0)
 	{
@@ -1914,7 +1914,7 @@ int E2Profile::GetLPTAddress(int &lpt1, int &lpt2, int &lpt3)
 
 	if (sp.length())
 	{
-		sscanf(sp.toLatin1(), "%x,%x,%x", &lpt1, &lpt2, &lpt3);
+		sscanf(sp.toLatin1().constData(), "%x,%x,%x", &lpt1, &lpt2, &lpt3);
 	}
 
 	return OK;

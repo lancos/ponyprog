@@ -126,17 +126,17 @@ class e2App : public cTranslator
 
 	int Calibration();
 
-	const char *GetHelpFile() const
+	QString GetHelpFile() const
 	{
-		return helpfile.toLatin1();
+		return helpfile;
 	}
-	const char *GetOkSound() const
+	QString GetOkSound() const
 	{
-		return ok_soundfile.toLatin1();
+		return ok_soundfile;
 	}
-	const char *GetErrSound() const
+	QString GetErrSound() const
 	{
-		return err_soundfile.toLatin1();
+		return err_soundfile;
 	}
 
 	uint8_t GetPolarity() const

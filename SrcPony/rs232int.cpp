@@ -117,7 +117,7 @@ int RS232Interface::OpenSerial(QString devname)
 	m_devname = devname;
 
 #ifdef  WIN32
-	hCom = CreateFile(m_devname.toLatin1().constData(),
+	hCom = CreateFile((LPCWSTR)m_devname.utf16(),
 					  GENERIC_READ | GENERIC_WRITE,
 					  0,              /* comm devices must be opened w/exclusive-access */
 					  NULL,   /* no security attrs */
@@ -559,7 +559,7 @@ int RS232Interface::SetSerialParams(long speed, int bits, int parity, int stops,
 			dcb_str.sprintf("baud=%ld parity=%c data=%d stop=%d", actual_speed, actual_parity, actual_bits, actual_stops);
 // 			dcb_str[255] = '\0';
 
-			if (BuildCommDCB(dcb_str.toLatin1().data(), &com_dcb))
+			if (BuildCommDCB((LPCWSTR)dcb_str.utf16(), &com_dcb))
 			{
 				if (actual_flowcontrol == 0)
 				{

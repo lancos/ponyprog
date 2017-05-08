@@ -35,6 +35,7 @@
 #include <QProgressDialog>
 #include <QIODevice>
 #include <QBuffer>
+#include <QSound>
 
 #include <QDebug>
 #include <QMessageBox>  // from vNoticeDialog
@@ -2734,11 +2735,7 @@ int e2CmdWindow::PlaySoundMsg(bool val)
 {
 	if (val)
 	{
-		// EK 2017
-		// TODO to use QSound
-#ifdef  WIN32
-		::PlaySound(GetOkSound(), NULL, SND_FILENAME | SND_ASYNC);
-#endif
+		QSound::play(GetOkSound());
 	}
 
 	return OK;
@@ -2755,7 +2752,8 @@ int e2CmdWindow::CmdHelp()
 	//str += "&";
 	system(str.toLatin1().constData());
 #else
-	ShellExecute(NULL, "open", GetHelpFile(), NULL, NULL, SW_SHOWNORMAL);
+	QString str = GetHelpFile();
+	ShellExecute(NULL, L"open", (LPCWSTR)str.utf16(), NULL, NULL, SW_SHOWNORMAL);
 #endif
 
 	return OK;

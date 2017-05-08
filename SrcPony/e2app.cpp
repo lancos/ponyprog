@@ -565,7 +565,7 @@ void e2App::LookForBogoMips()
 	{
 		multiplier *= 5;
 
-		SetBogoMips(700 * multiplier);
+		E2Profile::SetBogoMips(700 * multiplier);
 		w.SetBogoKips();
 
 		t0 = GetTickCount();
@@ -577,7 +577,7 @@ void e2App::LookForBogoMips()
 
 		count = GetTickCount() - t0;
 
-		out << "bogo = " << GetBogoMips() << ", count =" << count << "\n";
+		out << "bogo = " << E2Profile::GetBogoMips() << ", count =" << count << "\n";
 	}
 	while (count <= MSLICE / 11);
 
@@ -590,7 +590,7 @@ void e2App::LookForBogoMips()
 
 	count = GetTickCount() - t0;
 
-	out << "1) count = " << count << " ** mslice = " << MSLICE << " *** bogo = " << GetBogoMips() << "\n";
+	out << "1) count = " << count << " ** mslice = " << MSLICE << " *** bogo = " << E2Profile::GetBogoMips() << "\n";
 
 	int j;
 
@@ -599,8 +599,8 @@ void e2App::LookForBogoMips()
 	{
 		int nv;
 
-		nv = (DWORD)((float) GetBogoMips() * (MSLICE / (float)count) + 0.5);
-		SetBogoMips(nv);
+		nv = (DWORD)((float) E2Profile::GetBogoMips() * (MSLICE / (float)count) + 0.5);
+		E2Profile::SetBogoMips(nv);
 		w.SetBogoKips();
 
 		t0 = GetTickCount();
@@ -612,7 +612,7 @@ void e2App::LookForBogoMips()
 
 		count = GetTickCount() - t0;
 
-		out << "2) count = " << count << " ** mslice = " << MSLICE << " *** bogo = " << GetBogoMips() << "\n";
+		out << "2) count = " << count << " ** mslice = " << MSLICE << " *** bogo = " << E2Profile::GetBogoMips() << "\n";
 	}
 
 	//Fine correction
@@ -620,8 +620,8 @@ void e2App::LookForBogoMips()
 	{
 		int nv;
 
-		nv = (DWORD)((float) GetBogoMips() * 1.01 + 0.5);
-		SetBogoMips(nv);
+		nv = (DWORD)((float) E2Profile::GetBogoMips() * 1.01 + 0.5);
+		E2Profile::SetBogoMips(nv);
 		w.SetBogoKips();
 
 		t0 = GetTickCount();
@@ -633,7 +633,7 @@ void e2App::LookForBogoMips()
 
 		count = GetTickCount() - t0;
 
-		count << "3) count = " << count << " ** mslice = " << MSLICE << " *** bogo = " << GetBogoMips() << "\n";
+		out << "3) count = " << count << " ** mslice = " << MSLICE << " *** bogo = " << E2Profile::GetBogoMips() << "\n";
 	}
 
 	w.CheckHwTimer();       //Check to enable again Hw timer
@@ -644,7 +644,7 @@ void e2App::LookForBogoMips()
 	}
 	else
 	{
-		out << "Hardware timer is too slow, use bogomips (" << GetBogoMips() << ")\n";
+		out << "Hardware timer is too slow, use bogomips (" << E2Profile::GetBogoMips() << ")\n";
 	}
 
 	fh.close();
@@ -660,4 +660,3 @@ int e2App::LoadDriver(int start)
 
 	return rv;
 }
-
