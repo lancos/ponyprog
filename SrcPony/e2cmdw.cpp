@@ -212,7 +212,9 @@ e2CmdWindow::e2CmdWindow(QWidget *parent) :
 
 	foreach (QAction *itL, actLangSelect)
 	{
-		if ((*itL).text() == E2Profile::GetCurrentLang())
+		QString lName = (*itL).text();
+		lName = lName.toLower();
+		if (lName == E2Profile::GetCurrentLang())
 		{
 			(*itL).setChecked(true);
 			break;
@@ -505,31 +507,38 @@ bool e2CmdWindow::readLangDir()
 	QString lngDirName;
 	QStringList dirsLang;
 	QDir dir;
+	QStringList trList;
 	// EK 2017
 	// this for linux
-	dirsLang << "/usr/share/ponyprog/" << "/usr/local/share/ponyprog/" << QDir::currentPath();
+	QString path = QDir::currentPath();
+	if (path.indexOf("/build") > 0)
+	{
+		path.remove("/build");
+	}
+	else
+	{
+		path += "/lang/";
+	}
+
+	qDebug() << "readLangDir" << path;
+
+	dirsLang << "/usr/share/ponyprog/lang" << "/usr/local/share/ponyprog/lang" << path;
 
 	foreach (const QString entry, dirsLang)
 	{
-		lngDirName = entry + "/lang/";
-
-		dir = QDir(lngDirName);
+		dir = QDir(entry);
 
 		if (dir.exists() == true)
 		{
+			lngDirName = entry;
 			E2Profile::SetLangDir(lngDirName);
-			found = true;
-			break;
-		}
 
-		lngDirName = entry + "/language/";
-		dir = QDir(lngDirName);
-
-		if (dir.exists() == true)
-		{
-			E2Profile::SetLangDir(lngDirName);
-			found = true;
-			break;
+			trList = dir.entryList(QStringList("*.utf"));
+			if (trList.count() > 0)
+			{
+				found = true;
+				break;
+			}
 		}
 	}
 
@@ -540,8 +549,6 @@ bool e2CmdWindow::readLangDir()
 
 	langFiles.clear();
 
-	QStringList fList = dir.entryList(QStringList("*.utf"));
-
 	found = false;
 
 	QMenu *langMenu = new QMenu("Language");
@@ -550,7 +557,7 @@ bool e2CmdWindow::readLangDir()
 	langGroup = new QActionGroup(this);
 
 
-	foreach (const QString iL, fList)
+	foreach (const QString iL, trList)
 	{
 		QFile fLang(lngDirName + iL);
 
@@ -565,12 +572,12 @@ bool e2CmdWindow::readLangDir()
 		{
 			QTextStream stream(&fLang);
 			stream.setCodec("UTF-8");
-			QString line, nm;
 
 			int lines = 0;
 
 			while (!stream.atEnd())
 			{
+				QString line, nm;
 				line = stream.readLine(); // line of text excluding '\n'
 				lines++;
 
@@ -580,12 +587,14 @@ bool e2CmdWindow::readLangDir()
 
 					selectedLang = line;
 					lines++;
+
 					nm = line;
+					line[0] = line[0].toUpper();
 
 					found = true;
 
-					langFiles += iL + ":" + nm;
-					QAction *tmpAction = new QAction(nm, actionLanguage);
+					langFiles << QString(iL + ":" + nm);
+					QAction *tmpAction = new QAction(line, actionLanguage);
 					tmpAction->setCheckable(true);
 
 
@@ -635,6 +644,7 @@ void e2CmdWindow::setLang(QAction *mnu)
 
 	lngStr = mnu->text();
 	lngStr = lngStr.remove("&");
+	lngStr = lngStr.toLower();
 
 	E2Profile::SetCurrentLang(lngStr);
 
@@ -750,6 +760,8 @@ bool e2CmdWindow::getLangTable()
 		return (false);
 	}
 
+	qDebug() << "getLangTable" << fileLang;
+
 	if (QFile::exists(E2Profile::GetLangDir() + "/" + fileLang) == false)
 	{
 		QMessageBox::warning(this, "Warning", "Language file not exists!\n\n"
@@ -758,7 +770,7 @@ bool e2CmdWindow::getLangTable()
 		return (false);
 	}
 
-	return loadTranslation(E2Profile::GetLangDir() + fileLang);
+	return loadTranslation(E2Profile::GetLangDir() + "/" + fileLang);
 }
 
 
