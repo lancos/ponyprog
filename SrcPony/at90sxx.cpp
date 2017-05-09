@@ -298,7 +298,7 @@ int At90sxx::QueryType(long &type)
 		}
 
 		detected_signature.sprintf("%02X-%02X-%02X", code[0], code[1], code[2]);
-		//              snprintf(detected_signature, MAXMSG, "%02X-%02X-%02X", code[0], code[1], code[2]);
+		//snprintf(detected_signature, MAXMSG, "%02X-%02X-%02X", code[0], code[1], code[2]);
 
 		rv = type ? OK : DEVICE_UNKNOWN;
 	}

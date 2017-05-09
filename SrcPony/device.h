@@ -131,9 +131,9 @@ class Device
 	{
 		return detected_type;
 	}
-	char const *GetDetectedSignatureStr() const
+	QString GetDetectedSignatureStr() const
 	{
-		return detected_signature.toLatin1();
+		return detected_signature;
 	}
 
   protected:    //--------------------------------------- protected

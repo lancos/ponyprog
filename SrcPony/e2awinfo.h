@@ -273,7 +273,7 @@ class e2AppWinInfo // : public QObject
 	}
 	QString GetDetectedSignatureStr() const
 	{
-		return eep ? eep->GetDetectedSignatureStr() : 0;
+		return eep ? eep->GetDetectedSignatureStr() : "";
 	}
 
   protected:    //--------------------------------------- protected
