@@ -97,7 +97,7 @@ int RS232Interface::OpenSerial(int no)
 	if (no >= 1 && no <= 256)
 	{
 #ifdef  WIN32
-		devname.sprintf("%s%d", E2Profile::GetDevName(), no);
+		devname = E2Profile::GetDevName() + QString("%1").arg(no);
 #elif defined(__linux__)
 		no--;           //linux call ttyS0 --> COM1, ttyS1 --> COM2, etc..
 		devname = E2Profile::GetDevDir() + "/" + E2Profile::GetDevName() + QString("%1").arg(no);
