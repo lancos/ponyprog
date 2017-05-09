@@ -71,15 +71,15 @@ e2App::e2App() :
 	//Initialize Bus Pointers vector
 	busvetp[I2C - 1] = &iicB;
 	busvetp[AT90S - 1] = &at90sB;
-	//      busvetp[ATMEGAB-1] = &atMegaB;
-	//      busvetp[AT1200S-1] = &at1200B;
+	//busvetp[ATMEGAB-1] = &atMegaB;
+	//busvetp[AT1200S-1] = &at1200B;
 	busvetp[AT89S - 1] = &at89sB;
 	busvetp[AT93C - 1] = &at93cB;
 	busvetp[AT250 - 1] = &at250B;
 	busvetp[AT250BIG - 1] = &at250BigB;
 	busvetp[PICB - 1] = &picB;
 	busvetp[PIC12B - 1] = &pic12B;
-	busvetp[SXB - 1] = &sxB;
+	//busvetp[SXB - 1] = &sxB;
 	busvetp[SDEB - 1] = &sdeB;
 	busvetp[PICNEWB - 1] = &picNewB;
 	busvetp[IMBUS - 1] = &imB;

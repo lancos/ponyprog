@@ -7,8 +7,6 @@
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id: e2app.h,v 1.12 2016/05/27 11:22:51 lancos Exp $
-//-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
 // modify it under the terms of the GNU  General Public License            //
@@ -45,7 +43,7 @@
 #include "at250bus2.h"
 #include "picbus.h"
 #include "pic12bus.h"
-#include "sxbus.h"
+//#include "sxbus.h"
 #include "sdebus.h"
 #include "at89sbus.h"
 //#include "atmegabus.h"
@@ -223,7 +221,7 @@ class e2App : public cTranslator
 	At250BigBus at250BigB;
 	PicBus picB;
 	Pic12Bus pic12B;
-	SxBus sxB;
+	//SxBus sxB;
 	Sde2506Bus sdeB;
 	At89sBus at89sB;
 	//      AtMegaBus atMegaB;

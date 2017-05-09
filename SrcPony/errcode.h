@@ -7,8 +7,6 @@
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
-// $Id: errcode.h,v 1.4 2007/04/20 10:58:21 lancos Exp $
-//-------------------------------------------------------------------------//
 //                                                                         //
 // This program is free software; you can redistribute it and/or           //
 // modify it under the terms of the GNU  General Public License            //
@@ -39,8 +37,8 @@
 #define BADFILETYPE             -5                      // File di tipo errato
 #define READERROR               -6                      // Errore in lettura dal file
 #define WRITEERROR              -7                      // Errore in scrittura da file
-#define NOTHINGTOSAVE   -8                      // Nessun contenuto da salvare
-#define NOTSUPPORTED    -9                      // Funzionalita` non supportata (ancora)
+#define NOTHINGTOSAVE           -8                      // Nessun contenuto da salvare
+#define NOTSUPPORTED            -9                      // Funzionalita` non supportata (ancora)
 
 #define E2P_TIMEOUT             -10
 
@@ -54,7 +52,7 @@
 #define E2ERR_ACCESSDENIED      -17
 #define E2ERR_NOTINSTALLED      -18
 #define IICERR_TIMEOUT          -19
-#define IICERR_STOP                     -20
+#define IICERR_STOP             -20
 
 #define E2ERR_WRITEFAILED       -21
 #define E2ERR_BLANKCHECKFAILED  -22
@@ -62,10 +60,10 @@
 #define DEVICE_BADTYPE          -23
 #define DEVICE_UNKNOWN          -24
 #define DEVICE_LOCKED           -25
-#define OP_ABORTED                      -26
+#define OP_ABORTED              -26
 
 #define BUFFEROVERFLOW          -30
-#define OUTOFMEMORY                     -31
+#define OUTOFMEMORY             -31
 #define BUFFERUNDERFLOW         -32
 
 //Codici di errore restituiti dall'interprete di comandi a menu
@@ -81,4 +79,3 @@
 #define CMD_SCRIPTERROR         -50
 
 #endif
-

@@ -77,7 +77,6 @@ SOURCES  += SrcPony/aboutmdlg.cpp \
             SrcPony/pic12bus.cpp \
             SrcPony/ponyioint.cpp \
             SrcPony/rs232int.cpp \
-            SrcPony/sxbus.cpp \
             SrcPony/at250bus.cpp \
             SrcPony/at90sbus.cpp \
             SrcPony/binfbuf.cpp \
@@ -127,7 +126,6 @@ HEADERS  += SrcPony/e2app.h \
             SrcPony/pgminter.h \
             SrcPony/picbus.h \
             SrcPony/sde2506.h \
-            SrcPony/sxbus.h \
             SrcPony/at17xxx.h \
             SrcPony/at89sbus.h \
             SrcPony/at93cxx8.h \
