@@ -523,7 +523,9 @@ bool e2CmdWindow::readLangDir()
 
 	lngDirName = E2Profile::GetLangDir();
 	if (lngDirName.length() == 0)
+	{
 		lngDirName = qApp->applicationDirPath() + "/lang";
+	}
 
 	qDebug() << "readLangDir path:" << path << ", Saved: " << lngDirName;
 

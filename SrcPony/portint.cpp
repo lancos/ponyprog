@@ -735,7 +735,7 @@ static int DetectPortsNT(const QString &ServiceName, const QString &PortFormat, 
 								QString strbuf2 = QString::fromUtf16(buf2);
 
 								if (sscanf(strbuf2.toLatin1().constData(), PortFormat.toLatin1().constData(), &Index) == 1
-									&& (unsigned)--Index < (unsigned)nports)        // Use zero-based index from here, avoid negative values
+										&& (unsigned)--Index < (unsigned)nports)        // Use zero-based index from here, avoid negative values
 								{
 									HKEY hControl;
 									//_snprintf(buf, sizeof(buf), "Enum\\%s\\Control", PnpPath);
