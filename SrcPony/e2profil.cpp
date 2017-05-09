@@ -1451,7 +1451,6 @@ QString E2Profile::GetDevDir()
 	return sp;
 }
 
-
 void E2Profile::SetDevDir(const QString &name)
 {
 	if (name.length())
@@ -1463,18 +1462,12 @@ void E2Profile::SetDevDir(const QString &name)
 
 QString E2Profile::GetDevName()
 {
-	QString sp = s->value("ttyDevName", "").toString();
-
-	if (sp.length() == 0)
-#ifdef  __linux__
-		sp = "ttyS";
-
+#ifdef __linux__
+	return s->value("ttyDevName", "ttyS").toString();
 #else
-		sp = "COM";
+	return s->value("ttyDevName", "COM").toString();
 #endif
-	return sp;
 }
-
 
 void E2Profile::SetDevName(const QString &name)
 {
@@ -1485,26 +1478,18 @@ void E2Profile::SetDevName(const QString &name)
 }
 
 
-QString E2Profile::GetHtmlBrowseApp()
-{
-	QString sp = s->value("HtmlBrowseApp", "").toString();
+//QString E2Profile::GetHtmlBrowseApp()
+//{
+//	return s->value("HtmlBrowseApp", "konqueror").toString();
+//}
 
-	if (sp.length() == 0)
-	{
-		sp = "konqueror";
-	}
-
-	return sp;
-}
-
-
-void E2Profile::SetHtmlBrowseApp(const QString &name)
-{
-	if (name.length())
-	{
-		s->setValue("HtmlBrowseApp", name);
-	}
-}
+//void E2Profile::SetHtmlBrowseApp(const QString &name)
+//{
+//	if (name.length())
+//	{
+//		s->setValue("HtmlBrowseApp", name);
+//	}
+//}
 
 
 QString E2Profile::GetLanguageCode()
@@ -1518,7 +1503,6 @@ QString E2Profile::GetLanguageCode()
 
 	return sp;
 }
-
 
 void E2Profile::SetLanguageCode(const QString &name)
 {

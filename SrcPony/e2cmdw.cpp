@@ -2764,15 +2764,30 @@ int e2CmdWindow::PlaySoundMsg(bool val)
 //====================>>> e2CmdWindow::CmdHelp <<<====================
 int e2CmdWindow::CmdHelp()
 {
-#ifdef __linux__
 	QString str;
-	//str = E2Profile::GetHtmlBrowseApp();
-	str = "xdg-open";
-	str += " \"http://www.lancos.com/e2p/ponyprog2000.html\" ";
-	//str += "&";
+
+	QFile file(GetHelpFile());
+
+#ifdef __linux__
+	if (file.exists())
+	{
+		str = "xdg-open" + GetHelpFile();
+	}
+	else
+	{
+		//str = E2Profile::GetHtmlBrowseApp() + "\"http://www.lancos.com/e2p/ponyprog2000.html\" &";
+		str = "xdg-open \"http://www.lancos.com/e2p/ponyprog2000.html\" ";
+	}
 	system(str.toLatin1().constData());
 #else
-	QString str = GetHelpFile();
+	if (file.exists())
+	{
+		str = GetHelpFile();
+	}
+	else
+	{
+		str = "\"http://www.lancos.com/e2p/ponyprog2000.html\" ";
+	}
 	ShellExecute(NULL, L"open", (LPCWSTR)str.utf16(), NULL, NULL, SW_SHOWNORMAL);
 #endif
 
