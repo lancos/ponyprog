@@ -60,7 +60,6 @@ int PortInterface::IOperm(int a, int b, int c)
 #else
 int PortInterface::IOperm(int a, int b, int c)
 {
-	c = a + b;
 	return 0;
 }
 #endif
