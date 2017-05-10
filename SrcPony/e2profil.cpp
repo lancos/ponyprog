@@ -26,15 +26,16 @@
 //=========================================================================//
 
 #include <QDebug>
+#include <QFile>
 #include <QString>
+#include <QStringList>
 #include <QSettings>
 
 #include "e2profil.h"
 #include "types.h"
-
 #include "errcode.h"
-
 #include "globals.h"
+#include "portint.h"
 
 //QSettings *E2Profile::s = new QSettings("ponyprog.ini", QSettings::IniFormat);
 QSettings *E2Profile::s = new QSettings(APPNAME);
@@ -149,15 +150,15 @@ void E2Profile::SetParInterfType(HInterfaceType type)
 }
 
 
-int E2Profile::GetParPortNo()
+int E2Profile::GetPortNumber()
 {
 	return s->value("PortNumber", "-1").toInt();
 }
 
 
-void E2Profile::SetParPortNo(int port)
+void E2Profile::SetPortNumber(int port)
 {
-	if (port >= 1 /* && port <= 4 */)
+	if (port >= 0 /* && port < 4 */)
 	{
 		s->setValue("PortNumber", QString::number(port));
 	}
@@ -1426,7 +1427,7 @@ void E2Profile::SetLogFileName(const QString &name)
 	}
 }
 
-
+#if 0
 QString E2Profile::GetLockDir()
 {
 	QString sp = s->value("ttyLockDir",  "/var/lock").toString();
@@ -1443,7 +1444,6 @@ void E2Profile::SetLockDir(const QString &name)
 	}
 }
 
-
 QString E2Profile::GetDevDir()
 {
 	QString sp = s->value("ttyDevDir", "/dev").toString();
@@ -1458,23 +1458,202 @@ void E2Profile::SetDevDir(const QString &name)
 		s->setValue("ttyDevDir", name);
 	}
 }
-
-
-QString E2Profile::GetDevName()
-{
-#ifdef __linux__
-	return s->value("ttyDevName", "ttyS").toString();
-#else
-	return s->value("ttyDevName", "COM").toString();
 #endif
+
+#ifdef __linux__
+
+static QString retrieve_ttyS_name()
+{
+	QString sp = "COM";
+	QFile file("/proc/tty/drivers");
+
+	if (file.open(QIODevice::ReadOnly | QIODevice::Text))
+	{
+		QTextStream in(&file);
+		QString line = in.readLine();
+		while (!line.isNull())
+		{
+			line = line.simplified();
+
+			if (line.size() > 0)
+			{
+				QStringList l = line.split(" ");
+				if (l.count() > 1 && l.at(0) == "serial")
+				{
+					sp = l.at(1);
+					break;
+				}
+			}
+			line = in.readLine();
+		}
+		file.close();
+	}
+	else
+	{
+		qDebug() << "Can't open file /proc/tty/drivers";
+	}
+
+	return sp;
 }
 
-void E2Profile::SetDevName(const QString &name)
+static QStringList retrieve_ttyS_list()
+{
+	QStringList lst;
+	QString name = retrieve_ttyS_name();
+
+	if (name.length() == 0)
+		return lst;
+
+	QFile file("/proc/tty/driver/serial");		//Need Root access!!!!
+
+	if (file.open(QIODevice::ReadOnly | QIODevice::Text))
+	{
+		QTextStream in(&file);
+		QString line = in.readLine();
+		while (!line.isNull())
+		{
+			if (line.contains("tx:"))
+			{
+				QStringList l = line.split(":");
+				if (l.count() > 0)
+				{
+					bool ok = false;
+
+					l.at(0).toInt(&ok);
+					if (ok)
+					{
+						lst << name + l.at(0);
+						qDebug() << "ttyS dev: " << name << l.at(0);
+					}
+				}
+			}
+			line = in.readLine();
+		}
+		file.close();
+	}
+	else
+	{
+		qDebug() << "Can't open file /proc/tty/drivers";
+	}
+
+	return lst;
+}
+
+#endif
+
+QString E2Profile::GetCOMDevName()
+{
+	QString sp = s->value("COMDevName", "").toString();
+
+	if (sp.length() == 0)
+	{
+#ifdef __linux__
+		sp = retrieve_ttyS_name();
+#else
+		sp = "COM";
+#endif
+	}
+
+	return sp;
+}
+
+void E2Profile::SetCOMDevName(const QString &name)
 {
 	if (name.length())
 	{
-		s->setValue("ttyDevName", name);
+		s->setValue("COMDevName", name);
 	}
+}
+
+
+QStringList E2Profile::GetCOMDevList()
+{
+	QStringList lst = s->value("COMDevList", QStringList()).toStringList();
+
+	if (lst.count() == 0)
+	{
+		#ifdef __linux__
+			lst = retrieve_ttyS_list();
+			if (lst.count() == 0)
+			{
+				QString sname = E2Profile::GetCOMDevName();
+
+				for (int i = 0; i < MAX_COMPORTS; i++)
+				{
+					lst << sname + QString::number(i);
+				}
+			}
+			else
+			{
+				E2Profile::SetCOMDevList(lst);
+			}
+		#else
+			QString sname = E2Profile::GetCOMDevName();
+
+			for (int i = 1; i <= MAX_COMPORTS; i++)
+			{
+				lst << sname + QString::number(i);
+			}
+		#endif
+	}
+
+	return lst;
+}
+
+void E2Profile::SetCOMDevList(const QStringList &lst)
+{
+	s->setValue("COMDevList", lst);
+}
+
+
+QString E2Profile::GetLPTDevName()
+{
+	QString sp = s->value("LPTDevName", "").toString();
+
+	if (sp.length() == 0)
+	{
+#ifdef __linux__
+		sp = QString("/dev/parport");
+#else
+		sp = QString("LPT");
+#endif
+	}
+
+	return sp;
+}
+
+void E2Profile::SetLPTDevName(const QString &name)
+{
+	if (name.length())
+	{
+		s->setValue("LPTDevName", name);
+	}
+}
+
+
+QStringList E2Profile::GetLPTDevList()
+{
+	QStringList lst = s->value("LPTDevList", QStringList()).toStringList();
+
+	if (lst.count() == 0)
+	{
+		QString sname = E2Profile::GetLPTDevName();
+#ifdef __linux__
+		for (int i = 0; i < MAX_LPTPORTS; i++)
+#else
+		for (int i = 1; i <= MAX_LPTPORTS; i++)
+#endif
+		{
+			lst << sname  + QString::number(i);
+		}
+	}
+
+	return lst;
+}
+
+void E2Profile::SetLPTDevList(const QStringList &lst)
+{
+	s->setValue("LPTDevList", lst);
 }
 
 

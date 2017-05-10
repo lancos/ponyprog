@@ -44,9 +44,9 @@ class LPTIOInterface : public PortInterface
 	}
 
 	void SetPort(int port_no);
-	int InDataPort(int port_no = 0);
-	int OutDataPort(int val, int port_no = 0);
-	int OutControlPort(int val, int port_no = 0);
+	int InDataPort(int port_no = -1);
+	int OutDataPort(int val, int port_no = -1);
+	int OutControlPort(int val, int port_no = -1);
 	int OutDataMask(int mask, int val);
 	virtual int OutControlMask(int mask, int val);
 

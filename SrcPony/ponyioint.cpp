@@ -153,7 +153,7 @@ int PonyIOInterface::Open(int com_no)
 
 	int ret_val = OK;
 
-	if (IsInstalled() != com_no)
+	if (GetInstalled() != com_no)
 	{
 		if ((ret_val = OpenSerial(com_no)) == OK)
 		{

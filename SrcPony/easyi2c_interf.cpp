@@ -76,15 +76,15 @@
 EasyI2CInterface::EasyI2CInterface(bool use_io)
 	: LptExtInterface(use_io)
 {
-	Install(0);
-	old_portno = 0;
+	DeInstall();
+	old_portno = -1;
 }
 
 int EasyI2CInterface::Open(int port_no)
 {
 	int ret_val = OK;
 
-	if (IsInstalled() != port_no)
+	if (GetInstalled() != port_no)
 	{
 		if (InDataPort(port_no) < 0)
 		{
@@ -107,7 +107,7 @@ void EasyI2CInterface::Close()
 	{
 		LptExtInterface::Close();
 
-		Install(0);
+		DeInstall();
 	}
 }
 

@@ -301,7 +301,7 @@ QString cTranslator::engText[] =
 	// STR_LBLUSB7             = "USB7",
 	// STR_LBLUSB8             = "USB8",
 #else
-	"ttyS",
+	"ttyUSB",
 	// STR_LBLUSB2             = "ttyS1",
 	// STR_LBLUSB3             = "ttyS2",
 	// STR_LBLUSB4             = "ttyS3",

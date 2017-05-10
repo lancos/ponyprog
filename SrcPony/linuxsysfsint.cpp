@@ -55,8 +55,8 @@ LinuxSysFsInterface::LinuxSysFsInterface()
 {
 	qDebug() << "LinuxSysFsInterface::LinuxSysFsInterface()";
 
-	Install(0);
-	old_portno = 0;
+	DeInstall();
+	old_portno = -1;
 	fd_ctrl = fd_clock = fd_datain = fd_dataout = -1;
 }
 
@@ -95,7 +95,7 @@ static int gpio_open(unsigned int gpio, bool out_dir)
 		{
 			int ret, len;
 
-			buf = QString().number(gpio);
+			buf = QString::number(gpio);
 			len = buf.length();
 			ret = write(fd, buf.toLatin1().data(), len);
 			close(fd);
@@ -249,7 +249,7 @@ int LinuxSysFsInterface::Open(int com_no)
 
 	int ret_val = OK;
 
-	if (IsInstalled() != com_no)
+	if (GetInstalled() != com_no)
 	{
 		if ((ret_val = InitPins()) == OK)
 		{
@@ -270,7 +270,7 @@ void LinuxSysFsInterface::Close()
 	{
 		SetPower(0);
 		DeInitPins();
-		Install(0);
+		DeInstall();
 	}
 
 	qDebug() << "LinuxSysFsInterface::Close() OUT";

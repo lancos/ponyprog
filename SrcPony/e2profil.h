@@ -91,8 +91,8 @@ class E2Profile
 
 	static HInterfaceType GetParInterfType();
 	static void SetParInterfType(HInterfaceType type);
-	static int GetParPortNo();
-	static void SetParPortNo(int value);
+	static int GetPortNumber();
+	static void SetPortNumber(int value);
 
 	static int GetBogoMips();
 	static void SetBogoMips(int value);
@@ -244,12 +244,18 @@ class E2Profile
 		return s->fileName();
 	}
 
-	static QString GetLockDir();
-	static void SetLockDir(const QString &name);
-	static QString GetDevDir();
-	static void SetDevDir(const QString &name);
-	static QString GetDevName();
-	static void SetDevName(const QString &name);
+	//static QString GetLockDir();
+	//static void SetLockDir(const QString &name);
+	//static QString GetDevDir();
+	//static void SetDevDir(const QString &name);
+	static QString GetCOMDevName();
+	static void SetCOMDevName(const QString &name);
+	static QStringList GetCOMDevList();
+	static void SetCOMDevList(const QStringList &lst);
+	static QString GetLPTDevName();
+	static void SetLPTDevName(const QString &name);
+	static QStringList GetLPTDevList();
+	static void SetLPTDevList(const QStringList &lst);
 
 	static FileType GetDefaultFileType();
 	static void SetDefaultFileType(FileType ft);

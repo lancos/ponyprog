@@ -27,6 +27,7 @@
 
 #include "types.h"
 #include "errcode.h"
+#include "e2profil.h"
 
 #include <QDebug>
 
@@ -71,7 +72,7 @@ LPTInterface::LPTInterface()
 
 	last_ctrl = last_data = 0;
 #ifdef __linux__
-	lpt_control.LPPort = 0;         //no used port
+	lpt_control.LPPort = -1;         //no used port
 
 	hLpt = INVALID_HANDLE_VALUE;
 	/**
@@ -91,7 +92,7 @@ LPTInterface::LPTInterface()
 	        }
 	**/
 #else
-	lpt_control.LPPort = 1;         //by default use LPT1
+	lpt_control.LPPort = 0;         //by default use LPT1
 #endif
 }
 
@@ -123,7 +124,7 @@ void LPTInterface::SetPort(int port_no)
 {
 	qDebug() << "LPTInterface::SetPort(" << port_no << ")";
 
-	if (port_no >= 1 && port_no <= MAX_LPTPORTS)
+	if (port_no >= 0 && port_no < MAX_LPTPORTS)
 	{
 		lpt_control.LPPort = port_no;
 
@@ -134,8 +135,7 @@ void LPTInterface::SetPort(int port_no)
 			close(hLpt);
 		}
 
-		//char name[MAXPATH];
-		QString name = QString().sprintf(PARPORTDEVNAME, lpt_control.LPPort - 1);
+		QString name = E2Profile::GetLPTDevName() + QString::number(lpt_control.LPPort);
 		//sprintf(name, PARPORTDEVNAME, lpt_control.LPPort - 1);
 		hLpt = open(name.toLatin1().constData(), O_RDWR);
 
@@ -168,7 +168,7 @@ int LPTInterface::InDataPort(int port_no)
 	int ret_val = E2ERR_NOTINSTALLED;
 
 #ifdef __linux__
-	if (port_no >= 1 && port_no <= MAX_LPTPORTS
+	if (port_no >= 0 && port_no < MAX_LPTPORTS
 			&& port_no != lpt_control.LPPort)
 	{
 		lpt_control.LPPort = port_no;
@@ -179,8 +179,9 @@ int LPTInterface::InDataPort(int port_no)
 			close(hLpt);
 		}
 
-		//char name[MAXPATH];
-		QString name = QString().sprintf(PARPORTDEVNAME, lpt_control.LPPort - 1);
+		QString name = E2Profile::GetLPTDevName() + QString::number(lpt_control.LPPort);
+		qDebug() << "Open " << name;
+
 		//sprintf(name, PARPORTDEVNAME, lpt_control.LPPort - 1);
 		hLpt = open(name.toLatin1().constData(), O_RDWR);
 
@@ -232,7 +233,7 @@ int LPTInterface::OutDataPort(int val, int port_no)
 
 #ifdef __linux__
 
-	if (port_no >= 1 && port_no <= MAX_LPTPORTS
+	if (port_no >= 0 && port_no < MAX_LPTPORTS
 			&& port_no != lpt_control.LPPort)
 	{
 		lpt_control.LPPort = port_no;
@@ -243,8 +244,7 @@ int LPTInterface::OutDataPort(int val, int port_no)
 			close(hLpt);
 		}
 
-		//char name[MAXPATH];
-		QString name = QString().sprintf(PARPORTDEVNAME, lpt_control.LPPort - 1);
+		QString name = E2Profile::GetLPTDevName() + QString::number(lpt_control.LPPort);
 		//sprintf(name, PARPORTDEVNAME, lpt_control.LPPort - 1);
 		hLpt = open(name.toLatin1().constData(), O_RDWR);
 
@@ -296,7 +296,7 @@ int LPTInterface::OutControlPort(int val, int port_no)
 
 #ifdef __linux__
 
-	if (port_no >= 1 && port_no <= MAX_LPTPORTS
+	if (port_no >= 0 && port_no < MAX_LPTPORTS
 			&& port_no != lpt_control.LPPort)
 	{
 		lpt_control.LPPort = port_no;
@@ -307,8 +307,7 @@ int LPTInterface::OutControlPort(int val, int port_no)
 			close(hLpt);
 		}
 
-		//char name[MAXPATH];
-		QString name = QString().sprintf(PARPORTDEVNAME, lpt_control.LPPort - 1);
+		QString name = E2Profile::GetLPTDevName() + QString::number(lpt_control.LPPort);
 		//sprintf(name, PARPORTDEVNAME, lpt_control.LPPort - 1);
 		hLpt = open(name.toLatin1().constData(), O_RDWR);
 

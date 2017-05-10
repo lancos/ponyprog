@@ -94,8 +94,8 @@ class e2App : public cTranslator
 	//      {
 	//              return winCounter;
 	//      }
-	int TestPort(int port = 0, int open_only = 0);
-	int OpenPort(int port = 0);
+	int TestPort(int port = -1, int open_only = 0);
+	int OpenPort(int port = -1);
 	void SetInitialBus(BusIO *p)
 	{
 		if (p)
@@ -151,7 +151,7 @@ class e2App : public cTranslator
 	}
 	void SetPort(int port)
 	{
-		if (port > 0)
+		if (port >= 0)
 		{
 			port_number = port;
 		}

@@ -48,7 +48,7 @@
 //=========================>>> e2App::e2App <<<==========================
 e2App::e2App() :
 	awip(0),
-	port_number(1)
+	port_number(0)
 {
 	// Constructor
 	qDebug() << "e2App::e2App()";
@@ -155,7 +155,7 @@ void e2App::initSettings()
 
 	// Read parameters from INI file
 	SetInterfaceType((HInterfaceType) E2Profile::GetParInterfType());
-	SetPort(E2Profile::GetParPortNo());
+	SetPort(E2Profile::GetPortNumber());
 	SetPolarity(E2Profile::GetPolarityControl());
 #if 0
 	// Make sure all parameters (even default values) are written
@@ -208,7 +208,7 @@ int e2App::OpenPort(int port)
 {
 	qDebug() << "e2App::OpenPort(" << port << ")";
 
-	if (port)
+	if (port >= 0)
 	{
 		SetPort(port);
 	}

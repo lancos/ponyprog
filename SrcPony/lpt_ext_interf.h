@@ -55,17 +55,17 @@ class LptExtInterface : public BusInterface
 
   protected:             //------------------------------- protected
 
-	int InDataPort(int port_no = 0)
+	int InDataPort(int port_no = -1)
 	{
 		return io_mode ? lptio.InDataPort(port_no) : lpt.InDataPort(port_no);
 	}
 
-	int OutDataPort(int val, int port_no = 0)
+	int OutDataPort(int val, int port_no = -1)
 	{
 		return io_mode ? lptio.OutDataPort(val, port_no) : lpt.OutDataPort(val, port_no);
 	}
 
-	int OutControlPort(int val, int port_no = 0)
+	int OutControlPort(int val, int port_no = -1)
 	{
 		return io_mode ? lptio.OutControlPort(val, port_no) : lpt.OutControlPort(val, port_no);
 	}

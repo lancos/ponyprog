@@ -76,8 +76,8 @@
 Dt006Interface::Dt006Interface(bool use_io)
 	: LptExtInterface(use_io)
 {
-	Install(0);
-	old_portno = 0;
+	DeInstall();
+	old_portno = -1;
 }
 
 void Dt006Interface::SetControlLine(int res)
@@ -110,7 +110,7 @@ int Dt006Interface::Open(int port_no)
 
 	qDebug() << "Dt006Interface::Open(port=" << port_no << ") IN *** installed=" << IsInstalled();
 
-	if (IsInstalled() != port_no)
+	if (GetInstalled() != port_no)
 	{
 		if (InDataPort(port_no) < 0)
 		{
@@ -137,7 +137,7 @@ void Dt006Interface::Close()
 	{
 		LptExtInterface::Close();
 
-		Install(0);
+		DeInstall();
 	}
 
 	qDebug() << "Dt006Interface::Close() OUT *** installed=" << IsInstalled();

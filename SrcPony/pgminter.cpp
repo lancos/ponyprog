@@ -41,8 +41,8 @@ SIProgInterface::SIProgInterface()
 {
 	qDebug() << "SIProgInterface::SIProgInterface()";
 
-	Install(0);
-	old_portno = 0;
+	DeInstall();
+	old_portno = -1;
 }
 
 //SIProgInterface::~SIProgInterface()
@@ -71,7 +71,7 @@ int SIProgInterface::SetPower(int onoff)
 	if (onoff)
 	{
 		SetControlLine(1);
-		//              SetClockData();         //29/05/98 non funziona la verifica subito dopo la scrittura delle 93Cx6
+		//SetClockData();         //29/05/98 non funziona la verifica subito dopo la scrittura delle 93Cx6
 	}
 	else
 	{
@@ -88,7 +88,7 @@ int SIProgInterface::Open(int com_no)
 
 	int ret_val = OK;
 
-	if (IsInstalled() != com_no)
+	if (GetInstalled() != com_no)
 	{
 		if ((ret_val = RS232Interface::OpenSerial(com_no)) == OK)
 		{
@@ -111,10 +111,8 @@ void SIProgInterface::Close()
 	if (IsInstalled())
 	{
 		SetPower(0);
-
-		//              SetCommMask(hCom, old_mask);
-
-		Install(0);
+		//SetCommMask(hCom, old_mask);
+		DeInstall();
 		RS232Interface::CloseSerial();
 	}
 
@@ -142,7 +140,7 @@ void SIProgInterface::SetClock(int scl)
 
 	if (IsInstalled())
 	{
-		if (E2Profile::GetPolarityControl()&CLOCKINV)
+		if (E2Profile::GetPolarityControl() & CLOCKINV)
 		{
 			scl = !scl;
 		}

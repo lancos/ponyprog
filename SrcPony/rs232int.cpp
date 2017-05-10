@@ -94,14 +94,13 @@ int RS232Interface::OpenSerial(int no)
 	int ret_val = E2ERR_OPENFAILED;
 	QString devname;
 
-	if (no >= 1 && no <= 256)
+	if (no >= 0 && no < 32)
 	{
-#ifdef  WIN32
-		devname = E2Profile::GetDevName() + QString("%1").arg(no);
-#elif defined(__linux__)
-		no--;           //linux call ttyS0 --> COM1, ttyS1 --> COM2, etc..
-		devname = E2Profile::GetDevDir() + "/" + E2Profile::GetDevName() + QString("%1").arg(no);
+#ifdef WIN32
+		no++;           //linux call ttyS0 --> COM1, ttyS1 --> COM2, etc..
 #endif
+		devname = E2Profile::GetCOMDevName() + QString::number(no);
+
 		ret_val = OpenSerial(devname);
 	}
 

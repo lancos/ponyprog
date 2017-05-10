@@ -40,7 +40,8 @@ class BusInterface
 	BusInterface()
 	{
 		cmd2cmd_delay = 0;
-		installed = 0;
+		installed = -1;
+		old_portno = -1;
 	}
 	//      virtual ~BusInterface();
 
@@ -71,10 +72,7 @@ class BusInterface
 
 		qDebug() << "BusInterface::TestSave(" << port << ") IN";
 
-		if ((old_portno = installed))
-		{
-			//                      old_cpreg = cpreg;
-		}
+		old_portno = installed;
 
 		Close();
 
@@ -90,18 +88,16 @@ class BusInterface
 	{
 		qDebug() << "BusInterface::TestRestore() IN *** Inst=" << installed;
 
-		if (installed)
+		if (IsInstalled())
 		{
 			Close();
 		}
 
-		if (old_portno)
+		if (old_portno >= 0)
 		{
 			Open(old_portno);
-			//                      cpreg = old_cpreg;
+			old_portno = -1;
 		}
-
-		old_portno = 0;
 
 		qDebug() << "BusInterface::TestRestore() OUT";
 	}
@@ -142,9 +138,9 @@ class BusInterface
 		}
 	}
 
-	int IsInstalled() const
+	bool IsInstalled() const
 	{
-		return installed;
+		return (installed >= 0) ? true : false;
 	}
 
   protected:             //------------------------------- protected
@@ -152,11 +148,19 @@ class BusInterface
 	{
 		installed = val;
 	}
+	void DeInstall()
+	{
+		installed = -1;
+	}
+	int GetInstalled() const
+	{
+		return installed;
+	}
 
 	int             old_portno;             // TestSave() save the status here
 
   private:               //------------------------------- private
-	int             installed;              // 0 --> not installed, <> 0 number if the installed port
+	int             installed;              // -1 --> not installed, >= 0 number if the installed port
 	int             cmd2cmd_delay;  // <> 0 if a delay between commands is needed
 };
 

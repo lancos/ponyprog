@@ -6592,7 +6592,7 @@ void e2CmdWindow::PostInit()
 		note.exec();
 	}
 
-	if (E2Profile::GetParPortNo() < 0)
+	if (E2Profile::GetPortNumber() < 0)
 	{
 		QMessageBox note;
 		note.setIcon(QMessageBox::Information);

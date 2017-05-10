@@ -39,8 +39,6 @@
 
 class e2CmdWindow;
 
-
-
 //=========================>>> e2Dialog::e2Dialog <<<====================
 e2Dialog::e2Dialog(QWidget *bw, const QString title)
 	: QDialog(bw),
@@ -100,40 +98,47 @@ void e2Dialog::onSelectCOM(int i)
 
 void e2Dialog::onSelectNum(int i)
 {
-	if (rdbComPort->isChecked() == true)
+	if (rdbLptPort->isChecked() == true)
 	{
 		lpt_no = i;
 		port_no = lpt_no;
+		qDebug() << "LPT port " << port_no;
 	}
 	else
 	{
 		com_no = i;
 		port_no = com_no;
+		qDebug() << "COM port " << port_no;
 	}
 }
 
 void e2Dialog::onChangePort(bool b)
 {
 	QRadioButton *s = static_cast<QRadioButton *>(sender());
-	//      bool state = s->isChecked();
+	//bool state = s->isChecked();
 
 	disconnect(rdbComPort, SIGNAL(toggled(bool)), this, SLOT(onChangePort(bool)));
 	disconnect(rdbLptPort, SIGNAL(toggled(bool)), this, SLOT(onChangePort(bool)));
 
 	if (s == rdbComPort)
 	{
+		qDebug() << "COM Port selected";
+
 		cbxInterfCOM->setEnabled(b);
 		cbxInterfLPT->setEnabled(!b);
 
 		disconnect(cbxInterfNum, SIGNAL(currentIndexChanged(int)), this, SLOT(onSelectNum(int)));
 		cbxInterfNum->clear();
-		cbxInterfNum->addItems(usbList);
+		cbxInterfNum->addItems(comList);
 		connect(cbxInterfNum, SIGNAL(currentIndexChanged(int)), this, SLOT(onSelectNum(int)));
 
+		port_no = com_no;
 		cbxInterfNum->setCurrentIndex(com_no);
 	}
 	else
 	{
+		qDebug() << "LPT Port selected";
+
 		cbxInterfCOM->setEnabled(!b);
 		cbxInterfLPT->setEnabled(b);
 
@@ -142,6 +147,7 @@ void e2Dialog::onChangePort(bool b)
 		cbxInterfNum->addItems(lptList);
 		connect(cbxInterfNum, SIGNAL(currentIndexChanged(int)), this, SLOT(onSelectNum(int)));
 
+		port_no = lpt_no;
 		cbxInterfNum->setCurrentIndex(lpt_no);
 	}
 
@@ -194,7 +200,6 @@ void e2Dialog::getSettings()
 
 		cbxInterfNum->setCurrentIndex(lpt_no);
 	}
-
 
 	chkPol1->setChecked((cmdWin->GetPolarity() & RESETINV) ? 1 : 0);
 	chkPol2->setChecked((cmdWin->GetPolarity() & CLOCKINV) ? 1 : 0);
@@ -262,8 +267,10 @@ void e2Dialog::setSettings()
 
 	//Store values in the INI file
 	E2Profile::SetParInterfType(interf_type);
-	E2Profile::SetParPortNo(port_no);
+	E2Profile::SetPortNumber(port_no);
 	cmdWin->SetPolarity(cmdWin->GetPolarity());
+
+	qDebug() << "PortNo: " << port_no;
 }
 
 
@@ -293,42 +300,8 @@ void e2Dialog::setWidgetsText()
 	rdbComPort->setText(translate(STR_LBLSERIAL));
 	rdbLptPort->setText(translate(STR_LBLPARALLEL));
 
-
-#ifndef __linux__
-
-	for (int i = 1; i < 4; i++)
-	{
-		lptList << translate(STR_LBLLPT1) + QString::number(i);
-	}
-
-	for (int i = 1; i < 5; i++)
-	{
-		comList << translate(STR_LBLCOM1) + QString::number(i);
-	}
-
-	for (int i = 1; i < 9; i++)
-	{
-		usbList << translate(STR_LBLUSB1) + QString::number(i);
-	}
-
-#else
-
-	for (int i = 0; i < 3; i++)
-	{
-		lptList << translate(STR_LBLLPT1) + QString::number(i);
-	}
-
-	for (int i = 0; i < 4; i++)
-	{
-		comList << translate(STR_LBLCOM1) + QString::number(i);
-	}
-
-	for (int i = 0; i < 8; i++)
-	{
-		usbList << translate(STR_LBLUSB1) + QString::number(i);
-	}
-
-#endif
+	lptList = E2Profile::GetLPTDevList();
+	comList = E2Profile::GetCOMDevList();
 
 	lblPol1->setText(translate(STR_LBLSELPOLARITY));
 
@@ -372,7 +345,7 @@ int e2Dialog::Test(int p, int open_only) const
 	HInterfaceType old_interf = cmdWin->GetInterfaceType();
 	int test;
 
-	if (p == 0)
+	if (p < 0)
 	{
 		p = port_no;
 	}

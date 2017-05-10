@@ -42,7 +42,7 @@ typedef BOOL (__stdcall *lpIsXP64Bit)(void);
 
 // Maximum number of printer ports that would be installed on a system
 #define MAX_LPTPORTS    4
-#define MAX_COMPORTS    4
+#define MAX_COMPORTS    8
 
 struct base_len
 {

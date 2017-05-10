@@ -336,21 +336,19 @@ int PortInterface::OpenSerial(int no)
 
 	int ret_val = E2ERR_OPENFAILED;
 
-	if (no >= 1 && no <= MAX_COMPORTS)
+	if (no >= 0 && no < MAX_COMPORTS)
 	{
-		if (ser_ports[no - 1].base == 0)
+		if (ser_ports[no].base == 0)
 		{
 			DetectPorts();
 		}
 
 		//Test if port exist
-		if (ser_ports[no - 1].base > 0)
+		if (ser_ports[no].base > 0)
 		{
-#ifdef  WIN32
-			QString str;
-
+#ifdef WIN32
 			//Test if port is already in use
-			str.sprintf("COM%d", no);
+			QString str = E2Profile::GetCOMDevName() + QString::number(no + 1);
 			hCom = CreateFile((LPCWSTR)str.utf16(),
 							  GENERIC_READ | GENERIC_WRITE,
 							  0,                    // comm devices must be opened w/exclusive-access
@@ -365,7 +363,7 @@ int PortInterface::OpenSerial(int no)
 				GetCommMask(hCom, &old_mask);
 				SetCommMask(hCom, 0);
 
-				ret_val = OpenPort(&ser_ports[no - 1]);
+				ret_val = OpenPort(&ser_ports[no]);
 
 				if (ret_val == OK)
 				{
@@ -380,7 +378,7 @@ int PortInterface::OpenSerial(int no)
 			}
 
 #else   //Linux
-			ret_val = OpenPort(&ser_ports[no - 1]);
+			ret_val = OpenPort(&ser_ports[no]);
 
 			if (ret_val == OK)
 			{
@@ -434,20 +432,18 @@ int PortInterface::OpenParallel(int no)
 {
 	int ret_val = E2ERR_OPENFAILED;
 
-	if (no >= 1 && no <= MAX_LPTPORTS)
+	if (no >= 0 && no < MAX_LPTPORTS)
 	{
-		if (par_ports[no - 1].base == 0)
+		if (par_ports[no].base == 0)
 		{
 			DetectPorts();
 		}
 
 		//Test if port exist
-		if (par_ports[no - 1].base)
+		if (par_ports[no].base)
 		{
-#ifdef  WIN32
-			QString str;
-
-			str.sprintf("LPT%d", no);
+#ifdef WIN32
+			QString str = E2Profile::GetLPTDevName() + QString::number(no + 1);
 			hCom = CreateFile((LPCWSTR)str.utf16(),
 							  GENERIC_READ | GENERIC_WRITE,
 							  0,                    // comm devices must be opened w/exclusive-access
@@ -459,7 +455,7 @@ int PortInterface::OpenParallel(int no)
 
 			if (hCom != INVALID_HANDLE_VALUE)
 			{
-				ret_val = OpenPort(&par_ports[no - 1]);
+				ret_val = OpenPort(&par_ports[no]);
 
 				if (ret_val == OK)
 				{
@@ -474,7 +470,7 @@ int PortInterface::OpenParallel(int no)
 			}
 
 #else           //Linux
-			ret_val = OpenPort(&par_ports[no - 1]);
+			ret_val = OpenPort(&par_ports[no]);
 
 			if (ret_val == OK)
 			{

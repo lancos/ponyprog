@@ -118,8 +118,8 @@ AvrISPInterface::AvrISPInterface(bool use_io)
 {
 	qDebug() << "AvrISPInterface::AvrISPInterface()";
 
-	Install(0);
-	old_portno = 0;
+	DeInstall();
+	old_portno = -1;
 }
 
 void AvrISPInterface::SetControlLine(int res)
@@ -191,7 +191,7 @@ int AvrISPInterface::Open(int port_no)
 
 	int ret_val = OK;
 
-	if (IsInstalled() != port_no)
+	if (GetInstalled() != port_no)
 	{
 		if (InDataPort(port_no) < 0)
 		{
@@ -221,7 +221,7 @@ void AvrISPInterface::Close()
 	{
 		LptExtInterface::Close();
 
-		Install(0);
+		DeInstall();
 	}
 
 	qDebug() << "AvrISPInterface::Close() OUT";
@@ -337,10 +337,7 @@ int AvrISPInterface::GetDataIn()
 		}
 	}
 
-	//      else
-	//      {
 	return E2ERR_NOTINSTALLED;
-	//      }
 }
 
 
