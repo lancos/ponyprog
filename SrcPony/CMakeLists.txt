@@ -46,7 +46,7 @@ SET(PONY_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/aboutmdlg.cpp
                  ${CMAKE_CURRENT_SOURCE_DIR}/pic12bus.cpp
                  ${CMAKE_CURRENT_SOURCE_DIR}/ponyioint.cpp
                  ${CMAKE_CURRENT_SOURCE_DIR}/rs232int.cpp
-                 ${CMAKE_CURRENT_SOURCE_DIR}/sxbus.cpp
+#                  ${CMAKE_CURRENT_SOURCE_DIR}/sxbus.cpp
                  ${CMAKE_CURRENT_SOURCE_DIR}/at250bus.cpp
                  ${CMAKE_CURRENT_SOURCE_DIR}/at90sbus.cpp
                  ${CMAKE_CURRENT_SOURCE_DIR}/binfbuf.cpp
@@ -96,7 +96,7 @@ SET(PONY_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/e2app.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/picbus.h
 #                  ${CMAKE_CURRENT_SOURCE_DIR}/profile.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/sde2506.h
-                 ${CMAKE_CURRENT_SOURCE_DIR}/sxbus.h
+#                  ${CMAKE_CURRENT_SOURCE_DIR}/sxbus.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/at17xxx.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/at89sbus.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/at93cxx8.h

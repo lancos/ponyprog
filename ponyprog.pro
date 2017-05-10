@@ -20,12 +20,43 @@ MOC_DIR = $$DESTDIR/.moc
 RCC_DIR = $$DESTDIR/.qrc
 UI_DIR = $$DESTDIR/.ui
 
+APP_NAME                      = "PonyProg"
+APP_LOW_NAME                  = "ponyprog"
+APP_LOW_H_NAME                = ".ponyprog"
+APP_AUTHOR                    = "Claudio Lanconelli"
+APP_COPYRIGHT                 = "(C) 1997-2017 $$APP_AUTHOR"
+APP_VERSION                   = "3.0.0"
+APP_LONG_NAME                 = "$$APP_NAME $$APP_VERSION"
+APP_EMAIL                     = "PonyProg2000@gmail.com"
+APP_URL                       = "https://github.com/lancos/ponyprog/"
+APP_URL_ISSUES                = "https://github.com/lancos/ponyprog/issues"
+APP_URL_WIKI                  = "https://github.com/lancos/ponyprog/wiki"
+APP_USERAGENT                 = "PonyProg/$$APP_VERSION (github.com/lancos/ponyprog/)"
+# APP_DONATE_URL                = "https://goo.gl/YFVJ0j"
+
 
 # TODO: please check this
 win32:INCLUDEPATH += $$PWD/windows 
 win32:DEPENDPATH += $$PWD/windows
 
 win64:INCLUDEPATH += $$PWD/windows 
+
+# Custom definitions.
+DEFINES += APP_VERSION='"\\\"$$APP_VERSION\\\""'
+DEFINES += APP_NAME='"\\\"$$APP_NAME\\\""'
+DEFINES += APP_LOW_NAME='"\\\"$$APP_LOW_NAME\\\""'
+DEFINES += APP_LOW_H_NAME='"\\\"$$APP_LOW_H_NAME\\\""'
+DEFINES += APP_LONG_NAME='"\\\"$$APP_LONG_NAME\\\""'
+DEFINES += APP_AUTHOR='"\\\"$$APP_AUTHOR\\\""'
+DEFINES += APP_EMAIL='"\\\"$$APP_EMAIL\\\""'
+DEFINES += APP_URL='"\\\"$$APP_URL\\\""'
+DEFINES += APP_URL_ISSUES='"\\\"$$APP_URL_ISSUES\\\""'
+DEFINES += APP_URL_ISSUES_NEW='"\\\"$$APP_URL_ISSUES_NEW\\\""'
+DEFINES += APP_URL_WIKI='"\\\"$$APP_URL_WIKI\\\""'
+DEFINES += APP_USERAGENT='"\\\"$$APP_USERAGENT\\\""'
+# DEFINES += APP_DONATE_URL='"\\\"$$APP_DONATE_URL\\\""'
+DEFINES += APP_SYSTEM_NAME='"\\\"$$QMAKE_HOST.os\\\""'
+DEFINES += APP_SYSTEM_VERSION='"\\\"$$QMAKE_HOST.arch\\\""'
 
 
 # TODO: please add this for macx
@@ -224,6 +255,6 @@ CONFIG(debug, debug|release) {
 }
 
 
-QMAKE_CXXFLAGS += -std=c++11 -Wno-unused-parameter
+QMAKE_CXXFLAGS += -std=c++11 -Wno-unused-parameter -Wall
 
 
