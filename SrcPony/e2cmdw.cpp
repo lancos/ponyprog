@@ -996,7 +996,7 @@ void e2CmdWindow::addI2C8Struct()
 void e2CmdWindow::addI2C16Struct()
 {
 	menuToGroup *mTmp = new menuToGroup();
-	mTmp = new menuToGroup();
+
 	mTmp->mnu = new QMenu("I2C Bus 16bit eeprom");
 	QAction *actionRecent = menuDevice->addMenu(mTmp->mnu);
 
@@ -1026,7 +1026,6 @@ void e2CmdWindow::addI2CAT17Struct()
 {
 	menuToGroup *mTmp = new menuToGroup();
 
-	mTmp = new menuToGroup();
 	mTmp->mnu =  new QMenu("I2C Bus AT17 eeprom");
 	QAction *actionRecent = menuDevice->addMenu(mTmp->mnu);
 
@@ -1056,7 +1055,7 @@ void e2CmdWindow::addI2CAT17Struct()
 void e2CmdWindow::addMW16Struct()
 {
 	menuToGroup *mTmp = new menuToGroup();
-	mTmp = new menuToGroup();
+
 	mTmp->mnu = new QMenu("MicroWire16 eeprom");
 	QAction *actionRecent = menuDevice->addMenu(mTmp->mnu);
 
@@ -1086,7 +1085,7 @@ void e2CmdWindow::addMW16Struct()
 void e2CmdWindow::addMW8Struct()
 {
 	menuToGroup *mTmp = new menuToGroup();
-	mTmp = new menuToGroup();
+
 	mTmp->mnu = new QMenu("MicroWire8 eeprom");
 	QAction *actionRecent = menuDevice->addMenu(mTmp->mnu);
 
@@ -1116,7 +1115,7 @@ void e2CmdWindow::addMW8Struct()
 void e2CmdWindow::addSPIStruct()
 {
 	menuToGroup *mTmp = new menuToGroup();
-	mTmp = new menuToGroup();
+
 	mTmp->mnu = new QMenu("SPI eeprom");
 	QAction *actionRecent = menuDevice->addMenu(mTmp->mnu);
 
@@ -1145,7 +1144,7 @@ void e2CmdWindow::addSPIStruct()
 void e2CmdWindow::addAT90Struct()
 {
 	menuToGroup *mTmp = new menuToGroup();
-	mTmp = new menuToGroup();
+
 	mTmp->mnu = new QMenu("AVR micro");
 	QAction *actionRecent = menuDevice->addMenu(mTmp->mnu);
 
@@ -1175,7 +1174,7 @@ void e2CmdWindow::addAT90Struct()
 void e2CmdWindow::addAT89Struct()
 {
 	menuToGroup *mTmp = new menuToGroup();
-	mTmp = new menuToGroup();
+
 	mTmp->mnu = new QMenu("AT89S micro");
 	QAction *actionRecent = menuDevice->addMenu(mTmp->mnu);
 
@@ -1205,7 +1204,7 @@ void e2CmdWindow::addAT89Struct()
 void e2CmdWindow::addPIC16Struct()
 {
 	menuToGroup *mTmp = new menuToGroup();
-	mTmp = new menuToGroup();
+
 	mTmp->mnu = new QMenu("PIC 16 micro");
 	QAction *actionRecent = menuDevice->addMenu(mTmp->mnu);
 
@@ -1235,7 +1234,7 @@ void e2CmdWindow::addPIC16Struct()
 void e2CmdWindow::addPIC12Struct()
 {
 	menuToGroup *mTmp = new menuToGroup();
-	mTmp = new menuToGroup();
+
 	mTmp->mnu = new QMenu("PIC 12 micro");
 	QAction *actionRecent = menuDevice->addMenu(mTmp->mnu);
 
@@ -1264,7 +1263,7 @@ void e2CmdWindow::addPIC12Struct()
 void e2CmdWindow::addIMBUSStruct()
 {
 	menuToGroup *mTmp = new menuToGroup();
-	mTmp = new menuToGroup();
+
 	mTmp->mnu = new QMenu("ImBus eeprom");
 	QAction *actionRecent = menuDevice->addMenu(mTmp->mnu);
 
@@ -1293,7 +1292,7 @@ void e2CmdWindow::addIMBUSStruct()
 void e2CmdWindow::addSDEStruct()
 {
 	menuToGroup *mTmp = new menuToGroup();
-	mTmp = new menuToGroup();
+
 	mTmp->mnu = new QMenu("SDE2506 eeprom");
 	QAction *actionRecent = menuDevice->addMenu(mTmp->mnu);
 
@@ -1322,7 +1321,7 @@ void e2CmdWindow::addSDEStruct()
 void e2CmdWindow::addX24CStruct()
 {
 	menuToGroup *mTmp = new menuToGroup();
-	mTmp = new menuToGroup();
+
 	mTmp->mnu = new QMenu("X2444 eeprom");
 	QAction *actionRecent = menuDevice->addMenu(mTmp->mnu);
 
