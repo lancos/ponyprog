@@ -38,7 +38,7 @@
 #include "portint.h"
 
 //QSettings *E2Profile::s = new QSettings("ponyprog.ini", QSettings::IniFormat);
-QSettings *E2Profile::s = new QSettings(APPNAME);
+QSettings *E2Profile::s = new QSettings(APP_NAME);
 
 //=====>>> Costruttore <<<======
 #if 0

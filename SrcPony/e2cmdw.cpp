@@ -75,7 +75,7 @@ QVector<menuToGroup> deviceMenu;
 //==================>>> e2CmdWindow::About <<<=======================
 void e2CmdWindow::About()
 {
-	AboutModalDialog about(this, translate(STR_ABOUT) + " " + APPNAME);
+	AboutModalDialog about(this, translate(STR_ABOUT) + " " APP_NAME);
 
 	PlaySoundMsg(E2Profile::GetSoundEnabled());
 
@@ -95,7 +95,7 @@ e2CmdWindow::e2CmdWindow(QWidget *parent) :
 
 	setupUi(this);
 
-	qDebug() << "e2CmdWindow::e2CmdWindow(" << APPNAME << ")";
+	qDebug() << "e2CmdWindow::e2CmdWindow(" APP_NAME ")";
 
 	cbxEEPType = NULL;
 	cbxEEPSubType = NULL;
@@ -2624,7 +2624,7 @@ int e2CmdWindow::CmdLastFile(int index)
 	{
 		if (IsBufChanged() && awip->IsBufferValid())
 		{
-			int ret = QMessageBox::warning(this, APPNAME,
+			int ret = QMessageBox::warning(this, QString(APP_NAME),
 										   "Buffer changed. Save it before to close?",		//TODO: translate message
 										   QMessageBox::Yes | QMessageBox::No);
 
@@ -2660,7 +2660,7 @@ int e2CmdWindow::CmdReload()
 	{
 		if (IsBufChanged() && awip->IsBufferValid())
 		{
-			int ret = QMessageBox::warning(this, APPNAME,
+			int ret = QMessageBox::warning(this, QString(APP_NAME),
 										   "Buffer changed. Save it before to close?",		//TODO: translate message
 										   QMessageBox::Yes | QMessageBox::No);
 
@@ -2799,8 +2799,8 @@ int e2CmdWindow::CmdHelp()
 //====================>>> e2CmdWindow::CmdCalibration <<<====================
 int e2CmdWindow::CmdCalibration()
 {
-	int ret = QMessageBox::warning(this, APPNAME,
-								   QString(translate(STR_BUSCALIBRA1)) + QString(APPNAME) + QString(translate(STR_BUSCALIBRA2)),
+	int ret = QMessageBox::warning(this, QString(APP_NAME),
+								   translate(STR_BUSCALIBRA1) + QString(APP_NAME) + translate(STR_BUSCALIBRA2),
 								   QMessageBox::Yes | QMessageBox::No);
 
 	if (ret == QMessageBox::Yes)
@@ -2849,8 +2849,8 @@ int e2CmdWindow::CmdRead(int type)
 {
 	if (IsBufChanged() && awip->IsBufferValid() && verbose == verboseAll)
 	{
-		int ret = QMessageBox::warning(this, APPNAME,
-									   QString(translate(STR_BUFCHANGED3)),
+		int ret = QMessageBox::warning(this, QString(APP_NAME),
+									   translate(STR_BUFCHANGED3),
 									   QMessageBox::Yes | QMessageBox::No);
 
 		if (ret == QMessageBox::Yes)
@@ -2972,8 +2972,8 @@ int e2CmdWindow::CmdWrite(int type, bool verify)
 	}
 	else
 	{
-		if ((verbose != verboseAll) || (QMessageBox::warning(this, APPNAME,
-										QString(translate(STR_ASKWRITE)),
+		if ((verbose != verboseAll) || (QMessageBox::warning(this, QString(APP_NAME),
+										translate(STR_ASKWRITE),
 										QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes))
 		{
 			int rval;
@@ -4625,8 +4625,8 @@ int e2CmdWindow::CmdOpen(int type, const QString &fname, long relocation, int cl
 
 	if (IsBufChanged() && awip->IsBufferValid() && verbose == verboseAll)
 	{
-		int ret = QMessageBox::warning(this, APPNAME,
-									   QString(STR_BUFCHANGED2),
+		int ret = QMessageBox::warning(this, QString(APP_NAME),
+									   translate(STR_BUFCHANGED2),
 									   QMessageBox::Yes | QMessageBox::No);
 
 		if (ret == QMessageBox::Yes)
@@ -6261,7 +6261,7 @@ int e2CmdWindow::SaveFile(int force_select)
 
 void e2CmdWindow::SetTitle()
 {
-	QString str = APPNAME + " - " + GetFileName();
+	QString str = QString(APP_NAME " - ") + GetFileName();
 	setWindowTitle(str);
 }
 
@@ -6625,7 +6625,7 @@ void e2CmdWindow::Print()
 
 		QString str;
 
-		QString title = APPNAME + " by " + AUTHORNAME + " " + translate(STR_MSGPAGE) + " " + QString::number(++curPage);
+		QString title = QString(APP_NAME " by " APP_AUTHOR " ") + translate(STR_MSGPAGE) + " " + QString::number(++curPage);
 
 		int k = 0;
 

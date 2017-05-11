@@ -52,10 +52,10 @@ AboutModalDialog::AboutModalDialog(QWidget *bw, const QString title)
 		setStyleSheet(cmdw->getStyleSheet());
 	}
 
-	lblAbout0->setText(APPNAME + " - " + translate(STR_APPNAME_EXT)  + "<br>" + translate(STR_MSGVERSION) + "  " + APPVERSION + "  " __DATE__);
-	lblAbout1->setText("Copyright (C) " + COPYRIGHTYEAR + "  by  <a href=\"" + AUTHORMAIL + "\">" + AUTHORNAME + "</a><br><br>" +
+	lblAbout0->setText(APP_NAME " - " + translate(STR_APPNAME_EXT)  + "<br>" + translate(STR_MSGVERSION) + "  " APP_VERSION "  " __DATE__);
+	lblAbout1->setText("Copyright (C) " + COPYRIGHTYEAR + "  by  <a href=\"" APP_EMAIL "\">" APP_AUTHOR "</a><br><br>" +
 					   "Porting to Qt4/Qt5 by <a href=\"" + PORTERMAIL + "\">" + PORTERGQT + "</a><br><br>" +
-					   translate(STR_APPDOWNLOAD1) + " " + APPNAME + " " + translate(STR_APPDOWNLOAD2) + "<br>" +
+					   translate(STR_APPDOWNLOAD1) + " " APP_NAME " " + translate(STR_APPDOWNLOAD2) + "<br>" +
 					   "<a href=\"" + AUTHORWEB + "\">" + AUTHORWEB + "</a>");
 
 	chkSound->setChecked(E2Profile::GetSkipStartupDialog());
