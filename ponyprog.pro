@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT  += core gui
 
 
 # TRANSLATIONS = cnc-qt.ts 
@@ -31,7 +31,8 @@ APP_EMAIL                     = "PonyProg2000@gmail.com"
 APP_URL                       = "https://github.com/lancos/ponyprog/"
 APP_URL_ISSUES                = "https://github.com/lancos/ponyprog/issues"
 APP_URL_WIKI                  = "https://github.com/lancos/ponyprog/wiki"
-APP_USERAGENT                 = "PonyProg/$$APP_VERSION (github.com/lancos/ponyprog/)"
+APP_USERAGENT                 = "PonyProg/$$APP_VERSION (github.com/lancos/ponyprog)"
+# replace it with yours info for donates
 # APP_DONATE_URL                = "https://goo.gl/YFVJ0j"
 
 
@@ -40,6 +41,14 @@ win32:INCLUDEPATH += $$PWD/windows
 win32:DEPENDPATH += $$PWD/windows
 
 win64:INCLUDEPATH += $$PWD/windows 
+win64:DEPENDPATH += $$PWD/windows
+
+# TODO: please add this for macx
+# macx
+
+# in case of manually installations, not from repositories
+unix:INCLUDEPATH +=/usr/local/include/
+
 
 # Custom definitions.
 DEFINES += APP_VERSION='"\\\"$$APP_VERSION\\\""'
@@ -59,10 +68,47 @@ DEFINES += APP_SYSTEM_NAME='"\\\"$$QMAKE_HOST.os\\\""'
 DEFINES += APP_SYSTEM_VERSION='"\\\"$$QMAKE_HOST.arch\\\""'
 
 
-# TODO: please add this for macx
-# macx
+CODECFORTR  = UTF-8
+CODECFORSRC = UTF-8
 
-unix:INCLUDEPATH +=/usr/local/include/
+
+exists(.git) {
+  APP_REVISION = $$system(git rev-parse --short HEAD)
+}
+
+isEmpty(APP_REVISION) {
+  APP_REVISION = ""
+}
+
+DEFINES += APP_REVISION='"\\\"$$APP_REVISION\\\""'
+
+
+message(ponyprog: PonyProg version is: \"$$APP_VERSION\")
+message(ponyprog: Detected Qt version: \"$$QT_VERSION\")
+message(ponyprog: Build destination directory: \"$$DESTDIR\")
+message(ponyprog: Prefix directory: \"$$PREFIX\")
+message(ponyprog: Build revision: \"$$APP_REVISION\")
+message(ponyprog: lrelease executable name: \"$$LRELEASE_EXECUTABLE\")
+
+# to add automatically in the source code
+VERSION = $$APP_VERSION
+
+
+win32 {
+  # Makes sure we use correct subsystem on Windows.
+    !contains(QMAKE_TARGET.arch, x86_64) {
+        message(rssguard: Compilling x86 variant.)
+        QMAKE_LFLAGS_WINDOWS = /SUBSYSTEM:WINDOWS,5.01
+    } else {
+        message(rssguard: Compilling x86_64 variant.)
+        QMAKE_LFLAGS_WINDOWS = /SUBSYSTEM:WINDOWS,5.02
+    }
+    QMAKE_TARGET_COMPANY = $$APP_AUTHOR
+    QMAKE_TARGET_DESCRIPTION = $$APP_NAME
+    QMAKE_TARGET_COPYRIGHT = $$APP_COPYRIGHT
+    QMAKE_TARGET_PRODUCT = $$APP_NAME
+}
+
 
 INCLUDEPATH += qhexedit2/src
 
@@ -227,20 +273,36 @@ FORMS    += SrcPony/forms/aboutdlg.ui \
             SrcPony/forms/progoption.ui \
             SrcPony/forms/sernumcfg.ui
 
+# for next version, when script for ts files convertion is implemented
+#TRANSLATIONS += localization/qtbase_cs.ts 
 	    
 # TODO: please check this
 win32:LIBS += -L$$PWD/windows/ 
-
+win64:LIBS += -L$$PWD/windows/ 
 
 # TODO: please add this for macx
 # macx:LIBS +=
 
+# in case of manually installations, not from repositories
+unix:!macx: LIBS += -L/usr/local/lib 
 
-# unix:!macx: LIBS += -L/usr/local/lib 
 
+# # Make sure QM translations are generated.
+# lrelease.input = TRANSLATIONS
+# lrelease.output = $$OUT_PWD/translations/${QMAKE_FILE_BASE}.qm
+# lrelease.commands = $$LRELEASE_EXECUTABLE -compress ${QMAKE_FILE_IN} -qm $$OUT_PWD/translations/${QMAKE_FILE_BASE}.qm
+# lrelease.CONFIG += no_link target_predeps
+
+# # Create new "make lupdate" target.
+# lupdate.target = lupdate
+# lupdate.commands = lupdate $$shell_path($$PWD/rssguard.pro) -ts $$shell_path($$TRANSLATIONS_WO_QT)
+# 
+# QMAKE_EXTRA_TARGETS += lupdate
+# QMAKE_EXTRA_COMPILERS += lrelease
 
 
 RESOURCES += SrcPony/ponyprog.qrc
+
 
 
 CONFIG(debug, debug|release) {
@@ -251,10 +313,63 @@ CONFIG(debug, debug|release) {
     QMAKE_CXXFLAGS_RELEASE -= -O2
     QMAKE_CXXFLAGS_RELEASE += -O3
     QMAKE_CXXFLAGS_RELEASE += -fno-exceptions -fno-rtti
-    DEFINES += QT_NO_DEBUG_OUTPUT
+    DEFINES += QT_NO_DEBUG_OUTPUT QT_USE_FAST_CONCATENATION QT_USE_FAST_OPERATOR_PLUS
 }
 
 
 QMAKE_CXXFLAGS += -std=c++11 -Wno-unused-parameter -Wall
 
 
+win32 {
+    isEmpty(QTDIR):QTDIR           = "c:\Qt\4.6.2"
+    isEmpty(MINGWDIR):MINGWDIR     = "c:\MinGW"
+    isEmpty(ISCC):ISCC = "c:\Program Files\Inno Setup 5\ISCC.exe"
+    
+    win32setup.depends  = make_first
+    win32setup.target   = win32setup
+    win32setup.commands = \
+        cscript //NoLogo res\win32\sed.js \
+            s/@@VERSION@@/$${VERSION}/ \
+            s/@@QTDIR@@/$${QTDIR}/ \
+            s/@@MINGWDIR@@/$${MINGWDIR}/ \
+            < res\win32\guitone.iss.in > res\win32\guitone.iss && \
+        ( for %%f in ($$DOCFILES) do \
+            cscript //NoLogo res\win32\sed.js \
+                s/\n\$$/\r\n/ \
+                < %%f > %%f.txt ) && \
+        \"$$ISCC\" res\win32\guitone.iss && \
+        ( for %%f IN ($$DOCFILES) do del %%f.txt )
+    
+    QMAKE_EXTRA_TARGETS += win32setup
+}
+
+# Install all files on Linux.
+unix:!mac {
+  target.path = $$PREFIX/bin
+
+  misc_texts.files = $$TEXTS
+  misc_texts.path = $$quote($$PREFIX/share/$$TARGET/information/)
+
+  desktop_file.files = desktop/$${TARGET}.desktop
+  desktop_file.path = $$quote($$PREFIX/share/applications/)
+
+  translations.files = $$OUT_PWD/lang
+  translations.path = $$quote($$PREFIX/share/$$TARGET/lang/)
+
+  INSTALLS += target misc_texts \
+              desktop_file translations
+}
+
+mac {
+  CONFIG -= app_bundle
+
+  target.path = $$quote($$PREFIX/Contents/MacOs/)
+  
+  misc_texts.files = $$TEXTS
+  misc_texts.path = $$quote($$PREFIX/Contents/Resources/information/)
+
+  translations.files = $$OUT_PWD/lang
+  translations.path =  $$quote($$PREFIX/Contents/Resources/lang/)
+
+  INSTALLS += target misc_texts translations
+}
