@@ -94,7 +94,7 @@ class e2App : public cTranslator
 	//      {
 	//              return winCounter;
 	//      }
-	int TestPort(int port = -1, int open_only = 0);
+	int TestPort(int port = -1, bool open_only = false);
 	int OpenPort(int port = -1);
 	void SetInitialBus(BusIO *p)
 	{

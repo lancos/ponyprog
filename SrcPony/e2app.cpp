@@ -226,7 +226,7 @@ void e2App::ClosePort()
 }
 
 //=====================>>> e2App::TestPort <<<==============================
-int e2App::TestPort(int port, int open_only)
+int e2App::TestPort(int port, bool open_only)
 {
 	qDebug() << "e2App::TestPort(port=" << port << ", open_only=" << open_only << ")";
 

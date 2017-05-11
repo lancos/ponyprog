@@ -75,10 +75,10 @@ enum UartRegs
 
 PonyIOInterface::PonyIOInterface()
 {
-	qDebug() << "PonyIOInterface::PonyIOInterface()";
+	//qDebug() << "PonyIOInterface::PonyIOInterface()";
 
-	Install(0);
-	old_portno = 0;
+	//DeInstall();
+	//old_portno = GetInstalled();
 }
 
 PonyIOInterface::~PonyIOInterface()
@@ -174,7 +174,7 @@ void PonyIOInterface::Close()
 	{
 		SetPower(0);
 		CloseSerial();
-		Install(0);
+		DeInstall();
 	}
 
 	qDebug() << "PonyIOInterface::Close() OUT";

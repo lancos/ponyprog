@@ -53,10 +53,10 @@
 
 LinuxSysFsInterface::LinuxSysFsInterface()
 {
-	qDebug() << "LinuxSysFsInterface::LinuxSysFsInterface()";
+	//qDebug() << "LinuxSysFsInterface::LinuxSysFsInterface()";
 
-	DeInstall();
-	old_portno = -1;
+	//DeInstall();
+	//old_portno = GetInstalled();
 	fd_ctrl = fd_clock = fd_datain = fd_dataout = -1;
 }
 

@@ -39,7 +39,7 @@ class LPTIOInterface : public PortInterface
 
 	void Close()
 	{
-		lpt_port = 0;
+		lpt_port = -1;
 		PortInterface::CloseParallel();
 	}
 

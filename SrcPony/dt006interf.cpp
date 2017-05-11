@@ -76,8 +76,8 @@
 Dt006Interface::Dt006Interface(bool use_io)
 	: LptExtInterface(use_io)
 {
-	DeInstall();
-	old_portno = -1;
+	//DeInstall();
+	//old_portno = GetInstalled();
 }
 
 void Dt006Interface::SetControlLine(int res)
@@ -97,7 +97,7 @@ void Dt006Interface::SetControlLine(int res)
 int Dt006Interface::SetPower(int onoff)
 {
 	(void)onoff;
-	//      OutDataPort(0);         //No action
+	//OutDataPort(0);         //No action
 	SetControlLine(0);
 
 	return OK;
@@ -147,7 +147,7 @@ void Dt006Interface::SetDataOut(int sda)
 {
 	if (IsInstalled())
 	{
-		if (E2Profile::GetPolarityControl()&DOUTINV)
+		if (E2Profile::GetPolarityControl() & DOUTINV)
 		{
 			sda = !sda;
 		}
@@ -160,7 +160,7 @@ void Dt006Interface::SetClock(int scl)
 {
 	if (IsInstalled())
 	{
-		if (E2Profile::GetPolarityControl()&CLOCKINV)
+		if (E2Profile::GetPolarityControl() & CLOCKINV)
 		{
 			scl = !scl;
 		}

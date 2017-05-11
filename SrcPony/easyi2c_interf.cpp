@@ -76,8 +76,8 @@
 EasyI2CInterface::EasyI2CInterface(bool use_io)
 	: LptExtInterface(use_io)
 {
-	DeInstall();
-	old_portno = -1;
+	//DeInstall();
+	//old_portno = GetInstalled();
 }
 
 int EasyI2CInterface::Open(int port_no)

@@ -116,10 +116,10 @@
 AvrISPInterface::AvrISPInterface(bool use_io)
 	: LptExtInterface(use_io)
 {
-	qDebug() << "AvrISPInterface::AvrISPInterface()";
+	//qDebug() << "AvrISPInterface::AvrISPInterface()";
 
-	DeInstall();
-	old_portno = -1;
+	//DeInstall();
+	//old_portno = GetInstalled();
 }
 
 void AvrISPInterface::SetControlLine(int res)

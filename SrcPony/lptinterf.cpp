@@ -71,28 +71,10 @@ LPTInterface::LPTInterface()
 	qDebug() << "LPTInterface::LPTInterface()";
 
 	last_ctrl = last_data = 0;
-#ifdef __linux__
 	lpt_control.LPPort = -1;         //no used port
 
+#ifdef __linux__
 	hLpt = INVALID_HANDLE_VALUE;
-	/**
-	        char name[16];
-	        int val;
-	        sprintf(name, PARPORTDEVNAME, lpt_control.LPPort-1);
-	        hLpt = open(name, O_RDWR);
-	        if (hLpt != INVALID_HANDLE_VALUE)
-	        {
-	                val = ioctl(hLpt, PPCLAIM, 0);
-	                if ( val )
-	                {
-	                        qDebug() << "LPTInterface::LPTInterface() ** ppclaim = "<< val;
-	                        close(hLpt);
-	                        hLpt = INVALID_HANDLE_VALUE;
-	                }
-	        }
-	**/
-#else
-	lpt_control.LPPort = 0;         //by default use LPT1
 #endif
 }
 

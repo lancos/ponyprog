@@ -61,7 +61,7 @@ class e2Dialog : public QDialog, public cTranslator, public Ui::E2Dialog
 	void onSelectLPT(int i);
 
   private:              //--------------------------------------- private
-	int Test(int p = -1, int open_only = 0) const;
+	int Test(int p = -1, bool open_only = false) const;
 	void setWidgetsText();
 	void getSettings();
 	void setSettings();
