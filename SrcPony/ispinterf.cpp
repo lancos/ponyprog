@@ -27,7 +27,6 @@
 
 #include "errcode.h"
 #include "globals.h"
-#include "e2profil.h"
 #include "wait.h"
 
 
@@ -128,7 +127,7 @@ void AvrISPInterface::SetControlLine(int res)
 
 	if (IsInstalled())
 	{
-		if (E2Profile::GetPolarityControl() & RESETINV)
+		if (cmdWin->GetPolarity() & RESETINV)
 		{
 			res = !res;
 		}
@@ -233,7 +232,7 @@ void AvrISPInterface::SetDataOut(int sda)
 
 	if (IsInstalled())
 	{
-		if (E2Profile::GetPolarityControl()&DOUTINV)
+		if (cmdWin->GetPolarity()&DOUTINV)
 		{
 			sda = !sda;
 		}
@@ -248,7 +247,7 @@ void AvrISPInterface::SetClock(int scl)
 
 	if (IsInstalled())
 	{
-		if (E2Profile::GetPolarityControl()&CLOCKINV)
+		if (cmdWin->GetPolarity()&CLOCKINV)
 		{
 			scl = !scl;
 		}
@@ -263,7 +262,7 @@ void AvrISPInterface::SetClockData()
 
 	if (IsInstalled())
 	{
-		int control     = E2Profile::GetPolarityControl();
+		int control     = cmdWin->GetPolarity();
 		uint8_t cpreg = GetLastData();
 
 		if (control & CLOCKINV)
@@ -295,7 +294,7 @@ void AvrISPInterface::ClearClockData()
 
 	if (IsInstalled())
 	{
-		int control = E2Profile::GetPolarityControl();
+		int control = cmdWin->GetPolarity();
 		uint8_t cpreg = GetLastData();
 
 		if (control & CLOCKINV)
@@ -327,7 +326,7 @@ int AvrISPInterface::GetDataIn()
 
 	if (IsInstalled())
 	{
-		if (E2Profile::GetPolarityControl() & DININV)
+		if (cmdWin->GetPolarity() & DININV)
 		{
 			return ~ InDataPort() & RF_DIN;
 		}

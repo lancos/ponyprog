@@ -26,7 +26,6 @@
 //=========================================================================//
 
 #include "errcode.h"
-#include "e2profil.h"
 #include "wait.h"
 
 #include "e2cmdw.h"
@@ -118,7 +117,7 @@ void EasyI2CInterface::SetDataOut(int sda)
 
 	if (IsInstalled())
 	{
-		if ((E2Profile::GetPolarityControl() & DOUTINV) != 0)
+		if ((cmdWin->GetPolarity() & DOUTINV) != 0)
 		{
 			sda = !sda;
 		}
@@ -134,7 +133,7 @@ void EasyI2CInterface::SetClock(int scl)
 
 	if (IsInstalled())
 	{
-		if ((E2Profile::GetPolarityControl() & CLOCKINV) != 0)
+		if ((cmdWin->GetPolarity() & CLOCKINV) != 0)
 		{
 			scl = !scl;
 		}
@@ -150,7 +149,7 @@ void EasyI2CInterface::SetClockData()
 
 	if (IsInstalled())
 	{
-		int control     = E2Profile::GetPolarityControl();
+		int control     = cmdWin->GetPolarity();
 		uint8_t cpreg = GetLastData();
 
 		if (control & CLOCKINV)
@@ -181,7 +180,7 @@ int EasyI2CInterface::GetDataIn()
 
 	if (IsInstalled())
 	{
-		if (E2Profile::GetPolarityControl() & DININV)
+		if (cmdWin->GetPolarity() & DININV)
 		{
 			return !(InDataPort() & RF_SDA);
 		}
@@ -218,7 +217,7 @@ int EasyI2CInterface::IsClockDataUP()
 		int sda = val & RF_SDA;
 		int scl = val & RF_SCL;
 
-		if (E2Profile::GetPolarityControl() & DININV)
+		if (cmdWin->GetPolarity() & DININV)
 		{
 			sda = !sda;
 		}
@@ -239,7 +238,7 @@ int EasyI2CInterface::IsClockDataDOWN()
 		int sda = val & RF_SDA;
 		int scl = val & RF_SCL;
 
-		if (E2Profile::GetPolarityControl() & DININV)
+		if (cmdWin->GetPolarity() & DININV)
 		{
 			sda = !sda;
 		}

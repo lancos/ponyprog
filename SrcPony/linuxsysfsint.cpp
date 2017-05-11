@@ -42,13 +42,6 @@
 # include <errno.h>
 # include <unistd.h>
 # include <fcntl.h>
-#else
-# ifdef __BORLANDC__
-#   define      __inline__
-# else // MICROSOFT VC++
-#   define      __inline__ __inline
-#   define _export
-# endif
 #endif
 
 LinuxSysFsInterface::LinuxSysFsInterface()
@@ -126,7 +119,7 @@ static int gpio_open(unsigned int gpio, bool out_dir)
 				}
 
 				len = buf.length();
-				ret = write(fd, buf.toLatin1().data(), len);
+				ret = write(fd, buf.toLatin1().constData(), len);
 				close(fd);
 				rval = (ret == len) ? 0 : -1;
 			}
@@ -283,7 +276,7 @@ void LinuxSysFsInterface::SetControlLine(int res)
 
 	if (IsInstalled())
 	{
-		if (E2Profile::GetPolarityControl() & RESETINV)
+		if (cmdWin->GetPolarity() & RESETINV)
 		{
 			res = !res;
 		}
@@ -316,7 +309,7 @@ void LinuxSysFsInterface::SetDataOut(int sda)
 
 	if (IsInstalled())
 	{
-		if ((E2Profile::GetPolarityControl() & DOUTINV))
+		if ((cmdWin->GetPolarity() & DOUTINV))
 		{
 			sda = !sda;
 		}
@@ -349,7 +342,7 @@ void LinuxSysFsInterface::SetClock(int scl)
 
 	if (IsInstalled())
 	{
-		if ((E2Profile::GetPolarityControl() & CLOCKINV))
+		if ((cmdWin->GetPolarity() & CLOCKINV))
 		{
 			scl = !scl;
 		}
@@ -421,7 +414,7 @@ int LinuxSysFsInterface::GetDataIn()
 #endif
 		qDebug() << "LinuxSysFsInterface::GetDataIn()=" << val << ", fd=" << fd_datain;
 
-		if (E2Profile::GetPolarityControl() & DININV)
+		if (cmdWin->GetPolarity() & DININV)
 		{
 			return !val;
 		}

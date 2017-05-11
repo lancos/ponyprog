@@ -27,9 +27,7 @@
 
 #include "pgminter.h"
 #include "errcode.h"
-#include "e2profil.h"
 #include "e2cmdw.h"
-#include "globals.h"      //for GetPolarity
 
 #include <QDebug>
 
@@ -55,7 +53,7 @@ void SIProgInterface::SetControlLine(int res)
 {
 	if (IsInstalled())
 	{
-		if (E2Profile::GetPolarityControl() & RESETINV)
+		if (cmdWin->GetPolarity() & RESETINV)
 		{
 			res = !res;
 		}
@@ -125,7 +123,7 @@ void SIProgInterface::SetDataOut(int sda)
 
 	if (IsInstalled())
 	{
-		if (E2Profile::GetPolarityControl() & DOUTINV)
+		if (cmdWin->GetPolarity() & DOUTINV)
 		{
 			sda = !sda;
 		}
@@ -140,7 +138,7 @@ void SIProgInterface::SetClock(int scl)
 
 	if (IsInstalled())
 	{
-		if (E2Profile::GetPolarityControl() & CLOCKINV)
+		if (cmdWin->GetPolarity() & CLOCKINV)
 		{
 			scl = !scl;
 		}
@@ -155,7 +153,7 @@ void SIProgInterface::SetClockData()
 
 	if (IsInstalled())
 	{
-		int control = E2Profile::GetPolarityControl();
+		int control = cmdWin->GetPolarity();
 
 		if ((control & CLOCKINV) && (control & DOUTINV))
 		{
@@ -188,7 +186,7 @@ void SIProgInterface::ClearClockData()  //aggiunto il 06/03/98
 
 	if (IsInstalled())
 	{
-		int control = E2Profile::GetPolarityControl();
+		int control = cmdWin->GetPolarity();
 
 		if ((control & CLOCKINV) && (control & DOUTINV))
 		{
@@ -220,7 +218,7 @@ int SIProgInterface::GetDataIn()
 
 	if (IsInstalled())
 	{
-		if (E2Profile::GetPolarityControl() & DININV)
+		if (cmdWin->GetPolarity() & DININV)
 		{
 			return !GetSerialCTS();
 		}

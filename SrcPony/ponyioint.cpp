@@ -52,7 +52,7 @@
 
 # define WF_SCL (1 << WB_SCL)
 # define WF_SDA (1 << WB_SDA)
-# define RF_SCL (1 << RB_SCL)
+//# define RF_SCL (1 << RB_SCL)
 # define RF_SDA (1 << RB_SDA)
 # define RF_TEST (1 << RB_TEST)
 
@@ -98,7 +98,7 @@ void PonyIOInterface::SetControlLine(int res)
 	{
 		qDebug() << "PonyIOInterface::SetControlLine() XX";
 
-		if (E2Profile::GetPolarityControl() & RESETINV)
+		if (cmdWin->GetPolarity() & RESETINV)
 		{
 			res = !res;
 		}
@@ -186,7 +186,7 @@ void PonyIOInterface::SetDataOut(int sda)
 
 	if (IsInstalled())
 	{
-		if ((E2Profile::GetPolarityControl() & DOUTINV))
+		if ((cmdWin->GetPolarity() & DOUTINV))
 		{
 			sda = !sda;
 		}
@@ -208,7 +208,7 @@ void PonyIOInterface::SetClock(int scl)
 
 	if (IsInstalled())
 	{
-		if ((E2Profile::GetPolarityControl() & CLOCKINV))
+		if ((cmdWin->GetPolarity() & CLOCKINV))
 		{
 			scl = !scl;
 		}
@@ -230,7 +230,7 @@ void PonyIOInterface::SetClockData()
 
 	if (IsInstalled())
 	{
-		int control     = E2Profile::GetPolarityControl();
+		int control     = cmdWin->GetPolarity();
 		uint8_t cpreg = GetCPWReg();
 
 		if (control & CLOCKINV)
@@ -262,7 +262,7 @@ void PonyIOInterface::ClearClockData()
 
 	if (IsInstalled())
 	{
-		int control = E2Profile::GetPolarityControl();
+		int control = cmdWin->GetPolarity();
 		uint8_t cpreg = GetCPWReg();
 
 		if (control & CLOCKINV)
@@ -293,7 +293,7 @@ int PonyIOInterface::GetDataIn()
 
 	if (IsInstalled())
 	{
-		if (E2Profile::GetPolarityControl() & DININV)
+		if (cmdWin->GetPolarity() & DININV)
 		{
 			return ~ InPort() & RF_SDA;
 		}

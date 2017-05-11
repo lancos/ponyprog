@@ -26,7 +26,6 @@
 //=========================================================================//
 
 #include "errcode.h"
-#include "e2profil.h"
 #include "dt006interf.h"
 #include "e2cmdw.h"
 
@@ -84,7 +83,7 @@ void Dt006Interface::SetControlLine(int res)
 {
 	if (IsInstalled())
 	{
-		if (E2Profile::GetPolarityControl() & RESETINV)
+		if (cmdWin->GetPolarity() & RESETINV)
 		{
 			res = !res;
 		}
@@ -147,7 +146,7 @@ void Dt006Interface::SetDataOut(int sda)
 {
 	if (IsInstalled())
 	{
-		if (E2Profile::GetPolarityControl() & DOUTINV)
+		if (cmdWin->GetPolarity() & DOUTINV)
 		{
 			sda = !sda;
 		}
@@ -160,7 +159,7 @@ void Dt006Interface::SetClock(int scl)
 {
 	if (IsInstalled())
 	{
-		if (E2Profile::GetPolarityControl() & CLOCKINV)
+		if (cmdWin->GetPolarity() & CLOCKINV)
 		{
 			scl = !scl;
 		}
@@ -173,7 +172,7 @@ void Dt006Interface::SetClockData()
 {
 	if (IsInstalled())
 	{
-		int control     = E2Profile::GetPolarityControl();
+		int control     = cmdWin->GetPolarity();
 		uint8_t cpreg = GetLastData();
 
 		if (control & CLOCKINV)
@@ -203,7 +202,7 @@ void Dt006Interface::ClearClockData()
 {
 	if (IsInstalled())
 	{
-		int control = E2Profile::GetPolarityControl();
+		int control = cmdWin->GetPolarity();
 		uint8_t cpreg = GetLastData();
 
 		if (control & CLOCKINV)
@@ -232,7 +231,7 @@ int Dt006Interface::GetDataIn()
 {
 	if (IsInstalled())
 	{
-		if (E2Profile::GetPolarityControl() & DININV)
+		if (cmdWin->GetPolarity() & DININV)
 		{
 			return InDataPort() & RF_DIN;
 		}
