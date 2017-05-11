@@ -313,34 +313,34 @@ uint8_t E2Profile::GetPolarityControl()
 	QString rval;
 
 	res = 0;
-	rval = s->value("ClockPolarity").toString();
+	rval = s->value("ClockPolarity", "").toString();
 
 	if (rval.length())
-		if (rval != "INV")
+		if (rval == "INV")
 		{
 			res |= CLOCKINV;
 		}
 
-	rval = s->value("ResetPolarity").toString();
+	rval = s->value("ResetPolarity", "").toString();
 
 	if (rval.length())
-		if (rval != "INV")
+		if (rval == "INV")
 		{
 			res |= RESETINV;
 		}
 
-	rval = s->value("DOutPolarity").toString();
+	rval = s->value("DOutPolarity", "").toString();
 
 	if (rval.length())
-		if (rval != "INV")
+		if (rval == "INV")
 		{
 			res |= DOUTINV;
 		}
 
-	rval = s->value("DInPolarity").toString();
+	rval = s->value("DInPolarity", "").toString();
 
 	if (rval.length())
-		if (rval != "INV")
+		if (rval == "INV")
 		{
 			res |= DININV;
 		}
@@ -351,23 +351,17 @@ uint8_t E2Profile::GetPolarityControl()
 
 void E2Profile::SetPolarityControl(uint8_t polarity_control)
 {
-	int rval = OK;
+	s->setValue("ResetPolarity",
+				(polarity_control & RESETINV) ? "INV" : "TRUE");
 
-	if (rval == OK)
-		s->setValue("ResetPolarity",
-					(polarity_control & RESETINV) ? "INV" : "TRUE");
+	s->setValue("ClockPolarity",
+				(polarity_control & CLOCKINV) ? "INV" : "TRUE");
 
-	if (rval == OK)
-		s->setValue("ClockPolarity",
-					(polarity_control & CLOCKINV) ? "INV" : "TRUE");
+	s->setValue("DOutPolarity",
+				(polarity_control & DOUTINV) ? "INV" : "TRUE");
 
-	if (rval == OK)
-		s->setValue("DOutPolarity",
-					(polarity_control & DOUTINV) ? "INV" : "TRUE");
-
-	if (rval == OK)
-		s->setValue("DInPolarity",
-					(polarity_control & DININV) ? "INV" : "TRUE");
+	s->setValue("DInPolarity",
+				(polarity_control & DININV) ? "INV" : "TRUE");
 }
 
 
