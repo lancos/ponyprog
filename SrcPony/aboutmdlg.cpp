@@ -31,7 +31,7 @@
 #include <QLabel>
 #include <QPixmap>
 
-
+#include "version.h"
 #include "aboutmdlg.h"
 #include "e2profil.h"
 

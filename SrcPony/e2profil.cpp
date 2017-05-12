@@ -31,6 +31,7 @@
 #include <QStringList>
 #include <QSettings>
 
+#include "version.h"
 #include "e2profil.h"
 #include "types.h"
 #include "errcode.h"

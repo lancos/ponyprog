@@ -44,7 +44,7 @@
 
 #include "qhexedit.h"
 
-
+#include "version.h"
 #include "e2profil.h"
 #include "e2dlg.h"
 #include "e2cmdw.h"             // our header

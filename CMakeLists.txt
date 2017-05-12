@@ -105,6 +105,9 @@ SET(VERSION ${PONYPROG_VERSION})
 
 # 
 SET(PONYPROG_VERSION "3.0.0")
+SET(PANYPROG_AUTHOR "Claudio Lanconelli")
+SET(PROJECT_EMAIL "PonyProg2000@gmail.com")
+SET(APP_NAME "PonyProg")
 
 EXECUTE_PROCESS (
       COMMAND date +"%d %b %Y"
