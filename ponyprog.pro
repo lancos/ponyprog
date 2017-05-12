@@ -96,17 +96,17 @@ VERSION = $$APP_VERSION
 
 win32 {
   # Makes sure we use correct subsystem on Windows.
-    !contains(QMAKE_TARGET.arch, x86_64) {
-        message(rssguard: Compilling x86 variant.)
-        QMAKE_LFLAGS_WINDOWS = /SUBSYSTEM:WINDOWS,5.01
-    } else {
-        message(rssguard: Compilling x86_64 variant.)
-        QMAKE_LFLAGS_WINDOWS = /SUBSYSTEM:WINDOWS,5.02
-    }
-    QMAKE_TARGET_COMPANY = $$APP_AUTHOR
-    QMAKE_TARGET_DESCRIPTION = $$APP_NAME
-    QMAKE_TARGET_COPYRIGHT = $$APP_COPYRIGHT
-    QMAKE_TARGET_PRODUCT = $$APP_NAME
+  #  !contains(QMAKE_TARGET.arch, x86_64) {
+  #      message(rssguard: Compilling x86 variant.)
+  #      QMAKE_LFLAGS_WINDOWS = /SUBSYSTEM:WINDOWS,5.01
+  #  } else {
+  #      message(rssguard: Compilling x86_64 variant.)
+  #      QMAKE_LFLAGS_WINDOWS = /SUBSYSTEM:WINDOWS,5.02
+  #  }
+  #  QMAKE_TARGET_COMPANY = $$APP_AUTHOR
+  #  QMAKE_TARGET_DESCRIPTION = $$APP_NAME
+  #  QMAKE_TARGET_COPYRIGHT = $$APP_COPYRIGHT
+  #  QMAKE_TARGET_PRODUCT = $$APP_NAME
 }
 
 
@@ -277,8 +277,8 @@ FORMS    += SrcPony/forms/aboutdlg.ui \
 #TRANSLATIONS += localization/qtbase_cs.ts 
 	    
 # TODO: please check this
-win32:LIBS += -L$$PWD/windows/ 
-win64:LIBS += -L$$PWD/windows/ 
+#win32:LIBS += -L$$PWD/windows/
+#win64:LIBS += -L$$PWD/windows/
 
 # TODO: please add this for macx
 # macx:LIBS +=
@@ -316,13 +316,13 @@ CONFIG(debug, debug|release) {
     DEFINES += QT_NO_DEBUG_OUTPUT QT_USE_FAST_CONCATENATION QT_USE_FAST_OPERATOR_PLUS
 }
 
-
-QMAKE_CXXFLAGS += -std=c++11 -Wno-unused-parameter -Wall
+# -Wall are already on the command line (where does it come from?)
+QMAKE_CXXFLAGS += -std=c++11 -Wno-unused-parameter
 
 
 win32 {
-    isEmpty(QTDIR):QTDIR           = "c:\Qt\4.6.2"
-    isEmpty(MINGWDIR):MINGWDIR     = "c:\MinGW"
+    isEmpty(QTDIR):QTDIR           = "c:\Qt\5.8.0"
+    isEmpty(MINGWDIR):MINGWDIR     = "C:\Qt\Qt5.8.0\Tools\mingw530_32"
     isEmpty(ISCC):ISCC = "c:\Program Files\Inno Setup 5\ISCC.exe"
     
     win32setup.depends  = make_first
