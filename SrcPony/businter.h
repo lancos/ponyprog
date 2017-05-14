@@ -102,14 +102,12 @@ class BusInterface
 		qDebug() << "BusInterface::TestRestore() OUT";
 	}
 
-	virtual int SetPower(int onoff)
+	virtual int SetPower(bool onoff)
 	{
-		(void)onoff;
 		return OK;
 	}
 	virtual void SetControlLine(int res = 1)
 	{
-		(void)res;
 	}
 
 	virtual void SetDataOut(int sda = 1) = 0;

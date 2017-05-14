@@ -64,7 +64,7 @@ void SIProgInterface::SetControlLine(int res)
 
 //La alimentazione e` data dalle tre linee: SCL, SDA, RESET.
 // Se una qualsiasi di queste tre linee e` a 1 vi e` alimentazione
-int SIProgInterface::SetPower(int onoff)
+int SIProgInterface::SetPower(bool onoff)
 {
 	if (onoff)
 	{
@@ -91,7 +91,7 @@ int SIProgInterface::Open(int com_no)
 		if ((ret_val = RS232Interface::OpenSerial(com_no)) == OK)
 		{
 			//      SetSerialEventMask(0);
-			//SetPower(1);  //08/02/1998 -- ora diamo alimentazione prima di ogni operazione e la togliamo subito dopo
+			//SetPower(true);  //08/02/1998 -- ora diamo alimentazione prima di ogni operazione e la togliamo subito dopo
 
 			Install(com_no);
 		}
@@ -108,7 +108,7 @@ void SIProgInterface::Close()
 
 	if (IsInstalled())
 	{
-		SetPower(0);
+		SetPower(false);
 		//SetCommMask(hCom, old_mask);
 		DeInstall();
 		RS232Interface::CloseSerial();

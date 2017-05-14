@@ -129,7 +129,7 @@ void PonyIOInterface::SetControlLine(int res)
 
 //Note that with PonyProg SI interface 3 lines provide the power:
 //  SCL, SDA, RESET. If any of these lines are on (>5V) the power is ON
-int PonyIOInterface::SetPower(int onoff)
+int PonyIOInterface::SetPower(bool onoff)
 {
 	qDebug() << "PonyIOInterface::SetPower(" << onoff << ")";
 
@@ -172,7 +172,7 @@ void PonyIOInterface::Close()
 
 	if (IsInstalled())
 	{
-		SetPower(0);
+		SetPower(false);
 		CloseSerial();
 		DeInstall();
 	}

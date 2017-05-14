@@ -142,7 +142,7 @@ void AvrISPInterface::SetControlLine(int res)
 }
 
 
-int AvrISPInterface::SetPower(int onoff)
+int AvrISPInterface::SetPower(bool onoff)
 {
 #ifdef  AVRISP_MAPPED
 

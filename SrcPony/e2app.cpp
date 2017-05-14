@@ -255,7 +255,7 @@ int e2App::OpenBus(BusIO *p)
 
 	if (rv == OK)
 	{
-		rv = busIntp->SetPower(1);
+		rv = busIntp->SetPower(true);
 
 		qDebug() << "e2App::OpenBus() ** SetPower";
 
@@ -278,7 +278,7 @@ void e2App::SleepBus()
 	qDebug() << "e2App::CloseBus() iniBus=" << (hex) << iniBus << (dec);
 
 	iniBus->WaitMsec(5);    // 08/04/98 -- hold time dell'alimentazione
-	busIntp->SetPower(0);
+	busIntp->SetPower(false);
 	iniBus->Close();                // 28/09/98 -- richiude la porta dopo averla usata
 }
 

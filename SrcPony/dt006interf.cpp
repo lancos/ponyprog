@@ -93,9 +93,8 @@ void Dt006Interface::SetControlLine(int res)
 }
 
 
-int Dt006Interface::SetPower(int onoff)
+int Dt006Interface::SetPower(bool onoff)
 {
-	(void)onoff;
 	//OutDataPort(0);         //No action
 	SetControlLine(0);
 

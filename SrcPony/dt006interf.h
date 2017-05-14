@@ -49,7 +49,7 @@ class Dt006Interface : public LptExtInterface
 
 	virtual int TestPort(int port);
 
-	int SetPower(int onoff);
+	int SetPower(bool onoff);
 	void SetControlLine(int res = 1);
 
   protected:             //------------------------------- protected

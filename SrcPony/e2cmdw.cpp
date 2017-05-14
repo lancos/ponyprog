@@ -1804,6 +1804,15 @@ void e2CmdWindow::createFontSizeMenu()
 	connect(fsizeGroup, SIGNAL(triggered(QAction *)), this, SLOT(selectFontSize(QAction *)));
 }
 
+void e2CmdWindow::onDtaChanged()
+{
+	if (awip)
+	{
+		awip->BufChanged(e2HexEdit->isModified());
+		UpdateStatusBar();
+	}
+}
+
 /**
  * @brief create all SIGNAL -> SLOT connections
  * EK 2017
@@ -1822,7 +1831,7 @@ void e2CmdWindow::createSignalSlotConnections()
 	// not implemented are: cut/copy/paste buttons
 
 	// font size
-	connect(fsizeGroup, SIGNAL(triggered()), this, SLOT(selectFontSize()));
+	//connect(fsizeGroup, SIGNAL(triggered()), this, SLOT(selectFontSize()));
 
 	// new
 	connect(actionNew, SIGNAL(triggered()), this, SLOT(onNew()));
@@ -1983,7 +1992,7 @@ void e2CmdWindow::createSignalSlotConnections()
 	connect(actiontEEPType, SIGNAL(triggered()), this, SLOT(onSelectEEPType(int val)));
 	connect(actiontEEPSubtype, SIGNAL(triggered()), this, SLOT(onEEPSubType(int val)));
 #endif
-	connect(actionCalibration, SIGNAL(triggered()), this, SLOT(onReadCalibration(int idx)));
+	//connect(actionCalibration, SIGNAL(triggered()), this, SLOT(onReadCalibration(int idx)));
 	// interface setup
 	connect(actionInterfaceSetup, SIGNAL(triggered()), this, SLOT(onInterfSetup()));
 	//      connect(actiontWriteCalibration, SIGNAL(triggered()), this, SLOT( onWriteCalibration(int idx)));
@@ -2006,6 +2015,26 @@ void e2CmdWindow::onInterfSetup()
 		}
 	}
 }
+
+#if 0
+void e2CmdWindow::dragEnterEvent(QDragEnterEvent *event)
+{
+	if (event->mimeData()->hasUrls())
+		event->accept();
+}
+
+
+void e2CmdWindow::dropEvent(QDropEvent *event)
+{
+	if (event->mimeData()->hasUrls())
+	{
+		QList<QUrl> urls = event->mimeData()->urls();
+		QString filePath = urls.at(0).toLocalFile();
+		loadFile(filePath);
+		event->accept();
+	}
+}
+#endif
 
 
 void e2CmdWindow::onGetInfo()
@@ -5999,27 +6028,23 @@ int e2CmdWindow::OpenScript(const QString &file)
 }
 
 
-HIDDEN QStringList filter = QStringList({ "*.e2p",   "*.hex",   "*.mot",    "*.bin", "*.csm", "*.rom", "*.eep", "*" });
-HIDDEN QStringList filterInfo = QStringList({ "E2P (*.e2p)",   "Intel (*.hex)",   "S-rec (*.mot)",    "Raw (*.bin)", "CSM (*.csm)", "(*.rom)", "(*.eep)", "*" });
+HIDDEN QStringList filter = QStringList({ "*.e2p", "*.hex", "*.mot", "*.bin", "*.csm", "*.rom", "*.eep", "*" });
+//                                         ^^^^^    ^^^^^    ^^^^^    ^^^^^    ^^^^^
+//                                       form E2P  form Intel  form S-rec, form Binary (Raw), CSM,    gli altri non aggiungono ulteriori formati
+HIDDEN QStringList filterInfo = QStringList({ "E2P (*.e2p)", "Intel (*.hex)", "S-rec (*.mot)", "Raw (*.bin)", "CSM (*.csm)", "(*.rom)", "(*.eep)", "*" });
 
-//                         ^^^^^      ^^^^^      ^^^^^       ^^^^^                ^^^^^^^
-//                                       form E2P  form Intel  form S-rec, form Binary (Raw),    CSM,    gli altri non aggiungono ulteriori formati
 HIDDEN int filterIndex = 0;
 
 
 
 HIDDEN void AddExtension(QString &name)
 {
-	int p = name.indexOf('.');  //look for extension
+	int p = name.lastIndexOf('.');  //look for extension
 
-	if (p < 0 || (name.mid(p) != filter.at(filterIndex)))
+	if (p < 0 || (name.mid(p) != filter.at(filterIndex).mid(1)))
 	{
-		//not found
-		name += filter.at(filterIndex);
-		//              if ( name.length() + strlen(filter[filterIndex] + 1) < maxlen )
-		//              {
-		//                      strcat(name, filter[filterIndex] + 1);        //append extension
-		//              }
+		//if not found append extension
+		name += filter.at(filterIndex).mid(1);
 	}
 }
 
@@ -6140,6 +6165,16 @@ int e2CmdWindow::OpenFile(const QString &file)
 	return rval;
 }
 
+int e2CmdWindow::filterNameToIndex(const QString &s, const QStringList &lst)
+{
+	for (int i = 0; i < lst.count(); i++)
+	{
+		if (lst.at(i) == s)
+			return i;
+	}
+
+	return -1;
+}
 
 QString e2CmdWindow::convertFilterListToString(const QStringList &lst)
 {
@@ -6180,6 +6215,7 @@ int e2CmdWindow::SaveFile(int force_select)
 			note.setIcon(QMessageBox::Critical);
 			note.setWindowTitle("Save");
 			note.setText(str);
+			//note.setParent(this);
 			note.exec();
 		}
 	}
@@ -6207,10 +6243,10 @@ int e2CmdWindow::SaveFile(int force_select)
 
 		filterIndex = (int)awip->GetFileBuf(); // ???
 
-
 		QString fltr = convertFilterListToString(filterInfo);
+		QString sFilter = filterInfo.at(filterIndex);
 		//fn = awip->GetFileName();	//should be the filename proposed by the dialog by default
-		QString fn = QFileDialog::getSaveFileName(this, translate(STR_MSGFILESAVEAS), QDir::homePath(), fltr);
+		QString fn = QFileDialog::getSaveFileName(this, s, QDir::homePath(), fltr, &sFilter);
 
 		if (fn.length())
 		{
@@ -6218,8 +6254,12 @@ int e2CmdWindow::SaveFile(int force_select)
 
 			//Save the old name in case some error occurs, so it can restore it
 			QString oldname = awip->GetFileName();
-
-			awip->SetFileBuf((enum FileType)filterIndex);   //????? Ci vorrebbe un controllo separato dall'estensione sul tipo di file (combobox)
+			int fidx = filterNameToIndex(sFilter, filterInfo);
+			if (fidx > -1)
+			{
+				filterIndex = fidx;
+				awip->SetFileBuf((enum FileType)filterIndex);   //????? Ci vorrebbe un controllo separato dall'estensione sul tipo di file (combobox)
+			}
 			E2Profile::SetDefaultFileType(awip->GetFileBuf());
 			awip->SetFileName(fn);
 

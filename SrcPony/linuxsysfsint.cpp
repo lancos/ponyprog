@@ -193,7 +193,7 @@ static int gpio_close(unsigned int gpio, int fd)
 }
 #endif
 
-int LinuxSysFsInterface::SetPower(int onoff)
+int LinuxSysFsInterface::SetPower(bool onoff)
 {
 	qDebug() << "LinuxSysFsInterface::SetPower(" << onoff << ")";
 	return OK;
@@ -261,7 +261,7 @@ void LinuxSysFsInterface::Close()
 
 	if (IsInstalled())
 	{
-		SetPower(0);
+		SetPower(false);
 		DeInitPins();
 		DeInstall();
 	}

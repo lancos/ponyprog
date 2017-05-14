@@ -53,7 +53,7 @@ class SIProgInterface : public BusInterface, public RS232Interface
 	//      int TestSave(int port);
 	//      void TestRestore();
 
-	int SetPower(int onoff);
+	int SetPower(bool onoff);
 	void SetControlLine(int res = 1);
 
   protected:             //------------------------------- protected

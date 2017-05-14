@@ -51,7 +51,7 @@ class PonyIOInterface : public BusInterface, public PortInterface
 
 	virtual int TestPort(int port);
 
-	int SetPower(int onoff);
+	int SetPower(bool onoff);
 	void SetControlLine(int res = 1);
 
   protected:             //------------------------------- protected

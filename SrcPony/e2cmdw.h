@@ -240,6 +240,7 @@ class e2CmdWindow : public QMainWindow, public e2App, public Ui::MainWindow
 
 	void onSelectScript(QAction *a);
 	void onSelectFile(QAction *a);
+	void onDtaChanged();
 
   public:
 	int CmdHelp();
@@ -308,6 +309,7 @@ class e2CmdWindow : public QMainWindow, public e2App, public Ui::MainWindow
   private:              //--------------------------------------- private
 	void createSignalSlotConnections();
 	QString convertFilterListToString(const QStringList &lst);
+	int filterNameToIndex(const QString &s, const QStringList &lst);
 
 	void doProgress(const QString &text);
 
