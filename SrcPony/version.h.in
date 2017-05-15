@@ -1,11 +1,25 @@
 #ifndef PONYPROGVERSION_H
 #define PONYPROGVERSION_H
 
+#ifndef APP_VERSION
 #define APP_VERSION  "@PONYPROG_VERSION@"
+#endif
+
+#ifndef APP_AUTHOR
 #define APP_AUTHOR  "@PONYPROG_AUTHOR@"
+#endif
+
+#ifndef PROGRAM_DATE
 #define PROGRAM_DATE  "@BUILD_DATE@"
+#endif
+
+#ifndef APP_NAME
 #define APP_NAME  "@PROJECT_NAME@"
+#endif
+
+#ifndef APP_EMAIL
 #define APP_EMAIL  "@PROJECT_EMAIL@"
+#endif
 
 #define USE_QT_VERSION  @USE_QT_VERSION@
 

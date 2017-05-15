@@ -94,6 +94,10 @@ message(ponyprog: lrelease executable name: \"$$LRELEASE_EXECUTABLE\")
 VERSION = $$APP_VERSION
 
 
+VERSION_FILE = $$OUT_PWD/SrcPony/version.h
+# write_file...
+
+
 win32 {
   # Makes sure we use correct subsystem on Windows.
   #  !contains(QMAKE_TARGET.arch, x86_64) {
