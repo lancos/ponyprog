@@ -326,17 +326,17 @@ QMAKE_CXXFLAGS += -std=c++11 -Wno-unused-parameter
 # EK 2017 
 # i hope, it's right...
 win32 {
-    isEmpty(QTDIR):QTDIR           = "c:\Qt\5.8.0"
-    isEmpty(MINGWDIR):MINGWDIR     = "C:\Qt\Qt5.8.0\Tools\mingw530_32"
+    isEmpty(QTDIR):QTDIR = "c:\Qt\5.8.0"
+    isEmpty(MINGWDIR):MINGWDIR = "C:\Qt\Qt5.8.0\Tools\mingw530_32"
     isEmpty(ISCC):ISCC = "c:\Program Files\Inno Setup 5\ISCC.exe"
-    
+
     win32setup.depends  = make_first
     win32setup.target   = win32setup
-    win32setup.commands = \"$$ISCC /DAPPNAME=$$APP_NAME \
+    win32setup.commands = $$ISCC /DAPPNAME=$$APP_NAME \
                        /DAPPVERSION=$$APP_VERSION \
-                       /DAPPCOPYRIGHT=$$APP_COPYRIGHT \
-                       distribution\innosetup\ponyprog.iss \"
-    
+                       /DAPPCOPYRIGHT=\"$$APP_COPYRIGHT\" \
+                       $$PWD/distribution/innosetup/ponyprog.iss
+
     QMAKE_EXTRA_TARGETS += win32setup
 }
 
