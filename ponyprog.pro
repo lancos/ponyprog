@@ -319,7 +319,8 @@ CONFIG(debug, debug|release) {
 # -Wall are already on the command line (where does it come from?)
 QMAKE_CXXFLAGS += -std=c++11 -Wno-unused-parameter
 
-
+# EK 2017 
+# i hope, it's right...
 win32 {
     isEmpty(QTDIR):QTDIR           = "c:\Qt\5.8.0"
     isEmpty(MINGWDIR):MINGWDIR     = "C:\Qt\Qt5.8.0\Tools\mingw530_32"
@@ -327,21 +328,14 @@ win32 {
     
     win32setup.depends  = make_first
     win32setup.target   = win32setup
-    win32setup.commands = \
-        cscript //NoLogo res\win32\sed.js \
-            s/@@VERSION@@/$${VERSION}/ \
-            s/@@QTDIR@@/$${QTDIR}/ \
-            s/@@MINGWDIR@@/$${MINGWDIR}/ \
-            < res\win32\guitone.iss.in > res\win32\guitone.iss && \
-        ( for %%f in ($$DOCFILES) do \
-            cscript //NoLogo res\win32\sed.js \
-                s/\n\$$/\r\n/ \
-                < %%f > %%f.txt ) && \
-        \"$$ISCC\" res\win32\guitone.iss && \
-        ( for %%f IN ($$DOCFILES) do del %%f.txt )
+    win32setup.commands = \"$$ISCC /DAPPNAME=$$APP_NAME \
+                       /DAPPVERSION=$$APP_VERSION \
+                       /DAPPCOPYRIGHT=$$APP_COPYRIGHT \
+                       distribution\innosetup\ponyprog.iss \"
     
     QMAKE_EXTRA_TARGETS += win32setup
 }
+
 
 # Install all files on Linux.
 unix:!mac {

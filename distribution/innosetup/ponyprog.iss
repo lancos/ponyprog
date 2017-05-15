@@ -1,14 +1,15 @@
 ; PonyProg2000 setup script.
 ; Copyright by Claudio Lanconelli 1999-2007
 
+
 [Setup]
-AppName=PonyProg2000
+AppName={#APPNAME}
 AppPublisher=LancOS 
 AppPublisherURL=http://www.LancOS.com/
 AppUpdatesURL=http://ponyprog.sourceforge.net
-AppVersion=2.08d
+AppVersion={#APPVERSION}
 AppVerName=PonyProg2000 v2.08d
-AppCopyright=Copyright � 1997-2013 by Claudio Lanconelli
+AppCopyright={#APPCOPYRIGHT}
 DefaultDirName={pf}\PonyProg2000
 DefaultGroupName=PonyProg
 Compression=lzma2/max
