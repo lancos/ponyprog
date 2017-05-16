@@ -20,15 +20,13 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>30</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
      <string>Fi&amp;le</string>
     </property>
-    <addaction name="actionNew"/>
-    <addaction name="separator"/>
     <addaction name="actionOpen"/>
     <addaction name="actionOpenFlash"/>
     <addaction name="actionOpenEep"/>
@@ -41,7 +39,6 @@
     <addaction name="actionReload"/>
     <addaction name="actionPrint"/>
     <addaction name="separator"/>
-    <addaction name="actionClose"/>
     <addaction name="actionExit"/>
    </widget>
    <widget class="QMenu" name="menuDevice">
@@ -198,15 +195,6 @@
    </attribute>
    <addaction name="actionEditNote"/>
   </widget>
-  <action name="actionNew">
-   <property name="icon">
-    <iconset resource="../ponyprog.qrc">
-     <normaloff>:/icons/new.png</normaloff>:/icons/new.png</iconset>
-   </property>
-   <property name="text">
-    <string>&amp;New Window</string>
-   </property>
-  </action>
   <action name="actionOpen">
    <property name="icon">
     <iconset resource="../ponyprog.qrc">
@@ -455,11 +443,6 @@
   <action name="actionOscOptions">
    <property name="text">
     <string>&amp;Osc. Calibration Options...</string>
-   </property>
-  </action>
-  <action name="actionClose">
-   <property name="text">
-    <string>&amp;Close</string>
    </property>
   </action>
   <action name="actionExit">

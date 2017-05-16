@@ -680,7 +680,7 @@ void e2CmdWindow::setLang(QAction *mnu)
 void e2CmdWindow::translateGUI()
 {
 	menuFile->setTitle(translate(STR_MENUFILE));
-	actionNew->setText(translate(STR_NEWWIN)); // EK 2017 ???
+// 	actionNew->setText(translate(STR_NEWWIN)); // EK 2017 ???
 	// TODO translation for last files
 	actionOpen->setText(translate(STR_OPEN));
 	actionOpenFlash->setText(translate(STR_OPENFLASH));
@@ -691,7 +691,7 @@ void e2CmdWindow::translateGUI()
 	actionSaveEepAs->setText(translate(STR_SAVEDATA));
 	actionReload->setText(translate(STR_RELOAD));
 	actionPrint->setText(translate(STR_PRINT));
-	actionClose->setText(translate(STR_CLOSE));
+// 	actionClose->setText(translate(STR_CLOSE));
 	actionExit->setText(translate(STR_EXIT));
 
 	menuDevice->setTitle(translate(STR_MENUDEVICE)); // for all device and chip id's
@@ -1834,7 +1834,7 @@ void e2CmdWindow::createSignalSlotConnections()
 	//connect(fsizeGroup, SIGNAL(triggered()), this, SLOT(selectFontSize()));
 
 	// new
-	connect(actionNew, SIGNAL(triggered()), this, SLOT(onNew()));
+// 	connect(actionNew, SIGNAL(triggered()), this, SLOT(onNew()));
 
 	// open all
 	connect(actionOpen, SIGNAL(triggered()), this, SLOT(onOpen()));
@@ -1870,7 +1870,7 @@ void e2CmdWindow::createSignalSlotConnections()
 	connect(actionPrint, SIGNAL(triggered()), this, SLOT(onPrint()));
 
 	// close
-	connect(actionClose, SIGNAL(triggered()), this, SLOT(onClose()));
+// 	connect(actionClose, SIGNAL(triggered()), this, SLOT(onClose()));
 
 	// exit
 	connect(actionExit, SIGNAL(triggered()), this, SLOT(onExit()));
