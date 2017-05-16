@@ -6,21 +6,21 @@
 #endif
 
 #ifndef APP_AUTHOR
-#define APP_AUTHOR  ""
+#define APP_AUTHOR  "Claudio Lanconelli"
 #endif
 
 #ifndef PROGRAM_DATE
-#define PROGRAM_DATE  "15 Mai 2017"
+#define PROGRAM_DATE  "16-05-2017"
 #endif
 
 #ifndef APP_NAME
-#define APP_NAME  "ponyprog"
+#define APP_NAME  "PonyProg"
 #endif
 
 #ifndef APP_EMAIL
 #define APP_EMAIL  "PonyProg2000@gmail.com"
 #endif
 
-#define USE_QT_VERSION  4
+#define USE_QT_VERSION  
 
 #endif

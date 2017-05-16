@@ -26,6 +26,7 @@ APP_LOW_H_NAME                = ".ponyprog"
 APP_AUTHOR                    = "Claudio Lanconelli"
 APP_COPYRIGHT                 = "(C) 1997-2017 $$APP_AUTHOR"
 APP_VERSION                   = "3.0.0"
+# APP_BUILD_DATE                = $$_DATE_
 APP_LONG_NAME                 = "$$APP_NAME $$APP_VERSION"
 APP_EMAIL                     = "PonyProg2000@gmail.com"
 APP_URL                       = "https://github.com/lancos/ponyprog/"
@@ -34,6 +35,14 @@ APP_URL_WIKI                  = "https://github.com/lancos/ponyprog/wiki"
 APP_USERAGENT                 = "PonyProg/$$APP_VERSION (github.com/lancos/ponyprog)"
 # replace it with yours info for donates
 # APP_DONATE_URL                = "https://goo.gl/YFVJ0j"
+
+win32 {
+    APP_BUILD_DATE = $$system(date /t)
+}
+else
+{
+    APP_BUILD_DATE = $$system(date +%d-%m-%Y)
+}
 
 
 # TODO: please check this
@@ -51,21 +60,21 @@ unix:INCLUDEPATH +=/usr/local/include/
 
 
 # Custom definitions.
-DEFINES += APP_VERSION='"\\\"$$APP_VERSION\\\""'
-DEFINES += APP_NAME='"\\\"$$APP_NAME\\\""'
-DEFINES += APP_LOW_NAME='"\\\"$$APP_LOW_NAME\\\""'
-DEFINES += APP_LOW_H_NAME='"\\\"$$APP_LOW_H_NAME\\\""'
-DEFINES += APP_LONG_NAME='"\\\"$$APP_LONG_NAME\\\""'
-DEFINES += APP_AUTHOR='"\\\"$$APP_AUTHOR\\\""'
-DEFINES += APP_EMAIL='"\\\"$$APP_EMAIL\\\""'
-DEFINES += APP_URL='"\\\"$$APP_URL\\\""'
-DEFINES += APP_URL_ISSUES='"\\\"$$APP_URL_ISSUES\\\""'
-DEFINES += APP_URL_ISSUES_NEW='"\\\"$$APP_URL_ISSUES_NEW\\\""'
-DEFINES += APP_URL_WIKI='"\\\"$$APP_URL_WIKI\\\""'
-DEFINES += APP_USERAGENT='"\\\"$$APP_USERAGENT\\\""'
-# DEFINES += APP_DONATE_URL='"\\\"$$APP_DONATE_URL\\\""'
-DEFINES += APP_SYSTEM_NAME='"\\\"$$QMAKE_HOST.os\\\""'
-DEFINES += APP_SYSTEM_VERSION='"\\\"$$QMAKE_HOST.arch\\\""'
+# DEFINES += APP_VERSION='"\\\"$$APP_VERSION\\\""'
+# DEFINES += APP_NAME='"\\\"$$APP_NAME\\\""'
+# DEFINES += APP_LOW_NAME='"\\\"$$APP_LOW_NAME\\\""'
+# DEFINES += APP_LOW_H_NAME='"\\\"$$APP_LOW_H_NAME\\\""'
+# DEFINES += APP_LONG_NAME='"\\\"$$APP_LONG_NAME\\\""'
+# DEFINES += APP_AUTHOR='"\\\"$$APP_AUTHOR\\\""'
+# DEFINES += APP_EMAIL='"\\\"$$APP_EMAIL\\\""'
+# DEFINES += APP_URL='"\\\"$$APP_URL\\\""'
+# DEFINES += APP_URL_ISSUES='"\\\"$$APP_URL_ISSUES\\\""'
+# DEFINES += APP_URL_ISSUES_NEW='"\\\"$$APP_URL_ISSUES_NEW\\\""'
+# DEFINES += APP_URL_WIKI='"\\\"$$APP_URL_WIKI\\\""'
+# DEFINES += APP_USERAGENT='"\\\"$$APP_USERAGENT\\\""'
+# # DEFINES += APP_DONATE_URL='"\\\"$$APP_DONATE_URL\\\""'
+# DEFINES += APP_SYSTEM_NAME='"\\\"$$QMAKE_HOST.os\\\""'
+# DEFINES += APP_SYSTEM_VERSION='"\\\"$$QMAKE_HOST.arch\\\""'
 
 
 CODECFORTR  = UTF-8
@@ -80,7 +89,7 @@ isEmpty(APP_REVISION) {
   APP_REVISION = ""
 }
 
-DEFINES += APP_REVISION='"\\\"$$APP_REVISION\\\""'
+# DEFINES += APP_REVISION='"\\\"$$APP_REVISION\\\""'
 
 
 message(ponyprog: PonyProg version is: \"$$APP_VERSION\")
@@ -94,7 +103,12 @@ message(ponyprog: lrelease executable name: \"$$LRELEASE_EXECUTABLE\")
 VERSION = $$APP_VERSION
 
 
-VERSION_FILE = $$OUT_PWD/SrcPony/version.h
+versionconfig.input = $$OUT_PWD/SrcPony/version-qmake.h.in
+versionconfig.output = $$OUT_PWD/SrcPony/version.h
+QMAKE_SUBSTITUTES += versionconfig
+
+
+# VERSION_FILE = $$OUT_PWD/SrcPony/version.h
 # write_file...
 
 
