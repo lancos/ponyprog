@@ -75,32 +75,28 @@ SET(PONY_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/aboutmdlg.cpp
                  ${CMAKE_CURRENT_SOURCE_DIR}/sdebus.cpp)
 
 
-SET(PONY_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/e2app.h 
+                 
+SET(PONY_NOMOC_HEADERS 
+                 ${CMAKE_CURRENT_SOURCE_DIR}/e2app.h 
                  ${CMAKE_CURRENT_SOURCE_DIR}/e2awinfo.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/Translator.h
-                 ${CMAKE_CURRENT_SOURCE_DIR}/e2cmdw.h 
                  ${CMAKE_CURRENT_SOURCE_DIR}/globals.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/device.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/microbus.h
-                 ${CMAKE_CURRENT_SOURCE_DIR}/aboutmdlg.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/at25xxx.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/at93cbus.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/busio.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/dt006interf.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/e24xx.h
-                 ${CMAKE_CURRENT_SOURCE_DIR}/e2dlg.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/eeptypes.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/ispinterf.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/lpt_io_interf.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/pgminter.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/picbus.h
-#                  ${CMAKE_CURRENT_SOURCE_DIR}/profile.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/sde2506.h
-#                  ${CMAKE_CURRENT_SOURCE_DIR}/sxbus.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/at17xxx.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/at89sbus.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/at93cxx8.h
-#                  ${CMAKE_CURRENT_SOURCE_DIR}/cmdenum.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/e2401.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/e2pfbuf.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/errcode.h
@@ -108,7 +104,6 @@ SET(PONY_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/e2app.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/jdminter.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/pic125xx.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/picbusnew.h
-                 ${CMAKE_CURRENT_SOURCE_DIR}/progoption.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/sdebus.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/types.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/at250bus2.h
@@ -120,11 +115,9 @@ SET(PONY_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/e2app.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/filebuf.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/imbus.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/linuxsysfsint.h
-#                  ${CMAKE_CURRENT_SOURCE_DIR}/modaldlg_utilities.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/pic12bus.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/ponyioint.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/resource.h
-                 ${CMAKE_CURRENT_SOURCE_DIR}/sernumdlg.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/wait.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/at250bus.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/at90sbus.h
@@ -132,30 +125,35 @@ SET(PONY_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/e2app.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/csmfbuf.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/e24xx-2.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/e2profil.h
-                 ${CMAKE_CURRENT_SOURCE_DIR}/filldlg.h
-                 ${CMAKE_CURRENT_SOURCE_DIR}/infomdlg.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/lpt_ext_interf.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/motsfbuf.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/pic168xx.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/portint.h
-#                  ${CMAKE_CURRENT_SOURCE_DIR}/retrymdlg.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/spi-bus.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/x2444bus.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/at250xx.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/at90sxx.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/businter.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/e24xx-5.h
-#                  ${CMAKE_CURRENT_SOURCE_DIR}/e2cnv.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/easyi2c_interf.h
-                 ${CMAKE_CURRENT_SOURCE_DIR}/fusemdlg.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/intfbuf.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/lptinterf.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/nvm3060.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/pic16xx.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/ppuser.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/rs232int.h
-#                  ${CMAKE_CURRENT_SOURCE_DIR}/string_table.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/x2444.h)
+                 
+                 
+SET(PONY_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/fusemdlg.h
+                 ${CMAKE_CURRENT_SOURCE_DIR}/filldlg.h
+                 ${CMAKE_CURRENT_SOURCE_DIR}/e2cmdw.h 
+                 ${CMAKE_CURRENT_SOURCE_DIR}/e2dlg.h
+                 ${CMAKE_CURRENT_SOURCE_DIR}/aboutmdlg.h
+                 ${CMAKE_CURRENT_SOURCE_DIR}/progoption.h
+                 ${CMAKE_CURRENT_SOURCE_DIR}/sernumdlg.h
+                 ${CMAKE_CURRENT_SOURCE_DIR}/infomdlg.h)
+
 
 SET(PONY_FORMS  ${CMAKE_CURRENT_SOURCE_DIR}/forms/aboutdlg.ui
                 ${CMAKE_CURRENT_SOURCE_DIR}/forms/blockdlg.ui
@@ -173,10 +171,12 @@ SET(PONY_FORMS  ${CMAKE_CURRENT_SOURCE_DIR}/forms/aboutdlg.ui
 SET(PONY_SOURCES ${PONY_SOURCES}
 		PARENT_SCOPE)
 		
-SET(PONY_HEADERS ${PONY_HEADERS}
+SET(PONY_NOMOC_HEADERS ${PONY_NOMOC_HEADERS}
 		PARENT_SCOPE)
 
-
+SET(PONY_HEADERS ${PONY_HEADERS}
+		PARENT_SCOPE)
+		
 # SET(FILES_TO_TRANSLATE ${FILES_TO_TRANSLATE} ${MAIN_SOURCES} ${MAIN_FORMS} ${MAIN_HEADERS} 
 #                  PARENT_SCOPE)
 
