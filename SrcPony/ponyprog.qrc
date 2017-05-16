@@ -1,6 +1,5 @@
 <!DOCTYPE RCC><RCC version="1.0">
     <qresource prefix="/" >
-        <file>icons/about.png</file>
         <file>icons/delete.png</file>
         <file>icons/help20x20.png</file>
         <file>icons/lock20x20.png</file>
