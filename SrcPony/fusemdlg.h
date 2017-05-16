@@ -34,7 +34,7 @@
 #include <QCheckBox>
 
 #include "ui_fusedlg.h"
-#include "ui_blockdlg.h"
+#include "ui_editdlg.h"
 
 #include "e2cmdw.h"
 
@@ -1115,7 +1115,7 @@ const QVector<FuseBit> eep_fusebits =
 };
 
 
-class blockDialog : public QDialog, public cTranslator, public Ui::BlockDialog
+class blockDialog : public QDialog, public cTranslator, public Ui::EditDialog
 {
 	Q_OBJECT
   public:               //---------------------------------------- public

@@ -34,11 +34,11 @@
 
 #include "Translator.h"
 
-#include "ui_blockdlg.h"
+#include "ui_editdlg.h"
 
 
 
-class FillDialog : public QDialog, public cTranslator, public Ui::BlockDialog
+class FillDialog : public QDialog, public cTranslator, public Ui::EditDialog
 {
 	Q_OBJECT
   public:               //---------------------------------------- public

@@ -38,7 +38,7 @@
 
 #include "ui_notesdlg.h"
 #include "ui_editdlg.h"
-#include "ui_blockdlg.h"
+// #include "ui_blockdlg.h"
 
 
 class e24xx_infoModalDialog : public QDialog, public cTranslator, public Ui::EditDialog
