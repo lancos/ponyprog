@@ -134,7 +134,6 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="actionNew"/>
    <addaction name="actionOpen"/>
    <addaction name="actionOpenFlash"/>
    <addaction name="actionOpenEep"/>
