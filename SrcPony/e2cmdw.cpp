@@ -2053,13 +2053,13 @@ void e2CmdWindow::onExit()
 	Exit();
 }
 
-
+#if 0
 void e2CmdWindow::onClose()
 {
 	//      CloseAppWin();
 	Exit();
 }
-
+#endif
 
 void e2CmdWindow::onOpen()
 {
@@ -2290,7 +2290,7 @@ void e2CmdWindow::onLoadScript()
 	}
 }
 
-
+#if 0
 void e2CmdWindow::onNew()
 {
 	if (IsAppReady())
@@ -2302,7 +2302,7 @@ void e2CmdWindow::onNew()
 		//                                theApp->DefaultWidth(), theApp->DefaultHeight(), 0);
 	}
 }
-
+#endif
 
 void e2CmdWindow::onReset()
 {

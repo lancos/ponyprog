@@ -163,7 +163,7 @@ class e2CmdWindow : public QMainWindow, public e2App, public Ui::MainWindow
 
 
   private slots:
-	void onNew();
+// 	void onNew();
 	void onOpen(); //
 	void onSave(); //
 	void onSaveAs(); //
@@ -210,7 +210,7 @@ class e2CmdWindow : public QMainWindow, public e2App, public Ui::MainWindow
 	void onProgramOptions(); //
 	void onSerialNumberOptions();
 	void onOscCalibOption();
-	void onClose(); //
+// 	void onClose(); //
 	void onExit(); //
 	void onDevType(int i);
 	void onDevSubType(int i);
