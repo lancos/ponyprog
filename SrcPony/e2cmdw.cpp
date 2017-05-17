@@ -1689,11 +1689,12 @@ void e2CmdWindow::onSelectX244(QAction *a)
 void e2CmdWindow::selectTypeSubtype(const QString &t, const QString &st)
 {
 	QString t_tmp = t;
-	t_tmp.remove(QChar('&'));
-	QString st_tmp = st;
-	st_tmp.remove(QChar('&'));
+	t_tmp = t_tmp.remove("&");
 
-	//      qDebug() << t_tmp << st_tmp;
+	QString st_tmp = st;
+	st_tmp = st_tmp.remove("&");
+
+	qDebug() << "selectTypeSubtype" << t_tmp << st_tmp;
 
 	int nt = cbxEEPType->findText(t_tmp);
 
@@ -1702,6 +1703,10 @@ void e2CmdWindow::selectTypeSubtype(const QString &t, const QString &st)
 		nt = 0;
 	}
 
+	disconnect(cbxEEPType, SIGNAL(currentIndexChanged(int)), this, SLOT(onDevType(int)));
+	cbxEEPType->setCurrentIndex(nt);
+	connect(cbxEEPType, SIGNAL(currentIndexChanged(int)), this, SLOT(onDevType(int)));
+
 	int nst = cbxEEPSubType->findText(st_tmp);
 
 	if (nst == -1)
@@ -1709,12 +1714,16 @@ void e2CmdWindow::selectTypeSubtype(const QString &t, const QString &st)
 		nst = 0;
 	}
 
+	disconnect(cbxEEPSubType, SIGNAL(currentIndexChanged(int)), this, SLOT(onDevSubType(int)));
+	cbxEEPSubType->setCurrentIndex(nst);
+	connect(cbxEEPSubType, SIGNAL(currentIndexChanged(int)), this, SLOT(onDevSubType(int)));
+
 	// search id
 	long new_id = EID_INVALID;
 
 	for (int i = 0; i < deviceMenu[nt].info.count(); i++)
 	{
-		if (deviceMenu[nt].info.at(i).name == st)
+		if (deviceMenu[nt].info.at(i).name == st_tmp)
 		{
 			new_id = deviceMenu[nt].info.at(i).id;
 		}
@@ -2020,7 +2029,9 @@ void e2CmdWindow::onInterfSetup()
 void e2CmdWindow::dragEnterEvent(QDragEnterEvent *event)
 {
 	if (event->mimeData()->hasUrls())
+	{
 		event->accept();
+	}
 }
 
 
@@ -5653,6 +5664,7 @@ void e2CmdWindow::onDevSubType(int st)
 	// search id
 	int t = cbxEEPType->currentIndex();
 	QString nm = cbxEEPSubType->currentText();
+	nm = nm.remove("&");
 	long new_id = 0;
 
 	for (int i = 0; i < deviceMenu[t].info.count(); i++)
@@ -5728,7 +5740,8 @@ void e2CmdWindow::UpdateMenuType(long new_type, long old_type)
 			{
 				disconnect(cbxEEPType, SIGNAL(currentIndexChanged(int)), this, SLOT(onDevType(int)));
 				QString nmMenu = m->mnu->title();
-				int nt = cbxEEPType->findText(nmMenu);
+				QString n = nmMenu.remove("&");
+				int nt = cbxEEPType->findText(n);
 				cbxEEPType->setCurrentIndex(nt);
 				connect(cbxEEPType, SIGNAL(currentIndexChanged(int)), this, SLOT(onDevType(int)));
 
@@ -5750,6 +5763,8 @@ void e2CmdWindow::UpdateMenuType(long new_type, long old_type)
 		}
 	}
 
+	connect(cbxEEPSubType, SIGNAL(currentIndexChanged(int)), this, SLOT(onDevSubType(int)));
+
 	if (m == 0)
 	{
 		qDebug() << "pointer m not found" << new_type;
@@ -5770,7 +5785,7 @@ void e2CmdWindow::UpdateMenuType(long new_type, long old_type)
 		}
 	}
 
-	connect(cbxEEPSubType, SIGNAL(currentIndexChanged(int)), this, SLOT(onDevSubType(int)));
+
 
 	// uncheck the old item
 	if (pre_pritype >= 0)
@@ -5863,11 +5878,13 @@ void e2CmdWindow::UpdateMenuType(long new_type, long old_type)
  */
 long GetEEPTypeFromString(const QString &name)
 {
+	QString n = name;
+	n = n.remove("&");
 	foreach (menuToGroup m, deviceMenu)
 	{
 		foreach (chipInfo c, m.info)
 		{
-			if (QString::compare(c.name, name, Qt::CaseInsensitive) == 0)
+			if (QString::compare(c.name, n, Qt::CaseInsensitive) == 0)
 			{
 				return c.id;
 			}
@@ -6170,7 +6187,9 @@ int e2CmdWindow::filterNameToIndex(const QString &s, const QStringList &lst)
 	for (int i = 0; i < lst.count(); i++)
 	{
 		if (lst.at(i) == s)
+		{
 			return i;
+		}
 	}
 
 	return -1;
