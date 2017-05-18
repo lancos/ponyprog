@@ -31,6 +31,7 @@
 #include "e2cmdw.h"
 
 #include <QDebug>
+#include <QProcess>
 #include <QString>
 
 #define GPIO_OUT                        true
@@ -70,8 +71,9 @@ static int gpio_open(unsigned int gpio, bool out_dir)
 	int rval;
 
 	//trying with gpio command (you need wiringPi installed)
-	buf.sprintf("gpio export %u %s", gpio, out_dir ? "out" : "in");
-	rval = system(buf.toLatin1().data());
+	buf.sprintf("export %u %s", gpio, out_dir ? "out" : "in");
+// 	rval = system(buf.toLatin1().data());
+        rval = QProcess::execute("gpio", buf.split(" "));
 
 	if (rval != 0)
 	{
@@ -163,8 +165,9 @@ static int gpio_close(unsigned int gpio, int fd)
 	}
 
 	//trying with gpio command (you need wiringPi installed)
-	buf.sprintf("gpio unexport %u", gpio);
-	rval = system(buf.toLatin1().data());
+	buf.sprintf("unexport %u", gpio);
+// 	rval = system(buf.toLatin1().data());
+        rval = QProcess::execute("gpio", buf.split(" "));
 
 	if (rval != 0)
 	{

@@ -38,7 +38,7 @@
 #include <QBuffer>
 #include <QSound>
 #include <QTextDocument>
-
+#include <QProcess>
 #include <QDebug>
 #include <QMessageBox>  // from vNoticeDialog
 
@@ -1769,7 +1769,6 @@ void e2CmdWindow::selectFontSize(QAction *mnu)
 }
 
 
-
 void e2CmdWindow::setFontForWidgets()
 {
 #ifdef Q_OS_WIN32
@@ -2812,14 +2811,15 @@ int e2CmdWindow::CmdHelp()
 #ifdef __linux__
 	if (file.exists())
 	{
-		str = "xdg-open" + GetHelpFile();
+		str = /*"xdg-open" +*/ GetHelpFile();
 	}
 	else
 	{
 		//str = E2Profile::GetHtmlBrowseApp() + "\"http://www.lancos.com/e2p/ponyprog2000.html\" &";
-		str = "xdg-open \"http://www.lancos.com/e2p/ponyprog2000.html\" ";
+		str = "\"http://www.lancos.com/e2p/ponyprog2000.html\" ";
 	}
-	system(str.toLatin1().constData());
+        //system(str.toLatin1().constData());
+        QProcess::execute("xdg-open", (QStringList() << str));
 #else
 	if (file.exists())
 	{
