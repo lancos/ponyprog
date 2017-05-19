@@ -2808,27 +2808,19 @@ int e2CmdWindow::CmdHelp()
 
 	QFile file(GetHelpFile());
 
-#ifdef __linux__
-	if (file.exists())
-	{
-		str = /*"xdg-open" +*/ GetHelpFile();
-	}
-	else
-	{
-		//str = E2Profile::GetHtmlBrowseApp() + "\"http://www.lancos.com/e2p/ponyprog2000.html\" &";
-		str = "\"http://www.lancos.com/e2p/ponyprog2000.html\" ";
-	}
-        //system(str.toLatin1().constData());
-        QProcess::execute("xdg-open", (QStringList() << str));
-#else
 	if (file.exists())
 	{
 		str = GetHelpFile();
 	}
 	else
 	{
-		str = "\"http://www.lancos.com/e2p/ponyprog2000.html\" ";
+		str = "http://www.lancos.com/e2p/ponyprog2000.html";
 	}
+
+#ifdef __linux__
+	//system(str.toLatin1().constData());
+	QProcess::execute("xdg-open", (QStringList() << str));
+#else
 	ShellExecute(NULL, L"open", (LPCWSTR)str.utf16(), NULL, NULL, SW_SHOWNORMAL);
 #endif
 
