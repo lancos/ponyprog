@@ -38,9 +38,7 @@ APP_USERAGENT                 = "PonyProg/$$APP_VERSION (github.com/lancos/ponyp
 
 win32 {
     APP_BUILD_DATE = $$system(date /t)
-}
-else
-{
+} else {
     APP_BUILD_DATE = $$system(date +%d-%m-%Y)
 }
 
@@ -103,8 +101,8 @@ message(ponyprog: lrelease executable name: \"$$LRELEASE_EXECUTABLE\")
 VERSION = $$APP_VERSION
 
 
-versionconfig.input = $$OUT_PWD/SrcPony/version-qmake.h.in
-versionconfig.output = $$OUT_PWD/SrcPony/version.h
+versionconfig.input = SrcPony/version-qmake.h.in
+versionconfig.output = $$PWD/SrcPony/version.h
 QMAKE_SUBSTITUTES += versionconfig
 
 
