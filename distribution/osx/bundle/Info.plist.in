@@ -7,7 +7,7 @@
 		<key>CFBundleExecutable</key>
 		<string>Ponyprog</string>
 		<key>CFBundleGetInfoString</key>
-		<string>@PONYPROG_VERSION@, @PONYPROG_COPYRIGHT@</string>
+		<string>@APP_VERSION@, @APP_COPYRIGHT@</string>
 		<key>CFBundleIconFile</key>
 		<string>Ponyprog</string>
 		<key>CFBundleIdentifier</key>
@@ -17,11 +17,11 @@
 		<key>CFBundlePackageType</key>
 		<string>APPL</string>
 		<key>CFBundleShortVersionString</key>
-		<string>@PONYPROG_VERSION@</string>
+		<string>@APP_VERSION@</string>
 		<key>CFBundleSignature</key>
 		<string>Ponyprog</string>
 		<key>CFBundleVersion</key>
-		<string>@PONYPROG_VERSION@</string>
+		<string>@APP_VERSION@</string>
 		<key>NSHumanReadableCopyright</key>
 		<string>@PONYPROG_COPYRIGHT@</string>
 		<key>LSMinimumSystemVersion</key>
