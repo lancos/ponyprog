@@ -1,0 +1,9 @@
+#!/bin/sh
+
+# errors shouldn't cause script to exit
+set +e
+
+setcap 'cap_sys_tty_config=+ep' /usr/bin/ponyprog
+
+# clear error termination state
+set -e
