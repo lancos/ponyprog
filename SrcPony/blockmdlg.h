@@ -25,68 +25,35 @@
 //-------------------------------------------------------------------------//
 //=========================================================================//
 
-#ifndef FUSEMDLG_H
-#define FUSEMDLG_H
+#ifndef BLOCKMDLG_H
+#define BLOCKMDLG_H
 
 // #include <QDialog>
 #include <QObject>
 #include <QString>
-#include <QVector>
-#include <QCheckBox>
+// #include <QVector>
+// #include <QCheckBox>
 
-#include "ui_fusedlg.h"
+#include "ui_editdlg.h"
 
 #include "e2cmdw.h"
 
 
-typedef struct
-{
-	int  bit;
-	QString ShortDescr;
-	QString LongDescr;
-} BitInfo;
-
-
-typedef struct
-{
-	long type; // chip id
-	QVector<BitInfo> fuse;
-	QVector<BitInfo> lock;
-} ChipBits;
-
-
-class fuseModalDialog : public QDialog, public cTranslator, public Ui::FuseDialog
+class blockDialog : public QDialog, public cTranslator, public Ui::EditDialog
 {
 	Q_OBJECT
   public:               //---------------------------------------- public
-	fuseModalDialog(e2CmdWindow *bw, e2AppWinInfo *p, bool readonly = false, const QString &msg = "");
-	virtual ~fuseModalDialog();             // Destructor
-
-  private slots:
-	void onOk();
-	void onRead();
-	void onProg();
+	blockDialog(e2CmdWindow *bw, e2AppWinInfo *p, bool readonly = false, const QString &msg = "");
+	virtual ~blockDialog();          // Destructor
 
   protected:    //--------------------------------------- protected
 
-  private:
-	void setTextWidgets();
-	void initWidgets(const QString &msg, long type, bool readonly);
-	int eep_FindFuses(long type);
+  private slots:
+	void onOk();
 
   private:              //--------------------------------------- private
-// 	QVector<QCheckBox *> chkFuse;
-// 	QVector<QCheckBox *> chkLock;
-
-	uint32_t lock, fuse;
-
-	static QVector<ChipBits> eep_bits;
-
 	e2AppWinInfo *awip;
-
-	bool write;
-	bool read;
+	uint32_t lock, fuse;
 };
-
 
 #endif

@@ -13,6 +13,7 @@ SET(PONY_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/aboutmdlg.cpp
                  ${CMAKE_CURRENT_SOURCE_DIR}/e24xx-5.cpp
                  ${CMAKE_CURRENT_SOURCE_DIR}/e2profil.cpp
                  ${CMAKE_CURRENT_SOURCE_DIR}/fusemdlg.cpp
+                 ${CMAKE_CURRENT_SOURCE_DIR}/blockmdlg.cpp
                  ${CMAKE_CURRENT_SOURCE_DIR}/intfbuf.cpp
                  ${CMAKE_CURRENT_SOURCE_DIR}/lpt_io_interf.cpp
                  ${CMAKE_CURRENT_SOURCE_DIR}/pgminter.cpp
@@ -147,6 +148,7 @@ SET(PONY_NOMOC_HEADERS
                  
 SET(PONY_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/fusemdlg.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/filldlg.h
+                 ${CMAKE_CURRENT_SOURCE_DIR}/blockmdlg.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/e2cmdw.h 
                  ${CMAKE_CURRENT_SOURCE_DIR}/e2dlg.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/aboutmdlg.h

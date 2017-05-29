@@ -52,6 +52,7 @@
 #include "aboutmdlg.h"
 #include "filldlg.h"
 #include "fusemdlg.h"
+#include "blockmdlg.h"
 #include "progoption.h"
 #include "sernumdlg.h"
 #include "errcode.h"

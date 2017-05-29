@@ -25,68 +25,109 @@
 //-------------------------------------------------------------------------//
 //=========================================================================//
 
-#ifndef FUSEMDLG_H
-#define FUSEMDLG_H
 
-// #include <QDialog>
-#include <QObject>
-#include <QString>
-#include <QVector>
-#include <QCheckBox>
+#include "blockmdlg.h"
 
-#include "ui_fusedlg.h"
-
-#include "e2cmdw.h"
+#include <QDebug>
 
 
-typedef struct
+//=========================>>> blockDialog::blockDialog <<<====================
+blockDialog::blockDialog(e2CmdWindow *bw, e2AppWinInfo *p, bool readonly, const QString &msg) :
+	QDialog(bw)
 {
-	int  bit;
-	QString ShortDescr;
-	QString LongDescr;
-} BitInfo;
+	setupUi(this);
+
+	setWindowTitle(translate(STR_MSGFUSEDLG));
+
+	awip = p;
+
+	lock = awip->GetLockBits();
+	fuse = awip->GetFuseBits();
+
+	e2CmdWindow *cmdw = static_cast<e2CmdWindow *>(bw);
+
+	if (cmdw->getStyleSheet().length() > 0)
+	{
+		setStyleSheet(cmdw->getStyleSheet());
+	}
+
+	qDebug() << "blockDialog::blockDialog()";
 
 
-typedef struct
+	lblFrom->setText(translate(STR_MSGFIRSTBLK));
+	lblTo->setText(translate(STR_MSGNUMBLOCK));
+	lblVal->setText(translate(STR_MSGHIGHENDBLK));
+
+	QString str1 = QString().sprintf("%d", (int)((lock >> 4) & 0x0F));
+	QString str2 = QString().sprintf("%d", (int)(lock & 0x0F));
+	QString str3 = QString().sprintf("%d", (int)(fuse & 0x0F));
+
+	txiFrom->setText(str1);
+	txiTo->setText(str2);
+	txiVal->setText(str3);
+
+	pushOk->setText(translate(STR_BTNOK));
+	pushCancel->setText(translate(STR_BTNCANC));
+
+	if (readonly)
+	{
+		pushOk->setEnabled(false);
+	}
+	else
+	{
+		pushOk->setEnabled(true);
+	}
+
+	connect(pushOk, SIGNAL(clicked()), this, SLOT(onOk()));
+	connect(pushCancel, SIGNAL(clicked()), this, SLOT(reject()));
+}
+
+
+//======================>>> blockDialog::~blockDialog <<<======================
+blockDialog::~blockDialog()
 {
-	long type; // chip id
-	QVector<BitInfo> fuse;
-	QVector<BitInfo> lock;
-} ChipBits;
+	qDebug() << "blockDialog::~blockDialog()";
+}
 
 
-class fuseModalDialog : public QDialog, public cTranslator, public Ui::FuseDialog
+
+void blockDialog::onOk()
 {
-	Q_OBJECT
-  public:               //---------------------------------------- public
-	fuseModalDialog(e2CmdWindow *bw, e2AppWinInfo *p, bool readonly = false, const QString &msg = "");
-	virtual ~fuseModalDialog();             // Destructor
+	bool good;
+	QString str = txiFrom->text();
 
-  private slots:
-	void onOk();
-	void onRead();
-	void onProg();
+	fuse = 0;
+	lock = 0;
 
-  protected:    //--------------------------------------- protected
+	int From = str.toInt(&good);
 
-  private:
-	void setTextWidgets();
-	void initWidgets(const QString &msg, long type, bool readonly);
-	int eep_FindFuses(long type);
+	if (good == false)
+	{
+		reject();
+	}
 
-  private:              //--------------------------------------- private
-// 	QVector<QCheckBox *> chkFuse;
-// 	QVector<QCheckBox *> chkLock;
+	str = txiTo->text();
+	int To = str.toInt(&good);
 
-	uint32_t lock, fuse;
+	if (good == false)
+	{
+		reject();
+	}
 
-	static QVector<ChipBits> eep_bits;
+	str = txiVal->text();
+	int Val = str.toInt(&good);
 
-	e2AppWinInfo *awip;
+	if (good == false)
+	{
+		reject();
+	}
 
-	bool write;
-	bool read;
-};
+	lock = ((From << 4) & 0xF0) | (To & 0x0F);
+	fuse = Val & 0x0F;
 
+	awip->SetLockBits(lock);
+	awip->SetFuseBits(fuse);
 
-#endif
+	accept();
+}
+

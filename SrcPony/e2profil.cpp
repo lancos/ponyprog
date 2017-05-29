@@ -1497,7 +1497,9 @@ static QStringList retrieve_ttyS_list()
 	QString name = retrieve_ttyS_name();
 
 	if (name.length() == 0)
+	{
 		return lst;
+	}
 
 	QFile file("/proc/tty/driver/serial");		//Need Root access!!!!
 
@@ -1567,29 +1569,29 @@ QStringList E2Profile::GetCOMDevList()
 
 	if (lst.count() == 0)
 	{
-		#ifdef __linux__
-			lst = retrieve_ttyS_list();
-			if (lst.count() == 0)
-			{
-				QString sname = E2Profile::GetCOMDevName();
-
-				for (int i = 0; i < MAX_COMPORTS; i++)
-				{
-					lst << sname + QString::number(i);
-				}
-			}
-			else
-			{
-				E2Profile::SetCOMDevList(lst);
-			}
-		#else
+#ifdef __linux__
+		lst = retrieve_ttyS_list();
+		if (lst.count() == 0)
+		{
 			QString sname = E2Profile::GetCOMDevName();
 
-			for (int i = 1; i <= MAX_COMPORTS; i++)
+			for (int i = 0; i < MAX_COMPORTS; i++)
 			{
 				lst << sname + QString::number(i);
 			}
-		#endif
+		}
+		else
+		{
+			E2Profile::SetCOMDevList(lst);
+		}
+#else
+		QString sname = E2Profile::GetCOMDevName();
+
+		for (int i = 1; i <= MAX_COMPORTS; i++)
+		{
+			lst << sname + QString::number(i);
+		}
+#endif
 	}
 
 	return lst;

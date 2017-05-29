@@ -6,7 +6,7 @@ CMAKE_POLICY(SET CMP0003 OLD)
 CMAKE_POLICY(SET CMP0015 OLD)
 
 # set the Qt version to 4 or 5
-SET(USE_QT_VERSION 5)
+SET(USE_QT_VERSION 4)
 
 # # SET(FILES_TO_TRANSLATE)
 
@@ -52,7 +52,7 @@ INCLUDE(CheckIncludeFile)
 INCLUDE(CheckIncludeFileCXX)
 INCLUDE(TestCXXAcceptsFlag)
 INCLUDE(CheckCXXCompilerFlag)
-INCLUDE(FindPkgConfig)
+# INCLUDE(FindPkgConfig)
 
 
 SET(TARGET_NAME ponyprog )
@@ -120,7 +120,7 @@ MESSAGE(STATUS "Version build date: ${APP_BUILD_DATE}")
 # 
 SET(PONYPROG_PACKAGE ponyprog)
 SET(PONYPROG_HOST ${CMAKE_SYSTEM} ${CMAKE_SYSTEM_PROCESSOR})
-SET(PONYPROG_COPYRIGHT "Copyright (c) 1997-2017   Claudio Lanconelli , All Rights Reserved.")
+SET(PONYPROG_COPYRIGHT "Copyright (c) 1997-2017   ${APP_AUTHOR}, All Rights Reserved.")
 SET(PONYPROG_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX})
 
 # Setup high-level build options
