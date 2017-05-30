@@ -91,58 +91,39 @@ void fuseModalDialog::onOk()
 	unsigned int l = 0;
 	unsigned int f = 0;
 
-#if 0
-	for (int k = 0; k < LOCKPACKSIZE; k++)
+	for (int j = 0; j < treeWidget->topLevelItemCount(); ++j)
 	{
-		lock |= (chkLock.at(0 * 8 + k)->isChecked()) ? (0x80000000 >> k) : 0;
-		lock |= (chkLock.at(1 * 8 + k)->isChecked()) ? (0x800000 >> k) : 0;
-		lock |= (chkLock.at(2 * 8 + k)->isChecked()) ? (0x8000 >> k) : 0;
-		lock |= (chkLock.at(3 * 8 + k)->isChecked()) ? (0x80 >> k) : 0;
+		QTreeWidgetItem *topItem = treeWidget->topLevelItem(j);
+		QString topName = topItem->text(0);
 
-		fuse |= (chkFuse.at(0 * 8 + k)->isChecked()) ? (0x80000000 >> k) : 0;
-		fuse |= (chkFuse.at(1 * 8 + k)->isChecked()) ? (0x800000 >> k) : 0;
-		fuse |= (chkFuse.at(2 * 8 + k)->isChecked()) ? (0x8000 >> k) : 0;
-		fuse |= (chkFuse.at(3 * 8 + k)->isChecked()) ? (0x80 >> k) : 0;
-	}
-#endif
-	//      lock = lock;
-	//      fuse = fuse;
-
-	QList<QTreeWidgetItem *> fuselist = treeWidget->findItems("Fuse", Qt::MatchRecursive, 0);
-	foreach (QTreeWidgetItem *item, fuselist)
-	{
-		QString t = item->text(0);
-		if (t == "Fuse")
+		for (int i = 0; i < topItem->childCount(); ++i)
 		{
-			continue;
-		}
-		int pos = t.indexOf(",");
-		if (pos > 0)
-		{
-			t = t.left(pos);
-			t = t.remove("Bit ");
-			qDebug() << t << item->checkState(0);
-		}
-	}
+			QString t = topItem->child(i)->text(0);
+			if (topItem->child(i)->checkState(0) == false)
+			{
+				continue;
+			}
 
+			int pos = t.indexOf(",");
+			if (pos > 0)
+			{
+				t = t.left(pos);
+				t = t.remove("Bit ");
+				int bOffset = t.toInt();
+				if (topName == "Lock")
+				{
+					l |= (1 << bOffset);
+				}
+				if (topName == "Fuse")
+				{
+					f |= (1 << bOffset);
+				}
+// 				qDebug() << t << topItem->child(i)->checkState(0);
+			}
 
-	QList<QTreeWidgetItem *> locklist = treeWidget->findItems("Lock", Qt::MatchRecursive, 0);
-	foreach (QTreeWidgetItem *item, locklist)
-	{
-		QString t = item->text(0);
-		if (t == "Lock")
-		{
-			continue;
-		}
-
-		int pos = t.indexOf(",");
-		if (pos > 0)
-		{
-			t = t.left(pos);
-			t = t.remove("Bit ");
-			qDebug() << t << item->checkState(0);
 		}
 	}
+	qDebug() << "lock" << l << "fuse" << f;
 
 	if (read == true)
 	{
@@ -210,9 +191,9 @@ void fuseModalDialog::initWidgets(const QString &msg, bool readonly)
 		{
 			unsigned int lock = awip->GetLockBits();
 
-			QTreeWidgetItem *lckItem = new QTreeWidgetItem();
-			lckItem->setText(0, "Lock");
-			treeWidget->insertTopLevelItem(0, lckItem);
+			QTreeWidgetItem *topItem = new QTreeWidgetItem();
+			topItem->setText(0, "Lock");
+			treeWidget->addTopLevelItem(topItem);
 
 			for (int i = 0; i < fBit.lock.count(); i++)
 			{
@@ -224,11 +205,13 @@ void fuseModalDialog::initWidgets(const QString &msg, bool readonly)
 					itm->setText(1, fBit.lock.at(i).LongDescr);
 				}
 				itm->setFlags(itm->flags() | Qt::ItemIsUserCheckable);
+				itm->setCheckState(0, Qt::Unchecked);
+
 				if (lock & (1 << bitOffset))
 				{
 					itm->setCheckState(0, Qt::Checked);
 				}
-				lckItem->addChild(itm);
+				topItem->addChild(itm);
 			}
 
 			treeWidget->expandAll();
@@ -239,9 +222,9 @@ void fuseModalDialog::initWidgets(const QString &msg, bool readonly)
 		{
 			unsigned int fuse = awip->GetFuseBits();
 
-			QTreeWidgetItem *lckItem = new QTreeWidgetItem();
-			lckItem->setText(0, "Fuse");
-			treeWidget->insertTopLevelItem(0, lckItem);
+			QTreeWidgetItem *topItem = new QTreeWidgetItem();
+			topItem->setText(0, "Fuse");
+			treeWidget->addTopLevelItem(topItem);
 
 			for (int i = 0; i < fBit.fuse.count(); i++)
 			{
@@ -253,11 +236,12 @@ void fuseModalDialog::initWidgets(const QString &msg, bool readonly)
 					itm->setText(1, fBit.fuse.at(i).LongDescr);
 				}
 				itm->setFlags(itm->flags() | Qt::ItemIsUserCheckable);
+				itm->setCheckState(0, Qt::Unchecked);
 				if (fuse & (1 << bitOffset))
 				{
 					itm->setCheckState(0, Qt::Checked);
 				}
-				lckItem->addChild(itm);
+				topItem->addChild(itm);
 			}
 
 			treeWidget->expandAll();
