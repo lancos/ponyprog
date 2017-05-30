@@ -35,6 +35,11 @@
 #include "aboutmdlg.h"
 #include "e2profil.h"
 
+static const QString AUTHORWEB     = "http://www.LancOS.com";
+static const QString COPYRIGHTYEAR = "1997-2017";
+static const QString PORTERGQT     = "Eduard Kalinowski";
+static const QString PORTERMAIL    = "eduard_kalinowski@yahoo.de";
+
 
 AboutModalDialog::AboutModalDialog(QWidget *bw, const QString title)
 	: QDialog(bw)

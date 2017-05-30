@@ -71,17 +71,13 @@ class fuseModalDialog : public QDialog, public cTranslator, public Ui::FuseDialo
 
   private:
 	void setTextWidgets();
-	void initWidgets(const QString &msg, long type, bool readonly);
+	void initWidgets(const QString &msg, bool readonly);
 	int eep_FindFuses(long type);
 
   private:              //--------------------------------------- private
-// 	QVector<QCheckBox *> chkFuse;
-// 	QVector<QCheckBox *> chkLock;
-
-	uint32_t lock, fuse;
-
 	static QVector<ChipBits> eep_bits;
 
+	e2CmdWindow *cmdw;
 	e2AppWinInfo *awip;
 
 	bool write;

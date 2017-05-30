@@ -29,6 +29,7 @@
 #include "fusemdlg.h"
 
 #include <QDebug>
+#include <QStringList>
 #include <QTreeWidget>
 #include <QRadioButton>
 
@@ -44,41 +45,20 @@ fuseModalDialog::fuseModalDialog(e2CmdWindow *bw, e2AppWinInfo *p, bool readonly
 
 	awip = p;
 
-	lock = awip->GetLockBits();
-	fuse = awip->GetFuseBits();
-
-	e2CmdWindow *cmdw = static_cast<e2CmdWindow *>(bw);
+	cmdw = static_cast<e2CmdWindow *>(bw);
 
 	if (cmdw->getStyleSheet().length() > 0)
 	{
 		setStyleSheet(cmdw->getStyleSheet());
 	}
 
-	long type = bw->GetCurrentChipType();
-
 	qDebug() << "fuseModalDialog::fuseModalDialog()";
-
-// 	chkFuse = (QVector<QCheckBox *>() << chk0_F0 << chk1_F0 << chk2_F0 << chk3_F0 << chk4_F0 << chk5_F0 << chk6_F0 << chk7_F0
-// 			   << chk0_F1 << chk1_F1 << chk2_F1 << chk3_F1 << chk4_F1 << chk5_F1 << chk6_F1 << chk7_F1
-// 			   << chk0_F2 << chk1_F2 << chk2_F2 << chk3_F2 << chk4_F2 << chk5_F2 << chk6_F2 << chk7_F2
-// 			   << chk0_F3 << chk1_F3 << chk2_F3 << chk3_F3 << chk4_F3 << chk5_F3 << chk6_F3 << chk7_F3
-// 			  );
-//
-// 	chkLock = (QVector<QCheckBox *>() << chk0_L0 << chk1_L0 << chk2_L0 << chk3_L0 << chk4_L0 << chk5_L0 << chk6_L0 << chk7_L0
-// 			   << chk0_L1 << chk1_L1 << chk2_L1 << chk3_L1 << chk4_L1 << chk5_L1 << chk6_L1 << chk7_L1
-// 			   << chk0_L2 << chk1_L2 << chk2_L2 << chk3_L2 << chk4_L2 << chk5_L2 << chk6_L2 << chk7_L2
-// 			   << chk0_L3 << chk1_L3 << chk2_L3 << chk3_L3 << chk4_L3 << chk5_L3 << chk6_L3 << chk7_L3
-// 			  );
 
 	read = write = false;
 
-// 	frmLock->setTitle("Lock");
-
 	setTextWidgets();
 
-// 	frmFuses->setTitle("Fuse");
-
-	initWidgets(msg, type, readonly);
+	initWidgets(msg, readonly);
 
 	connect(pushRead, SIGNAL(clicked()), this, SLOT(onRead()));
 	connect(pushWrite, SIGNAL(clicked()), this, SLOT(onProg()));
@@ -95,31 +75,9 @@ fuseModalDialog::~fuseModalDialog()
 
 void fuseModalDialog::setTextWidgets()
 {
-// 	int i = 0;
-//
-// 	foreach (QCheckBox *c, chkFuse)
-// 	{
-// 		c->setText(QString().sprintf(" %d", i));
-// 		i++;
-//
-// 		if (i == 8)
-// 		{
-// 			i = 0;
-// 		}
-// 	}
-//
-// 	i = 0;
-//
-// 	foreach (QCheckBox *c, chkLock)
-// 	{
-// 		c->setText(QString().sprintf(" %d", i));
-// 		i++;
-//
-// 		if (i == 8)
-// 		{
-// 			i = 0;
-// 		}
-// 	}
+	// EK 2017
+	// TODO add translations for header of view
+	treeWidget->setHeaderLabels(QStringList() << "Bit" << "Description");
 
 	pushRead->setText(translate(STR_BTNREAD));
 	pushWrite->setText(translate(STR_BTNWRITE));
@@ -149,6 +107,42 @@ void fuseModalDialog::onOk()
 #endif
 	//      lock = lock;
 	//      fuse = fuse;
+
+	QList<QTreeWidgetItem *> fuselist = treeWidget->findItems("Fuse", Qt::MatchRecursive, 0);
+	foreach (QTreeWidgetItem *item, fuselist)
+	{
+		QString t = item->text(0);
+		if (t == "Fuse")
+		{
+			continue;
+		}
+		int pos = t.indexOf(",");
+		if (pos > 0)
+		{
+			t = t.left(pos);
+			t = t.remove("Bit ");
+			qDebug() << t << item->checkState(0);
+		}
+	}
+
+
+	QList<QTreeWidgetItem *> locklist = treeWidget->findItems("Lock", Qt::MatchRecursive, 0);
+	foreach (QTreeWidgetItem *item, locklist)
+	{
+		QString t = item->text(0);
+		if (t == "Lock")
+		{
+			continue;
+		}
+
+		int pos = t.indexOf(",");
+		if (pos > 0)
+		{
+			t = t.left(pos);
+			t = t.remove("Bit ");
+			qDebug() << t << item->checkState(0);
+		}
+	}
 
 	if (read == true)
 	{
@@ -200,9 +194,13 @@ int fuseModalDialog::eep_FindFuses(long type)
 	return -1;
 }
 
-
-void fuseModalDialog::initWidgets(const QString &msg, long int type, bool readonly)
+/**
+ * @brief
+ */
+void fuseModalDialog::initWidgets(const QString &msg, bool readonly)
 {
+	long type = cmdw->GetCurrentChipType();
+
 	int j = eep_FindFuses(type);
 
 	if (j >= 0)
@@ -210,6 +208,8 @@ void fuseModalDialog::initWidgets(const QString &msg, long int type, bool readon
 		ChipBits fBit = eep_bits.at(j);
 		if (fBit.lock.count() > 0)
 		{
+			unsigned int lock = awip->GetLockBits();
+
 			QTreeWidgetItem *lckItem = new QTreeWidgetItem();
 			lckItem->setText(0, "Lock");
 			treeWidget->insertTopLevelItem(0, lckItem);
@@ -217,19 +217,28 @@ void fuseModalDialog::initWidgets(const QString &msg, long int type, bool readon
 			for (int i = 0; i < fBit.lock.count(); i++)
 			{
 				QTreeWidgetItem *itm = new QTreeWidgetItem();
-				itm->setText(0, QString().sprintf("Bit %d ", i) + fBit.lock.at(i).ShortDescr);
+				int bitOffset = fBit.lock.at(i).bit;
+				itm->setText(0, QString().sprintf("Bit %d, ", bitOffset) + fBit.lock.at(i).ShortDescr);
 				if (fBit.lock.at(i).LongDescr.length() > 0)
 				{
 					itm->setText(1, fBit.lock.at(i).LongDescr);
 				}
 				itm->setFlags(itm->flags() | Qt::ItemIsUserCheckable);
-				itm->setCheckState(0, Qt::Checked);
+				if (lock & (1 << bitOffset))
+				{
+					itm->setCheckState(0, Qt::Checked);
+				}
 				lckItem->addChild(itm);
 			}
+
+			treeWidget->expandAll();
+			treeWidget->resizeColumnToContents(0);
 		}
 
 		if (fBit.fuse.count() > 0)
 		{
+			unsigned int fuse = awip->GetFuseBits();
+
 			QTreeWidgetItem *lckItem = new QTreeWidgetItem();
 			lckItem->setText(0, "Fuse");
 			treeWidget->insertTopLevelItem(0, lckItem);
@@ -237,196 +246,25 @@ void fuseModalDialog::initWidgets(const QString &msg, long int type, bool readon
 			for (int i = 0; i < fBit.fuse.count(); i++)
 			{
 				QTreeWidgetItem *itm = new QTreeWidgetItem();
-				itm->setText(0, QString().sprintf("Bit %d ", i) + fBit.fuse.at(i).ShortDescr);
+				int bitOffset = fBit.fuse.at(i).bit;
+				itm->setText(0, QString().sprintf("Bit %d, ", bitOffset) + fBit.fuse.at(i).ShortDescr);
 				if (fBit.fuse.at(i).LongDescr.length() > 0)
 				{
 					itm->setText(1, fBit.fuse.at(i).LongDescr);
 				}
 				itm->setFlags(itm->flags() | Qt::ItemIsUserCheckable);
-				itm->setCheckState(0, Qt::Checked);
+				if (fuse & (1 << bitOffset))
+				{
+					itm->setCheckState(0, Qt::Checked);
+				}
 				lckItem->addChild(itm);
 			}
+
+			treeWidget->expandAll();
+			treeWidget->resizeColumnToContents(0);
 		}
-#if 0
-		frmLock0->setHidden(fBit.lockenable3 == 0);
-		frmLock1->setHidden(fBit.lockenable2 == 0);
-		frmLock2->setHidden(fBit.lockenable1 == 0);
-		frmLock3->setHidden(fBit.lockenable0 == 0);
-
-		frmFuses0->setHidden(fBit.fuseenable3 == 0);
-		frmFuses1->setHidden(fBit.fuseenable2 == 0);
-		frmFuses2->setHidden(fBit.fuseenable1 == 0);
-		frmFuses3->setHidden(fBit.fuseenable0 == 0);
-
-		if (fBit.lockenable3 == 0 &&
-				fBit.lockenable2 == 0 &&
-				fBit.lockenable1 == 0 &&
-				fBit.lockenable0 == 0)
-		{
-			frmLock->setHidden(true);
-		}
-		else
-		{
-			frmLock->setHidden(false);
-		}
-
-		if (fBit.fuseenable3 == 0 &&
-				fBit.fuseenable2 == 0 &&
-				fBit.fuseenable1 == 0 &&
-				fBit.fuseenable0 == 0)
-		{
-			frmFuses->setHidden(true);
-		}
-		else
-		{
-			frmFuses->setHidden(false);
-		}
-
-
-		//Label
-		for (int k = 0; k < LOCKPACKSIZE; k++)
-		{
-			QString sp;
-			int pos = LOCKPACKSIZE - k - 1;
-			QString def = QString().sprintf(" %d", k);
-
-			sp = fBit.locklabel3[pos];
-
-			if (!sp.length())
-			{
-				sp = def;
-			}
-
-			chkLock.at(0 * 8 + k)->setText(sp);
-
-			sp = fBit.locklabel2[pos];
-
-			if (!sp.length())
-			{
-				sp = def;
-			}
-
-			chkLock.at(1 * 8 + k)->setText(sp);
-
-			sp = fBit.locklabel1[pos];
-
-			if (!sp.length())
-			{
-				sp = def;
-			}
-
-			chkLock.at(2 * 8 + k)->setText(sp);
-
-			sp = fBit.locklabel0[pos];
-
-			if (!sp.length())
-			{
-				sp = def;
-			}
-
-			chkLock.at(3 * 8 + k)->setText(sp);
-
-
-			sp = fBit.fuselabel3[pos];
-
-			if (!sp.length())
-			{
-				sp = def;
-			}
-
-			chkFuse.at(0 * 8 + k)->setText(sp);
-
-			sp = fBit.fuselabel2[pos];
-
-			if (!sp.length())
-			{
-				sp = def;
-			}
-
-			chkFuse.at(1 * 8 + k)->setText(sp);
-
-			sp = fBit.fuselabel1[pos];
-
-			if (!sp.length())
-			{
-				sp = def;
-			}
-
-			chkFuse.at(2 * 8 + k)->setText(sp);
-
-			sp = fBit.fuselabel0[pos];
-
-			if (!sp.length())
-			{
-				sp = def;
-			}
-
-			chkFuse.at(3 * 8 + k)->setText(sp);
-		}
-
-		//Sensitive
-		for (int k = 0; k < LOCKPACKSIZE; k++)
-		{
-			int pos = LOCKPACKSIZE - k - 1;
-			chkLock.at(0 * 8 + pos)->setEnabled((fBit.lockenable3 & (0x80 >> k)) ? true : false);
-			chkLock.at(1 * 8 + pos)->setEnabled((fBit.lockenable2 & (0x80 >> k)) ? true : false);
-			chkLock.at(2 * 8 + pos)->setEnabled((fBit.lockenable1 & (0x80 >> k)) ? true : false);
-			chkLock.at(3 * 8 + pos)->setEnabled((fBit.lockenable0 & (0x80 >> k)) ? true : false);
-
-			chkFuse.at(0 * 8 + pos)->setEnabled((fBit.fuseenable3 & (0x80 >> k)) ? true : false);
-			chkFuse.at(1 * 8 + pos)->setEnabled((fBit.fuseenable2 & (0x80 >> k)) ? true : false);
-			chkFuse.at(2 * 8 + pos)->setEnabled((fBit.fuseenable1 & (0x80 >> k)) ? true : false);
-			chkFuse.at(3 * 8 + pos)->setEnabled((fBit.fuseenable0 & (0x80 >> k)) ? true : false);
-		}
-#endif
-	}
-	else
-	{
-#if 0
-		//Default (disable all)
-		for (int k = 0; k < LOCKPACKSIZE; k++)
-		{
-			QString def = QString().sprintf(" %d", k);
-			//Label
-			chkLock.at(0 * 8 + k)->setText(def);
-			chkLock.at(1 * 8 + k)->setText(def);
-			chkLock.at(2 * 8 + k)->setText(def);
-			chkLock.at(3 * 8 + k)->setText(def);
-
-			chkFuse.at(0 * 8 + k)->setText(def);
-			chkFuse.at(1 * 8 + k)->setText(def);
-			chkFuse.at(2 * 8 + k)->setText(def);
-			chkFuse.at(3 * 8 + k)->setText(def);
-
-			//Sensitive
-			chkLock.at(0 * 8 + k)->setEnabled(false);
-			chkLock.at(1 * 8 + k)->setEnabled(false);
-			chkLock.at(2 * 8 + k)->setEnabled(false);
-			chkLock.at(3 * 8 + k)->setEnabled(false);
-
-			chkFuse.at(0 * 8 + k)->setEnabled(false);
-			chkFuse.at(1 * 8 + k)->setEnabled(false);
-			chkFuse.at(2 * 8 + k)->setEnabled(false);
-			chkFuse.at(3 * 8 + k)->setEnabled(false);
-		}
-#endif
 	}
 
-#if 0
-	//Checked
-	for (int k = 0; k < LOCKPACKSIZE; k++)
-	{
-		chkLock.at(0 * 8 + k)->setChecked(((lock >> 24) & (0x80 >> k)) ? true : false); // L0
-		chkLock.at(1 * 8 + k)->setChecked(((lock >> 16) & (0x80 >> k)) ? true : false); // L1
-		chkLock.at(2 * 8 + k)->setChecked(((lock >>  8) & (0x80 >> k)) ? true : false); // L2
-		chkLock.at(3 * 8 + k)->setChecked(((lock) & (0x80 >> k)) ? true : false);     // L3
-
-		chkFuse.at(0 * 8 + k)->setChecked(((fuse >> 24) & (0x80 >> k)) ? true : false); // F0
-		chkFuse.at(1 * 8 + k)->setChecked(((fuse >> 16) & (0x80 >> k)) ? true : false); // F1
-		chkFuse.at(2 * 8 + k)->setChecked(((fuse >>  8) & (0x80 >> k)) ? true : false); // F2
-		chkFuse.at(3 * 8 + k)->setChecked(((fuse) & (0x80 >> k)) ? true : false);     // F3
-	}
-#endif
 	chkHlp1->setText(translate(STR_FUSEDLGNOTESET) + " (bit = 0)");
 	chkHlp1->setEnabled(false);
 	chkHlp0->setText(translate(STR_FUSEDLGNOTECLR) + " (bit = 1)");
@@ -455,7 +293,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 1, "Lock1", },
+			{ 1, "Lock1", "Add the description, Luke"},
 			{ 2, "Lock2", }
 		},
 	},

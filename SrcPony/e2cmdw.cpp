@@ -59,6 +59,7 @@
 #include "eeptypes.h"
 
 
+
 #define STATUSBAR_FORM  "    Size     0 Bytes     CRC  0000h      "
 #define STATUSBAR_PRINT "    Size %5ld Bytes     CRC  %04Xh     %c"
 
@@ -973,7 +974,8 @@ void e2CmdWindow::addI2C8Struct()
 	QAction *actionRecent = menuDevice->addMenu(mTmp->mnu);
 
 	mTmp->grp = new QActionGroup(this);
-	mTmp->info << eep24xx_map << eep24xx1A_map << eep24xx1B_map << eep24xx5_map;
+// 	mTmp->info << eep24xx_map << eep24xx1A_map << eep24xx1B_map << eep24xx5_map;
+	mTmp->info << GetEEPSubTypeVector(E24XX) << GetEEPSubTypeVector(E24XX1_A) << GetEEPSubTypeVector(E24XX1_B) << GetEEPSubTypeVector(E24XX5);
 	mTmp->type << E24XX << E24XX1_A << E24XX1_B << E24XX5;
 
 	for (int i = 0; i < mTmp->info.count(); i++)
@@ -1002,7 +1004,8 @@ void e2CmdWindow::addI2C16Struct()
 	QAction *actionRecent = menuDevice->addMenu(mTmp->mnu);
 
 	mTmp->grp = new QActionGroup(this);
-	mTmp->info << eep24xx2_map;
+// 	mTmp->info << eep24xx2_map;
+	mTmp->info << GetEEPSubTypeVector(E24XX2);
 	mTmp->type << E24XX2;
 
 	for (int i = 0; i < mTmp->info.count(); i++)
@@ -1031,7 +1034,8 @@ void e2CmdWindow::addI2CAT17Struct()
 	QAction *actionRecent = menuDevice->addMenu(mTmp->mnu);
 
 	mTmp->grp = new QActionGroup(this);
-	mTmp->info << eep17xxx_map;
+// 	mTmp->info << eep17xxx_map;
+	mTmp->info << GetEEPSubTypeVector(AT17XXX);
 	mTmp->type << AT17XXX;
 
 	for (int i = 0; i < mTmp->info.count(); i++)
@@ -1061,7 +1065,8 @@ void e2CmdWindow::addMW16Struct()
 	QAction *actionRecent = menuDevice->addMenu(mTmp->mnu);
 
 	mTmp->grp = new QActionGroup(this);
-	mTmp->info << eep93x6_map;
+// 	mTmp->info << eep93x6_map;
+	mTmp->info << GetEEPSubTypeVector(E93X6);
 	mTmp->type << E93X6;
 
 	for (int i = 0; i < mTmp->info.count(); i++)
@@ -1091,7 +1096,8 @@ void e2CmdWindow::addMW8Struct()
 	QAction *actionRecent = menuDevice->addMenu(mTmp->mnu);
 
 	mTmp->grp = new QActionGroup(this);
-	mTmp->info << eep93xx8_map;
+// 	mTmp->info << eep93xx8_map;
+	mTmp->info << GetEEPSubTypeVector(E93XX_8);
 	mTmp->type << E93XX_8;
 
 	for (int i = 0; i < mTmp->info.count(); i++)
@@ -1121,7 +1127,8 @@ void e2CmdWindow::addSPIStruct()
 	QAction *actionRecent = menuDevice->addMenu(mTmp->mnu);
 
 	mTmp->grp = new QActionGroup(this);
-	mTmp->info << eep250xx_map << eep25xxx_map;
+// 	mTmp->info << eep250xx_map << eep25xxx_map;
+	mTmp->info << GetEEPSubTypeVector(E250XX) << GetEEPSubTypeVector(E25XXX);
 	mTmp->type << E250XX << E25XXX;
 
 	for (int i = 0; i < mTmp->info.count(); i++)
@@ -1150,7 +1157,8 @@ void e2CmdWindow::addAT90Struct()
 	QAction *actionRecent = menuDevice->addMenu(mTmp->mnu);
 
 	mTmp->grp = new QActionGroup(this);
-	mTmp->info << eepAt90s_map;
+// 	mTmp->info << eepAt90s_map;
+	mTmp->info << GetEEPSubTypeVector(AT90SXX);
 	mTmp->type << AT90SXX;
 
 	for (int i = 0; i < mTmp->info.count(); i++)
@@ -1180,7 +1188,8 @@ void e2CmdWindow::addAT89Struct()
 	QAction *actionRecent = menuDevice->addMenu(mTmp->mnu);
 
 	mTmp->grp = new QActionGroup(this);
-	mTmp->info << eepAt89s_map;
+// 	mTmp->info << eepAt89s_map;
+	mTmp->info << GetEEPSubTypeVector(AT89SXX);
 	mTmp->type << AT89SXX;
 
 	for (int i = 0; i < mTmp->info.count(); i++)
@@ -1210,7 +1219,8 @@ void e2CmdWindow::addPIC16Struct()
 	QAction *actionRecent = menuDevice->addMenu(mTmp->mnu);
 
 	mTmp->grp = new QActionGroup(this);
-	mTmp->info << eepPic168xx_map << eepPic16_map;
+// 	mTmp->info << eepPic168xx_map << eepPic16_map;
+	mTmp->info << GetEEPSubTypeVector(PIC168XX) << GetEEPSubTypeVector(PIC16XX);
 	mTmp->type << PIC168XX << PIC16XX;
 
 	for (int i = 0; i < mTmp->info.count(); i++)
@@ -1240,7 +1250,8 @@ void e2CmdWindow::addPIC12Struct()
 	QAction *actionRecent = menuDevice->addMenu(mTmp->mnu);
 
 	mTmp->grp = new QActionGroup(this);
-	mTmp->info << eepPic125_map;
+// 	mTmp->info << eepPic125_map;
+	mTmp->info << GetEEPSubTypeVector(PIC125XX);
 	mTmp->type << PIC125XX;
 
 	for (int i = 0; i < mTmp->info.count(); i++)
@@ -1269,7 +1280,8 @@ void e2CmdWindow::addIMBUSStruct()
 	QAction *actionRecent = menuDevice->addMenu(mTmp->mnu);
 
 	mTmp->grp = new QActionGroup(this);
-	mTmp->info = eepnvm3060_map;
+// 	mTmp->info = eepnvm3060_map;
+	mTmp->info << GetEEPSubTypeVector(ENVMXXX);
 	mTmp->type << ENVMXXX;
 
 	for (int i = 0; i < mTmp->info.count(); i++)
@@ -1298,7 +1310,8 @@ void e2CmdWindow::addSDEStruct()
 	QAction *actionRecent = menuDevice->addMenu(mTmp->mnu);
 
 	mTmp->grp = new QActionGroup(this);
-	mTmp->info << eep2506_map;
+// 	mTmp->info << eep2506_map;
+	mTmp->info << GetEEPSubTypeVector(E2506XX);
 	mTmp->type << E2506XX;
 
 	for (int i = 0; i < mTmp->info.count(); i++)
@@ -1327,7 +1340,8 @@ void e2CmdWindow::addX24CStruct()
 	QAction *actionRecent = menuDevice->addMenu(mTmp->mnu);
 
 	mTmp->grp = new QActionGroup(this);
-	mTmp->info << eep2444_map;
+// 	mTmp->info << eep2444_map;
+	mTmp->info << GetEEPSubTypeVector(X24C44XX);
 	mTmp->type << X24C44XX;
 
 	for (int i = 0; i < mTmp->info.count(); i++)

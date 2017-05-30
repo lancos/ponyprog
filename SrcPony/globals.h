@@ -30,8 +30,6 @@
 #ifndef _GLOBALS_H
 #define _GLOBALS_H
 
-#include <QString>
-
 
 #define AUTOSIZE_ID     64768
 
@@ -42,28 +40,7 @@
 
 #define ALL_TYPE        0x7 // (PROG_TYPE|DATA_TYPE|CONFIG_TYPE)
 
-//static const QString APPNAME       = APP_NAME;
-//static const QString AUTHORNAME    = APP_AUTHOR;
-//static const QString AUTHORMAIL    = APP_EMAIL;
-static const QString AUTHORWEB     = "http://www.LancOS.com";
-static const QString COPYRIGHTYEAR = "1997-2017";
-// static QString APPNAME_EXT   = STR_APPNAME_EXT;
-static const QString PORTERGQT     = "Eduard Kalinowski";
-static const QString PORTERMAIL    = "eduard_kalinowski@yahoo.de";
 
-//static const QString APPVERSION    = APP_VERSION;
-
-
-// #ifdef  MAX_PATH
-// #define MAXPATH MAX_PATH
-// #else
-// #define MAXPATH 1024
-// #endif
-
-// #define MAXMSG  256
-
-// #define MAXFNAMEMSG     40
-// #define MAXNUMDIGIT     64
 
 #define NO_OF_FILETYPE  LAST_FT
 enum FileType

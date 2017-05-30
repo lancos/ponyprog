@@ -35,6 +35,259 @@
 
 
 
+//AutoTag
+//Device type description vectors
+
+
+static QVector<chipInfo> const eep24xx_map =
+{
+	{ "24XX Auto", E2400, AUTOSIZE_ID / 256, -1, -1, -1 },
+	{"2402", E2402, 1, -1, -1, -1},
+	{"2404", E2404, 2, -1, -1, -1},
+	{"2408", E2408, 4, -1, -1, -1},
+	{"2416", E2416, 8, -1, -1, -1}
+};
+
+
+static QVector<chipInfo> const eep24xx1A_map =
+{
+	//      "Auto",
+	{"2401-A", E2401_A, 1, -1, -1, -1}
+};
+
+
+static QVector<chipInfo> const eep24xx1B_map =
+{
+	//      "Auto",
+	{"2401-B", E2401_B, 1, -1, -1, -1}
+};
+
+
+
+static QVector<chipInfo> const eep24xx2_map =
+{
+	//      "Auto",
+	{"24E16", E24E16, 8, -1, -1, -1},
+	{"2432", E2432, 16, -1, -1, -1},
+	{"2464/2465", E2464, 32, -1, -1, -1},
+	{"24128", E24128, 64, -1, -1, -1},
+	{"24256", E24256, 128, -1, -1, -1},
+	{"24512", E24512, 256, -1, -1, -1}
+};
+
+
+static QVector<chipInfo> const eep24xx5_map =
+{
+	//      "Auto",
+	{"24325", E24325, 16, -1, -1, -1},
+	{"24645", E24645, 32, -1, -1, -1}
+};
+
+
+static QVector<chipInfo> const eepAt90s_map =
+{
+	//      "AVR  Auto", AT90S0000
+	{"AT90S1200", AT90S1200, (KB(1) + 64), KB(1), 0, -1},
+	{"AT90S2313", AT90S2313, (KB(2) + 128), KB(2), 0, -1},
+	{"AT90S2323", AT90S2323, (KB(2) + 128), KB(2), 0, -1},
+	{"AT90S2333", AT90S2333, (KB(2) + 128), KB(2), 0, -1},
+	{"AT90S2343", AT90S2343, (KB(2) + 128), KB(2), 0, -1},
+	{"AT90S4414", AT90S4414, (KB(4) + 256), KB(4), 0, -1},
+	{"AT90S4433", AT90S4433, (KB(4) + 256), KB(4), 0, -1},
+	{"AT90S4434", AT90S4434, (KB(4) + 256), KB(4), 0, -1},
+	{"AT90S8515", AT90S8515, (KB(8) + 512), KB(8), 0, -1},
+	{"AT90C8534", AT90S8534, (KB(8) + 512), KB(8), 0, -1},
+	{"AT90S8535", AT90S8535, (KB(8) + 512), KB(8), 0, -1},
+	{"AT90CAN32", AT90CAN32, (KB(32) + KB(1)), KB(32), 128, -1},
+	{"AT90CAN64", AT90CAN64, (KB(64) + KB(2)), KB(64), 256, -1},
+	{"AT90CAN128", AT90CAN128, (KB(128) + KB(4)), KB(128), 256, -1},
+
+	{"ATmega8515", ATmega8515, (KB(8) + 512), KB(8), 64, -1 },
+	{"ATmega8535", ATmega8535, (KB(8) + 512), KB(8), 64, -1 },
+	{"ATmega48", ATmega48, (KB(4) + 256), KB(4), 64, -1},
+	{"ATmega8", ATmega8, (KB(8) + 512), KB(8), 64, -1},
+	{"ATmega88", ATmega88, (KB(8) + 512), KB(8),  64, -1},
+	{"ATmega16", ATmega16, (KB(16) + 512), KB(16), 128, -1},
+	{"ATmega161", ATmega161, (KB(16) + 512), KB(16), 128, -1},
+	{"ATmega162", ATmega162, (KB(16) + 512), KB(16), 128, -1},
+	{"ATmega163", ATmega163, (KB(16) + 512), KB(16), 128, -1},
+	{"ATmega164", ATmega164, (KB(16) + 512), KB(16), 128, -1},
+	{"ATmega168", ATmega168, (KB(16) + 512), KB(16), 128, -1},
+	{"ATmega169", ATmega169, (KB(16) + 512), KB(16), 128, -1},
+	{"ATmega32", ATmega32, (KB(32) + KB(1)), KB(32), 128, -1},
+
+	{"ATmega323", ATmega323, (KB(32) + KB(1)), KB(32), 128, -1},
+	{"ATmega324", ATmega324, (KB(32) + KB(1)), KB(32), 128, -1},
+	{"ATmega328", ATmega328, (KB(32) + KB(1)), KB(32), 128, -1}, // new (RG 22.06.2012)
+	{"ATmega603", ATmega603, (KB(64) + KB(2)), KB(64), 256, -1},
+	{"ATmega103", ATmega103, (KB(128) + KB(4)), KB(128), 256, -1},
+	{"ATmega64", ATmega64, (KB(64) + KB(2)), KB(64), 256, -1},
+	{"ATmega640", ATmega640, (KB(64) + KB(4)), KB(64), 256, -1},
+	{"ATmega644", ATmega644, (KB(64) + KB(2)), KB(64), 256, -1},
+	{"ATmega128", ATmega128, (KB(128) + KB(4)), KB(128), 256, -1},
+	{"ATmega1280", ATmega1280, (KB(128) + KB(4)), KB(128), 256, -1},
+	{"ATmega1281", ATmega1281, (KB(128) + KB(4)), KB(128), 256, -1},
+	{"ATmega2560", ATmega2560, (KB(256) + KB(4)), KB(256), 256, -1},
+	{"ATmega2561", ATmega2561, (KB(256) + KB(4)), KB(256), 256, -1},
+
+	{"ATtiny12", ATtiny12, (KB(1) + 64), KB(1), 0, -1},
+	{"ATtiny13", ATtiny13, (KB(1) + 64), KB(1), 32, -1},
+	{"ATtiny15", ATtiny15, (KB(1) + 64), KB(1), 0, -1},
+	{"ATtiny22", ATtiny22, (KB(2) + 128), KB(2), 0, -1},
+	{"ATtiny25", ATtiny25, (KB(2) + 128), KB(2), 32, -1},
+	{"ATtiny26", ATtiny26, (KB(2) + 128), KB(2), 32, -1},
+	{"ATtiny261", ATtiny261, (KB(2) + 128), KB(2), 32, -1},
+	//      {"ATtiny28", ATtiny28, },
+	{"ATtiny2313", ATtiny2313, (KB(2) + 128), KB(2), 32, -1},
+	{"ATtiny45", ATtiny45, (KB(4) + 256), KB(4), 64,  -1},
+	{"ATtiny461", ATtiny461, (KB(4) + 256), KB(4), 64, -1},
+	{"ATtiny85", ATtiny85, (KB(8) + 512), KB(8), 64, -1},
+	{"ATtiny861", ATtiny861, (KB(8) + 512), KB(8), 64, -1}
+};
+
+
+static QVector<chipInfo> const eepAt89s_map =
+{
+	//      "AT89SXX Auto", AT89S0000
+	{"AT89S8252", AT89S8252, KB(8) + KB(2), KB(8), 0, -1 },
+	{"AT89S8253", AT89S8253, KB(12) + KB(2), KB(12), 64, 1 },
+	{"AT89S51", AT89S51, KB(4), KB(4), 256, -1 },
+	{"AT89S52", AT89S52, KB(8), KB(8), 256, -1 },
+	{"AT89S53", AT89S53, KB(12), KB(12), 0, -1 }
+};
+
+
+static QVector<chipInfo> const eep93x6_map =
+{
+	//      "93XX Auto", E9300
+	{"9306", E9306, 16, -1, -1, 64},
+	{"9346", E9346, 64, -1, -1, 64},
+	{"9356", E9356, 128, -1, -1, 256},
+	{"9357", E9357, 128, -1, -1, 128},
+	{"9366", E9366, 256, -1, -1, 256},
+	{"9376", E9376, 512, -1, -1, 1024},
+	{"9386", E9386, 1024, -1, -1, 1024}
+};
+
+
+static QVector<chipInfo> const eep93xx8_map =
+{
+	//      "93XX Auto",
+	{"9306", E9306_8, 32, -1, -1, 128},
+	{"9346", E9346_8, 128, -1, -1, 128},
+	{"9356", E9356_8, 256, -1, -1, 512},
+	{"9357", E9357_8, 256, -1, -1, 256},
+	{"9366", E9366_8, 512, -1, -1, 512},
+	{"9376", E9376_8, 1024, -1, -1, 2048},
+	{"9386", E9386_8, 2048, -1, -1, 2048},
+};
+
+
+static QVector<chipInfo> const eepPic16_map =
+{
+	//      "PIC16XX Auto",
+	{"PIC16X83", PIC1683, KB(1) + 64, KB(1), -1, -1},
+	{"PIC16X84", PIC1684, KB(2) + 64, KB(2), -1, -1}
+};
+
+
+static QVector<chipInfo> const eepPic168xx_map =
+{
+	{"PIC168XX Auto", PIC16800, AUTOSIZE_ID, 0, -1, -1},
+	{"PIC16F84A", PIC1684A, KB(2) + 64, KB(2), -1, -1},
+	{"PIC16F870", PIC16870, KB(4) + 64, KB(4), -1, -1},
+	{"PIC16F871", PIC16871, KB(4) + 64, KB(4), -1, -1},
+	{"PIC16F872", PIC16872, KB(4) + 64, KB(4), -1, -1},
+
+	{"PIC16F873", PIC16873, KB(8) + 128, KB(8), -1, -1},
+	{"PIC16F874", PIC16874, KB(8) + 128, KB(8), -1, -1},
+	{"PIC16F876", PIC16876, KB(16) + 256, KB(16), -1, -1},
+	{"PIC16F877", PIC16877, KB(16) + 256, KB(16), -1, -1},
+
+	{"PIC16F873A", PIC16873A, KB(8) + 128, KB(8), -1, -1},
+	{"PIC16F874A", PIC16874A, KB(8) + 128, KB(8), -1, -1},
+	{"PIC16F876A", PIC16876A, KB(16) + 256, KB(16), -1, -1},
+	{"PIC16F877A", PIC16877A, KB(16) + 256, KB(16), -1, -1},
+
+	{"PIC16F627", PIC16627, KB(1) + 128, KB(1), -1, -1},
+	{"PIC16F628", PIC16628, KB(2) + 128, KB(2), -1, -1}
+};
+
+
+static QVector<chipInfo> const eepPic125_map =
+{
+	//      "PIC125XX Auto",PIC12500
+	{"PIC12C508", PIC12508, KB(1), KB(1), -1, -1},
+	{"PIC12C509", PIC12509, KB(2), KB(2), -1, -1},
+	{"PIC12C508A", PIC12508A, KB(1), KB(1), -1, -1},
+	{"PIC12C509A", PIC12509A, KB(2), KB(2), -1, -1},
+	{"PIC12E518", PIC12E518, KB(1), KB(1), -1, -1},
+	{"PIC12E519", PIC12E519, KB(2), KB(2), -1, -1},
+	{"PIC12C671", PIC12671, KB(1), KB(1), -1, -1},
+	{"PIC12C672", PIC12672, KB(2), KB(2), -1, -1},
+	{"PIC12CE673", PIC12673, KB(1), KB(1), -1, -1},
+	{"PIC12CE674", PIC12674, KB(2), KB(2), -1, -1}
+};
+
+
+static QVector<chipInfo> const eep250xx_map =
+{
+	//      "250X0 Auto",
+	{"25010", E25010, 128, -1, -1, -1},
+	{"25020", E25020, 256, -1, -1, -1},
+	{"25040", E25040, 512, -1, -1, -1}
+};
+
+
+static QVector<chipInfo> const eep25xxx_map =
+{
+	//      "25XXX Auto",E25XX0
+	{"25080", E25080, KB(1), -1, -1, -1},
+	{"25160", E25160, KB(2), -1, -1, -1},
+	{"25320", E25320, KB(4), -1, -1, -1},
+	{"2564X/95640", E25640, KB(8), -1, -1, -1},
+	{"25128", E25128, KB(16), -1, -1, -1},
+	{"25256", E25256, KB(32), -1, -1, -1}
+};
+
+
+static QVector<chipInfo> const eep2506_map =
+{
+	//      "250X0 Auto",E25000
+	{"SDE2506", E2506, 128, -1, -1, -1}
+};
+
+
+static QVector<chipInfo> const eepnvm3060_map =
+{
+	//      "NVMXX Auto",ENVM3000
+	{"MDA2062", EMDA2062, 128, -1, -1, -1},
+	{"NVM3060", ENVM3060, 512, -1, -1, -1}
+};
+
+
+static QVector<chipInfo> const eep2444_map =
+{
+	//      "XX Auto",
+	{"S2430", S24H30, 8, -1, -1, 8},
+	{"X2444", X24C44, 16, -1, -1, 16},
+	{"X2445", X24C45, 16, -1, -1, 16}
+};
+
+
+static QVector<chipInfo> const eep17xxx_map =
+{
+	//      "Auto",AT1700
+	{"AT1765", AT1765, KB(8), -1, -1, -1},
+	{"AT17128", AT17128, KB(16), -1, -1, -1},
+	{"AT17256", AT17256, KB(32), -1, -1, -1},
+	{"AT17512", AT17512, KB(64), -1, -1, -1},
+	{"AT17010", AT17010, KB(128), -1, -1, -1},
+
+};
+
+
+
 long BuildE2PType(int pritype, int subtype)
 {
 	return (((long)pritype & 0x7FFF) << 16) | (subtype & 0x7FFF);
