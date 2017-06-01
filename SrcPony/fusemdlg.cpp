@@ -252,10 +252,10 @@ void fuseModalDialog::initWidgets(const QString &msg, bool readonly)
 	}
 
 	chkHlp1->setText(translate(STR_FUSEDLGNOTESET) + " (bit = 0)");
-// 	chkHlp1->setEnabled(false);
+	chkHlp1->setEnabled(false);
 	chkHlp0->setText(translate(STR_FUSEDLGNOTECLR) + " (bit = 1)");
         chkHlp0->setChecked(true);
-// 	chkHlp0->setEnabled(false);
+	chkHlp0->setEnabled(false);
 
 	if (readonly)
 	{
