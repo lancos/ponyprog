@@ -50,7 +50,7 @@ class Sde2506 : public Device
 
 	Sde2506Bus *GetBus()
 	{
-		return (Sde2506Bus *)Device::GetBus();
+		return static_cast<Sde2506Bus *>(Device::GetBus());
 	}
 
   private:              //--------------------------------------- private

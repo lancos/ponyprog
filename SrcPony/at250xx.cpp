@@ -155,7 +155,7 @@ int At250xx::Verify(int type)
 		}
 	}
 
-	delete localbuf;
+	delete[] localbuf;
 
 	return rval;
 }

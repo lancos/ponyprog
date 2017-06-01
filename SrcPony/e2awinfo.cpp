@@ -351,7 +351,7 @@ void e2AppWinInfo::SetEEProm(unsigned long id)
 
 		long xtype = GetEEPId();
 		eep->SetProgPageSize(GetEEPTypeWPageSize(xtype), false);
-		At90sBus *b = (At90sBus *)eep->GetBus();
+		At90sBus *b = static_cast<At90sBus *>(eep->GetBus());
 		b->SetFlashPagePolling((xtype != ATmega603) && (xtype != ATmega103));
 		b->SetOld1200Mode((xtype == AT90S1200));
 		break;
@@ -377,7 +377,7 @@ void e2AppWinInfo::SetEEProm(unsigned long id)
 			eep->SetDataPageSize(GetEEPTypeWPageSize(GetEEPId()) / 2, true);     //read data page size
 		}
 
-		At89sBus *b = (At89sBus *)eep->GetBus();
+		At89sBus *b = static_cast<At89sBus *>(eep->GetBus());
 		b->SetCompatibilityMode((xtype == AT89S8252 || xtype == AT89S53));
 		b->SetFallingPhase((xtype == AT89S8253) && E2Profile::Get8253FallEdge());
 		b->SetPagePolling(true, (xtype == AT89S8253 || xtype == AT89S51 || xtype == AT89S52));
@@ -941,7 +941,7 @@ int e2AppWinInfo::Save()
 	//restore buffer
 	memcpy(GetBufPtr(), localbuf, GetBufSize());
 
-	delete localbuf;
+	delete[] localbuf;
 
 	return rval;
 }

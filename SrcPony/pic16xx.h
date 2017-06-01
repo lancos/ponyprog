@@ -56,7 +56,7 @@ class Pic16xx : public Device
 
 	PicBus *GetBus()
 	{
-		return (PicBus *)Device::GetBus();
+		return static_cast<PicBus *>(Device::GetBus());
 	}
 
 	uint16_t id_locations[8];

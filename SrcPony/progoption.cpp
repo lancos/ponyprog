@@ -44,7 +44,7 @@ progOptionDialog::progOptionDialog(QWidget *bw, long type, int &reload, int &ree
 
 	setWindowTitle(title);
 
-	cmdw = (e2CmdWindow *)bw;
+	cmdw = static_cast<e2CmdWindow *>(bw);
 
 	chk = (QVector<QCheckBox *>() << idRELOAD << idREADFLASH << idREADEEP << idBYTESWAP <<
 		   idSETID << idREADOSCCAL << idERASE << idFLASH << idEEPROM << idLOCK);

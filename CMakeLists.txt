@@ -131,7 +131,9 @@ SET(PONYPROG_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX})
 # ENDIF(MSVC)
 
 
+#on old versiong of GCC: -std=c++11 move to -std=c++0x
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fno-exceptions -fno-rtti")
+# SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-exceptions -fno-rtti")
 
 # options for gprof 
 IF(${USE_PROFILER})
@@ -168,6 +170,7 @@ ELSE()
     ENDIF(NOT Qt5Widgets_FOUND)
 ENDIF()
 
+# for this feature install debhelper or 
 SET(PONYPROG_CPACK_PACKAGE_SHLIBDEPS ON)
 
 IF(${USE_QT_VERSION} MATCHES "4")

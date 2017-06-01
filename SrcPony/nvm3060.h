@@ -50,7 +50,7 @@ class Nvm3060 : public Device
 
 	IMBus *GetBus()
 	{
-		return (IMBus *)Device::GetBus();
+		return static_cast<IMBus *>(Device::GetBus());
 	}
 
   private:              //--------------------------------------- private

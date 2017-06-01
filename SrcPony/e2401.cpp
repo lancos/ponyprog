@@ -213,6 +213,6 @@ int mE2401::Verify(int type)
 
 	GetBus()->ReadEnd();
 
-	delete localbuf;
+	delete[] localbuf;
 	return rval;
 }

@@ -347,6 +347,6 @@ int At17xxx::Verify(int type)
 
 	GetBus()->ReadEnd();
 
-	delete localbuf;
+	delete[] localbuf;
 	return rval;
 }

@@ -129,7 +129,7 @@ int E24xx2::Write(int probe, int type)
 
 	GetBus()->WriteEnd();
 
-	delete localbuf;
+	delete[] localbuf;
 
 	if (rval == OK)
 	{
@@ -262,7 +262,7 @@ int E24xx2::Verify(int type)
 
 	GetBus()->ReadEnd();
 
-	delete localbuf;
+	delete[] localbuf;
 	return rval;
 }
 

@@ -52,7 +52,7 @@ class mE2401 : public Device
 
 	I2CBus *GetBus()
 	{
-		return (I2CBus *)Device::GetBus();
+		return static_cast<I2CBus *>(Device::GetBus());
 	}
 
 	//-- Parte riguardante la EEPROM

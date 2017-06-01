@@ -44,7 +44,7 @@ e2pFileBuf::e2pFileBuf(e2AppWinInfo *wininfo)
 	: FileBuf(wininfo)
 {
 	file_type = E2P;
-	static_assert(sizeof(struct e2pHeader) == 152, "Bad size for e2pHeader");
+	Q_ASSERT_X(sizeof(struct e2pHeader) == 152, "e2pFileBuf", "Bad size for e2pHeader");
 }
 
 //======================>>> e2pFileBuf::~e2pFileBuf <<<=======================
@@ -195,7 +195,7 @@ int e2pFileBuf::Load(int loadtype, long relocation_offset)
 				rval = READERROR;
 			}
 
-			delete localbuf;
+			delete[] localbuf;
 		}
 		else
 		{
@@ -321,7 +321,7 @@ int e2pFileBuf::Save(int savetype, long relocation_offset)
 			rval = WRITEERROR;
 		}
 
-		delete localbuf;
+		delete[] localbuf;
 	}
 	else
 	{

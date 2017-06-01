@@ -311,7 +311,9 @@ CONFIG(debug, debug|release) {
 }
 
 # -Wall are already on the command line (where does it come from?)
+# for old GCC -std=c++11 move to -std=c++0x
 QMAKE_CXXFLAGS += -std=c++11 -Wno-unused-parameter
+# QMAKE_CXXFLAGS += -Wno-unused-parameter -Wall
 
 # EK 2017 
 # i hope, it's right...

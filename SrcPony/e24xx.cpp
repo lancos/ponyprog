@@ -237,7 +237,7 @@ int E24xx::Verify(int type)
 	}
 
 	GetBus()->ReadEnd();
-	delete localbuf;
+	delete[] localbuf;
 	return rval;
 }
 

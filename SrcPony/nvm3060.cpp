@@ -214,7 +214,7 @@ int Nvm3060::Verify(int type)
 			rval = (memcmp(GetBufPtr(), localbuf, size) != 0) ? 0 : 1;
 		}
 
-		delete localbuf;
+		delete[] localbuf;
 	}
 
 	return rval;

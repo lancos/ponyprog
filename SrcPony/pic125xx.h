@@ -54,7 +54,7 @@ class Pic125xx : public Device
 
 	Pic12Bus *GetBus()
 	{
-		return (Pic12Bus *)Device::GetBus();
+		return static_cast<Pic12Bus *>(Device::GetBus());
 	}
 
 	virtual int CodeProtectAdjust(uint16_t &config, int read = 0);

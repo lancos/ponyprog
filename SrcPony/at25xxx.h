@@ -45,7 +45,7 @@ class At25xxx : public At250xx
 
 	At250BigBus *GetBus()
 	{
-		return (At250BigBus *)Device::GetBus();
+		return static_cast<At250BigBus *>(Device::GetBus());
 	}
 
   private:              //--------------------------------------- private

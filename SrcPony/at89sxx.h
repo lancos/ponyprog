@@ -56,7 +56,7 @@ class At89sxx : public Device
 
 	At89sBus *GetBus()
 	{
-		return (At89sBus *)Device::GetBus();
+		return static_cast<At89sBus *>(Device::GetBus());
 	}
 
   protected:    //--------------------------------------- protected

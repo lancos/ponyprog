@@ -50,7 +50,7 @@ class At250xx : public Device
 
 	At250Bus *GetBus()
 	{
-		return (At250Bus *)Device::GetBus();
+		return static_cast<At250Bus *>(Device::GetBus());
 	}
 
   private:              //--------------------------------------- private

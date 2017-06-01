@@ -323,7 +323,7 @@ int At89sxx::Verify(int type)
 
 		rval = (v_prog == OK && v_data == OK && v_config == OK) ? 1 : 0;
 
-		delete localbuf;
+		delete[] localbuf;
 	}
 
 	return rval;

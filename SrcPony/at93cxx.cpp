@@ -150,7 +150,7 @@ int At93cxx::Verify(int type)
 		}
 	}
 
-	delete localbuf;
+	delete[] localbuf;
 
 	return rval;
 }

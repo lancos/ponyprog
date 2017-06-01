@@ -48,7 +48,7 @@ class Pic168xx : public Pic16xx
 
 	PicBus *GetBus()
 	{
-		return (PicBusNew *)Device::GetBus();
+		return static_cast<PicBusNew *>(Device::GetBus());
 	}
 
 	int QueryType(long &type);

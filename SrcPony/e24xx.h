@@ -70,7 +70,7 @@ class E24xx : public Device
 
 	I2CBus *GetBus()
 	{
-		return (I2CBus *)Device::GetBus();
+		return static_cast<I2CBus *>(Device::GetBus());
 	}
 
 	virtual int bank_out(uint8_t const *copy_buf, int bank_no, long size = -1, long idx = 0);

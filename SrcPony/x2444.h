@@ -50,7 +50,7 @@ class X2444 : public Device
 
 	X2444Bus *GetBus()
 	{
-		return (X2444Bus *)Device::GetBus();
+		return static_cast<X2444Bus *>(Device::GetBus());
 	}
 
   private:              //--------------------------------------- private
