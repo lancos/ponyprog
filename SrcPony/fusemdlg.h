@@ -49,9 +49,18 @@ typedef struct
 
 typedef struct
 {
+	int mask;
+	QString LongDescr;
+} MaskDescr;
+
+
+typedef struct
+{
 	long type; // chip id
 	QVector<BitInfo> fuse;
+	QVector<MaskDescr> fuseDescr;
 	QVector<BitInfo> lock;
+	QVector<MaskDescr> lockDescr;
 } ChipBits;
 
 

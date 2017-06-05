@@ -123,9 +123,9 @@ void fuseModalDialog::onOk()
 
 		}
 	}
-        
-        // EK 2017 
-        // TODO to work with chkHlp1/chkHlp0: invert or not bits
+
+	// EK 2017
+	// TODO to work with chkHlp1/chkHlp0: invert or not bits
 
 	if (read == true)
 	{
@@ -254,7 +254,7 @@ void fuseModalDialog::initWidgets(const QString &msg, bool readonly)
 	chkHlp1->setText(translate(STR_FUSEDLGNOTESET) + " (bit = 0)");
 	chkHlp1->setEnabled(false);
 	chkHlp0->setText(translate(STR_FUSEDLGNOTECLR) + " (bit = 1)");
-        chkHlp0->setChecked(true);
+	chkHlp0->setChecked(true);
 	chkHlp0->setEnabled(false);
 
 	if (readonly)
@@ -273,1381 +273,6 @@ void fuseModalDialog::initWidgets(const QString &msg, bool readonly)
 
 QVector<ChipBits> fuseModalDialog::eep_bits =
 {
-	{
-		AT90S1200,
-		{
-			// fuse
-		},
-		{
-			// lock
-			{ 1, "Lock1", "Add the description, Luke"},
-			{ 2, "Lock2", }
-		},
-	},
-	{
-		AT90S2313,
-		{
-			// fuse
-		},
-		{
-			// lock
-			{ 1, "Lock1", },
-			{ 2, "Lock2", }
-		}
-	},
-	{
-		AT90S4414,
-		{
-			// fuse
-		},
-		{
-			// lock
-			{ 1, "Lock1", },
-			{ 2, "Lock2", }
-		}
-	},
-	{
-		AT90S8515,
-		{
-			// fuse
-		},
-		{
-			// lock
-			{ 1, "Lock1", },
-			{ 2, "Lock2", }
-		}
-	},
-	{
-		AT90S4434,
-		{
-			// fuse
-			{ 0, "FSTRT", }
-		},
-		{
-			// lock
-			{ 1, "Lock1", },
-			{ 2, "Lock2", }
-		}
-	},
-	{
-		AT90S8535,
-		{
-			// fuse
-			{ 0, "FSTRT", }
-		},
-		{
-			// lock
-			{ 1, "Lock1", },
-			{ 2, "Lock2", }
-		}
-	},
-	{
-		AT90S2333,
-		{
-			// fuse
-			{ 0, "CKSEL0", },
-			{ 1, "CKSEL1", },
-			{ 2, "CKSEL2", },
-			{ 3, "BODEN", },
-			{ 4, "BODLEVEL", },
-			{ 5, "SPIEN", }
-		},
-		{
-			// lock
-			{ 1, "Lock1", },
-			{ 2, "Lock2", }
-		}
-	},
-
-	{
-		AT90S4433,
-		{
-			// fuse
-			{ 0, "CKSEL0", },
-			{ 1, "CKSEL1", },
-			{ 2, "CKSEL2", },
-			{ 3, "BODEN", },
-			{ 4, "BODLEVEL", },
-			{ 5, "SPIEN", }
-		},
-		{
-			// lock
-			{ 1, "Lock1", },
-			{ 2, "Lock2", }
-		}
-	},
-
-	{
-		AT90S2323,
-		{
-			// fuse
-			{ 0, "FSTRT", }
-		},
-		{
-			// lock
-			{ 1, "Lock1", },
-			{ 2, "Lock2", }
-		}
-	},
-
-	{
-		AT90S2343,
-		{
-			// fuse
-			{0, "RCEN", }
-		},
-		{
-			// lock
-			{ 1, "Lock1", },
-			{ 2, "Lock2", }
-		}
-	},
-
-	{
-		AT90S8534,
-		{
-			// fuse
-		},
-		{
-			// lock
-			{ 1, "Lock1", },
-			{ 2, "Lock2", }
-		}
-	},
-	{
-		ATtiny12,
-		{
-			// fuse
-			{ 0, "CKSEL0", },
-			{ 1, "CKSEL1", },
-			{ 2, "CKSEL2", },
-			{ 3, "CKSEL3", },
-			{ 4, "RSTDISBL", },
-			{ 5, "SPIEN", },
-			{ 6, "BODEN", },
-			{ 7, "BODLEVEL", }
-		},
-		{
-			// lock
-			{ 1, "Lock1", },
-			{ 2, "Lock2", }
-		}
-	},
-
-	{
-		ATtiny13,
-		{
-			// fuse
-			{ 0, "CKSEL0", },
-			{ 1, "CKSEL1", },
-			{ 2, "SUT0", },
-			{ 3, "SUT1", },
-			{ 4, "CKDIV8", },
-			{ 5, "WDTON", },
-			{ 6, "EESAVE", },
-			{ 7, "SPIEN", },
-			{ 8, "RSTDISBL", },
-			{ 9, "BODLEVEL0", },
-			{ 10, "BODLEVEL1", },
-			{ 11, "DWEN", },
-			{ 12, "SELFPRGEN", }
-		},
-		{
-			// lock
-			{ 0, "Lock1", },
-			{ 1, "Lock2", }
-		}
-	},
-	{
-		ATtiny15,
-		{
-			// fuse
-			{ 0, "CKSEL0", },
-			{ 1, "CKSEL1", },
-			{ 4, "RSTDISBL", },
-			{ 5, "SPIEN", },
-			{ 6, "BODEN", },
-			{ 7, "BODLEVEL", }
-		},
-		{
-			// lock
-			{ 1, "Lock1", },
-			{ 2, "Lock2", }
-		}
-	},
-
-	{
-		ATtiny22,
-		{
-			// fuse
-			{ 0, "RCEN", },
-		},
-		{
-			// lock
-			{ 1, "Lock1", },
-			{ 2, "Lock2", }
-		}
-	},
-	{
-		ATtiny26,
-		{
-			// fuse
-			{ 0, "CKSEL0", },
-			{ 1, "CKSEL1", },
-			{ 2, "CKSEL2", },
-			{ 3, "CKSEL3", },
-			{ 4, "SUT0", },
-			{ 5, "SUT1", },
-			{ 6, "CKOPT", },
-			{ 7, "PLLCK", },
-			{ 8, "BODEN", },
-			{ 9, "BODLEVEL", },
-			{ 10, "EESAVE", },
-			{ 11, "SPIEN", },
-			{ 12, "RSTDISBL", }
-		},
-		{
-			// lock
-			{ 0, "Lock1", },
-			{ 1, "Lock2", }
-		}
-	},
-
-	{
-		ATtiny2313,
-		{
-			// fuse
-			{ 0, "CKSEL0", },
-			{ 1, "CKSEL1", },
-			{ 2, "CKSEL2", },
-			{ 3, "CKSEL3", },
-			{ 4, "SUT0", },
-			{ 5, "SUT1", },
-			{ 6, "CKOUT", },
-			{ 7, "CKDIV8", },
-			{ 8, "RSTDISBL", },
-			{ 9, "BODLEVEL0", },
-			{ 10, "BODLEVEL1", },
-			{ 11, "BODLEVEL2", },
-			{ 12, "WDTON", },
-			{ 13, "SPIEN", },
-			{ 14, "EESAVE", },
-			{ 15, "DWEN", },
-			{ 16, "SPMEN", }
-		},
-		{
-			// lock
-			{ 0, "Lock1", },
-			{ 1, "Lock2", }
-		}
-	},
-	{
-		ATtiny25,
-		{
-			// fuse
-			{ 0, "CKSEL0", },
-			{ 1, "CKSEL1", },
-			{ 2, "CKSEL2", },
-			{ 3, "CKSEL3", },
-			{ 4, "SUT0", },
-			{ 5, "SUT1", },
-			{ 6, "CKOUT", },
-			{ 7, "CKDIV8", },
-			{ 8, "BODLEVEL0", },
-			{ 9, "BODLEVEL1", },
-			{ 10, "BODLEVEL2", },
-			{ 11, "EESAVE", },
-			{ 12, "WDTON", },
-			{ 13, "SPIEN", },
-			{ 14, "DWEN", },
-			{ 15, "RSTDISBL", },
-			{ 16, "SELFPRGEN", }
-		},
-		{
-			// lock
-			{ 0, "Lock1", },
-			{ 1, "Lock2", }
-		}
-	},
-
-	{
-		ATtiny45,
-		{
-			// fuse
-			{ 0, "CKSEL0", },
-			{ 1, "CKSEL1", },
-			{ 2, "CKSEL2", },
-			{ 3, "CKSEL3", },
-			{ 4, "SUT0", },
-			{ 5, "SUT1", },
-			{ 6, "CKOUT", },
-			{ 7, "CKDIV8", },
-			{ 8, "BODLEVEL0", },
-			{ 9, "BODLEVEL1", },
-			{ 10, "BODLEVEL2", },
-			{ 11, "EESAVE", },
-			{ 12, "WDTON", },
-			{ 13, "SPIEN", },
-			{ 14, "DWEN", },
-			{ 15, "RSTDISBL", },
-			{ 16, "SELFPRGEN", }
-		},
-		{
-			// lock
-			{ 0, "Lock1", },
-			{ 1, "Lock2", }
-		}
-	},
-	{
-		ATtiny85,
-		{
-			// fuse
-			{ 0, "CKSEL0", },
-			{ 1, "CKSEL1", },
-			{ 2, "CKSEL2", },
-			{ 3, "CKSEL3", },
-			{ 4, "SUT0", },
-			{ 5, "SUT1", },
-			{ 6, "CKOUT", },
-			{ 7, "CKDIV8", },
-			{ 8, "BODLEVEL0", },
-			{ 9, "BODLEVEL1", },
-			{ 10, "BODLEVEL2", },
-			{ 11, "EESAVE", },
-			{ 12, "WDTON", },
-			{ 13, "SPIEN", },
-			{ 14, "DWEN", },
-			{ 15, "RSTDISBL", },
-			{ 16, "SELFPRGEN", }
-		},
-		{
-			// lock
-			{ 0, "Lock1", },
-			{ 1, "Lock2", }
-		}
-	},
-
-	{
-		ATtiny261,
-		{
-			// fuse
-			{ 0, "CKSEL0", },
-			{ 1, "CKSEL1", },
-			{ 2, "CKSEL2", },
-			{ 3, "CKSEL3", },
-			{ 4, "SUT0", },
-			{ 5, "SUT1", },
-			{ 6, "CKOUT", },
-			{ 7, "CKDIV8", },
-			{ 8, "BODLEVEL0", },
-			{ 9, "BODLEVEL1", },
-			{ 10, "BODLEVEL2", },
-			{ 11, "EESAVE", },
-			{ 12, "WDTON", },
-			{ 13, "SPIEN", },
-			{ 14, "DWEN", },
-			{ 15, "RSTDISBL", },
-			{ 16, "SELFPRGEN", }
-		},
-		{
-			// lock
-			{ 0, "Lock1", },
-			{ 1, "Lock2", }
-		}
-	},
-
-	{
-		ATtiny461,
-		{
-			// fuse
-			{ 0, "CKSEL0", },
-			{ 1, "CKSEL1", },
-			{ 2, "CKSEL2", },
-			{ 3, "CKSEL3", },
-			{ 4, "SUT0", },
-			{ 5, "SUT1", },
-			{ 6, "CKOUT", },
-			{ 7, "CKDIV8", },
-			{ 8, "BODLEVEL0", },
-			{ 9, "BODLEVEL1", },
-			{ 10, "BODLEVEL2", },
-			{ 11, "EESAVE", },
-			{ 12, "WDTON", },
-			{ 13, "SPIEN", },
-			{ 14, "DWEN", },
-			{ 15, "RSTDISBL", },
-			{ 16, "SELFPRGEN", }
-		},
-		{
-			// lock
-			{ 0, "Lock1", },
-			{ 1, "Lock2", }
-		}
-	},
-
-	{
-		ATtiny861,
-		{
-			// fuse
-			{ 0, "CKSEL0", },
-			{ 1, "CKSEL1", },
-			{ 2, "CKSEL2", },
-			{ 3, "CKSEL3", },
-			{ 4, "SUT0", },
-			{ 5, "SUT1", },
-			{ 6, "CKOUT", },
-			{ 7, "CKDIV8", },
-			{ 8, "BODLEVEL0", },
-			{ 9, "BODLEVEL1", },
-			{ 10, "BODLEVEL2", },
-			{ 11, "EESAVE", },
-			{ 12, "WDTON", },
-			{ 13, "SPIEN", },
-			{ 14, "DWEN", },
-			{ 15, "RSTDISBL", },
-			{ 16, "SELFPRGEN", }
-		},
-		{
-			// lock
-			{ 0, "Lock1", },
-			{ 1, "Lock2", }
-		}
-	},
-
-	{
-		ATmega48,
-		{
-			// fuse
-			{ 0, "CKSEL0", },
-			{ 1, "CKSEL1", },
-			{ 2, "CKSEL2", },
-			{ 3, "CKSEL3", },
-			{ 4, "SUT0", },
-			{ 5, "SUT1", },
-			{ 6, "CKOUT", },
-			{ 7, "CKDIV8", },
-			{ 8, "BODLEVEL0", },
-			{ 9, "BODLEVEL1", },
-			{ 10, "BODLEVEL2", },
-			{ 11, "EESAVE", },
-			{ 12, "WDTON", },
-			{ 13, "SPIEN", },
-			{ 14, "DWEN", },
-			{ 15, "RSTDISBL", },
-			{ 16, "SELFPRGEN", }
-		},
-		{
-			// lock
-			{ 0, "Lock1", },
-			{ 1, "Lock2", },
-			{ 2, "BootLock01", },
-			{ 3, "BootLock02", },
-			{ 4, "BootLock11", },
-			{ 5, "BootLock12", }
-		}
-	},
-
-	{
-		ATmega88,
-		{
-			// fuse
-			{ 0, "CKSEL0", },
-			{ 1, "CKSEL1", },
-			{ 2, "CKSEL2", },
-			{ 3, "CKSEL3", },
-			{ 4, "SUT0", },
-			{ 5, "SUT1", },
-			{ 6, "CKOUT", },
-			{ 7, "CKDIV8", },
-			{ 8, "BODLEVEL0", },
-			{ 9, "BODLEVEL1", },
-			{ 10, "BODLEVEL2", },
-			{ 11, "EESAVE", },
-			{ 12, "WDTON", },
-			{ 13, "SPIEN", },
-			{ 14, "DWEN", },
-			{ 15, "RSTDISBL", },
-			{ 16, "BOOTRST", },
-			{ 17, "BOOTSZ0", },
-			{ 18, "BOOTSZ1", }
-		},
-		{
-			// lock
-			{ 0, "Lock1", },
-			{ 1, "Lock2", },
-			{ 2, "BootLock01", },
-			{ 3, "BootLock02", },
-			{ 4, "BootLock11", },
-			{ 5, "BootLock12", }
-		}
-	},
-
-	{
-		ATmega168,
-		{
-			// fuse
-			{ 0, "CKSEL0", },
-			{ 1, "CKSEL1", },
-			{ 2, "CKSEL2", },
-			{ 3, "CKSEL3", },
-			{ 4, "SUT0", },
-			{ 5, "SUT1", },
-			{ 6, "CKOUT", },
-			{ 7, "CKDIV8", },
-			{ 8, "BODLEVEL0", },
-			{ 9, "BODLEVEL1", },
-			{ 10, "BODLEVEL2", },
-			{ 11, "EESAVE", },
-			{ 12, "WDTON", },
-			{ 13, "SPIEN", },
-			{ 14, "DWEN", },
-			{ 15, "RSTDISBL", },
-			{ 16, "BOOTRST", },
-			{ 17, "BOOTSZ0", },
-			{ 18, "BOOTSZ1", }
-		},
-		{
-			// lock
-			{ 0, "Lock1", },
-			{ 1, "Lock2", },
-			{ 2, "BootLock01", },
-			{ 3, "BootLock02", },
-			{ 4, "BootLock11", },
-			{ 5, "BootLock12", }
-		}
-	},
-
-	{
-		ATmega328,
-		{
-			// fuse
-			{ 0, "CKSEL0", },
-			{ 1, "CKSEL1", },
-			{ 2, "CKSEL2", },
-			{ 3, "CKSEL3", },
-			{ 4, "SUT0", },
-			{ 5, "SUT1", },
-			{ 6, "CKOUT", },
-			{ 7, "CKDIV8", },
-			{ 8, "BODLEVEL0", },
-			{ 9, "BODLEVEL1", },
-			{ 10, "BODLEVEL2", },
-			{ 11, "EESAVE", },
-			{ 12, "WDTON", },
-			{ 13, "SPIEN", },
-			{ 14, "DWEN", },
-			{ 15, "RSTDISBL", },
-			{ 16, "BOOTRST", },
-			{ 17, "BOOTSZ0", },
-			{ 18, "BOOTSZ1", }
-		},
-		{
-			// lock
-			{ 0, "Lock1", },
-			{ 1, "Lock2", },
-			{ 2, "BootLock01", },
-			{ 3, "BootLock02", },
-			{ 4, "BootLock11", },
-			{ 5, "BootLock12", }
-		}
-	},
-
-	{
-		ATmega164,
-		{
-			// fuse
-			{ 0, "CKSEL0", },
-			{ 1, "CKSEL1", },
-			{ 2, "CKSEL2", },
-			{ 3, "CKSEL3", },
-			{ 4, "SUT0", },
-			{ 5, "SUT1", },
-			{ 6, "CKOUT", },
-			{ 7, "CKDIV8", },
-			{ 8, "BOOTRST", },
-			{ 9, "BOOTSZ0", },
-			{ 10, "BOOTSZ1", },
-			{ 11, "EESAVE", },
-			{ 12, "WDTON", },
-			{ 13, "SPIEN", },
-			{ 14, "JTAGEN", },
-			{ 15, "OCDEN", },
-			{ 16, "BODLEVEL0", },
-			{ 17, "BODLEVEL1", },
-			{ 18, "BODLEVEL2", }
-		},
-		{
-			// lock
-			{ 0, "Lock1", },
-			{ 1, "Lock2", },
-			{ 2, "BootLock01", },
-			{ 3, "BootLock02", },
-			{ 4, "BootLock11", },
-			{ 5, "BootLock12", }
-		}
-	},
-
-	{
-		ATmega324,
-		{
-			// fuse
-			{ 0, "CKSEL0", },
-			{ 1, "CKSEL1", },
-			{ 2, "CKSEL2", },
-			{ 3, "CKSEL3", },
-			{ 4, "SUT0", },
-			{ 5, "SUT1", },
-			{ 6, "CKOUT", },
-			{ 7, "CKDIV8", },
-			{ 8, "BOOTRST", },
-			{ 9, "BOOTSZ0", },
-			{ 10, "BOOTSZ1", },
-			{ 11, "EESAVE", },
-			{ 12, "WDTON", },
-			{ 13, "SPIEN", },
-			{ 14, "JTAGEN", },
-			{ 15, "OCDEN", },
-			{ 16, "BODLEVEL0", },
-			{ 17, "BODLEVEL1", },
-			{ 18, "BODLEVEL2", }
-		},
-		{
-			// lock
-			{ 0, "Lock1", },
-			{ 1, "Lock2", },
-			{ 2, "BootLock01", },
-			{ 3, "BootLock02", },
-			{ 4, "BootLock11", },
-			{ 5, "BootLock12", }
-		}
-	},
-
-	{
-		ATmega644,
-		{
-			// fuse
-			{ 0, "CKSEL0", },
-			{ 1, "CKSEL1", },
-			{ 2, "CKSEL2", },
-			{ 3, "CKSEL3", },
-			{ 4, "SUT0", },
-			{ 5, "SUT1", },
-			{ 6, "CKOUT", },
-			{ 7, "CKDIV8", },
-			{ 8, "BOOTRST", },
-			{ 9, "BOOTSZ0", },
-			{ 10, "BOOTSZ1", },
-			{ 11, "EESAVE", },
-			{ 12, "WDTON", },
-			{ 13, "SPIEN", },
-			{ 14, "JTAGEN", },
-			{ 15, "OCDEN", },
-			{ 16, "BODLEVEL0", },
-			{ 17, "BODLEVEL1", },
-			{ 18, "BODLEVEL2", }
-		},
-		{
-			// lock
-			{ 0, "Lock1", },
-			{ 1, "Lock2", },
-			{ 2, "BootLock01", },
-			{ 3, "BootLock02", },
-			{ 4, "BootLock11", },
-			{ 5, "BootLock12", }
-		}
-	},
-
-	{
-		ATmega640,
-		{
-			// fuse
-			{ 0, "CKSEL0", },
-			{ 1, "CKSEL1", },
-			{ 2, "CKSEL2", },
-			{ 3, "CKSEL3", },
-			{ 4, "SUT0", },
-			{ 5, "SUT1", },
-			{ 6, "CKOUT", },
-			{ 7, "CKDIV8", },
-			{ 8, "BOOTRST", },
-			{ 9, "BOOTSZ0", },
-			{ 10, "BOOTSZ1", },
-			{ 11, "EESAVE", },
-			{ 12, "WDTON", },
-			{ 13, "SPIEN", },
-			{ 14, "JTAGEN", },
-			{ 15, "OCDEN", },
-			{ 16, "BODLEVEL0", },
-			{ 17, "BODLEVEL1", },
-			{ 18, "BODLEVEL2", }
-		},
-		{
-			// lock
-			{ 0, "Lock1", },
-			{ 1, "Lock2", },
-			{ 2, "BootLock01", },
-			{ 3, "BootLock02", },
-			{ 4, "BootLock11", },
-			{ 5, "BootLock12", }
-		}
-	},
-
-	{
-		ATmega1280,
-		{
-			// fuse
-			{ 0, "CKSEL0", },
-			{ 1, "CKSEL1", },
-			{ 2, "CKSEL2", },
-			{ 3, "CKSEL3", },
-			{ 4, "SUT0", },
-			{ 5, "SUT1", },
-			{ 6, "CKOUT", },
-			{ 7, "CKDIV8", },
-			{ 8, "BOOTRST", },
-			{ 9, "BOOTSZ0", },
-			{ 10, "BOOTSZ1", },
-			{ 11, "EESAVE", },
-			{ 12, "WDTON", },
-			{ 13, "SPIEN", },
-			{ 14, "JTAGEN", },
-			{ 15, "OCDEN", },
-			{ 16, "BODLEVEL0", },
-			{ 17, "BODLEVEL1", },
-			{ 18, "BODLEVEL2", }
-		},
-		{
-			// lock
-			{ 0, "Lock1", },
-			{ 1, "Lock2", },
-			{ 2, "BootLock01", },
-			{ 3, "BootLock02", },
-			{ 4, "BootLock11", },
-			{ 5, "BootLock12", }
-		}
-	},
-
-	{
-		ATmega1281,
-		{
-			// fuse
-			{ 0, "CKSEL0", },
-			{ 1, "CKSEL1", },
-			{ 2, "CKSEL2", },
-			{ 3, "CKSEL3", },
-			{ 4, "SUT0", },
-			{ 5, "SUT1", },
-			{ 6, "CKOUT", },
-			{ 7, "CKDIV8", },
-			{ 8, "BOOTRST", },
-			{ 9, "BOOTSZ0", },
-			{ 10, "BOOTSZ1", },
-			{ 11, "EESAVE", },
-			{ 12, "WDTON", },
-			{ 13, "SPIEN", },
-			{ 14, "JTAGEN", },
-			{ 15, "OCDEN", },
-			{ 16, "BODLEVEL0", },
-			{ 17, "BODLEVEL1", },
-			{ 18, "BODLEVEL2", }
-		},
-		{
-			// lock
-			{ 0, "Lock1", },
-			{ 1, "Lock2", },
-			{ 2, "BootLock01", },
-			{ 3, "BootLock02", },
-			{ 4, "BootLock11", },
-			{ 5, "BootLock12", }
-		}
-	},
-
-	{
-		ATmega2560,
-		{
-			// fuse
-			{ 0, "CKSEL0", },
-			{ 1, "CKSEL1", },
-			{ 2, "CKSEL2", },
-			{ 3, "CKSEL3", },
-			{ 4, "SUT0", },
-			{ 5, "SUT1", },
-			{ 6, "CKOUT", },
-			{ 7, "CKDIV8", },
-			{ 8, "BOOTRST", },
-			{ 9, "BOOTSZ0", },
-			{ 10, "BOOTSZ1", },
-			{ 11, "EESAVE", },
-			{ 12, "WDTON", },
-			{ 13, "SPIEN", },
-			{ 14, "JTAGEN", },
-			{ 15, "OCDEN", },
-			{ 16, "BODLEVEL0", },
-			{ 17, "BODLEVEL1", },
-			{ 18, "BODLEVEL2", }
-		},
-		{
-			// lock
-			{ 0, "Lock1", },
-			{ 1, "Lock2", },
-			{ 2, "BootLock01", },
-			{ 3, "BootLock02", },
-			{ 4, "BootLock11", },
-			{ 5, "BootLock12", }
-		}
-	},
-
-	{
-		ATmega2561,
-		{
-			// fuse
-			{ 0, "CKSEL0", },
-			{ 1, "CKSEL1", },
-			{ 2, "CKSEL2", },
-			{ 3, "CKSEL3", },
-			{ 4, "SUT0", },
-			{ 5, "SUT1", },
-			{ 6, "CKOUT", },
-			{ 7, "CKDIV8", },
-			{ 8, "BOOTRST", },
-			{ 9, "BOOTSZ0", },
-			{ 10, "BOOTSZ1", },
-			{ 11, "EESAVE", },
-			{ 12, "WDTON", },
-			{ 13, "SPIEN", },
-			{ 14, "JTAGEN", },
-			{ 15, "OCDEN", },
-			{ 16, "BODLEVEL0", },
-			{ 17, "BODLEVEL1", },
-			{ 18, "BODLEVEL2", }
-		},
-		{
-			// lock
-			{ 0, "Lock1", },
-			{ 1, "Lock2", },
-			{ 2, "BootLock01", },
-			{ 3, "BootLock02", },
-			{ 4, "BootLock11", },
-			{ 5, "BootLock12", }
-		}
-	},
-
-	{
-		AT90CAN32,
-		{
-			// fuse
-			{ 0, "CKSEL0", },
-			{ 1, "CKSEL1", },
-			{ 2, "CKSEL2", },
-			{ 3, "CKSEL3", },
-			{ 4, "SUT0", },
-			{ 5, "SUT1", },
-			{ 6, "CKOUT", },
-			{ 7, "CKDIV8", },
-			{ 8, "BOOTRST", },
-			{ 9, "BOOTSZ0", },
-			{ 10, "BOOTSZ1", },
-			{ 11, "EESAVE", },
-			{ 12, "WDTON", },
-			{ 13, "SPIEN", },
-			{ 14, "JTAGEN", },
-			{ 15, "OCDEN", },
-			{ 16, "TA0SEL", },
-			{ 17, "BODLEVEL0", },
-			{ 18, "BODLEVEL1", },
-			{ 19, "BODLEVEL2", }
-		},
-		{
-			// lock
-			{ 0, "Lock1", },
-			{ 1, "Lock2", },
-			{ 2, "BootLock01", },
-			{ 3, "BootLock02", },
-			{ 4, "BootLock11", },
-			{ 5, "BootLock12", }
-		}
-	},
-
-	{
-		AT90CAN64,
-		{
-			// fuse
-			{ 0, "CKSEL0", },
-			{ 1, "CKSEL1", },
-			{ 2, "CKSEL2", },
-			{ 3, "CKSEL3", },
-			{ 4, "SUT0", },
-			{ 5, "SUT1", },
-			{ 6, "CKOUT", },
-			{ 7, "CKDIV8", },
-			{ 8, "BOOTRST", },
-			{ 9, "BOOTSZ0", },
-			{ 10, "BOOTSZ1", },
-			{ 11, "EESAVE", },
-			{ 12, "WDTON", },
-			{ 13, "SPIEN", },
-			{ 14, "JTAGEN", },
-			{ 15, "OCDEN", },
-			{ 16, "TA0SEL", },
-			{ 17, "BODLEVEL0", },
-			{ 18, "BODLEVEL1", },
-			{ 19, "BODLEVEL2", }
-		},
-		{
-			// lock
-			{ 0, "Lock1", },
-			{ 1, "Lock2", },
-			{ 2, "BootLock01", },
-			{ 3, "BootLock02", },
-			{ 4, "BootLock11", },
-			{ 5, "BootLock12", }
-		}
-	},
-
-	{
-		AT90CAN128,
-		{
-			// fuse
-			{ 0, "CKSEL0", },
-			{ 1, "CKSEL1", },
-			{ 2, "CKSEL2", },
-			{ 3, "CKSEL3", },
-			{ 4, "SUT0", },
-			{ 5, "SUT1", },
-			{ 6, "CKOUT", },
-			{ 7, "CKDIV8", },
-			{ 8, "BOOTRST", },
-			{ 9, "BOOTSZ0", },
-			{ 10, "BOOTSZ1", },
-			{ 11, "EESAVE", },
-			{ 12, "WDTON", },
-			{ 13, "SPIEN", },
-			{ 14, "JTAGEN", },
-			{ 15, "OCDEN", },
-			{ 16, "TA0SEL", },
-			{ 17, "BODLEVEL0", },
-			{ 18, "BODLEVEL1", },
-			{ 19, "BODLEVEL2", }
-		},
-		{
-			// lock
-			{ 0, "Lock1", },
-			{ 1, "Lock2", },
-			{ 2, "BootLock01", },
-			{ 3, "BootLock02", },
-			{ 4, "BootLock11", },
-			{ 5, "BootLock12", }
-		}
-	},
-
-	{
-		ATmega603,
-		{
-			// fuse
-			{ 0, "SUT0", },
-			{ 1, "SUT1", },
-			{ 3, "EESAVE", }
-		},
-		{
-			// lock
-			{ 1, "Lock1", },
-			{ 2, "Lock2", }
-		}
-	},
-
-	{
-		ATmega103,
-		{
-			// fuse
-			{ 0, "SUT0", },
-			{ 1, "SUT1", },
-			{ 3, "EESAVE", }
-		},
-		{
-			// lock
-			{ 1, "Lock1", },
-			{ 2, "Lock2", }
-		}
-	},
-
-	{
-		ATmega8,
-		{
-			// fuse
-			{ 0, "CKSEL0", },
-			{ 1, "CKSEL1", },
-			{ 2, "CKSEL2", },
-			{ 3, "CKSEL3", },
-			{ 4, "SUT0", },
-			{ 5, "SUT1", },
-			{ 6, "BODEN", },
-			{ 7, "BODLEVEL", },
-			{ 8, "BOOTRST", },
-			{ 9, "BOOTSZ0", },
-			{ 10, "BOOTSZ1", },
-			{ 11, "EESAVE", },
-			{ 12, "CKOPT", },
-			{ 13, "SPIEN", },
-			{ 14, "WDTON", },
-			{ 15, "RSTDISBL", }
-		},
-		{
-			// lock
-			{ 0, "Lock1", },
-			{ 1, "Lock2", },
-			{ 2, "BootLock01", },
-			{ 3, "BootLock02", },
-			{ 4, "BootLock11", },
-			{ 5, "BootLock12", }
-		}
-	},
-
-	{
-		ATmega8515,
-		{
-			// fuse
-			{ 0, "CKSEL0", },
-			{ 1, "CKSEL1", },
-			{ 2, "CKSEL2", },
-			{ 3, "CKSEL3", },
-			{ 4, "SUT0", },
-			{ 5, "SUT1", },
-			{ 6, "BODEN", },
-			{ 7, "BODLEVEL", },
-			{ 8, "BOOTRST", },
-			{ 9, "BOOTSZ0", },
-			{ 10, "BOOTSZ1", },
-			{ 11, "EESAVE", },
-			{ 12, "CKOPT", },
-			{ 13, "SPIEN", },
-			{ 14, "WDTON", },
-			{ 15, "S8515C", }
-		},
-		{
-			// lock
-			{ 0, "Lock1", },
-			{ 1, "Lock2", },
-			{ 2, "BootLock01", },
-			{ 3, "BootLock02", },
-			{ 4, "BootLock11", },
-			{ 5, "BootLock12", }
-		}
-	},
-
-	{
-		ATmega8535,
-		{
-			// fuse
-			{ 0, "CKSEL0", },
-			{ 1, "CKSEL1", },
-			{ 2, "CKSEL2", },
-			{ 3, "CKSEL3", },
-			{ 4, "SUT0", },
-			{ 5, "SUT1", },
-			{ 6, "BODEN", },
-			{ 7, "BODLEVEL", },
-			{ 8, "BOOTRST", },
-			{ 9, "BOOTSZ0", },
-			{ 10, "BOOTSZ1", },
-			{ 11, "EESAVE", },
-			{ 12, "CKOPT", },
-			{ 13, "SPIEN", },
-			{ 14, "WDTON", },
-			{ 15, "S8535C", }
-		},
-		{
-			// lock
-			{ 0, "Lock1", },
-			{ 1, "Lock2", },
-			{ 2, "BootLock01", },
-			{ 3, "BootLock02", },
-			{ 4, "BootLock11", },
-			{ 5, "BootLock12", }
-		}
-	},
-
-	{
-		ATmega64,
-		{
-			// fuse
-			{ 0, "CKSEL0", },
-			{ 1, "CKSEL1", },
-			{ 2, "CKSEL2", },
-			{ 3, "CKSEL3", },
-			{ 4, "SUT0", },
-			{ 5, "SUT1", },
-			{ 6, "BODEN", },
-			{ 7, "BODLEVEL", },
-			{ 8, "BOOTRST", },
-			{ 9, "BOOTSZ0", },
-			{ 10, "BOOTSZ1", },
-			{ 11, "EESAVE", },
-			{ 12, "CKOPT", },
-			{ 13, "SPIEN", },
-			{ 14, "JTAGEN", },
-			{ 15, "OCDEN", },
-			{ 16, "WDTON", },
-			{ 17, "M103C", }
-
-		},
-		{
-			// lock
-			{ 0, "Lock1", },
-			{ 1, "Lock2", },
-			{ 2, "BootLock01", },
-			{ 3, "BootLock02", },
-			{ 4, "BootLock11", },
-			{ 5, "BootLock12", }
-		}
-	},
-
-	{
-		ATmega128,
-		{
-			// fuse
-			{ 0, "CKSEL0", },
-			{ 1, "CKSEL1", },
-			{ 2, "CKSEL2", },
-			{ 3, "CKSEL3", },
-			{ 4, "SUT0", },
-			{ 5, "SUT1", },
-			{ 6, "BODEN", },
-			{ 7, "BODLEVEL", },
-			{ 8, "BOOTRST", },
-			{ 9, "BOOTSZ0", },
-			{ 10, "BOOTSZ1", },
-			{ 11, "EESAVE", },
-			{ 12, "CKOPT", },
-			{ 13, "SPIEN", },
-			{ 14, "JTAGEN", },
-			{ 15, "OCDEN", },
-			{ 16, "WDTON", },
-			{ 17, "M103C", }
-
-		},
-		{
-			// lock
-			{ 0, "Lock1", },
-			{ 1, "Lock2", },
-			{ 2, "BootLock01", },
-			{ 3, "BootLock02", },
-			{ 4, "BootLock11", },
-			{ 5, "BootLock12", }
-		}
-	},
-
-	{
-		ATmega16,
-		{
-			// fuse
-			{ 0, "CKSEL0", },
-			{ 1, "CKSEL1", },
-			{ 2, "CKSEL2", },
-			{ 3, "CKSEL3", },
-			{ 4, "SUT0", },
-			{ 5, "SUT1", },
-			{ 6, "BODEN", },
-			{ 7, "BODLEVEL", },
-			{ 8, "BOOTRST", },
-			{ 9, "BOOTSZ0", },
-			{ 10, "BOOTSZ1", },
-			{ 11, "EESAVE", },
-			{ 12, "CKOPT", },
-			{ 13, "SPIEN", },
-			{ 14, "JTAGEN", },
-			{ 15, "OCDEN", }
-		},
-		{
-			// lock
-			{ 0, "Lock1", },
-			{ 1, "Lock2", },
-			{ 2, "BootLock01", },
-			{ 3, "BootLock02", },
-			{ 4, "BootLock11", },
-			{ 5, "BootLock12", }
-		}
-	},
-
-	{
-		ATmega161,
-		{
-			// fuse
-			{ 0, "CKSEL0", },
-			{ 1, "CKSEL1", },
-			{ 2, "CKSEL2", },
-			{ 3, "BODEN", },
-			{ 4, "BODLEVEL", },
-			{ 5, "SPIEN", },
-			{ 6, "BOOTRST", }
-		},
-		{
-			// lock
-			{ 0, "Lock1", },
-			{ 1, "Lock2", },
-			{ 2, "BootLock01", },
-			{ 3, "BootLock02", },
-			{ 4, "BootLock11", },
-			{ 5, "BootLock12", }
-		}
-	},
-
-	{
-		ATmega163,
-		{
-			// fuse
-			{ 0, "CKSEL0", },
-			{ 1, "CKSEL1", },
-			{ 2, "CKSEL2", },
-			{ 3, "CKSEL3", },
-			{ 6, "BODEN", },
-			{ 7, "BODLEVEL", },
-			{ 8, "BOOTRST", },
-			{ 9, "BOOTSZ0", },
-			{ 10, "BOOTSZ1", }
-		},
-		{
-			// lock
-			{ 0, "Lock1", },
-			{ 1, "Lock2", },
-			{ 2, "BootLock01", },
-			{ 3, "BootLock02", },
-			{ 4, "BootLock11", },
-			{ 5, "BootLock12", }
-		}
-	},
-
-	{
-		ATmega162,
-		{
-			// fuse
-			{ 0, "CKSEL0", },
-			{ 1, "CKSEL1", },
-			{ 2, "CKSEL2", },
-			{ 3, "CKSEL3", },
-			{ 4, "SUT0", },
-			{ 5, "SUT1", },
-			{ 6, "CKOUT", },
-			{ 7, "CKDIV8", },
-			{ 8, "BOOTRST", },
-			{ 9, "BOOTSZ0", },
-			{ 10, "BOOTSZ1", },
-			{ 11, "EESAVE", },
-			{ 12, "WDTON", },
-			{ 13, "SPIEN", },
-			{ 14, "JTAGEN", },
-			{ 15, "OCDEN", },
-			{ 17, "BOD0LEVEL", },
-			{ 18, "BOD1LEVEL", },
-			{ 19, "BOD2LEVEL", },
-			{ 20, "M161C", }
-		},
-		{
-			// lock
-			{ 0, "Lock1", },
-			{ 1, "Lock2", },
-			{ 2, "BootLock01", },
-			{ 3, "BootLock02", },
-			{ 4, "BootLock11", },
-			{ 5, "BootLock12", }
-		}
-	},
-
-	{
-		ATmega169,
-		{
-			// fuse
-			{ 0, "CKSEL0", },
-			{ 1, "CKSEL1", },
-			{ 2, "CKSEL2", },
-			{ 3, "CKSEL3", },
-			{ 4, "SUT0", },
-			{ 5, "SUT1", },
-			{ 6, "CKOUT", },
-			{ 7, "CKDIV8", },
-			{ 8, "BOOTRST", },
-			{ 9, "BOOTSZ0", },
-			{ 10, "BOOTSZ1", },
-			{ 11, "EESAVE", },
-			{ 12, "WDTON", },
-			{ 13, "SPIEN", },
-			{ 14, "JTAGEN", },
-			{ 15, "OCDEN", },
-			{ 16, "RSTDISBL", },
-			{ 17, "BOD0LEVEL", },
-			{ 18, "BOD1LEVEL", },
-			{ 19, "BOD2LEVEL", }
-		},
-		{
-			// lock
-			{ 0, "Lock1", },
-			{ 1, "Lock2", },
-			{ 2, "BootLock01", },
-			{ 3, "BootLock02", },
-			{ 4, "BootLock11", },
-			{ 5, "BootLock12", }
-		}
-	},
-
-	{
-		ATmega323,
-		{
-			// fuse
-			{ 0, "CKSEL0", },
-			{ 1, "CKSEL1", },
-			{ 2, "CKSEL2", },
-			{ 3, "CKSEL3", },
-			{ 6, "BODEN", },
-			{ 7, "BODLEVEL", },
-			{ 8, "BOOTRST", },
-			{ 9, "BOOTSZ0", },
-			{ 10, "BOOTSZ1", },
-			{ 11, "EESAVE", },
-			{ 13, "SPIEN", },
-			{ 14, "JTAGEN", },
-			{ 15, "OCDEN", }
-		},
-		{
-			// lock
-			{ 0, "Lock1", },
-			{ 1, "Lock2", },
-			{ 2, "BootLock01", },
-			{ 3, "BootLock02", },
-			{ 4, "BootLock11", },
-			{ 5, "BootLock12", }
-		}
-	},
-
-	{
-		ATmega32,
-		{
-			// fuse
-			{ 0, "CKSEL0", },
-			{ 1, "CKSEL1", },
-			{ 2, "CKSEL2", },
-			{ 3, "CKSEL3", },
-			{ 4, "SUT0", },
-			{ 5, "SUT1", },
-			{ 6, "BODEN", },
-			{ 7, "BODLEVEL", },
-			{ 8, "BOOTRST", },
-			{ 9, "BOOTSZ0", },
-			{ 10, "BOOTSZ1", },
-			{ 11, "EESAVE", },
-			{ 12, "CKOPT", },
-			{ 13, "SPIEN", },
-			{ 14, "JTAGEN", },
-			{ 15, "OCDEN", }
-		},
-		{
-			// lock
-			{ 0, "Lock1", },
-			{ 1, "Lock2", },
-			{ 2, "BootLock01", },
-			{ 3, "BootLock02", },
-			{ 4, "BootLock11", },
-			{ 5, "BootLock12", }
-		}
-	},
 
 	{
 		AT89S8252,
@@ -1655,10 +280,16 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			// fuse
 		},
 		{
+			// fuse mask description
+		},
+		{
 			// lock
-			{ 5, "LB3", },
-			{ 6, "LB2", },
-			{ 7, "LB1", }
+			{ 5, "LB3", ""},
+			{ 6, "LB2", ""},
+			{ 7, "LB1", ""}
+		},
+		{
+			// lock mask description
 		}
 	},
 
@@ -1668,10 +299,16 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			// fuse
 		},
 		{
+			// fuse mask description
+		},
+		{
 			// lock
-			{ 0, "LB3", },
-			{ 1, "LB2", },
-			{ 2, "LB1", }
+			{ 0, "LB3", ""},
+			{ 1, "LB2", ""},
+			{ 2, "LB1", ""}
+		},
+		{
+			// lock mask description
 		}
 	},
 
@@ -1681,10 +318,20 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			// fuse
 		},
 		{
+			// fuse mask description
+		},
+		{
 			// lock
-			{ 2, "LB3", },
-			{ 3, "LB2", },
-			{ 4, "LB1", }
+			{ 2, "LB3", ""},
+			{ 3, "LB2", ""},
+			{ 4, "LB1", "Verify disabled"}
+		},
+		{
+			// lock mask description
+			{ 0x00000, "External execution disabled"},
+			{ 0x00010, "Verify disabled"},
+			{ 0x00018, "MOVC disabled"},
+			{ 0x0001c, "No memory lock features enabled"}
 		}
 	},
 
@@ -1694,10 +341,20 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			// fuse
 		},
 		{
+			// fuse mask description
+		},
+		{
 			// lock
-			{ 2, "LB3", },
-			{ 3, "LB2", },
-			{ 4, "LB1", }
+			{ 2, "LB3", ""},
+			{ 3, "LB2", ""},
+			{ 4, "LB1", ""}
+		},
+		{
+			// lock mask description
+                        { 0x00000, "External execution disabled"},
+			{ 0x00010, "Verify disabled"},
+			{ 0x00018, "MOVC disabled"},
+			{ 0x0001c, "No memory lock features enabled"}
 		}
 	},
 
@@ -1707,10 +364,1717 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			// fuse
 		},
 		{
+			// fuse mask description
+		},
+		{
 			// lock
-			{ 5, "LB3", },
-			{ 6, "LB2", },
-			{ 7, "LB1", }
+			{ 5, "LB3", ""},
+			{ 6, "LB2", ""},
+			{ 7, "LB1", ""}
+		},
+		{
+			// lock mask description
+                        { 0x00000, "External execution disabled"},
+			{ 0x00010, "Verify disabled"},
+			{ 0x00018, "MOVC disabled"},
+			{ 0x0001c, "No memory lock features enabled"}
+		}
+	},
+
+	{
+		AT90S1200,
+		{
+			// fuse
+                        { 0, "Fuse0", "External clock enabled"},
+			{ 5, "Fuse5", "Serial program downloading (SPI) enabled"}
+		},
+		{
+			// fuse mask description
+		},
+		{
+			// lock
+			{ 1, "Lock1", ""},
+			{ 2, "Lock2", ""}
+		},
+		{
+			// lock mask description
+                        { 0x00000, "No memory lock features enabled"},
+                        { 0x00002, "Further programming disabled"},
+                        { 0x00006, "Further programming and verification disabled"}
+		}
+	},
+	{
+		AT90S2313,
+		{
+			// fuse
+                        { 0, "Fuse0", "Short start-up time enabled"},
+			{ 5, "Fuse5", "Serial program downloading (SPI) enabled"}
+		},
+		{
+			// fuse mask description
+		},
+		{
+			// lock
+			{ 1, "Lock1", ""},
+			{ 2, "Lock2", ""}
+		},
+		{
+			// lock mask description
+                        { 0x00000, "No memory lock features enabled"},
+                        { 0x00002, "Further programming disabled"},
+                        { 0x00006, "Further programming and verification disabled"}
+		}
+	},
+	{
+		AT90S4414,
+		{
+			// fuse
+		},
+		{
+			// fuse mask description
+		},
+		{
+			// lock
+			{ 1, "Lock1", ""},
+			{ 2, "Lock2", ""}
+		},
+		{
+			// lock mask description
+		}
+	},
+	{
+		AT90S8515,
+		{
+			// fuse
+		},
+		{
+			// fuse mask description
+		},
+		{
+			// lock
+			{ 1, "Lock1", ""},
+			{ 2, "Lock2", ""}
+		},
+		{
+			// lock mask description
+		}
+	},
+	{
+		AT90S4434,
+		{
+			// fuse
+			{ 0, "FSTRT", ""}
+		},
+		{
+			// fuse mask description
+		},
+		{
+			// lock
+			{ 1, "Lock1", ""},
+			{ 2, "Lock2", ""}
+		},
+		{
+			// lock mask description
+		}
+	},
+	{
+		AT90S8535,
+		{
+			// fuse
+			{ 0, "FSTRT", ""}
+		},
+		{
+			// fuse mask description
+		},
+		{
+			// lock
+			{ 1, "Lock1", ""},
+			{ 2, "Lock2", ""}
+		},
+		{
+			// lock mask description
+		}
+	},
+	{
+		AT90S2333,
+		{
+			// fuse
+			{ 0, "CKSEL0", ""},
+			{ 1, "CKSEL1", ""},
+			{ 2, "CKSEL2", ""},
+			{ 3, "BODEN", ""},
+			{ 4, "BODLEVEL", ""},
+			{ 5, "SPIEN", ""}
+		},
+		{
+			// fuse mask description
+		},
+		{
+			// lock
+			{ 1, "Lock1", ""},
+			{ 2, "Lock2", ""}
+		},
+		{
+			// lock mask description
+		}
+	},
+
+	{
+		AT90S4433,
+		{
+			// fuse
+			{ 0, "CKSEL0", ""},
+			{ 1, "CKSEL1", ""},
+			{ 2, "CKSEL2", ""},
+			{ 3, "BODEN", ""},
+			{ 4, "BODLEVEL", ""},
+			{ 5, "SPIEN", ""}
+		},
+		{
+			// fuse mask description
+		},
+		{
+			// lock
+			{ 1, "Lock1", ""},
+			{ 2, "Lock2", ""}
+		},
+		{
+			// lock mask description
+		}
+	},
+
+	{
+		AT90S2323,
+		{
+			// fuse
+			{ 0, "FSTRT", ""}
+		},
+		{
+			// fuse mask description
+		},
+		{
+			// lock
+			{ 1, "Lock1", ""},
+			{ 2, "Lock2", ""}
+		},
+		{
+			// lock mask description
+		}
+	},
+
+	{
+		AT90S2343,
+		{
+			// fuse
+			{0, "RCEN", ""}
+		},
+		{
+			// fuse mask description
+		},
+		{
+			// lock
+			{ 1, "Lock1", ""},
+			{ 2, "Lock2", ""}
+		},
+		{
+			// lock mask description
+		}
+	},
+
+	{
+		AT90S8534,
+		{
+			// fuse
+		},
+		{
+			// fuse mask description
+		},
+		{
+			// lock
+			{ 1, "Lock1", ""},
+			{ 2, "Lock2", ""}
+		},
+		{
+			// lock mask description
+		}
+	},
+
+	{
+		AT90CAN32,
+		{
+			// fuse
+			{ 0, "CKSEL0", ""},
+			{ 1, "CKSEL1", ""},
+			{ 2, "CKSEL2", ""},
+			{ 3, "CKSEL3", ""},
+			{ 4, "SUT0", ""},
+			{ 5, "SUT1", ""},
+			{ 6, "CKOUT", ""},
+			{ 7, "CKDIV8", ""},
+			{ 8, "BOOTRST", ""},
+			{ 9, "BOOTSZ0", ""},
+			{ 10, "BOOTSZ1", ""},
+			{ 11, "EESAVE", ""},
+			{ 12, "WDTON", ""},
+			{ 13, "SPIEN", ""},
+			{ 14, "JTAGEN", ""},
+			{ 15, "OCDEN", ""},
+			{ 16, "TA0SEL", ""},
+			{ 17, "BODLEVEL0", ""},
+			{ 18, "BODLEVEL1", ""},
+			{ 19, "BODLEVEL2", ""}
+		},
+		{
+			// fuse mask description
+		},
+		{
+			// lock
+			{ 0, "Lock1", ""},
+			{ 1, "Lock2", ""},
+			{ 2, "BootLock01", ""},
+			{ 3, "BootLock02", ""},
+			{ 4, "BootLock11", ""},
+			{ 5, "BootLock12", ""}
+		},
+		{
+			// lock mask description
+		}
+	},
+
+	{
+		AT90CAN64,
+		{
+			// fuse
+			{ 0, "CKSEL0", ""},
+			{ 1, "CKSEL1", ""},
+			{ 2, "CKSEL2", ""},
+			{ 3, "CKSEL3", ""},
+			{ 4, "SUT0", ""},
+			{ 5, "SUT1", ""},
+			{ 6, "CKOUT", ""},
+			{ 7, "CKDIV8", ""},
+			{ 8, "BOOTRST", ""},
+			{ 9, "BOOTSZ0", ""},
+			{ 10, "BOOTSZ1", ""},
+			{ 11, "EESAVE", ""},
+			{ 12, "WDTON", ""},
+			{ 13, "SPIEN", ""},
+			{ 14, "JTAGEN", ""},
+			{ 15, "OCDEN", ""},
+			{ 16, "TA0SEL", ""},
+			{ 17, "BODLEVEL0", ""},
+			{ 18, "BODLEVEL1", ""},
+			{ 19, "BODLEVEL2", ""}
+		},
+		{
+			// fuse mask description
+		},
+		{
+			// lock
+			{ 0, "Lock1", ""},
+			{ 1, "Lock2", ""},
+			{ 2, "BootLock01", ""},
+			{ 3, "BootLock02", ""},
+			{ 4, "BootLock11", ""},
+			{ 5, "BootLock12", ""}
+		},
+		{
+			// lock mask description
+		}
+	},
+
+	{
+		AT90CAN128,
+		{
+			// fuse
+			{ 0, "CKSEL0", ""},
+			{ 1, "CKSEL1", ""},
+			{ 2, "CKSEL2", ""},
+			{ 3, "CKSEL3", ""},
+			{ 4, "SUT0", ""},
+			{ 5, "SUT1", ""},
+			{ 6, "CKOUT", ""},
+			{ 7, "CKDIV8", ""},
+			{ 8, "BOOTRST", ""},
+			{ 9, "BOOTSZ0", ""},
+			{ 10, "BOOTSZ1", ""},
+			{ 11, "EESAVE", ""},
+			{ 12, "WDTON", ""},
+			{ 13, "SPIEN", ""},
+			{ 14, "JTAGEN", ""},
+			{ 15, "OCDEN", ""},
+			{ 16, "TA0SEL", ""},
+			{ 17, "BODLEVEL0", ""},
+			{ 18, "BODLEVEL1", ""},
+			{ 19, "BODLEVEL2", ""}
+		},
+		{
+			// fuse mask description
+		},
+		{
+			// lock
+			{ 0, "Lock1", ""},
+			{ 1, "Lock2", ""},
+			{ 2, "BootLock01", ""},
+			{ 3, "BootLock02", ""},
+			{ 4, "BootLock11", ""},
+			{ 5, "BootLock12", ""}
+		},
+		{
+			// lock mask description
+		}
+	},
+
+	{
+		ATtiny12,
+		{
+			// fuse
+			{ 0, "CKSEL0", ""},
+			{ 1, "CKSEL1", ""},
+			{ 2, "CKSEL2", ""},
+			{ 3, "CKSEL3", ""},
+			{ 4, "RSTDISBL", ""},
+			{ 5, "SPIEN", ""},
+			{ 6, "BODEN", ""},
+			{ 7, "BODLEVEL", ""}
+		},
+		{
+			// fuse mask description
+		},
+		{
+			// lock
+			{ 1, "Lock1", ""},
+			{ 2, "Lock2", ""}
+		},
+		{
+			// lock mask description
+		}
+	},
+
+	{
+		ATtiny13,
+		{
+			// fuse
+			{ 0, "CKSEL0", ""},
+			{ 1, "CKSEL1", ""},
+			{ 2, "SUT0", ""},
+			{ 3, "SUT1", ""},
+			{ 4, "CKDIV8", ""},
+			{ 5, "WDTON", ""},
+			{ 6, "EESAVE", ""},
+			{ 7, "SPIEN", ""},
+			{ 8, "RSTDISBL", ""},
+			{ 9, "BODLEVEL0", ""},
+			{ 10, "BODLEVEL1", ""},
+			{ 11, "DWEN", ""},
+			{ 12, "SELFPRGEN", ""}
+		},
+		{
+			// fuse mask description
+		},
+		{
+			// lock
+			{ 0, "Lock1", ""},
+			{ 1, "Lock2", ""}
+		},
+		{
+			// lock mask description
+		}
+	},
+	{
+		ATtiny15,
+		{
+			// fuse
+			{ 0, "CKSEL0", ""},
+			{ 1, "CKSEL1", ""},
+			{ 4, "RSTDISBL", ""},
+			{ 5, "SPIEN", ""},
+			{ 6, "BODEN", ""},
+			{ 7, "BODLEVEL", ""}
+		},
+		{
+			// fuse mask description
+		},
+		{
+			// lock
+			{ 1, "Lock1", ""},
+			{ 2, "Lock2", ""}
+		},
+		{
+			// lock mask description
+		}
+	},
+
+	{
+		ATtiny22,
+		{
+			// fuse
+			{ 0, "RCEN", ""},
+		},
+		{
+			// fuse mask description
+		},
+		{
+			// lock
+			{ 1, "Lock1", ""},
+			{ 2, "Lock2", ""}
+		},
+		{
+			// lock mask description
+		}
+	},
+	{
+		ATtiny26,
+		{
+			// fuse
+			{ 0, "CKSEL0", ""},
+			{ 1, "CKSEL1", ""},
+			{ 2, "CKSEL2", ""},
+			{ 3, "CKSEL3", ""},
+			{ 4, "SUT0", ""},
+			{ 5, "SUT1", ""},
+			{ 6, "CKOPT", ""},
+			{ 7, "PLLCK", ""},
+			{ 8, "BODEN", ""},
+			{ 9, "BODLEVEL", ""},
+			{ 10, "EESAVE", ""},
+			{ 11, "SPIEN", ""},
+			{ 12, "RSTDISBL", ""}
+		},
+		{
+			// fuse mask description
+		},
+		{
+			// lock
+			{ 0, "Lock1", ""},
+			{ 1, "Lock2", ""}
+		},
+		{
+			// lock mask description
+		}
+	},
+
+	{
+		ATtiny2313,
+		{
+			// fuse
+			{ 0, "CKSEL0", ""},
+			{ 1, "CKSEL1", ""},
+			{ 2, "CKSEL2", ""},
+			{ 3, "CKSEL3", ""},
+			{ 4, "SUT0", ""},
+			{ 5, "SUT1", ""},
+			{ 6, "CKOUT", ""},
+			{ 7, "CKDIV8", ""},
+			{ 8, "RSTDISBL", ""},
+			{ 9, "BODLEVEL0", ""},
+			{ 10, "BODLEVEL1", ""},
+			{ 11, "BODLEVEL2", ""},
+			{ 12, "WDTON", ""},
+			{ 13, "SPIEN", ""},
+			{ 14, "EESAVE", ""},
+			{ 15, "DWEN", ""},
+			{ 16, "SPMEN", ""}
+		},
+		{
+			// fuse mask description
+		},
+		{
+			// lock
+			{ 0, "Lock1", ""},
+			{ 1, "Lock2", ""}
+		},
+		{
+			// lock mask description
+		}
+	},
+	{
+		ATtiny25,
+		{
+			// fuse
+			{ 0, "CKSEL0", ""},
+			{ 1, "CKSEL1", ""},
+			{ 2, "CKSEL2", ""},
+			{ 3, "CKSEL3", ""},
+			{ 4, "SUT0", ""},
+			{ 5, "SUT1", ""},
+			{ 6, "CKOUT", ""},
+			{ 7, "CKDIV8", ""},
+			{ 8, "BODLEVEL0", ""},
+			{ 9, "BODLEVEL1", ""},
+			{ 10, "BODLEVEL2", ""},
+			{ 11, "EESAVE", ""},
+			{ 12, "WDTON", ""},
+			{ 13, "SPIEN", ""},
+			{ 14, "DWEN", ""},
+			{ 15, "RSTDISBL", ""},
+			{ 16, "SELFPRGEN", ""}
+		},
+		{
+			// fuse mask description
+		},
+		{
+			// lock
+			{ 0, "Lock1", ""},
+			{ 1, "Lock2", ""}
+		},
+		{
+			// lock mask description
+		}
+	},
+
+	{
+		ATtiny45,
+		{
+			// fuse
+			{ 0, "CKSEL0", ""},
+			{ 1, "CKSEL1", ""},
+			{ 2, "CKSEL2", ""},
+			{ 3, "CKSEL3", ""},
+			{ 4, "SUT0", ""},
+			{ 5, "SUT1", ""},
+			{ 6, "CKOUT", ""},
+			{ 7, "CKDIV8", ""},
+			{ 8, "BODLEVEL0", ""},
+			{ 9, "BODLEVEL1", ""},
+			{ 10, "BODLEVEL2", ""},
+			{ 11, "EESAVE", ""},
+			{ 12, "WDTON", ""},
+			{ 13, "SPIEN", ""},
+			{ 14, "DWEN", ""},
+			{ 15, "RSTDISBL", ""},
+			{ 16, "SELFPRGEN", ""}
+		},
+		{
+			// fuse mask description
+		},
+		{
+			// lock
+			{ 0, "Lock1", ""},
+			{ 1, "Lock2", ""}
+		},
+		{
+			// lock mask description
+		}
+	},
+	{
+		ATtiny85,
+		{
+			// fuse
+			{ 0, "CKSEL0", ""},
+			{ 1, "CKSEL1", ""},
+			{ 2, "CKSEL2", ""},
+			{ 3, "CKSEL3", ""},
+			{ 4, "SUT0", ""},
+			{ 5, "SUT1", ""},
+			{ 6, "CKOUT", ""},
+			{ 7, "CKDIV8", ""},
+			{ 8, "BODLEVEL0", ""},
+			{ 9, "BODLEVEL1", ""},
+			{ 10, "BODLEVEL2", ""},
+			{ 11, "EESAVE", ""},
+			{ 12, "WDTON", ""},
+			{ 13, "SPIEN", ""},
+			{ 14, "DWEN", ""},
+			{ 15, "RSTDISBL", ""},
+			{ 16, "SELFPRGEN", ""}
+		},
+		{
+			// fuse mask description
+		},
+		{
+			// lock
+			{ 0, "Lock1", ""},
+			{ 1, "Lock2", ""}
+		},
+		{
+			// lock mask description
+		}
+	},
+
+	{
+		ATtiny261,
+		{
+			// fuse
+			{ 0, "CKSEL0", ""},
+			{ 1, "CKSEL1", ""},
+			{ 2, "CKSEL2", ""},
+			{ 3, "CKSEL3", ""},
+			{ 4, "SUT0", ""},
+			{ 5, "SUT1", ""},
+			{ 6, "CKOUT", ""},
+			{ 7, "CKDIV8", ""},
+			{ 8, "BODLEVEL0", ""},
+			{ 9, "BODLEVEL1", ""},
+			{ 10, "BODLEVEL2", ""},
+			{ 11, "EESAVE", ""},
+			{ 12, "WDTON", ""},
+			{ 13, "SPIEN", ""},
+			{ 14, "DWEN", ""},
+			{ 15, "RSTDISBL", ""},
+			{ 16, "SELFPRGEN", ""}
+		},
+		{
+			// fuse mask description
+		},
+		{
+			// lock
+			{ 0, "Lock1", ""},
+			{ 1, "Lock2", ""}
+		},
+		{
+			// lock mask description
+		}
+	},
+
+	{
+		ATtiny461,
+		{
+			// fuse
+			{ 0, "CKSEL0", ""},
+			{ 1, "CKSEL1", ""},
+			{ 2, "CKSEL2", ""},
+			{ 3, "CKSEL3", ""},
+			{ 4, "SUT0", ""},
+			{ 5, "SUT1", ""},
+			{ 6, "CKOUT", ""},
+			{ 7, "CKDIV8", ""},
+			{ 8, "BODLEVEL0", ""},
+			{ 9, "BODLEVEL1", ""},
+			{ 10, "BODLEVEL2", ""},
+			{ 11, "EESAVE", ""},
+			{ 12, "WDTON", ""},
+			{ 13, "SPIEN", ""},
+			{ 14, "DWEN", ""},
+			{ 15, "RSTDISBL", ""},
+			{ 16, "SELFPRGEN", ""}
+		},
+		{
+			// fuse mask description
+		},
+		{
+			// lock
+			{ 0, "Lock1", ""},
+			{ 1, "Lock2", ""}
+		},
+		{
+			// lock mask description
+		}
+	},
+
+	{
+		ATtiny861,
+		{
+			// fuse
+			{ 0, "CKSEL0", ""},
+			{ 1, "CKSEL1", ""},
+			{ 2, "CKSEL2", ""},
+			{ 3, "CKSEL3", ""},
+			{ 4, "SUT0", ""},
+			{ 5, "SUT1", ""},
+			{ 6, "CKOUT", ""},
+			{ 7, "CKDIV8", ""},
+			{ 8, "BODLEVEL0", ""},
+			{ 9, "BODLEVEL1", ""},
+			{ 10, "BODLEVEL2", ""},
+			{ 11, "EESAVE", ""},
+			{ 12, "WDTON", ""},
+			{ 13, "SPIEN", ""},
+			{ 14, "DWEN", ""},
+			{ 15, "RSTDISBL", ""},
+			{ 16, "SELFPRGEN", ""}
+		},
+		{
+			// fuse mask description
+		},
+		{
+			// lock
+			{ 0, "Lock1", ""},
+			{ 1, "Lock2", ""}
+		},
+		{
+			// lock mask description
+		}
+	},
+
+	{
+		ATmega48,
+		{
+			// fuse
+			{ 0, "CKSEL0", ""},
+			{ 1, "CKSEL1", ""},
+			{ 2, "CKSEL2", ""},
+			{ 3, "CKSEL3", ""},
+			{ 4, "SUT0", ""},
+			{ 5, "SUT1", ""},
+			{ 6, "CKOUT", ""},
+			{ 7, "CKDIV8", ""},
+			{ 8, "BODLEVEL0", ""},
+			{ 9, "BODLEVEL1", ""},
+			{ 10, "BODLEVEL2", ""},
+			{ 11, "EESAVE", ""},
+			{ 12, "WDTON", ""},
+			{ 13, "SPIEN", ""},
+			{ 14, "DWEN", ""},
+			{ 15, "RSTDISBL", ""},
+			{ 16, "SELFPRGEN", ""}
+		},
+		{
+			// fuse mask description
+		},
+		{
+			// lock
+			{ 0, "Lock1", ""},
+			{ 1, "Lock2", ""},
+			{ 2, "BootLock01", ""},
+			{ 3, "BootLock02", ""},
+			{ 4, "BootLock11", ""},
+			{ 5, "BootLock12", ""}
+		},
+		{
+			// lock mask description
+		}
+	},
+
+	{
+		ATmega88,
+		{
+			// fuse
+			{ 0, "CKSEL0", ""},
+			{ 1, "CKSEL1", ""},
+			{ 2, "CKSEL2", ""},
+			{ 3, "CKSEL3", ""},
+			{ 4, "SUT0", ""},
+			{ 5, "SUT1", ""},
+			{ 6, "CKOUT", ""},
+			{ 7, "CKDIV8", ""},
+			{ 8, "BODLEVEL0", ""},
+			{ 9, "BODLEVEL1", ""},
+			{ 10, "BODLEVEL2", ""},
+			{ 11, "EESAVE", ""},
+			{ 12, "WDTON", ""},
+			{ 13, "SPIEN", ""},
+			{ 14, "DWEN", ""},
+			{ 15, "RSTDISBL", ""},
+			{ 16, "BOOTRST", ""},
+			{ 17, "BOOTSZ0", ""},
+			{ 18, "BOOTSZ1", ""}
+		},
+		{
+			// fuse mask description
+		},
+		{
+			// lock
+			{ 0, "Lock1", ""},
+			{ 1, "Lock2", ""},
+			{ 2, "BootLock01", ""},
+			{ 3, "BootLock02", ""},
+			{ 4, "BootLock11", ""},
+			{ 5, "BootLock12", ""}
+		},
+		{
+			// lock mask description
+		}
+	},
+
+	{
+		ATmega168,
+		{
+			// fuse
+			{ 0, "CKSEL0", ""},
+			{ 1, "CKSEL1", ""},
+			{ 2, "CKSEL2", ""},
+			{ 3, "CKSEL3", ""},
+			{ 4, "SUT0", ""},
+			{ 5, "SUT1", ""},
+			{ 6, "CKOUT", ""},
+			{ 7, "CKDIV8", ""},
+			{ 8, "BODLEVEL0", ""},
+			{ 9, "BODLEVEL1", ""},
+			{ 10, "BODLEVEL2", ""},
+			{ 11, "EESAVE", ""},
+			{ 12, "WDTON", ""},
+			{ 13, "SPIEN", ""},
+			{ 14, "DWEN", ""},
+			{ 15, "RSTDISBL", ""},
+			{ 16, "BOOTRST", ""},
+			{ 17, "BOOTSZ0", ""},
+			{ 18, "BOOTSZ1", ""}
+		},
+		{
+			// fuse mask description
+		},
+		{
+			// lock
+			{ 0, "Lock1", ""},
+			{ 1, "Lock2", ""},
+			{ 2, "BootLock01", ""},
+			{ 3, "BootLock02", ""},
+			{ 4, "BootLock11", ""},
+			{ 5, "BootLock12", ""}
+		},
+		{
+			// lock mask description
+		}
+	},
+
+	{
+		ATmega328,
+		{
+			// fuse
+			{ 0, "CKSEL0", ""},
+			{ 1, "CKSEL1", ""},
+			{ 2, "CKSEL2", ""},
+			{ 3, "CKSEL3", ""},
+			{ 4, "SUT0", ""},
+			{ 5, "SUT1", ""},
+			{ 6, "CKOUT", ""},
+			{ 7, "CKDIV8", ""},
+			{ 8, "BODLEVEL0", ""},
+			{ 9, "BODLEVEL1", ""},
+			{ 10, "BODLEVEL2", ""},
+			{ 11, "EESAVE", ""},
+			{ 12, "WDTON", ""},
+			{ 13, "SPIEN", ""},
+			{ 14, "DWEN", ""},
+			{ 15, "RSTDISBL", ""},
+			{ 16, "BOOTRST", ""},
+			{ 17, "BOOTSZ0", ""},
+			{ 18, "BOOTSZ1", ""}
+		},
+		{
+			// fuse mask description
+		},
+		{
+			// lock
+			{ 0, "Lock1", ""},
+			{ 1, "Lock2", ""},
+			{ 2, "BootLock01", ""},
+			{ 3, "BootLock02", ""},
+			{ 4, "BootLock11", ""},
+			{ 5, "BootLock12", ""}
+		},
+		{
+			// lock mask description
+		}
+	},
+
+	{
+		ATmega164,
+		{
+			// fuse
+			{ 0, "CKSEL0", ""},
+			{ 1, "CKSEL1", ""},
+			{ 2, "CKSEL2", ""},
+			{ 3, "CKSEL3", ""},
+			{ 4, "SUT0", ""},
+			{ 5, "SUT1", ""},
+			{ 6, "CKOUT", ""},
+			{ 7, "CKDIV8", ""},
+			{ 8, "BOOTRST", ""},
+			{ 9, "BOOTSZ0", ""},
+			{ 10, "BOOTSZ1", ""},
+			{ 11, "EESAVE", ""},
+			{ 12, "WDTON", ""},
+			{ 13, "SPIEN", ""},
+			{ 14, "JTAGEN", ""},
+			{ 15, "OCDEN", ""},
+			{ 16, "BODLEVEL0", ""},
+			{ 17, "BODLEVEL1", ""},
+			{ 18, "BODLEVEL2", ""}
+		},
+		{
+			// fuse mask description
+		},
+		{
+			// lock
+			{ 0, "Lock1", ""},
+			{ 1, "Lock2", ""},
+			{ 2, "BootLock01", ""},
+			{ 3, "BootLock02", ""},
+			{ 4, "BootLock11", ""},
+			{ 5, "BootLock12", ""}
+		},
+		{
+			// lock mask description
+		}
+	},
+
+	{
+		ATmega324,
+		{
+			// fuse
+			{ 0, "CKSEL0", ""},
+			{ 1, "CKSEL1", ""},
+			{ 2, "CKSEL2", ""},
+			{ 3, "CKSEL3", ""},
+			{ 4, "SUT0", ""},
+			{ 5, "SUT1", ""},
+			{ 6, "CKOUT", ""},
+			{ 7, "CKDIV8", ""},
+			{ 8, "BOOTRST", ""},
+			{ 9, "BOOTSZ0", ""},
+			{ 10, "BOOTSZ1", ""},
+			{ 11, "EESAVE", ""},
+			{ 12, "WDTON", ""},
+			{ 13, "SPIEN", ""},
+			{ 14, "JTAGEN", ""},
+			{ 15, "OCDEN", ""},
+			{ 16, "BODLEVEL0", ""},
+			{ 17, "BODLEVEL1", ""},
+			{ 18, "BODLEVEL2", ""}
+		},
+		{
+			// fuse mask description
+		},
+		{
+			// lock
+			{ 0, "Lock1", ""},
+			{ 1, "Lock2", ""},
+			{ 2, "BootLock01", ""},
+			{ 3, "BootLock02", ""},
+			{ 4, "BootLock11", ""},
+			{ 5, "BootLock12", ""}
+		},
+		{
+			// lock mask description
+		}
+	},
+
+	{
+		ATmega644,
+		{
+			// fuse
+			{ 0, "CKSEL0", ""},
+			{ 1, "CKSEL1", ""},
+			{ 2, "CKSEL2", ""},
+			{ 3, "CKSEL3", ""},
+			{ 4, "SUT0", ""},
+			{ 5, "SUT1", ""},
+			{ 6, "CKOUT", ""},
+			{ 7, "CKDIV8", ""},
+			{ 8, "BOOTRST", ""},
+			{ 9, "BOOTSZ0", ""},
+			{ 10, "BOOTSZ1", ""},
+			{ 11, "EESAVE", ""},
+			{ 12, "WDTON", ""},
+			{ 13, "SPIEN", ""},
+			{ 14, "JTAGEN", ""},
+			{ 15, "OCDEN", ""},
+			{ 16, "BODLEVEL0", ""},
+			{ 17, "BODLEVEL1", ""},
+			{ 18, "BODLEVEL2", ""}
+		},
+		{
+			// fuse mask description
+		},
+		{
+			// lock
+			{ 0, "Lock1", ""},
+			{ 1, "Lock2", ""},
+			{ 2, "BootLock01", ""},
+			{ 3, "BootLock02", ""},
+			{ 4, "BootLock11", ""},
+			{ 5, "BootLock12", ""}
+		},
+		{
+			// lock mask description
+		}
+	},
+
+	{
+		ATmega640,
+		{
+			// fuse
+			{ 0, "CKSEL0", ""},
+			{ 1, "CKSEL1", ""},
+			{ 2, "CKSEL2", ""},
+			{ 3, "CKSEL3", ""},
+			{ 4, "SUT0", ""},
+			{ 5, "SUT1", ""},
+			{ 6, "CKOUT", ""},
+			{ 7, "CKDIV8", ""},
+			{ 8, "BOOTRST", ""},
+			{ 9, "BOOTSZ0", ""},
+			{ 10, "BOOTSZ1", ""},
+			{ 11, "EESAVE", ""},
+			{ 12, "WDTON", ""},
+			{ 13, "SPIEN", ""},
+			{ 14, "JTAGEN", ""},
+			{ 15, "OCDEN", ""},
+			{ 16, "BODLEVEL0", ""},
+			{ 17, "BODLEVEL1", ""},
+			{ 18, "BODLEVEL2", ""}
+		},
+		{
+			// fuse mask description
+		},
+		{
+			// lock
+			{ 0, "Lock1", ""},
+			{ 1, "Lock2", ""},
+			{ 2, "BootLock01", ""},
+			{ 3, "BootLock02", ""},
+			{ 4, "BootLock11", ""},
+			{ 5, "BootLock12", ""}
+		},
+		{
+			// lock mask description
+		}
+	},
+
+	{
+		ATmega1280,
+		{
+			// fuse
+			{ 0, "CKSEL0", ""},
+			{ 1, "CKSEL1", ""},
+			{ 2, "CKSEL2", ""},
+			{ 3, "CKSEL3", ""},
+			{ 4, "SUT0", ""},
+			{ 5, "SUT1", ""},
+			{ 6, "CKOUT", ""},
+			{ 7, "CKDIV8", ""},
+			{ 8, "BOOTRST", ""},
+			{ 9, "BOOTSZ0", ""},
+			{ 10, "BOOTSZ1", ""},
+			{ 11, "EESAVE", ""},
+			{ 12, "WDTON", ""},
+			{ 13, "SPIEN", ""},
+			{ 14, "JTAGEN", ""},
+			{ 15, "OCDEN", ""},
+			{ 16, "BODLEVEL0", ""},
+			{ 17, "BODLEVEL1", ""},
+			{ 18, "BODLEVEL2", ""}
+		},
+		{
+			// fuse mask description
+		},
+		{
+			// lock
+			{ 0, "Lock1", ""},
+			{ 1, "Lock2", ""},
+			{ 2, "BootLock01", ""},
+			{ 3, "BootLock02", ""},
+			{ 4, "BootLock11", ""},
+			{ 5, "BootLock12", ""}
+		},
+		{
+			// lock mask description
+		}
+	},
+
+	{
+		ATmega1281,
+		{
+			// fuse
+			{ 0, "CKSEL0", ""},
+			{ 1, "CKSEL1", ""},
+			{ 2, "CKSEL2", ""},
+			{ 3, "CKSEL3", ""},
+			{ 4, "SUT0", ""},
+			{ 5, "SUT1", ""},
+			{ 6, "CKOUT", ""},
+			{ 7, "CKDIV8", ""},
+			{ 8, "BOOTRST", ""},
+			{ 9, "BOOTSZ0", ""},
+			{ 10, "BOOTSZ1", ""},
+			{ 11, "EESAVE", ""},
+			{ 12, "WDTON", ""},
+			{ 13, "SPIEN", ""},
+			{ 14, "JTAGEN", ""},
+			{ 15, "OCDEN", ""},
+			{ 16, "BODLEVEL0", ""},
+			{ 17, "BODLEVEL1", ""},
+			{ 18, "BODLEVEL2", ""}
+		},
+		{
+			// fuse mask description
+		},
+		{
+			// lock
+			{ 0, "Lock1", ""},
+			{ 1, "Lock2", ""},
+			{ 2, "BootLock01", ""},
+			{ 3, "BootLock02", ""},
+			{ 4, "BootLock11", ""},
+			{ 5, "BootLock12", ""}
+		},
+		{
+			// lock mask description
+		}
+	},
+
+	{
+		ATmega2560,
+		{
+			// fuse
+			{ 0, "CKSEL0", ""},
+			{ 1, "CKSEL1", ""},
+			{ 2, "CKSEL2", ""},
+			{ 3, "CKSEL3", ""},
+			{ 4, "SUT0", ""},
+			{ 5, "SUT1", ""},
+			{ 6, "CKOUT", ""},
+			{ 7, "CKDIV8", ""},
+			{ 8, "BOOTRST", ""},
+			{ 9, "BOOTSZ0", ""},
+			{ 10, "BOOTSZ1", ""},
+			{ 11, "EESAVE", ""},
+			{ 12, "WDTON", ""},
+			{ 13, "SPIEN", ""},
+			{ 14, "JTAGEN", ""},
+			{ 15, "OCDEN", ""},
+			{ 16, "BODLEVEL0", ""},
+			{ 17, "BODLEVEL1", ""},
+			{ 18, "BODLEVEL2", ""}
+		},
+		{
+			// fuse mask description
+		},
+		{
+			// lock
+			{ 0, "Lock1", ""},
+			{ 1, "Lock2", ""},
+			{ 2, "BootLock01", ""},
+			{ 3, "BootLock02", ""},
+			{ 4, "BootLock11", ""},
+			{ 5, "BootLock12", ""}
+		},
+		{
+			// lock mask description
+		}
+	},
+
+	{
+		ATmega2561,
+		{
+			// fuse
+			{ 0, "CKSEL0", ""},
+			{ 1, "CKSEL1", ""},
+			{ 2, "CKSEL2", ""},
+			{ 3, "CKSEL3", ""},
+			{ 4, "SUT0", ""},
+			{ 5, "SUT1", ""},
+			{ 6, "CKOUT", ""},
+			{ 7, "CKDIV8", ""},
+			{ 8, "BOOTRST", ""},
+			{ 9, "BOOTSZ0", ""},
+			{ 10, "BOOTSZ1", ""},
+			{ 11, "EESAVE", ""},
+			{ 12, "WDTON", ""},
+			{ 13, "SPIEN", ""},
+			{ 14, "JTAGEN", ""},
+			{ 15, "OCDEN", ""},
+			{ 16, "BODLEVEL0", ""},
+			{ 17, "BODLEVEL1", ""},
+			{ 18, "BODLEVEL2", ""}
+		},
+		{
+			// fuse mask description
+		},
+		{
+			// lock
+			{ 0, "Lock1", ""},
+			{ 1, "Lock2", ""},
+			{ 2, "BootLock01", ""},
+			{ 3, "BootLock02", ""},
+			{ 4, "BootLock11", ""},
+			{ 5, "BootLock12", ""}
+		},
+		{
+			// lock mask description
+		}
+	},
+
+	{
+		ATmega603,
+		{
+			// fuse
+			{ 0, "SUT0", ""},
+			{ 1, "SUT1", ""},
+			{ 3, "EESAVE", ""}
+		},
+		{
+			// fuse mask description
+		},
+		{
+			// lock
+			{ 1, "Lock1", ""},
+			{ 2, "Lock2", ""}
+		},
+		{
+			// lock mask description
+		}
+	},
+
+	{
+		ATmega103,
+		{
+			// fuse
+			{ 0, "SUT0", ""},
+			{ 1, "SUT1", ""},
+			{ 3, "EESAVE", ""}
+		},
+		{
+			// fuse mask description
+		},
+		{
+			// lock
+			{ 1, "Lock1", ""},
+			{ 2, "Lock2", ""}
+		},
+		{
+			// lock mask description
+		}
+	},
+
+	{
+		ATmega8,
+		{
+			// fuse
+			{ 0, "CKSEL0", ""},
+			{ 1, "CKSEL1", ""},
+			{ 2, "CKSEL2", ""},
+			{ 3, "CKSEL3", ""},
+			{ 4, "SUT0", ""},
+			{ 5, "SUT1", ""},
+			{ 6, "BODEN", ""},
+			{ 7, "BODLEVEL", ""},
+			{ 8, "BOOTRST", ""},
+			{ 9, "BOOTSZ0", ""},
+			{ 10, "BOOTSZ1", ""},
+			{ 11, "EESAVE", ""},
+			{ 12, "CKOPT", ""},
+			{ 13, "SPIEN", ""},
+			{ 14, "WDTON", ""},
+			{ 15, "RSTDISBL", ""}
+		},
+		{
+			// fuse mask description
+		},
+		{
+			// lock
+			{ 0, "Lock1", ""},
+			{ 1, "Lock2", ""},
+			{ 2, "BootLock01", ""},
+			{ 3, "BootLock02", ""},
+			{ 4, "BootLock11", ""},
+			{ 5, "BootLock12", ""}
+		},
+		{
+			// lock mask description
+		}
+	},
+
+	{
+		ATmega8515,
+		{
+			// fuse
+			{ 0, "CKSEL0", ""},
+			{ 1, "CKSEL1", ""},
+			{ 2, "CKSEL2", ""},
+			{ 3, "CKSEL3", ""},
+			{ 4, "SUT0", ""},
+			{ 5, "SUT1", ""},
+			{ 6, "BODEN", ""},
+			{ 7, "BODLEVEL", ""},
+			{ 8, "BOOTRST", ""},
+			{ 9, "BOOTSZ0", ""},
+			{ 10, "BOOTSZ1", ""},
+			{ 11, "EESAVE", ""},
+			{ 12, "CKOPT", ""},
+			{ 13, "SPIEN", ""},
+			{ 14, "WDTON", ""},
+			{ 15, "S8515C", ""}
+		},
+		{
+			// fuse mask description
+		},
+		{
+			// lock
+			{ 0, "Lock1", ""},
+			{ 1, "Lock2", ""},
+			{ 2, "BootLock01", ""},
+			{ 3, "BootLock02", ""},
+			{ 4, "BootLock11", ""},
+			{ 5, "BootLock12", ""}
+		},
+		{
+			// lock mask description
+		}
+	},
+
+	{
+		ATmega8535,
+		{
+			// fuse
+			{ 0, "CKSEL0", ""},
+			{ 1, "CKSEL1", ""},
+			{ 2, "CKSEL2", ""},
+			{ 3, "CKSEL3", ""},
+			{ 4, "SUT0", ""},
+			{ 5, "SUT1", ""},
+			{ 6, "BODEN", ""},
+			{ 7, "BODLEVEL", ""},
+			{ 8, "BOOTRST", ""},
+			{ 9, "BOOTSZ0", ""},
+			{ 10, "BOOTSZ1", ""},
+			{ 11, "EESAVE", ""},
+			{ 12, "CKOPT", ""},
+			{ 13, "SPIEN", ""},
+			{ 14, "WDTON", ""},
+			{ 15, "S8535C", ""}
+		},
+		{
+			// fuse mask description
+		},
+		{
+			// lock
+			{ 0, "Lock1", ""},
+			{ 1, "Lock2", ""},
+			{ 2, "BootLock01", ""},
+			{ 3, "BootLock02", ""},
+			{ 4, "BootLock11", ""},
+			{ 5, "BootLock12", ""}
+		},
+		{
+			// lock mask description
+		}
+	},
+
+	{
+		ATmega64,
+		{
+			// fuse
+			{ 0, "CKSEL0", ""},
+			{ 1, "CKSEL1", ""},
+			{ 2, "CKSEL2", ""},
+			{ 3, "CKSEL3", ""},
+			{ 4, "SUT0", ""},
+			{ 5, "SUT1", ""},
+			{ 6, "BODEN", ""},
+			{ 7, "BODLEVEL", ""},
+			{ 8, "BOOTRST", ""},
+			{ 9, "BOOTSZ0", ""},
+			{ 10, "BOOTSZ1", ""},
+			{ 11, "EESAVE", ""},
+			{ 12, "CKOPT", ""},
+			{ 13, "SPIEN", ""},
+			{ 14, "JTAGEN", ""},
+			{ 15, "OCDEN", ""},
+			{ 16, "WDTON", ""},
+			{ 17, "M103C", ""}
+		},
+		{
+			// fuse mask description
+		},
+		{
+			// lock
+			{ 0, "Lock1", ""},
+			{ 1, "Lock2", ""},
+			{ 2, "BootLock01", ""},
+			{ 3, "BootLock02", ""},
+			{ 4, "BootLock11", ""},
+			{ 5, "BootLock12", ""}
+		},
+		{
+			// lock mask description
+		}
+	},
+
+	{
+		ATmega128,
+		{
+			// fuse
+			{ 0, "CKSEL0", ""},
+			{ 1, "CKSEL1", ""},
+			{ 2, "CKSEL2", ""},
+			{ 3, "CKSEL3", ""},
+			{ 4, "SUT0", ""},
+			{ 5, "SUT1", ""},
+			{ 6, "BODEN", ""},
+			{ 7, "BODLEVEL", ""},
+			{ 8, "BOOTRST", ""},
+			{ 9, "BOOTSZ0", ""},
+			{ 10, "BOOTSZ1", ""},
+			{ 11, "EESAVE", ""},
+			{ 12, "CKOPT", ""},
+			{ 13, "SPIEN", ""},
+			{ 14, "JTAGEN", ""},
+			{ 15, "OCDEN", ""},
+			{ 16, "WDTON", ""},
+			{ 17, "M103C", ""}
+		},
+		{
+			// fuse mask description
+		},
+		{
+			// lock
+			{ 0, "Lock1", ""},
+			{ 1, "Lock2", ""},
+			{ 2, "BootLock01", ""},
+			{ 3, "BootLock02", ""},
+			{ 4, "BootLock11", ""},
+			{ 5, "BootLock12", ""}
+		},
+		{
+			// lock mask description
+		}
+	},
+
+	{
+		ATmega16,
+		{
+			// fuse
+			{ 0, "CKSEL0", ""},
+			{ 1, "CKSEL1", ""},
+			{ 2, "CKSEL2", ""},
+			{ 3, "CKSEL3", ""},
+			{ 4, "SUT0", ""},
+			{ 5, "SUT1", ""},
+			{ 6, "BODEN", ""},
+			{ 7, "BODLEVEL", ""},
+			{ 8, "BOOTRST", ""},
+			{ 9, "BOOTSZ0", ""},
+			{ 10, "BOOTSZ1", ""},
+			{ 11, "EESAVE", ""},
+			{ 12, "CKOPT", ""},
+			{ 13, "SPIEN", ""},
+			{ 14, "JTAGEN", ""},
+			{ 15, "OCDEN", ""}
+		},
+		{
+			// fuse mask description
+		},
+		{
+			// lock
+			{ 0, "Lock1", ""},
+			{ 1, "Lock2", ""},
+			{ 2, "BootLock01", ""},
+			{ 3, "BootLock02", ""},
+			{ 4, "BootLock11", ""},
+			{ 5, "BootLock12", ""}
+		},
+		{
+			// lock mask description
+		}
+	},
+
+	{
+		ATmega161,
+		{
+			// fuse
+			{ 0, "CKSEL0", ""},
+			{ 1, "CKSEL1", ""},
+			{ 2, "CKSEL2", ""},
+			{ 3, "BODEN", ""},
+			{ 4, "BODLEVEL", ""},
+			{ 5, "SPIEN", ""},
+			{ 6, "BOOTRST", ""}
+		},
+		{
+			// fuse mask description
+		},
+		{
+			// lock
+			{ 0, "Lock1", ""},
+			{ 1, "Lock2", ""},
+			{ 2, "BootLock01", ""},
+			{ 3, "BootLock02", ""},
+			{ 4, "BootLock11", ""},
+			{ 5, "BootLock12", ""}
+		},
+		{
+			// lock mask description
+		}
+	},
+
+	{
+		ATmega163,
+		{
+			// fuse
+			{ 0, "CKSEL0", ""},
+			{ 1, "CKSEL1", ""},
+			{ 2, "CKSEL2", ""},
+			{ 3, "CKSEL3", ""},
+			{ 6, "BODEN", ""},
+			{ 7, "BODLEVEL", ""},
+			{ 8, "BOOTRST", ""},
+			{ 9, "BOOTSZ0", ""},
+			{ 10, "BOOTSZ1", ""}
+		},
+		{
+			// fuse mask description
+		},
+		{
+			// lock
+			{ 0, "Lock1", ""},
+			{ 1, "Lock2", ""},
+			{ 2, "BootLock01", ""},
+			{ 3, "BootLock02", ""},
+			{ 4, "BootLock11", ""},
+			{ 5, "BootLock12", ""}
+		},
+		{
+			// lock mask description
+		}
+	},
+
+	{
+		ATmega162,
+		{
+			// fuse
+			{ 0, "CKSEL0", ""},
+			{ 1, "CKSEL1", ""},
+			{ 2, "CKSEL2", ""},
+			{ 3, "CKSEL3", ""},
+			{ 4, "SUT0", ""},
+			{ 5, "SUT1", ""},
+			{ 6, "CKOUT", ""},
+			{ 7, "CKDIV8", ""},
+			{ 8, "BOOTRST", ""},
+			{ 9, "BOOTSZ0", ""},
+			{ 10, "BOOTSZ1", ""},
+			{ 11, "EESAVE", ""},
+			{ 12, "WDTON", ""},
+			{ 13, "SPIEN", ""},
+			{ 14, "JTAGEN", ""},
+			{ 15, "OCDEN", ""},
+			{ 17, "BOD0LEVEL", ""},
+			{ 18, "BOD1LEVEL", ""},
+			{ 19, "BOD2LEVEL", ""},
+			{ 20, "M161C", ""}
+		},
+		{
+			// fuse mask description
+		},
+		{
+			// lock
+			{ 0, "Lock1", ""},
+			{ 1, "Lock2", ""},
+			{ 2, "BootLock01", ""},
+			{ 3, "BootLock02", ""},
+			{ 4, "BootLock11", ""},
+			{ 5, "BootLock12", ""}
+		},
+		{
+			// lock mask description
+		}
+	},
+
+	{
+		ATmega169,
+		{
+			// fuse
+			{ 0, "CKSEL0", ""},
+			{ 1, "CKSEL1", ""},
+			{ 2, "CKSEL2", ""},
+			{ 3, "CKSEL3", ""},
+			{ 4, "SUT0", ""},
+			{ 5, "SUT1", ""},
+			{ 6, "CKOUT", ""},
+			{ 7, "CKDIV8", ""},
+			{ 8, "BOOTRST", ""},
+			{ 9, "BOOTSZ0", ""},
+			{ 10, "BOOTSZ1", ""},
+			{ 11, "EESAVE", ""},
+			{ 12, "WDTON", ""},
+			{ 13, "SPIEN", ""},
+			{ 14, "JTAGEN", ""},
+			{ 15, "OCDEN", ""},
+			{ 16, "RSTDISBL", ""},
+			{ 17, "BOD0LEVEL", ""},
+			{ 18, "BOD1LEVEL", ""},
+			{ 19, "BOD2LEVEL", ""}
+		},
+		{
+			// fuse mask description
+		},
+		{
+			// lock
+			{ 0, "Lock1", ""},
+			{ 1, "Lock2", ""},
+			{ 2, "BootLock01", ""},
+			{ 3, "BootLock02", ""},
+			{ 4, "BootLock11", ""},
+			{ 5, "BootLock12", ""}
+		},
+		{
+			// lock mask description
+		}
+	},
+
+	{
+		ATmega323,
+		{
+			// fuse
+			{ 0, "CKSEL0", ""},
+			{ 1, "CKSEL1", ""},
+			{ 2, "CKSEL2", ""},
+			{ 3, "CKSEL3", ""},
+			{ 6, "BODEN", ""},
+			{ 7, "BODLEVEL", ""},
+			{ 8, "BOOTRST", ""},
+			{ 9, "BOOTSZ0", ""},
+			{ 10, "BOOTSZ1", ""},
+			{ 11, "EESAVE", ""},
+			{ 13, "SPIEN", ""},
+			{ 14, "JTAGEN", ""},
+			{ 15, "OCDEN", ""}
+		},
+		{
+			// fuse mask description
+		},
+		{
+			// lock
+			{ 0, "Lock1", ""},
+			{ 1, "Lock2", ""},
+			{ 2, "BootLock01", ""},
+			{ 3, "BootLock02", ""},
+			{ 4, "BootLock11", ""},
+			{ 5, "BootLock12", ""}
+		},
+		{
+			// lock mask description
+		}
+	},
+
+	{
+		ATmega32,
+		{
+			// fuse
+			{ 0, "CKSEL0", ""},
+			{ 1, "CKSEL1", ""},
+			{ 2, "CKSEL2", ""},
+			{ 3, "CKSEL3", ""},
+			{ 4, "SUT0", ""},
+			{ 5, "SUT1", ""},
+			{ 6, "BODEN", ""},
+			{ 7, "BODLEVEL", ""},
+			{ 8, "BOOTRST", ""},
+			{ 9, "BOOTSZ0", ""},
+			{ 10, "BOOTSZ1", ""},
+			{ 11, "EESAVE", ""},
+			{ 12, "CKOPT", ""},
+			{ 13, "SPIEN", ""},
+			{ 14, "JTAGEN", ""},
+			{ 15, "OCDEN", ""}
+		},
+		{
+			// fuse mask description
+		},
+		{
+			// lock
+			{ 0, "Lock1", ""},
+			{ 1, "Lock2", ""},
+			{ 2, "BootLock01", ""},
+			{ 3, "BootLock02", ""},
+			{ 4, "BootLock11", ""},
+			{ 5, "BootLock12", ""}
+		},
+		{
+			// lock mask description
 		}
 	},
 
@@ -1720,12 +2084,18 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			// fuse
 		},
 		{
+			// fuse mask description
+		},
+		{
 			// lock
-			{ 0, "FOSC0", },
-			{ 1, "FOSC1", },
-			{ 2, "WDTE", },
-			{ 3, "CP", },
-			{ 4, "MCLRE", }
+			{ 0, "FOSC0", ""},
+			{ 1, "FOSC1", ""},
+			{ 2, "WDTE", ""},
+			{ 3, "CP", ""},
+			{ 4, "MCLRE", ""}
+		},
+		{
+			// lock mask description
 		}
 	},
 
@@ -1735,12 +2105,18 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			// fuse
 		},
 		{
+			// fuse mask description
+		},
+		{
 			// lock
-			{ 0, "FOSC0", },
-			{ 1, "FOSC1", },
-			{ 2, "WDTE", },
-			{ 3, "CP", },
-			{ 4, "MCLRE", }
+			{ 0, "FOSC0", ""},
+			{ 1, "FOSC1", ""},
+			{ 2, "WDTE", ""},
+			{ 3, "CP", ""},
+			{ 4, "MCLRE", ""}
+		},
+		{
+			// lock mask description
 		}
 	},
 
@@ -1750,12 +2126,18 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			// fuse
 		},
 		{
+			// fuse mask description
+		},
+		{
 			// lock
-			{ 0, "FOSC0", },
-			{ 1, "FOSC1", },
-			{ 2, "WDTE", },
-			{ 3, "CP", },
-			{ 4, "MCLRE", }
+			{ 0, "FOSC0", ""},
+			{ 1, "FOSC1", ""},
+			{ 2, "WDTE", ""},
+			{ 3, "CP", ""},
+			{ 4, "MCLRE", ""}
+		},
+		{
+			// lock mask description
 		}
 	},
 
@@ -1765,12 +2147,18 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			// fuse
 		},
 		{
+			// fuse mask description
+		},
+		{
 			// lock
-			{ 0, "FOSC0", },
-			{ 1, "FOSC1", },
-			{ 2, "WDTE", },
-			{ 3, "CP", },
-			{ 4, "MCLRE", }
+			{ 0, "FOSC0", ""},
+			{ 1, "FOSC1", ""},
+			{ 2, "WDTE", ""},
+			{ 3, "CP", ""},
+			{ 4, "MCLRE", ""}
+		},
+		{
+			// lock mask description
 		}
 	},
 
@@ -1780,12 +2168,18 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			// fuse
 		},
 		{
+			// fuse mask description
+		},
+		{
 			// lock
-			{ 0, "FOSC0", },
-			{ 1, "FOSC1", },
-			{ 2, "WDTE", },
-			{ 3, "CP", },
-			{ 4, "MCLRE", }
+			{ 0, "FOSC0", ""},
+			{ 1, "FOSC1", ""},
+			{ 2, "WDTE", ""},
+			{ 3, "CP", ""},
+			{ 4, "MCLRE", ""}
+		},
+		{
+			// lock mask description
 		}
 	},
 
@@ -1795,12 +2189,18 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			// fuse
 		},
 		{
+			// fuse mask description
+		},
+		{
 			// lock
-			{ 0, "FOSC0", },
-			{ 1, "FOSC1", },
-			{ 2, "WDTE", },
-			{ 3, "CP", },
-			{ 4, "MCLRE", }
+			{ 0, "FOSC0", ""},
+			{ 1, "FOSC1", ""},
+			{ 2, "WDTE", ""},
+			{ 3, "CP", ""},
+			{ 4, "MCLRE", ""}
+		},
+		{
+			// lock mask description
 		}
 	},
 
@@ -1810,21 +2210,27 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			// fuse
 		},
 		{
+			// fuse mask description
+		},
+		{
 			// lock
-			{ 0, "FOSC0", },
-			{ 1, "FOSC1", },
-			{ 2, "FOSC2", },
-			{ 3, "WDTE", },
-			{ 4, "PWRTE", },
-			{ 5, "CP0", },
-			{ 6, "CP1", },
-			{ 7, "MCLRE", },
-			{ 8, "CP0", },
-			{ 9, "CP1", },
-			{ 10, "CP0", },
-			{ 11, "CP1", },
-			{ 12, "CP0", },
-			{ 13, "CP1", }
+			{ 0, "FOSC0", ""},
+			{ 1, "FOSC1", ""},
+			{ 2, "FOSC2", ""},
+			{ 3, "WDTE", ""},
+			{ 4, "PWRTE", ""},
+			{ 5, "CP0", ""},
+			{ 6, "CP1", ""},
+			{ 7, "MCLRE", ""},
+			{ 8, "CP0", ""},
+			{ 9, "CP1", ""},
+			{ 10, "CP0", ""},
+			{ 11, "CP1", ""},
+			{ 12, "CP0", ""},
+			{ 13, "CP1", ""}
+		},
+		{
+			// lock mask description
 		}
 	},
 
@@ -1834,21 +2240,27 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			// fuse
 		},
 		{
+			// fuse mask description
+		},
+		{
 			// lock
-			{ 0, "FOSC0", },
-			{ 1, "FOSC1", },
-			{ 2, "FOSC2", },
-			{ 3, "WDTE", },
-			{ 4, "PWRTE", },
-			{ 5, "CP0", },
-			{ 6, "CP1", },
-			{ 7, "MCLRE", },
-			{ 8, "CP0", },
-			{ 9, "CP1", },
-			{ 10, "CP0", },
-			{ 11, "CP1", },
-			{ 12, "CP0", },
-			{ 13, "CP1", }
+			{ 0, "FOSC0", ""},
+			{ 1, "FOSC1", ""},
+			{ 2, "FOSC2", ""},
+			{ 3, "WDTE", ""},
+			{ 4, "PWRTE", ""},
+			{ 5, "CP0", ""},
+			{ 6, "CP1", ""},
+			{ 7, "MCLRE", ""},
+			{ 8, "CP0", ""},
+			{ 9, "CP1", ""},
+			{ 10, "CP0", ""},
+			{ 11, "CP1", ""},
+			{ 12, "CP0", ""},
+			{ 13, "CP1", ""}
+		},
+		{
+			// lock mask description
 		}
 	},
 
@@ -1858,21 +2270,27 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			// fuse
 		},
 		{
+			// fuse mask description
+		},
+		{
 			// lock
-			{ 0, "FOSC0", },
-			{ 1, "FOSC1", },
-			{ 2, "FOSC2", },
-			{ 3, "WDTE", },
-			{ 4, "PWRTE", },
-			{ 5, "CP0", },
-			{ 6, "CP1", },
-			{ 7, "MCLRE", },
-			{ 8, "CP0", },
-			{ 9, "CP1", },
-			{ 10, "CP0", },
-			{ 11, "CP1", },
-			{ 12, "CP0", },
-			{ 13, "CP1", }
+			{ 0, "FOSC0", ""},
+			{ 1, "FOSC1", ""},
+			{ 2, "FOSC2", ""},
+			{ 3, "WDTE", ""},
+			{ 4, "PWRTE", ""},
+			{ 5, "CP0", ""},
+			{ 6, "CP1", ""},
+			{ 7, "MCLRE", ""},
+			{ 8, "CP0", ""},
+			{ 9, "CP1", ""},
+			{ 10, "CP0", ""},
+			{ 11, "CP1", ""},
+			{ 12, "CP0", ""},
+			{ 13, "CP1", ""}
+		},
+		{
+			// lock mask description
 		}
 	},
 
@@ -1882,21 +2300,27 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			// fuse
 		},
 		{
+			// fuse mask description
+		},
+		{
 			// lock
-			{ 0, "FOSC0", },
-			{ 1, "FOSC1", },
-			{ 2, "FOSC2", },
-			{ 3, "WDTE", },
-			{ 4, "PWRTE", },
-			{ 5, "CP0", },
-			{ 6, "CP1", },
-			{ 7, "MCLRE", },
-			{ 8, "CP0", },
-			{ 9, "CP1", },
-			{ 10, "CP0", },
-			{ 11, "CP1", },
-			{ 12, "CP0", },
-			{ 13, "CP1", }
+			{ 0, "FOSC0", ""},
+			{ 1, "FOSC1", ""},
+			{ 2, "FOSC2", ""},
+			{ 3, "WDTE", ""},
+			{ 4, "PWRTE", ""},
+			{ 5, "CP0", ""},
+			{ 6, "CP1", ""},
+			{ 7, "MCLRE", ""},
+			{ 8, "CP0", ""},
+			{ 9, "CP1", ""},
+			{ 10, "CP0", ""},
+			{ 11, "CP1", ""},
+			{ 12, "CP0", ""},
+			{ 13, "CP1", ""}
+		},
+		{
+			// lock mask description
 		}
 	},
 
@@ -1906,12 +2330,18 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			// fuse
 		},
 		{
+			// fuse mask description
+		},
+		{
 			// lock
-			{ 0, "FOSC0", },
-			{ 1, "FOSC1", },
-			{ 2, "WDTE", },
-			{ 3, "PWRTE", },
-			{ 4, "CP", }
+			{ 0, "FOSC0", ""},
+			{ 1, "FOSC1", ""},
+			{ 2, "WDTE", ""},
+			{ 3, "PWRTE", ""},
+			{ 4, "CP", ""}
+		},
+		{
+			// lock mask description
 		}
 	},
 
@@ -1921,12 +2351,18 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			// fuse
 		},
 		{
+			// fuse mask description
+		},
+		{
 			// lock
-			{ 0, "FOSC0", },
-			{ 1, "FOSC1", },
-			{ 2, "WDTE", },
-			{ 3, "PWRTE", },
-			{ 4, "CP", }
+			{ 0, "FOSC0", ""},
+			{ 1, "FOSC1", ""},
+			{ 2, "WDTE", ""},
+			{ 3, "PWRTE", ""},
+			{ 4, "CP", ""}
+		},
+		{
+			// lock mask description
 		}
 	},
 
@@ -1936,12 +2372,18 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			// fuse
 		},
 		{
+			// fuse mask description
+		},
+		{
 			// lock
-			{ 0, "FOSC0", },
-			{ 1, "FOSC1", },
-			{ 2, "WDTE", },
-			{ 3, "PWRTE", },
-			{ 4, "CP", }
+			{ 0, "FOSC0", ""},
+			{ 1, "FOSC1", ""},
+			{ 2, "WDTE", ""},
+			{ 3, "PWRTE", ""},
+			{ 4, "CP", ""}
+		},
+		{
+			// lock mask description
 		}
 	},
 
@@ -1951,20 +2393,26 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			// fuse
 		},
 		{
+			// fuse mask description
+		},
+		{
 			// lock
-			{ 0, "FOSC0", },
-			{ 1, "FOSC1", },
-			{ 2, "WDTE", },
-			{ 3, "PWRTE", },
-			{ 4, "CP0", },
-			{ 5, "CP1", },
-			{ 6, "BODEN", },
-			{ 7, "LVP", },
-			{ 8, "CPD", },
-			{ 9, "WRT", },
-			{ 11, "RESV", },
-			{ 12, "CP0", },
-			{ 13, "CP1", }
+			{ 0, "FOSC0", ""},
+			{ 1, "FOSC1", ""},
+			{ 2, "WDTE", ""},
+			{ 3, "PWRTE", ""},
+			{ 4, "CP0", ""},
+			{ 5, "CP1", ""},
+			{ 6, "BODEN", ""},
+			{ 7, "LVP", ""},
+			{ 8, "CPD", ""},
+			{ 9, "WRT", ""},
+			{ 11, "RESV", ""},
+			{ 12, "CP0", ""},
+			{ 13, "CP1", ""}
+		},
+		{
+			// lock mask description
 		}
 	},
 
@@ -1974,20 +2422,26 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			// fuse
 		},
 		{
+			// fuse mask description
+		},
+		{
 			// lock
-			{ 0, "FOSC0", },
-			{ 1, "FOSC1", },
-			{ 2, "WDTE", },
-			{ 3, "PWRTE", },
-			{ 4, "CP0", },
-			{ 5, "CP1", },
-			{ 6, "BODEN", },
-			{ 7, "LVP", },
-			{ 8, "CPD", },
-			{ 9, "WRT", },
-			{ 11, "RESV", },
-			{ 12, "CP0", },
-			{ 13, "CP1", }
+			{ 0, "FOSC0", ""},
+			{ 1, "FOSC1", ""},
+			{ 2, "WDTE", ""},
+			{ 3, "PWRTE", ""},
+			{ 4, "CP0", ""},
+			{ 5, "CP1", ""},
+			{ 6, "BODEN", ""},
+			{ 7, "LVP", ""},
+			{ 8, "CPD", ""},
+			{ 9, "WRT", ""},
+			{ 11, "RESV", ""},
+			{ 12, "CP0", ""},
+			{ 13, "CP1", ""}
+		},
+		{
+			// lock mask description
 		}
 	},
 
@@ -1997,20 +2451,26 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			// fuse
 		},
 		{
+			// fuse mask description
+		},
+		{
 			// lock
-			{ 0, "FOSC0", },
-			{ 1, "FOSC1", },
-			{ 2, "WDTE", },
-			{ 3, "PWRTE", },
-			{ 4, "CP0", },
-			{ 5, "CP1", },
-			{ 6, "BODEN", },
-			{ 7, "LVP", },
-			{ 8, "CPD", },
-			{ 9, "WRT", },
-			{ 11, "RESV", },
-			{ 12, "CP0", },
-			{ 13, "CP1", }
+			{ 0, "FOSC0", ""},
+			{ 1, "FOSC1", ""},
+			{ 2, "WDTE", ""},
+			{ 3, "PWRTE", ""},
+			{ 4, "CP0", ""},
+			{ 5, "CP1", ""},
+			{ 6, "BODEN", ""},
+			{ 7, "LVP", ""},
+			{ 8, "CPD", ""},
+			{ 9, "WRT", ""},
+			{ 11, "RESV", ""},
+			{ 12, "CP0", ""},
+			{ 13, "CP1", ""}
+		},
+		{
+			// lock mask description
 		}
 	},
 
@@ -2020,20 +2480,26 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			// fuse
 		},
 		{
+			// fuse mask description
+		},
+		{
 			// lock
-			{ 0, "FOSC0", },
-			{ 1, "FOSC1", },
-			{ 2, "WDTE", },
-			{ 3, "PWRTE", },
-			{ 4, "CP0", },
-			{ 5, "CP1", },
-			{ 6, "BODEN", },
-			{ 7, "LVP", },
-			{ 8, "CPD", },
-			{ 9, "WRT", },
-			{ 11, "RESV", },
-			{ 12, "CP0", },
-			{ 13, "CP1", }
+			{ 0, "FOSC0", ""},
+			{ 1, "FOSC1", ""},
+			{ 2, "WDTE", ""},
+			{ 3, "PWRTE", ""},
+			{ 4, "CP0", ""},
+			{ 5, "CP1", ""},
+			{ 6, "BODEN", ""},
+			{ 7, "LVP", ""},
+			{ 8, "CPD", ""},
+			{ 9, "WRT", ""},
+			{ 11, "RESV", ""},
+			{ 12, "CP0", ""},
+			{ 13, "CP1", ""}
+		},
+		{
+			// lock mask description
 		}
 	},
 
@@ -2043,20 +2509,26 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			// fuse
 		},
 		{
+			// fuse mask description
+		},
+		{
 			// lock
-			{ 0, "FOSC0", },
-			{ 1, "FOSC1", },
-			{ 2, "WDTE", },
-			{ 3, "PWRTE", },
-			{ 4, "CP0", },
-			{ 5, "CP1", },
-			{ 6, "BODEN", },
-			{ 7, "LVP", },
-			{ 8, "CPD", },
-			{ 9, "WRT", },
-			{ 11, "RESV", },
-			{ 12, "CP0", },
-			{ 13, "CP1", }
+			{ 0, "FOSC0", ""},
+			{ 1, "FOSC1", ""},
+			{ 2, "WDTE", ""},
+			{ 3, "PWRTE", ""},
+			{ 4, "CP0", ""},
+			{ 5, "CP1", ""},
+			{ 6, "BODEN", ""},
+			{ 7, "LVP", ""},
+			{ 8, "CPD", ""},
+			{ 9, "WRT", ""},
+			{ 11, "RESV", ""},
+			{ 12, "CP0", ""},
+			{ 13, "CP1", ""}
+		},
+		{
+			// lock mask description
 		}
 	},
 
@@ -2066,20 +2538,26 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			// fuse
 		},
 		{
+			// fuse mask description
+		},
+		{
 			// lock
-			{ 0, "FOSC0", },
-			{ 1, "FOSC1", },
-			{ 2, "WDTE", },
-			{ 3, "PWRTE", },
-			{ 4, "CP0", },
-			{ 5, "CP1", },
-			{ 6, "BODEN", },
-			{ 7, "LVP", },
-			{ 8, "CPD", },
-			{ 9, "WRT", },
-			{ 11, "RESV", },
-			{ 12, "CP0", },
-			{ 13, "CP1", }
+			{ 0, "FOSC0", ""},
+			{ 1, "FOSC1", ""},
+			{ 2, "WDTE", ""},
+			{ 3, "PWRTE", ""},
+			{ 4, "CP0", ""},
+			{ 5, "CP1", ""},
+			{ 6, "BODEN", ""},
+			{ 7, "LVP", ""},
+			{ 8, "CPD", ""},
+			{ 9, "WRT", ""},
+			{ 11, "RESV", ""},
+			{ 12, "CP0", ""},
+			{ 13, "CP1", ""}
+		},
+		{
+			// lock mask description
 		}
 	},
 
@@ -2089,20 +2567,26 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			// fuse
 		},
 		{
+			// fuse mask description
+		},
+		{
 			// lock
-			{ 0, "FOSC0", },
-			{ 1, "FOSC1", },
-			{ 2, "WDTE", },
-			{ 3, "PWRTE", },
-			{ 4, "CP0", },
-			{ 5, "CP1", },
-			{ 6, "BODEN", },
-			{ 7, "LVP", },
-			{ 8, "CPD", },
-			{ 9, "WRT", },
-			{ 11, "RESV", },
-			{ 12, "CP0", },
-			{ 13, "CP1", }
+			{ 0, "FOSC0", ""},
+			{ 1, "FOSC1", ""},
+			{ 2, "WDTE", ""},
+			{ 3, "PWRTE", ""},
+			{ 4, "CP0", ""},
+			{ 5, "CP1", ""},
+			{ 6, "BODEN", ""},
+			{ 7, "LVP", ""},
+			{ 8, "CPD", ""},
+			{ 9, "WRT", ""},
+			{ 11, "RESV", ""},
+			{ 12, "CP0", ""},
+			{ 13, "CP1", ""}
+		},
+		{
+			// lock mask description
 		}
 	},
 
@@ -2112,18 +2596,24 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			// fuse
 		},
 		{
+			// fuse mask description
+		},
+		{
 			// lock
-			{ 0, "FOSC0", },
-			{ 1, "FOSC1", },
-			{ 2, "WDTEN", },
-			{ 3, "/PWRTEN", },
-			{ 6, "BOREN", },
-			{ 7, "LVP", },
-			{ 8, "CPD", },
-			{ 9, "WRT0", },
-			{ 11, "WRT1", },
-			{ 12, "DEBUG", },
-			{ 14, "CP", }
+			{ 0, "FOSC0", ""},
+			{ 1, "FOSC1", ""},
+			{ 2, "WDTEN", ""},
+			{ 3, "/PWRTEN", ""},
+			{ 6, "BOREN", ""},
+			{ 7, "LVP", ""},
+			{ 8, "CPD", ""},
+			{ 9, "WRT0", ""},
+			{ 11, "WRT1", ""},
+			{ 12, "DEBUG", ""},
+			{ 14, "CP", ""}
+		},
+		{
+			// lock mask description
 		}
 	},
 
@@ -2133,18 +2623,24 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			// fuse
 		},
 		{
+			// fuse mask description
+		},
+		{
 			// lock
-			{ 0, "FOSC0", },
-			{ 1, "FOSC1", },
-			{ 2, "WDTEN", },
-			{ 3, "/PWRTEN", },
-			{ 6, "BOREN", },
-			{ 7, "LVP", },
-			{ 8, "CPD", },
-			{ 9, "WRT0", },
-			{ 11, "WRT1", },
-			{ 12, "DEBUG", },
-			{ 14, "CP", }
+			{ 0, "FOSC0", ""},
+			{ 1, "FOSC1", ""},
+			{ 2, "WDTEN", ""},
+			{ 3, "/PWRTEN", ""},
+			{ 6, "BOREN", ""},
+			{ 7, "LVP", ""},
+			{ 8, "CPD", ""},
+			{ 9, "WRT0", ""},
+			{ 11, "WRT1", ""},
+			{ 12, "DEBUG", ""},
+			{ 14, "CP", ""}
+		},
+		{
+			// lock mask description
 		}
 	},
 
@@ -2154,18 +2650,24 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			// fuse
 		},
 		{
+			// fuse mask description
+		},
+		{
 			// lock
-			{ 0, "FOSC0", },
-			{ 1, "FOSC1", },
-			{ 2, "WDTEN", },
-			{ 3, "/PWRTEN", },
-			{ 6, "BOREN", },
-			{ 7, "LVP", },
-			{ 8, "CPD", },
-			{ 9, "WRT0", },
-			{ 11, "WRT1", },
-			{ 12, "DEBUG", },
-			{ 14, "CP", }
+			{ 0, "FOSC0", ""},
+			{ 1, "FOSC1", ""},
+			{ 2, "WDTEN", ""},
+			{ 3, "/PWRTEN", ""},
+			{ 6, "BOREN", ""},
+			{ 7, "LVP", ""},
+			{ 8, "CPD", ""},
+			{ 9, "WRT0", ""},
+			{ 11, "WRT1", ""},
+			{ 12, "DEBUG", ""},
+			{ 14, "CP", ""}
+		},
+		{
+			// lock mask description
 		}
 	},
 
@@ -2175,18 +2677,24 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			// fuse
 		},
 		{
+			// fuse mask description
+		},
+		{
 			// lock
-			{ 0, "FOSC0", },
-			{ 1, "FOSC1", },
-			{ 2, "WDTEN", },
-			{ 3, "/PWRTEN", },
-			{ 6, "BOREN", },
-			{ 7, "LVP", },
-			{ 8, "CPD", },
-			{ 9, "WRT0", },
-			{ 11, "WRT1", },
-			{ 12, "DEBUG", },
-			{ 14, "CP", }
+			{ 0, "FOSC0", ""},
+			{ 1, "FOSC1", ""},
+			{ 2, "WDTEN", ""},
+			{ 3, "/PWRTEN", ""},
+			{ 6, "BOREN", ""},
+			{ 7, "LVP", ""},
+			{ 8, "CPD", ""},
+			{ 9, "WRT0", ""},
+			{ 11, "WRT1", ""},
+			{ 12, "DEBUG", ""},
+			{ 14, "CP", ""}
+		},
+		{
+			// lock mask description
 		}
 	},
 
@@ -2196,20 +2704,26 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			// fuse
 		},
 		{
+			// fuse mask description
+		},
+		{
 			// lock
-			{ 0, "FOSC0", },
-			{ 1, "FOSC1", },
-			{ 2, "WDTEN", },
-			{ 3, "/PWRTEN", },
-			{ 4, "FOSC2", },
-			{ 5, "MCLRE", },
-			{ 6, "BOREN", },
-			{ 7, "LVP", },
-			{ 8, "CPD", },
-			{ 10, "CP0", },
-			{ 11, "CP1", },
-			{ 12, "CP0", },
-			{ 13, "CP1", }
+			{ 0, "FOSC0", ""},
+			{ 1, "FOSC1", ""},
+			{ 2, "WDTEN", ""},
+			{ 3, "/PWRTEN", ""},
+			{ 4, "FOSC2", ""},
+			{ 5, "MCLRE", ""},
+			{ 6, "BOREN", ""},
+			{ 7, "LVP", ""},
+			{ 8, "CPD", ""},
+			{ 10, "CP0", ""},
+			{ 11, "CP1", ""},
+			{ 12, "CP0", ""},
+			{ 13, "CP1", ""}
+		},
+		{
+			// lock mask description
 		}
 	},
 
@@ -2219,20 +2733,26 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			// fuse
 		},
 		{
+			// fuse mask description
+		},
+		{
 			// lock
-			{ 0, "FOSC0", },
-			{ 1, "FOSC1", },
-			{ 2, "WDTEN", },
-			{ 3, "/PWRTEN", },
-			{ 4, "FOSC2", },
-			{ 5, "MCLRE", },
-			{ 6, "BOREN", },
-			{ 7, "LVP", },
-			{ 8, "CPD", },
-			{ 10, "CP0", },
-			{ 11, "CP1", },
-			{ 12, "CP0", },
-			{ 13, "CP1", }
+			{ 0, "FOSC0", ""},
+			{ 1, "FOSC1", ""},
+			{ 2, "WDTEN", ""},
+			{ 3, "/PWRTEN", ""},
+			{ 4, "FOSC2", ""},
+			{ 5, "MCLRE", ""},
+			{ 6, "BOREN", ""},
+			{ 7, "LVP", ""},
+			{ 8, "CPD", ""},
+			{ 10, "CP0", ""},
+			{ 11, "CP1", ""},
+			{ 12, "CP0", ""},
+			{ 13, "CP1", ""}
+		},
+		{
+			// lock mask description
 		}
 	}
 };
