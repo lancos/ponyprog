@@ -993,7 +993,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ 7, "BODLEVEL", "Brown-out detection level at VCC=1.8 V"}
 		},
 		{
-			// fuse mask description
+			// fuse mask description ???
 			{ "CKSEL=0000", "External Clock" },
 			{ "CKSEL=0001", "External Clock" },
 			{ "CKSEL=0010", "Internal RC Ocsillator" },
@@ -1080,13 +1080,17 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			// fuse
 			{ 0, "CKSEL0", ""},
 			{ 1, "CKSEL1", ""},
-			{ 4, "RSTDISBL", ""},
-			{ 5, "SPIEN", ""},
-			{ 6, "BODEN", ""},
-			{ 7, "BODLEVEL", ""}
+			{ 4, "RSTDISBL", "External reset function of PB5 disabled"},
+			{ 5, "SPIEN", "Serial program downloading (SPI) enabled"},
+			{ 6, "BODEN", "Brown-out detection enabled"},
+			{ 7, "BODLEVEL", "Brown-out detection level at VCC=2.7 V"}
 		},
 		{
 			// fuse mask description
+			{ "CKSEL=00", "Slowly rising power"},
+			{ "CKSEL=01", "Slowly rising power"},
+			{ "CKSEL=10", "Quickly rising power"},
+			{ "CKSEL=11", "Very quickly rising power"}
 		},
 		{
 			// lock
@@ -1105,7 +1109,8 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		ATtiny22,
 		{
 			// fuse
-			{ 0, "RCEN", ""}
+			{ 0, "FB0", "External clock disabled"}, // NOT enabled
+			{ 5, "FB5", "Serial program downloading (SPI) enabled"}
 		},
 		{
 			// fuse mask description
@@ -1132,16 +1137,78 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ 3, "CKSEL3", ""},
 			{ 4, "SUT0", ""},
 			{ 5, "SUT1", ""},
-			{ 6, "CKOPT", ""},
+			{ 6, "CKOPT", "CKOPT fuse (operation dependent of CKSEL fuses)"},
 			{ 7, "PLLCK", ""},
-			{ 8, "BODEN", ""},
-			{ 9, "BODLEVEL", ""},
-			{ 10, "EESAVE", ""},
-			{ 11, "SPIEN", ""},
-			{ 12, "RSTDISBL", ""}
+			{ 8, "BODEN", "Brown-out detection enabled"},
+			{ 9, "BODLEVEL", "Brown-out detection level at VCC=2.7 V"},
+			{ 10, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle"},
+			{ 11, "SPIEN", "Serial program downloading (SPI) enabled"},
+			{ 12, "RSTDISBL", "Reset Disabled (Enable PB7 as i/o pin)"}
 		},
 		{
 			// fuse mask description
+			{ "CKSEL=0000 SUT=00 PLLCK=1", "Ext. Clock; Start-up time: 6 CK + 0 ms"},
+			{ "CKSEL=0000 SUT=01 PLLCK=1", "Ext. Clock; Start-up time: 6 CK + 4 ms"},
+			{ "CKSEL=0000 SUT=10 PLLCK=1", "Ext. Clock; Start-up time: 6 CK + 64 ms"},
+			{ "CKSEL=1111 SUT=01 PLLCK=1", "Ext. Crystal/Resonator High Freq.; Start-up time: 16K CK + 0 ms"},
+			{ "CKSEL=1111 SUT=10 PLLCK=1", "Ext. Crystal/Resonator High Freq.; Start-up time: 16K CK + 4 ms"},
+			{ "CKSEL=1111 SUT=11 PLLCK=1", "Ext. Crystal/Resonator High Freq.; Start-up time: 16K CK + 64 ms"},
+			{ "CKSEL=1110 SUT=10 PLLCK=1", "Ext. Crystal/Resonator High Freq.; Start-up time: 1K CK + 0 ms"},
+			{ "CKSEL=1110 SUT=11 PLLCK=1", "Ext. Crystal/Resonator High Freq.; Start-up time: 1K CK + 4 ms"},
+			{ "CKSEL=1111 SUT=00 PLLCK=1", "Ext. Crystal/Resonator High Freq.; Start-up time: 1K CK + 64 ms"},
+			{ "CKSEL=1110 SUT=00 PLLCK=1", "Ext. Crystal/Resonator High Freq.; Start-up time: 258 CK + 4 ms"},
+			{ "CKSEL=1110 SUT=01 PLLCK=1", "Ext. Crystal/Resonator High Freq.; Start-up time: 258 CK + 64 ms"},
+			{ "CKSEL=1011 SUT=01 PLLCK=1", "Ext. Crystal/Resonator Low Freq.; Start-up time: 16K CK + 0 ms"},
+			{ "CKSEL=1011 SUT=10 PLLCK=1", "Ext. Crystal/Resonator Low Freq.; Start-up time: 16K CK + 4 ms"},
+			{ "CKSEL=1011 SUT=11 PLLCK=1", "Ext. Crystal/Resonator Low Freq.; Start-up time: 16K CK + 64 ms"},
+			{ "CKSEL=1010 SUT=10 PLLCK=1", "Ext. Crystal/Resonator Low Freq.; Start-up time: 1K CK + 0 ms"},
+			{ "CKSEL=1010 SUT=11 PLLCK=1", "Ext. Crystal/Resonator Low Freq.; Start-up time: 1K CK + 4 ms"},
+			{ "CKSEL=1011 SUT=00 PLLCK=1", "Ext. Crystal/Resonator Low Freq.; Start-up time: 1K CK + 64 ms"},
+			{ "CKSEL=1010 SUT=00 PLLCK=1", "Ext. Crystal/Resonator Low Freq.; Start-up time: 258 CK + 4 ms"},
+			{ "CKSEL=1010 SUT=01 PLLCK=1", "Ext. Crystal/Resonator Low Freq.; Start-up time: 258 CK + 64 ms"},
+			{ "CKSEL=1101 SUT=01 PLLCK=1", "Ext. Crystal/Resonator Medium Freq.; Start-up time: 16K CK + 0 ms"},
+			{ "CKSEL=1101 SUT=10 PLLCK=1", "Ext. Crystal/Resonator Medium Freq.; Start-up time: 16K CK + 4 ms"},
+			{ "CKSEL=1101 SUT=11 PLLCK=1", "Ext. Crystal/Resonator Medium Freq.; Start-up time: 16K CK + 64 ms"},
+			{ "CKSEL=1100 SUT=10 PLLCK=1", "Ext. Crystal/Resonator Medium Freq.; Start-up time: 1K CK + 0 ms"},
+			{ "CKSEL=1100 SUT=11 PLLCK=1", "Ext. Crystal/Resonator Medium Freq.; Start-up time: 1K CK + 4 ms"},
+			{ "CKSEL=1101 SUT=00 PLLCK=1", "Ext. Crystal/Resonator Medium Freq.; Start-up time: 1K CK + 64 ms"},
+			{ "CKSEL=1100 SUT=00 PLLCK=1", "Ext. Crystal/Resonator Medium Freq.; Start-up time: 258 CK + 4 ms"},
+			{ "CKSEL=1100 SUT=01 PLLCK=1", "Ext. Crystal/Resonator Medium Freq.; Start-up time: 258 CK + 64 ms"},
+			{ "CKSEL=1001 SUT=00 PLLCK=1", "Ext. Low-Freq. Crystal; Start-up time: 1K CK + 4 ms"},
+			{ "CKSEL=1001 SUT=01 PLLCK=1", "Ext. Low-Freq. Crystal; Start-up time: 1K CK + 64 ms"},
+			{ "CKSEL=1001 SUT=10 PLLCK=1", "Ext. Low-Freq. Crystal; Start-up time: 32K CK + 64 ms"},
+			{ "CKSEL=0101 SUT=00 PLLCK=1", "Ext. RC Osc. - 0.9 MHz; Start-up time: 18 CK + 0 ms"},
+			{ "CKSEL=0101 SUT=01 PLLCK=1", "Ext. RC Osc. - 0.9 MHz; Start-up time: 18 CK + 4 ms"},
+			{ "CKSEL=0101 SUT=10 PLLCK=1", "Ext. RC Osc. - 0.9 MHz; Start-up time: 18 CK + 64 ms"},
+			{ "CKSEL=0101 SUT=11 PLLCK=1", "Ext. RC Osc. - 0.9 MHz; Start-up time: 6 CK + 4 ms"},
+			{ "CKSEL=0110 SUT=00 PLLCK=1", "Ext. RC Osc. 0.9 MHz - 3.0 MHz; Start-up time: 18 CK + 0 ms"},
+			{ "CKSEL=0110 SUT=01 PLLCK=1", "Ext. RC Osc. 0.9 MHz - 3.0 MHz; Start-up time: 18 CK + 4 ms"},
+			{ "CKSEL=0110 SUT=10 PLLCK=1", "Ext. RC Osc. 0.9 MHz - 3.0 MHz; Start-up time: 18 CK + 64 ms"},
+			{ "CKSEL=0110 SUT=11 PLLCK=1", "Ext. RC Osc. 0.9 MHz - 3.0 MHz; Start-up time: 6 CK + 4 ms"},
+			{ "CKSEL=0111 SUT=00 PLLCK=1", "Ext. RC Osc. 3.0 MHz - 8.0 MHz; Start-up time: 18 CK + 0 ms"},
+			{ "CKSEL=0111 SUT=01 PLLCK=1", "Ext. RC Osc. 3.0 MHz - 8.0 MHz; Start-up time: 18 CK + 4 ms"},
+			{ "CKSEL=0111 SUT=10 PLLCK=1", "Ext. RC Osc. 3.0 MHz - 8.0 MHz; Start-up time: 18 CK + 64 ms"},
+			{ "CKSEL=0111 SUT=11 PLLCK=1", "Ext. RC Osc. 3.0 MHz - 8.0 MHz; Start-up time: 6 CK + 4 ms"},
+			{ "CKSEL=1000 SUT=00 PLLCK=1", "Ext. RC Osc. 8.0 MHz - 12.0 MHz; Start-up time: 18 CK + 0 ms"},
+			{ "CKSEL=1000 SUT=01 PLLCK=1", "Ext. RC Osc. 8.0 MHz - 12.0 MHz; Start-up time: 18 CK + 4 ms"},
+			{ "CKSEL=1000 SUT=10 PLLCK=1", "Ext. RC Osc. 8.0 MHz - 12.0 MHz; Start-up time: 18 CK + 64 ms"},
+			{ "CKSEL=1000 SUT=11 PLLCK=1", "Ext. RC Osc. 8.0 MHz - 12.0 MHz; Start-up time: 6 CK + 4 ms"},
+			{ "CKSEL=0001 SUT=00 PLLCK=1", "Int. RC Osc. 1 MHz; Start-up time: 6 CK + 0 ms"},
+			{ "CKSEL=0001 SUT=01 PLLCK=1", "Int. RC Osc. 1 MHz; Start-up time: 6 CK + 4 ms"},
+			{ "CKSEL=0001 SUT=10 PLLCK=1", "Int. RC Osc. 1 MHz; Start-up time: 6 CK + 64 ms"},
+			{ "CKSEL=0010 SUT=00 PLLCK=1", "Int. RC Osc. 2 MHz; Start-up time: 6 CK + 0 ms"},
+			{ "CKSEL=0010 SUT=01 PLLCK=1", "Int. RC Osc. 2 MHz; Start-up time: 6 CK + 4 ms"},
+			{ "CKSEL=0010 SUT=10 PLLCK=1", "Int. RC Osc. 2 MHz; Start-up time: 6 CK + 64 ms"},
+			{ "CKSEL=0011 SUT=00 PLLCK=1", "Int. RC Osc. 4 MHz; Start-up time: 6 CK + 0 ms"},
+			{ "CKSEL=0011 SUT=01 PLLCK=1", "Int. RC Osc. 4 MHz; Start-up time: 6 CK + 4 ms"},
+			{ "CKSEL=0011 SUT=10 PLLCK=1", "Int. RC Osc. 4 MHz; Start-up time: 6 CK + 64 ms"},
+			{ "CKSEL=0100 SUT=00 PLLCK=1", "Int. RC Osc. 8 MHz; Start-up time: 6 CK + 0 ms"},
+			{ "CKSEL=0100 SUT=01 PLLCK=1", "Int. RC Osc. 8 MHz; Start-up time: 6 CK + 4 ms"},
+			{ "CKSEL=0100 SUT=10 PLLCK=1", "Int. RC Osc. 8 MHz; Start-up time: 6 CK + 64 ms"},
+			{ "CKSEL=0001 SUT=11 PLLCK=0", "PLL Clock; Start-up time: 16K CK + 64 ms"},
+			{ "CKSEL=0001 SUT=00 PLLCK=0", "PLL Clock; Start-up time: 1K CK + 0 ms"},
+			{ "CKSEL=0001 SUT=01 PLLCK=0", "PLL Clock; Start-up time: 1K CK + 4 ms"},
+			{ "CKSEL=0001 SUT=10 PLLCK=0", "PLL Clock; Start-up time: 1K CK + 64 ms"}
 		},
 		{
 			// lock
