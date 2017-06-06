@@ -49,7 +49,7 @@ typedef struct
 
 typedef struct
 {
-	int mask;
+	QString mask;
 	QString LongDescr;
 } MaskDescr;
 
