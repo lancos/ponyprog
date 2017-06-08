@@ -28,7 +28,7 @@
 #ifndef FUSEMDLG_H
 #define FUSEMDLG_H
 
-// #include <QDialog>
+#include <QStringList>
 #include <QObject>
 #include <QString>
 #include <QVector>
@@ -38,19 +38,23 @@
 
 #include "e2cmdw.h"
 
-
+/**
+ * @brief BitInfo is the main structure for displaying in the QTreeWidget
+ */
 typedef struct
 {
 	int  bit;
-	QString ShortDescr;
-	QString LongDescr;
+	const QString ShortDescr;
+	const QString LongDescr;
 } BitInfo;
 
-
+/**
+ * @brief MaskDescr is the structure for QComboBoxes with help information
+ */
 typedef struct
 {
-	QString mask;
-	QString LongDescr;
+	const QString mask;
+	const QString LongDescr;
 } MaskDescr;
 
 
@@ -75,13 +79,18 @@ class fuseModalDialog : public QDialog, public cTranslator, public Ui::FuseDialo
 	void onOk();
 	void onRead();
 	void onProg();
+	void onFuseComboSelected();
+	void onFuseBitClicked();
+	void onLockComboSelected();
+	void onLockBitClicked();
 
   protected:    //--------------------------------------- protected
 
   private:
 	void setTextWidgets();
+	void scanMasks();
 	void initWidgets(const QString &msg, bool readonly);
-	int eep_FindFuses(long type);
+	int  eepFindFuses(long type);
 
   private:              //--------------------------------------- private
 	static QVector<ChipBits> eep_bits;
@@ -89,6 +98,10 @@ class fuseModalDialog : public QDialog, public cTranslator, public Ui::FuseDialo
 	e2CmdWindow *cmdw;
 	e2AppWinInfo *awip;
 
+	QStringList maskListFuse; // fuse masks
+	QStringList maskListLock; // lock masks
+
+	int currentChip;
 	bool write;
 	bool read;
 };

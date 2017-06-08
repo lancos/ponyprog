@@ -9,38 +9,85 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>494</width>
-    <height>510</height>
+    <width>569</width>
+    <height>549</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_4">
-   <item row="1" column="0">
-    <widget class="QGroupBox" name="frmHlp">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Minimum">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
+   <item row="0" column="0">
+    <widget class="QTabWidget" name="tabWidget">
+     <property name="currentIndex">
+      <number>0</number>
      </property>
-     <layout class="QGridLayout" name="gridLayout_3">
-      <item row="0" column="0">
-       <widget class="QRadioButton" name="chkHlp0">
-        <property name="text">
-         <string>CheckBox</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QRadioButton" name="chkHlp1">
-        <property name="text">
-         <string>CheckBox</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
+     <widget class="QWidget" name="tabFuse">
+      <attribute name="title">
+       <string>Fuse</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout">
+       <item row="4" column="0">
+        <widget class="QTreeWidget" name="treeWidgetFuse">
+         <column>
+          <property name="text">
+           <string>Bit</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Description</string>
+          </property>
+         </column>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QComboBox" name="comboBoxFuse1"/>
+       </item>
+       <item row="2" column="0">
+        <widget class="QComboBox" name="comboBoxFuse2"/>
+       </item>
+       <item row="0" column="0">
+        <widget class="QComboBox" name="comboBoxFuse0"/>
+       </item>
+       <item row="3" column="0">
+        <widget class="QComboBox" name="comboBoxFuse3"/>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tabLock">
+      <attribute name="title">
+       <string>Lock</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_2">
+       <item row="2" column="0">
+        <widget class="QComboBox" name="comboBoxLock2"/>
+       </item>
+       <item row="4" column="0">
+        <widget class="QTreeWidget" name="treeWidgetLock">
+         <column>
+          <property name="text">
+           <string>Bit</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Description</string>
+          </property>
+         </column>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QComboBox" name="comboBoxLock1"/>
+       </item>
+       <item row="0" column="0">
+        <widget class="QComboBox" name="comboBoxLock0"/>
+       </item>
+       <item row="3" column="0">
+        <widget class="QComboBox" name="comboBoxLock3"/>
+       </item>
+      </layout>
+     </widget>
     </widget>
    </item>
    <item row="2" column="0">
@@ -88,18 +135,30 @@
      </item>
     </layout>
    </item>
-   <item row="0" column="0">
-    <widget class="QTreeWidget" name="treeWidget">
-     <column>
-      <property name="text">
-       <string>Bit</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Description</string>
-      </property>
-     </column>
+   <item row="1" column="0">
+    <widget class="QGroupBox" name="frmHlp">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Minimum">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_3">
+      <item row="0" column="0">
+       <widget class="QCheckBox" name="chkHlp0">
+        <property name="text">
+         <string>CheckBox</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QCheckBox" name="chkHlp1">
+        <property name="text">
+         <string>CheckBox</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </widget>
    </item>
   </layout>
