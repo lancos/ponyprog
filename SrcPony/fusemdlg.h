@@ -79,10 +79,10 @@ class fuseModalDialog : public QDialog, public cTranslator, public Ui::FuseDialo
 	void onOk();
 	void onRead();
 	void onProg();
-	void onFuseComboSelected();
-	void onFuseBitClicked();
-	void onLockComboSelected();
-	void onLockBitClicked();
+	void onFuseComboSelected(int i);
+	void onFuseBitClicked(QTreeWidgetItem *itm, int col);
+	void onLockComboSelected(int i);
+	void onLockBitClicked(QTreeWidgetItem *itm, int col);
 
   protected:    //--------------------------------------- protected
 
@@ -91,6 +91,7 @@ class fuseModalDialog : public QDialog, public cTranslator, public Ui::FuseDialo
 	void scanMasks();
 	void initWidgets(const QString &msg, bool readonly);
 	int  eepFindFuses(long type);
+	void setMaskBits(QTreeWidget *w, const QString &m, unsigned int bits);
 
   private:              //--------------------------------------- private
 	static QVector<ChipBits> eep_bits;
@@ -101,7 +102,11 @@ class fuseModalDialog : public QDialog, public cTranslator, public Ui::FuseDialo
 	QStringList maskListFuse; // fuse masks
 	QStringList maskListLock; // lock masks
 
+	QVector<QComboBox *> lstLock;
+	QVector<QComboBox *> lstFuse;
+
 	int currentChip;
+	ChipBits currentBitField;
 	bool write;
 	bool read;
 };
