@@ -203,6 +203,12 @@ void fuseModalDialog::scanMasks()
 }
 
 
+bool fuseModalDialog::isExp(unsigned int a)
+{
+	return (a > 0 && (a & (a - 1)) == 0);
+}
+
+
 void fuseModalDialog::onRead()
 {
 	read = true;
@@ -340,6 +346,12 @@ void fuseModalDialog::initWidgets(const QString &msg, bool readonly)
 				lst << mdes.LongDescr;
 			}
 		}
+
+		if (isExp(lst.count()) == false)
+		{
+			lst << "Undefined combination";
+		}
+
 		lstLock.at(i)->setHidden(false);
 		lstLock.at(i)->addItems(lst);
 
@@ -358,6 +370,12 @@ void fuseModalDialog::initWidgets(const QString &msg, bool readonly)
 				lst << mdes.LongDescr;
 			}
 		}
+
+		if (isExp(lst.count()) == false)
+		{
+			lst << "Undefined combination";
+		}
+
 		lstFuse.at(i)->setHidden(false);
 		lstFuse.at(i)->addItems(lst);
 
@@ -389,6 +407,9 @@ void fuseModalDialog::onFuseComboSelected(int idx)
 		return;
 	}
 
+	// deactivate signal from checkbutton
+	disconnect(treeWidgetFuse, SIGNAL(itemChanged(QTreeWidgetItem *, int)), this, SLOT(onFuseBitClicked(QTreeWidgetItem *, int)));
+
 	// possible list
 	QStringList mskList = currentBitField.fuseDescr.at(idx).mask.split(" "); //maskListFuse.at(n).split(" ");
 	foreach (QString cMask, mskList)
@@ -404,16 +425,14 @@ void fuseModalDialog::onFuseComboSelected(int idx)
 		QString bits = cMask.mid(pos + 1);
 		bool ok;
 		unsigned int bField = bits.toInt(&ok, 2);
+
 		qDebug() << mskName << (bin) << bField << (dec);
 
-		// deactivate signal from checkbutton
-		disconnect(treeWidgetFuse, SIGNAL(itemChanged(QTreeWidgetItem *, int)), this, SLOT(onFuseBitClicked(QTreeWidgetItem *, int)));
-
 		setMaskBits(treeWidgetFuse, mskName, bField);
-
-		// activate signal
-		connect(treeWidgetFuse, SIGNAL(itemChanged(QTreeWidgetItem *, int)), this, SLOT(onFuseBitClicked(QTreeWidgetItem *, int)));
 	}
+
+	// activate signal
+	connect(treeWidgetFuse, SIGNAL(itemChanged(QTreeWidgetItem *, int)), this, SLOT(onFuseBitClicked(QTreeWidgetItem *, int)));
 }
 
 
@@ -440,6 +459,9 @@ void fuseModalDialog::onLockComboSelected(int idx)
 		return;
 	}
 
+	// deactivate signal from checkbutton
+	disconnect(treeWidgetLock, SIGNAL(itemChanged(QTreeWidgetItem *, int)), this, SLOT(onLockBitClicked(QTreeWidgetItem *, int)));
+
 	// possible list
 	QStringList mskList = currentBitField.lockDescr.at(idx).mask.split(" ");
 	foreach (QString cMask, mskList)
@@ -455,16 +477,14 @@ void fuseModalDialog::onLockComboSelected(int idx)
 		QString bits = cMask.mid(pos + 1);
 		bool ok;
 		unsigned int bField = bits.toInt(&ok, 2);
+
 		qDebug() << mskName << (bin) << bField << (dec);
 
-		// deactivate signal from checkbutton
-		disconnect(treeWidgetLock, SIGNAL(itemChanged(QTreeWidgetItem *, int)), this, SLOT(onLockBitClicked(QTreeWidgetItem *, int)));
-
 		setMaskBits(treeWidgetLock, mskName, bField);
-
-		// activate signal
-		connect(treeWidgetLock, SIGNAL(itemChanged(QTreeWidgetItem *, int)), this, SLOT(onLockBitClicked(QTreeWidgetItem *, int)));
 	}
+
+	// activate signal
+	connect(treeWidgetLock, SIGNAL(itemChanged(QTreeWidgetItem *, int)), this, SLOT(onLockBitClicked(QTreeWidgetItem *, int)));
 }
 
 
@@ -479,7 +499,7 @@ void fuseModalDialog::setMaskBits(QTreeWidget *w, const QString &mskName, unsign
 	{
 		QString t = w->topLevelItem(idx)->text(0);
 		int pos = t.indexOf(", ");
-		
+
 		if (pos > 0)
 		{
 			QString nm = t.mid(pos + 2);
@@ -506,7 +526,7 @@ void fuseModalDialog::setMaskBits(QTreeWidget *w, const QString &mskName, unsign
 
 		QString t = w->topLevelItem(idx)->text(0);
 		int pos = t.indexOf(", ");
-                
+
 		if (pos > 0)
 		{
 			QString nm = t.mid(pos + 2);
@@ -527,13 +547,13 @@ void fuseModalDialog::setMaskBits(QTreeWidget *w, const QString &mskName, unsign
 
 void fuseModalDialog::onFuseBitClicked(QTreeWidgetItem *itm, int col)
 {
-    qDebug() << itm;
+	qDebug() << itm;
 }
 
 
 void fuseModalDialog::onLockBitClicked(QTreeWidgetItem *itm, int col)
 {
-    qDebug() << itm;
+	qDebug() << itm;
 }
 
 

@@ -92,6 +92,7 @@ class fuseModalDialog : public QDialog, public cTranslator, public Ui::FuseDialo
 	void initWidgets(const QString &msg, bool readonly);
 	int  eepFindFuses(long type);
 	void setMaskBits(QTreeWidget *w, const QString &m, unsigned int bits);
+	bool isExp(unsigned int a);
 
   private:              //--------------------------------------- private
 	static QVector<ChipBits> eep_bits;
