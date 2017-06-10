@@ -293,7 +293,7 @@ void fuseModalDialog::initWidgets(const QString &msg, bool readonly)
 		treeWidgetLock->expandAll();
 		treeWidgetLock->resizeColumnToContents(0);
 
-		connect(treeWidgetLock, SIGNAL(itemClicked(QTreeWidgetItem *, int)), this, SLOT(onLockBitClicked(QTreeWidgetItem *, int)));
+		connect(treeWidgetLock, SIGNAL(itemChanged(QTreeWidgetItem *, int)), this, SLOT(onLockBitClicked(QTreeWidgetItem *, int)));
 	}
 
 	if (currentBitField.fuse.count() > 0)
@@ -321,7 +321,7 @@ void fuseModalDialog::initWidgets(const QString &msg, bool readonly)
 		treeWidgetFuse->expandAll();
 		treeWidgetFuse->resizeColumnToContents(0);
 
-		connect(treeWidgetFuse, SIGNAL(itemClicked(QTreeWidgetItem *, int)), this, SLOT(onFuseBitClicked(QTreeWidgetItem *, int)));
+		connect(treeWidgetFuse, SIGNAL(itemChanged(QTreeWidgetItem *, int)), this, SLOT(onFuseBitClicked(QTreeWidgetItem *, int)));
 	}
 
 	scanMasks();
@@ -407,12 +407,12 @@ void fuseModalDialog::onFuseComboSelected(int idx)
 		qDebug() << mskName << (bin) << bField << (dec);
 
 		// deactivate signal from checkbutton
-		disconnect(treeWidgetFuse, SIGNAL(itemClicked(QTreeWidgetItem *, int)), this, SLOT(onFuseBitClicked(QTreeWidgetItem *, int)));
+		disconnect(treeWidgetFuse, SIGNAL(itemChanged(QTreeWidgetItem *, int)), this, SLOT(onFuseBitClicked(QTreeWidgetItem *, int)));
 
 		setMaskBits(treeWidgetFuse, mskName, bField);
 
 		// activate signal
-		connect(treeWidgetFuse, SIGNAL(itemClicked(QTreeWidgetItem *, int)), this, SLOT(onFuseBitClicked(QTreeWidgetItem *, int)));
+		connect(treeWidgetFuse, SIGNAL(itemChanged(QTreeWidgetItem *, int)), this, SLOT(onFuseBitClicked(QTreeWidgetItem *, int)));
 	}
 }
 
@@ -527,11 +527,13 @@ void fuseModalDialog::setMaskBits(QTreeWidget *w, const QString &mskName, unsign
 
 void fuseModalDialog::onFuseBitClicked(QTreeWidgetItem *itm, int col)
 {
+    qDebug() << itm;
 }
 
 
 void fuseModalDialog::onLockBitClicked(QTreeWidgetItem *itm, int col)
 {
+    qDebug() << itm;
 }
 
 
