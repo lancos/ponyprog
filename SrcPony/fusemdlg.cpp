@@ -432,7 +432,7 @@ void fuseModalDialog::onFuseComboSelected(int idx)
 	// activate signal
 	connect(treeWidgetFuse, SIGNAL(itemChanged(QTreeWidgetItem *, int)), this, SLOT(onFuseBitClicked(QTreeWidgetItem *, int)));
 
-	labelFuseLock->setText(QString().sprintf("Fuse: %x Lock: %x", ~fuseBits, ~lockBits));
+	labelFuseLock->setText(QString().sprintf("Fuse: 0x%08X Lock: 0x%08X", fuseBits, lockBits));
 }
 
 
@@ -487,7 +487,7 @@ void fuseModalDialog::onLockComboSelected(int idx)
 	// activate signal
 	connect(treeWidgetLock, SIGNAL(itemChanged(QTreeWidgetItem *, int)), this, SLOT(onLockBitClicked(QTreeWidgetItem *, int)));
 
-	labelFuseLock->setText(QString().sprintf("Fuse: %x Lock: %x", ~fuseBits, ~lockBits));
+	labelFuseLock->setText(QString().sprintf("Fuse: 0x%08X Lock: 0x%08X", fuseBits, lockBits));
 }
 
 
