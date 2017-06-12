@@ -97,7 +97,7 @@ void fuseModalDialog::onOk()
 	for (int i = 0; i < treeWidgetFuse->topLevelItemCount(); ++i)
 	{
 		QString t = treeWidgetFuse->topLevelItem(i)->text(0);
-		if (treeWidgetFuse->topLevelItem(i)->checkState(0) == false)
+		if (treeWidgetFuse->topLevelItem(i)->checkState(0) == Qt::Unchecked)
 		{
 			continue;
 		}
@@ -117,7 +117,7 @@ void fuseModalDialog::onOk()
 	for (int i = 0; i < treeWidgetLock->topLevelItemCount(); ++i)
 	{
 		QString t = treeWidgetLock->topLevelItem(i)->text(0);
-		if (treeWidgetLock->topLevelItem(i)->checkState(0) == false)
+		if (treeWidgetLock->topLevelItem(i)->checkState(0) == Qt::Unchecked)
 		{
 			continue;
 		}
@@ -377,6 +377,8 @@ void fuseModalDialog::initWidgets(const QString &msg, bool readonly)
 
 		connect(lstFuseWidget.at(i), SIGNAL(activated(int)), this, SLOT(onFuseComboSelected(int)));
 	}
+
+	labelFuseLock->setText(QString().sprintf("Fuse: 0x%08X Lock: 0x%08X", fuseBits, lockBits));
 }
 
 
@@ -589,13 +591,62 @@ void fuseModalDialog::setMaskBits(QTreeWidget *w, const QString &cMask)
 
 void fuseModalDialog::onFuseBitClicked(QTreeWidgetItem *itm, int col)
 {
-	qDebug() << itm;
+	qDebug() << itm->text(0) << itm->checkState(0);
+
+	Qt::CheckState st = itm->checkState(0);
+	QString t =  itm->text(0);
+	int pos = t.indexOf(",");
+
+	if (pos < 0)
+	{
+		return;
+	}
+
+	t = t.left(pos);
+	t = t.remove("Bit ");
+	int bOffset = t.toInt();
+
+	if (st == Qt::Checked)
+	{
+		fuseBits |= (1 << bOffset);
+	}
+	else
+	{
+		fuseBits &= ~(1 << bOffset);
+	}
+
+	labelFuseLock->setText(QString().sprintf("Fuse: 0x%08X Lock: 0x%08X", fuseBits, lockBits));
+
 }
 
 
 void fuseModalDialog::onLockBitClicked(QTreeWidgetItem *itm, int col)
 {
-	qDebug() << itm;
+	qDebug() << itm->text(0) << itm->checkState(0);
+
+	Qt::CheckState st = itm->checkState(0);
+	QString t =  itm->text(0);
+	int pos = t.indexOf(",");
+
+	if (pos < 0)
+	{
+		return;
+	}
+
+	t = t.left(pos);
+	t = t.remove("Bit ");
+	int bOffset = t.toInt();
+
+	if (st == Qt::Checked)
+	{
+		lockBits |= (1 << bOffset);
+	}
+	else
+	{
+		lockBits &= ~(1 << bOffset);
+	}
+
+	labelFuseLock->setText(QString().sprintf("Fuse: 0x%08X Lock: 0x%08X", fuseBits, lockBits));
 }
 
 
