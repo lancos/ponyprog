@@ -91,7 +91,7 @@ class fuseModalDialog : public QDialog, public cTranslator, public Ui::FuseDialo
 	void scanMasks();
 	void initWidgets(const QString &msg, bool readonly);
 	int  eepFindFuses(long type);
-	void setMaskBits(QTreeWidget *w, const QString &m, unsigned int bits);
+	void setMaskBits(QTreeWidget *w, const QString &m);//, unsigned int bits);
 	bool isExp(unsigned int a);
 
   private:              //--------------------------------------- private
@@ -103,8 +103,8 @@ class fuseModalDialog : public QDialog, public cTranslator, public Ui::FuseDialo
 	QStringList maskListFuse; // fuse masks
 	QStringList maskListLock; // lock masks
 
-	QVector<QComboBox *> lstLock;
-	QVector<QComboBox *> lstFuse;
+	QVector<QComboBox *> lstLockWidget;
+	QVector<QComboBox *> lstFuseWidget;
 
 	int currentChip;
 	ChipBits currentBitField;

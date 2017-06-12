@@ -167,13 +167,6 @@ void fuseModalDialog::scanMasks()
 	maskListLock.clear();
 	maskListFuse.clear();
 
-	if (currentChip < 0)
-	{
-		return;
-	}
-
-// 	ChipBits fBit = eep_bits.at(currentChip);
-
 	// analyse from mask entries
 	foreach (MaskDescr mdes, currentBitField.lockDescr)
 	{
@@ -237,13 +230,13 @@ void fuseModalDialog::initWidgets(const QString &msg, bool readonly)
 {
 	long type = cmdw->GetCurrentChipType();
 
-	lstLock = (QVector<QComboBox *>() << comboBoxLock0 << comboBoxLock1 << comboBoxLock2 << comboBoxLock3);
-	lstFuse = (QVector<QComboBox *>() << comboBoxFuse0 << comboBoxFuse1 << comboBoxFuse2 << comboBoxFuse3);
+	lstLockWidget = (QVector<QComboBox *>() << comboBoxLock0 << comboBoxLock1 << comboBoxLock2 << comboBoxLock3);
+	lstFuseWidget = (QVector<QComboBox *>() << comboBoxFuse0 << comboBoxFuse1 << comboBoxFuse2 << comboBoxFuse3);
 
 	for (int i = 0; i < 4; i++)
 	{
-		lstLock.at(i)->setHidden(true);
-		lstFuse.at(i)->setHidden(true);
+		lstLockWidget.at(i)->setHidden(true);
+		lstFuseWidget.at(i)->setHidden(true);
 	}
 
 	chkHlp1->setText(translate(STR_FUSEDLGNOTECLR) + " (bit = 1)");
@@ -272,7 +265,6 @@ void fuseModalDialog::initWidgets(const QString &msg, bool readonly)
 
 	currentBitField = eep_bits.at(currentChip);
 
-// 	ChipBits fBit = eep_bits.at(currentChip);
 	if (currentBitField.lock.count() > 0)
 	{
 		unsigned int lock = awip->GetLockBits();
@@ -347,15 +339,16 @@ void fuseModalDialog::initWidgets(const QString &msg, bool readonly)
 			}
 		}
 
+		// when not all combinations are descripted
 		if (isExp(lst.count()) == false)
 		{
 			lst << "Undefined combination";
 		}
 
-		lstLock.at(i)->setHidden(false);
-		lstLock.at(i)->addItems(lst);
+		lstLockWidget.at(i)->setHidden(false);
+		lstLockWidget.at(i)->addItems(lst);
 
-		connect(lstLock.at(i), SIGNAL(activated(int)), this, SLOT(onLockComboSelected(int)));
+		connect(lstLockWidget.at(i), SIGNAL(activated(int)), this, SLOT(onLockComboSelected(int)));
 	}
 
 	for (int i = 0; i < maskListFuse.count(); i++)
@@ -371,15 +364,16 @@ void fuseModalDialog::initWidgets(const QString &msg, bool readonly)
 			}
 		}
 
+		// when not all combinations are descripted
 		if (isExp(lst.count()) == false)
 		{
 			lst << "Undefined combination";
 		}
 
-		lstFuse.at(i)->setHidden(false);
-		lstFuse.at(i)->addItems(lst);
+		lstFuseWidget.at(i)->setHidden(false);
+		lstFuseWidget.at(i)->addItems(lst);
 
-		connect(lstFuse.at(i), SIGNAL(activated(int)), this, SLOT(onFuseComboSelected(int)));
+		connect(lstFuseWidget.at(i), SIGNAL(activated(int)), this, SLOT(onFuseComboSelected(int)));
 	}
 }
 
@@ -387,22 +381,36 @@ void fuseModalDialog::initWidgets(const QString &msg, bool readonly)
 void fuseModalDialog::onFuseComboSelected(int idx)
 {
 	QComboBox *s = static_cast<QComboBox *>(sender());
-	int n = -1;
+	int globIdx = 0;
+	int nMask = -1;
+
+	// we have only 4 comboboxes for fuse
 	for (int i = 0; i < 4; i++)
 	{
-		if (lstFuse.at(i) == s)
+		if (lstFuseWidget.at(i) == s)
 		{
-			n = i;
+			nMask = i;
 			break;
+		}
+		globIdx += lstFuseWidget.at(i)->count();
+
+                // correcture 
+		if (lstFuseWidget.at(i)->findText("Undefined combination") > 0)
+		{
+			globIdx--;
 		}
 	}
 
-	if (n < 0)
+	if (nMask < 0)
 	{
 		return;
 	}
 
-	if (currentBitField.fuseDescr.at(idx).mask.length() == 0)
+	globIdx += idx;
+
+	qDebug() << "onFuseComboSelected index" << globIdx;
+
+	if (currentBitField.fuseDescr.at(globIdx).mask.length() == 0)
 	{
 		return;
 	}
@@ -411,24 +419,12 @@ void fuseModalDialog::onFuseComboSelected(int idx)
 	disconnect(treeWidgetFuse, SIGNAL(itemChanged(QTreeWidgetItem *, int)), this, SLOT(onFuseBitClicked(QTreeWidgetItem *, int)));
 
 	// possible list
-	QStringList mskList = currentBitField.fuseDescr.at(idx).mask.split(" "); //maskListFuse.at(n).split(" ");
+	QStringList mskList = currentBitField.fuseDescr.at(globIdx).mask.split(" "); //maskListFuse.at(n).split(" ");
+	qDebug() << mskList << currentBitField.fuseDescr.at(globIdx).LongDescr;
+
 	foreach (QString cMask, mskList)
 	{
-		int pos = cMask.indexOf("=");
-		if (pos < 0)
-		{
-			// not correct format
-			continue;
-		}
-
-		QString mskName = cMask.left(pos);
-		QString bits = cMask.mid(pos + 1);
-		bool ok;
-		unsigned int bField = bits.toInt(&ok, 2);
-
-		qDebug() << mskName << (bin) << bField << (dec);
-
-		setMaskBits(treeWidgetFuse, mskName, bField);
+		setMaskBits(treeWidgetFuse, cMask);
 	}
 
 	// activate signal
@@ -439,22 +435,35 @@ void fuseModalDialog::onFuseComboSelected(int idx)
 void fuseModalDialog::onLockComboSelected(int idx)
 {
 	QComboBox *s = static_cast<QComboBox *>(sender());
-	int n = -1;
+	int globIdx = 0;
+	int nMask = -1;
+	// we have only 4 comboboxes for lock
 	for (int i = 0; i < 4; i++)
 	{
-		if (lstLock.at(i) == s)
+		if (lstLockWidget.at(i) == s)
 		{
-			n = i;
+			nMask = i;
 			break;
+		}
+		globIdx += lstLockWidget.at(i)->count();
+
+                // correcture 
+		if (lstLockWidget.at(i)->findText("Undefined combination") > 0)
+		{
+			globIdx--;
 		}
 	}
 
-	if (n < 0)
+	if (nMask < 0)
 	{
 		return;
 	}
 
-	if (currentBitField.lockDescr.at(idx).mask.length() == 0)
+	globIdx += idx;
+
+	qDebug() << "onLockComboSelected index" << globIdx;
+
+	if (currentBitField.lockDescr.at(globIdx).mask.length() == 0)
 	{
 		return;
 	}
@@ -463,24 +472,12 @@ void fuseModalDialog::onLockComboSelected(int idx)
 	disconnect(treeWidgetLock, SIGNAL(itemChanged(QTreeWidgetItem *, int)), this, SLOT(onLockBitClicked(QTreeWidgetItem *, int)));
 
 	// possible list
-	QStringList mskList = currentBitField.lockDescr.at(idx).mask.split(" ");
+	QStringList mskList = currentBitField.lockDescr.at(globIdx).mask.split(" ");
+	qDebug() << mskList << currentBitField.lockDescr.at(globIdx).LongDescr;
+
 	foreach (QString cMask, mskList)
 	{
-		int pos = cMask.indexOf("=");
-		if (pos < 0)
-		{
-			// not correct format
-			continue;
-		}
-
-		QString mskName = cMask.left(pos);
-		QString bits = cMask.mid(pos + 1);
-		bool ok;
-		unsigned int bField = bits.toInt(&ok, 2);
-
-		qDebug() << mskName << (bin) << bField << (dec);
-
-		setMaskBits(treeWidgetLock, mskName, bField);
+		setMaskBits(treeWidgetLock, cMask);
 	}
 
 	// activate signal
@@ -488,11 +485,25 @@ void fuseModalDialog::onLockComboSelected(int idx)
 }
 
 
-void fuseModalDialog::setMaskBits(QTreeWidget *w, const QString &mskName, unsigned int bits)
+void fuseModalDialog::setMaskBits(QTreeWidget *w, const QString &cMask)
 {
-	int idx;
+	int p = cMask.indexOf("=");
+	if (p < 0)
+	{
+		// not correct format
+		return;
+	}
 
-	qDebug() << mskName << bits;
+	QString mskName = cMask.left(p);
+	QString bitStr = cMask.mid(p + 1);
+	bool ok;
+
+	unsigned int bField = bitStr.toInt(&ok, 2);
+
+	int idx;
+	mskName = "^" + mskName + "\\d+";
+
+	qDebug() << cMask <<  "converted to" << mskName << (bin) << bField << (dec);
 
 	// search in QTreeWidget the names
 	for (idx = 0; idx < w->topLevelItemCount(); idx++)
@@ -505,7 +516,7 @@ void fuseModalDialog::setMaskBits(QTreeWidget *w, const QString &mskName, unsign
 			QString nm = t.mid(pos + 2);
 
 			// first element found
-			if (nm.indexOf(mskName) == 0)
+			if (nm.indexOf(QRegExp(mskName)) == 0)
 			{
 				break;
 			}
@@ -518,10 +529,10 @@ void fuseModalDialog::setMaskBits(QTreeWidget *w, const QString &mskName, unsign
 		return;
 	}
 
-	while (idx < w->topLevelItemCount())
+	for (int i = 0; i < bitStr.length(); i++)
 	{
-		Qt::CheckState st = (bits & 0x01) ?  Qt::Checked :  Qt::Unchecked;
-		bits >>= 1;
+		Qt::CheckState st = (bField & 0x01) ?  Qt::Checked :  Qt::Unchecked;
+		bField >>= 1;
 		w->topLevelItem(idx)->setCheckState(0, st);
 
 		QString t = w->topLevelItem(idx)->text(0);
@@ -530,7 +541,7 @@ void fuseModalDialog::setMaskBits(QTreeWidget *w, const QString &mskName, unsign
 		if (pos > 0)
 		{
 			QString nm = t.mid(pos + 2);
-			if (nm.indexOf(mskName) < 0)
+			if (nm.indexOf(QRegExp(mskName)) < 0)
 			{
 				break;
 			}
@@ -569,8 +580,8 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 5, "LB5", ""},
-			{ 6, "LB6", ""},
+			{ 5, "LB5", "" },
+			{ 6, "LB6", "" },
 			{ 7, "LB7", ""}
 		},
 		{
@@ -589,8 +600,8 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 0, "LB0", ""},
-			{ 1, "LB1", ""},
+			{ 0, "LB0", "" },
+			{ 1, "LB1", "" },
 			{ 2, "LB2", ""}
 		},
 		{
@@ -609,15 +620,15 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 2, "LB2", ""},
-			{ 3, "LB3", ""},
+			{ 2, "LB2", "" },
+			{ 3, "LB3", "" },
 			{ 4, "LB4", ""}
 		},
 		{
 			// lock mask description
-			{ "LB=000", "Mode 1: No memory lock features enabled"},
-			{ "LB=001", "Mode 2: MOVC disabled"},
-			{ "LB=011", "Mode 3: Verify disabled"},
+			{ "LB=000", "Mode 1: No memory lock features enabled" },
+			{ "LB=001", "Mode 2: MOVC disabled" },
+			{ "LB=011", "Mode 3: Verify disabled" },
 			{ "LB=111", "Mode 4: External execution disabled"}
 		}
 	},
@@ -632,15 +643,15 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 2, "LB2", ""},
-			{ 3, "LB3", ""},
+			{ 2, "LB2", "" },
+			{ 3, "LB3", "" },
 			{ 4, "LB4", ""}
 		},
 		{
 			// lock mask description
-			{ "LB=000", "Mode 1: No memory lock features enabled"},
-			{ "LB=001", "Mode 2: MOVC disabled"},
-			{ "LB=011", "Mode 3: Verify disabled"},
+			{ "LB=000", "Mode 1: No memory lock features enabled" },
+			{ "LB=001", "Mode 2: MOVC disabled" },
+			{ "LB=011", "Mode 3: Verify disabled" },
 			{ "LB=111", "Mode 4: External execution disabled"}
 		}
 	},
@@ -655,15 +666,15 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 5, "LB5", ""},
-			{ 6, "LB6", ""},
+			{ 5, "LB5", "" },
+			{ 6, "LB6", "" },
 			{ 7, "LB7", ""}
 		},
 		{
 			// lock mask description
-			{ "LB=000", "Mode 1: No memory lock features enabled"},
-			{ "LB=001", "Mode 2: MOVC disabled"},
-			{ "LB=011", "Mode 3: Verify disabled"},
+			{ "LB=000", "Mode 1: No memory lock features enabled" },
+			{ "LB=001", "Mode 2: MOVC disabled" },
+			{ "LB=011", "Mode 3: Verify disabled" },
 			{ "LB=111", "Mode 4: External execution disabled"}
 		}
 	},
@@ -673,27 +684,27 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		{
 			// fuse
 			// byte low
-			{ 0, "CKSEL0", ""},
-			{ 1, "CKSEL1", ""},
-			{ 2, "CKSEL2", ""},
-			{ 3, "CKSEL3", ""},
-			{ 4, "SUT0", ""},
-			{ 5, "SUT1", ""},
-			{ 6, "CKOUT", "Clock output on PORTC7"},
-			{ 7, "CKDIV8", "Divide clock by 8 internally"},
+			{ 0, "CKSEL0", "" },
+			{ 1, "CKSEL1", "" },
+			{ 2, "CKSEL2", "" },
+			{ 3, "CKSEL3", "" },
+			{ 4, "SUT0", "" },
+			{ 5, "SUT1", "" },
+			{ 6, "CKOUT", "Clock output on PORTC7" },
+			{ 7, "CKDIV8", "Divide clock by 8 internally" },
 			// byte high
-			{ 8, "BOOTRST", "Boot Reset vector Enabled (default address=$0000)"},
-			{ 9, "BOOTSZ0", ""},
-			{ 10, "BOOTSZ1", ""},
-			{ 11, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle"},
-			{ 12, "WDTON", "Watchdog timer always on"},
-			{ 13, "SPIEN", "Serial program downloading (SPI) enabled"},
-			{ 14, "JTAGEN", "JTAG Interface Enabled"},
-			{ 15, "OCDEN", "On-Chip Debug Enabled"},
+			{ 8, "BOOTRST", "Boot Reset vector Enabled (default address=$0000)" },
+			{ 9, "BOOTSZ0", "" },
+			{ 10, "BOOTSZ1", "" },
+			{ 11, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle" },
+			{ 12, "WDTON", "Watchdog timer always on" },
+			{ 13, "SPIEN", "Serial program downloading (SPI) enabled" },
+			{ 14, "JTAGEN", "JTAG Interface Enabled" },
+			{ 15, "OCDEN", "On-Chip Debug Enabled" },
 			// byte ext
-			{ 16, "TA0SEL", "Reserved for factory tests"},
-			{ 17, "BODLEVEL0", ""},
-			{ 18, "BODLEVEL1", ""},
+			{ 16, "TA0SEL", "Reserved for factory tests" },
+			{ 17, "BODLEVEL0", "" },
+			{ 18, "BODLEVEL1", "" },
 			{ 19, "BODLEVEL2", ""}
 		},
 		{
@@ -753,11 +764,11 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 0, "Lock1", ""},
-			{ 1, "Lock2", ""},
-			{ 2, "BootLock1", ""},
-			{ 3, "BootLock2", ""},
-			{ 4, "BootLoad1", ""},
+			{ 0, "Lock1", "" },
+			{ 1, "Lock2", "" },
+			{ 2, "BootLock1", "" },
+			{ 3, "BootLock2", "" },
+			{ 4, "BootLoad1", "" },
 			{ 5, "BootLoad2", ""}
 		},
 		{
@@ -782,25 +793,25 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		AT90CAN64,
 		{
 			// fuse
-			{ 0, "CKSEL0", ""},
-			{ 1, "CKSEL1", ""},
-			{ 2, "CKSEL2", ""},
-			{ 3, "CKSEL3", ""},
-			{ 4, "SUT0", ""},
-			{ 5, "SUT1", ""},
-			{ 6, "CKOUT", "Clock output on PORTC7"},
-			{ 7, "CKDIV8", "Divide clock by 8 internally"},
-			{ 8, "BOOTRST", "Boot Reset vector Enabled (default address=$0000)"},
-			{ 9, "BOOTSZ0", ""},
-			{ 10, "BOOTSZ1", ""},
-			{ 11, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle"},
-			{ 12, "WDTON", "Watchdog timer always on"},
-			{ 13, "SPIEN", "Serial program downloading (SPI) enabled"},
-			{ 14, "JTAGEN", "JTAG Interface Enabled"},
-			{ 15, "OCDEN", "On-Chip Debug Enabled"},
-			{ 16, "TA0SEL", "Reserved for factory tests"},
-			{ 17, "BODLEVEL0", ""},
-			{ 18, "BODLEVEL1", ""},
+			{ 0, "CKSEL0", "" },
+			{ 1, "CKSEL1", "" },
+			{ 2, "CKSEL2", "" },
+			{ 3, "CKSEL3", "" },
+			{ 4, "SUT0", "" },
+			{ 5, "SUT1", "" },
+			{ 6, "CKOUT", "Clock output on PORTC7" },
+			{ 7, "CKDIV8", "Divide clock by 8 internally" },
+			{ 8, "BOOTRST", "Boot Reset vector Enabled (default address=$0000)" },
+			{ 9, "BOOTSZ0", "" },
+			{ 10, "BOOTSZ1", "" },
+			{ 11, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle" },
+			{ 12, "WDTON", "Watchdog timer always on" },
+			{ 13, "SPIEN", "Serial program downloading (SPI) enabled" },
+			{ 14, "JTAGEN", "JTAG Interface Enabled" },
+			{ 15, "OCDEN", "On-Chip Debug Enabled" },
+			{ 16, "TA0SEL", "Reserved for factory tests" },
+			{ 17, "BODLEVEL0", "" },
+			{ 18, "BODLEVEL1", "" },
 			{ 19, "BODLEVEL2", ""}
 		},
 		{
@@ -860,11 +871,11 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 0, "Lock1", ""},
-			{ 1, "Lock2", ""},
-			{ 2, "BootLock1", ""},
-			{ 3, "BootLock2", ""},
-			{ 4, "BootLoad1", ""},
+			{ 0, "Lock1", "" },
+			{ 1, "Lock2", "" },
+			{ 2, "BootLock1", "" },
+			{ 3, "BootLock2", "" },
+			{ 4, "BootLoad1", "" },
 			{ 5, "BootLoad2", ""}
 		},
 		{
@@ -889,25 +900,25 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		AT90CAN128,
 		{
 			// fuse
-			{ 0, "CKSEL0", ""},
-			{ 1, "CKSEL1", ""},
-			{ 2, "CKSEL2", ""},
-			{ 3, "CKSEL3", ""},
-			{ 4, "SUT0", ""},
-			{ 5, "SUT1", ""},
-			{ 6, "CKOUT", "Clock output on PORTE7"},
-			{ 7, "CKDIV8", "Divide clock by 8 internally"},
-			{ 8, "BOOTRST", "Boot Reset vector Enabled (default address=$0000)"},
-			{ 9, "BOOTSZ0", ""},
-			{ 10, "BOOTSZ1", ""},
-			{ 11, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle"},
-			{ 12, "WDTON", "Watchdog timer always on"},
-			{ 13, "SPIEN", "Serial program downloading (SPI) enabled"},
-			{ 14, "JTAGEN", "JTAG Interface Enabled"},
-			{ 15, "OCDEN", "On-Chip Debug Enabled"},
-			{ 16, "TA0SEL", "Reserved for factory tests"},
-			{ 17, "BODLEVEL0", ""},
-			{ 18, "BODLEVEL1", ""},
+			{ 0, "CKSEL0", "" },
+			{ 1, "CKSEL1", "" },
+			{ 2, "CKSEL2", "" },
+			{ 3, "CKSEL3", "" },
+			{ 4, "SUT0", "" },
+			{ 5, "SUT1", "" },
+			{ 6, "CKOUT", "Clock output on PORTE7" },
+			{ 7, "CKDIV8", "Divide clock by 8 internally" },
+			{ 8, "BOOTRST", "Boot Reset vector Enabled (default address=$0000)" },
+			{ 9, "BOOTSZ0", "" },
+			{ 10, "BOOTSZ1", "" },
+			{ 11, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle" },
+			{ 12, "WDTON", "Watchdog timer always on" },
+			{ 13, "SPIEN", "Serial program downloading (SPI) enabled" },
+			{ 14, "JTAGEN", "JTAG Interface Enabled" },
+			{ 15, "OCDEN", "On-Chip Debug Enabled" },
+			{ 16, "TA0SEL", "Reserved for factory tests" },
+			{ 17, "BODLEVEL0", "" },
+			{ 18, "BODLEVEL1", "" },
 			{ 19, "BODLEVEL2", ""}
 		},
 		{
@@ -967,11 +978,11 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 0, "Lock1", ""},
-			{ 1, "Lock2", ""},
-			{ 2, "BootLock1", ""},
-			{ 3, "BootLock2", ""},
-			{ 4, "BootLoad1", ""},
+			{ 0, "Lock1", "" },
+			{ 1, "Lock2", "" },
+			{ 2, "BootLock1", "" },
+			{ 3, "BootLock2", "" },
+			{ 4, "BootLoad1", "" },
 			{ 5, "BootLoad2", ""}
 		},
 		{
@@ -996,7 +1007,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		AT90S1200,
 		{
 			// fuse
-			{ 0, "FB0", "External clock enabled"},
+			{ 0, "FB0", "External clock enabled" },
 			{ 5, "FB5", "Serial program downloading (SPI) enabled"}
 		},
 		{
@@ -1004,13 +1015,13 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 1, "LB1", ""},
+			{ 1, "LB1", "" },
 			{ 2, "LB2", ""}
 		},
 		{
 			// lock mask description
-			{ "LB=11", "Mode 1: No memory lock features enabled"},
-			{ "LB=10", "Mode 2: Further programming disabled"},
+			{ "LB=11", "Mode 1: No memory lock features enabled" },
+			{ "LB=10", "Mode 2: Further programming disabled" },
 			{ "LB=00", "Mode 3: Further programming and verification disabled"}
 		}
 	},
@@ -1018,7 +1029,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		AT90S2313,
 		{
 			// fuse
-			{ 0, "FB0", "Short start-up time enabled"},
+			{ 0, "FB0", "Short start-up time enabled" },
 			{ 5, "FB5", "Serial program downloading (SPI) enabled"}
 		},
 		{
@@ -1026,13 +1037,13 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 1, "Lock1", ""},
+			{ 1, "Lock1", "" },
 			{ 2, "Lock2", ""}
 		},
 		{
 			// lock mask description
-			{ "Lock=11", "Mode 1: No memory lock features enabled"},
-			{ "Lock=10", "Mode 2: Further programming disabled"},
+			{ "Lock=11", "Mode 1: No memory lock features enabled" },
+			{ "Lock=10", "Mode 2: Further programming disabled" },
 			{ "Lock=00", "Mode 3: Further programming and verification disabled"}
 		}
 	},
@@ -1040,9 +1051,9 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		AT90S4414,
 		{
 			// fuse
-			{ 0, "FB0", "Short start-up time enabled"},
-			{ 1, "SPIEN", ""},
-			{ 2, "FSTRT", ""},
+			{ 0, "FB0", "Short start-up time enabled" },
+			{ 1, "SPIEN", "" },
+			{ 2, "FSTRT", "" },
 			{ 5, "FB5", "Serial program downloading (SPI) enabled"}
 		},
 		{
@@ -1050,13 +1061,13 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 1, "Lock1", ""},
+			{ 1, "Lock1", "" },
 			{ 2, "Lock2", ""}
 		},
 		{
 			// lock mask description
-			{ "Lock=11", "Mode 1: No memory lock features enabled"},
-			{ "Lock=10", "Mode 2: Further programming disabled"},
+			{ "Lock=11", "Mode 1: No memory lock features enabled" },
+			{ "Lock=10", "Mode 2: Further programming disabled" },
 			{ "Lock=00", "Mode 3: Further programming and verification disabled"}
 		}
 	},
@@ -1064,9 +1075,9 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		AT90S8515,
 		{
 			// fuse
-			{ 0, "FB0", "Short start-up time enabled"},
-			{ 1, "SPIEN", ""},
-			{ 2, "FSTRT", ""},
+			{ 0, "FB0", "Short start-up time enabled" },
+			{ 1, "SPIEN", "" },
+			{ 2, "FSTRT", "" },
 			{ 5, "FB5", "Serial program downloading (SPI) enabled"}
 		},
 		{
@@ -1074,13 +1085,13 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 1, "Lock1", ""},
+			{ 1, "Lock1", "" },
 			{ 2, "Lock2", ""}
 		},
 		{
 			// lock mask description
-			{ "Lock=11", "Mode 1: No memory lock features enabled"},
-			{ "Lock=10", "Mode 2: Further programming disabled"},
+			{ "Lock=11", "Mode 1: No memory lock features enabled" },
+			{ "Lock=10", "Mode 2: Further programming disabled" },
 			{ "Lock=00", "Mode 3: Further programming and verification disabled"}
 		}
 	},
@@ -1088,9 +1099,9 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		AT90S4434,
 		{
 			// fuse
-			{ 0, "FB0", "Short start-up time enabled"},
-			{ 1, "SPIEN", ""},
-			{ 2, "FSTRT", ""},
+			{ 0, "FB0", "Short start-up time enabled" },
+			{ 1, "SPIEN", "" },
+			{ 2, "FSTRT", "" },
 			{ 5, "FB5", "Serial program downloading (SPI) enabled"}
 		},
 		{
@@ -1098,13 +1109,13 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 1, "Lock1", ""},
+			{ 1, "Lock1", "" },
 			{ 2, "Lock2", ""}
 		},
 		{
 			// lock mask description
-			{ "Lock=11", "Mode 1: No memory lock features enabled"},
-			{ "Lock=10", "Mode 2: Further programming disabled"},
+			{ "Lock=11", "Mode 1: No memory lock features enabled" },
+			{ "Lock=10", "Mode 2: Further programming disabled" },
 			{ "Lock=00", "Mode 3: Further programming and verification disabled"}
 		}
 	},
@@ -1112,9 +1123,9 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		AT90S8535,
 		{
 			// fuse
-			{ 0, "FB0", "Short start-up time enabled"},
-			{ 1, "SPIEN", ""},
-			{ 2, "FSTRT", ""},
+			{ 0, "FB0", "Short start-up time enabled" },
+			{ 1, "SPIEN", "" },
+			{ 2, "FSTRT", "" },
 			{ 5, "FB5", "Serial program downloading (SPI) enabled"}
 		},
 		{
@@ -1122,13 +1133,13 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 1, "Lock1", ""},
+			{ 1, "Lock1", "" },
 			{ 2, "Lock2", ""}
 		},
 		{
 			// lock mask description
-			{ "Lock=11", "Mode 1: No memory lock features enabled"},
-			{ "Lock=10", "Mode 2: Further programming disabled"},
+			{ "Lock=11", "Mode 1: No memory lock features enabled" },
+			{ "Lock=10", "Mode 2: Further programming disabled" },
 			{ "Lock=00", "Mode 3: Further programming and verification disabled"}
 		}
 	},
@@ -1136,11 +1147,11 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		AT90S2333, // ???
 		{
 			// fuse
-			{ 0, "CKSEL0", ""},
-			{ 1, "CKSEL1", ""},
-			{ 2, "CKSEL2", ""},
-			{ 3, "BODEN", "Brown-out detection enabled"},
-			{ 4, "BODLEVEL", "Brown-out detection level at VCC=2.7V"},
+			{ 0, "CKSEL0", "" },
+			{ 1, "CKSEL1", "" },
+			{ 2, "CKSEL2", "" },
+			{ 3, "BODEN", "Brown-out detection enabled" },
+			{ 4, "BODLEVEL", "Brown-out detection level at VCC=2.7V" },
 			{ 5, "SPIEN", "Serial program downloading (SPI) enabled"}
 		},
 		{
@@ -1148,13 +1159,13 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 1, "Lock1", ""},
+			{ 1, "Lock1", "" },
 			{ 2, "Lock2", ""}
 		},
 		{
 			// lock mask description
-			{ "Lock=11", "Mode 1: No memory lock features enabled"},
-			{ "Lock=10", "Mode 2: Further programming disabled"},
+			{ "Lock=11", "Mode 1: No memory lock features enabled" },
+			{ "Lock=10", "Mode 2: Further programming disabled" },
 			{ "Lock=00", "Mode 3: Further programming and verification disabled"}
 		}
 	},
@@ -1163,11 +1174,11 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		AT90S4433,
 		{
 			// fuse
-			{ 0, "CKSEL0", ""},
-			{ 1, "CKSEL1", ""},
-			{ 2, "CKSEL2", ""},
-			{ 3, "BODEN", "Brown-out detection enabled"},
-			{ 4, "BODLEVEL", "Brown-out detection level at VCC=2.7V"},
+			{ 0, "CKSEL0", "" },
+			{ 1, "CKSEL1", "" },
+			{ 2, "CKSEL2", "" },
+			{ 3, "BODEN", "Brown-out detection enabled" },
+			{ 4, "BODLEVEL", "Brown-out detection level at VCC=2.7V" },
 			{ 5, "SPIEN", "Serial program downloading (SPI) enabled"}
 		},
 		{
@@ -1183,13 +1194,13 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 1, "Lock1", ""},
+			{ 1, "Lock1", "" },
 			{ 2, "Lock2", ""}
 		},
 		{
 			// lock mask description
-			{ "Lock=11", "Mode 1: No memory lock features enabled"},
-			{ "Lock=10", "Mode 2: Further programming disabled"},
+			{ "Lock=11", "Mode 1: No memory lock features enabled" },
+			{ "Lock=10", "Mode 2: Further programming disabled" },
 			{ "Lock=00", "Mode 3: Further programming and verification disabled"}
 		}
 	},
@@ -1198,7 +1209,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		AT90S2323,
 		{
 			// fuse
-			{ 0, "FB0", "Short start-up time enabled"},
+			{ 0, "FB0", "Short start-up time enabled" },
 			{ 5, "FB5", "Serial program downloading (SPI) enabled"}
 		},
 		{
@@ -1206,13 +1217,13 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 1, "Lock1", ""},
+			{ 1, "Lock1", "" },
 			{ 2, "Lock2", ""}
 		},
 		{
 			// lock mask description
-			{ "Lock=11", "Mode 1: No memory lock features enabled"},
-			{ "Lock=10", "Mode 2: Further programming disabled"},
+			{ "Lock=11", "Mode 1: No memory lock features enabled" },
+			{ "Lock=10", "Mode 2: Further programming disabled" },
 			{ "Lock=00", "Mode 3: Further programming and verification disabled"}
 		}
 	},
@@ -1221,7 +1232,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		AT90S2343,
 		{
 			// fuse
-			{ 0, "FB0", "External clock disabled"}, // enabled but invert
+			{ 0, "FB0", "External clock disabled" }, // enabled but invert
 			{ 5, "FB5", "Serial program downloading (SPI) enabled"}
 		},
 		{
@@ -1229,13 +1240,13 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 1, "Lock1", ""},
+			{ 1, "Lock1", "" },
 			{ 2, "Lock2", ""}
 		},
 		{
 			// lock mask description
-			{ "Lock=11", "Mode 1: No memory lock features enabled"},
-			{ "Lock=10", "Mode 2: Further programming disabled"},
+			{ "Lock=11", "Mode 1: No memory lock features enabled" },
+			{ "Lock=10", "Mode 2: Further programming disabled" },
 			{ "Lock=00", "Mode 3: Further programming and verification disabled"}
 		}
 	},
@@ -1244,9 +1255,9 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		AT90S8534,
 		{
 			// fuse
-			{ 0, "FB0", "Short start-up time enabled"},
-			{ 1, "SPIEN", ""},
-			{ 2, "FSTRT", ""},
+			{ 0, "FB0", "Short start-up time enabled" },
+			{ 1, "SPIEN", "" },
+			{ 2, "FSTRT", "" },
 			{ 5, "FB5", "Serial program downloading (SPI) enabled"}
 		},
 		{
@@ -1254,13 +1265,13 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 1, "Lock1", ""},
+			{ 1, "Lock1", "" },
 			{ 2, "Lock2", ""}
 		},
 		{
 			// lock mask description
-			{ "Lock=11", "Mode 1: No memory lock features enabled"},
-			{ "Lock=10", "Mode 2: Further programming disabled"},
+			{ "Lock=11", "Mode 1: No memory lock features enabled" },
+			{ "Lock=10", "Mode 2: Further programming disabled" },
 			{ "Lock=00", "Mode 3: Further programming and verification disabled"}
 		}
 	},
@@ -1269,13 +1280,13 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		ATtiny12,
 		{
 			// fuse
-			{ 0, "CKSEL0", ""},
-			{ 1, "CKSEL1", ""},
-			{ 2, "CKSEL2", ""},
-			{ 3, "CKSEL3", ""},
-			{ 4, "RSTDISBL", "External reset function of PB5 disabled"},
-			{ 5, "SPIEN", "Serial program downloading (SPI) enabled"},
-			{ 6, "BODEN", "Brown-out detection enabled"},
+			{ 0, "CKSEL0", "" },
+			{ 1, "CKSEL1", "" },
+			{ 2, "CKSEL2", "" },
+			{ 3, "CKSEL3", "" },
+			{ 4, "RSTDISBL", "External reset function of PB5 disabled" },
+			{ 5, "SPIEN", "Serial program downloading (SPI) enabled" },
+			{ 6, "BODEN", "Brown-out detection enabled" },
 			{ 7, "BODLEVEL", "Brown-out detection level at VCC=1.8 V"}
 		},
 		{
@@ -1299,13 +1310,13 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 1, "Lock1", ""},
+			{ 1, "Lock1", "" },
 			{ 2, "Lock2", ""}
 		},
 		{
 			// lock mask description
-			{ "Lock=11", "Mode 1: No memory lock features enabled"},
-			{ "Lock=10", "Mode 2: Further programming disabled"},
+			{ "Lock=11", "Mode 1: No memory lock features enabled" },
+			{ "Lock=10", "Mode 2: Further programming disabled" },
 			{ "Lock=00", "Mode 3: Further programming and verification disabled"}
 		}
 	},
@@ -1314,18 +1325,18 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		ATtiny13,
 		{
 			// fuse
-			{ 0, "CKSEL0", ""},
-			{ 1, "CKSEL1", ""},
-			{ 2, "SUT0", ""},
-			{ 3, "SUT1", ""},
-			{ 4, "CKDIV8", "Divide clock by 8 internally"},
-			{ 5, "WDTON", "Watch-dog Timer always on"},
-			{ 6, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle"},
-			{ 7, "SPIEN", "Serial program downloading (SPI) enabled"},
-			{ 8, "RSTDISBL", "Reset Disabled (Enable PB5 as i/o pin)"},
-			{ 9, "BODLEVEL0", ""},
-			{ 10, "BODLEVEL1", ""},
-			{ 11, "DWEN", "Debug Wire enable"},
+			{ 0, "CKSEL0", "" },
+			{ 1, "CKSEL1", "" },
+			{ 2, "SUT0", "" },
+			{ 3, "SUT1", "" },
+			{ 4, "CKDIV8", "Divide clock by 8 internally" },
+			{ 5, "WDTON", "Watch-dog Timer always on" },
+			{ 6, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle" },
+			{ 7, "SPIEN", "Serial program downloading (SPI) enabled" },
+			{ 8, "RSTDISBL", "Reset Disabled (Enable PB5 as i/o pin)" },
+			{ 9, "BODLEVEL0", "" },
+			{ 10, "BODLEVEL1", "" },
+			{ 11, "DWEN", "Debug Wire enable" },
 			{ 12, "SELFPRGEN", "Self Programming enable"}
 		},
 		{
@@ -1350,13 +1361,13 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 0, "Lock1", ""},
+			{ 0, "Lock1", "" },
 			{ 1, "Lock2", ""}
 		},
 		{
 			// lock mask description
-			{ "Lock=11", "Mode 1: No memory lock features enabled"},
-			{ "Lock=10", "Mode 2: Further programming disabled"},
+			{ "Lock=11", "Mode 1: No memory lock features enabled" },
+			{ "Lock=10", "Mode 2: Further programming disabled" },
 			{ "Lock=00", "Mode 3: Further programming and verification disabled"}
 		}
 	},
@@ -1364,29 +1375,29 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		ATtiny15,
 		{
 			// fuse
-			{ 0, "CKSEL0", ""},
-			{ 1, "CKSEL1", ""},
-			{ 4, "RSTDISBL", "External reset function of PB5 disabled"},
-			{ 5, "SPIEN", "Serial program downloading (SPI) enabled"},
-			{ 6, "BODEN", "Brown-out detection enabled"},
+			{ 0, "CKSEL0", "" },
+			{ 1, "CKSEL1", "" },
+			{ 4, "RSTDISBL", "External reset function of PB5 disabled" },
+			{ 5, "SPIEN", "Serial program downloading (SPI) enabled" },
+			{ 6, "BODEN", "Brown-out detection enabled" },
 			{ 7, "BODLEVEL", "Brown-out detection level at VCC=2.7 V"}
 		},
 		{
 			// fuse mask description
-			{ "CKSEL=00", "Slowly rising power"},
-			{ "CKSEL=01", "Slowly rising power"},
-			{ "CKSEL=10", "Quickly rising power"},
+			{ "CKSEL=00", "Slowly rising power" },
+			{ "CKSEL=01", "Slowly rising power" },
+			{ "CKSEL=10", "Quickly rising power" },
 			{ "CKSEL=11", "Very quickly rising power"}
 		},
 		{
 			// lock
-			{ 1, "Lock1", ""},
+			{ 1, "Lock1", "" },
 			{ 2, "Lock2", ""}
 		},
 		{
 			// lock mask description
-			{ "Lock=11", "Mode 1: No memory lock features enabled"},
-			{ "Lock=10", "Mode 2: Further programming disabled"},
+			{ "Lock=11", "Mode 1: No memory lock features enabled" },
+			{ "Lock=10", "Mode 2: Further programming disabled" },
 			{ "Lock=00", "Mode 3: Further programming and verification disabled"}
 		}
 	},
@@ -1395,7 +1406,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		ATtiny22,
 		{
 			// fuse
-			{ 0, "FB0", "External clock disabled"}, // NOT enabled
+			{ 0, "FB0", "External clock disabled" }, // NOT enabled
 			{ 5, "FB5", "Serial program downloading (SPI) enabled"}
 		},
 		{
@@ -1403,13 +1414,13 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 1, "Lock1", ""},
+			{ 1, "Lock1", "" },
 			{ 2, "Lock2", ""}
 		},
 		{
 			// lock mask description
-			{ "Lock=11", "Mode 1: No memory lock features enabled"},
-			{ "Lock=10", "Mode 2: Further programming disabled"},
+			{ "Lock=11", "Mode 1: No memory lock features enabled" },
+			{ "Lock=10", "Mode 2: Further programming disabled" },
 			{ "Lock=00", "Mode 3: Further programming and verification disabled"}
 		}
 	},
@@ -1417,94 +1428,94 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		ATtiny26,
 		{
 			// fuse
-			{ 0, "CKSEL0", ""},
-			{ 1, "CKSEL1", ""},
-			{ 2, "CKSEL2", ""},
-			{ 3, "CKSEL3", ""},
-			{ 4, "SUT0", ""},
-			{ 5, "SUT1", ""},
-			{ 6, "CKOPT", "CKOPT fuse (operation dependent of CKSEL fuses)"},
-			{ 7, "PLLCK", ""},
-			{ 8, "BODEN", "Brown-out detection enabled"},
-			{ 9, "BODLEVEL", "Brown-out detection level at VCC=2.7 V"},
-			{ 10, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle"},
-			{ 11, "SPIEN", "Serial program downloading (SPI) enabled"},
+			{ 0, "CKSEL0", "" },
+			{ 1, "CKSEL1", "" },
+			{ 2, "CKSEL2", "" },
+			{ 3, "CKSEL3", "" },
+			{ 4, "SUT0", "" },
+			{ 5, "SUT1", "" },
+			{ 6, "CKOPT", "CKOPT fuse (operation dependent of CKSEL fuses)" },
+			{ 7, "PLLCK", "" },
+			{ 8, "BODEN", "Brown-out detection enabled" },
+			{ 9, "BODLEVEL", "Brown-out detection level at VCC=2.7 V" },
+			{ 10, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle" },
+			{ 11, "SPIEN", "Serial program downloading (SPI) enabled" },
 			{ 12, "RSTDISBL", "Reset Disabled (Enable PB7 as i/o pin)"}
 		},
 		{
 			// fuse mask description
-			{ "CKSEL=0000 SUT=00 PLLCK=1", "Ext. Clock; Start-up time: 6 CK + 0 ms"},
-			{ "CKSEL=0000 SUT=01 PLLCK=1", "Ext. Clock; Start-up time: 6 CK + 4 ms"},
-			{ "CKSEL=0000 SUT=10 PLLCK=1", "Ext. Clock; Start-up time: 6 CK + 64 ms"},
-			{ "CKSEL=1111 SUT=01 PLLCK=1", "Ext. Crystal/Resonator High Freq.; Start-up time: 16K CK + 0 ms"},
-			{ "CKSEL=1111 SUT=10 PLLCK=1", "Ext. Crystal/Resonator High Freq.; Start-up time: 16K CK + 4 ms"},
-			{ "CKSEL=1111 SUT=11 PLLCK=1", "Ext. Crystal/Resonator High Freq.; Start-up time: 16K CK + 64 ms"},
-			{ "CKSEL=1110 SUT=10 PLLCK=1", "Ext. Crystal/Resonator High Freq.; Start-up time: 1K CK + 0 ms"},
-			{ "CKSEL=1110 SUT=11 PLLCK=1", "Ext. Crystal/Resonator High Freq.; Start-up time: 1K CK + 4 ms"},
-			{ "CKSEL=1111 SUT=00 PLLCK=1", "Ext. Crystal/Resonator High Freq.; Start-up time: 1K CK + 64 ms"},
-			{ "CKSEL=1110 SUT=00 PLLCK=1", "Ext. Crystal/Resonator High Freq.; Start-up time: 258 CK + 4 ms"},
-			{ "CKSEL=1110 SUT=01 PLLCK=1", "Ext. Crystal/Resonator High Freq.; Start-up time: 258 CK + 64 ms"},
-			{ "CKSEL=1011 SUT=01 PLLCK=1", "Ext. Crystal/Resonator Low Freq.; Start-up time: 16K CK + 0 ms"},
-			{ "CKSEL=1011 SUT=10 PLLCK=1", "Ext. Crystal/Resonator Low Freq.; Start-up time: 16K CK + 4 ms"},
-			{ "CKSEL=1011 SUT=11 PLLCK=1", "Ext. Crystal/Resonator Low Freq.; Start-up time: 16K CK + 64 ms"},
-			{ "CKSEL=1010 SUT=10 PLLCK=1", "Ext. Crystal/Resonator Low Freq.; Start-up time: 1K CK + 0 ms"},
-			{ "CKSEL=1010 SUT=11 PLLCK=1", "Ext. Crystal/Resonator Low Freq.; Start-up time: 1K CK + 4 ms"},
-			{ "CKSEL=1011 SUT=00 PLLCK=1", "Ext. Crystal/Resonator Low Freq.; Start-up time: 1K CK + 64 ms"},
-			{ "CKSEL=1010 SUT=00 PLLCK=1", "Ext. Crystal/Resonator Low Freq.; Start-up time: 258 CK + 4 ms"},
-			{ "CKSEL=1010 SUT=01 PLLCK=1", "Ext. Crystal/Resonator Low Freq.; Start-up time: 258 CK + 64 ms"},
-			{ "CKSEL=1101 SUT=01 PLLCK=1", "Ext. Crystal/Resonator Medium Freq.; Start-up time: 16K CK + 0 ms"},
-			{ "CKSEL=1101 SUT=10 PLLCK=1", "Ext. Crystal/Resonator Medium Freq.; Start-up time: 16K CK + 4 ms"},
-			{ "CKSEL=1101 SUT=11 PLLCK=1", "Ext. Crystal/Resonator Medium Freq.; Start-up time: 16K CK + 64 ms"},
-			{ "CKSEL=1100 SUT=10 PLLCK=1", "Ext. Crystal/Resonator Medium Freq.; Start-up time: 1K CK + 0 ms"},
-			{ "CKSEL=1100 SUT=11 PLLCK=1", "Ext. Crystal/Resonator Medium Freq.; Start-up time: 1K CK + 4 ms"},
-			{ "CKSEL=1101 SUT=00 PLLCK=1", "Ext. Crystal/Resonator Medium Freq.; Start-up time: 1K CK + 64 ms"},
-			{ "CKSEL=1100 SUT=00 PLLCK=1", "Ext. Crystal/Resonator Medium Freq.; Start-up time: 258 CK + 4 ms"},
-			{ "CKSEL=1100 SUT=01 PLLCK=1", "Ext. Crystal/Resonator Medium Freq.; Start-up time: 258 CK + 64 ms"},
-			{ "CKSEL=1001 SUT=00 PLLCK=1", "Ext. Low-Freq. Crystal; Start-up time: 1K CK + 4 ms"},
-			{ "CKSEL=1001 SUT=01 PLLCK=1", "Ext. Low-Freq. Crystal; Start-up time: 1K CK + 64 ms"},
-			{ "CKSEL=1001 SUT=10 PLLCK=1", "Ext. Low-Freq. Crystal; Start-up time: 32K CK + 64 ms"},
-			{ "CKSEL=0101 SUT=00 PLLCK=1", "Ext. RC Osc. - 0.9 MHz; Start-up time: 18 CK + 0 ms"},
-			{ "CKSEL=0101 SUT=01 PLLCK=1", "Ext. RC Osc. - 0.9 MHz; Start-up time: 18 CK + 4 ms"},
-			{ "CKSEL=0101 SUT=10 PLLCK=1", "Ext. RC Osc. - 0.9 MHz; Start-up time: 18 CK + 64 ms"},
-			{ "CKSEL=0101 SUT=11 PLLCK=1", "Ext. RC Osc. - 0.9 MHz; Start-up time: 6 CK + 4 ms"},
-			{ "CKSEL=0110 SUT=00 PLLCK=1", "Ext. RC Osc. 0.9 MHz - 3.0 MHz; Start-up time: 18 CK + 0 ms"},
-			{ "CKSEL=0110 SUT=01 PLLCK=1", "Ext. RC Osc. 0.9 MHz - 3.0 MHz; Start-up time: 18 CK + 4 ms"},
-			{ "CKSEL=0110 SUT=10 PLLCK=1", "Ext. RC Osc. 0.9 MHz - 3.0 MHz; Start-up time: 18 CK + 64 ms"},
-			{ "CKSEL=0110 SUT=11 PLLCK=1", "Ext. RC Osc. 0.9 MHz - 3.0 MHz; Start-up time: 6 CK + 4 ms"},
-			{ "CKSEL=0111 SUT=00 PLLCK=1", "Ext. RC Osc. 3.0 MHz - 8.0 MHz; Start-up time: 18 CK + 0 ms"},
-			{ "CKSEL=0111 SUT=01 PLLCK=1", "Ext. RC Osc. 3.0 MHz - 8.0 MHz; Start-up time: 18 CK + 4 ms"},
-			{ "CKSEL=0111 SUT=10 PLLCK=1", "Ext. RC Osc. 3.0 MHz - 8.0 MHz; Start-up time: 18 CK + 64 ms"},
-			{ "CKSEL=0111 SUT=11 PLLCK=1", "Ext. RC Osc. 3.0 MHz - 8.0 MHz; Start-up time: 6 CK + 4 ms"},
-			{ "CKSEL=1000 SUT=00 PLLCK=1", "Ext. RC Osc. 8.0 MHz - 12.0 MHz; Start-up time: 18 CK + 0 ms"},
-			{ "CKSEL=1000 SUT=01 PLLCK=1", "Ext. RC Osc. 8.0 MHz - 12.0 MHz; Start-up time: 18 CK + 4 ms"},
-			{ "CKSEL=1000 SUT=10 PLLCK=1", "Ext. RC Osc. 8.0 MHz - 12.0 MHz; Start-up time: 18 CK + 64 ms"},
-			{ "CKSEL=1000 SUT=11 PLLCK=1", "Ext. RC Osc. 8.0 MHz - 12.0 MHz; Start-up time: 6 CK + 4 ms"},
-			{ "CKSEL=0001 SUT=00 PLLCK=1", "Int. RC Osc. 1 MHz; Start-up time: 6 CK + 0 ms"},
-			{ "CKSEL=0001 SUT=01 PLLCK=1", "Int. RC Osc. 1 MHz; Start-up time: 6 CK + 4 ms"},
-			{ "CKSEL=0001 SUT=10 PLLCK=1", "Int. RC Osc. 1 MHz; Start-up time: 6 CK + 64 ms"},
-			{ "CKSEL=0010 SUT=00 PLLCK=1", "Int. RC Osc. 2 MHz; Start-up time: 6 CK + 0 ms"},
-			{ "CKSEL=0010 SUT=01 PLLCK=1", "Int. RC Osc. 2 MHz; Start-up time: 6 CK + 4 ms"},
-			{ "CKSEL=0010 SUT=10 PLLCK=1", "Int. RC Osc. 2 MHz; Start-up time: 6 CK + 64 ms"},
-			{ "CKSEL=0011 SUT=00 PLLCK=1", "Int. RC Osc. 4 MHz; Start-up time: 6 CK + 0 ms"},
-			{ "CKSEL=0011 SUT=01 PLLCK=1", "Int. RC Osc. 4 MHz; Start-up time: 6 CK + 4 ms"},
-			{ "CKSEL=0011 SUT=10 PLLCK=1", "Int. RC Osc. 4 MHz; Start-up time: 6 CK + 64 ms"},
-			{ "CKSEL=0100 SUT=00 PLLCK=1", "Int. RC Osc. 8 MHz; Start-up time: 6 CK + 0 ms"},
-			{ "CKSEL=0100 SUT=01 PLLCK=1", "Int. RC Osc. 8 MHz; Start-up time: 6 CK + 4 ms"},
-			{ "CKSEL=0100 SUT=10 PLLCK=1", "Int. RC Osc. 8 MHz; Start-up time: 6 CK + 64 ms"},
-			{ "CKSEL=0001 SUT=11 PLLCK=0", "PLL Clock; Start-up time: 16K CK + 64 ms"},
-			{ "CKSEL=0001 SUT=00 PLLCK=0", "PLL Clock; Start-up time: 1K CK + 0 ms"},
-			{ "CKSEL=0001 SUT=01 PLLCK=0", "PLL Clock; Start-up time: 1K CK + 4 ms"},
+			{ "CKSEL=0000 SUT=00 PLLCK=1", "Ext. Clock; Start-up time: 6 CK + 0 ms" },
+			{ "CKSEL=0000 SUT=01 PLLCK=1", "Ext. Clock; Start-up time: 6 CK + 4 ms" },
+			{ "CKSEL=0000 SUT=10 PLLCK=1", "Ext. Clock; Start-up time: 6 CK + 64 ms" },
+			{ "CKSEL=1111 SUT=01 PLLCK=1", "Ext. Crystal/Resonator High Freq.; Start-up time: 16K CK + 0 ms" },
+			{ "CKSEL=1111 SUT=10 PLLCK=1", "Ext. Crystal/Resonator High Freq.; Start-up time: 16K CK + 4 ms" },
+			{ "CKSEL=1111 SUT=11 PLLCK=1", "Ext. Crystal/Resonator High Freq.; Start-up time: 16K CK + 64 ms" },
+			{ "CKSEL=1110 SUT=10 PLLCK=1", "Ext. Crystal/Resonator High Freq.; Start-up time: 1K CK + 0 ms" },
+			{ "CKSEL=1110 SUT=11 PLLCK=1", "Ext. Crystal/Resonator High Freq.; Start-up time: 1K CK + 4 ms" },
+			{ "CKSEL=1111 SUT=00 PLLCK=1", "Ext. Crystal/Resonator High Freq.; Start-up time: 1K CK + 64 ms" },
+			{ "CKSEL=1110 SUT=00 PLLCK=1", "Ext. Crystal/Resonator High Freq.; Start-up time: 258 CK + 4 ms" },
+			{ "CKSEL=1110 SUT=01 PLLCK=1", "Ext. Crystal/Resonator High Freq.; Start-up time: 258 CK + 64 ms" },
+			{ "CKSEL=1011 SUT=01 PLLCK=1", "Ext. Crystal/Resonator Low Freq.; Start-up time: 16K CK + 0 ms" },
+			{ "CKSEL=1011 SUT=10 PLLCK=1", "Ext. Crystal/Resonator Low Freq.; Start-up time: 16K CK + 4 ms" },
+			{ "CKSEL=1011 SUT=11 PLLCK=1", "Ext. Crystal/Resonator Low Freq.; Start-up time: 16K CK + 64 ms" },
+			{ "CKSEL=1010 SUT=10 PLLCK=1", "Ext. Crystal/Resonator Low Freq.; Start-up time: 1K CK + 0 ms" },
+			{ "CKSEL=1010 SUT=11 PLLCK=1", "Ext. Crystal/Resonator Low Freq.; Start-up time: 1K CK + 4 ms" },
+			{ "CKSEL=1011 SUT=00 PLLCK=1", "Ext. Crystal/Resonator Low Freq.; Start-up time: 1K CK + 64 ms" },
+			{ "CKSEL=1010 SUT=00 PLLCK=1", "Ext. Crystal/Resonator Low Freq.; Start-up time: 258 CK + 4 ms" },
+			{ "CKSEL=1010 SUT=01 PLLCK=1", "Ext. Crystal/Resonator Low Freq.; Start-up time: 258 CK + 64 ms" },
+			{ "CKSEL=1101 SUT=01 PLLCK=1", "Ext. Crystal/Resonator Medium Freq.; Start-up time: 16K CK + 0 ms" },
+			{ "CKSEL=1101 SUT=10 PLLCK=1", "Ext. Crystal/Resonator Medium Freq.; Start-up time: 16K CK + 4 ms" },
+			{ "CKSEL=1101 SUT=11 PLLCK=1", "Ext. Crystal/Resonator Medium Freq.; Start-up time: 16K CK + 64 ms" },
+			{ "CKSEL=1100 SUT=10 PLLCK=1", "Ext. Crystal/Resonator Medium Freq.; Start-up time: 1K CK + 0 ms" },
+			{ "CKSEL=1100 SUT=11 PLLCK=1", "Ext. Crystal/Resonator Medium Freq.; Start-up time: 1K CK + 4 ms" },
+			{ "CKSEL=1101 SUT=00 PLLCK=1", "Ext. Crystal/Resonator Medium Freq.; Start-up time: 1K CK + 64 ms" },
+			{ "CKSEL=1100 SUT=00 PLLCK=1", "Ext. Crystal/Resonator Medium Freq.; Start-up time: 258 CK + 4 ms" },
+			{ "CKSEL=1100 SUT=01 PLLCK=1", "Ext. Crystal/Resonator Medium Freq.; Start-up time: 258 CK + 64 ms" },
+			{ "CKSEL=1001 SUT=00 PLLCK=1", "Ext. Low-Freq. Crystal; Start-up time: 1K CK + 4 ms" },
+			{ "CKSEL=1001 SUT=01 PLLCK=1", "Ext. Low-Freq. Crystal; Start-up time: 1K CK + 64 ms" },
+			{ "CKSEL=1001 SUT=10 PLLCK=1", "Ext. Low-Freq. Crystal; Start-up time: 32K CK + 64 ms" },
+			{ "CKSEL=0101 SUT=00 PLLCK=1", "Ext. RC Osc. - 0.9 MHz; Start-up time: 18 CK + 0 ms" },
+			{ "CKSEL=0101 SUT=01 PLLCK=1", "Ext. RC Osc. - 0.9 MHz; Start-up time: 18 CK + 4 ms" },
+			{ "CKSEL=0101 SUT=10 PLLCK=1", "Ext. RC Osc. - 0.9 MHz; Start-up time: 18 CK + 64 ms" },
+			{ "CKSEL=0101 SUT=11 PLLCK=1", "Ext. RC Osc. - 0.9 MHz; Start-up time: 6 CK + 4 ms" },
+			{ "CKSEL=0110 SUT=00 PLLCK=1", "Ext. RC Osc. 0.9 MHz - 3.0 MHz; Start-up time: 18 CK + 0 ms" },
+			{ "CKSEL=0110 SUT=01 PLLCK=1", "Ext. RC Osc. 0.9 MHz - 3.0 MHz; Start-up time: 18 CK + 4 ms" },
+			{ "CKSEL=0110 SUT=10 PLLCK=1", "Ext. RC Osc. 0.9 MHz - 3.0 MHz; Start-up time: 18 CK + 64 ms" },
+			{ "CKSEL=0110 SUT=11 PLLCK=1", "Ext. RC Osc. 0.9 MHz - 3.0 MHz; Start-up time: 6 CK + 4 ms" },
+			{ "CKSEL=0111 SUT=00 PLLCK=1", "Ext. RC Osc. 3.0 MHz - 8.0 MHz; Start-up time: 18 CK + 0 ms" },
+			{ "CKSEL=0111 SUT=01 PLLCK=1", "Ext. RC Osc. 3.0 MHz - 8.0 MHz; Start-up time: 18 CK + 4 ms" },
+			{ "CKSEL=0111 SUT=10 PLLCK=1", "Ext. RC Osc. 3.0 MHz - 8.0 MHz; Start-up time: 18 CK + 64 ms" },
+			{ "CKSEL=0111 SUT=11 PLLCK=1", "Ext. RC Osc. 3.0 MHz - 8.0 MHz; Start-up time: 6 CK + 4 ms" },
+			{ "CKSEL=1000 SUT=00 PLLCK=1", "Ext. RC Osc. 8.0 MHz - 12.0 MHz; Start-up time: 18 CK + 0 ms" },
+			{ "CKSEL=1000 SUT=01 PLLCK=1", "Ext. RC Osc. 8.0 MHz - 12.0 MHz; Start-up time: 18 CK + 4 ms" },
+			{ "CKSEL=1000 SUT=10 PLLCK=1", "Ext. RC Osc. 8.0 MHz - 12.0 MHz; Start-up time: 18 CK + 64 ms" },
+			{ "CKSEL=1000 SUT=11 PLLCK=1", "Ext. RC Osc. 8.0 MHz - 12.0 MHz; Start-up time: 6 CK + 4 ms" },
+			{ "CKSEL=0001 SUT=00 PLLCK=1", "Int. RC Osc. 1 MHz; Start-up time: 6 CK + 0 ms" },
+			{ "CKSEL=0001 SUT=01 PLLCK=1", "Int. RC Osc. 1 MHz; Start-up time: 6 CK + 4 ms" },
+			{ "CKSEL=0001 SUT=10 PLLCK=1", "Int. RC Osc. 1 MHz; Start-up time: 6 CK + 64 ms" },
+			{ "CKSEL=0010 SUT=00 PLLCK=1", "Int. RC Osc. 2 MHz; Start-up time: 6 CK + 0 ms" },
+			{ "CKSEL=0010 SUT=01 PLLCK=1", "Int. RC Osc. 2 MHz; Start-up time: 6 CK + 4 ms" },
+			{ "CKSEL=0010 SUT=10 PLLCK=1", "Int. RC Osc. 2 MHz; Start-up time: 6 CK + 64 ms" },
+			{ "CKSEL=0011 SUT=00 PLLCK=1", "Int. RC Osc. 4 MHz; Start-up time: 6 CK + 0 ms" },
+			{ "CKSEL=0011 SUT=01 PLLCK=1", "Int. RC Osc. 4 MHz; Start-up time: 6 CK + 4 ms" },
+			{ "CKSEL=0011 SUT=10 PLLCK=1", "Int. RC Osc. 4 MHz; Start-up time: 6 CK + 64 ms" },
+			{ "CKSEL=0100 SUT=00 PLLCK=1", "Int. RC Osc. 8 MHz; Start-up time: 6 CK + 0 ms" },
+			{ "CKSEL=0100 SUT=01 PLLCK=1", "Int. RC Osc. 8 MHz; Start-up time: 6 CK + 4 ms" },
+			{ "CKSEL=0100 SUT=10 PLLCK=1", "Int. RC Osc. 8 MHz; Start-up time: 6 CK + 64 ms" },
+			{ "CKSEL=0001 SUT=11 PLLCK=0", "PLL Clock; Start-up time: 16K CK + 64 ms" },
+			{ "CKSEL=0001 SUT=00 PLLCK=0", "PLL Clock; Start-up time: 1K CK + 0 ms" },
+			{ "CKSEL=0001 SUT=01 PLLCK=0", "PLL Clock; Start-up time: 1K CK + 4 ms" },
 			{ "CKSEL=0001 SUT=10 PLLCK=0", "PLL Clock; Start-up time: 1K CK + 64 ms"}
 		},
 		{
 			// lock
-			{ 0, "Lock1", ""},
+			{ 0, "Lock1", "" },
 			{ 1, "Lock2", ""}
 		},
 		{
 			// lock mask description
-			{ "Lock=11", "Mode 1: No memory lock features enabled"},
-			{ "Lock=10", "Mode 2: Further programming disabled"},
+			{ "Lock=11", "Mode 1: No memory lock features enabled" },
+			{ "Lock=10", "Mode 2: Further programming disabled" },
 			{ "Lock=00", "Mode 3: Further programming and verification disabled"}
 		}
 	},
@@ -1513,70 +1524,70 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		ATtiny2313,
 		{
 			// fuse
-			{ 0, "CKSEL0", ""},
-			{ 1, "CKSEL1", ""},
-			{ 2, "CKSEL2", ""},
-			{ 3, "CKSEL3", ""},
-			{ 4, "SUT0", ""},
-			{ 5, "SUT1", ""},
-			{ 6, "CKOUT", "Clock output on PORTD2"},
-			{ 7, "CKDIV8", "Divide clock by 8 internally"},
-			{ 8, "RSTDISBL", "Reset Disabled (Enable PA2 as i/o pin)"},
-			{ 9, "BODLEVEL0", ""},
-			{ 10, "BODLEVEL1", ""},
-			{ 11, "BODLEVEL2", ""},
-			{ 12, "WDTON", "Watch-dog Timer always on"},
-			{ 13, "SPIEN", "Serial program downloading (SPI) enabled"},
-			{ 14, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle"},
-			{ 15, "DWEN", "Debug Wire enable"},
+			{ 0, "CKSEL0", "" },
+			{ 1, "CKSEL1", "" },
+			{ 2, "CKSEL2", "" },
+			{ 3, "CKSEL3", "" },
+			{ 4, "SUT0", "" },
+			{ 5, "SUT1", "" },
+			{ 6, "CKOUT", "Clock output on PORTD2" },
+			{ 7, "CKDIV8", "Divide clock by 8 internally" },
+			{ 8, "RSTDISBL", "Reset Disabled (Enable PA2 as i/o pin)" },
+			{ 9, "BODLEVEL0", "" },
+			{ 10, "BODLEVEL1", "" },
+			{ 11, "BODLEVEL2", "" },
+			{ 12, "WDTON", "Watch-dog Timer always on" },
+			{ 13, "SPIEN", "Serial program downloading (SPI) enabled" },
+			{ 14, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle" },
+			{ 15, "DWEN", "Debug Wire enable" },
 			{ 16, "SELFPRGEN", "Self programming enable"}
 		},
 		{
 			// fuse mask description
-			{ "CKSEL=0000 SUT=00", "Ext. Clock; Start-up time: 14 CK + 0 ms"},
-			{ "CKSEL=0000 SUT=01", "Ext. Clock; Start-up time: 14 CK + 4.1 ms"},
-			{ "CKSEL=0000 SUT=10", "Ext. Clock; Start-up time: 14 CK + 65 ms"},
-			{ "CKSEL=1000 SUT=10", "Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time: 14 CK + 0 ms"},
-			{ "CKSEL=1001 SUT=01", "Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time: 14 CK + 0 ms"},
-			{ "CKSEL=1000 SUT=00", "Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time: 14 CK + 4.1 ms"},
-			{ "CKSEL=1000 SUT=11", "Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time: 14 CK + 4.1 ms"},
-			{ "CKSEL=1001 SUT=10", "Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time: 14 CK + 4.1 ms"},
-			{ "CKSEL=1000 SUT=01", "Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time: 14 CK + 65 ms"},
-			{ "CKSEL=1001 SUT=00", "Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time: 14 CK + 65 ms"},
-			{ "CKSEL=1001 SUT=11", "Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time: 14 CK + 65 ms"},
-			{ "CKSEL=1010 SUT=10", "Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time: 14 CK + 0 ms"},
-			{ "CKSEL=1011 SUT=01", "Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time: 14 CK + 0 ms"},
-			{ "CKSEL=1010 SUT=00", "Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time: 14 CK + 4.1 ms"},
-			{ "CKSEL=1010 SUT=11", "Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time: 14 CK + 4.1 ms"},
-			{ "CKSEL=1011 SUT=10", "Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time: 14 CK + 4.1 ms"},
-			{ "CKSEL=1010 SUT=01", "Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time: 14 CK + 65 ms"},
-			{ "CKSEL=1011 SUT=00", "Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time: 14 CK + 65 ms"},
-			{ "CKSEL=1011 SUT=11", "Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time: 14 CK + 65 ms"},
-			{ "CKSEL=1100 SUT=10", "Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time: 14 CK + 0 ms"},
-			{ "CKSEL=1101 SUT=01", "Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time: 14 CK + 0 ms"},
-			{ "CKSEL=1100 SUT=00", "Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time: 14 CK + 4.1 ms"},
-			{ "CKSEL=1100 SUT=11", "Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time: 14 CK + 4.1 ms"},
-			{ "CKSEL=1101 SUT=10", "Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time: 14 CK + 4.1 ms"},
-			{ "CKSEL=1100 SUT=01", "Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time: 14 CK + 65 ms"},
-			{ "CKSEL=1101 SUT=00", "Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time: 14 CK + 65 ms"},
-			{ "CKSEL=1101 SUT=11", "Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time: 14 CK + 65 ms"},
-			{ "CKSEL=1110 SUT=10", "Ext. Crystal Osc.; Frequency 8.0- MHz; Start-up time: 14 CK + 0 ms"},
-			{ "CKSEL=1111 SUT=01", "Ext. Crystal Osc.; Frequency 8.0- MHz; Start-up time: 14 CK + 0 ms"},
-			{ "CKSEL=1110 SUT=00", "Ext. Crystal Osc.; Frequency 8.0- MHz; Start-up time: 14 CK + 4.1 ms"},
-			{ "CKSEL=1110 SUT=11", "Ext. Crystal Osc.; Frequency 8.0- MHz; Start-up time: 14 CK + 4.1 ms"},
-			{ "CKSEL=1111 SUT=10", "Ext. Crystal Osc.; Frequency 8.0- MHz; Start-up time: 14 CK + 4.1 ms"},
-			{ "CKSEL=1110 SUT=01", "Ext. Crystal Osc.; Frequency 8.0- MHz; Start-up time: 14 CK + 65 ms"},
-			{ "CKSEL=1111 SUT=00", "Ext. Crystal Osc.; Frequency 8.0- MHz; Start-up time: 14 CK + 65 ms"},
-			{ "CKSEL=1111 SUT=11", "Ext. Crystal Osc.; Frequency 8.0- MHz; Start-up time: 14 CK + 65 ms"},
-			{ "CKSEL=0110 SUT=00", "Int. RC Osc. 128 kHz; Start-up time: 14 CK + 0 ms"},
-			{ "CKSEL=0110 SUT=01", "Int. RC Osc. 128 kHz; Start-up time: 14 CK + 4 ms"},
-			{ "CKSEL=0110 SUT=10", "Int. RC Osc. 128 kHz; Start-up time: 14 CK + 64 ms"},
-			{ "CKSEL=0010 SUT=00", "Int. RC Osc. 4 MHz; Start-up time: 14 CK + 0 ms"},
-			{ "CKSEL=0010 SUT=01", "Int. RC Osc. 4 MHz; Start-up time: 14 CK + 4.1 ms"},
-			{ "CKSEL=0010 SUT=10", "Int. RC Osc. 4 MHz; Start-up time: 14 CK + 65 ms"},
-			{ "CKSEL=0100 SUT=00", "Int. RC Osc. 8 MHz; Start-up time: 14 CK + 0 ms"},
-			{ "CKSEL=0100 SUT=01", "Int. RC Osc. 8 MHz; Start-up time: 14 CK + 4.1 ms"},
-			{ "CKSEL=0100 SUT=10", "Int. RC Osc. 8 MHz; Start-up time: 14 CK + 65 ms"},
+			{ "CKSEL=0000 SUT=00", "Ext. Clock; Start-up time: 14 CK + 0 ms" },
+			{ "CKSEL=0000 SUT=01", "Ext. Clock; Start-up time: 14 CK + 4.1 ms" },
+			{ "CKSEL=0000 SUT=10", "Ext. Clock; Start-up time: 14 CK + 65 ms" },
+			{ "CKSEL=1000 SUT=10", "Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time: 14 CK + 0 ms" },
+			{ "CKSEL=1001 SUT=01", "Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time: 14 CK + 0 ms" },
+			{ "CKSEL=1000 SUT=00", "Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time: 14 CK + 4.1 ms" },
+			{ "CKSEL=1000 SUT=11", "Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time: 14 CK + 4.1 ms" },
+			{ "CKSEL=1001 SUT=10", "Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time: 14 CK + 4.1 ms" },
+			{ "CKSEL=1000 SUT=01", "Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time: 14 CK + 65 ms" },
+			{ "CKSEL=1001 SUT=00", "Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time: 14 CK + 65 ms" },
+			{ "CKSEL=1001 SUT=11", "Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time: 14 CK + 65 ms" },
+			{ "CKSEL=1010 SUT=10", "Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time: 14 CK + 0 ms" },
+			{ "CKSEL=1011 SUT=01", "Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time: 14 CK + 0 ms" },
+			{ "CKSEL=1010 SUT=00", "Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time: 14 CK + 4.1 ms" },
+			{ "CKSEL=1010 SUT=11", "Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time: 14 CK + 4.1 ms" },
+			{ "CKSEL=1011 SUT=10", "Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time: 14 CK + 4.1 ms" },
+			{ "CKSEL=1010 SUT=01", "Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time: 14 CK + 65 ms" },
+			{ "CKSEL=1011 SUT=00", "Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time: 14 CK + 65 ms" },
+			{ "CKSEL=1011 SUT=11", "Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time: 14 CK + 65 ms" },
+			{ "CKSEL=1100 SUT=10", "Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time: 14 CK + 0 ms" },
+			{ "CKSEL=1101 SUT=01", "Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time: 14 CK + 0 ms" },
+			{ "CKSEL=1100 SUT=00", "Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time: 14 CK + 4.1 ms" },
+			{ "CKSEL=1100 SUT=11", "Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time: 14 CK + 4.1 ms" },
+			{ "CKSEL=1101 SUT=10", "Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time: 14 CK + 4.1 ms" },
+			{ "CKSEL=1100 SUT=01", "Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time: 14 CK + 65 ms" },
+			{ "CKSEL=1101 SUT=00", "Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time: 14 CK + 65 ms" },
+			{ "CKSEL=1101 SUT=11", "Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time: 14 CK + 65 ms" },
+			{ "CKSEL=1110 SUT=10", "Ext. Crystal Osc.; Frequency 8.0- MHz; Start-up time: 14 CK + 0 ms" },
+			{ "CKSEL=1111 SUT=01", "Ext. Crystal Osc.; Frequency 8.0- MHz; Start-up time: 14 CK + 0 ms" },
+			{ "CKSEL=1110 SUT=00", "Ext. Crystal Osc.; Frequency 8.0- MHz; Start-up time: 14 CK + 4.1 ms" },
+			{ "CKSEL=1110 SUT=11", "Ext. Crystal Osc.; Frequency 8.0- MHz; Start-up time: 14 CK + 4.1 ms" },
+			{ "CKSEL=1111 SUT=10", "Ext. Crystal Osc.; Frequency 8.0- MHz; Start-up time: 14 CK + 4.1 ms" },
+			{ "CKSEL=1110 SUT=01", "Ext. Crystal Osc.; Frequency 8.0- MHz; Start-up time: 14 CK + 65 ms" },
+			{ "CKSEL=1111 SUT=00", "Ext. Crystal Osc.; Frequency 8.0- MHz; Start-up time: 14 CK + 65 ms" },
+			{ "CKSEL=1111 SUT=11", "Ext. Crystal Osc.; Frequency 8.0- MHz; Start-up time: 14 CK + 65 ms" },
+			{ "CKSEL=0110 SUT=00", "Int. RC Osc. 128 kHz; Start-up time: 14 CK + 0 ms" },
+			{ "CKSEL=0110 SUT=01", "Int. RC Osc. 128 kHz; Start-up time: 14 CK + 4 ms" },
+			{ "CKSEL=0110 SUT=10", "Int. RC Osc. 128 kHz; Start-up time: 14 CK + 64 ms" },
+			{ "CKSEL=0010 SUT=00", "Int. RC Osc. 4 MHz; Start-up time: 14 CK + 0 ms" },
+			{ "CKSEL=0010 SUT=01", "Int. RC Osc. 4 MHz; Start-up time: 14 CK + 4.1 ms" },
+			{ "CKSEL=0010 SUT=10", "Int. RC Osc. 4 MHz; Start-up time: 14 CK + 65 ms" },
+			{ "CKSEL=0100 SUT=00", "Int. RC Osc. 8 MHz; Start-up time: 14 CK + 0 ms" },
+			{ "CKSEL=0100 SUT=01", "Int. RC Osc. 8 MHz; Start-up time: 14 CK + 4.1 ms" },
+			{ "CKSEL=0100 SUT=10", "Int. RC Osc. 8 MHz; Start-up time: 14 CK + 65 ms" },
 
 			{ "BODLEVEL=11", "Brown-out detection disabled" },
 			{ "BODLEVEL=10", "Brown-out detection level at VCC=1.8 V" },
@@ -1585,13 +1596,13 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 0, "Lock1", ""},
+			{ 0, "Lock1", "" },
 			{ 1, "Lock2", ""}
 		},
 		{
 			// lock mask description
-			{ "Lock=11", "Mode 1: No memory lock features enabled"},
-			{ "Lock=10", "Mode 2: Further programming disabled"},
+			{ "Lock=11", "Mode 1: No memory lock features enabled" },
+			{ "Lock=10", "Mode 2: Further programming disabled" },
 			{ "Lock=00", "Mode 3: Further programming and verification disabled"}
 		}
 	},
@@ -1599,22 +1610,22 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		ATtiny25,
 		{
 			// fuse
-			{ 0, "CKSEL0", ""},
-			{ 1, "CKSEL1", ""},
-			{ 2, "CKSEL2", ""},
-			{ 3, "CKSEL3", ""},
-			{ 4, "SUT0", ""},
-			{ 5, "SUT1", ""},
-			{ 6, "CKOUT", "Clock output on PORTB4"},
-			{ 7, "CKDIV8", "Divide clock by 8 internally"},
-			{ 8, "BODLEVEL0", ""},
-			{ 9, "BODLEVEL1", ""},
-			{ 10, "BODLEVEL2", ""},
-			{ 11, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle"},
-			{ 12, "WDTON", "Watch-dog Timer always on"},
-			{ 13, "SPIEN", "Serial program downloading (SPI) enabled"},
-			{ 14, "DWEN", "Debug Wire enable"},
-			{ 15, "RSTDISBL", "Reset Disabled (Enable PB5 as i/o pin)"},
+			{ 0, "CKSEL0", "" },
+			{ 1, "CKSEL1", "" },
+			{ 2, "CKSEL2", "" },
+			{ 3, "CKSEL3", "" },
+			{ 4, "SUT0", "" },
+			{ 5, "SUT1", "" },
+			{ 6, "CKOUT", "Clock output on PORTB4" },
+			{ 7, "CKDIV8", "Divide clock by 8 internally" },
+			{ 8, "BODLEVEL0", "" },
+			{ 9, "BODLEVEL1", "" },
+			{ 10, "BODLEVEL2", "" },
+			{ 11, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle" },
+			{ 12, "WDTON", "Watch-dog Timer always on" },
+			{ 13, "SPIEN", "Serial program downloading (SPI) enabled" },
+			{ 14, "DWEN", "Debug Wire enable" },
+			{ 15, "RSTDISBL", "Reset Disabled (Enable PB5 as i/o pin)" },
 			{ 16, "SELFPRGEN", "Self Programming enable"}
 		},
 		{
@@ -1679,13 +1690,13 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 0, "Lock1", ""},
+			{ 0, "Lock1", "" },
 			{ 1, "Lock2", ""}
 		},
 		{
 			// lock mask description
-			{ "Lock=11", "Mode 1: No memory lock features enabled"},
-			{ "Lock=10", "Mode 2: Further programming disabled"},
+			{ "Lock=11", "Mode 1: No memory lock features enabled" },
+			{ "Lock=10", "Mode 2: Further programming disabled" },
 			{ "Lock=00", "Mode 3: Further programming and verification disabled"}
 		}
 	},
@@ -1694,22 +1705,22 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		ATtiny45,
 		{
 			// fuse
-			{ 0, "CKSEL0", ""},
-			{ 1, "CKSEL1", ""},
-			{ 2, "CKSEL2", ""},
-			{ 3, "CKSEL3", ""},
-			{ 4, "SUT0", ""},
-			{ 5, "SUT1", ""},
-			{ 6, "CKOUT", "Clock output on PORTB4"},
-			{ 7, "CKDIV8", "Divide clock by 8 internally"},
-			{ 8, "BODLEVEL0", ""},
-			{ 9, "BODLEVEL1", ""},
-			{ 10, "BODLEVEL2", ""},
-			{ 11, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle"},
-			{ 12, "WDTON", "Watch-dog Timer always on"},
-			{ 13, "SPIEN", "Serial program downloading (SPI) enabled"},
-			{ 14, "DWEN", "Debug Wire enable"},
-			{ 15, "RSTDISBL", "Reset Disabled (Enable PB5 as i/o pin)"},
+			{ 0, "CKSEL0", "" },
+			{ 1, "CKSEL1", "" },
+			{ 2, "CKSEL2", "" },
+			{ 3, "CKSEL3", "" },
+			{ 4, "SUT0", "" },
+			{ 5, "SUT1", "" },
+			{ 6, "CKOUT", "Clock output on PORTB4" },
+			{ 7, "CKDIV8", "Divide clock by 8 internally" },
+			{ 8, "BODLEVEL0", "" },
+			{ 9, "BODLEVEL1", "" },
+			{ 10, "BODLEVEL2", "" },
+			{ 11, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle" },
+			{ 12, "WDTON", "Watch-dog Timer always on" },
+			{ 13, "SPIEN", "Serial program downloading (SPI) enabled" },
+			{ 14, "DWEN", "Debug Wire enable" },
+			{ 15, "RSTDISBL", "Reset Disabled (Enable PB5 as i/o pin)" },
 			{ 16, "SELFPRGEN", "Self Programming enable"}
 		},
 		{
@@ -1774,13 +1785,13 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 0, "Lock1", ""},
+			{ 0, "Lock1", "" },
 			{ 1, "Lock2", ""}
 		},
 		{
 			// lock mask description
-			{ "Lock=11", "Mode 1: No memory lock features enabled"},
-			{ "Lock=10", "Mode 2: Further programming disabled"},
+			{ "Lock=11", "Mode 1: No memory lock features enabled" },
+			{ "Lock=10", "Mode 2: Further programming disabled" },
 			{ "Lock=00", "Mode 3: Further programming and verification disabled"}
 		}
 	},
@@ -1788,22 +1799,22 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		ATtiny85,
 		{
 			// fuse
-			{ 0, "CKSEL0", ""},
-			{ 1, "CKSEL1", ""},
-			{ 2, "CKSEL2", ""},
-			{ 3, "CKSEL3", ""},
-			{ 4, "SUT0", ""},
-			{ 5, "SUT1", ""},
-			{ 6, "CKOUT", "Clock output on PORTB4"},
-			{ 7, "CKDIV8", "Divide clock by 8 internally"},
-			{ 8, "BODLEVEL0", ""},
-			{ 9, "BODLEVEL1", ""},
-			{ 10, "BODLEVEL2", ""},
-			{ 11, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle"},
-			{ 12, "WDTON", "Watch-dog Timer always on"},
-			{ 13, "SPIEN", "Serial program downloading (SPI) enabled"},
-			{ 14, "DWEN", "Debug Wire enable"},
-			{ 15, "RSTDISBL", "Reset Disabled (Enable PB5 as i/o pin)"},
+			{ 0, "CKSEL0", "" },
+			{ 1, "CKSEL1", "" },
+			{ 2, "CKSEL2", "" },
+			{ 3, "CKSEL3", "" },
+			{ 4, "SUT0", "" },
+			{ 5, "SUT1", "" },
+			{ 6, "CKOUT", "Clock output on PORTB4" },
+			{ 7, "CKDIV8", "Divide clock by 8 internally" },
+			{ 8, "BODLEVEL0", "" },
+			{ 9, "BODLEVEL1", "" },
+			{ 10, "BODLEVEL2", "" },
+			{ 11, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle" },
+			{ 12, "WDTON", "Watch-dog Timer always on" },
+			{ 13, "SPIEN", "Serial program downloading (SPI) enabled" },
+			{ 14, "DWEN", "Debug Wire enable" },
+			{ 15, "RSTDISBL", "Reset Disabled (Enable PB5 as i/o pin)" },
 			{ 16, "SELFPRGEN", "Self Programming enable"}
 		},
 		{
@@ -1868,13 +1879,13 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 0, "Lock1", ""},
+			{ 0, "Lock1", "" },
 			{ 1, "Lock2", ""}
 		},
 		{
 			// lock mask description
-			{ "Lock=11", "Mode 1: No memory lock features enabled"},
-			{ "Lock=10", "Mode 2: Further programming disabled"},
+			{ "Lock=11", "Mode 1: No memory lock features enabled" },
+			{ "Lock=10", "Mode 2: Further programming disabled" },
 			{ "Lock=00", "Mode 3: Further programming and verification disabled"}
 		}
 	},
@@ -1883,22 +1894,22 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		ATtiny261,
 		{
 			// fuse
-			{ 0, "CKSEL0", ""},
-			{ 1, "CKSEL1", ""},
-			{ 2, "CKSEL2", ""},
-			{ 3, "CKSEL3", ""},
-			{ 4, "SUT0", ""},
-			{ 5, "SUT1", ""},
-			{ 6, "CKOUT", "Clock output on PORTB5"},
-			{ 7, "CKDIV8", "Divide clock by 8 internally"},
-			{ 8, "BODLEVEL0", ""},
-			{ 9, "BODLEVEL1", ""},
-			{ 10, "BODLEVEL2", ""},
-			{ 11, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle"},
-			{ 12, "WDTON", "Watch-dog Timer always on"},
-			{ 13, "SPIEN", "Serial program downloading (SPI) enabled"},
-			{ 14, "DWEN", "Debug Wire enable"},
-			{ 15, "RSTDISBL", "Reset Disabled (Enable PB7 as i/o pin)"},
+			{ 0, "CKSEL0", "" },
+			{ 1, "CKSEL1", "" },
+			{ 2, "CKSEL2", "" },
+			{ 3, "CKSEL3", "" },
+			{ 4, "SUT0", "" },
+			{ 5, "SUT1", "" },
+			{ 6, "CKOUT", "Clock output on PORTB5" },
+			{ 7, "CKDIV8", "Divide clock by 8 internally" },
+			{ 8, "BODLEVEL0", "" },
+			{ 9, "BODLEVEL1", "" },
+			{ 10, "BODLEVEL2", "" },
+			{ 11, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle" },
+			{ 12, "WDTON", "Watch-dog Timer always on" },
+			{ 13, "SPIEN", "Serial program downloading (SPI) enabled" },
+			{ 14, "DWEN", "Debug Wire enable" },
+			{ 15, "RSTDISBL", "Reset Disabled (Enable PB7 as i/o pin)" },
 			{ 16, "SELFPRGEN", "Self Programming enable"}
 		},
 		{
@@ -1964,13 +1975,13 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 0, "Lock1", ""},
+			{ 0, "Lock1", "" },
 			{ 1, "Lock2", ""}
 		},
 		{
 			// lock mask description
-			{ "Lock=11", "Mode 1: No memory lock features enabled"},
-			{ "Lock=10", "Mode 2: Further programming disabled"},
+			{ "Lock=11", "Mode 1: No memory lock features enabled" },
+			{ "Lock=10", "Mode 2: Further programming disabled" },
 			{ "Lock=00", "Mode 3: Further programming and verification disabled"}
 		}
 	},
@@ -1979,22 +1990,22 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		ATtiny461,
 		{
 			// fuse
-			{ 0, "CKSEL0", ""},
-			{ 1, "CKSEL1", ""},
-			{ 2, "CKSEL2", ""},
-			{ 3, "CKSEL3", ""},
-			{ 4, "SUT0", ""},
-			{ 5, "SUT1", ""},
-			{ 6, "CKOUT", "Clock output on PORTB5"},
-			{ 7, "CKDIV8", "Divide clock by 8 internally"},
-			{ 8, "BODLEVEL0", ""},
-			{ 9, "BODLEVEL1", ""},
-			{ 10, "BODLEVEL2", ""},
-			{ 11, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle"},
-			{ 12, "WDTON", "Watch-dog Timer always on"},
-			{ 13, "SPIEN", "Serial program downloading (SPI) enabled"},
-			{ 14, "DWEN", "Debug Wire enable"},
-			{ 15, "RSTDISBL", "Reset Disabled (Enable PB7 as i/o pin)"},
+			{ 0, "CKSEL0", "" },
+			{ 1, "CKSEL1", "" },
+			{ 2, "CKSEL2", "" },
+			{ 3, "CKSEL3", "" },
+			{ 4, "SUT0", "" },
+			{ 5, "SUT1", "" },
+			{ 6, "CKOUT", "Clock output on PORTB5" },
+			{ 7, "CKDIV8", "Divide clock by 8 internally" },
+			{ 8, "BODLEVEL0", "" },
+			{ 9, "BODLEVEL1", "" },
+			{ 10, "BODLEVEL2", "" },
+			{ 11, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle" },
+			{ 12, "WDTON", "Watch-dog Timer always on" },
+			{ 13, "SPIEN", "Serial program downloading (SPI) enabled" },
+			{ 14, "DWEN", "Debug Wire enable" },
+			{ 15, "RSTDISBL", "Reset Disabled (Enable PB7 as i/o pin)" },
 			{ 16, "SELFPRGEN", "Self Programming enable"}
 		},
 		{
@@ -2060,13 +2071,13 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 0, "Lock1", ""},
+			{ 0, "Lock1", "" },
 			{ 1, "Lock2", ""}
 		},
 		{
 			// lock mask description
-			{ "Lock=11", "Mode 1: No memory lock features enabled"},
-			{ "Lock=10", "Mode 2: Further programming disabled"},
+			{ "Lock=11", "Mode 1: No memory lock features enabled" },
+			{ "Lock=10", "Mode 2: Further programming disabled" },
 			{ "Lock=00", "Mode 3: Further programming and verification disabled"}
 		}
 	},
@@ -2075,22 +2086,22 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		ATtiny861,
 		{
 			// fuse
-			{ 0, "CKSEL0", ""},
-			{ 1, "CKSEL1", ""},
-			{ 2, "CKSEL2", ""},
-			{ 3, "CKSEL3", ""},
-			{ 4, "SUT0", ""},
-			{ 5, "SUT1", ""},
-			{ 6, "CKOUT", "Clock output on PORTB5"},
-			{ 7, "CKDIV8", "Divide clock by 8 internally"},
-			{ 8, "BODLEVEL0", ""},
-			{ 9, "BODLEVEL1", ""},
-			{ 10, "BODLEVEL2", ""},
-			{ 11, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle"},
-			{ 12, "WDTON", "Watch-dog Timer always on"},
-			{ 13, "SPIEN", "Serial program downloading (SPI) enabled"},
-			{ 14, "DWEN", "Debug Wire enable"},
-			{ 15, "RSTDISBL", "Reset Disabled (Enable PB7 as i/o pin)"},
+			{ 0, "CKSEL0", "" },
+			{ 1, "CKSEL1", "" },
+			{ 2, "CKSEL2", "" },
+			{ 3, "CKSEL3", "" },
+			{ 4, "SUT0", "" },
+			{ 5, "SUT1", "" },
+			{ 6, "CKOUT", "Clock output on PORTB5" },
+			{ 7, "CKDIV8", "Divide clock by 8 internally" },
+			{ 8, "BODLEVEL0", "" },
+			{ 9, "BODLEVEL1", "" },
+			{ 10, "BODLEVEL2", "" },
+			{ 11, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle" },
+			{ 12, "WDTON", "Watch-dog Timer always on" },
+			{ 13, "SPIEN", "Serial program downloading (SPI) enabled" },
+			{ 14, "DWEN", "Debug Wire enable" },
+			{ 15, "RSTDISBL", "Reset Disabled (Enable PB7 as i/o pin)" },
 			{ 16, "SELFPRGEN", "Self Programming enable"}
 		},
 		{
@@ -2156,13 +2167,13 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 0, "Lock1", ""},
+			{ 0, "Lock1", "" },
 			{ 1, "Lock2", ""}
 		},
 		{
 			// lock mask description
-			{ "Lock=11", "Mode 1: No memory lock features enabled"},
-			{ "Lock=10", "Mode 2: Further programming disabled"},
+			{ "Lock=11", "Mode 1: No memory lock features enabled" },
+			{ "Lock=10", "Mode 2: Further programming disabled" },
 			{ "Lock=00", "Mode 3: Further programming and verification disabled"}
 		}
 	},
@@ -2171,22 +2182,22 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		ATmega48,
 		{
 			// fuse
-			{ 0, "CKSEL0", ""},
-			{ 1, "CKSEL1", ""},
-			{ 2, "CKSEL2", ""},
-			{ 3, "CKSEL3", ""},
-			{ 4, "SUT0", ""},
-			{ 5, "SUT1", ""},
-			{ 6, "CKOUT", "Clock output on PORTB0"},
-			{ 7, "CKDIV8", "Divide clock by 8 internally"},
-			{ 8, "BODLEVEL0", ""},
-			{ 9, "BODLEVEL1", ""},
-			{ 10, "BODLEVEL2", ""},
-			{ 11, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle"},
-			{ 12, "WDTON", "Watch-dog Timer always on"},
-			{ 13, "SPIEN", "Serial program downloading (SPI) enabled"},
-			{ 14, "DWEN", "Debug Wire enable"},
-			{ 15, "RSTDISBL", "Reset Disabled (Enable PB6 as i/o pin)"},
+			{ 0, "CKSEL0", "" },
+			{ 1, "CKSEL1", "" },
+			{ 2, "CKSEL2", "" },
+			{ 3, "CKSEL3", "" },
+			{ 4, "SUT0", "" },
+			{ 5, "SUT1", "" },
+			{ 6, "CKOUT", "Clock output on PORTB0" },
+			{ 7, "CKDIV8", "Divide clock by 8 internally" },
+			{ 8, "BODLEVEL0", "" },
+			{ 9, "BODLEVEL1", "" },
+			{ 10, "BODLEVEL2", "" },
+			{ 11, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle" },
+			{ 12, "WDTON", "Watch-dog Timer always on" },
+			{ 13, "SPIEN", "Serial program downloading (SPI) enabled" },
+			{ 14, "DWEN", "Debug Wire enable" },
+			{ 15, "RSTDISBL", "Reset Disabled (Enable PB6 as i/o pin)" },
 			{ 16, "SELFPRGEN", "Self Programming enable"}
 		},
 		{
@@ -2208,7 +2219,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 0, "Lock1", ""},
+			{ 0, "Lock1", "" },
 			{ 1, "Lock2", ""}
 		},
 		{
@@ -2223,22 +2234,22 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		ATmega88,
 		{
 			// fuse
-			{ 0, "CKSEL0", ""},
-			{ 1, "CKSEL1", ""},
-			{ 2, "CKSEL2", ""},
-			{ 3, "CKSEL3", ""},
-			{ 4, "SUT0", ""},
-			{ 5, "SUT1", ""},
-			{ 6, "CKOUT", "Clock output on PORTB0"},
-			{ 7, "CKDIV8", "Divide clock by 8 internally"},
-			{ 8, "BODLEVEL0", ""},
-			{ 9, "BODLEVEL1", ""},
-			{ 10, "BODLEVEL2", ""},
-			{ 11, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle"},
-			{ 12, "WDTON", "Watch-dog Timer always on"},
-			{ 13, "SPIEN", "Serial program downloading (SPI) enabled"},
-			{ 14, "DWEN", "Debug Wire enable"},
-			{ 15, "RSTDISBL", "Reset Disabled (Enable PC6 as i/o pin)"},
+			{ 0, "CKSEL0", "" },
+			{ 1, "CKSEL1", "" },
+			{ 2, "CKSEL2", "" },
+			{ 3, "CKSEL3", "" },
+			{ 4, "SUT0", "" },
+			{ 5, "SUT1", "" },
+			{ 6, "CKOUT", "Clock output on PORTB0" },
+			{ 7, "CKDIV8", "Divide clock by 8 internally" },
+			{ 8, "BODLEVEL0", "" },
+			{ 9, "BODLEVEL1", "" },
+			{ 10, "BODLEVEL2", "" },
+			{ 11, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle" },
+			{ 12, "WDTON", "Watch-dog Timer always on" },
+			{ 13, "SPIEN", "Serial program downloading (SPI) enabled" },
+			{ 14, "DWEN", "Debug Wire enable" },
+			{ 15, "RSTDISBL", "Reset Disabled (Enable PC6 as i/o pin)" },
 			{ 16, "SELFPRGEN", "Self Programming enable"}
 		},
 		{
@@ -2260,7 +2271,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 0, "Lock1", ""},
+			{ 0, "Lock1", "" },
 			{ 1, "Lock2", ""}
 		},
 		{
@@ -2275,24 +2286,24 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		ATmega168,
 		{
 			// fuse
-			{ 0, "CKSEL0", ""},
-			{ 1, "CKSEL1", ""},
-			{ 2, "CKSEL2", ""},
-			{ 3, "CKSEL3", ""},
-			{ 4, "SUT0", ""},
-			{ 5, "SUT1", ""},
-			{ 6, "CKOUT", "Clock output on PORTB0"},
-			{ 7, "CKDIV8", "Divide clock by 8 internally"},
-			{ 8, "BODLEVEL0", ""},
-			{ 9, "BODLEVEL1", ""},
-			{ 10, "BODLEVEL2", ""},
-			{ 11, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle"},
-			{ 12, "WDTON", "Watch-dog Timer always on"},
-			{ 13, "SPIEN", "Serial program downloading (SPI) enabled"},
-			{ 14, "DWEN", "Debug Wire enable"},
-			{ 15, "RSTDISBL", "Reset Disabled (Enable PC6 as i/o pin)"},
-			{ 16, "BOOTRST", "Boot Reset vector Enabled (default address=$0000)"},
-			{ 17, "BOOTSZ0", ""},
+			{ 0, "CKSEL0", "" },
+			{ 1, "CKSEL1", "" },
+			{ 2, "CKSEL2", "" },
+			{ 3, "CKSEL3", "" },
+			{ 4, "SUT0", "" },
+			{ 5, "SUT1", "" },
+			{ 6, "CKOUT", "Clock output on PORTB0" },
+			{ 7, "CKDIV8", "Divide clock by 8 internally" },
+			{ 8, "BODLEVEL0", "" },
+			{ 9, "BODLEVEL1", "" },
+			{ 10, "BODLEVEL2", "" },
+			{ 11, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle" },
+			{ 12, "WDTON", "Watch-dog Timer always on" },
+			{ 13, "SPIEN", "Serial program downloading (SPI) enabled" },
+			{ 14, "DWEN", "Debug Wire enable" },
+			{ 15, "RSTDISBL", "Reset Disabled (Enable PC6 as i/o pin)" },
+			{ 16, "BOOTRST", "Boot Reset vector Enabled (default address=$0000)" },
+			{ 17, "BOOTSZ0", "" },
 			{ 18, "BOOTSZ1", ""}
 		},
 		{
@@ -2336,9 +2347,9 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ "CKSEL=0111 SUT=10", "Ext. Full-swing Crystal; Start-up time PWRDWN/RESET: 16K CK/14 CK + 4.1 ms" },
 			{ "CKSEL=0111 SUT=11", "Ext. Full-swing Crystal; Start-up time PWRDWN/RESET: 16K CK/14 CK + 65 ms" },
 			{ "CKSEL=0110 SUT=10", "Ext. Full-swing Crystal; Start-up time PWRDWN/RESET: 1K CK /14 CK + 0 ms" },
-			{ "CKSEL=0110 SUT=11", "Ext. Full-swing Crystal; Start-up time PWRDWN/RESET: 1K CK /14 CK + 4.1 ms"},
+			{ "CKSEL=0110 SUT=11", "Ext. Full-swing Crystal; Start-up time PWRDWN/RESET: 1K CK /14 CK + 4.1 ms" },
 			{ "CKSEL=0111 SUT=00", "Ext. Full-swing Crystal; Start-up time PWRDWN/RESET: 1K CK /14 CK + 65 ms" },
-			{ "CKSEL=0110 SUT=00", "Ext. Full-swing Crystal; Start-up time PWRDWN/RESET: 258 CK/14 CK + 4.1 ms"},
+			{ "CKSEL=0110 SUT=00", "Ext. Full-swing Crystal; Start-up time PWRDWN/RESET: 258 CK/14 CK + 4.1 ms" },
 			{ "CKSEL=0110 SUT=01", "Ext. Full-swing Crystal; Start-up time PWRDWN/RESET: 258 CK/14 CK + 65 ms" },
 			{ "CKSEL=0100 SUT=00", "Ext. Low-Freq. Crystal; Start-up time PWRDWN/RESET: 1K CK/14 CK + 0 ms" },
 			{ "CKSEL=0100 SUT=01", "Ext. Low-Freq. Crystal; Start-up time PWRDWN/RESET: 1K CK/14 CK + 4.1 ms" },
@@ -2366,11 +2377,11 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 0, "Lock1", ""},
-			{ 1, "Lock2", ""},
-			{ 2, "BootLock1", ""},
-			{ 3, "BootLock2", ""},
-			{ 4, "BootLoad1", ""},
+			{ 0, "Lock1", "" },
+			{ 1, "Lock2", "" },
+			{ 2, "BootLock1", "" },
+			{ 3, "BootLock2", "" },
+			{ 4, "BootLoad1", "" },
 			{ 5, "BootLoad2", ""}
 		},
 		{
@@ -2395,24 +2406,24 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		ATmega328,
 		{
 			// fuse
-			{ 0, "CKSEL0", ""},
-			{ 1, "CKSEL1", ""},
-			{ 2, "CKSEL2", ""},
-			{ 3, "CKSEL3", ""},
-			{ 4, "SUT0", ""},
-			{ 5, "SUT1", ""},
-			{ 6, "CKOUT", "Clock output on PORTB0"},
-			{ 7, "CKDIV8", "Divide clock by 8 internally"},
-			{ 8, "BOOTRST", "Boot Reset vector Enabled (default address=$0000)"},
-			{ 9, "BOOTSZ0", ""},
-			{ 10, "BOOTSZ1", ""},
-			{ 11, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle"},
-			{ 12, "WDTON", "Watch-dog Timer always on"},
-			{ 13, "SPIEN", "Serial program downloading (SPI) enabled"},
-			{ 14, "DWEN", "Debug Wire enable"},
-			{ 15, "RSTDISBL", "Reset Disabled (Enable PC6 as i/o pin)"},
-			{ 16, "BODLEVEL0", ""},
-			{ 17, "BODLEVEL1", ""},
+			{ 0, "CKSEL0", "" },
+			{ 1, "CKSEL1", "" },
+			{ 2, "CKSEL2", "" },
+			{ 3, "CKSEL3", "" },
+			{ 4, "SUT0", "" },
+			{ 5, "SUT1", "" },
+			{ 6, "CKOUT", "Clock output on PORTB0" },
+			{ 7, "CKDIV8", "Divide clock by 8 internally" },
+			{ 8, "BOOTRST", "Boot Reset vector Enabled (default address=$0000)" },
+			{ 9, "BOOTSZ0", "" },
+			{ 10, "BOOTSZ1", "" },
+			{ 11, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle" },
+			{ 12, "WDTON", "Watch-dog Timer always on" },
+			{ 13, "SPIEN", "Serial program downloading (SPI) enabled" },
+			{ 14, "DWEN", "Debug Wire enable" },
+			{ 15, "RSTDISBL", "Reset Disabled (Enable PC6 as i/o pin)" },
+			{ 16, "BODLEVEL0", "" },
+			{ 17, "BODLEVEL1", "" },
 			{ 18, "BODLEVEL2", ""}
 		},
 		{
@@ -2456,9 +2467,9 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ "CKSEL=0111 SUT=10", "Ext. Full-swing Crystal; Start-up time PWRDWN/RESET: 16K CK/14 CK + 4.1 ms" },
 			{ "CKSEL=0111 SUT=11", "Ext. Full-swing Crystal; Start-up time PWRDWN/RESET: 16K CK/14 CK + 65 ms" },
 			{ "CKSEL=0110 SUT=10", "Ext. Full-swing Crystal; Start-up time PWRDWN/RESET: 1K CK /14 CK + 0 ms" },
-			{ "CKSEL=0110 SUT=11", "Ext. Full-swing Crystal; Start-up time PWRDWN/RESET: 1K CK /14 CK + 4.1 ms"},
+			{ "CKSEL=0110 SUT=11", "Ext. Full-swing Crystal; Start-up time PWRDWN/RESET: 1K CK /14 CK + 4.1 ms" },
 			{ "CKSEL=0111 SUT=00", "Ext. Full-swing Crystal; Start-up time PWRDWN/RESET: 1K CK /14 CK + 65 ms" },
-			{ "CKSEL=0110 SUT=00", "Ext. Full-swing Crystal; Start-up time PWRDWN/RESET: 258 CK/14 CK + 4.1 ms"},
+			{ "CKSEL=0110 SUT=00", "Ext. Full-swing Crystal; Start-up time PWRDWN/RESET: 258 CK/14 CK + 4.1 ms" },
 			{ "CKSEL=0110 SUT=01", "Ext. Full-swing Crystal; Start-up time PWRDWN/RESET: 258 CK/14 CK + 65 ms" },
 			{ "CKSEL=0100 SUT=00", "Ext. Low-Freq. Crystal; Start-up time PWRDWN/RESET: 1K CK/14 CK + 0 ms" },
 			{ "CKSEL=0100 SUT=01", "Ext. Low-Freq. Crystal; Start-up time PWRDWN/RESET: 1K CK/14 CK + 4.1 ms" },
@@ -2475,8 +2486,8 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 
 			{ "BOOTSZ=01", "Boot Flash section size=1024 words Boot start address=$3C00" },
 			{ "BOOTSZ=00", "Boot Flash section size=2048 words Boot start address=$3800" },
-			{ "BOOTSZ=11", "Boot Flash section size=256 words Boot start address=$3F00"},
-			{ "BOOTSZ=10", "Boot Flash section size=512 words Boot start address=$3E00"},
+			{ "BOOTSZ=11", "Boot Flash section size=256 words Boot start address=$3F00" },
+			{ "BOOTSZ=10", "Boot Flash section size=512 words Boot start address=$3E00" },
 
 			{ "BODLEVEL=111", "Brown-out detection disabled" },
 			{ "BODLEVEL=110", "Brown-out detection level at VCC=1.8 V" },
@@ -2485,11 +2496,11 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 0, "Lock1", ""},
-			{ 1, "Lock2", ""},
-			{ 2, "BootLock1", ""},
-			{ 3, "BootLock2", ""},
-			{ 4, "BootLoad1", ""},
+			{ 0, "Lock1", "" },
+			{ 1, "Lock2", "" },
+			{ 2, "BootLock1", "" },
+			{ 3, "BootLock2", "" },
+			{ 4, "BootLoad1", "" },
 			{ 5, "BootLoad2", ""}
 		},
 		{
@@ -2514,24 +2525,24 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		ATmega164,
 		{
 			// fuse
-			{ 0, "CKSEL0", ""},
-			{ 1, "CKSEL1", ""},
-			{ 2, "CKSEL2", ""},
-			{ 3, "CKSEL3", ""},
-			{ 4, "SUT0", ""},
-			{ 5, "SUT1", ""},
-			{ 6, "CKOUT", "Clock output on PORTB1"},
-			{ 7, "CKDIV8", "Divide clock by 8 internally"},
-			{ 8, "BOOTRST", "Boot Reset vector Enabled (default address=$0000)"},
-			{ 9, "BOOTSZ0", ""},
-			{ 10, "BOOTSZ1", ""},
-			{ 11, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle"},
-			{ 12, "WDTON", "Watch-dog Timer always on"},
-			{ 13, "SPIEN", "Serial program downloading (SPI) enabled"},
-			{ 14, "JTAGEN", "JTAG Interface Enabled"},
-			{ 15, "OCDEN", "On-Chip Debug Enabled"},
-			{ 16, "BODLEVEL0", ""},
-			{ 17, "BODLEVEL1", ""},
+			{ 0, "CKSEL0", "" },
+			{ 1, "CKSEL1", "" },
+			{ 2, "CKSEL2", "" },
+			{ 3, "CKSEL3", "" },
+			{ 4, "SUT0", "" },
+			{ 5, "SUT1", "" },
+			{ 6, "CKOUT", "Clock output on PORTB1" },
+			{ 7, "CKDIV8", "Divide clock by 8 internally" },
+			{ 8, "BOOTRST", "Boot Reset vector Enabled (default address=$0000)" },
+			{ 9, "BOOTSZ0", "" },
+			{ 10, "BOOTSZ1", "" },
+			{ 11, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle" },
+			{ 12, "WDTON", "Watch-dog Timer always on" },
+			{ 13, "SPIEN", "Serial program downloading (SPI) enabled" },
+			{ 14, "JTAGEN", "JTAG Interface Enabled" },
+			{ 15, "OCDEN", "On-Chip Debug Enabled" },
+			{ 16, "BODLEVEL0", "" },
+			{ 17, "BODLEVEL1", "" },
 			{ 18, "BODLEVEL2", ""}
 		},
 		{
@@ -2594,8 +2605,8 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 
 			{ "BOOTSZ=01", "Boot Flash section size=1024 words Boot start address=$3C00" },
 			{ "BOOTSZ=00", "Boot Flash section size=2048 words Boot start address=$3800" },
-			{ "BOOTSZ=11", "Boot Flash section size=256 words Boot start address=$3F00"},
-			{ "BOOTSZ=10", "Boot Flash section size=512 words Boot start address=$3E00"},
+			{ "BOOTSZ=11", "Boot Flash section size=256 words Boot start address=$3F00" },
+			{ "BOOTSZ=10", "Boot Flash section size=512 words Boot start address=$3E00" },
 
 			{ "BODLEVEL=111", "Brown-out detection disabled" },
 			{ "BODLEVEL=110", "Brown-out detection level at VCC=1.8 V" },
@@ -2604,11 +2615,11 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 0, "Lock1", ""},
-			{ 1, "Lock2", ""},
-			{ 2, "BootLock1", ""},
-			{ 3, "BootLock2", ""},
-			{ 4, "BootLoad1", ""},
+			{ 0, "Lock1", "" },
+			{ 1, "Lock2", "" },
+			{ 2, "BootLock1", "" },
+			{ 3, "BootLock2", "" },
+			{ 4, "BootLoad1", "" },
 			{ 5, "BootLoad2", ""}
 		},
 		{
@@ -2633,24 +2644,24 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		ATmega324,
 		{
 			// fuse
-			{ 0, "CKSEL0", ""},
-			{ 1, "CKSEL1", ""},
-			{ 2, "CKSEL2", ""},
-			{ 3, "CKSEL3", ""},
-			{ 4, "SUT0", ""},
-			{ 5, "SUT1", ""},
-			{ 6, "CKOUT", "Clock output on PORTB1"},
-			{ 7, "CKDIV8", "Divide clock by 8 internally"},
-			{ 8, "BOOTRST", "Boot Reset vector Enabled (default address=$0000)"},
-			{ 9, "BOOTSZ0", ""},
-			{ 10, "BOOTSZ1", ""},
-			{ 11, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle"},
-			{ 12, "WDTON", "Watch-dog Timer always on"},
-			{ 13, "SPIEN", "Serial program downloading (SPI) enabled"},
-			{ 14, "JTAGEN", "JTAG Interface Enabled"},
-			{ 15, "OCDEN", "On-Chip Debug Enabled"},
-			{ 16, "BODLEVEL0", ""},
-			{ 17, "BODLEVEL1", ""},
+			{ 0, "CKSEL0", "" },
+			{ 1, "CKSEL1", "" },
+			{ 2, "CKSEL2", "" },
+			{ 3, "CKSEL3", "" },
+			{ 4, "SUT0", "" },
+			{ 5, "SUT1", "" },
+			{ 6, "CKOUT", "Clock output on PORTB1" },
+			{ 7, "CKDIV8", "Divide clock by 8 internally" },
+			{ 8, "BOOTRST", "Boot Reset vector Enabled (default address=$0000)" },
+			{ 9, "BOOTSZ0", "" },
+			{ 10, "BOOTSZ1", "" },
+			{ 11, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle" },
+			{ 12, "WDTON", "Watch-dog Timer always on" },
+			{ 13, "SPIEN", "Serial program downloading (SPI) enabled" },
+			{ 14, "JTAGEN", "JTAG Interface Enabled" },
+			{ 15, "OCDEN", "On-Chip Debug Enabled" },
+			{ 16, "BODLEVEL0", "" },
+			{ 17, "BODLEVEL1", "" },
 			{ 18, "BODLEVEL2", ""}
 		},
 		{
@@ -2713,8 +2724,8 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 
 			{ "BOOTSZ=01", "Boot Flash section size=1024 words Boot start address=$3C00" },
 			{ "BOOTSZ=00", "Boot Flash section size=2048 words Boot start address=$3800" },
-			{ "BOOTSZ=11", "Boot Flash section size=256 words Boot start address=$3F00"},
-			{ "BOOTSZ=10", "Boot Flash section size=512 words Boot start address=$3E00"},
+			{ "BOOTSZ=11", "Boot Flash section size=256 words Boot start address=$3F00" },
+			{ "BOOTSZ=10", "Boot Flash section size=512 words Boot start address=$3E00" },
 
 			{ "BODLEVEL=111", "Brown-out detection disabled" },
 			{ "BODLEVEL=110", "Brown-out detection level at VCC=1.8 V" },
@@ -2723,11 +2734,11 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 0, "Lock1", ""},
-			{ 1, "Lock2", ""},
-			{ 2, "BootLock1", ""},
-			{ 3, "BootLock2", ""},
-			{ 4, "BootLoad1", ""},
+			{ 0, "Lock1", "" },
+			{ 1, "Lock2", "" },
+			{ 2, "BootLock1", "" },
+			{ 3, "BootLock2", "" },
+			{ 4, "BootLoad1", "" },
 			{ 5, "BootLoad2", ""}
 		},
 		{
@@ -2752,24 +2763,24 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		ATmega644,
 		{
 			// fuse
-			{ 0, "CKSEL0", ""},
-			{ 1, "CKSEL1", ""},
-			{ 2, "CKSEL2", ""},
-			{ 3, "CKSEL3", ""},
-			{ 4, "SUT0", ""},
-			{ 5, "SUT1", ""},
-			{ 6, "CKOUT", "Clock output on PORTB1"},
-			{ 7, "CKDIV8", "Divide clock by 8 internally"},
-			{ 8, "BOOTRST", "Boot Reset vector Enabled (default address=$0000)"},
-			{ 9, "BOOTSZ0", ""},
-			{ 10, "BOOTSZ1", ""},
-			{ 11, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle"},
-			{ 12, "WDTON", "Watch-dog Timer always on"},
-			{ 13, "SPIEN", "Serial program downloading (SPI) enabled"},
-			{ 14, "JTAGEN", "JTAG Interface Enabled"},
-			{ 15, "OCDEN", "On-Chip Debug Enabled"},
-			{ 16, "BODLEVEL0", ""},
-			{ 17, "BODLEVEL1", ""},
+			{ 0, "CKSEL0", "" },
+			{ 1, "CKSEL1", "" },
+			{ 2, "CKSEL2", "" },
+			{ 3, "CKSEL3", "" },
+			{ 4, "SUT0", "" },
+			{ 5, "SUT1", "" },
+			{ 6, "CKOUT", "Clock output on PORTB1" },
+			{ 7, "CKDIV8", "Divide clock by 8 internally" },
+			{ 8, "BOOTRST", "Boot Reset vector Enabled (default address=$0000)" },
+			{ 9, "BOOTSZ0", "" },
+			{ 10, "BOOTSZ1", "" },
+			{ 11, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle" },
+			{ 12, "WDTON", "Watch-dog Timer always on" },
+			{ 13, "SPIEN", "Serial program downloading (SPI) enabled" },
+			{ 14, "JTAGEN", "JTAG Interface Enabled" },
+			{ 15, "OCDEN", "On-Chip Debug Enabled" },
+			{ 16, "BODLEVEL0", "" },
+			{ 17, "BODLEVEL1", "" },
 			{ 18, "BODLEVEL2", ""}
 		},
 		{
@@ -2832,8 +2843,8 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 
 			{ "BOOTSZ=01", "Boot Flash section size=1024 words Boot start address=$7C00" },
 			{ "BOOTSZ=00", "Boot Flash section size=2048 words Boot start address=$7800" },
-			{ "BOOTSZ=11", "Boot Flash section size=256 words Boot start address=$7F00"},
-			{ "BOOTSZ=10", "Boot Flash section size=512 words Boot start address=$7E00"},
+			{ "BOOTSZ=11", "Boot Flash section size=256 words Boot start address=$7F00" },
+			{ "BOOTSZ=10", "Boot Flash section size=512 words Boot start address=$7E00" },
 
 			{ "BODLEVEL=111", "Brown-out detection disabled" },
 			{ "BODLEVEL=110", "Brown-out detection level at VCC=1.8 V" },
@@ -2842,11 +2853,11 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 0, "Lock1", ""},
-			{ 1, "Lock2", ""},
-			{ 2, "BootLock1", ""},
-			{ 3, "BootLock2", ""},
-			{ 4, "BootLoad1", ""},
+			{ 0, "Lock1", "" },
+			{ 1, "Lock2", "" },
+			{ 2, "BootLock1", "" },
+			{ 3, "BootLock2", "" },
+			{ 4, "BootLoad1", "" },
 			{ 5, "BootLoad2", ""}
 		},
 		{
@@ -2871,24 +2882,24 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		ATmega640,
 		{
 			// fuse
-			{ 0, "CKSEL0", ""},
-			{ 1, "CKSEL1", ""},
-			{ 2, "CKSEL2", ""},
-			{ 3, "CKSEL3", ""},
-			{ 4, "SUT0", ""},
-			{ 5, "SUT1", ""},
-			{ 6, "CKOUT", "Clock output on PORTE7"},
-			{ 7, "CKDIV8", "Divide clock by 8 internally"},
-			{ 8, "BOOTRST", "Boot Reset vector Enabled (default address=$0000)"},
-			{ 9, "BOOTSZ0", ""},
-			{ 10, "BOOTSZ1", ""},
-			{ 11, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle"},
-			{ 12, "WDTON", "Watch-dog Timer always on"},
-			{ 13, "SPIEN", "Serial program downloading (SPI) enabled"},
-			{ 14, "JTAGEN", "JTAG Interface Enabled"},
-			{ 15, "OCDEN", "On-Chip Debug Enabled"},
-			{ 16, "BODLEVEL0", ""},
-			{ 17, "BODLEVEL1", ""},
+			{ 0, "CKSEL0", "" },
+			{ 1, "CKSEL1", "" },
+			{ 2, "CKSEL2", "" },
+			{ 3, "CKSEL3", "" },
+			{ 4, "SUT0", "" },
+			{ 5, "SUT1", "" },
+			{ 6, "CKOUT", "Clock output on PORTE7" },
+			{ 7, "CKDIV8", "Divide clock by 8 internally" },
+			{ 8, "BOOTRST", "Boot Reset vector Enabled (default address=$0000)" },
+			{ 9, "BOOTSZ0", "" },
+			{ 10, "BOOTSZ1", "" },
+			{ 11, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle" },
+			{ 12, "WDTON", "Watch-dog Timer always on" },
+			{ 13, "SPIEN", "Serial program downloading (SPI) enabled" },
+			{ 14, "JTAGEN", "JTAG Interface Enabled" },
+			{ 15, "OCDEN", "On-Chip Debug Enabled" },
+			{ 16, "BODLEVEL0", "" },
+			{ 17, "BODLEVEL1", "" },
 			{ 18, "BODLEVEL2", ""}
 		},
 		{
@@ -2951,8 +2962,8 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 
 			{ "BOOTSZ=01", "Boot Flash section size=1024 words Boot start address=$7C00" },
 			{ "BOOTSZ=00", "Boot Flash section size=2048 words Boot start address=$7800" },
-			{ "BOOTSZ=11", "Boot Flash section size=256 words Boot start address=$7F00"},
-			{ "BOOTSZ=10", "Boot Flash section size=512 words Boot start address=$7E00"},
+			{ "BOOTSZ=11", "Boot Flash section size=256 words Boot start address=$7F00" },
+			{ "BOOTSZ=10", "Boot Flash section size=512 words Boot start address=$7E00" },
 
 			{ "BODLEVEL=111", "Brown-out detection disabled" },
 			{ "BODLEVEL=110", "Brown-out detection level at VCC=1.8 V" },
@@ -2961,11 +2972,11 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 0, "Lock1", ""},
-			{ 1, "Lock2", ""},
-			{ 2, "BootLock1", ""},
-			{ 3, "BootLock2", ""},
-			{ 4, "BootLoad1", ""},
+			{ 0, "Lock1", "" },
+			{ 1, "Lock2", "" },
+			{ 2, "BootLock1", "" },
+			{ 3, "BootLock2", "" },
+			{ 4, "BootLoad1", "" },
 			{ 5, "BootLoad2", ""}
 		},
 		{
@@ -2990,24 +3001,24 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		ATmega1280,
 		{
 			// fuse
-			{ 0, "CKSEL0", ""},
-			{ 1, "CKSEL1", ""},
-			{ 2, "CKSEL2", ""},
-			{ 3, "CKSEL3", ""},
-			{ 4, "SUT0", ""},
-			{ 5, "SUT1", ""},
-			{ 6, "CKOUT", "Clock output on PORTE7"},
-			{ 7, "CKDIV8", "Divide clock by 8 internally"},
-			{ 8, "BOOTRST", "Boot Reset vector Enabled (default address=$0000)"},
-			{ 9, "BOOTSZ0", ""},
-			{ 10, "BOOTSZ1", ""},
-			{ 11, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle"},
-			{ 12, "WDTON", "Watch-dog Timer always on"},
-			{ 13, "SPIEN", "Serial program downloading (SPI) enabled"},
-			{ 14, "JTAGEN", "JTAG Interface Enabled"},
-			{ 15, "OCDEN", "On-Chip Debug Enabled"},
-			{ 16, "BODLEVEL0", ""},
-			{ 17, "BODLEVEL1", ""},
+			{ 0, "CKSEL0", "" },
+			{ 1, "CKSEL1", "" },
+			{ 2, "CKSEL2", "" },
+			{ 3, "CKSEL3", "" },
+			{ 4, "SUT0", "" },
+			{ 5, "SUT1", "" },
+			{ 6, "CKOUT", "Clock output on PORTE7" },
+			{ 7, "CKDIV8", "Divide clock by 8 internally" },
+			{ 8, "BOOTRST", "Boot Reset vector Enabled (default address=$0000)" },
+			{ 9, "BOOTSZ0", "" },
+			{ 10, "BOOTSZ1", "" },
+			{ 11, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle" },
+			{ 12, "WDTON", "Watch-dog Timer always on" },
+			{ 13, "SPIEN", "Serial program downloading (SPI) enabled" },
+			{ 14, "JTAGEN", "JTAG Interface Enabled" },
+			{ 15, "OCDEN", "On-Chip Debug Enabled" },
+			{ 16, "BODLEVEL0", "" },
+			{ 17, "BODLEVEL1", "" },
 			{ 18, "BODLEVEL2", ""}
 		},
 		{
@@ -3070,8 +3081,8 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 
 			{ "BOOTSZ=01", "Boot Flash section size=1024 words Boot start address=$7C00" },
 			{ "BOOTSZ=00", "Boot Flash section size=2048 words Boot start address=$7800" },
-			{ "BOOTSZ=11", "Boot Flash section size=256 words Boot start address=$7F00"},
-			{ "BOOTSZ=10", "Boot Flash section size=512 words Boot start address=$7E00"},
+			{ "BOOTSZ=11", "Boot Flash section size=256 words Boot start address=$7F00" },
+			{ "BOOTSZ=10", "Boot Flash section size=512 words Boot start address=$7E00" },
 
 			{ "BODLEVEL=111", "Brown-out detection disabled" },
 			{ "BODLEVEL=110", "Brown-out detection level at VCC=1.8 V" },
@@ -3080,11 +3091,11 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 0, "Lock1", ""},
-			{ 1, "Lock2", ""},
-			{ 2, "BootLock1", ""},
-			{ 3, "BootLock2", ""},
-			{ 4, "BootLoad1", ""},
+			{ 0, "Lock1", "" },
+			{ 1, "Lock2", "" },
+			{ 2, "BootLock1", "" },
+			{ 3, "BootLock2", "" },
+			{ 4, "BootLoad1", "" },
 			{ 5, "BootLoad2", ""}
 		},
 		{
@@ -3109,24 +3120,24 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		ATmega1281,
 		{
 			// fuse
-			{ 0, "CKSEL0", ""},
-			{ 1, "CKSEL1", ""},
-			{ 2, "CKSEL2", ""},
-			{ 3, "CKSEL3", ""},
-			{ 4, "SUT0", ""},
-			{ 5, "SUT1", ""},
-			{ 6, "CKOUT", "Clock output on PORTE7"},
-			{ 7, "CKDIV8", "Divide clock by 8 internally"},
-			{ 8, "BOOTRST", "Boot Reset vector Enabled (default address=$0000)"},
-			{ 9, "BOOTSZ0", ""},
-			{ 10, "BOOTSZ1", ""},
-			{ 11, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle"},
-			{ 12, "WDTON", "Watch-dog Timer always on"},
-			{ 13, "SPIEN", "Serial program downloading (SPI) enabled"},
-			{ 14, "JTAGEN", "JTAG Interface Enabled"},
-			{ 15, "OCDEN", "On-Chip Debug Enabled"},
-			{ 16, "BODLEVEL0", ""},
-			{ 17, "BODLEVEL1", ""},
+			{ 0, "CKSEL0", "" },
+			{ 1, "CKSEL1", "" },
+			{ 2, "CKSEL2", "" },
+			{ 3, "CKSEL3", "" },
+			{ 4, "SUT0", "" },
+			{ 5, "SUT1", "" },
+			{ 6, "CKOUT", "Clock output on PORTE7" },
+			{ 7, "CKDIV8", "Divide clock by 8 internally" },
+			{ 8, "BOOTRST", "Boot Reset vector Enabled (default address=$0000)" },
+			{ 9, "BOOTSZ0", "" },
+			{ 10, "BOOTSZ1", "" },
+			{ 11, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle" },
+			{ 12, "WDTON", "Watch-dog Timer always on" },
+			{ 13, "SPIEN", "Serial program downloading (SPI) enabled" },
+			{ 14, "JTAGEN", "JTAG Interface Enabled" },
+			{ 15, "OCDEN", "On-Chip Debug Enabled" },
+			{ 16, "BODLEVEL0", "" },
+			{ 17, "BODLEVEL1", "" },
 			{ 18, "BODLEVEL2", ""}
 		},
 		{
@@ -3189,8 +3200,8 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 
 			{ "BOOTSZ=01", "Boot Flash section size=1024 words Boot start address=$7C00" },
 			{ "BOOTSZ=00", "Boot Flash section size=2048 words Boot start address=$7800" },
-			{ "BOOTSZ=11", "Boot Flash section size=256 words Boot start address=$7F00"},
-			{ "BOOTSZ=10", "Boot Flash section size=512 words Boot start address=$7E00"},
+			{ "BOOTSZ=11", "Boot Flash section size=256 words Boot start address=$7F00" },
+			{ "BOOTSZ=10", "Boot Flash section size=512 words Boot start address=$7E00" },
 
 			{ "BODLEVEL=111", "Brown-out detection disabled" },
 			{ "BODLEVEL=110", "Brown-out detection level at VCC=1.8 V" },
@@ -3199,11 +3210,11 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 0, "Lock1", ""},
-			{ 1, "Lock2", ""},
-			{ 2, "BootLock1", ""},
-			{ 3, "BootLock2", ""},
-			{ 4, "BootLoad1", ""},
+			{ 0, "Lock1", "" },
+			{ 1, "Lock2", "" },
+			{ 2, "BootLock1", "" },
+			{ 3, "BootLock2", "" },
+			{ 4, "BootLoad1", "" },
 			{ 5, "BootLoad2", ""}
 		},
 		{
@@ -3228,24 +3239,24 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		ATmega2560,
 		{
 			// fuse
-			{ 0, "CKSEL0", ""},
-			{ 1, "CKSEL1", ""},
-			{ 2, "CKSEL2", ""},
-			{ 3, "CKSEL3", ""},
-			{ 4, "SUT0", ""},
-			{ 5, "SUT1", ""},
-			{ 6, "CKOUT", "Clock output on PORTE7"},
-			{ 7, "CKDIV8", "Divide clock by 8 internally"},
-			{ 8, "BOOTRST", "Boot Reset vector Enabled (default address=$0000)"},
-			{ 9, "BOOTSZ0", ""},
-			{ 10, "BOOTSZ1", ""},
-			{ 11, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle"},
-			{ 12, "WDTON", "Watch-dog Timer always on"},
-			{ 13, "SPIEN", "Serial program downloading (SPI) enabled"},
-			{ 14, "JTAGEN", "JTAG Interface Enabled"},
-			{ 15, "OCDEN", "On-Chip Debug Enabled"},
-			{ 16, "BODLEVEL0", ""},
-			{ 17, "BODLEVEL1", ""},
+			{ 0, "CKSEL0", "" },
+			{ 1, "CKSEL1", "" },
+			{ 2, "CKSEL2", "" },
+			{ 3, "CKSEL3", "" },
+			{ 4, "SUT0", "" },
+			{ 5, "SUT1", "" },
+			{ 6, "CKOUT", "Clock output on PORTE7" },
+			{ 7, "CKDIV8", "Divide clock by 8 internally" },
+			{ 8, "BOOTRST", "Boot Reset vector Enabled (default address=$0000)" },
+			{ 9, "BOOTSZ0", "" },
+			{ 10, "BOOTSZ1", "" },
+			{ 11, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle" },
+			{ 12, "WDTON", "Watch-dog Timer always on" },
+			{ 13, "SPIEN", "Serial program downloading (SPI) enabled" },
+			{ 14, "JTAGEN", "JTAG Interface Enabled" },
+			{ 15, "OCDEN", "On-Chip Debug Enabled" },
+			{ 16, "BODLEVEL0", "" },
+			{ 17, "BODLEVEL1", "" },
 			{ 18, "BODLEVEL2", ""}
 		},
 		{
@@ -3308,8 +3319,8 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 
 			{ "BOOTSZ=01", "Boot Flash section size=1024 words Boot start address=$7C00" },
 			{ "BOOTSZ=00", "Boot Flash section size=2048 words Boot start address=$7800" },
-			{ "BOOTSZ=11", "Boot Flash section size=256 words Boot start address=$7F00"},
-			{ "BOOTSZ=10", "Boot Flash section size=512 words Boot start address=$7E00"},
+			{ "BOOTSZ=11", "Boot Flash section size=256 words Boot start address=$7F00" },
+			{ "BOOTSZ=10", "Boot Flash section size=512 words Boot start address=$7E00" },
 
 			{ "BODLEVEL=111", "Brown-out detection disabled" },
 			{ "BODLEVEL=110", "Brown-out detection level at VCC=1.8 V" },
@@ -3318,11 +3329,11 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 0, "Lock1", ""},
-			{ 1, "Lock2", ""},
-			{ 2, "BootLock1", ""},
-			{ 3, "BootLock2", ""},
-			{ 4, "BootLoad1", ""},
+			{ 0, "Lock1", "" },
+			{ 1, "Lock2", "" },
+			{ 2, "BootLock1", "" },
+			{ 3, "BootLock2", "" },
+			{ 4, "BootLoad1", "" },
 			{ 5, "BootLoad2", ""}
 		},
 		{
@@ -3347,24 +3358,24 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		ATmega2561,
 		{
 			// fuse
-			{ 0, "CKSEL0", ""},
-			{ 1, "CKSEL1", ""},
-			{ 2, "CKSEL2", ""},
-			{ 3, "CKSEL3", ""},
-			{ 4, "SUT0", ""},
-			{ 5, "SUT1", ""},
-			{ 6, "CKOUT", "Clock output on PORTE7"},
-			{ 7, "CKDIV8", "Divide clock by 8 internally"},
-			{ 8, "BOOTRST", "Boot Reset vector Enabled (default address=$0000)"},
-			{ 9, "BOOTSZ0", ""},
-			{ 10, "BOOTSZ1", ""},
-			{ 11, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle"},
-			{ 12, "WDTON", "Watch-dog Timer always on"},
-			{ 13, "SPIEN", "Serial program downloading (SPI) enabled"},
-			{ 14, "JTAGEN", "JTAG Interface Enabled"},
-			{ 15, "OCDEN", "On-Chip Debug Enabled"},
-			{ 16, "BODLEVEL0", ""},
-			{ 17, "BODLEVEL1", ""},
+			{ 0, "CKSEL0", "" },
+			{ 1, "CKSEL1", "" },
+			{ 2, "CKSEL2", "" },
+			{ 3, "CKSEL3", "" },
+			{ 4, "SUT0", "" },
+			{ 5, "SUT1", "" },
+			{ 6, "CKOUT", "Clock output on PORTE7" },
+			{ 7, "CKDIV8", "Divide clock by 8 internally" },
+			{ 8, "BOOTRST", "Boot Reset vector Enabled (default address=$0000)" },
+			{ 9, "BOOTSZ0", "" },
+			{ 10, "BOOTSZ1", "" },
+			{ 11, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle" },
+			{ 12, "WDTON", "Watch-dog Timer always on" },
+			{ 13, "SPIEN", "Serial program downloading (SPI) enabled" },
+			{ 14, "JTAGEN", "JTAG Interface Enabled" },
+			{ 15, "OCDEN", "On-Chip Debug Enabled" },
+			{ 16, "BODLEVEL0", "" },
+			{ 17, "BODLEVEL1", "" },
 			{ 18, "BODLEVEL2", ""}
 		},
 		{
@@ -3427,8 +3438,8 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 
 			{ "BOOTSZ=01", "Boot Flash section size=1024 words Boot start address=$7C00" },
 			{ "BOOTSZ=00", "Boot Flash section size=2048 words Boot start address=$7800" },
-			{ "BOOTSZ=11", "Boot Flash section size=256 words Boot start address=$7F00"},
-			{ "BOOTSZ=10", "Boot Flash section size=512 words Boot start address=$7E00"},
+			{ "BOOTSZ=11", "Boot Flash section size=256 words Boot start address=$7F00" },
+			{ "BOOTSZ=10", "Boot Flash section size=512 words Boot start address=$7E00" },
 
 			{ "BODLEVEL=111", "Brown-out detection disabled" },
 			{ "BODLEVEL=110", "Brown-out detection level at VCC=1.8 V" },
@@ -3437,11 +3448,11 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 0, "Lock1", ""},
-			{ 1, "Lock2", ""},
-			{ 2, "BootLock1", ""},
-			{ 3, "BootLock2", ""},
-			{ 4, "BootLoad1", ""},
+			{ 0, "Lock1", "" },
+			{ 1, "Lock2", "" },
+			{ 2, "BootLock1", "" },
+			{ 3, "BootLock2", "" },
+			{ 4, "BootLoad1", "" },
 			{ 5, "BootLoad2", ""}
 		},
 		{
@@ -3466,8 +3477,8 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		ATmega603, // ???
 		{
 			// fuse
-			{ 0, "SUT0", ""},
-			{ 1, "SUT1", ""},
+			{ 0, "SUT0", "" },
+			{ 1, "SUT1", "" },
 			{ 3, "EESAVE", ""}
 		},
 		{
@@ -3475,7 +3486,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 1, "Lock1", ""},
+			{ 1, "Lock1", "" },
 			{ 2, "Lock2", ""}
 		},
 		{
@@ -3490,8 +3501,8 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		ATmega103, // ???
 		{
 			// fuse
-			{ 0, "SUT0", ""},
-			{ 1, "SUT1", ""},
+			{ 0, "SUT0", "" },
+			{ 1, "SUT1", "" },
 			{ 3, "EESAVE", ""}
 		},
 		{
@@ -3499,7 +3510,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 1, "Lock1", ""},
+			{ 1, "Lock1", "" },
 			{ 2, "Lock2", ""}
 		},
 		{
@@ -3514,21 +3525,21 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		ATmega8,
 		{
 			// fuse
-			{ 0, "CKSEL0", ""},
-			{ 1, "CKSEL1", ""},
-			{ 2, "CKSEL2", ""},
-			{ 3, "CKSEL3", ""},
-			{ 4, "SUT0", ""},
-			{ 5, "SUT1", ""},
-			{ 6, "BODEN", "Brown-out detection enabled"},
-			{ 7, "BODLEVEL", "No Brown-out detection level at VCC=2.7 V"},
-			{ 8, "BOOTRST", "Boot Reset vector Enabled (default address=$0000)"},
-			{ 9, "BOOTSZ0", ""},
-			{ 10, "BOOTSZ1", ""},
-			{ 11, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle"},
-			{ 12, "CKOPT", "CKOPT fuse (operation dependent of CKSEL fuses"},
-			{ 13, "SPIEN", "Serial program downloading (SPI) enabled"},
-			{ 14, "WDTON", "Watch-dog Timer always on"},
+			{ 0, "CKSEL0", "" },
+			{ 1, "CKSEL1", "" },
+			{ 2, "CKSEL2", "" },
+			{ 3, "CKSEL3", "" },
+			{ 4, "SUT0", "" },
+			{ 5, "SUT1", "" },
+			{ 6, "BODEN", "Brown-out detection enabled" },
+			{ 7, "BODLEVEL", "No Brown-out detection level at VCC=2.7 V" },
+			{ 8, "BOOTRST", "Boot Reset vector Enabled (default address=$0000)" },
+			{ 9, "BOOTSZ0", "" },
+			{ 10, "BOOTSZ1", "" },
+			{ 11, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle" },
+			{ 12, "CKOPT", "CKOPT fuse (operation dependent of CKSEL fuses" },
+			{ 13, "SPIEN", "Serial program downloading (SPI) enabled" },
+			{ 14, "WDTON", "Watch-dog Timer always on" },
 			{ 15, "RSTDISBL", "Reset Disabled (Enable PC6 as i/o pin)"}
 		},
 		{
@@ -3594,16 +3605,16 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 
 			{ "BOOTSZ=01", "Boot Flash section size=1024 words Boot start address=$0C00" },
 			{ "BOOTSZ=00", "Boot Flash section size=2048 words Boot start address=$0800" },
-			{ "BOOTSZ=11", "Boot Flash section size=256 words Boot start address=$0F00"},
+			{ "BOOTSZ=11", "Boot Flash section size=256 words Boot start address=$0F00" },
 			{ "BOOTSZ=10", "Boot Flash section size=512 words Boot start address=$0E00"}
 		},
 		{
 			// lock
-			{ 0, "Lock1", ""},
-			{ 1, "Lock2", ""},
-			{ 2, "BootLock1", ""},
-			{ 3, "BootLock2", ""},
-			{ 4, "BootLoad1", ""},
+			{ 0, "Lock1", "" },
+			{ 1, "Lock2", "" },
+			{ 2, "BootLock1", "" },
+			{ 3, "BootLock2", "" },
+			{ 4, "BootLoad1", "" },
 			{ 5, "BootLoad2", ""}
 		},
 		{
@@ -3628,21 +3639,21 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		ATmega8515,
 		{
 			// fuse
-			{ 0, "CKSEL0", ""},
-			{ 1, "CKSEL1", ""},
-			{ 2, "CKSEL2", ""},
-			{ 3, "CKSEL3", ""},
-			{ 4, "SUT0", ""},
-			{ 5, "SUT1", ""},
-			{ 6, "BODEN", "Brown-out detection enabled"},
-			{ 7, "BODLEVEL", "Brown-out detection level at VCC=2.7 V"},
-			{ 8, "BOOTRST", "Boot Reset vector Enabled (default address=$0000)"},
-			{ 9, "BOOTSZ0", ""},
-			{ 10, "BOOTSZ1", ""},
-			{ 11, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle"},
-			{ 12, "CKOPT", "CKOPT fuse (operation dependent of CKSEL fuses)"},
-			{ 13, "SPIEN", "Serial program downloading (SPI) enabled"},
-			{ 14, "WDTON", "Watch-dog Timer always on"},
+			{ 0, "CKSEL0", "" },
+			{ 1, "CKSEL1", "" },
+			{ 2, "CKSEL2", "" },
+			{ 3, "CKSEL3", "" },
+			{ 4, "SUT0", "" },
+			{ 5, "SUT1", "" },
+			{ 6, "BODEN", "Brown-out detection enabled" },
+			{ 7, "BODLEVEL", "Brown-out detection level at VCC=2.7 V" },
+			{ 8, "BOOTRST", "Boot Reset vector Enabled (default address=$0000)" },
+			{ 9, "BOOTSZ0", "" },
+			{ 10, "BOOTSZ1", "" },
+			{ 11, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle" },
+			{ 12, "CKOPT", "CKOPT fuse (operation dependent of CKSEL fuses)" },
+			{ 13, "SPIEN", "Serial program downloading (SPI) enabled" },
+			{ 14, "WDTON", "Watch-dog Timer always on" },
 			{ 15, "S8515C", "AT90S4414/8515 compatibility mode"}
 		},
 		{
@@ -3708,16 +3719,16 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 
 			{ "BOOTSZ=01", "Boot Flash section size=1024 words Boot start address=$0C00" },
 			{ "BOOTSZ=00", "Boot Flash section size=2048 words Boot start address=$0800" },
-			{ "BOOTSZ=11", "Boot Flash section size=256 words Boot start address=$0F00"},
+			{ "BOOTSZ=11", "Boot Flash section size=256 words Boot start address=$0F00" },
 			{ "BOOTSZ=10", "Boot Flash section size=512 words Boot start address=$0E00"}
 		},
 		{
 			// lock
-			{ 0, "Lock1", ""},
-			{ 1, "Lock2", ""},
-			{ 2, "BootLock1", ""},
-			{ 3, "BootLock2", ""},
-			{ 4, "BootLoad1", ""},
+			{ 0, "Lock1", "" },
+			{ 1, "Lock2", "" },
+			{ 2, "BootLock1", "" },
+			{ 3, "BootLock2", "" },
+			{ 4, "BootLoad1", "" },
 			{ 5, "BootLoad2", ""}
 		},
 		{
@@ -3742,21 +3753,21 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		ATmega8535,
 		{
 			// fuse
-			{ 0, "CKSEL0", ""},
-			{ 1, "CKSEL1", ""},
-			{ 2, "CKSEL2", ""},
-			{ 3, "CKSEL3", ""},
-			{ 4, "SUT0", ""},
-			{ 5, "SUT1", ""},
-			{ 6, "BODEN", "Brown-out detection enabled"},
-			{ 7, "BODLEVEL", "Brown-out detection level at VCC=2.7 V"},
-			{ 8, "BOOTRST", "Boot Reset vector Enabled (default address=$0000)"},
-			{ 9, "BOOTSZ0", ""},
-			{ 10, "BOOTSZ1", ""},
-			{ 11, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle"},
-			{ 12, "CKOPT", "CKOPT fuse (operation dependent of CKSEL fuses)"},
-			{ 13, "SPIEN", "Serial program downloading (SPI) enabled"},
-			{ 14, "WDTON", "Watch-dog Timer always on"},
+			{ 0, "CKSEL0", "" },
+			{ 1, "CKSEL1", "" },
+			{ 2, "CKSEL2", "" },
+			{ 3, "CKSEL3", "" },
+			{ 4, "SUT0", "" },
+			{ 5, "SUT1", "" },
+			{ 6, "BODEN", "Brown-out detection enabled" },
+			{ 7, "BODLEVEL", "Brown-out detection level at VCC=2.7 V" },
+			{ 8, "BOOTRST", "Boot Reset vector Enabled (default address=$0000)" },
+			{ 9, "BOOTSZ0", "" },
+			{ 10, "BOOTSZ1", "" },
+			{ 11, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle" },
+			{ 12, "CKOPT", "CKOPT fuse (operation dependent of CKSEL fuses)" },
+			{ 13, "SPIEN", "Serial program downloading (SPI) enabled" },
+			{ 14, "WDTON", "Watch-dog Timer always on" },
 			{ 15, "S8515C", "AT90S4414/8515 compatibility mode"}
 		},
 		{
@@ -3766,7 +3777,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ "CKSEL=0000 SUT=10", "Ext. Clock; Start-up time: 6 CK + 64 ms" },
 			{ "CKSEL=1111 SUT=01", "Ext. Crystal/Resonator High Freq.; Start-up time: 16K CK + 0 ms" },
 			{ "CKSEL=1111 SUT=10", "Ext. Crystal/Resonator High Freq.; Start-up time: 16K CK + 4 ms" },
-			{ "CKSEL=1111 SUT=11", "Ext. Crystal/Resonator High Freq.; Start-up time: 16K CK + 64 ms"},
+			{ "CKSEL=1111 SUT=11", "Ext. Crystal/Resonator High Freq.; Start-up time: 16K CK + 64 ms" },
 			{ "CKSEL=1110 SUT=10", "Ext. Crystal/Resonator High Freq.; Start-up time: 1K CK + 0 ms" },
 			{ "CKSEL=1110 SUT=11", "Ext. Crystal/Resonator High Freq.; Start-up time: 1K CK + 4 ms" },
 			{ "CKSEL=1111 SUT=00", "Ext. Crystal/Resonator High Freq.; Start-up time: 1K CK + 64 ms" },
@@ -3822,16 +3833,16 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 
 			{ "BOOTSZ=01", "Boot Flash section size=1024 words Boot start address=$0C00" },
 			{ "BOOTSZ=00", "Boot Flash section size=2048 words Boot start address=$0800" },
-			{ "BOOTSZ=11", "Boot Flash section size=256 words Boot start address=$0F00"},
+			{ "BOOTSZ=11", "Boot Flash section size=256 words Boot start address=$0F00" },
 			{ "BOOTSZ=10", "Boot Flash section size=512 words Boot start address=$0E00"}
 		},
 		{
 			// lock
-			{ 0, "Lock1", ""},
-			{ 1, "Lock2", ""},
-			{ 2, "BootLock1", ""},
-			{ 3, "BootLock2", ""},
-			{ 4, "BootLoad1", ""},
+			{ 0, "Lock1", "" },
+			{ 1, "Lock2", "" },
+			{ 2, "BootLock1", "" },
+			{ 3, "BootLock2", "" },
+			{ 4, "BootLoad1", "" },
 			{ 5, "BootLoad2", ""}
 		},
 		{
@@ -3856,23 +3867,23 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		ATmega64,
 		{
 			// fuse
-			{ 0, "CKSEL0", ""},
-			{ 1, "CKSEL1", ""},
-			{ 2, "CKSEL2", ""},
-			{ 3, "CKSEL3", ""},
-			{ 4, "SUT0", ""},
-			{ 5, "SUT1", ""},
-			{ 6, "BODEN", "Brown-out detection enabled"},
-			{ 7, "BODLEVEL", "Not Brown-out detection level at VCC=2.7 V"},
-			{ 8, "BOOTRST", "Boot Reset vector Enabled (default address=$0000)"},
-			{ 9, "BOOTSZ0", ""},
-			{ 10, "BOOTSZ1", ""},
-			{ 11, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle"},
-			{ 12, "CKOPT", "CKOPT fuse (operation dependent of CKSEL fuses)"},
-			{ 13, "SPIEN", "Serial program downloading (SPI) enabled"},
-			{ 14, "JTAGEN", "JTAG Interface Enabled"},
-			{ 15, "OCDEN", "On-Chip Debug Enabled"},
-			{ 16, "WDTON", "Watchdog Timer always on"},
+			{ 0, "CKSEL0", "" },
+			{ 1, "CKSEL1", "" },
+			{ 2, "CKSEL2", "" },
+			{ 3, "CKSEL3", "" },
+			{ 4, "SUT0", "" },
+			{ 5, "SUT1", "" },
+			{ 6, "BODEN", "Brown-out detection enabled" },
+			{ 7, "BODLEVEL", "Not Brown-out detection level at VCC=2.7 V" },
+			{ 8, "BOOTRST", "Boot Reset vector Enabled (default address=$0000)" },
+			{ 9, "BOOTSZ0", "" },
+			{ 10, "BOOTSZ1", "" },
+			{ 11, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle" },
+			{ 12, "CKOPT", "CKOPT fuse (operation dependent of CKSEL fuses)" },
+			{ 13, "SPIEN", "Serial program downloading (SPI) enabled" },
+			{ 14, "JTAGEN", "JTAG Interface Enabled" },
+			{ 15, "OCDEN", "On-Chip Debug Enabled" },
+			{ 16, "WDTON", "Watchdog Timer always on" },
 			{ 17, "M103C", "ATmega103 Compatibility Mode"}
 		},
 		{
@@ -3938,16 +3949,16 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 
 			{ "BOOTSZ=01", "Boot Flash section size=1024 words Boot start address=$7C00" },
 			{ "BOOTSZ=00", "Boot Flash section size=2048 words Boot start address=$7800" },
-			{ "BOOTSZ=11", "Boot Flash section size=256 words Boot start address=$7F00"},
+			{ "BOOTSZ=11", "Boot Flash section size=256 words Boot start address=$7F00" },
 			{ "BOOTSZ=10", "Boot Flash section size=512 words Boot start address=$7E00"}
 		},
 		{
 			// lock
-			{ 0, "Lock1", ""},
-			{ 1, "Lock2", ""},
-			{ 2, "BootLock1", ""},
-			{ 3, "BootLock2", ""},
-			{ 4, "BootLoad1", ""},
+			{ 0, "Lock1", "" },
+			{ 1, "Lock2", "" },
+			{ 2, "BootLock1", "" },
+			{ 3, "BootLock2", "" },
+			{ 4, "BootLoad1", "" },
 			{ 5, "BootLoad2", ""}
 		},
 		{
@@ -3972,23 +3983,23 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		ATmega128,
 		{
 			// fuse
-			{ 0, "CKSEL0", ""},
-			{ 1, "CKSEL1", ""},
-			{ 2, "CKSEL2", ""},
-			{ 3, "CKSEL3", ""},
-			{ 4, "SUT0", ""},
-			{ 5, "SUT1", ""},
-			{ 6, "BODEN", "Brown-out detection enabled"},
-			{ 7, "BODLEVEL", "Not Brown-out detection level at VCC=2.7 V"},
-			{ 8, "BOOTRST", "Boot Reset vector Enabled (default address=$0000)"},
-			{ 9, "BOOTSZ0", ""},
-			{ 10, "BOOTSZ1", ""},
-			{ 11, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle"},
-			{ 12, "CKOPT", "CKOPT fuse (operation dependent of CKSEL fuses)"},
-			{ 13, "SPIEN", "Serial program downloading (SPI) enabled"},
-			{ 14, "JTAGEN", "JTAG Interface Enabled"},
-			{ 15, "OCDEN", "On-Chip Debug Enabled"},
-			{ 16, "WDTON", "Watchdog Timer always on"},
+			{ 0, "CKSEL0", "" },
+			{ 1, "CKSEL1", "" },
+			{ 2, "CKSEL2", "" },
+			{ 3, "CKSEL3", "" },
+			{ 4, "SUT0", "" },
+			{ 5, "SUT1", "" },
+			{ 6, "BODEN", "Brown-out detection enabled" },
+			{ 7, "BODLEVEL", "Not Brown-out detection level at VCC=2.7 V" },
+			{ 8, "BOOTRST", "Boot Reset vector Enabled (default address=$0000)" },
+			{ 9, "BOOTSZ0", "" },
+			{ 10, "BOOTSZ1", "" },
+			{ 11, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle" },
+			{ 12, "CKOPT", "CKOPT fuse (operation dependent of CKSEL fuses)" },
+			{ 13, "SPIEN", "Serial program downloading (SPI) enabled" },
+			{ 14, "JTAGEN", "JTAG Interface Enabled" },
+			{ 15, "OCDEN", "On-Chip Debug Enabled" },
+			{ 16, "WDTON", "Watchdog Timer always on" },
 			{ 17, "M103C", "ATmega103 Compatibility Mode"}
 		},
 		{
@@ -4054,16 +4065,16 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 
 			{ "BOOTSZ=01", "Boot Flash section size=1024 words Boot start address=$FC00" },
 			{ "BOOTSZ=00", "Boot Flash section size=2048 words Boot start address=$F800" },
-			{ "BOOTSZ=11", "Boot Flash section size=256 words Boot start address=$FF00"},
+			{ "BOOTSZ=11", "Boot Flash section size=256 words Boot start address=$FF00" },
 			{ "BOOTSZ=10", "Boot Flash section size=512 words Boot start address=$FE00"}
 		},
 		{
 			// lock
-			{ 0, "Lock1", ""},
-			{ 1, "Lock2", ""},
-			{ 2, "BootLock1", ""},
-			{ 3, "BootLock2", ""},
-			{ 4, "BootLoad1", ""},
+			{ 0, "Lock1", "" },
+			{ 1, "Lock2", "" },
+			{ 2, "BootLock1", "" },
+			{ 3, "BootLock2", "" },
+			{ 4, "BootLoad1", "" },
 			{ 5, "BootLoad2", ""}
 		},
 		{
@@ -4088,21 +4099,21 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		ATmega16,
 		{
 			// fuse
-			{ 0, "CKSEL0", ""},
-			{ 1, "CKSEL1", ""},
-			{ 2, "CKSEL2", ""},
-			{ 3, "CKSEL3", ""},
-			{ 4, "SUT0", ""},
-			{ 5, "SUT1", ""},
-			{ 6, "BODEN", "Brown-out detection enabled"},
-			{ 7, "BODLEVEL", "Not Brown-out detection level at VCC=2.7 V"},
-			{ 8, "BOOTRST", "Boot Reset vector Enabled (default address=$0000)"},
-			{ 9, "BOOTSZ0", ""},
-			{ 10, "BOOTSZ1", ""},
-			{ 11, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle"},
-			{ 12, "CKOPT", "CKOPT fuse (operation dependent of CKSEL fuses)"},
-			{ 13, "SPIEN", "Serial program downloading (SPI) enabled"},
-			{ 14, "JTAGEN", "JTAG Interface Enabled"},
+			{ 0, "CKSEL0", "" },
+			{ 1, "CKSEL1", "" },
+			{ 2, "CKSEL2", "" },
+			{ 3, "CKSEL3", "" },
+			{ 4, "SUT0", "" },
+			{ 5, "SUT1", "" },
+			{ 6, "BODEN", "Brown-out detection enabled" },
+			{ 7, "BODLEVEL", "Not Brown-out detection level at VCC=2.7 V" },
+			{ 8, "BOOTRST", "Boot Reset vector Enabled (default address=$0000)" },
+			{ 9, "BOOTSZ0", "" },
+			{ 10, "BOOTSZ1", "" },
+			{ 11, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle" },
+			{ 12, "CKOPT", "CKOPT fuse (operation dependent of CKSEL fuses)" },
+			{ 13, "SPIEN", "Serial program downloading (SPI) enabled" },
+			{ 14, "JTAGEN", "JTAG Interface Enabled" },
 			{ 15, "OCDEN", "On-Chip Debug Enabled"}
 		},
 		{
@@ -4168,16 +4179,16 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 
 			{ "BOOTSZ=01", "Boot Flash section size=1024 words Boot start address=$1C00" },
 			{ "BOOTSZ=00", "Boot Flash section size=2048 words Boot start address=$1800" },
-			{ "BOOTSZ=11", "Boot Flash section size=256 words Boot start address=$1F00"},
+			{ "BOOTSZ=11", "Boot Flash section size=256 words Boot start address=$1F00" },
 			{ "BOOTSZ=10", "Boot Flash section size=512 words Boot start address=$1E00"}
 		},
 		{
 			// lock
-			{ 0, "Lock1", ""},
-			{ 1, "Lock2", ""},
-			{ 2, "BootLock1", ""},
-			{ 3, "BootLock2", ""},
-			{ 4, "BootLoad1", ""},
+			{ 0, "Lock1", "" },
+			{ 1, "Lock2", "" },
+			{ 2, "BootLock1", "" },
+			{ 3, "BootLock2", "" },
+			{ 4, "BootLoad1", "" },
 			{ 5, "BootLoad2", ""}
 		},
 		{
@@ -4202,33 +4213,33 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		ATmega161,
 		{
 			// fuse
-			{ 0, "CKSEL0", ""},
-			{ 1, "CKSEL1", ""},
-			{ 2, "CKSEL2", ""},
-			{ 3, "SUT", "Start-up time"},
-			{ 4, "SPIEN", "Serial program downloading (SPI) enabled"},
+			{ 0, "CKSEL0", "" },
+			{ 1, "CKSEL1", "" },
+			{ 2, "CKSEL2", "" },
+			{ 3, "SUT", "Start-up time" },
+			{ 4, "SPIEN", "Serial program downloading (SPI) enabled" },
 			{ 5, "BOOTRST", "Boot Reset vector Enabled (default address=$0000)"}
 
 		},
 		{
 			// fuse mask description
-			{"CKSEL=000", "External Clock; fast rising power"},
-			{"CKSEL=001", "External Clock; BOD Enabled or power-on reset"},
-			{"CKSEL=010", "Crystal Oscillator; slowly rising power"},
-			{"CKSEL=011", "Crystal Oscillator; fast rising power"},
-			{"CKSEL=100", "Crystal Oscillator; BOD Enabled or power-on reset"},
-			{"CKSEL=101", "Ceramic Resonator / External Clock; Slowly rising power"},
-			{"CKSEL=110", "Ceramic Resonator; fast rising power"},
+			{"CKSEL=000", "External Clock; fast rising power" },
+			{"CKSEL=001", "External Clock; BOD Enabled or power-on reset" },
+			{"CKSEL=010", "Crystal Oscillator; slowly rising power" },
+			{"CKSEL=011", "Crystal Oscillator; fast rising power" },
+			{"CKSEL=100", "Crystal Oscillator; BOD Enabled or power-on reset" },
+			{"CKSEL=101", "Ceramic Resonator / External Clock; Slowly rising power" },
+			{"CKSEL=110", "Ceramic Resonator; fast rising power" },
 			{"CKSEL=111", "Ceramic Resonator; BOD Enabled or power-on reset"}
 
 		},
 		{
 			// lock
-			{ 0, "Lock1", ""},
-			{ 1, "Lock2", ""},
-			{ 2, "BootLock1", ""},
-			{ 3, "BootLock2", ""},
-			{ 4, "BootLoad1", ""},
+			{ 0, "Lock1", "" },
+			{ 1, "Lock2", "" },
+			{ 2, "BootLock1", "" },
+			{ 3, "BootLock2", "" },
+			{ 4, "BootLoad1", "" },
 			{ 5, "BootLoad2", ""}
 		},
 		{
@@ -4253,48 +4264,48 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		ATmega163,
 		{
 			// fuse
-			{ 0, "CKSEL0", ""},
-			{ 1, "CKSEL1", ""},
-			{ 2, "CKSEL2", ""},
-			{ 3, "CKSEL3", ""},
+			{ 0, "CKSEL0", "" },
+			{ 1, "CKSEL1", "" },
+			{ 2, "CKSEL2", "" },
+			{ 3, "CKSEL3", "" },
 			{ 5, "SPIEN", "Serial program downloading (SPI) enabled" },
-			{ 6, "BODEN", "Brown-out detection enabled"},
-			{ 7, "BODLEVEL", "Not Brown-out detection level at VCC=2.7 V"},
-			{ 8, "BOOTRST", "Boot Reset vector Enabled (default address=$0000)"},
-			{ 9, "BOOTSZ0", ""},
+			{ 6, "BODEN", "Brown-out detection enabled" },
+			{ 7, "BODLEVEL", "Not Brown-out detection level at VCC=2.7 V" },
+			{ 8, "BOOTRST", "Boot Reset vector Enabled (default address=$0000)" },
+			{ 9, "BOOTSZ0", "" },
 			{ 10, "BOOTSZ1", ""}
 		},
 		{
 			// fuse mask description
-			{"CKSEL=0000", "External Clock fast rising power"},
-			{"CKSEL=0001", "External Clock BOD enabled"},
-			{"CKSEL=0010", "Internal RC Ocsillator slowly rising power"},
-			{"CKSEL=0011", "Internal RC Ocsillator fast rising power"},
-			{"CKSEL=0100", "Internal RC Oscillator BOD enabled"},
-			{"CKSEL=0101", "External RC Oscillator slowly rising power"},
-			{"CKSEL=0110", "External RC Oscillator fast rising power"},
-			{"CKSEL=0111", "External RC Oscillator BOD enabled"},
-			{"CKSEL=1000", "External Low-Frequency Crystal"},
-			{"CKSEL=1001", "External Low-Frequency Crystal"},
-			{"CKSEL=1010", "Crystal Oscillator slowly rising power"},
-			{"CKSEL=1011", "Crystal Oscillator fast rising power"},
-			{"CKSEL=1100", "Crystal Oscillator BOD enabled"},
-			{"CKSEL=1101", "Ceramic Resonator/External Clock slowly rising power"},
-			{"CKSEL=1110", "Ceramic Resonator fast rising power"},
-			{"CKSEL=1111", "Ceramic Resonator BOD enabled"},
+			{"CKSEL=0000", "External Clock fast rising power" },
+			{"CKSEL=0001", "External Clock BOD enabled" },
+			{"CKSEL=0010", "Internal RC Ocsillator slowly rising power" },
+			{"CKSEL=0011", "Internal RC Ocsillator fast rising power" },
+			{"CKSEL=0100", "Internal RC Oscillator BOD enabled" },
+			{"CKSEL=0101", "External RC Oscillator slowly rising power" },
+			{"CKSEL=0110", "External RC Oscillator fast rising power" },
+			{"CKSEL=0111", "External RC Oscillator BOD enabled" },
+			{"CKSEL=1000", "External Low-Frequency Crystal" },
+			{"CKSEL=1001", "External Low-Frequency Crystal" },
+			{"CKSEL=1010", "Crystal Oscillator slowly rising power" },
+			{"CKSEL=1011", "Crystal Oscillator fast rising power" },
+			{"CKSEL=1100", "Crystal Oscillator BOD enabled" },
+			{"CKSEL=1101", "Ceramic Resonator/External Clock slowly rising power" },
+			{"CKSEL=1110", "Ceramic Resonator fast rising power" },
+			{"CKSEL=1111", "Ceramic Resonator BOD enabled" },
 
 			{ "BOOTSZ=01", "Boot Flash section size=1024 words Boot start address=$1C00" },
 			{ "BOOTSZ=00", "Boot Flash section size=2048 words Boot start address=$1800" },
-			{ "BOOTSZ=11", "Boot Flash section size=256 words Boot start address=$1F00"},
+			{ "BOOTSZ=11", "Boot Flash section size=256 words Boot start address=$1F00" },
 			{ "BOOTSZ=10", "Boot Flash section size=512 words Boot start address=$1E00"}
 		},
 		{
 			// lock
-			{ 0, "Lock1", ""},
-			{ 1, "Lock2", ""},
-			{ 2, "BootLock1", ""},
-			{ 3, "BootLock2", ""},
-			{ 4, "BootLoad1", ""},
+			{ 0, "Lock1", "" },
+			{ 1, "Lock2", "" },
+			{ 2, "BootLock1", "" },
+			{ 3, "BootLock2", "" },
+			{ 4, "BootLoad1", "" },
 			{ 5, "BootLoad2", ""}
 		},
 		{
@@ -4319,25 +4330,25 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		ATmega162,
 		{
 			// fuse
-			{ 0, "CKSEL0", ""},
-			{ 1, "CKSEL1", ""},
-			{ 2, "CKSEL2", ""},
-			{ 3, "CKSEL3", ""},
-			{ 4, "SUT0", ""},
-			{ 5, "SUT1", ""},
-			{ 6, "CKOUT", "Clock output on PORTB0"},
-			{ 7, "CKDIV8", "Divide clock by 8 internally"},
-			{ 8, "BOOTRST", "Boot Reset vector Enabled (default address=$0000)"},
-			{ 9, "BOOTSZ0", ""},
-			{ 10, "BOOTSZ1", ""},
-			{ 11, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle"},
-			{ 12, "WDTON", "Watchdog timer always on"},
-			{ 13, "SPIEN", "Serial program downloading (SPI) enabled"},
-			{ 14, "JTAGEN", "JTAG Interface Enabled"},
-			{ 15, "OCDEN", "On-Chip Debug Enabled"},
-			{ 17, "BODLEVEL0", ""},
-			{ 18, "BODLEVEL1", ""},
-			{ 19, "BODLEVEL1", ""},
+			{ 0, "CKSEL0", "" },
+			{ 1, "CKSEL1", "" },
+			{ 2, "CKSEL2", "" },
+			{ 3, "CKSEL3", "" },
+			{ 4, "SUT0", "" },
+			{ 5, "SUT1", "" },
+			{ 6, "CKOUT", "Clock output on PORTB0" },
+			{ 7, "CKDIV8", "Divide clock by 8 internally" },
+			{ 8, "BOOTRST", "Boot Reset vector Enabled (default address=$0000)" },
+			{ 9, "BOOTSZ0", "" },
+			{ 10, "BOOTSZ1", "" },
+			{ 11, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle" },
+			{ 12, "WDTON", "Watchdog timer always on" },
+			{ 13, "SPIEN", "Serial program downloading (SPI) enabled" },
+			{ 14, "JTAGEN", "JTAG Interface Enabled" },
+			{ 15, "OCDEN", "On-Chip Debug Enabled" },
+			{ 17, "BODLEVEL0", "" },
+			{ 18, "BODLEVEL1", "" },
+			{ 19, "BODLEVEL1", "" },
 			{ 20, "M161C", "ATmega161 compability mode"}
 		},
 		{
@@ -4400,16 +4411,16 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 
 			{ "BOOTSZ=01", "Boot Flash section size=1024 words Boot start address=$1C00" },
 			{ "BOOTSZ=00", "Boot Flash section size=2048 words Boot start address=$1800" },
-			{ "BOOTSZ=11", "Boot Flash section size=256 words Boot start address=$1F00"},
+			{ "BOOTSZ=11", "Boot Flash section size=256 words Boot start address=$1F00" },
 			{ "BOOTSZ=10", "Boot Flash section size=512 words Boot start address=$1E00"}
 		},
 		{
 			// lock
-			{ 0, "Lock1", ""},
-			{ 1, "Lock2", ""},
-			{ 2, "BootLock1", ""},
-			{ 3, "BootLock2", ""},
-			{ 4, "BootLoad1", ""},
+			{ 0, "Lock1", "" },
+			{ 1, "Lock2", "" },
+			{ 2, "BootLock1", "" },
+			{ 3, "BootLock2", "" },
+			{ 4, "BootLoad1", "" },
 			{ 5, "BootLoad2", ""}
 		},
 		{
@@ -4434,25 +4445,25 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		ATmega169,
 		{
 			// fuse
-			{ 0, "CKSEL0", ""},
-			{ 1, "CKSEL1", ""},
-			{ 2, "CKSEL2", ""},
-			{ 3, "CKSEL3", ""},
-			{ 4, "SUT0", ""},
-			{ 5, "SUT1", ""},
-			{ 6, "CKOUT", "Clock output on PORTE7"},
-			{ 7, "CKDIV8", "Divide clock by 8 internally"},
-			{ 8, "BOOTRST", "Boot Reset vector Enabled (default address=$0000)"},
-			{ 9, "BOOTSZ0", ""},
-			{ 10, "BOOTSZ1", ""},
-			{ 11, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle"},
-			{ 12, "WDTON", "Watchdog timer always on"},
-			{ 13, "SPIEN", "Serial program downloading (SPI) enabled"},
-			{ 14, "JTAGEN", "JTAG Interface Enabled"},
-			{ 15, "OCDEN", "On-Chip Debug Enabled"},
-			{ 16, "RSTDISBL", "Reset Disabled (Enable PG5 as i/o pin)"},
-			{ 17, "BODLEVEL0", ""},
-			{ 18, "BODLEVEL1", ""},
+			{ 0, "CKSEL0", "" },
+			{ 1, "CKSEL1", "" },
+			{ 2, "CKSEL2", "" },
+			{ 3, "CKSEL3", "" },
+			{ 4, "SUT0", "" },
+			{ 5, "SUT1", "" },
+			{ 6, "CKOUT", "Clock output on PORTE7" },
+			{ 7, "CKDIV8", "Divide clock by 8 internally" },
+			{ 8, "BOOTRST", "Boot Reset vector Enabled (default address=$0000)" },
+			{ 9, "BOOTSZ0", "" },
+			{ 10, "BOOTSZ1", "" },
+			{ 11, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle" },
+			{ 12, "WDTON", "Watchdog timer always on" },
+			{ 13, "SPIEN", "Serial program downloading (SPI) enabled" },
+			{ 14, "JTAGEN", "JTAG Interface Enabled" },
+			{ 15, "OCDEN", "On-Chip Debug Enabled" },
+			{ 16, "RSTDISBL", "Reset Disabled (Enable PG5 as i/o pin)" },
+			{ 17, "BODLEVEL0", "" },
+			{ 18, "BODLEVEL1", "" },
 			{ 19, "BODLEVEL2", ""}
 		},
 		{
@@ -4509,16 +4520,16 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 
 			{ "BOOTSZ=01", "Boot Flash section size=1024 words Boot start address=$1C00" },
 			{ "BOOTSZ=00", "Boot Flash section size=2048 words Boot start address=$1800" },
-			{ "BOOTSZ=11", "Boot Flash section size=256 words Boot start address=$1F00"},
+			{ "BOOTSZ=11", "Boot Flash section size=256 words Boot start address=$1F00" },
 			{ "BOOTSZ=10", "Boot Flash section size=512 words Boot start address=$1E00"}
 		},
 		{
 			// lock
-			{ 0, "Lock1", ""},
-			{ 1, "Lock2", ""},
-			{ 2, "BootLock1", ""},
-			{ 3, "BootLock2", ""},
-			{ 4, "BootLoad1", ""},
+			{ 0, "Lock1", "" },
+			{ 1, "Lock2", "" },
+			{ 2, "BootLock1", "" },
+			{ 3, "BootLock2", "" },
+			{ 4, "BootLoad1", "" },
 			{ 5, "BootLoad2", ""}
 		},
 		{
@@ -4543,51 +4554,51 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		ATmega323,
 		{
 			// fuse
-			{ 0, "CKSEL0", ""},
-			{ 1, "CKSEL1", ""},
-			{ 2, "CKSEL2", ""},
-			{ 3, "CKSEL3", ""},
-			{ 6, "BODEN", "Brown-out detection enabled"},
-			{ 7, "BODLEVEL", "Not Brown-out detection level at VCC=2.7 V"},
-			{ 8, "BOOTRST", "Boot Reset vector Enabled (default address=$0000)"},
-			{ 9, "BOOTSZ0", ""},
-			{ 10, "BOOTSZ1", ""},
-			{ 11, "EESAVE", "Preserve EEPROM memory during through Chip Erase Cycle"},
-			{ 13, "SPIEN", "Serial program downloading (SPI) enabled"},
-			{ 14, "JTAGEN", "JTAG Enabled"},
+			{ 0, "CKSEL0", "" },
+			{ 1, "CKSEL1", "" },
+			{ 2, "CKSEL2", "" },
+			{ 3, "CKSEL3", "" },
+			{ 6, "BODEN", "Brown-out detection enabled" },
+			{ 7, "BODLEVEL", "Not Brown-out detection level at VCC=2.7 V" },
+			{ 8, "BOOTRST", "Boot Reset vector Enabled (default address=$0000)" },
+			{ 9, "BOOTSZ0", "" },
+			{ 10, "BOOTSZ1", "" },
+			{ 11, "EESAVE", "Preserve EEPROM memory during through Chip Erase Cycle" },
+			{ 13, "SPIEN", "Serial program downloading (SPI) enabled" },
+			{ 14, "JTAGEN", "JTAG Enabled" },
 			{ 15, "OCDEN", "On-Chip Debug Enabled"}
 		},
 		{
 			// fuse mask description
-			{"CKSEL=0000", "External Clock fast rising power"},
-			{"CKSEL=0001", "External Clock BOD enabled"},
-			{"CKSEL=0010", "Internal RC Ocsillator slowly rising power"},
-			{"CKSEL=0011", "Internal RC Ocsillator fast rising power"},
-			{"CKSEL=0100", "Internal RC Oscillator BOD enabled"},
-			{"CKSEL=0101", "External RC Oscillator slowly rising power"},
-			{"CKSEL=0110", "External RC Oscillator fast rising power"},
-			{"CKSEL=0111", "External RC Oscillator BOD enabled"},
-			{"CKSEL=1000", "External Low-Frequency Crystal"},
-			{"CKSEL=1001", "External Low-Frequency Crystal"},
-			{"CKSEL=1010", "Crystal Oscillator slowly rising power"},
-			{"CKSEL=1011", "Crystal Oscillator fast rising power"},
-			{"CKSEL=1100", "Crystal Oscillator BOD enabled"},
-			{"CKSEL=1101", "Ceramic Resonator/External Clock slowly rising power"},
-			{"CKSEL=1110", "Ceramic Resonator fast rising power"},
-			{"CKSEL=1111", "Ceramic Resonator BOD enabled"},
+			{"CKSEL=0000", "External Clock fast rising power" },
+			{"CKSEL=0001", "External Clock BOD enabled" },
+			{"CKSEL=0010", "Internal RC Ocsillator slowly rising power" },
+			{"CKSEL=0011", "Internal RC Ocsillator fast rising power" },
+			{"CKSEL=0100", "Internal RC Oscillator BOD enabled" },
+			{"CKSEL=0101", "External RC Oscillator slowly rising power" },
+			{"CKSEL=0110", "External RC Oscillator fast rising power" },
+			{"CKSEL=0111", "External RC Oscillator BOD enabled" },
+			{"CKSEL=1000", "External Low-Frequency Crystal" },
+			{"CKSEL=1001", "External Low-Frequency Crystal" },
+			{"CKSEL=1010", "Crystal Oscillator slowly rising power" },
+			{"CKSEL=1011", "Crystal Oscillator fast rising power" },
+			{"CKSEL=1100", "Crystal Oscillator BOD enabled" },
+			{"CKSEL=1101", "Ceramic Resonator/External Clock slowly rising power" },
+			{"CKSEL=1110", "Ceramic Resonator fast rising power" },
+			{"CKSEL=1111", "Ceramic Resonator BOD enabled" },
 
 			{ "BOOTSZ=01", "Boot Flash section size=1024 words Boot start address=$3C00" },
 			{ "BOOTSZ=00", "Boot Flash section size=2048 words Boot start address=$3800" },
-			{ "BOOTSZ=11", "Boot Flash section size=256 words Boot start address=$3F00"},
+			{ "BOOTSZ=11", "Boot Flash section size=256 words Boot start address=$3F00" },
 			{ "BOOTSZ=10", "Boot Flash section size=512 words Boot start address=$3E00"}
 		},
 		{
 			// lock
-			{ 0, "Lock1", ""},
-			{ 1, "Lock2", ""},
-			{ 2, "BootLock1", ""},
-			{ 3, "BootLock2", ""},
-			{ 4, "BootLoad1", ""},
+			{ 0, "Lock1", "" },
+			{ 1, "Lock2", "" },
+			{ 2, "BootLock1", "" },
+			{ 3, "BootLock2", "" },
+			{ 4, "BootLoad1", "" },
 			{ 5, "BootLoad2", ""}
 		},
 		{
@@ -4612,21 +4623,21 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		ATmega32,
 		{
 			// fuse
-			{ 0, "CKSEL0", ""},
-			{ 1, "CKSEL1", ""},
-			{ 2, "CKSEL2", ""},
-			{ 3, "CKSEL3", ""},
-			{ 4, "SUT0", ""},
-			{ 5, "SUT1", ""},
-			{ 6, "BODEN", "Brown-out detection enabled"},
-			{ 7, "BODLEVEL", "Not Brown-out detection level at VCC=2.7 V"},
-			{ 8, "BOOTRST", "Boot Reset vector Enabled (default address=$0000)"},
-			{ 9, "BOOTSZ0", ""},
-			{ 10, "BOOTSZ1", ""},
-			{ 11, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle"},
-			{ 12, "CKOPT", "CKOPT fuse (operation dependent of CKSEL fuses)"},
-			{ 13, "SPIEN", "Serial program downloading (SPI) enabled"},
-			{ 14, "JTAGEN", "JTAG Interface Enabled"},
+			{ 0, "CKSEL0", "" },
+			{ 1, "CKSEL1", "" },
+			{ 2, "CKSEL2", "" },
+			{ 3, "CKSEL3", "" },
+			{ 4, "SUT0", "" },
+			{ 5, "SUT1", "" },
+			{ 6, "BODEN", "Brown-out detection enabled" },
+			{ 7, "BODLEVEL", "Not Brown-out detection level at VCC=2.7 V" },
+			{ 8, "BOOTRST", "Boot Reset vector Enabled (default address=$0000)" },
+			{ 9, "BOOTSZ0", "" },
+			{ 10, "BOOTSZ1", "" },
+			{ 11, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle" },
+			{ 12, "CKOPT", "CKOPT fuse (operation dependent of CKSEL fuses)" },
+			{ 13, "SPIEN", "Serial program downloading (SPI) enabled" },
+			{ 14, "JTAGEN", "JTAG Interface Enabled" },
 			{ 15, "OCDEN", "On-Chip Debug Enabled"}
 		},
 		{
@@ -4692,16 +4703,16 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 
 			{ "BOOTSZ=01", "Boot Flash section size=1024 words Boot start address=$3C00" },
 			{ "BOOTSZ=00", "Boot Flash section size=2048 words Boot start address=$3800" },
-			{ "BOOTSZ=11", "Boot Flash section size=256 words Boot start address=$3F00"},
+			{ "BOOTSZ=11", "Boot Flash section size=256 words Boot start address=$3F00" },
 			{ "BOOTSZ=10", "Boot Flash section size=512 words Boot start address=$3E00"}
 		},
 		{
 			// lock
-			{ 0, "Lock1", ""},
-			{ 1, "Lock2", ""},
-			{ 2, "BootLock1", ""},
-			{ 3, "BootLock2", ""},
-			{ 4, "BootLoad1", ""},
+			{ 0, "Lock1", "" },
+			{ 1, "Lock2", "" },
+			{ 2, "BootLock1", "" },
+			{ 3, "BootLock2", "" },
+			{ 4, "BootLoad1", "" },
 			{ 5, "BootLoad2", ""}
 		},
 		{
@@ -4732,10 +4743,10 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 0, "FOSC0", ""},
-			{ 1, "FOSC1", ""},
-			{ 2, "WDTE", ""},
-			{ 3, "CP", ""},
+			{ 0, "FOSC0", "" },
+			{ 1, "FOSC1", "" },
+			{ 2, "WDTE", "" },
+			{ 3, "CP", "" },
 			{ 4, "MCLRE", ""}
 		},
 		{
@@ -4753,10 +4764,10 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 0, "FOSC0", ""},
-			{ 1, "FOSC1", ""},
-			{ 2, "WDTE", ""},
-			{ 3, "CP", ""},
+			{ 0, "FOSC0", "" },
+			{ 1, "FOSC1", "" },
+			{ 2, "WDTE", "" },
+			{ 3, "CP", "" },
 			{ 4, "MCLRE", ""}
 		},
 		{
@@ -4774,10 +4785,10 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 0, "FOSC0", ""},
-			{ 1, "FOSC1", ""},
-			{ 2, "WDTE", ""},
-			{ 3, "CP", ""},
+			{ 0, "FOSC0", "" },
+			{ 1, "FOSC1", "" },
+			{ 2, "WDTE", "" },
+			{ 3, "CP", "" },
 			{ 4, "MCLRE", ""}
 		},
 		{
@@ -4795,10 +4806,10 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 0, "FOSC0", ""},
-			{ 1, "FOSC1", ""},
-			{ 2, "WDTE", ""},
-			{ 3, "CP", ""},
+			{ 0, "FOSC0", "" },
+			{ 1, "FOSC1", "" },
+			{ 2, "WDTE", "" },
+			{ 3, "CP", "" },
 			{ 4, "MCLRE", ""}
 		},
 		{
@@ -4816,10 +4827,10 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 0, "FOSC0", ""},
-			{ 1, "FOSC1", ""},
-			{ 2, "WDTE", ""},
-			{ 3, "CP", ""},
+			{ 0, "FOSC0", "" },
+			{ 1, "FOSC1", "" },
+			{ 2, "WDTE", "" },
+			{ 3, "CP", "" },
 			{ 4, "MCLRE", ""}
 		},
 		{
@@ -4837,10 +4848,10 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 0, "FOSC0", ""},
-			{ 1, "FOSC1", ""},
-			{ 2, "WDTE", ""},
-			{ 3, "CP", ""},
+			{ 0, "FOSC0", "" },
+			{ 1, "FOSC1", "" },
+			{ 2, "WDTE", "" },
+			{ 3, "CP", "" },
 			{ 4, "MCLRE", ""}
 		},
 		{
@@ -4858,19 +4869,19 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 0, "FOSC0", ""},
-			{ 1, "FOSC1", ""},
-			{ 2, "FOSC2", ""},
-			{ 3, "WDTE", ""},
-			{ 4, "PWRTE", ""},
-			{ 5, "CP0", ""},
-			{ 6, "CP1", ""},
-			{ 7, "MCLRE", ""},
-			{ 8, "CP0", ""},
-			{ 9, "CP1", ""},
-			{ 10, "CP0", ""},
-			{ 11, "CP1", ""},
-			{ 12, "CP0", ""},
+			{ 0, "FOSC0", "" },
+			{ 1, "FOSC1", "" },
+			{ 2, "FOSC2", "" },
+			{ 3, "WDTE", "" },
+			{ 4, "PWRTE", "" },
+			{ 5, "CP0", "" },
+			{ 6, "CP1", "" },
+			{ 7, "MCLRE", "" },
+			{ 8, "CP0", "" },
+			{ 9, "CP1", "" },
+			{ 10, "CP0", "" },
+			{ 11, "CP1", "" },
+			{ 12, "CP0", "" },
 			{ 13, "CP1", ""}
 		},
 		{
@@ -4888,19 +4899,19 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 0, "FOSC0", ""},
-			{ 1, "FOSC1", ""},
-			{ 2, "FOSC2", ""},
-			{ 3, "WDTE", ""},
-			{ 4, "PWRTE", ""},
-			{ 5, "CP0", ""},
-			{ 6, "CP1", ""},
-			{ 7, "MCLRE", ""},
-			{ 8, "CP0", ""},
-			{ 9, "CP1", ""},
-			{ 10, "CP0", ""},
-			{ 11, "CP1", ""},
-			{ 12, "CP0", ""},
+			{ 0, "FOSC0", "" },
+			{ 1, "FOSC1", "" },
+			{ 2, "FOSC2", "" },
+			{ 3, "WDTE", "" },
+			{ 4, "PWRTE", "" },
+			{ 5, "CP0", "" },
+			{ 6, "CP1", "" },
+			{ 7, "MCLRE", "" },
+			{ 8, "CP0", "" },
+			{ 9, "CP1", "" },
+			{ 10, "CP0", "" },
+			{ 11, "CP1", "" },
+			{ 12, "CP0", "" },
 			{ 13, "CP1", ""}
 		},
 		{
@@ -4918,19 +4929,19 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 0, "FOSC0", ""},
-			{ 1, "FOSC1", ""},
-			{ 2, "FOSC2", ""},
-			{ 3, "WDTE", ""},
-			{ 4, "PWRTE", ""},
-			{ 5, "CP0", ""},
-			{ 6, "CP1", ""},
-			{ 7, "MCLRE", ""},
-			{ 8, "CP0", ""},
-			{ 9, "CP1", ""},
-			{ 10, "CP0", ""},
-			{ 11, "CP1", ""},
-			{ 12, "CP0", ""},
+			{ 0, "FOSC0", "" },
+			{ 1, "FOSC1", "" },
+			{ 2, "FOSC2", "" },
+			{ 3, "WDTE", "" },
+			{ 4, "PWRTE", "" },
+			{ 5, "CP0", "" },
+			{ 6, "CP1", "" },
+			{ 7, "MCLRE", "" },
+			{ 8, "CP0", "" },
+			{ 9, "CP1", "" },
+			{ 10, "CP0", "" },
+			{ 11, "CP1", "" },
+			{ 12, "CP0", "" },
 			{ 13, "CP1", ""}
 		},
 		{
@@ -4948,19 +4959,19 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 0, "FOSC0", ""},
-			{ 1, "FOSC1", ""},
-			{ 2, "FOSC2", ""},
-			{ 3, "WDTE", ""},
-			{ 4, "PWRTE", ""},
-			{ 5, "CP0", ""},
-			{ 6, "CP1", ""},
-			{ 7, "MCLRE", ""},
-			{ 8, "CP0", ""},
-			{ 9, "CP1", ""},
-			{ 10, "CP0", ""},
-			{ 11, "CP1", ""},
-			{ 12, "CP0", ""},
+			{ 0, "FOSC0", "" },
+			{ 1, "FOSC1", "" },
+			{ 2, "FOSC2", "" },
+			{ 3, "WDTE", "" },
+			{ 4, "PWRTE", "" },
+			{ 5, "CP0", "" },
+			{ 6, "CP1", "" },
+			{ 7, "MCLRE", "" },
+			{ 8, "CP0", "" },
+			{ 9, "CP1", "" },
+			{ 10, "CP0", "" },
+			{ 11, "CP1", "" },
+			{ 12, "CP0", "" },
 			{ 13, "CP1", ""}
 		},
 		{
@@ -4978,10 +4989,10 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 0, "FOSC0", ""},
-			{ 1, "FOSC1", ""},
-			{ 2, "WDTE", ""},
-			{ 3, "PWRTE", ""},
+			{ 0, "FOSC0", "" },
+			{ 1, "FOSC1", "" },
+			{ 2, "WDTE", "" },
+			{ 3, "PWRTE", "" },
 			{ 4, "CP", ""}
 		},
 		{
@@ -4999,10 +5010,10 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 0, "FOSC0", ""},
-			{ 1, "FOSC1", ""},
-			{ 2, "WDTE", ""},
-			{ 3, "PWRTE", ""},
+			{ 0, "FOSC0", "" },
+			{ 1, "FOSC1", "" },
+			{ 2, "WDTE", "" },
+			{ 3, "PWRTE", "" },
 			{ 4, "CP", ""}
 		},
 		{
@@ -5020,10 +5031,10 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 0, "FOSC0", ""},
-			{ 1, "FOSC1", ""},
-			{ 2, "WDTE", ""},
-			{ 3, "PWRTE", ""},
+			{ 0, "FOSC0", "" },
+			{ 1, "FOSC1", "" },
+			{ 2, "WDTE", "" },
+			{ 3, "PWRTE", "" },
 			{ 4, "CP", ""}
 		},
 		{
@@ -5041,18 +5052,18 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 0, "FOSC0", ""},
-			{ 1, "FOSC1", ""},
-			{ 2, "WDTE", ""},
-			{ 3, "PWRTE", ""},
-			{ 4, "CP0", ""},
-			{ 5, "CP1", ""},
-			{ 6, "BODEN", ""},
-			{ 7, "LVP", ""},
-			{ 8, "CPD", ""},
-			{ 9, "WRT", ""},
-			{ 11, "RESV", ""},
-			{ 12, "CP0", ""},
+			{ 0, "FOSC0", "" },
+			{ 1, "FOSC1", "" },
+			{ 2, "WDTE", "" },
+			{ 3, "PWRTE", "" },
+			{ 4, "CP0", "" },
+			{ 5, "CP1", "" },
+			{ 6, "BODEN", "" },
+			{ 7, "LVP", "" },
+			{ 8, "CPD", "" },
+			{ 9, "WRT", "" },
+			{ 11, "RESV", "" },
+			{ 12, "CP0", "" },
 			{ 13, "CP1", ""}
 		},
 		{
@@ -5070,18 +5081,18 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 0, "FOSC0", ""},
-			{ 1, "FOSC1", ""},
-			{ 2, "WDTE", ""},
-			{ 3, "PWRTE", ""},
-			{ 4, "CP0", ""},
-			{ 5, "CP1", ""},
-			{ 6, "BODEN", ""},
-			{ 7, "LVP", ""},
-			{ 8, "CPD", ""},
-			{ 9, "WRT", ""},
-			{ 11, "RESV", ""},
-			{ 12, "CP0", ""},
+			{ 0, "FOSC0", "" },
+			{ 1, "FOSC1", "" },
+			{ 2, "WDTE", "" },
+			{ 3, "PWRTE", "" },
+			{ 4, "CP0", "" },
+			{ 5, "CP1", "" },
+			{ 6, "BODEN", "" },
+			{ 7, "LVP", "" },
+			{ 8, "CPD", "" },
+			{ 9, "WRT", "" },
+			{ 11, "RESV", "" },
+			{ 12, "CP0", "" },
 			{ 13, "CP1", ""}
 		},
 		{
@@ -5099,18 +5110,18 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 0, "FOSC0", ""},
-			{ 1, "FOSC1", ""},
-			{ 2, "WDTE", ""},
-			{ 3, "PWRTE", ""},
-			{ 4, "CP0", ""},
-			{ 5, "CP1", ""},
-			{ 6, "BODEN", ""},
-			{ 7, "LVP", ""},
-			{ 8, "CPD", ""},
-			{ 9, "WRT", ""},
-			{ 11, "RESV", ""},
-			{ 12, "CP0", ""},
+			{ 0, "FOSC0", "" },
+			{ 1, "FOSC1", "" },
+			{ 2, "WDTE", "" },
+			{ 3, "PWRTE", "" },
+			{ 4, "CP0", "" },
+			{ 5, "CP1", "" },
+			{ 6, "BODEN", "" },
+			{ 7, "LVP", "" },
+			{ 8, "CPD", "" },
+			{ 9, "WRT", "" },
+			{ 11, "RESV", "" },
+			{ 12, "CP0", "" },
 			{ 13, "CP1", ""}
 		},
 		{
@@ -5128,18 +5139,18 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 0, "FOSC0", ""},
-			{ 1, "FOSC1", ""},
-			{ 2, "WDTE", ""},
-			{ 3, "PWRTE", ""},
-			{ 4, "CP0", ""},
-			{ 5, "CP1", ""},
-			{ 6, "BODEN", ""},
-			{ 7, "LVP", ""},
-			{ 8, "CPD", ""},
-			{ 9, "WRT", ""},
-			{ 11, "RESV", ""},
-			{ 12, "CP0", ""},
+			{ 0, "FOSC0", "" },
+			{ 1, "FOSC1", "" },
+			{ 2, "WDTE", "" },
+			{ 3, "PWRTE", "" },
+			{ 4, "CP0", "" },
+			{ 5, "CP1", "" },
+			{ 6, "BODEN", "" },
+			{ 7, "LVP", "" },
+			{ 8, "CPD", "" },
+			{ 9, "WRT", "" },
+			{ 11, "RESV", "" },
+			{ 12, "CP0", "" },
 			{ 13, "CP1", ""}
 		},
 		{
@@ -5157,18 +5168,18 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 0, "FOSC0", ""},
-			{ 1, "FOSC1", ""},
-			{ 2, "WDTE", ""},
-			{ 3, "PWRTE", ""},
-			{ 4, "CP0", ""},
-			{ 5, "CP1", ""},
-			{ 6, "BODEN", ""},
-			{ 7, "LVP", ""},
-			{ 8, "CPD", ""},
-			{ 9, "WRT", ""},
-			{ 11, "RESV", ""},
-			{ 12, "CP0", ""},
+			{ 0, "FOSC0", "" },
+			{ 1, "FOSC1", "" },
+			{ 2, "WDTE", "" },
+			{ 3, "PWRTE", "" },
+			{ 4, "CP0", "" },
+			{ 5, "CP1", "" },
+			{ 6, "BODEN", "" },
+			{ 7, "LVP", "" },
+			{ 8, "CPD", "" },
+			{ 9, "WRT", "" },
+			{ 11, "RESV", "" },
+			{ 12, "CP0", "" },
 			{ 13, "CP1", ""}
 		},
 		{
@@ -5186,18 +5197,18 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 0, "FOSC0", ""},
-			{ 1, "FOSC1", ""},
-			{ 2, "WDTE", ""},
-			{ 3, "PWRTE", ""},
-			{ 4, "CP0", ""},
-			{ 5, "CP1", ""},
-			{ 6, "BODEN", ""},
-			{ 7, "LVP", ""},
-			{ 8, "CPD", ""},
-			{ 9, "WRT", ""},
-			{ 11, "RESV", ""},
-			{ 12, "CP0", ""},
+			{ 0, "FOSC0", "" },
+			{ 1, "FOSC1", "" },
+			{ 2, "WDTE", "" },
+			{ 3, "PWRTE", "" },
+			{ 4, "CP0", "" },
+			{ 5, "CP1", "" },
+			{ 6, "BODEN", "" },
+			{ 7, "LVP", "" },
+			{ 8, "CPD", "" },
+			{ 9, "WRT", "" },
+			{ 11, "RESV", "" },
+			{ 12, "CP0", "" },
 			{ 13, "CP1", ""}
 		},
 		{
@@ -5215,18 +5226,18 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 0, "FOSC0", ""},
-			{ 1, "FOSC1", ""},
-			{ 2, "WDTE", ""},
-			{ 3, "PWRTE", ""},
-			{ 4, "CP0", ""},
-			{ 5, "CP1", ""},
-			{ 6, "BODEN", ""},
-			{ 7, "LVP", ""},
-			{ 8, "CPD", ""},
-			{ 9, "WRT", ""},
-			{ 11, "RESV", ""},
-			{ 12, "CP0", ""},
+			{ 0, "FOSC0", "" },
+			{ 1, "FOSC1", "" },
+			{ 2, "WDTE", "" },
+			{ 3, "PWRTE", "" },
+			{ 4, "CP0", "" },
+			{ 5, "CP1", "" },
+			{ 6, "BODEN", "" },
+			{ 7, "LVP", "" },
+			{ 8, "CPD", "" },
+			{ 9, "WRT", "" },
+			{ 11, "RESV", "" },
+			{ 12, "CP0", "" },
 			{ 13, "CP1", ""}
 		},
 		{
@@ -5244,16 +5255,16 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 0, "FOSC0", ""},
-			{ 1, "FOSC1", ""},
-			{ 2, "WDTEN", ""},
-			{ 3, "/PWRTEN", ""},
-			{ 6, "BOREN", ""},
-			{ 7, "LVP", ""},
-			{ 8, "CPD", ""},
-			{ 9, "WRT0", ""},
-			{ 11, "WRT1", ""},
-			{ 12, "DEBUG", ""},
+			{ 0, "FOSC0", "" },
+			{ 1, "FOSC1", "" },
+			{ 2, "WDTEN", "" },
+			{ 3, "/PWRTEN", "" },
+			{ 6, "BOREN", "" },
+			{ 7, "LVP", "" },
+			{ 8, "CPD", "" },
+			{ 9, "WRT0", "" },
+			{ 11, "WRT1", "" },
+			{ 12, "DEBUG", "" },
 			{ 14, "CP", ""}
 		},
 		{
@@ -5271,16 +5282,16 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 0, "FOSC0", ""},
-			{ 1, "FOSC1", ""},
-			{ 2, "WDTEN", ""},
-			{ 3, "/PWRTEN", ""},
-			{ 6, "BOREN", ""},
-			{ 7, "LVP", ""},
-			{ 8, "CPD", ""},
-			{ 9, "WRT0", ""},
-			{ 11, "WRT1", ""},
-			{ 12, "DEBUG", ""},
+			{ 0, "FOSC0", "" },
+			{ 1, "FOSC1", "" },
+			{ 2, "WDTEN", "" },
+			{ 3, "/PWRTEN", "" },
+			{ 6, "BOREN", "" },
+			{ 7, "LVP", "" },
+			{ 8, "CPD", "" },
+			{ 9, "WRT0", "" },
+			{ 11, "WRT1", "" },
+			{ 12, "DEBUG", "" },
 			{ 14, "CP", ""}
 		},
 		{
@@ -5298,16 +5309,16 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 0, "FOSC0", ""},
-			{ 1, "FOSC1", ""},
-			{ 2, "WDTEN", ""},
-			{ 3, "/PWRTEN", ""},
-			{ 6, "BOREN", ""},
-			{ 7, "LVP", ""},
-			{ 8, "CPD", ""},
-			{ 9, "WRT0", ""},
-			{ 11, "WRT1", ""},
-			{ 12, "DEBUG", ""},
+			{ 0, "FOSC0", "" },
+			{ 1, "FOSC1", "" },
+			{ 2, "WDTEN", "" },
+			{ 3, "/PWRTEN", "" },
+			{ 6, "BOREN", "" },
+			{ 7, "LVP", "" },
+			{ 8, "CPD", "" },
+			{ 9, "WRT0", "" },
+			{ 11, "WRT1", "" },
+			{ 12, "DEBUG", "" },
 			{ 14, "CP", ""}
 		},
 		{
@@ -5325,16 +5336,16 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 0, "FOSC0", ""},
-			{ 1, "FOSC1", ""},
-			{ 2, "WDTEN", ""},
-			{ 3, "/PWRTEN", ""},
-			{ 6, "BOREN", ""},
-			{ 7, "LVP", ""},
-			{ 8, "CPD", ""},
-			{ 9, "WRT0", ""},
-			{ 11, "WRT1", ""},
-			{ 12, "DEBUG", ""},
+			{ 0, "FOSC0", "" },
+			{ 1, "FOSC1", "" },
+			{ 2, "WDTEN", "" },
+			{ 3, "/PWRTEN", "" },
+			{ 6, "BOREN", "" },
+			{ 7, "LVP", "" },
+			{ 8, "CPD", "" },
+			{ 9, "WRT0", "" },
+			{ 11, "WRT1", "" },
+			{ 12, "DEBUG", "" },
 			{ 14, "CP", ""}
 		},
 		{
@@ -5352,18 +5363,18 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 0, "FOSC0", ""},
-			{ 1, "FOSC1", ""},
-			{ 2, "WDTEN", ""},
-			{ 3, "/PWRTEN", ""},
-			{ 4, "FOSC2", ""},
-			{ 5, "MCLRE", ""},
-			{ 6, "BOREN", ""},
-			{ 7, "LVP", ""},
-			{ 8, "CPD", ""},
-			{ 10, "CP0", ""},
-			{ 11, "CP1", ""},
-			{ 12, "CP0", ""},
+			{ 0, "FOSC0", "" },
+			{ 1, "FOSC1", "" },
+			{ 2, "WDTEN", "" },
+			{ 3, "/PWRTEN", "" },
+			{ 4, "FOSC2", "" },
+			{ 5, "MCLRE", "" },
+			{ 6, "BOREN", "" },
+			{ 7, "LVP", "" },
+			{ 8, "CPD", "" },
+			{ 10, "CP0", "" },
+			{ 11, "CP1", "" },
+			{ 12, "CP0", "" },
 			{ 13, "CP1", ""}
 		},
 		{
@@ -5381,18 +5392,18 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock
-			{ 0, "FOSC0", ""},
-			{ 1, "FOSC1", ""},
-			{ 2, "WDTEN", ""},
-			{ 3, "/PWRTEN", ""},
-			{ 4, "FOSC2", ""},
-			{ 5, "MCLRE", ""},
-			{ 6, "BOREN", ""},
-			{ 7, "LVP", ""},
-			{ 8, "CPD", ""},
-			{ 10, "CP0", ""},
-			{ 11, "CP1", ""},
-			{ 12, "CP0", ""},
+			{ 0, "FOSC0", "" },
+			{ 1, "FOSC1", "" },
+			{ 2, "WDTEN", "" },
+			{ 3, "/PWRTEN", "" },
+			{ 4, "FOSC2", "" },
+			{ 5, "MCLRE", "" },
+			{ 6, "BOREN", "" },
+			{ 7, "LVP", "" },
+			{ 8, "CPD", "" },
+			{ 10, "CP0", "" },
+			{ 11, "CP1", "" },
+			{ 12, "CP0", "" },
 			{ 13, "CP1", ""}
 		},
 		{
