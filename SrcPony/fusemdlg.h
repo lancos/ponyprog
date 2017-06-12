@@ -106,6 +106,9 @@ class fuseModalDialog : public QDialog, public cTranslator, public Ui::FuseDialo
 	QVector<QComboBox *> lstLockWidget;
 	QVector<QComboBox *> lstFuseWidget;
 
+	unsigned int fuseBits;
+	unsigned int lockBits;
+
 	int currentChip;
 	ChipBits currentBitField;
 	bool write;

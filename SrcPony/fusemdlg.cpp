@@ -268,6 +268,7 @@ void fuseModalDialog::initWidgets(const QString &msg, bool readonly)
 	if (currentBitField.lock.count() > 0)
 	{
 		unsigned int lock = awip->GetLockBits();
+		lockBits = lock;
 
 		for (int i = 0; i < currentBitField.lock.count(); i++)
 		{
@@ -297,6 +298,7 @@ void fuseModalDialog::initWidgets(const QString &msg, bool readonly)
 	if (currentBitField.fuse.count() > 0)
 	{
 		unsigned int fuse = awip->GetFuseBits();
+		fuseBits = fuse;
 
 		for (int i = 0; i < currentBitField.fuse.count(); i++)
 		{
@@ -394,7 +396,7 @@ void fuseModalDialog::onFuseComboSelected(int idx)
 		}
 		globIdx += lstFuseWidget.at(i)->count();
 
-                // correcture 
+		// correcture for undefined
 		if (lstFuseWidget.at(i)->findText("Undefined combination") > 0)
 		{
 			globIdx--;
@@ -429,6 +431,8 @@ void fuseModalDialog::onFuseComboSelected(int idx)
 
 	// activate signal
 	connect(treeWidgetFuse, SIGNAL(itemChanged(QTreeWidgetItem *, int)), this, SLOT(onFuseBitClicked(QTreeWidgetItem *, int)));
+
+	labelFuseLock->setText(QString().sprintf("Fuse: %x Lock: %x", ~fuseBits, ~lockBits));
 }
 
 
@@ -447,7 +451,7 @@ void fuseModalDialog::onLockComboSelected(int idx)
 		}
 		globIdx += lstLockWidget.at(i)->count();
 
-                // correcture 
+		// correcture for undefined
 		if (lstLockWidget.at(i)->findText("Undefined combination") > 0)
 		{
 			globIdx--;
@@ -482,6 +486,8 @@ void fuseModalDialog::onLockComboSelected(int idx)
 
 	// activate signal
 	connect(treeWidgetLock, SIGNAL(itemChanged(QTreeWidgetItem *, int)), this, SLOT(onLockBitClicked(QTreeWidgetItem *, int)));
+
+	labelFuseLock->setText(QString().sprintf("Fuse: %x Lock: %x", ~fuseBits, ~lockBits));
 }
 
 
@@ -531,7 +537,32 @@ void fuseModalDialog::setMaskBits(QTreeWidget *w, const QString &cMask)
 
 	for (int i = 0; i < bitStr.length(); i++)
 	{
-		Qt::CheckState st = (bField & 0x01) ?  Qt::Checked :  Qt::Unchecked;
+		Qt::CheckState st;
+		if (bField & 0x01)
+		{
+			st = Qt::Checked;
+			if (w == treeWidgetFuse)
+			{
+				fuseBits |= (1 << idx);
+			}
+			else
+			{
+				lockBits |= (1 << idx);
+			}
+		}
+		else
+		{
+			st = Qt::Unchecked;
+			if (w == treeWidgetFuse)
+			{
+				fuseBits &= ~(1 << idx);
+			}
+			else
+			{
+				lockBits &= ~(1 << idx);
+			}
+		}
+
 		bField >>= 1;
 		w->topLevelItem(idx)->setCheckState(0, st);
 
