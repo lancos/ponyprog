@@ -111,7 +111,6 @@ void fuseModalDialog::onOk()
 
 			f |= (1 << bOffset);
 		}
-
 	}
 
 	for (int i = 0; i < treeWidgetLock->topLevelItemCount(); ++i)
@@ -509,6 +508,7 @@ void fuseModalDialog::setMaskBits(QTreeWidget *w, const QString &cMask)
 	unsigned int bField = bitStr.toInt(&ok, 2);
 
 	int idx;
+	// at begin of string only
 	mskName = "^" + mskName + "\\d+";
 
 	qDebug() << cMask <<  "converted to" << mskName << (bin) << bField << (dec);
@@ -591,8 +591,6 @@ void fuseModalDialog::setMaskBits(QTreeWidget *w, const QString &cMask)
 
 void fuseModalDialog::onFuseBitClicked(QTreeWidgetItem *itm, int col)
 {
-	qDebug() << itm->text(0) << itm->checkState(0);
-
 	Qt::CheckState st = itm->checkState(0);
 	QString t =  itm->text(0);
 	int pos = t.indexOf(",");
@@ -615,6 +613,10 @@ void fuseModalDialog::onFuseBitClicked(QTreeWidgetItem *itm, int col)
 		fuseBits &= ~(1 << bOffset);
 	}
 
+	QString fuseName = t.mid(pos + 2);
+
+	qDebug() << itm->text(0) << st << fuseName;
+
 	labelFuseLock->setText(QString().sprintf("Fuse: 0x%08X Lock: 0x%08X", fuseBits, lockBits));
 
 }
@@ -622,8 +624,6 @@ void fuseModalDialog::onFuseBitClicked(QTreeWidgetItem *itm, int col)
 
 void fuseModalDialog::onLockBitClicked(QTreeWidgetItem *itm, int col)
 {
-	qDebug() << itm->text(0) << itm->checkState(0);
-
 	Qt::CheckState st = itm->checkState(0);
 	QString t =  itm->text(0);
 	int pos = t.indexOf(",");
@@ -645,6 +645,10 @@ void fuseModalDialog::onLockBitClicked(QTreeWidgetItem *itm, int col)
 	{
 		lockBits &= ~(1 << bOffset);
 	}
+
+	QString lockName = t.mid(pos + 2);
+
+	qDebug() << itm->text(0) << st << lockName;
 
 	labelFuseLock->setText(QString().sprintf("Fuse: 0x%08X Lock: 0x%08X", fuseBits, lockBits));
 }
@@ -4827,12 +4831,16 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			// lock
 			{ 0, "FOSC0", "" },
 			{ 1, "FOSC1", "" },
-			{ 2, "WDTE", "" },
-			{ 3, "CP", "" },
-			{ 4, "MCLRE", ""}
+			{ 2, "WDTE", "Watchdog timer enable" },
+			{ 3, "CP", "Code protection bit" },
+			{ 4, "MCLRE", "Not MCLR enable bit"}
 		},
 		{
 			// lock mask description
+			{ "FOSC=11", "EXTRC - external RC oscillator" },
+			{ "FOSC=10", "INTRC - internal RC oscillator" },
+			{ "FOSC=00", "XT oscillator" },
+			{ "FOSC=00", "LP oscillator" }
 		}
 	},
 
@@ -4848,12 +4856,16 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			// lock
 			{ 0, "FOSC0", "" },
 			{ 1, "FOSC1", "" },
-			{ 2, "WDTE", "" },
-			{ 3, "CP", "" },
-			{ 4, "MCLRE", ""}
+			{ 2, "WDTE", "Watchdog timer enable" },
+			{ 3, "CP", "Code protection bit" },
+			{ 4, "MCLRE", "Not MCLR enable bit"}
 		},
 		{
 			// lock mask description
+			{ "FOSC=11", "EXTRC - external RC oscillator" },
+			{ "FOSC=10", "INTRC - internal RC oscillator" },
+			{ "FOSC=00", "XT oscillator" },
+			{ "FOSC=00", "LP oscillator" }
 		}
 	},
 
@@ -4869,12 +4881,16 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			// lock
 			{ 0, "FOSC0", "" },
 			{ 1, "FOSC1", "" },
-			{ 2, "WDTE", "" },
-			{ 3, "CP", "" },
-			{ 4, "MCLRE", ""}
+			{ 2, "WDTE", "Watchdog timer enable" },
+			{ 3, "CP", "Code protection bit" },
+			{ 4, "MCLRE", "Not MCLR enable bit"}
 		},
 		{
 			// lock mask description
+			{ "FOSC=11", "EXTRC - external RC oscillator" },
+			{ "FOSC=10", "INTRC - internal RC oscillator" },
+			{ "FOSC=00", "XT oscillator" },
+			{ "FOSC=00", "LP oscillator" }
 		}
 	},
 
@@ -4890,12 +4906,16 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			// lock
 			{ 0, "FOSC0", "" },
 			{ 1, "FOSC1", "" },
-			{ 2, "WDTE", "" },
-			{ 3, "CP", "" },
-			{ 4, "MCLRE", ""}
+			{ 2, "WDTE", "Watchdog timer enable" },
+			{ 3, "CP", "Code protection bit" },
+			{ 4, "MCLRE", "Not MCLR enable bit"}
 		},
 		{
 			// lock mask description
+			{ "FOSC=11", "EXTRC - external RC oscillator" },
+			{ "FOSC=10", "INTRC - internal RC oscillator" },
+			{ "FOSC=00", "XT oscillator" },
+			{ "FOSC=00", "LP oscillator" }
 		}
 	},
 
@@ -4911,12 +4931,16 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			// lock
 			{ 0, "FOSC0", "" },
 			{ 1, "FOSC1", "" },
-			{ 2, "WDTE", "" },
-			{ 3, "CP", "" },
-			{ 4, "MCLRE", ""}
+			{ 2, "WDTE", "Watchdog timer enable" },
+			{ 3, "CP", "Code protection bit" },
+			{ 4, "MCLRE", "Not MCLR enable bit"}
 		},
 		{
 			// lock mask description
+			{ "FOSC=11", "EXTRC - external RC oscillator" },
+			{ "FOSC=10", "INTRC - internal RC oscillator" },
+			{ "FOSC=00", "XT oscillator" },
+			{ "FOSC=00", "LP oscillator" }
 		}
 	},
 
@@ -4932,12 +4956,16 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			// lock
 			{ 0, "FOSC0", "" },
 			{ 1, "FOSC1", "" },
-			{ 2, "WDTE", "" },
-			{ 3, "CP", "" },
-			{ 4, "MCLRE", ""}
+			{ 2, "WDTE", "Watchdog timer enable" },
+			{ 3, "CP", "Code protection bit" },
+			{ 4, "MCLRE", "Not MCLR enable bit"}
 		},
 		{
 			// lock mask description
+			{ "FOSC=11", "EXTRC - external RC oscillator" },
+			{ "FOSC=10", "INTRC - internal RC oscillator" },
+			{ "FOSC=00", "XT oscillator" },
+			{ "FOSC=00", "LP oscillator" }
 		}
 	},
 
