@@ -87,6 +87,7 @@ class fuseModalDialog : public QDialog, public cTranslator, public Ui::FuseDialo
   protected:    //--------------------------------------- protected
 
   private:
+	void displayBitFields();
 	void setTextWidgets();
 	void scanMasks();
 	void initWidgets(const QString &msg, bool readonly);
