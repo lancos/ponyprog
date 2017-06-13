@@ -679,7 +679,7 @@ void fuseModalDialog::onFuseBitClicked(QTreeWidgetItem *itm, int col)
 			}
 
 			t = t.mid(pos + 2);
-			qDebug() << "t: " << t;
+// 			qDebug() << "t: " << t;
 			if (t.indexOf(QRegExp(msplt)) >= 0)
 			{
 				if (treeWidgetFuse->topLevelItem(iTree)->checkState(0) == Qt::Unchecked)
@@ -691,10 +691,10 @@ void fuseModalDialog::onFuseBitClicked(QTreeWidgetItem *itm, int col)
 					bitString = "1" + bitString;
 				}
 			}
-			else
-			{
-				break;
-			}
+// 			else
+// 			{
+// 				break;
+// 			}
 		}
 
 		if (bitString.length() > 0)
@@ -849,10 +849,10 @@ void fuseModalDialog::onLockBitClicked(QTreeWidgetItem *itm, int col)
 					bitString = "1" + bitString;
 				}
 			}
-			else
-			{
-				break;
-			}
+// 			else
+// 			{
+// 				break;
+// 			}
 		}
 
 		if (bitString.length() > 0)
