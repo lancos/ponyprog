@@ -117,6 +117,7 @@ SOURCES  += SrcPony/aboutmdlg.cpp \
             SrcPony/e24xx-5.cpp \
             SrcPony/e2profil.cpp \
             SrcPony/fusemdlg.cpp \
+            SrcPony/bitfield.cpp \
             SrcPony/blockmdlg.cpp \
             SrcPony/intfbuf.cpp \
             SrcPony/lpt_io_interf.cpp \
@@ -244,6 +245,7 @@ HEADERS  += SrcPony/e2app.h \
             SrcPony/e24xx-5.h \
             SrcPony/easyi2c_interf.h \
             SrcPony/fusemdlg.h \
+            SrcPony/bitfield.h \
             SrcPony/blockmdlg.h \
             SrcPony/intfbuf.h \
             SrcPony/lptinterf.h \

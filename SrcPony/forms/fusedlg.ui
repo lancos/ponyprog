@@ -26,67 +26,13 @@
       <attribute name="title">
        <string>Fuse</string>
       </attribute>
-      <layout class="QGridLayout" name="gridLayout">
-       <item row="4" column="0">
-        <widget class="QTreeWidget" name="treeWidgetFuse">
-         <column>
-          <property name="text">
-           <string>Bit</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>Description</string>
-          </property>
-         </column>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QComboBox" name="comboBoxFuse1"/>
-       </item>
-       <item row="2" column="0">
-        <widget class="QComboBox" name="comboBoxFuse2"/>
-       </item>
-       <item row="0" column="0">
-        <widget class="QComboBox" name="comboBoxFuse0"/>
-       </item>
-       <item row="3" column="0">
-        <widget class="QComboBox" name="comboBoxFuse3"/>
-       </item>
-      </layout>
+      <layout class="QGridLayout" name="gridLayout"/>
      </widget>
      <widget class="QWidget" name="tabLock">
       <attribute name="title">
        <string>Lock</string>
       </attribute>
-      <layout class="QGridLayout" name="gridLayout_2">
-       <item row="2" column="0">
-        <widget class="QComboBox" name="comboBoxLock2"/>
-       </item>
-       <item row="4" column="0">
-        <widget class="QTreeWidget" name="treeWidgetLock">
-         <column>
-          <property name="text">
-           <string>Bit</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>Description</string>
-          </property>
-         </column>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QComboBox" name="comboBoxLock1"/>
-       </item>
-       <item row="0" column="0">
-        <widget class="QComboBox" name="comboBoxLock0"/>
-       </item>
-       <item row="3" column="0">
-        <widget class="QComboBox" name="comboBoxLock3"/>
-       </item>
-      </layout>
+      <layout class="QGridLayout" name="gridLayout_2"/>
      </widget>
     </widget>
    </item>

@@ -29,53 +29,31 @@
 #include <QDebug>
 #include <QString>
 
+#include "bitfield.h"
+
 
 //=========================>>> BitFieldWidget::BitFieldWidget <<<====================
-BitFieldWidget::BitFieldWidget(QWidget *bw, long &cfrom, long &cto, int &cval, long max_addr, const QString title) :
-	QDialog(bw)
+BitFieldWidget::BitFieldWidget(QWidget *parent, QVector<BitInfo> &vInfo, QVector<MaskDescr> &vMask, unsigned int field) :
+	QWidget(parent)
 {
 	setupUi(this);
 
-// 	setWindowTitle(title);
-//
-// 	e2CmdWindow *cmdw = static_cast<e2CmdWindow *>(bw);
-//
-// 	if (cmdw->getStyleSheet().length() > 0)
-// 	{
-// 		setStyleSheet(cmdw->getStyleSheet());
-// 	}
-//
-// 	qDebug() << "BitFieldWidget::BitFieldWidget()";
-//
-// 	pFrom = &cfrom;
-// 	pTo = &cto;
-// 	pVal = &cval;
-//
-// 	mMax = (max_addr > 0) ? max_addr : 0xFFFFFF;
-// 	mFrom = (cfrom < 0) ? 0 : cfrom;
-// 	mTo = (cto < 0) ? mMax : cto;
-// 	mVal = (cval < 0) ? 0xFF : cval;
-//
-// 	lblFrom->setText(translate(STR_LBLFROM));
-// 	lblTo->setText(translate(STR_LBLTO));
-// 	lblVal->setText(translate(STR_LBLVALUE));
-//
-// 	pushOk->setText(translate(STR_BTNOK));
-// 	pushCancel->setText(translate(STR_BTNCANC));
-//
-// 	//TODO: should get strings from E2Profile settings, not local variables
-// 	QString str;
-// 	str = QString().sprintf("0x%04lX", mFrom);
-// 	txiFrom->setText(str);
-//
-// 	str = QString().sprintf("0x%04lX", mTo);
-// 	txiTo->setText(str);
-//
-// 	str = QString().sprintf("0x%02X", mVal);
-// 	txiVal->setText(str);
-//
-// 	connect(pushOk, SIGNAL(clicked()), this, SLOT(onOk()));
-// 	connect(pushCancel, SIGNAL(clicked()), this, SLOT(reject()));
+	vecInfo = &vInfo;
+
+	vecDescr = &vMask;
+
+	bField = field;
+
+	treeWidget->header()->hide();
+
+	lstWidget = (QVector<QComboBox *>() << comboBox0 << comboBox1 << comboBox2 << comboBox3);
+
+	for (int i = 0; i < 4; i++)
+	{
+		lstWidget.at(i)->setHidden(true);
+	}
+
+	initWidget();
 }
 
 
@@ -86,48 +64,24 @@ BitFieldWidget::~BitFieldWidget()
 }
 
 
-
-/**
- * @brief
- */
-void BitFieldWidget::initWidgets(const QString &msg, bool readonly)
+void BitFieldWidget::initWidget()
 {
-	long type = cmdw->GetCurrentChipType();
 
-	lstWidget = (QVector<QComboBox *>() << comboBox0 << comboBox1 << comboBox2 << comboBox3);
-
-	for (int i = 0; i < 4; i++)
+	if (vecInfo->count() > 0)
 	{
-		lstComboWidget.at(i)->setHidden(true);
-	}
-
-	currentChip = eepFindFuses(type);
-
-	if (currentChip < 0)
-	{
-		return;
-	}
-
-	currentBitField = eep_bits.at(currentChip);
-
-	if (currentBitField.lock.count() > 0)
-	{
-		unsigned int lock = awip->GetLockBits();
-		lockBits = lock;
-
-		for (int i = 0; i < currentBitField.lock.count(); i++)
+		for (int i = 0; i < vecInfo->count(); i++)
 		{
 			QTreeWidgetItem *itm = new QTreeWidgetItem();
-			int bitOffset = currentBitField.lock.at(i).bit;
-			itm->setText(0, QString().sprintf("Bit %d, ", bitOffset) + currentBitField.lock.at(i).ShortDescr);
-			if (currentBitField.lock.at(i).LongDescr.length() > 0)
+			int bitOffset = vecInfo->at(i).bit;
+			itm->setText(0, QString().sprintf("Bit %d, ", bitOffset) + vecInfo->at(i).ShortDescr);
+			if (vecInfo->at(i).LongDescr.length() > 0)
 			{
-				itm->setText(1, currentBitField.lock.at(i).LongDescr);
+				itm->setText(1, vecInfo->at(i).LongDescr);
 			}
 			itm->setFlags(itm->flags() | Qt::ItemIsUserCheckable);
 			itm->setCheckState(0, Qt::Unchecked);
 
-			if (lock & (1 << bitOffset))
+			if (bField & (1 << bitOffset))
 			{
 				itm->setCheckState(0, Qt::Checked);
 			}
@@ -142,14 +96,13 @@ void BitFieldWidget::initWidgets(const QString &msg, bool readonly)
 
 	scanMasks();
 
-	// now working with maskList
 
 	for (int i = 0; i < maskList.count(); i++)
 	{
 		QStringList lst;
 		QString currentMask = maskList.at(i);
 		// two loops are not optimal!
-		foreach (MaskDescr mdes, currentBitField.lockDescr)
+		foreach (MaskDescr mdes, *vecDescr)
 		{
 			if (mdes.mask.indexOf(QRegExp(currentMask)) >= 0)
 			{
@@ -163,13 +116,40 @@ void BitFieldWidget::initWidgets(const QString &msg, bool readonly)
 			lst << "Undefined combination";
 		}
 
-		lstComboWidget.at(i)->setHidden(false);
-		lstComboWidget.at(i)->addItems(lst);
+		lstWidget.at(i)->setHidden(false);
+		lstWidget.at(i)->addItems(lst);
 
-		connect(lstComboWidget.at(i), SIGNAL(activated(int)), this, SLOT(onComboSelected(int)));
+		connect(lstWidget.at(i), SIGNAL(activated(int)), this, SLOT(onComboSelected(int)));
 	}
 
-	emit displayBitFields();
+	emit displayBitFields(bField);
+}
+
+
+void BitFieldWidget::scanMasks()
+{
+	maskList.clear();
+
+	// analyse from mask entries
+	foreach (MaskDescr mdes, *vecDescr)
+	{
+		QString cMask = mdes.mask;
+		cMask.replace(QRegExp("\\d+"), "\\d+");
+		// at string begin only
+		cMask = "^" + cMask;
+		if (maskList.indexOf(cMask) == -1)
+		{
+			maskList << cMask;
+		}
+	}
+
+	qDebug() << maskList;
+}
+
+
+bool BitFieldWidget::isExp(unsigned int a)
+{
+	return (a > 0 && (a & (a - 1)) == 0);
 }
 
 
@@ -204,7 +184,7 @@ void BitFieldWidget::onComboSelected(int idx)
 
 	qDebug() << "onComboSelected index" << globIdx;
 
-	if (currentBitField.lockDescr.at(globIdx).mask.length() == 0)
+	if (vecDescr->at(globIdx).mask.length() == 0)
 	{
 		return;
 	}
@@ -213,8 +193,8 @@ void BitFieldWidget::onComboSelected(int idx)
 	disconnect(treeWidget, SIGNAL(itemChanged(QTreeWidgetItem *, int)), this, SLOT(onBitClicked(QTreeWidgetItem *, int)));
 
 	// possible list
-	QStringList mskList = currentBitField.lockDescr.at(globIdx).mask.split(" ");
-	qDebug() << mskList << currentBitField.lockDescr.at(globIdx).LongDescr;
+	QStringList mskList = vecDescr->at(globIdx).mask.split(" ");
+	qDebug() << mskList << vecDescr->at(globIdx).LongDescr;
 
 	foreach (QString cMask, mskList)
 	{
@@ -224,7 +204,7 @@ void BitFieldWidget::onComboSelected(int idx)
 	// activate signal
 	connect(treeWidget, SIGNAL(itemChanged(QTreeWidgetItem *, int)), this, SLOT(onBitClicked(QTreeWidgetItem *, int)));
 
-	emit displayBitFields();
+	emit displayBitFields(bField);
 }
 
 
@@ -241,13 +221,13 @@ void BitFieldWidget::setMaskBits(QTreeWidget *w, const QString &cMask)
 	QString bitStr = cMask.mid(p + 1);
 	bool ok;
 
-	unsigned int bField = bitStr.toInt(&ok, 2);
+	unsigned int localField = bitStr.toInt(&ok, 2);
 
 	int idx;
 	// at begin of string only
 	mskName = "^" + mskName + "\\d+";
 
-	qDebug() << cMask <<  "converted to" << mskName << (bin) << bField << (dec);
+	qDebug() << cMask <<  "converted to" << mskName << (bin) << localField << (dec);
 
 	// search in QTreeWidget the names
 	for (idx = 0; idx < w->topLevelItemCount(); idx++)
@@ -276,32 +256,21 @@ void BitFieldWidget::setMaskBits(QTreeWidget *w, const QString &cMask)
 	for (int i = 0; i < bitStr.length(); i++)
 	{
 		Qt::CheckState st;
-		if (bField & 0x01)
+		if (localField & 0x01)
 		{
 			st = Qt::Checked;
-			if (w == treeWidgetFuse)
-			{
-				fuseBits |= (1 << idx);
-			}
-			else
-			{
-				lockBits |= (1 << idx);
-			}
+
+			bField |= (1 << idx);
 		}
 		else
 		{
 			st = Qt::Unchecked;
-			if (w == treeWidgetFuse)
-			{
-				fuseBits &= ~(1 << idx);
-			}
-			else
-			{
-				lockBits &= ~(1 << idx);
-			}
+
+			bField &= ~(1 << idx);
 		}
 
-		bField >>= 1;
+		localField >>= 1;
+
 		w->topLevelItem(idx)->setCheckState(0, st);
 
 		QString t = w->topLevelItem(idx)->text(0);
@@ -346,22 +315,22 @@ void BitFieldWidget::onBitClicked(QTreeWidgetItem *itm, int col)
 
 	if (st == Qt::Checked)
 	{
-		fuseBits |= (1 << bOffset);
+		bField |= (1 << bOffset);
 	}
 	else
 	{
-		fuseBits &= ~(1 << bOffset);
+		bField &= ~(1 << bOffset);
 	}
 
-	displayBitFields();
+	displayBitFields(bField);
 
-	qDebug() << fuseName << maskListFuse;
+	qDebug() << fuseName << maskList;
 
 	int idxCombo = -1;
 
-	for (int i = 0; i < maskListFuse.count(); i++)
+	for (int i = 0; i < maskList.count(); i++)
 	{
-		QString m = maskListFuse.at(i);
+		QString m = maskList.at(i);
 		QStringList mSplitted = m.split(" ");
 
 		for (int r = 0; r < mSplitted.count(); r++)
@@ -388,7 +357,7 @@ void BitFieldWidget::onBitClicked(QTreeWidgetItem *itm, int col)
 		return;
 	}
 
-	QString completeMask = maskListFuse.at(idxCombo);
+	QString completeMask = maskList.at(idxCombo);
 
 	// now replace the \\d+ with bit information from treewidget
 	QStringList mSplitted = completeMask.split(" ");
@@ -400,9 +369,9 @@ void BitFieldWidget::onBitClicked(QTreeWidgetItem *itm, int col)
 		qDebug() << msplt;
 
 		QString bitString;
-		for (int iTree = 0; iTree < treeWidgetFuse->topLevelItemCount(); ++iTree)
+		for (int iTree = 0; iTree < treeWidget->topLevelItemCount(); ++iTree)
 		{
-			QString t = treeWidgetFuse->topLevelItem(iTree)->text(0);
+			QString t = treeWidget->topLevelItem(iTree)->text(0);
 			int pos = t.indexOf(", ");
 			if (pos <= 0)
 			{
@@ -413,7 +382,7 @@ void BitFieldWidget::onBitClicked(QTreeWidgetItem *itm, int col)
 
 			if (t.indexOf(QRegExp(msplt)) >= 0)
 			{
-				if (treeWidgetFuse->topLevelItem(iTree)->checkState(0) == Qt::Unchecked)
+				if (treeWidget->topLevelItem(iTree)->checkState(0) == Qt::Unchecked)
 				{
 					bitString = "0" + bitString;
 				}
@@ -428,7 +397,6 @@ void BitFieldWidget::onBitClicked(QTreeWidgetItem *itm, int col)
 		{
 			msplt.replace("\\d+", QString("=" + bitString));
 			completeMask.replace(orig, msplt);
-
 		}
 	}
 
@@ -437,26 +405,26 @@ void BitFieldWidget::onBitClicked(QTreeWidgetItem *itm, int col)
 	if (completeMask.length() > 0)
 	{
 		int i;
-		for (i = 0; i < currentBitField.fuseDescr.count(); i++)
+		for (i = 0; i < vecDescr->count(); i++)
 		{
-			if (currentBitField.fuseDescr.at(i).mask.indexOf(QRegExp(completeMask)) == 0)
+			if (vecDescr->at(i).mask.indexOf(QRegExp(completeMask)) == 0)
 			{
-				QString comboText = currentBitField.fuseDescr.at(i).LongDescr;
-				int c = lstFuseWidget.at(idxCombo)->findText(comboText);
+				QString comboText = vecDescr->at(i).LongDescr;
+				int c = lstWidget.at(idxCombo)->findText(comboText);
 				if (c >= 0)
 				{
-					lstFuseWidget.at(idxCombo)->setCurrentIndex(c);
+					lstWidget.at(idxCombo)->setCurrentIndex(c);
 				}
 
 				break;
 			}
 		}
-		if (i == currentBitField.fuseDescr.count())
+		if (i == vecDescr->count())
 		{
-			int p = lstFuseWidget.at(idxCombo)->findText("Undefined combination");
+			int p = lstWidget.at(idxCombo)->findText("Undefined combination");
 			if (p >= 0)
 			{
-				lstFuseWidget.at(idxCombo)->setCurrentIndex(p);
+				lstWidget.at(idxCombo)->setCurrentIndex(p);
 			}
 		}
 	}

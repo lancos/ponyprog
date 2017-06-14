@@ -34,29 +34,10 @@
 #include <QVector>
 #include <QCheckBox>
 
+#include "bitfield.h"
 #include "ui_fusedlg.h"
 
 #include "e2cmdw.h"
-
-/**
- * @brief BitInfo is the main structure for displaying in the QTreeWidget
- */
-typedef struct
-{
-	int  bit;
-	const QString ShortDescr;
-	const QString LongDescr;
-} BitInfo;
-
-/**
- * @brief MaskDescr is the structure for QComboBoxes with help information
- */
-typedef struct
-{
-	const QString mask;
-	const QString LongDescr;
-} MaskDescr;
-
 
 typedef struct
 {
@@ -76,25 +57,24 @@ class fuseModalDialog : public QDialog, public cTranslator, public Ui::FuseDialo
 	fuseModalDialog(e2CmdWindow *bw, e2AppWinInfo *p, bool readonly = false, const QString &msg = "");
 	virtual ~fuseModalDialog();             // Destructor
 
+  public slots:
+	void getLock(int l);
+	void getFuse(int f);
+
   private slots:
 	void onOk();
 	void onRead();
 	void onProg();
-	void onFuseComboSelected(int i);
-	void onFuseBitClicked(QTreeWidgetItem *itm, int col);
-	void onLockComboSelected(int i);
-	void onLockBitClicked(QTreeWidgetItem *itm, int col);
 
   protected:    //--------------------------------------- protected
 
   private:
 	void displayBitFields();
 	void setTextWidgets();
-	void scanMasks();
+
 	void initWidgets(const QString &msg, bool readonly);
 	int  eepFindFuses(long type);
-	void setMaskBits(QTreeWidget *w, const QString &m);//, unsigned int bits);
-	bool isExp(unsigned int a);
+
 
   private:              //--------------------------------------- private
 	static QVector<ChipBits> eep_bits;
@@ -102,17 +82,15 @@ class fuseModalDialog : public QDialog, public cTranslator, public Ui::FuseDialo
 	e2CmdWindow *cmdw;
 	e2AppWinInfo *awip;
 
-	QStringList maskListFuse; // fuse masks
-	QStringList maskListLock; // lock masks
-
-	QVector<QComboBox *> lstLockWidget;
-	QVector<QComboBox *> lstFuseWidget;
+	BitFieldWidget *fuse;
+	BitFieldWidget *lock;
 
 	unsigned int fuseBits;
 	unsigned int lockBits;
 
 	int currentChip;
 	ChipBits currentBitField;
+
 	bool write;
 	bool read;
 };

@@ -75,9 +75,6 @@ fuseModalDialog::~fuseModalDialog()
 
 void fuseModalDialog::setTextWidgets()
 {
-	treeWidgetFuse->header()->hide();
-	treeWidgetLock->header()->hide();
-
 	pushRead->setText(translate(STR_BTNREAD));
 	pushWrite->setText(translate(STR_BTNWRITE));
 	pushOk->setText(translate(STR_BTNOK));
@@ -87,55 +84,14 @@ void fuseModalDialog::setTextWidgets()
 
 void fuseModalDialog::onOk()
 {
-	unsigned int l = 0;
-	unsigned int f = 0;
-
-	for (int i = 0; i < treeWidgetFuse->topLevelItemCount(); ++i)
-	{
-		QString t = treeWidgetFuse->topLevelItem(i)->text(0);
-		if (treeWidgetFuse->topLevelItem(i)->checkState(0) == Qt::Unchecked)
-		{
-			continue;
-		}
-
-		int pos = t.indexOf(",");
-		if (pos > 0)
-		{
-			t = t.left(pos);
-			t = t.remove("Bit ");
-			int bOffset = t.toInt();
-
-			f |= (1 << bOffset);
-		}
-	}
-
-	for (int i = 0; i < treeWidgetLock->topLevelItemCount(); ++i)
-	{
-		QString t = treeWidgetLock->topLevelItem(i)->text(0);
-		if (treeWidgetLock->topLevelItem(i)->checkState(0) == Qt::Unchecked)
-		{
-			continue;
-		}
-
-		int pos = t.indexOf(",");
-		if (pos > 0)
-		{
-			t = t.left(pos);
-			t = t.remove("Bit ");
-			int bOffset = t.toInt();
-
-			l |= (1 << bOffset);
-		}
-	}
-
 	if (read == true)
 	{
 		emit done(2);
 	}
 	else
 	{
-		awip->SetLockBits(l);
-		awip->SetFuseBits(f);
+		awip->SetLockBits(lockBits);
+		awip->SetFuseBits(fuseBits);
 
 		if (write == true)
 		{
@@ -156,47 +112,6 @@ void fuseModalDialog::onProg()
 	emit onOk();
 }
 
-
-void fuseModalDialog::scanMasks()
-{
-	maskListLock.clear();
-	maskListFuse.clear();
-
-	// analyse from mask entries
-	foreach (MaskDescr mdes, currentBitField.lockDescr)
-	{
-		QString cMask = mdes.mask;
-		cMask.replace(QRegExp("\\d+"), "\\d+");
-		// at string begin only
-		cMask = "^" + cMask;
-		if (maskListLock.indexOf(cMask) == -1)
-		{
-			maskListLock << cMask;
-		}
-	}
-
-	qDebug() << maskListLock;
-
-	foreach (MaskDescr mdes, currentBitField.fuseDescr)
-	{
-		QString cMask = mdes.mask;
-		cMask.replace(QRegExp("\\d+"), "\\d+");
-		// at string begin only
-		cMask = "^" + cMask;
-		if (maskListFuse.indexOf(cMask) == -1)
-		{
-			maskListFuse << cMask;
-		}
-	}
-
-	qDebug() << maskListFuse;
-}
-
-
-bool fuseModalDialog::isExp(unsigned int a)
-{
-	return (a > 0 && (a & (a - 1)) == 0);
-}
 
 
 void fuseModalDialog::onRead()
@@ -220,21 +135,26 @@ int fuseModalDialog::eepFindFuses(long type)
 	return -1;
 }
 
+
+void fuseModalDialog::getLock(int l)
+{
+	lockBits = l;
+	displayBitFields();
+}
+
+
+void fuseModalDialog::getFuse(int l)
+{
+	fuseBits = l;
+	displayBitFields();
+}
+
 /**
  * @brief
  */
 void fuseModalDialog::initWidgets(const QString &msg, bool readonly)
 {
 	long type = cmdw->GetCurrentChipType();
-
-	lstLockWidget = (QVector<QComboBox *>() << comboBoxLock0 << comboBoxLock1 << comboBoxLock2 << comboBoxLock3);
-	lstFuseWidget = (QVector<QComboBox *>() << comboBoxFuse0 << comboBoxFuse1 << comboBoxFuse2 << comboBoxFuse3);
-
-	for (int i = 0; i < 4; i++)
-	{
-		lstLockWidget.at(i)->setHidden(true);
-		lstFuseWidget.at(i)->setHidden(true);
-	}
 
 	chkHlp1->setText(translate(STR_FUSEDLGNOTECLR) + " (bit = 1)");
 	chkHlp1->setEnabled(false);
@@ -262,174 +182,30 @@ void fuseModalDialog::initWidgets(const QString &msg, bool readonly)
 
 	currentBitField = eep_bits.at(currentChip);
 
-	if (currentBitField.lock.count() > 0)
-	{
-		unsigned int lock = awip->GetLockBits();
-		lockBits = lock;
-
-		for (int i = 0; i < currentBitField.lock.count(); i++)
-		{
-			QTreeWidgetItem *itm = new QTreeWidgetItem();
-			int bitOffset = currentBitField.lock.at(i).bit;
-			itm->setText(0, QString().sprintf("Bit %d, ", bitOffset) + currentBitField.lock.at(i).ShortDescr);
-			if (currentBitField.lock.at(i).LongDescr.length() > 0)
-			{
-				itm->setText(1, currentBitField.lock.at(i).LongDescr);
-			}
-			itm->setFlags(itm->flags() | Qt::ItemIsUserCheckable);
-			itm->setCheckState(0, Qt::Unchecked);
-
-			if (lock & (1 << bitOffset))
-			{
-				itm->setCheckState(0, Qt::Checked);
-			}
-			treeWidgetLock->addTopLevelItem(itm);
-		}
-
-		treeWidgetLock->expandAll();
-		treeWidgetLock->resizeColumnToContents(0);
-
-		connect(treeWidgetLock, SIGNAL(itemChanged(QTreeWidgetItem *, int)), this, SLOT(onLockBitClicked(QTreeWidgetItem *, int)));
-	}
-
+	unsigned int f = awip->GetFuseBits();
 	if (currentBitField.fuse.count() > 0)
 	{
-		unsigned int fuse = awip->GetFuseBits();
-		fuseBits = fuse;
-
-		for (int i = 0; i < currentBitField.fuse.count(); i++)
-		{
-			QTreeWidgetItem *itm = new QTreeWidgetItem();
-			int bitOffset = currentBitField.fuse.at(i).bit;
-			itm->setText(0, QString().sprintf("Bit %d, ", bitOffset) + currentBitField.fuse.at(i).ShortDescr);
-			if (currentBitField.fuse.at(i).LongDescr.length() > 0)
-			{
-				itm->setText(1, currentBitField.fuse.at(i).LongDescr);
-			}
-			itm->setFlags(itm->flags() | Qt::ItemIsUserCheckable);
-			itm->setCheckState(0, Qt::Unchecked);
-			if (fuse & (1 << bitOffset))
-			{
-				itm->setCheckState(0, Qt::Checked);
-			}
-			treeWidgetFuse->addTopLevelItem(itm);
-		}
-
-		treeWidgetFuse->expandAll();
-		treeWidgetFuse->resizeColumnToContents(0);
-
-		connect(treeWidgetFuse, SIGNAL(itemChanged(QTreeWidgetItem *, int)), this, SLOT(onFuseBitClicked(QTreeWidgetItem *, int)));
+		fuse = new BitFieldWidget(tabFuse, currentBitField.fuse, currentBitField.fuseDescr, f);
+		connect(fuse, SIGNAL(displayBitFields(int)), this, SLOT(getFuse(int)));
 	}
-
-	scanMasks();
-
-	// now working with maskListFuse, maskListLock
-
-	for (int i = 0; i < maskListLock.count(); i++)
+	else
 	{
-		QStringList lst;
-		QString currentMask = maskListLock.at(i);
-		// two loops are not optimal!
-		foreach (MaskDescr mdes, currentBitField.lockDescr)
-		{
-			if (mdes.mask.indexOf(QRegExp(currentMask)) >= 0)
-			{
-				lst << mdes.LongDescr;
-			}
-		}
-
-		// when not all combinations are descripted
-		if (isExp(lst.count()) == false)
-		{
-			lst << "Undefined combination";
-		}
-
-		lstLockWidget.at(i)->setHidden(false);
-		lstLockWidget.at(i)->addItems(lst);
-
-		connect(lstLockWidget.at(i), SIGNAL(activated(int)), this, SLOT(onLockComboSelected(int)));
+		// TODO
+		// disable tab
 	}
 
-	for (int i = 0; i < maskListFuse.count(); i++)
+	unsigned int l = awip->GetLockBits();
+	if (currentBitField.lock.count() > 0)
 	{
-		QStringList lst;
-		QString currentMask = maskListFuse.at(i);
-		// two loops are not optimal!
-		foreach (MaskDescr mdes, currentBitField.fuseDescr)
-		{
-			if (mdes.mask.indexOf(QRegExp(currentMask)) >= 0)
-			{
-				lst << mdes.LongDescr;
-			}
-		}
-
-		// when not all combinations are descripted
-		if (isExp(lst.count()) == false)
-		{
-			lst << "Undefined combination";
-		}
-
-		lstFuseWidget.at(i)->setHidden(false);
-		lstFuseWidget.at(i)->addItems(lst);
-
-		connect(lstFuseWidget.at(i), SIGNAL(activated(int)), this, SLOT(onFuseComboSelected(int)));
+		lock = new BitFieldWidget(tabLock, currentBitField.lock, currentBitField.lockDescr, l);
+		connect(lock, SIGNAL(displayBitFields(int)), this, SLOT(getLock(int)));
 	}
-
-	displayBitFields();
-}
-
-
-void fuseModalDialog::onFuseComboSelected(int idx)
-{
-	QComboBox *s = static_cast<QComboBox *>(sender());
-	int globIdx = 0;
-	int nMask = -1;
-
-	// we have only 4 comboboxes for fuse
-	for (int i = 0; i < 4; i++)
+	else
 	{
-		if (lstFuseWidget.at(i) == s)
-		{
-			nMask = i;
-			break;
-		}
-		globIdx += lstFuseWidget.at(i)->count();
-
-		// correcture for undefined
-		if (lstFuseWidget.at(i)->findText("Undefined combination") > 0)
-		{
-			globIdx--;
-		}
+		// TODO
+		// disable tab
 	}
 
-	if (nMask < 0)
-	{
-		return;
-	}
-
-	globIdx += idx;
-
-	qDebug() << "onFuseComboSelected index" << globIdx;
-
-	if (currentBitField.fuseDescr.at(globIdx).mask.length() == 0)
-	{
-		return;
-	}
-
-	// deactivate signal from checkbutton
-	disconnect(treeWidgetFuse, SIGNAL(itemChanged(QTreeWidgetItem *, int)), this, SLOT(onFuseBitClicked(QTreeWidgetItem *, int)));
-
-	// possible list
-	QStringList mskList = currentBitField.fuseDescr.at(globIdx).mask.split(" "); //maskListFuse.at(n).split(" ");
-	qDebug() << mskList << currentBitField.fuseDescr.at(globIdx).LongDescr;
-
-	foreach (QString cMask, mskList)
-	{
-		setMaskBits(treeWidgetFuse, cMask);
-	}
-
-	// activate signal
-	connect(treeWidgetFuse, SIGNAL(itemChanged(QTreeWidgetItem *, int)), this, SLOT(onFuseBitClicked(QTreeWidgetItem *, int)));
 
 	displayBitFields();
 }
@@ -438,432 +214,6 @@ void fuseModalDialog::onFuseComboSelected(int idx)
 void fuseModalDialog::displayBitFields()
 {
 	labelFuseLock->setText(QString().sprintf("Fuse: 0x%08X Lock: 0x%08X", fuseBits, lockBits));
-}
-
-
-void fuseModalDialog::onLockComboSelected(int idx)
-{
-	QComboBox *s = static_cast<QComboBox *>(sender());
-	int globIdx = 0;
-	int nMask = -1;
-	// we have only 4 comboboxes for lock
-	for (int i = 0; i < 4; i++)
-	{
-		if (lstLockWidget.at(i) == s)
-		{
-			nMask = i;
-			break;
-		}
-		globIdx += lstLockWidget.at(i)->count();
-
-		// correcture for undefined
-		if (lstLockWidget.at(i)->findText("Undefined combination") > 0)
-		{
-			globIdx--;
-		}
-	}
-
-	if (nMask < 0)
-	{
-		return;
-	}
-
-	globIdx += idx;
-
-	qDebug() << "onLockComboSelected index" << globIdx;
-
-	if (currentBitField.lockDescr.at(globIdx).mask.length() == 0)
-	{
-		return;
-	}
-
-	// deactivate signal from checkbutton
-	disconnect(treeWidgetLock, SIGNAL(itemChanged(QTreeWidgetItem *, int)), this, SLOT(onLockBitClicked(QTreeWidgetItem *, int)));
-
-	// possible list
-	QStringList mskList = currentBitField.lockDescr.at(globIdx).mask.split(" ");
-	qDebug() << mskList << currentBitField.lockDescr.at(globIdx).LongDescr;
-
-	foreach (QString cMask, mskList)
-	{
-		setMaskBits(treeWidgetLock, cMask);
-	}
-
-	// activate signal
-	connect(treeWidgetLock, SIGNAL(itemChanged(QTreeWidgetItem *, int)), this, SLOT(onLockBitClicked(QTreeWidgetItem *, int)));
-
-	displayBitFields();
-}
-
-
-void fuseModalDialog::setMaskBits(QTreeWidget *w, const QString &cMask)
-{
-	int p = cMask.indexOf("=");
-	if (p < 0)
-	{
-		// not correct format
-		return;
-	}
-
-	QString mskName = cMask.left(p);
-	QString bitStr = cMask.mid(p + 1);
-	bool ok;
-
-	unsigned int bField = bitStr.toInt(&ok, 2);
-
-	int idx;
-	// at begin of string only
-	mskName = "^" + mskName + "\\d+";
-
-	qDebug() << cMask <<  "converted to" << mskName << (bin) << bField << (dec);
-
-	// search in QTreeWidget the names
-	for (idx = 0; idx < w->topLevelItemCount(); idx++)
-	{
-		QString t = w->topLevelItem(idx)->text(0);
-		int pos = t.indexOf(", ");
-
-		if (pos > 0)
-		{
-			QString nm = t.mid(pos + 2);
-
-			// first element found
-			if (nm.indexOf(QRegExp(mskName)) == 0)
-			{
-				break;
-			}
-		}
-	}
-
-	if (idx >= w->topLevelItemCount())
-	{
-		qDebug() << "setMaskBits is wrong";
-		return;
-	}
-
-	for (int i = 0; i < bitStr.length(); i++)
-	{
-		Qt::CheckState st;
-		if (bField & 0x01)
-		{
-			st = Qt::Checked;
-			if (w == treeWidgetFuse)
-			{
-				fuseBits |= (1 << idx);
-			}
-			else
-			{
-				lockBits |= (1 << idx);
-			}
-		}
-		else
-		{
-			st = Qt::Unchecked;
-			if (w == treeWidgetFuse)
-			{
-				fuseBits &= ~(1 << idx);
-			}
-			else
-			{
-				lockBits &= ~(1 << idx);
-			}
-		}
-
-		bField >>= 1;
-		w->topLevelItem(idx)->setCheckState(0, st);
-
-		QString t = w->topLevelItem(idx)->text(0);
-		int pos = t.indexOf(", ");
-
-		if (pos > 0)
-		{
-			QString nm = t.mid(pos + 2);
-			if (nm.indexOf(QRegExp(mskName)) < 0)
-			{
-				break;
-			}
-		}
-		else
-		{
-			break;
-		}
-
-		idx++;
-	}
-}
-
-
-void fuseModalDialog::onFuseBitClicked(QTreeWidgetItem *itm, int col)
-{
-	Qt::CheckState st = itm->checkState(0);
-	QString t =  itm->text(0);
-	int pos = t.indexOf(",");
-
-	if (pos < 0)
-	{
-		return;
-	}
-
-	QString fuseName = t.mid(pos + 2);
-
-	t = t.left(pos);
-	t.remove("Bit ");
-
-	int bOffset = t.toInt();
-
-	if (st == Qt::Checked)
-	{
-		fuseBits |= (1 << bOffset);
-	}
-	else
-	{
-		fuseBits &= ~(1 << bOffset);
-	}
-
-	displayBitFields();
-
-	qDebug() << fuseName << maskListFuse;
-
-	int idxCombo = -1;
-
-	for (int i = 0; i < maskListFuse.count(); i++)
-	{
-		QString m = maskListFuse.at(i);
-		QStringList mSplitted = m.split(" ");
-
-		for (int r = 0; r < mSplitted.count(); r++)
-		{
-			QString msplt = mSplitted.at(r);
-			msplt.remove("=");
-			if (fuseName.indexOf(QRegExp(msplt)) >= 0)
-			{
-				idxCombo = i;
-				qDebug() << "found " << msplt << i;
-				break;
-			}
-		}
-		if (idxCombo != -1)
-		{
-			break;
-		}
-	}
-
-	// maskListFuse.at(idxCombo) has mask to search
-	// and idxCombo is the number of list
-	if (idxCombo == -1)
-	{
-		return;
-	}
-
-	QString completeMask = maskListFuse.at(idxCombo);
-
-	// now replace the \\d+ with bit information from treewidget
-	QStringList mSplitted = completeMask.split(" ");
-	for (int r = 0; r < mSplitted.count(); r++)
-	{
-		QString orig = mSplitted.at(r);
-		QString msplt = orig;
-		msplt.remove("=");
-		qDebug() << msplt;
-
-		QString bitString;
-		for (int iTree = 0; iTree < treeWidgetFuse->topLevelItemCount(); ++iTree)
-		{
-			QString t = treeWidgetFuse->topLevelItem(iTree)->text(0);
-			int pos = t.indexOf(", ");
-			if (pos <= 0)
-			{
-				continue;
-			}
-
-			t = t.mid(pos + 2);
-// 			qDebug() << "t: " << t;
-			if (t.indexOf(QRegExp(msplt)) >= 0)
-			{
-				if (treeWidgetFuse->topLevelItem(iTree)->checkState(0) == Qt::Unchecked)
-				{
-					bitString = "0" + bitString;
-				}
-				else
-				{
-					bitString = "1" + bitString;
-				}
-			}
-		}
-
-		if (bitString.length() > 0)
-		{
-			msplt.replace("\\d+", QString("=" + bitString));
-			completeMask.replace(orig, msplt);
-
-		}
-	}
-
-	qDebug() << "converted: " << completeMask << "idx" << idxCombo;
-
-	if (completeMask.length() > 0)
-	{
-		int i;
-		for (i = 0; i < currentBitField.fuseDescr.count(); i++)
-		{
-			if (currentBitField.fuseDescr.at(i).mask.indexOf(QRegExp(completeMask)) == 0)
-			{
-				QString comboText = currentBitField.fuseDescr.at(i).LongDescr;
-				int c = lstFuseWidget.at(idxCombo)->findText(comboText);
-				if (c >= 0)
-				{
-					lstFuseWidget.at(idxCombo)->setCurrentIndex(c);
-				}
-
-				break;
-			}
-		}
-		if (i == currentBitField.fuseDescr.count())
-		{
-			int p = lstFuseWidget.at(idxCombo)->findText("Undefined combination");
-			if (p >= 0)
-			{
-				lstFuseWidget.at(idxCombo)->setCurrentIndex(p);
-			}
-		}
-	}
-}
-
-
-void fuseModalDialog::onLockBitClicked(QTreeWidgetItem *itm, int col)
-{
-	Qt::CheckState st = itm->checkState(0);
-	QString t =  itm->text(0);
-	int pos = t.indexOf(",");
-
-	if (pos < 0)
-	{
-		return;
-	}
-
-	QString lockName = t.mid(pos + 2);
-
-	t = t.left(pos);
-	t.remove("Bit ");
-
-	int bOffset = t.toInt();
-
-	if (st == Qt::Checked)
-	{
-		lockBits |= (1 << bOffset);
-	}
-	else
-	{
-		lockBits &= ~(1 << bOffset);
-	}
-
-	displayBitFields();
-
-	qDebug() << lockName << maskListLock;
-
-	int idxCombo = -1;
-
-	for (int i = 0; i < maskListLock.count(); i++)
-	{
-		QString m = maskListLock.at(i);
-		QStringList mSplitted = m.split(" ");
-
-		for (int r = 0; r < mSplitted.count(); r++)
-		{
-			QString msplt = mSplitted.at(r);
-			msplt.remove("="); // remove this character from mask
-
-			if (lockName.indexOf(QRegExp(msplt)) >= 0)
-			{
-				idxCombo = i;
-				qDebug() << "found " << msplt << i;
-				break;
-			}
-		}
-		if (idxCombo != -1)
-		{
-			break;
-		}
-	}
-
-	// maskListLock.at(idxCombo) has mask to search
-	// and idxCombo is the number of list
-	if (idxCombo == -1)
-	{
-		return;
-	}
-
-	QString completeMask = maskListLock.at(idxCombo);
-	// now replace the \\d+ with bit information from treewidget
-	QStringList mSplitted = completeMask.split(" ");
-	for (int r = 0; r < mSplitted.count(); r++)
-	{
-		QString orig = mSplitted.at(r);
-		QString msplt = orig;
-		msplt.remove("=");
-		qDebug() << msplt;
-
-		QString bitString;
-		for (int iTree = 0; iTree < treeWidgetLock->topLevelItemCount(); ++iTree)
-		{
-			QString t = treeWidgetLock->topLevelItem(iTree)->text(0);
-			int pos = t.indexOf(", ");
-			if (pos <= 0)
-			{
-				continue;
-			}
-
-			t = t.mid(pos + 2);
-
-			if (t.indexOf(QRegExp(msplt)) >= 0)
-			{
-				if (treeWidgetLock->topLevelItem(iTree)->checkState(0) == Qt::Unchecked)
-				{
-					bitString = "0" + bitString;
-				}
-				else
-				{
-					bitString = "1" + bitString;
-				}
-			}
-		}
-
-		if (bitString.length() > 0)
-		{
-			msplt.replace("\\d+", QString("=" + bitString));
-			completeMask.replace(orig, msplt);
-
-		}
-	}
-
-	qDebug() << "converted: " << completeMask;
-
-	if (completeMask.length() > 0)
-	{
-		int i;
-		for (i = 0; i < currentBitField.lockDescr.count(); i++)
-		{
-			if (currentBitField.lockDescr.at(i).mask.indexOf(QRegExp(completeMask)) == 0)
-			{
-				QString comboText = currentBitField.lockDescr.at(i).LongDescr;
-				int c = lstLockWidget.at(idxCombo)->findText(comboText);
-				if (c >= 0)
-				{
-					lstLockWidget.at(idxCombo)->setCurrentIndex(c);
-				}
-				break;
-			}
-		}
-
-		if (i == currentBitField.lockDescr.count())
-		{
-			int c = lstLockWidget.at(idxCombo)->findText("Undefined combination");
-			if (c >= 0)
-			{
-				lstLockWidget.at(idxCombo)->setCurrentIndex(c);
-			}
-		}
-	}
 }
 
 

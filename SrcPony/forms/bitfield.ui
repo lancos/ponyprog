@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>559</width>
-    <height>381</height>
+    <width>542</width>
+    <height>385</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -28,6 +28,9 @@
    </item>
    <item row="4" column="0">
     <widget class="QTreeWidget" name="treeWidget">
+     <attribute name="headerVisible">
+      <bool>true</bool>
+     </attribute>
      <column>
       <property name="text">
        <string>Bit</string>

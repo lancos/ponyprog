@@ -31,35 +31,64 @@
 #include <QString>
 #include <QWidget>
 #include <QObject>
-
+#include <QVector>
+#include <QComboBox>
 
 #include "ui_bitfield.h"
 
+/**
+ * @brief BitInfo is the main structure for displaying in the QTreeWidget
+ */
+typedef struct
+{
+	int  bit;
+	const QString ShortDescr;
+	const QString LongDescr;
+} BitInfo;
+
+/**
+ * @brief MaskDescr is the structure for QComboBoxes with help information
+ */
+typedef struct
+{
+	const QString mask;
+	const QString LongDescr;
+} MaskDescr;
 
 
 class BitFieldWidget : public QWidget, public Ui::FormBitField
 {
 	Q_OBJECT
   public:               //---------------------------------------- public
-	BitFieldWidget(QWidget *bw, ...);
+	BitFieldWidget(QWidget *parent, QVector<BitInfo> &vInfo, QVector<MaskDescr> &vMask, unsigned int field);
 	virtual ~BitFieldWidget();          // Destructor
 
 
   protected:    //--------------------------------------- protected
 
+  signals:
+	void displayBitFields(int field);
+
   private slots:
+	void onComboSelected(int i);
+	void onBitClicked(QTreeWidgetItem *itm, int col);
 // 	void onOk();
 
+  private:
+	void scanMasks();
+	void initWidget();
+	void setMaskBits(QTreeWidget *w, const QString &m);//, unsigned int bits);
+	bool isExp(unsigned int a);
 
   private:              //--------------------------------------- private
 	QVector<QComboBox *> lstWidget;
 
-// 	long *pFrom, *pTo;
-// 	int *pVal;
-//
-// 	long mFrom, mTo;
-// 	int mVal;
-// 	long mMax;
+	QVector<BitInfo> *vecInfo;
+	QVector<MaskDescr> *vecDescr;
+
+	unsigned int bField;
+
+	QStringList maskList; // masks
 };
 
 #endif
