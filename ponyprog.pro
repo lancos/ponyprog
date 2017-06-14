@@ -257,8 +257,9 @@ HEADERS  += SrcPony/e2app.h \
             qhexedit2/src/commands.h \
             qhexedit2/src/qhexedit.h
 
-FORMS    += SrcPony/forms/aboutdlg.ui \ 
+FORMS    += SrcPony/forms/aboutdlg.ui \
             SrcPony/forms/editdlg.ui \
+            SrcPony/forms/bitfield.ui \
             SrcPony/forms/notesdlg.ui \
             SrcPony/forms/e2dlg.ui \
             SrcPony/forms/fusedlg.ui \

@@ -31,7 +31,6 @@
 #include <QDebug>
 #include <QStringList>
 #include <QTreeWidget>
-#include <QRadioButton>
 
 
 
@@ -73,13 +72,10 @@ fuseModalDialog::~fuseModalDialog()
 	qDebug() << "fuseModalDialog::~fuseModalDialog()";
 }
 
+
 void fuseModalDialog::setTextWidgets()
 {
-	// EK 2017
-	// TODO add translations for header of view
-// 	treeWidgetFuse->setHeaderLabels(QStringList() << "Bit" << "Description");
 	treeWidgetFuse->header()->hide();
-// 	treeWidgetLock->setHeaderLabels(QStringList() << "Bit" << "Description");
 	treeWidgetLock->header()->hide();
 
 	pushRead->setText(translate(STR_BTNREAD));
@@ -627,6 +623,7 @@ void fuseModalDialog::onFuseBitClicked(QTreeWidgetItem *itm, int col)
 	displayBitFields();
 
 	qDebug() << fuseName << maskListFuse;
+
 	int idxCombo = -1;
 
 	for (int i = 0; i < maskListFuse.count(); i++)
@@ -659,6 +656,7 @@ void fuseModalDialog::onFuseBitClicked(QTreeWidgetItem *itm, int col)
 	}
 
 	QString completeMask = maskListFuse.at(idxCombo);
+
 	// now replace the \\d+ with bit information from treewidget
 	QStringList mSplitted = completeMask.split(" ");
 	for (int r = 0; r < mSplitted.count(); r++)
@@ -691,10 +689,6 @@ void fuseModalDialog::onFuseBitClicked(QTreeWidgetItem *itm, int col)
 					bitString = "1" + bitString;
 				}
 			}
-// 			else
-// 			{
-// 				break;
-// 			}
 		}
 
 		if (bitString.length() > 0)
@@ -704,23 +698,33 @@ void fuseModalDialog::onFuseBitClicked(QTreeWidgetItem *itm, int col)
 
 		}
 	}
-	qDebug() << "converted: " << completeMask;
+
+	qDebug() << "converted: " << completeMask << "idx" << idxCombo;
 
 	if (completeMask.length() > 0)
 	{
 		int i;
-		for (i = 0; i < currentBitField.fuseDescr.count(); i++) //.at(i).mask.length() == 0)
+		for (i = 0; i < currentBitField.fuseDescr.count(); i++)
 		{
 			if (currentBitField.fuseDescr.at(i).mask.indexOf(QRegExp(completeMask)) == 0)
 			{
-				lstFuseWidget.at(idxCombo)->setCurrentIndex(i);
+				QString comboText = currentBitField.fuseDescr.at(i).LongDescr;
+				int c = lstFuseWidget.at(idxCombo)->findText(comboText);
+				if (c >= 0)
+				{
+					lstFuseWidget.at(idxCombo)->setCurrentIndex(c);
+				}
+
 				break;
 			}
 		}
 		if (i == currentBitField.fuseDescr.count())
 		{
 			int p = lstFuseWidget.at(idxCombo)->findText("Undefined combination");
-			lstFuseWidget.at(idxCombo)->setCurrentIndex(p);
+			if (p >= 0)
+			{
+				lstFuseWidget.at(idxCombo)->setCurrentIndex(p);
+			}
 		}
 	}
 }
@@ -756,6 +760,7 @@ void fuseModalDialog::onLockBitClicked(QTreeWidgetItem *itm, int col)
 	displayBitFields();
 
 	qDebug() << lockName << maskListLock;
+
 	int idxCombo = -1;
 
 	for (int i = 0; i < maskListLock.count(); i++)
@@ -768,34 +773,6 @@ void fuseModalDialog::onLockBitClicked(QTreeWidgetItem *itm, int col)
 			QString msplt = mSplitted.at(r);
 			msplt.remove("="); // remove this character from mask
 
-			if (lockName.indexOf(QRegExp(msplt)) >= 0)
-			{
-				idxCombo = i;
-				qDebug() << "found " << msplt << i;
-				break;
-			}
-		}
-		if (idxCombo != -1)
-		{
-			break;
-		}
-	}
-
-	// maskListLock.at(idxCombo) has mask to search
-	// and idxCombo is the number of list
-	if (idxCombo != -1)
-	{
-	}
-
-	for (int i = 0; i < maskListLock.count(); i++)
-	{
-		QString m = maskListLock.at(i);
-		QStringList mSplitted = m.split(" ");
-
-		for (int r = 0; r < mSplitted.count(); r++)
-		{
-			QString msplt = mSplitted.at(r);
-			msplt.remove("=");
 			if (lockName.indexOf(QRegExp(msplt)) >= 0)
 			{
 				idxCombo = i;
@@ -837,7 +814,7 @@ void fuseModalDialog::onLockBitClicked(QTreeWidgetItem *itm, int col)
 			}
 
 			t = t.mid(pos + 2);
-			qDebug() << "t: " << t;
+
 			if (t.indexOf(QRegExp(msplt)) >= 0)
 			{
 				if (treeWidgetLock->topLevelItem(iTree)->checkState(0) == Qt::Unchecked)
@@ -849,10 +826,6 @@ void fuseModalDialog::onLockBitClicked(QTreeWidgetItem *itm, int col)
 					bitString = "1" + bitString;
 				}
 			}
-// 			else
-// 			{
-// 				break;
-// 			}
 		}
 
 		if (bitString.length() > 0)
@@ -862,23 +835,33 @@ void fuseModalDialog::onLockBitClicked(QTreeWidgetItem *itm, int col)
 
 		}
 	}
+
 	qDebug() << "converted: " << completeMask;
 
 	if (completeMask.length() > 0)
 	{
 		int i;
-		for (i = 0; i < currentBitField.lockDescr.count(); i++) //.at(i).mask.length() == 0)
+		for (i = 0; i < currentBitField.lockDescr.count(); i++)
 		{
 			if (currentBitField.lockDescr.at(i).mask.indexOf(QRegExp(completeMask)) == 0)
 			{
-				lstLockWidget.at(idxCombo)->setCurrentIndex(i);
+				QString comboText = currentBitField.lockDescr.at(i).LongDescr;
+				int c = lstLockWidget.at(idxCombo)->findText(comboText);
+				if (c >= 0)
+				{
+					lstLockWidget.at(idxCombo)->setCurrentIndex(c);
+				}
 				break;
 			}
 		}
+
 		if (i == currentBitField.lockDescr.count())
 		{
-			int p = lstLockWidget.at(idxCombo)->findText("Undefined combination");
-			lstLockWidget.at(idxCombo)->setCurrentIndex(p);
+			int c = lstLockWidget.at(idxCombo)->findText("Undefined combination");
+			if (c >= 0)
+			{
+				lstLockWidget.at(idxCombo)->setCurrentIndex(c);
+			}
 		}
 	}
 }
@@ -902,10 +885,12 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock mask description
-			// ???
+			{ "LB=000", "Mode 1: No memory lock features enabled" },
+			{ "LB=001", "Mode 2: MOVC disabled" },
+			{ "LB=011", "Mode 3: Verify disabled" },
+			{ "LB=111", "Mode 4: External execution disabled" }
 		}
 	},
-
 	{
 		AT89S8253,
 		{
@@ -922,7 +907,10 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock mask description
-			// ???
+			{ "LB=000", "Mode 1: No memory lock features enabled" },
+			{ "LB=001", "Mode 2: MOVC disabled" },
+			{ "LB=011", "Mode 3: Verify disabled" },
+			{ "LB=111", "Mode 4: External execution disabled" }
 		}
 	},
 
@@ -4190,7 +4178,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ 4, "SUT0", "" },
 			{ 5, "SUT1", "" },
 			{ 6, "BODEN", "Brown-out detection enabled" },
-			{ 7, "BODLEVEL", "Not Brown-out detection level at VCC=2.7 V" },
+			{ 7, "BODLEVEL", "NOT Brown-out detection level at VCC=2.7 V" },
 			{ 8, "BOOTRST", "Boot Reset vector Enabled (default address=$0000)" },
 			{ 9, "BOOTSZ0", "" },
 			{ 10, "BOOTSZ1", "" },
@@ -4306,7 +4294,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ 4, "SUT0", "" },
 			{ 5, "SUT1", "" },
 			{ 6, "BODEN", "Brown-out detection enabled" },
-			{ 7, "BODLEVEL", "Not Brown-out detection level at VCC=2.7 V" },
+			{ 7, "BODLEVEL", "NOT Brown-out detection level at VCC=2.7 V" },
 			{ 8, "BOOTRST", "Boot Reset vector Enabled (default address=$0000)" },
 			{ 9, "BOOTSZ0", "" },
 			{ 10, "BOOTSZ1", "" },
@@ -4422,7 +4410,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ 4, "SUT0", "" },
 			{ 5, "SUT1", "" },
 			{ 6, "BODEN", "Brown-out detection enabled" },
-			{ 7, "BODLEVEL", "Not Brown-out detection level at VCC=2.7 V" },
+			{ 7, "BODLEVEL", "NOT Brown-out detection level at VCC=2.7 V" },
 			{ 8, "BOOTRST", "Boot Reset vector Enabled (default address=$0000)" },
 			{ 9, "BOOTSZ0", "" },
 			{ 10, "BOOTSZ1", "" },
@@ -4539,14 +4527,14 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// fuse mask description
-			{"CKSEL=000", "External Clock; fast rising power" },
-			{"CKSEL=001", "External Clock; BOD Enabled or power-on reset" },
-			{"CKSEL=010", "Crystal Oscillator; slowly rising power" },
-			{"CKSEL=011", "Crystal Oscillator; fast rising power" },
-			{"CKSEL=100", "Crystal Oscillator; BOD Enabled or power-on reset" },
-			{"CKSEL=101", "Ceramic Resonator / External Clock; Slowly rising power" },
-			{"CKSEL=110", "Ceramic Resonator; fast rising power" },
-			{"CKSEL=111", "Ceramic Resonator; BOD Enabled or power-on reset" }
+			{ "CKSEL=000", "External Clock; fast rising power" },
+			{ "CKSEL=001", "External Clock; BOD Enabled or power-on reset" },
+			{ "CKSEL=010", "Crystal Oscillator; slowly rising power" },
+			{ "CKSEL=011", "Crystal Oscillator; fast rising power" },
+			{ "CKSEL=100", "Crystal Oscillator; BOD Enabled or power-on reset" },
+			{ "CKSEL=101", "Ceramic Resonator / External Clock; Slowly rising power" },
+			{ "CKSEL=110", "Ceramic Resonator; fast rising power" },
+			{ "CKSEL=111", "Ceramic Resonator; BOD Enabled or power-on reset" }
 
 		},
 		{
@@ -4586,29 +4574,29 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ 3, "CKSEL3", "" },
 			{ 5, "SPIEN", "Serial program downloading (SPI) enabled" },
 			{ 6, "BODEN", "Brown-out detection enabled" },
-			{ 7, "BODLEVEL", "Not Brown-out detection level at VCC=2.7 V" },
+			{ 7, "BODLEVEL", "NOT Brown-out detection level at VCC=2.7 V" },
 			{ 8, "BOOTRST", "Boot Reset vector Enabled (default address=$0000)" },
 			{ 9, "BOOTSZ0", "" },
 			{ 10, "BOOTSZ1", "" }
 		},
 		{
 			// fuse mask description
-			{"CKSEL=0000", "External Clock fast rising power" },
-			{"CKSEL=0001", "External Clock BOD enabled" },
-			{"CKSEL=0010", "Internal RC Ocsillator slowly rising power" },
-			{"CKSEL=0011", "Internal RC Ocsillator fast rising power" },
-			{"CKSEL=0100", "Internal RC Oscillator BOD enabled" },
-			{"CKSEL=0101", "External RC Oscillator slowly rising power" },
-			{"CKSEL=0110", "External RC Oscillator fast rising power" },
-			{"CKSEL=0111", "External RC Oscillator BOD enabled" },
-			{"CKSEL=1000", "External Low-Frequency Crystal" },
-			{"CKSEL=1001", "External Low-Frequency Crystal" },
-			{"CKSEL=1010", "Crystal Oscillator slowly rising power" },
-			{"CKSEL=1011", "Crystal Oscillator fast rising power" },
-			{"CKSEL=1100", "Crystal Oscillator BOD enabled" },
-			{"CKSEL=1101", "Ceramic Resonator/External Clock slowly rising power" },
-			{"CKSEL=1110", "Ceramic Resonator fast rising power" },
-			{"CKSEL=1111", "Ceramic Resonator BOD enabled" },
+			{ "CKSEL=0000", "External Clock fast rising power" },
+			{ "CKSEL=0001", "External Clock BOD enabled" },
+			{ "CKSEL=0010", "Internal RC Ocsillator slowly rising power" },
+			{ "CKSEL=0011", "Internal RC Ocsillator fast rising power" },
+			{ "CKSEL=0100", "Internal RC Oscillator BOD enabled" },
+			{ "CKSEL=0101", "External RC Oscillator slowly rising power" },
+			{ "CKSEL=0110", "External RC Oscillator fast rising power" },
+			{ "CKSEL=0111", "External RC Oscillator BOD enabled" },
+			{ "CKSEL=1000", "External Low-Frequency Crystal" },
+			{ "CKSEL=1001", "External Low-Frequency Crystal" },
+			{ "CKSEL=1010", "Crystal Oscillator slowly rising power" },
+			{ "CKSEL=1011", "Crystal Oscillator fast rising power" },
+			{ "CKSEL=1100", "Crystal Oscillator BOD enabled" },
+			{ "CKSEL=1101", "Ceramic Resonator/External Clock slowly rising power" },
+			{ "CKSEL=1110", "Ceramic Resonator fast rising power" },
+			{ "CKSEL=1111", "Ceramic Resonator BOD enabled" },
 
 			{ "BOOTSZ=01", "Boot Flash section size=1024 words Boot start address=$1C00" },
 			{ "BOOTSZ=00", "Boot Flash section size=2048 words Boot start address=$1800" },
@@ -4875,7 +4863,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ 2, "CKSEL2", "" },
 			{ 3, "CKSEL3", "" },
 			{ 6, "BODEN", "Brown-out detection enabled" },
-			{ 7, "BODLEVEL", "Not Brown-out detection level at VCC=2.7 V" },
+			{ 7, "BODLEVEL", "NOT Brown-out detection level at VCC=2.7 V" },
 			{ 8, "BOOTRST", "Boot Reset vector Enabled (default address=$0000)" },
 			{ 9, "BOOTSZ0", "" },
 			{ 10, "BOOTSZ1", "" },
@@ -4886,22 +4874,22 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// fuse mask description
-			{"CKSEL=0000", "External Clock fast rising power" },
-			{"CKSEL=0001", "External Clock BOD enabled" },
-			{"CKSEL=0010", "Internal RC Ocsillator slowly rising power" },
-			{"CKSEL=0011", "Internal RC Ocsillator fast rising power" },
-			{"CKSEL=0100", "Internal RC Oscillator BOD enabled" },
-			{"CKSEL=0101", "External RC Oscillator slowly rising power" },
-			{"CKSEL=0110", "External RC Oscillator fast rising power" },
-			{"CKSEL=0111", "External RC Oscillator BOD enabled" },
-			{"CKSEL=1000", "External Low-Frequency Crystal" },
-			{"CKSEL=1001", "External Low-Frequency Crystal" },
-			{"CKSEL=1010", "Crystal Oscillator slowly rising power" },
-			{"CKSEL=1011", "Crystal Oscillator fast rising power" },
-			{"CKSEL=1100", "Crystal Oscillator BOD enabled" },
-			{"CKSEL=1101", "Ceramic Resonator/External Clock slowly rising power" },
-			{"CKSEL=1110", "Ceramic Resonator fast rising power" },
-			{"CKSEL=1111", "Ceramic Resonator BOD enabled" },
+			{ "CKSEL=0000", "External Clock fast rising power" },
+			{ "CKSEL=0001", "External Clock BOD enabled" },
+			{ "CKSEL=0010", "Internal RC Ocsillator slowly rising power" },
+			{ "CKSEL=0011", "Internal RC Ocsillator fast rising power" },
+			{ "CKSEL=0100", "Internal RC Oscillator BOD enabled" },
+			{ "CKSEL=0101", "External RC Oscillator slowly rising power" },
+			{ "CKSEL=0110", "External RC Oscillator fast rising power" },
+			{ "CKSEL=0111", "External RC Oscillator BOD enabled" },
+			{ "CKSEL=1000", "External Low-Frequency Crystal" },
+			{ "CKSEL=1001", "External Low-Frequency Crystal" },
+			{ "CKSEL=1010", "Crystal Oscillator slowly rising power" },
+			{ "CKSEL=1011", "Crystal Oscillator fast rising power" },
+			{ "CKSEL=1100", "Crystal Oscillator BOD enabled" },
+			{ "CKSEL=1101", "Ceramic Resonator/External Clock slowly rising power" },
+			{ "CKSEL=1110", "Ceramic Resonator fast rising power" },
+			{ "CKSEL=1111", "Ceramic Resonator BOD enabled" },
 
 			{ "BOOTSZ=01", "Boot Flash section size=1024 words Boot start address=$3C00" },
 			{ "BOOTSZ=00", "Boot Flash section size=2048 words Boot start address=$3800" },
@@ -4946,7 +4934,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ 4, "SUT0", "" },
 			{ 5, "SUT1", "" },
 			{ 6, "BODEN", "Brown-out detection enabled" },
-			{ 7, "BODLEVEL", "Not Brown-out detection level at VCC=2.7 V" },
+			{ 7, "BODLEVEL", "NOT Brown-out detection level at VCC=2.7 V" },
 			{ 8, "BOOTRST", "Boot Reset vector Enabled (default address=$0000)" },
 			{ 9, "BOOTSZ0", "" },
 			{ 10, "BOOTSZ1", "" },
@@ -5063,7 +5051,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ 1, "FOSC1", "" },
 			{ 2, "WDTE", "Watchdog timer enable" },
 			{ 3, "CP", "Code protection bit" },
-			{ 4, "MCLRE", "Not MCLR enable bit" }
+			{ 4, "MCLRE", "NOT MCLR enable bit" }
 		},
 		{
 			// lock mask description
@@ -5088,7 +5076,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ 1, "FOSC1", "" },
 			{ 2, "WDTE", "Watchdog timer enable" },
 			{ 3, "CP", "Code protection bit" },
-			{ 4, "MCLRE", "Not MCLR enable bit" }
+			{ 4, "MCLRE", "NOT MCLR enable bit" }
 		},
 		{
 			// lock mask description
@@ -5113,7 +5101,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ 1, "FOSC1", "" },
 			{ 2, "WDTE", "Watchdog timer enable" },
 			{ 3, "CP", "Code protection bit" },
-			{ 4, "MCLRE", "Not MCLR enable bit" }
+			{ 4, "MCLRE", "NOT MCLR enable bit" }
 		},
 		{
 			// lock mask description
@@ -5138,7 +5126,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ 1, "FOSC1", "" },
 			{ 2, "WDTE", "Watchdog timer enable" },
 			{ 3, "CP", "Code protection bit" },
-			{ 4, "MCLRE", "Not MCLR enable bit" }
+			{ 4, "MCLRE", "NOT MCLR enable bit" }
 		},
 		{
 			// lock mask description
@@ -5163,7 +5151,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ 1, "FOSC1", "" },
 			{ 2, "WDTE", "Watchdog timer enable" },
 			{ 3, "CP", "Code protection bit" },
-			{ 4, "MCLRE", "Not MCLR enable bit" }
+			{ 4, "MCLRE", "NOT MCLR enable bit" }
 		},
 		{
 			// lock mask description
@@ -5188,7 +5176,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ 1, "FOSC1", "" },
 			{ 2, "WDTE", "Watchdog timer enable" },
 			{ 3, "CP", "Code protection bit" },
-			{ 4, "MCLRE", "Not MCLR enable bit" }
+			{ 4, "MCLRE", "NOT MCLR enable bit" }
 		},
 		{
 			// lock mask description
@@ -5213,7 +5201,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ 1, "FOSC1", "" },
 			{ 2, "FOSC2", "" },
 			{ 3, "WDTE", "Watchdog Timer Enable" },
-			{ 4, "PWRTE", "Not Power-up Timer Enable" },
+			{ 4, "PWRTE", "NOT Power-up Timer Enable" },
 			{ 5, "CP0", "" },
 			{ 6, "CP1", "" },
 			{ 7, "MCLRE", "Master Clear Reset Enable" },
@@ -5256,7 +5244,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ 1, "FOSC1", "" },
 			{ 2, "FOSC2", "" },
 			{ 3, "WDTE", "Watchdog Timer Enable" },
-			{ 4, "PWRTE", "Not Power-up Timer Enable" },
+			{ 4, "PWRTE", "NOT Power-up Timer Enable" },
 			{ 5, "CP0", "" },
 			{ 6, "CP1", "" },
 			{ 7, "MCLRE", "Master Clear Reset Enable" },
@@ -5268,7 +5256,6 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ 13, "CP1", "" }
 		},
 		{
-			// lock mask description
 			// lock mask description
 			{ "FOSC=111", "EXTRC, Clockout on OSC2" },
 			{ "FOSC=110", "EXTRC, OSC2 is I/O" },
@@ -5300,7 +5287,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ 1, "FOSC1", "" },
 			{ 2, "FOSC2", "" },
 			{ 3, "WDTE", "Watchdog Timer Enable" },
-			{ 4, "PWRTE", "Not Power-up Timer Enable" },
+			{ 4, "PWRTE", "NOT Power-up Timer Enable" },
 			{ 5, "CP0", "" },
 			{ 6, "CP1", "" },
 			{ 7, "MCLRE", "Master Clear Reset Enable" },
@@ -5312,7 +5299,6 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ 13, "CP1", "" }
 		},
 		{
-			// lock mask description
 			// lock mask description
 			{ "FOSC=111", "EXTRC, Clockout on OSC2" },
 			{ "FOSC=110", "EXTRC, OSC2 is I/O" },
@@ -5344,7 +5330,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ 1, "FOSC1", "" },
 			{ 2, "FOSC2", "" },
 			{ 3, "WDTE", "Watchdog Timer Enable" },
-			{ 4, "PWRTE", "Not Power-up Timer Enable" },
+			{ 4, "PWRTE", "NOT Power-up Timer Enable" },
 			{ 5, "CP0", "" },
 			{ 6, "CP1", "" },
 			{ 7, "MCLRE", "Master Clear Reset Enable" },
@@ -5356,7 +5342,6 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ 13, "CP1", "" }
 		},
 		{
-			// lock mask description
 			// lock mask description
 			{ "FOSC=111", "EXTRC, Clockout on OSC2" },
 			{ "FOSC=110", "EXTRC, OSC2 is I/O" },
@@ -5387,8 +5372,8 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ 0, "FOSC0", "" },
 			{ 1, "FOSC1", "" },
 			{ 2, "WDTE", "Watchdog timer enable" },
-			{ 3, "CP", "Code protection bit" },
-			{ 4, "MCLRE", "Not MCLR enable bit" }
+			{ 3, "PWRTE", "NOT Power-up Timer Enable" },
+			{ 4, "CP", "Code protection" }
 		},
 		{
 			// lock mask description
@@ -5412,8 +5397,8 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ 0, "FOSC0", "" },
 			{ 1, "FOSC1", "" },
 			{ 2, "WDTE", "Watchdog timer enable" },
-			{ 3, "CP", "Code protection bit" },
-			{ 4, "MCLRE", "Not MCLR enable bit" }
+			{ 3, "PWRTE", "NOT Power-up Timer Enable" },
+			{ 4, "CP", "Code protection" }
 		},
 		{
 			// lock mask description
@@ -5437,8 +5422,8 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ 0, "FOSC0", "" },
 			{ 1, "FOSC1", "" },
 			{ 2, "WDTE", "Watchdog timer enable" },
-			{ 3, "CP", "Code protection bit" },
-			{ 4, "MCLRE", "Not MCLR enable bit" }
+			{ 3, "PWRTE", "NOT Power-up Timer Enable" },
+			{ 4, "CP", "Code protection" }
 		},
 		{
 			// lock mask description
@@ -5462,7 +5447,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ 0, "FOSC0", "" },
 			{ 1, "FOSC1", "" },
 			{ 2, "WDTE", "Watchdog Timer Enable" },
-			{ 3, "PWRTE", "Power-up Timer Enable" },
+			{ 3, "PWRTE", "NOT Power-up Timer Enable" },
 			{ 4, "CP0", "" },
 			{ 5, "CP1", "" },
 			{ 6, "BODEN", "Brown-out Reset Enable" },
@@ -5475,15 +5460,15 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock mask description
-			{"FOSC=11", "RC oscillator" },
-			{"FOSC=10", "HS oscillator" },
-			{"FOSC=01", "XT oscillator" },
-			{"FOSC=00", "LP oscillator" },
+			{ "FOSC=11", "RC oscillator" },
+			{ "FOSC=10", "HS oscillator" },
+			{ "FOSC=01", "XT oscillator" },
+			{ "FOSC=00", "LP oscillator" },
 
-			{"CP=11", "Code protection off" },
-			{"CP=10", "1F00h to 1FFFh code protected" }, // TODO to correct it
-			{"CP=01", "1000h to 1FFFh code protected" }, // TODO to correct it
-			{"CP=00", "0000h to 1FFFh code protected" } // TODO to correct it
+			{ "CP=11", "Code protection off" },
+			{ "CP=10", "1F00h to 1FFFh code protected" },
+			{ "CP=01", "1000h to 1FFFh code protected" },
+			{ "CP=00", "0000h to 1FFFh code protected" }
 		}
 	},
 
@@ -5500,7 +5485,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ 0, "FOSC0", "" },
 			{ 1, "FOSC1", "" },
 			{ 2, "WDTE", "Watchdog Timer Enable" },
-			{ 3, "PWRTE", "Power-up Timer Enable" },
+			{ 3, "PWRTE", "NOT Power-up Timer Enable" },
 			{ 4, "CP0", "" },
 			{ 5, "CP1", "" },
 			{ 6, "BODEN", "Brown-out Reset Enable" },
@@ -5513,6 +5498,15 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock mask description
+			{ "FOSC=11", "RC oscillator" },
+			{ "FOSC=10", "HS oscillator" },
+			{ "FOSC=01", "XT oscillator" },
+			{ "FOSC=00", "LP oscillator" },
+
+			{ "CP=11", "Code protection off" },
+			{ "CP=10", "1F00h to 1FFFh code protected" },
+			{ "CP=01", "1000h to 1FFFh code protected" },
+			{ "CP=00", "0000h to 1FFFh code protected" }
 		}
 	},
 
@@ -5529,7 +5523,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ 0, "FOSC0", "" },
 			{ 1, "FOSC1", "" },
 			{ 2, "WDTE", "Watchdog Timer Enable" },
-			{ 3, "PWRTE", "Power-up Timer Enable" },
+			{ 3, "PWRTE", "NOT Power-up Timer Enable" },
 			{ 4, "CP0", "" },
 			{ 5, "CP1", "" },
 			{ 6, "BODEN", "Brown-out Reset Enable" },
@@ -5542,6 +5536,15 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock mask description
+			{ "FOSC=11", "RC oscillator" },
+			{ "FOSC=10", "HS oscillator" },
+			{ "FOSC=01", "XT oscillator" },
+			{ "FOSC=00", "LP oscillator" },
+
+			{ "CP=11", "Code protection off" },
+			{ "CP=10", "1F00h to 1FFFh code protected" },
+			{ "CP=01", "1000h to 1FFFh code protected" },
+			{ "CP=00", "0000h to 1FFFh code protected" }
 		}
 	},
 
@@ -5558,7 +5561,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ 0, "FOSC0", "" },
 			{ 1, "FOSC1", "" },
 			{ 2, "WDTE", "Watchdog Timer Enable" },
-			{ 3, "PWRTE", "Power-up Timer Enable" },
+			{ 3, "PWRTE", "NOT Power-up Timer Enable" },
 			{ 4, "CP0", "" },
 			{ 5, "CP1", "" },
 			{ 6, "BODEN", "Brown-out Reset Enable" },
@@ -5571,6 +5574,15 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock mask description
+			{ "FOSC=11", "RC oscillator" },
+			{ "FOSC=10", "HS oscillator" },
+			{ "FOSC=01", "XT oscillator" },
+			{ "FOSC=00", "LP oscillator" },
+
+			{ "CP=11", "Code protection off" },
+			{ "CP=10", "0F00h to 0FFFh code protected" },
+			{ "CP=01", "0800h to 0FFFh code protected" },
+			{ "CP=00", "0000h to 0FFFh code protected" }
 		}
 	},
 
@@ -5587,7 +5599,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ 0, "FOSC0", "" },
 			{ 1, "FOSC1", "" },
 			{ 2, "WDTE", "Watchdog Timer Enable" },
-			{ 3, "PWRTE", "Power-up Timer Enable" },
+			{ 3, "PWRTE", "NOT Power-up Timer Enable" },
 			{ 4, "CP0", "" },
 			{ 5, "CP1", "" },
 			{ 6, "BODEN", "Brown-out Reset Enable" },
@@ -5600,10 +5612,15 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock mask description
-			{"FOSC=11", "RC oscillator" },
-			{"FOSC=10", "HS oscillator" },
-			{"FOSC=01", "XT oscillator" },
-			{"FOSC=00", "LP oscillator" }
+			{ "FOSC=11", "RC oscillator" },
+			{ "FOSC=10", "HS oscillator" },
+			{ "FOSC=01", "XT oscillator" },
+			{ "FOSC=00", "LP oscillator" },
+
+			{ "CP=11", "Code protection off" },
+			{ "CP=10", "0F00h to 0FFFh code protected" },
+			{ "CP=01", "0800h to 0FFFh code protected" },
+			{ "CP=00", "0000h to 0FFFh code protected" }
 		}
 	},
 
@@ -5620,7 +5637,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ 0, "FOSC0", "" },
 			{ 1, "FOSC1", "" },
 			{ 2, "WDTE", "Watchdog Timer Enable" },
-			{ 3, "PWRTE", "Power-up Timer Enable" },
+			{ 3, "PWRTE", "NOT Power-up Timer Enable" },
 			{ 4, "CP0", "" },
 			{ 5, "CP1", "" },
 			{ 6, "BODEN", "Brown-out Reset Enable" },
@@ -5633,6 +5650,15 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock mask description
+			{ "FOSC=11", "RC oscillator" },
+			{ "FOSC=10", "HS oscillator" },
+			{ "FOSC=01", "XT oscillator" },
+			{ "FOSC=00", "LP oscillator" },
+
+			{ "CP=11", "Code protection off" },
+			{ "CP=10", "1F00h to 1FFFh code protected" },
+			{ "CP=01", "1000h to 1FFFh code protected" },
+			{ "CP=00", "0000h to 1FFFh code protected" }
 		}
 	},
 
@@ -5649,7 +5675,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ 0, "FOSC0", "" },
 			{ 1, "FOSC1", "" },
 			{ 2, "WDTE", "Watchdog Timer Enable" },
-			{ 3, "PWRTE", "Power-up Timer Enable" },
+			{ 3, "PWRTE", "NOT Power-up Timer Enable" },
 			{ 4, "CP0", "" },
 			{ 5, "CP1", "" },
 			{ 6, "BODEN", "Brown-out Reset Enable" },
@@ -5662,6 +5688,15 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock mask description
+			{ "FOSC=11", "RC oscillator" },
+			{ "FOSC=10", "HS oscillator" },
+			{ "FOSC=01", "XT oscillator" },
+			{ "FOSC=00", "LP oscillator" },
+
+			{ "CP=11", "Code protection off" },
+			{ "CP=10", "1F00h to 1FFFh code protected" },
+			{ "CP=01", "1000h to 1FFFh code protected" },
+			{ "CP=00", "0000h to 1FFFh code protected" }
 		}
 	},
 
@@ -5677,18 +5712,27 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			// lock
 			{ 0, "FOSC0", "" },
 			{ 1, "FOSC1", "" },
-			{ 2, "WDTEN", "" },
-			{ 3, "/PWRTEN", "" },
-			{ 6, "BOREN", "" },
-			{ 7, "LVP", "" },
-			{ 8, "CPD", "" },
+			{ 2, "WDTEN", "Watchdog Timer Enable" },
+			{ 3, "/PWRTEN", "NOT Power-up Timer Enable" },
+			{ 6, "BOREN", "Brown-out Reset Enable" },
+			{ 7, "LVP", "Low-Voltage (Single-Supply)" },
+			{ 8, "CPD", "Data EEPROM Memory Code Protection" },
 			{ 9, "WRT0", "" },
 			{ 11, "WRT1", "" },
-			{ 12, "DEBUG", "" },
-			{ 14, "CP", "" }
+			{ 12, "DEBUG", "In-Circuit Debugger Mode" },
+			{ 14, "CP", "Flash Program Memory Code Protection" }
 		},
 		{
 			// lock mask description
+			{ "FOSC=11", "RC oscillator" },
+			{ "FOSC=10", "HS oscillator" },
+			{ "FOSC=01", "XT oscillator" },
+			{ "FOSC=00", "LP oscillator" },
+
+			{ "WRT=11", "Write protection off; all program memory may be written to by EECON control" },
+			{ "WRT=10", "0000h to 00FFh write-protected; 0100h to 0FFFh may be written to by EECON control" },
+			{ "WRT=01", "0000h to 03FFh write-protected; 0400h to 0FFFh may be written to by EECON control" },
+			{ "WRT=00", "0000h to 07FFh write-protected; 0800h to 0FFFh may be written to by EECON control" }
 		}
 	},
 
@@ -5704,18 +5748,27 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			// lock
 			{ 0, "FOSC0", "" },
 			{ 1, "FOSC1", "" },
-			{ 2, "WDTEN", "" },
-			{ 3, "/PWRTEN", "" },
-			{ 6, "BOREN", "" },
-			{ 7, "LVP", "" },
-			{ 8, "CPD", "" },
+			{ 2, "WDTEN", "Watchdog Timer Enable" },
+			{ 3, "/PWRTEN", "NOT Power-up Timer Enable" },
+			{ 6, "BOREN", "Brown-out Reset Enable" },
+			{ 7, "LVP", "Low-Voltage (Single-Supply)" },
+			{ 8, "CPD", "Data EEPROM Memory Code Protection" },
 			{ 9, "WRT0", "" },
 			{ 11, "WRT1", "" },
-			{ 12, "DEBUG", "" },
-			{ 14, "CP", "" }
+			{ 12, "DEBUG", "In-Circuit Debugger Mode" },
+			{ 14, "CP", "Flash Program Memory Code Protection" }
 		},
 		{
 			// lock mask description
+			{ "FOSC=11", "RC oscillator" },
+			{ "FOSC=10", "HS oscillator" },
+			{ "FOSC=01", "XT oscillator" },
+			{ "FOSC=00", "LP oscillator" },
+
+			{ "WRT=11", "Write protection off; all program memory may be written to by EECON control" },
+			{ "WRT=10", "0000h to 00FFh write-protected; 0100h to 0FFFh may be written to by EECON control" },
+			{ "WRT=01", "0000h to 03FFh write-protected; 0400h to 0FFFh may be written to by EECON control" },
+			{ "WRT=00", "0000h to 07FFh write-protected; 0800h to 0FFFh may be written to by EECON control" }
 		}
 	},
 
@@ -5731,18 +5784,27 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			// lock
 			{ 0, "FOSC0", "" },
 			{ 1, "FOSC1", "" },
-			{ 2, "WDTEN", "" },
-			{ 3, "/PWRTEN", "" },
-			{ 6, "BOREN", "" },
-			{ 7, "LVP", "" },
-			{ 8, "CPD", "" },
+			{ 2, "WDTEN", "Watchdog Timer Enable" },
+			{ 3, "/PWRTEN", "NOT Power-up Timer Enable" },
+			{ 6, "BOREN", "Brown-out Reset Enable" },
+			{ 7, "LVP", "Low-Voltage (Single-Supply)" },
+			{ 8, "CPD", "Data EEPROM Memory Code Protection" },
 			{ 9, "WRT0", "" },
 			{ 11, "WRT1", "" },
-			{ 12, "DEBUG", "" },
-			{ 14, "CP", "" }
+			{ 12, "DEBUG", "In-Circuit Debugger Mode" },
+			{ 14, "CP", "Flash Program Memory Code Protection" }
 		},
 		{
 			// lock mask description
+			{ "FOSC=11", "RC oscillator" },
+			{ "FOSC=10", "HS oscillator" },
+			{ "FOSC=01", "XT oscillator" },
+			{ "FOSC=00", "LP oscillator" },
+
+			{ "WRT=11", "Write protection off; all program memory may be written to by EECON control" },
+			{ "WRT=10", "0000h to 00FFh write-protected; 0100h to 1FFFh may be written to by EECON control" },
+			{ "WRT=01", "0000h to 07FFh write-protected; 0800h to 1FFFh may be written to by EECON control" },
+			{ "WRT=00", "0000h to 0FFFh write-protected; 1000h to 1FFFh may be written to by EECON control" }
 		}
 	},
 
@@ -5758,18 +5820,27 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			// lock
 			{ 0, "FOSC0", "" },
 			{ 1, "FOSC1", "" },
-			{ 2, "WDTEN", "" },
-			{ 3, "/PWRTEN", "" },
-			{ 6, "BOREN", "" },
-			{ 7, "LVP", "" },
-			{ 8, "CPD", "" },
+			{ 2, "WDTEN", "Watchdog Timer Enable" },
+			{ 3, "/PWRTEN", "NOT Power-up Timer Enable" },
+			{ 6, "BOREN", "Brown-out Reset Enable" },
+			{ 7, "LVP", "Low-Voltage (Single-Supply)" },
+			{ 8, "CPD", "Data EEPROM Memory Code Protection" },
 			{ 9, "WRT0", "" },
 			{ 11, "WRT1", "" },
-			{ 12, "DEBUG", "" },
-			{ 14, "CP", "" }
+			{ 12, "DEBUG", "In-Circuit Debugger Mode" },
+			{ 14, "CP", "Flash Program Memory Code Protection" }
 		},
 		{
 			// lock mask description
+			{ "FOSC=11", "RC oscillator" },
+			{ "FOSC=10", "HS oscillator" },
+			{ "FOSC=01", "XT oscillator" },
+			{ "FOSC=00", "LP oscillator" },
+
+			{ "WRT=11", "Write protection off; all program memory may be written to by EECON control" },
+			{ "WRT=10", "0000h to 00FFh write-protected; 0100h to 1FFFh may be written to by EECON control" },
+			{ "WRT=01", "0000h to 07FFh write-protected; 0800h to 1FFFh may be written to by EECON control" },
+			{ "WRT=00", "0000h to 0FFFh write-protected; 1000h to 1FFFh may be written to by EECON control" }
 		}
 	},
 
@@ -5785,13 +5856,13 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			// lock
 			{ 0, "FOSC0", "" },
 			{ 1, "FOSC1", "" },
-			{ 2, "WDTEN", "" },
-			{ 3, "/PWRTEN", "" },
+			{ 2, "WDTEN", "Watchdog Timer Enable" },
+			{ 3, "/PWRTEN", "NOT Power-up Timer Enable" },
 			{ 4, "FOSC2", "" },
-			{ 5, "MCLRE", "" },
-			{ 6, "BOREN", "" },
-			{ 7, "LVP", "" },
-			{ 8, "CPD", "" },
+			{ 5, "MCLRE", "RA5/MCLR pin function select" },
+			{ 6, "BOREN", "Brown-out Detect Reset Enable" },
+			{ 7, "LVP", "Low Voltage Programming Enable" },
+			{ 8, "CPD", "Data Code Protection" },
 			{ 10, "CP0", "" },
 			{ 11, "CP1", "" },
 			{ 12, "CP0", "" },
@@ -5799,6 +5870,19 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock mask description
+			{ "FOSC=111", "ER oscillator: CLKOUT function on RA6/OSC2/CLKOUT pin, Resistor on RA7/OSC1/CLKIN" },
+			{ "FOSC=110", "ER oscillator: I/O function on RA6/OSC2/CLKOUT pin, Resistor on RA7/OSC1/CLKIN" },
+			{ "FOSC=101", "INTRC oscillator: CLKOUT function on RA6/OSC2/CLKOUT pin, I/O function on RA7/OSC1/CLKIN" },
+			{ "FOSC=100", "INTRC oscillator: I/O function on RA6/OSC2/CLKOUT pin, I/O function on RA7/OSC1/CLKIN" },
+			{ "FOSC=011", "EC: I/O function on RA6/OSC2/CLKOUT pin, CLKIN on RA7/OSC1/CLKIN" },
+			{ "FOSC=010", "HS oscillator: High speed crystal/resonator on RA6/OSC2/CLKOUT and RA7/OSC1/CLKIN" },
+			{ "FOSC=001", "XT oscillator: Crystal/resonator on RA6/OSC2/CLKOUT and RA7/OSC1/CLKIN" },
+			{ "FOSC=000", "LP oscillator: Low power crystal on RA6/OSC2/CLKOUT and RA7/OSC1/CLKIN" },
+
+			{ "CP=11", "Program memory code protection off" },
+			{ "CP10", "Program memory code protection off" },
+			{ "CP01", "0200h-03FFh code protected" },
+			{ "CP00", "0000h-03FFh code protected" }
 		}
 	},
 
@@ -5814,13 +5898,13 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			// lock
 			{ 0, "FOSC0", "" },
 			{ 1, "FOSC1", "" },
-			{ 2, "WDTEN", "" },
-			{ 3, "/PWRTEN", "" },
+			{ 2, "WDTEN", "Watchdog Timer Enable" },
+			{ 3, "/PWRTEN", "NOT Power-up Timer Enable" },
 			{ 4, "FOSC2", "" },
-			{ 5, "MCLRE", "" },
-			{ 6, "BOREN", "" },
-			{ 7, "LVP", "" },
-			{ 8, "CPD", "" },
+			{ 5, "MCLRE", "RA5/MCLR pin function select" },
+			{ 6, "BOREN", "Brown-out Detect Reset Enable" },
+			{ 7, "LVP", "Low Voltage Programming Enable" },
+			{ 8, "CPD", "Data Code Protection" },
 			{ 10, "CP0", "" },
 			{ 11, "CP1", "" },
 			{ 12, "CP0", "" },
@@ -5828,6 +5912,19 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		},
 		{
 			// lock mask description
+			{ "FOSC=111", "ER oscillator: CLKOUT function on RA6/OSC2/CLKOUT pin, Resistor on RA7/OSC1/CLKIN" },
+			{ "FOSC=110", "ER oscillator: I/O function on RA6/OSC2/CLKOUT pin, Resistor on RA7/OSC1/CLKIN" },
+			{ "FOSC=101", "INTRC oscillator: CLKOUT function on RA6/OSC2/CLKOUT pin, I/O function on RA7/OSC1/CLKIN" },
+			{ "FOSC=100", "INTRC oscillator: I/O function on RA6/OSC2/CLKOUT pin, I/O function on RA7/OSC1/CLKIN" },
+			{ "FOSC=011", "EC: I/O function on RA6/OSC2/CLKOUT pin, CLKIN on RA7/OSC1/CLKIN" },
+			{ "FOSC=010", "HS oscillator: High speed crystal/resonator on RA6/OSC2/CLKOUT and RA7/OSC1/CLKIN" },
+			{ "FOSC=001", "XT oscillator: Crystal/resonator on RA6/OSC2/CLKOUT and RA7/OSC1/CLKIN" },
+			{ "FOSC=000", "LP oscillator: Low power crystal on RA6/OSC2/CLKOUT and RA7/OSC1/CLKIN" },
+
+			{ "CP=11", "Program memory code protection off" },
+			{ "CP10", "0400h-07FFh code protected" },
+			{ "CP01", "0200h-07FFh code protected" },
+			{ "CP00", "0000h-07FFh code protected" }
 		}
 	}
 };

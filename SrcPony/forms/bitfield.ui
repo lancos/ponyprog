@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>FormBitField</class>
+ <widget class="QWidget" name="FormBitField">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>559</width>
+    <height>381</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
+    <widget class="QComboBox" name="comboBox0"/>
+   </item>
+   <item row="1" column="0">
+    <widget class="QComboBox" name="comboBox1"/>
+   </item>
+   <item row="2" column="0">
+    <widget class="QComboBox" name="comboBox2"/>
+   </item>
+   <item row="3" column="0">
+    <widget class="QComboBox" name="comboBox3"/>
+   </item>
+   <item row="4" column="0">
+    <widget class="QTreeWidget" name="treeWidget">
+     <column>
+      <property name="text">
+       <string>Bit</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Description</string>
+      </property>
+     </column>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

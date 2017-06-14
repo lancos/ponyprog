@@ -159,6 +159,7 @@ SET(PONY_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/fusemdlg.h
 
 SET(PONY_FORMS  ${CMAKE_CURRENT_SOURCE_DIR}/forms/aboutdlg.ui
                 ${CMAKE_CURRENT_SOURCE_DIR}/forms/editdlg.ui
+                ${CMAKE_CURRENT_SOURCE_DIR}/forms/bitfield.ui
                 ${CMAKE_CURRENT_SOURCE_DIR}/forms/notesdlg.ui
                 ${CMAKE_CURRENT_SOURCE_DIR}/forms/e2dlg.ui
                 ${CMAKE_CURRENT_SOURCE_DIR}/forms/fusedlg.ui

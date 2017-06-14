@@ -25,97 +25,41 @@
 //-------------------------------------------------------------------------//
 //=========================================================================//
 
-#ifndef FUSEMDLG_H
-#define FUSEMDLG_H
+#ifndef BITFIELDWIDGET_H
+#define BITFIELDWIDGET_H
 
-#include <QStringList>
-#include <QObject>
 #include <QString>
-#include <QVector>
-#include <QCheckBox>
-
-#include "ui_fusedlg.h"
-
-#include "e2cmdw.h"
-
-/**
- * @brief BitInfo is the main structure for displaying in the QTreeWidget
- */
-typedef struct
-{
-	int  bit;
-	const QString ShortDescr;
-	const QString LongDescr;
-} BitInfo;
-
-/**
- * @brief MaskDescr is the structure for QComboBoxes with help information
- */
-typedef struct
-{
-	const QString mask;
-	const QString LongDescr;
-} MaskDescr;
+#include <QWidget>
+#include <QObject>
 
 
-typedef struct
-{
-	// TODO QVector<long> type; for same descriptions of chip bits
-	long type; // chip id
-	QVector<BitInfo> fuse;
-	QVector<MaskDescr> fuseDescr;
-	QVector<BitInfo> lock;
-	QVector<MaskDescr> lockDescr;
-} ChipBits;
+#include "ui_bitfield.h"
 
 
-class fuseModalDialog : public QDialog, public cTranslator, public Ui::FuseDialog
+
+class BitFieldWidget : public QWidget, public Ui::FormBitField
 {
 	Q_OBJECT
   public:               //---------------------------------------- public
-	fuseModalDialog(e2CmdWindow *bw, e2AppWinInfo *p, bool readonly = false, const QString &msg = "");
-	virtual ~fuseModalDialog();             // Destructor
+	BitFieldWidget(QWidget *bw, ...);
+	virtual ~BitFieldWidget();          // Destructor
 
-  private slots:
-	void onOk();
-	void onRead();
-	void onProg();
-	void onFuseComboSelected(int i);
-	void onFuseBitClicked(QTreeWidgetItem *itm, int col);
-	void onLockComboSelected(int i);
-	void onLockBitClicked(QTreeWidgetItem *itm, int col);
 
   protected:    //--------------------------------------- protected
 
-  private:
-	void displayBitFields();
-	void setTextWidgets();
-	void scanMasks();
-	void initWidgets(const QString &msg, bool readonly);
-	int  eepFindFuses(long type);
-	void setMaskBits(QTreeWidget *w, const QString &m);//, unsigned int bits);
-	bool isExp(unsigned int a);
+  private slots:
+// 	void onOk();
+
 
   private:              //--------------------------------------- private
-	static QVector<ChipBits> eep_bits;
+	QVector<QComboBox *> lstWidget;
 
-	e2CmdWindow *cmdw;
-	e2AppWinInfo *awip;
-
-	QStringList maskListFuse; // fuse masks
-	QStringList maskListLock; // lock masks
-
-	QVector<QComboBox *> lstLockWidget;
-	QVector<QComboBox *> lstFuseWidget;
-
-	unsigned int fuseBits;
-	unsigned int lockBits;
-
-	int currentChip;
-	ChipBits currentBitField;
-	bool write;
-	bool read;
+// 	long *pFrom, *pTo;
+// 	int *pVal;
+//
+// 	long mFrom, mTo;
+// 	int mVal;
+// 	long mMax;
 };
-
 
 #endif
