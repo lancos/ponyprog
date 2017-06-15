@@ -72,12 +72,12 @@ class BitFieldWidget : public QWidget, public Ui::FormBitField
   private slots:
 	void onComboSelected(int i);
 	void onBitClicked(QTreeWidgetItem *itm, int col);
-// 	void onOk();
 
   private:
-	void scanMasks();
 	void initWidget();
-	void setMaskBits(QTreeWidget *w, const QString &m);//, unsigned int bits);
+	void scanMasks();
+	void createComboLists();
+	void setMaskBits(const QString &m);//, unsigned int bits);
 	bool isExp(unsigned int a);
 
   private:              //--------------------------------------- private

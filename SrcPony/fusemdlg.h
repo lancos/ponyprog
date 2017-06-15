@@ -33,6 +33,7 @@
 #include <QString>
 #include <QVector>
 #include <QCheckBox>
+#include <QResizeEvent>
 
 #include "bitfield.h"
 #include "ui_fusedlg.h"
@@ -68,6 +69,7 @@ class fuseModalDialog : public QDialog, public cTranslator, public Ui::FuseDialo
 
   protected:    //--------------------------------------- protected
 
+
   private:
 	void displayBitFields();
 	void setTextWidgets();
@@ -82,8 +84,8 @@ class fuseModalDialog : public QDialog, public cTranslator, public Ui::FuseDialo
 	e2CmdWindow *cmdw;
 	e2AppWinInfo *awip;
 
-	BitFieldWidget *fuse;
-	BitFieldWidget *lock;
+	BitFieldWidget *fuseWidget;
+	BitFieldWidget *lockWidget;
 
 	unsigned int fuseBits;
 	unsigned int lockBits;

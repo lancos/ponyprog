@@ -44,6 +44,9 @@ fuseModalDialog::fuseModalDialog(e2CmdWindow *bw, e2AppWinInfo *p, bool readonly
 
 	awip = p;
 
+	fuseWidget = NULL;
+	lockWidget = NULL;
+
 	cmdw = static_cast<e2CmdWindow *>(bw);
 
 	if (cmdw->getStyleSheet().length() > 0)
@@ -113,7 +116,6 @@ void fuseModalDialog::onProg()
 }
 
 
-
 void fuseModalDialog::onRead()
 {
 	read = true;
@@ -148,6 +150,7 @@ void fuseModalDialog::getFuse(int l)
 	fuseBits = l;
 	displayBitFields();
 }
+
 
 /**
  * @brief
@@ -185,27 +188,18 @@ void fuseModalDialog::initWidgets(const QString &msg, bool readonly)
 	unsigned int f = awip->GetFuseBits();
 	if (currentBitField.fuse.count() > 0)
 	{
-		fuse = new BitFieldWidget(tabFuse, currentBitField.fuse, currentBitField.fuseDescr, f);
-		connect(fuse, SIGNAL(displayBitFields(int)), this, SLOT(getFuse(int)));
-	}
-	else
-	{
-		// TODO
-		// disable tab
+		fuseWidget = new BitFieldWidget(this, currentBitField.fuse, currentBitField.fuseDescr, f);
+		tabWidget->addTab(fuseWidget, "Fuse");
+		connect(fuseWidget, SIGNAL(displayBitFields(int)), this, SLOT(getFuse(int)));
 	}
 
 	unsigned int l = awip->GetLockBits();
 	if (currentBitField.lock.count() > 0)
 	{
-		lock = new BitFieldWidget(tabLock, currentBitField.lock, currentBitField.lockDescr, l);
-		connect(lock, SIGNAL(displayBitFields(int)), this, SLOT(getLock(int)));
+		lockWidget = new BitFieldWidget(this, currentBitField.lock, currentBitField.lockDescr, l);
+		tabWidget->addTab(lockWidget, "Lock");
+		connect(lockWidget, SIGNAL(displayBitFields(int)), this, SLOT(getLock(int)));
 	}
-	else
-	{
-		// TODO
-		// disable tab
-	}
-
 
 	displayBitFields();
 }
@@ -220,7 +214,7 @@ void fuseModalDialog::displayBitFields()
 QVector<ChipBits> fuseModalDialog::eep_bits =
 {
 	{
-		AT89S8252,
+		AT89S8252, // ???
 		{
 			// fuse
 		},
@@ -242,7 +236,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		}
 	},
 	{
-		AT89S8253,
+		AT89S8253, // ???
 		{
 			// fuse
 		},
@@ -265,7 +259,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 	},
 
 	{
-		AT89S51,
+		AT89S51, // ???
 		{
 			// fuse
 		},
@@ -288,7 +282,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 	},
 
 	{
-		AT89S52,
+		AT89S52, // ???
 		{
 			// fuse
 		},
@@ -311,7 +305,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 	},
 
 	{
-		AT89S53,
+		AT89S53, // ???
 		{
 			// fuse
 		},
@@ -661,7 +655,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		AT90S1200,
 		{
 			// fuse
-			{ 0, "FB0", "External clock enabled" },
+			{ 0, "/FB0", "NOT External clock enabled" },
 			{ 5, "FB5", "Serial program downloading (SPI) enabled" }
 		},
 		{
@@ -832,7 +826,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ 1, "CKSEL1", "" },
 			{ 2, "CKSEL2", "" },
 			{ 3, "BODEN", "Brown-out detection enabled" },
-			{ 4, "BODLEVEL", "Brown-out detection level at VCC=2.7V" },
+			{ 4, "/BODLEVEL", "NOT Brown-out detection level at VCC=2.7V" },
 			{ 5, "SPIEN", "Serial program downloading (SPI) enabled" }
 		},
 		{
@@ -886,7 +880,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		AT90S2343,
 		{
 			// fuse
-			{ 0, "FB0", "External clock disabled" }, // enabled but invert
+			{ 0, "/FB0", "NOT External clock enabled" }, // enabled but invert
 			{ 5, "FB5", "Serial program downloading (SPI) enabled" }
 		},
 		{
@@ -941,7 +935,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ 4, "RSTDISBL", "External reset function of PB5 disabled" },
 			{ 5, "SPIEN", "Serial program downloading (SPI) enabled" },
 			{ 6, "BODEN", "Brown-out detection enabled" },
-			{ 7, "BODLEVEL", "Brown-out detection level at VCC=1.8 V" }
+			{ 7, "/BODLEVEL", "NOT Brown-out detection level at VCC=1.8 V" }
 		},
 		{
 			// fuse mask description ???
@@ -1034,7 +1028,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ 4, "RSTDISBL", "External reset function of PB5 disabled" },
 			{ 5, "SPIEN", "Serial program downloading (SPI) enabled" },
 			{ 6, "BODEN", "Brown-out detection enabled" },
-			{ 7, "BODLEVEL", "Brown-out detection level at VCC=2.7 V" }
+			{ 7, "/BODLEVEL", "NOT Brown-out detection level at VCC=2.7 V" }
 		},
 		{
 			// fuse mask description
@@ -1060,7 +1054,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		ATtiny22,
 		{
 			// fuse
-			{ 0, "FB0", "External clock disabled" }, // NOT enabled
+			{ 0, "/FB0", "NOT External clock disabled" }, // NOT enabled
 			{ 5, "FB5", "Serial program downloading (SPI) enabled" }
 		},
 		{
@@ -1089,9 +1083,9 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ 4, "SUT0", "" },
 			{ 5, "SUT1", "" },
 			{ 6, "CKOPT", "CKOPT fuse (operation dependent of CKSEL fuses)" },
-			{ 7, "PLLCK", "" },
+			{ 7, "PLLCK0", "" },
 			{ 8, "BODEN", "Brown-out detection enabled" },
-			{ 9, "BODLEVEL", "Brown-out detection level at VCC=2.7 V" },
+			{ 9, "/BODLEVEL", "NOT Brown-out detection level at VCC=2.7 V" },
 			{ 10, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle" },
 			{ 11, "SPIEN", "Serial program downloading (SPI) enabled" },
 			{ 12, "RSTDISBL", "Reset Disabled (Enable PB7 as i/o pin)" }
@@ -3133,10 +3127,15 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			// fuse
 			{ 0, "SUT0", "" },
 			{ 1, "SUT1", "" },
-			{ 3, "EESAVE", "" }
+			{ 3, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle" },
+			{ 5, "FU5", "Serial program downloading (SPI) enabled" }
 		},
 		{
 			// fuse mask description
+			{ "SUT=00", "Start-up time=5 CPU cycles" },
+			{ "SUT=01", "Start-up time=0.5 ms" },
+			{ "SUT=10", "Start-up time=4.0 ms" },
+			{ "SUT=11", "Start-up time=16.0 ms" }
 		},
 		{
 			// lock
@@ -3152,15 +3151,20 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 	},
 
 	{
-		ATmega103, // ???
+		ATmega103,
 		{
 			// fuse
 			{ 0, "SUT0", "" },
 			{ 1, "SUT1", "" },
-			{ 3, "EESAVE", "" }
+			{ 3, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle" },
+			{ 5, "FU5", "Serial program downloading (SPI) enabled" }
 		},
 		{
 			// fuse mask description
+			{ "SUT=00", "Start-up time=5 CPU cycles" },
+			{ "SUT=01", "Start-up time=0.5 ms" },
+			{ "SUT=10", "Start-up time=4.0 ms" },
+			{ "SUT=11", "Start-up time=16.0 ms" }
 		},
 		{
 			// lock
@@ -3186,7 +3190,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ 4, "SUT0", "" },
 			{ 5, "SUT1", "" },
 			{ 6, "BODEN", "Brown-out detection enabled" },
-			{ 7, "BODLEVEL", "No Brown-out detection level at VCC=2.7 V" },
+			{ 7, "/BODLEVEL", "NOT Brown-out detection level at VCC=2.7 V" },
 			{ 8, "BOOTRST", "Boot Reset vector Enabled (default address=$0000)" },
 			{ 9, "BOOTSZ0", "" },
 			{ 10, "BOOTSZ1", "" },
@@ -3300,7 +3304,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ 4, "SUT0", "" },
 			{ 5, "SUT1", "" },
 			{ 6, "BODEN", "Brown-out detection enabled" },
-			{ 7, "BODLEVEL", "Brown-out detection level at VCC=2.7 V" },
+			{ 7, "/BODLEVEL", "NOT Brown-out detection level at VCC=2.7 V" },
 			{ 8, "BOOTRST", "Boot Reset vector Enabled (default address=$0000)" },
 			{ 9, "BOOTSZ0", "" },
 			{ 10, "BOOTSZ1", "" },
@@ -3414,7 +3418,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ 4, "SUT0", "" },
 			{ 5, "SUT1", "" },
 			{ 6, "BODEN", "Brown-out detection enabled" },
-			{ 7, "BODLEVEL", "Brown-out detection level at VCC=2.7 V" },
+			{ 7, "/BODLEVEL", "NOT Brown-out detection level at VCC=2.7 V" },
 			{ 8, "BOOTRST", "Boot Reset vector Enabled (default address=$0000)" },
 			{ 9, "BOOTSZ0", "" },
 			{ 10, "BOOTSZ1", "" },
@@ -3528,7 +3532,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ 4, "SUT0", "" },
 			{ 5, "SUT1", "" },
 			{ 6, "BODEN", "Brown-out detection enabled" },
-			{ 7, "BODLEVEL", "NOT Brown-out detection level at VCC=2.7 V" },
+			{ 7, "/BODLEVEL", "NOT Brown-out detection level at VCC=2.7 V" },
 			{ 8, "BOOTRST", "Boot Reset vector Enabled (default address=$0000)" },
 			{ 9, "BOOTSZ0", "" },
 			{ 10, "BOOTSZ1", "" },
@@ -3644,7 +3648,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ 4, "SUT0", "" },
 			{ 5, "SUT1", "" },
 			{ 6, "BODEN", "Brown-out detection enabled" },
-			{ 7, "BODLEVEL", "NOT Brown-out detection level at VCC=2.7 V" },
+			{ 7, "/BODLEVEL", "NOT Brown-out detection level at VCC=2.7 V" },
 			{ 8, "BOOTRST", "Boot Reset vector Enabled (default address=$0000)" },
 			{ 9, "BOOTSZ0", "" },
 			{ 10, "BOOTSZ1", "" },
@@ -3760,7 +3764,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ 4, "SUT0", "" },
 			{ 5, "SUT1", "" },
 			{ 6, "BODEN", "Brown-out detection enabled" },
-			{ 7, "BODLEVEL", "NOT Brown-out detection level at VCC=2.7 V" },
+			{ 7, "/BODLEVEL", "NOT Brown-out detection level at VCC=2.7 V" },
 			{ 8, "BOOTRST", "Boot Reset vector Enabled (default address=$0000)" },
 			{ 9, "BOOTSZ0", "" },
 			{ 10, "BOOTSZ1", "" },
@@ -3924,7 +3928,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ 3, "CKSEL3", "" },
 			{ 5, "SPIEN", "Serial program downloading (SPI) enabled" },
 			{ 6, "BODEN", "Brown-out detection enabled" },
-			{ 7, "BODLEVEL", "NOT Brown-out detection level at VCC=2.7 V" },
+			{ 7, "/BODLEVEL", "NOT Brown-out detection level at VCC=2.7 V" },
 			{ 8, "BOOTRST", "Boot Reset vector Enabled (default address=$0000)" },
 			{ 9, "BOOTSZ0", "" },
 			{ 10, "BOOTSZ1", "" }
@@ -4213,7 +4217,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ 2, "CKSEL2", "" },
 			{ 3, "CKSEL3", "" },
 			{ 6, "BODEN", "Brown-out detection enabled" },
-			{ 7, "BODLEVEL", "NOT Brown-out detection level at VCC=2.7 V" },
+			{ 7, "/BODLEVEL", "NOT Brown-out detection level at VCC=2.7 V" },
 			{ 8, "BOOTRST", "Boot Reset vector Enabled (default address=$0000)" },
 			{ 9, "BOOTSZ0", "" },
 			{ 10, "BOOTSZ1", "" },
@@ -4284,7 +4288,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ 4, "SUT0", "" },
 			{ 5, "SUT1", "" },
 			{ 6, "BODEN", "Brown-out detection enabled" },
-			{ 7, "BODLEVEL", "NOT Brown-out detection level at VCC=2.7 V" },
+			{ 7, "/BODLEVEL", "NOT Brown-out detection level at VCC=2.7 V" },
 			{ 8, "BOOTRST", "Boot Reset vector Enabled (default address=$0000)" },
 			{ 9, "BOOTSZ0", "" },
 			{ 10, "BOOTSZ1", "" },
@@ -4401,7 +4405,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ 1, "FOSC1", "" },
 			{ 2, "WDTE", "Watchdog timer enable" },
 			{ 3, "CP", "Code protection bit" },
-			{ 4, "MCLRE", "NOT MCLR enable bit" }
+			{ 4, "/MCLRE", "NOT MCLR enable bit" }
 		},
 		{
 			// lock mask description
@@ -4426,7 +4430,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ 1, "FOSC1", "" },
 			{ 2, "WDTE", "Watchdog timer enable" },
 			{ 3, "CP", "Code protection bit" },
-			{ 4, "MCLRE", "NOT MCLR enable bit" }
+			{ 4, "/MCLRE", "NOT MCLR enable bit" }
 		},
 		{
 			// lock mask description
@@ -4451,7 +4455,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ 1, "FOSC1", "" },
 			{ 2, "WDTE", "Watchdog timer enable" },
 			{ 3, "CP", "Code protection bit" },
-			{ 4, "MCLRE", "NOT MCLR enable bit" }
+			{ 4, "/MCLRE", "NOT MCLR enable bit" }
 		},
 		{
 			// lock mask description
@@ -4476,7 +4480,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ 1, "FOSC1", "" },
 			{ 2, "WDTE", "Watchdog timer enable" },
 			{ 3, "CP", "Code protection bit" },
-			{ 4, "MCLRE", "NOT MCLR enable bit" }
+			{ 4, "/MCLRE", "NOT MCLR enable bit" }
 		},
 		{
 			// lock mask description
@@ -4501,7 +4505,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ 1, "FOSC1", "" },
 			{ 2, "WDTE", "Watchdog timer enable" },
 			{ 3, "CP", "Code protection bit" },
-			{ 4, "MCLRE", "NOT MCLR enable bit" }
+			{ 4, "/MCLRE", "NOT MCLR enable bit" }
 		},
 		{
 			// lock mask description
@@ -4526,7 +4530,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ 1, "FOSC1", "" },
 			{ 2, "WDTE", "Watchdog timer enable" },
 			{ 3, "CP", "Code protection bit" },
-			{ 4, "MCLRE", "NOT MCLR enable bit" }
+			{ 4, "/MCLRE", "NOT MCLR enable bit" }
 		},
 		{
 			// lock mask description
@@ -4551,7 +4555,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ 1, "FOSC1", "" },
 			{ 2, "FOSC2", "" },
 			{ 3, "WDTE", "Watchdog Timer Enable" },
-			{ 4, "PWRTE", "NOT Power-up Timer Enable" },
+			{ 4, "/PWRTE", "NOT Power-up Timer Enable" },
 			{ 5, "CP0", "" },
 			{ 6, "CP1", "" },
 			{ 7, "MCLRE", "Master Clear Reset Enable" },
@@ -4594,7 +4598,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ 1, "FOSC1", "" },
 			{ 2, "FOSC2", "" },
 			{ 3, "WDTE", "Watchdog Timer Enable" },
-			{ 4, "PWRTE", "NOT Power-up Timer Enable" },
+			{ 4, "/PWRTE", "NOT Power-up Timer Enable" },
 			{ 5, "CP0", "" },
 			{ 6, "CP1", "" },
 			{ 7, "MCLRE", "Master Clear Reset Enable" },
@@ -4637,7 +4641,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ 1, "FOSC1", "" },
 			{ 2, "FOSC2", "" },
 			{ 3, "WDTE", "Watchdog Timer Enable" },
-			{ 4, "PWRTE", "NOT Power-up Timer Enable" },
+			{ 4, "/PWRTE", "NOT Power-up Timer Enable" },
 			{ 5, "CP0", "" },
 			{ 6, "CP1", "" },
 			{ 7, "MCLRE", "Master Clear Reset Enable" },
@@ -4680,7 +4684,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ 1, "FOSC1", "" },
 			{ 2, "FOSC2", "" },
 			{ 3, "WDTE", "Watchdog Timer Enable" },
-			{ 4, "PWRTE", "NOT Power-up Timer Enable" },
+			{ 4, "/PWRTE", "NOT Power-up Timer Enable" },
 			{ 5, "CP0", "" },
 			{ 6, "CP1", "" },
 			{ 7, "MCLRE", "Master Clear Reset Enable" },
@@ -4722,7 +4726,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ 0, "FOSC0", "" },
 			{ 1, "FOSC1", "" },
 			{ 2, "WDTE", "Watchdog timer enable" },
-			{ 3, "PWRTE", "NOT Power-up Timer Enable" },
+			{ 3, "/PWRTE", "NOT Power-up Timer Enable" },
 			{ 4, "CP", "Code protection" }
 		},
 		{
@@ -4747,7 +4751,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ 0, "FOSC0", "" },
 			{ 1, "FOSC1", "" },
 			{ 2, "WDTE", "Watchdog timer enable" },
-			{ 3, "PWRTE", "NOT Power-up Timer Enable" },
+			{ 3, "/PWRTE", "NOT Power-up Timer Enable" },
 			{ 4, "CP", "Code protection" }
 		},
 		{
@@ -4772,7 +4776,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ 0, "FOSC0", "" },
 			{ 1, "FOSC1", "" },
 			{ 2, "WDTE", "Watchdog timer enable" },
-			{ 3, "PWRTE", "NOT Power-up Timer Enable" },
+			{ 3, "/PWRTE", "NOT Power-up Timer Enable" },
 			{ 4, "CP", "Code protection" }
 		},
 		{
@@ -4797,7 +4801,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ 0, "FOSC0", "" },
 			{ 1, "FOSC1", "" },
 			{ 2, "WDTE", "Watchdog Timer Enable" },
-			{ 3, "PWRTE", "NOT Power-up Timer Enable" },
+			{ 3, "/PWRTE", "NOT Power-up Timer Enable" },
 			{ 4, "CP0", "" },
 			{ 5, "CP1", "" },
 			{ 6, "BODEN", "Brown-out Reset Enable" },
@@ -4835,7 +4839,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ 0, "FOSC0", "" },
 			{ 1, "FOSC1", "" },
 			{ 2, "WDTE", "Watchdog Timer Enable" },
-			{ 3, "PWRTE", "NOT Power-up Timer Enable" },
+			{ 3, "/PWRTE", "NOT Power-up Timer Enable" },
 			{ 4, "CP0", "" },
 			{ 5, "CP1", "" },
 			{ 6, "BODEN", "Brown-out Reset Enable" },
@@ -4873,7 +4877,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ 0, "FOSC0", "" },
 			{ 1, "FOSC1", "" },
 			{ 2, "WDTE", "Watchdog Timer Enable" },
-			{ 3, "PWRTE", "NOT Power-up Timer Enable" },
+			{ 3, "/PWRTE", "NOT Power-up Timer Enable" },
 			{ 4, "CP0", "" },
 			{ 5, "CP1", "" },
 			{ 6, "BODEN", "Brown-out Reset Enable" },
@@ -4911,7 +4915,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ 0, "FOSC0", "" },
 			{ 1, "FOSC1", "" },
 			{ 2, "WDTE", "Watchdog Timer Enable" },
-			{ 3, "PWRTE", "NOT Power-up Timer Enable" },
+			{ 3, "/PWRTE", "NOT Power-up Timer Enable" },
 			{ 4, "CP0", "" },
 			{ 5, "CP1", "" },
 			{ 6, "BODEN", "Brown-out Reset Enable" },
@@ -4949,7 +4953,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ 0, "FOSC0", "" },
 			{ 1, "FOSC1", "" },
 			{ 2, "WDTE", "Watchdog Timer Enable" },
-			{ 3, "PWRTE", "NOT Power-up Timer Enable" },
+			{ 3, "/PWRTE", "NOT Power-up Timer Enable" },
 			{ 4, "CP0", "" },
 			{ 5, "CP1", "" },
 			{ 6, "BODEN", "Brown-out Reset Enable" },
@@ -4987,7 +4991,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ 0, "FOSC0", "" },
 			{ 1, "FOSC1", "" },
 			{ 2, "WDTE", "Watchdog Timer Enable" },
-			{ 3, "PWRTE", "NOT Power-up Timer Enable" },
+			{ 3, "/PWRTE", "NOT Power-up Timer Enable" },
 			{ 4, "CP0", "" },
 			{ 5, "CP1", "" },
 			{ 6, "BODEN", "Brown-out Reset Enable" },
@@ -5025,7 +5029,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ 0, "FOSC0", "" },
 			{ 1, "FOSC1", "" },
 			{ 2, "WDTE", "Watchdog Timer Enable" },
-			{ 3, "PWRTE", "NOT Power-up Timer Enable" },
+			{ 3, "/PWRTE", "NOT Power-up Timer Enable" },
 			{ 4, "CP0", "" },
 			{ 5, "CP1", "" },
 			{ 6, "BODEN", "Brown-out Reset Enable" },

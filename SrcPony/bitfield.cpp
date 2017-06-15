@@ -44,8 +44,6 @@ BitFieldWidget::BitFieldWidget(QWidget *parent, QVector<BitInfo> &vInfo, QVector
 
 	bField = field;
 
-	treeWidget->header()->hide();
-
 	lstWidget = (QVector<QComboBox *>() << comboBox0 << comboBox1 << comboBox2 << comboBox3);
 
 	for (int i = 0; i < 4; i++)
@@ -69,10 +67,12 @@ void BitFieldWidget::initWidget()
 
 	if (vecInfo->count() > 0)
 	{
+		int lastBit = 0;
 		for (int i = 0; i < vecInfo->count(); i++)
 		{
 			QTreeWidgetItem *itm = new QTreeWidgetItem();
 			int bitOffset = vecInfo->at(i).bit;
+			lastBit = bitOffset;
 			itm->setText(0, QString().sprintf("Bit %d, ", bitOffset) + vecInfo->at(i).ShortDescr);
 			if (vecInfo->at(i).LongDescr.length() > 0)
 			{
@@ -88,6 +88,11 @@ void BitFieldWidget::initWidget()
 			treeWidget->addTopLevelItem(itm);
 		}
 
+		for (int i = (lastBit + 1); i < 32; i++)
+		{
+			bField &= ~(1 << i);
+		}
+
 		treeWidget->expandAll();
 		treeWidget->resizeColumnToContents(0);
 
@@ -96,7 +101,14 @@ void BitFieldWidget::initWidget()
 
 	scanMasks();
 
+	createComboLists();
 
+	emit displayBitFields(bField);
+}
+
+
+void BitFieldWidget::createComboLists()
+{
 	for (int i = 0; i < maskList.count(); i++)
 	{
 		QStringList lst;
@@ -121,8 +133,6 @@ void BitFieldWidget::initWidget()
 
 		connect(lstWidget.at(i), SIGNAL(activated(int)), this, SLOT(onComboSelected(int)));
 	}
-
-	emit displayBitFields(bField);
 }
 
 
@@ -198,7 +208,7 @@ void BitFieldWidget::onComboSelected(int idx)
 
 	foreach (QString cMask, mskList)
 	{
-		setMaskBits(treeWidget, cMask);
+		setMaskBits(cMask);
 	}
 
 	// activate signal
@@ -208,7 +218,7 @@ void BitFieldWidget::onComboSelected(int idx)
 }
 
 
-void BitFieldWidget::setMaskBits(QTreeWidget *w, const QString &cMask)
+void BitFieldWidget::setMaskBits(const QString &cMask)
 {
 	int p = cMask.indexOf("=");
 	if (p < 0)
@@ -230,9 +240,9 @@ void BitFieldWidget::setMaskBits(QTreeWidget *w, const QString &cMask)
 	qDebug() << cMask <<  "converted to" << mskName << (bin) << localField << (dec);
 
 	// search in QTreeWidget the names
-	for (idx = 0; idx < w->topLevelItemCount(); idx++)
+	for (idx = 0; idx < treeWidget->topLevelItemCount(); idx++)
 	{
-		QString t = w->topLevelItem(idx)->text(0);
+		QString t = treeWidget->topLevelItem(idx)->text(0);
 		int pos = t.indexOf(", ");
 
 		if (pos > 0)
@@ -247,7 +257,7 @@ void BitFieldWidget::setMaskBits(QTreeWidget *w, const QString &cMask)
 		}
 	}
 
-	if (idx >= w->topLevelItemCount())
+	if (idx >= treeWidget->topLevelItemCount())
 	{
 		qDebug() << "setMaskBits is wrong";
 		return;
@@ -271,9 +281,9 @@ void BitFieldWidget::setMaskBits(QTreeWidget *w, const QString &cMask)
 
 		localField >>= 1;
 
-		w->topLevelItem(idx)->setCheckState(0, st);
+		treeWidget->topLevelItem(idx)->setCheckState(0, st);
 
-		QString t = w->topLevelItem(idx)->text(0);
+		QString t = treeWidget->topLevelItem(idx)->text(0);
 		int pos = t.indexOf(", ");
 
 		if (pos > 0)
