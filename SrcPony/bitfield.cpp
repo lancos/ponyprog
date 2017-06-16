@@ -168,6 +168,13 @@ void BitFieldWidget::onComboSelected(int idx)
 	QComboBox *s = static_cast<QComboBox *>(sender());
 	int globIdx = 0;
 	int nMask = -1;
+
+	// no changes in this case
+	if (s->currentText() == "Undefined combination")
+	{
+		return;
+	}
+
 	// we have only 4 comboboxes for lock
 	for (int i = 0; i < 4; i++)
 	{
