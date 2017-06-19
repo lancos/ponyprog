@@ -44,11 +44,11 @@ BitFieldWidget::BitFieldWidget(QWidget *parent, QVector<BitInfo> &vInfo, QVector
 
 	bField = field;
 
-	lstWidget = (QVector<QComboBox *>() << comboBox0 << comboBox1 << comboBox2 << comboBox3);
+	lstComboBoxes = (QVector<QComboBox *>() << comboBox0 << comboBox1 << comboBox2 << comboBox3);
 
 	for (int i = 0; i < 4; i++)
 	{
-		lstWidget.at(i)->setHidden(true);
+		lstComboBoxes.at(i)->setHidden(true);
 	}
 
 	initWidget();
@@ -88,6 +88,7 @@ void BitFieldWidget::initWidget()
 			treeWidget->addTopLevelItem(itm);
 		}
 
+		// reset not used bits
 		for (int i = (lastBit + 1); i < 32; i++)
 		{
 			bField &= ~(1 << i);
@@ -103,7 +104,20 @@ void BitFieldWidget::initWidget()
 
 	createComboLists();
 
-	emit displayBitFields(bField);
+	// init of comboboxes
+	for (int i = 0; i < treeWidget->topLevelItemCount(); i++)
+	{
+		if (treeWidget->topLevelItem(i)->text(1).length() == 0)
+		{
+			emit onBitClicked(treeWidget->topLevelItem(i), 0);
+		}
+	}
+}
+
+
+unsigned int BitFieldWidget::getBitfield()
+{
+	return bField;
 }
 
 
@@ -128,10 +142,10 @@ void BitFieldWidget::createComboLists()
 			lst << "Undefined combination";
 		}
 
-		lstWidget.at(i)->setHidden(false);
-		lstWidget.at(i)->addItems(lst);
+		lstComboBoxes.at(i)->setHidden(false);
+		lstComboBoxes.at(i)->addItems(lst);
 
-		connect(lstWidget.at(i), SIGNAL(activated(int)), this, SLOT(onComboSelected(int)));
+		connect(lstComboBoxes.at(i), SIGNAL(activated(int)), this, SLOT(onComboSelected(int)));
 	}
 }
 
@@ -178,15 +192,15 @@ void BitFieldWidget::onComboSelected(int idx)
 	// we have only 4 comboboxes for lock
 	for (int i = 0; i < 4; i++)
 	{
-		if (lstWidget.at(i) == s)
+		if (lstComboBoxes.at(i) == s)
 		{
 			nMask = i;
 			break;
 		}
-		globIdx += lstWidget.at(i)->count();
+		globIdx += lstComboBoxes.at(i)->count();
 
 		// correcture for undefined
-		if (lstWidget.at(i)->findText("Undefined combination") > 0)
+		if (lstComboBoxes.at(i)->findText("Undefined combination") > 0)
 		{
 			globIdx--;
 		}
@@ -427,10 +441,10 @@ void BitFieldWidget::onBitClicked(QTreeWidgetItem *itm, int col)
 			if (vecDescr->at(i).mask.indexOf(QRegExp(completeMask)) == 0)
 			{
 				QString comboText = vecDescr->at(i).LongDescr;
-				int c = lstWidget.at(idxCombo)->findText(comboText);
+				int c = lstComboBoxes.at(idxCombo)->findText(comboText);
 				if (c >= 0)
 				{
-					lstWidget.at(idxCombo)->setCurrentIndex(c);
+					lstComboBoxes.at(idxCombo)->setCurrentIndex(c);
 				}
 
 				break;
@@ -438,10 +452,10 @@ void BitFieldWidget::onBitClicked(QTreeWidgetItem *itm, int col)
 		}
 		if (i == vecDescr->count())
 		{
-			int p = lstWidget.at(idxCombo)->findText("Undefined combination");
+			int p = lstComboBoxes.at(idxCombo)->findText("Undefined combination");
 			if (p >= 0)
 			{
-				lstWidget.at(idxCombo)->setCurrentIndex(p);
+				lstComboBoxes.at(idxCombo)->setCurrentIndex(p);
 			}
 		}
 	}

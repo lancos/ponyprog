@@ -63,6 +63,8 @@ class BitFieldWidget : public QWidget, public Ui::FormBitField
 	BitFieldWidget(QWidget *parent, QVector<BitInfo> &vInfo, QVector<MaskDescr> &vMask, unsigned int field);
 	virtual ~BitFieldWidget();          // Destructor
 
+	unsigned int getBitfield();
+
 
   protected:    //--------------------------------------- protected
 
@@ -81,7 +83,7 @@ class BitFieldWidget : public QWidget, public Ui::FormBitField
 	bool isExp(unsigned int a);
 
   private:              //--------------------------------------- private
-	QVector<QComboBox *> lstWidget;
+	QVector<QComboBox *> lstComboBoxes;
 
 	QVector<BitInfo> *vecInfo;
 	QVector<MaskDescr> *vecDescr;

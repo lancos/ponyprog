@@ -191,6 +191,8 @@ void fuseModalDialog::initWidgets(const QString &msg, bool readonly)
 		fuseWidget = new BitFieldWidget(this, currentBitField.fuse, currentBitField.fuseDescr, f);
 		tabWidget->addTab(fuseWidget, "Fuse");
 		connect(fuseWidget, SIGNAL(displayBitFields(int)), this, SLOT(getFuse(int)));
+
+		fuseBits = fuseWidget->getBitfield();
 	}
 
 	unsigned int l = awip->GetLockBits();
@@ -199,6 +201,8 @@ void fuseModalDialog::initWidgets(const QString &msg, bool readonly)
 		lockWidget = new BitFieldWidget(this, currentBitField.lock, currentBitField.lockDescr, l);
 		tabWidget->addTab(lockWidget, "Lock");
 		connect(lockWidget, SIGNAL(displayBitFields(int)), this, SLOT(getLock(int)));
+
+		lockBits = lockWidget->getBitfield();
 	}
 
 	displayBitFields();
