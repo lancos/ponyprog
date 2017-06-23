@@ -111,12 +111,6 @@ e2CmdWindow::e2CmdWindow(QWidget *parent) :
 	// TODO to remove this to E2Profile init?
 	//      QFont sysFont = qApp->font();
 	//      sysFont = sysFont;
-
-	if (readLangDir() == false)   // init from langFiles variable in format "filename:language"
-	{
-		QMessageBox::warning(this, "Warning", "Directory with other languages not found\nDefault GUI language is english", QMessageBox::Close);
-	}
-
 	// EK 2017
 	// to check this
 	fontSize = E2Profile::GetFontSize();//sysFont.pointSize();
@@ -133,6 +127,18 @@ e2CmdWindow::e2CmdWindow(QWidget *parent) :
 	{
 		setStyleSheet(programStyleSheet);
 	}
+
+
+	if (readLangDir() == false)   // init from langFiles variable in format "filename:language"
+	{
+		QMessageBox msgBox(QMessageBox::Warning, "Warning", "Directory with other languages not found\nDefault GUI language is english", QMessageBox::Close);
+		msgBox.setStyleSheet(programStyleSheet);
+		// TODO translate buttons
+		msgBox.setButtonText(QMessageBox::Close, "Close");
+		msgBox.exec();
+// 		QMessageBox::warning(this, "Warning", "Directory with other languages not found\nDefault GUI language is english", QMessageBox::Close);
+	}
+
 
 	createFontSizeMenu();
 
@@ -208,8 +214,14 @@ e2CmdWindow::e2CmdWindow(QWidget *parent) :
 
 	if (getLangTable() == false)
 	{
-		QMessageBox::warning(this, "Language file error",
-							 "Can't open language file!\nDefault GUI language is english", QMessageBox::Close);
+		QMessageBox msgBox(QMessageBox::Warning, "Language file error",
+						   "Can't open language file!\nDefault GUI language is english", QMessageBox::Close);
+		msgBox.setStyleSheet(programStyleSheet);
+		// TODO translate buttons
+		msgBox.setButtonText(QMessageBox::Close, "Close");
+		msgBox.exec();
+// 		QMessageBox::warning(this, "Language file error",
+// 							 "Can't open language file!\nDefault GUI language is english", QMessageBox::Close);
 
 		E2Profile::SetCurrentLang("english");
 	}
@@ -360,7 +372,7 @@ int e2CmdWindow::CloseAppWin()
 		{
 			// EK 2017
 			// TODO we can do it about program settings: use QSettings
-#ifdef Q_OS_WIN32                            // Yes it's a dirty hack here but clean in Windows sense, heha 130406
+#ifdef Q_OS_WIN32 
 			HKEY key;       // Save window position to Win7-safe, roaming hive of registry
 
 			if (!RegCreateKeyEx(HKEY_CURRENT_USER, "Software\\h#s\\PonyProg",
@@ -472,7 +484,12 @@ void e2CmdWindow::onSelectFile(QAction *a)
 	}
 	else
 	{
-		QMessageBox::critical(this, "File error", translate(STR_MSGFILENOTFOUND), QMessageBox::Close);
+		QMessageBox msgBox(QMessageBox::Critical, "File error", translate(STR_MSGFILENOTFOUND), QMessageBox::Close);
+		msgBox.setStyleSheet(programStyleSheet);
+		// TODO translate buttons
+		msgBox.setButtonText(QMessageBox::Close, "Close");
+		msgBox.exec();
+// 		QMessageBox::critical(this, "File error", translate(STR_MSGFILENOTFOUND), QMessageBox::Close);
 	}
 }
 
@@ -776,8 +793,14 @@ bool e2CmdWindow::getLangTable()
 
 	if (QFile::exists(E2Profile::GetLangDir() + "/" + fileLang) == false)
 	{
-		QMessageBox::warning(this, "Warning", "Language file not exists!\n\n"
-							 + E2Profile::GetLangDir() + "\n\n" + fileLang, QMessageBox::Close);
+		QMessageBox msgBox(QMessageBox::Warning, "Warning", "Language file not exists!\n\n"
+						   + E2Profile::GetLangDir() + "\n\n" + fileLang, QMessageBox::Close);
+		msgBox.setStyleSheet(programStyleSheet);
+		// TODO translate buttons
+		msgBox.setButtonText(QMessageBox::Close, "Close");
+		msgBox.exec();
+// 		QMessageBox::warning(this, "Warning", "Language file not exists!\n\n"
+// 							 + E2Profile::GetLangDir() + "\n\n" + fileLang, QMessageBox::Close);
 		// not found
 		return (false);
 	}
@@ -793,9 +816,12 @@ int e2CmdWindow::OnError(int err_no, const QString &msgerr)
 	QString msg;
 
 	QMessageBox note;
+	note.setStyleSheet(programStyleSheet);
 	note.setWindowTitle("Error");
 	note.setIcon(QMessageBox::Critical);
+	note.setStyleSheet(programStyleSheet);
 
+	// TODO translate buttons
 	switch (err_no)
 	{
 	case 0:
@@ -2496,9 +2522,14 @@ void e2CmdWindow::onAskToSave()
 		str = translate(STR_BUFCHANGED);
 		str.replace("%s", GetFileName());
 
-		int ret = QMessageBox::warning(this, "PonyProg",
-									   str,
-									   QMessageBox::Yes | QMessageBox::No);
+		QMessageBox msgBox(QMessageBox::Warning, "PonyProg", str, QMessageBox::Yes | QMessageBox::No);
+		msgBox.setStyleSheet(programStyleSheet);
+		// TODO translate buttons
+//                 msgBox.setButtonText(QMessageBox::Close, "Close");
+		int ret = msgBox.exec();
+// 		int ret = QMessageBox::warning(this, "PonyProg",
+// 									   str,
+// 									   QMessageBox::Yes | QMessageBox::No);
 
 		if (ret == QMessageBox::Yes)
 		{
@@ -2615,8 +2646,14 @@ int e2CmdWindow::CmdSave(int type, const QString &fname, long relocation)
 		if (verbose != verboseNo)
 		{
 			QMessageBox note;
+			note.setStyleSheet(programStyleSheet);
 			note.setIcon(QMessageBox::Warning);
 			note.setWindowTitle("Warning");
+
+			note.setStyleSheet(programStyleSheet);
+			// TODO translate buttons
+//                 msgBox.setButtonText(QMessageBox::Close, "Close");
+
 			note.setText(translate(STR_NOTHINGSAVE));
 			note.exec();
 		}
@@ -2652,8 +2689,14 @@ int e2CmdWindow::CmdSaveAs(int type, long relocation)
 		if (verbose != verboseNo)
 		{
 			QMessageBox note;
+			note.setStyleSheet(programStyleSheet);
 			note.setIcon(QMessageBox::Warning);
 			note.setWindowTitle("Warning");
+
+			note.setStyleSheet(programStyleSheet);
+			// TODO translate buttons
+//                 note.setButtonText(QMessageBox::Close, "Close");
+
 			note.setText(translate(STR_NOTHINGSAVE));
 			note.exec();
 		}
@@ -2677,9 +2720,16 @@ int e2CmdWindow::CmdLastFile(int index)
 	{
 		if (IsBufChanged() && awip->IsBufferValid())
 		{
-			int ret = QMessageBox::warning(this, QString(APP_NAME),
-										   "Buffer changed. Save it before to close?",		//TODO: translate message
-										   QMessageBox::Yes | QMessageBox::No);
+			QMessageBox msgBox(QMessageBox::Warning, QString(APP_NAME), "Buffer changed. Save it before to close?",		//TODO: translate message
+							   QMessageBox::Yes | QMessageBox::No);
+			msgBox.setStyleSheet(programStyleSheet);
+			// TODO translate buttons
+//                 msgBox.setButtonText(QMessageBox::Close, "Close");
+			int ret = msgBox.exec();
+
+// 			int ret = QMessageBox::warning(this, QString(APP_NAME),
+// 										   "Buffer changed. Save it before to close?",		//TODO: translate message
+// 										   QMessageBox::Yes | QMessageBox::No);
 
 			if (ret == QMessageBox::Yes)
 			{
@@ -2713,9 +2763,15 @@ int e2CmdWindow::CmdReload()
 	{
 		if (IsBufChanged() && awip->IsBufferValid())
 		{
-			int ret = QMessageBox::warning(this, QString(APP_NAME),
-										   "Buffer changed. Save it before to close?",		//TODO: translate message
-										   QMessageBox::Yes | QMessageBox::No);
+			QMessageBox msgBox(QMessageBox::Warning, QString(APP_NAME), "Buffer changed. Save it before to close?",		//TODO: translate message
+							   QMessageBox::Yes | QMessageBox::No);
+			msgBox.setStyleSheet(programStyleSheet);
+			// TODO translate buttons
+//                 msgBox.setButtonText(QMessageBox::Close, "Close");
+			int ret = msgBox.exec();
+// 			int ret = QMessageBox::warning(this, QString(APP_NAME),
+// 										   "Buffer changed. Save it before to close?",		//TODO: translate message
+// 										   QMessageBox::Yes | QMessageBox::No);
 
 			if (ret == QMessageBox::Yes)
 			{
@@ -2777,8 +2833,14 @@ int e2CmdWindow::CmdReload()
 		if (verbose != verboseNo)
 		{
 			QMessageBox note;
+			note.setStyleSheet(programStyleSheet);
 			note.setIcon(QMessageBox::Warning);
 			note.setWindowTitle("Warning");
+
+			note.setStyleSheet(programStyleSheet);
+			// TODO translate buttons
+//                 note.setButtonText(QMessageBox::Close, "Close");
+
 			note.setText(translate(STR_NOTHINGLOAD));
 			note.exec();
 		}
@@ -2797,8 +2859,14 @@ int e2CmdWindow::CmdPrint()
 	else
 	{
 		QMessageBox note;
+		note.setStyleSheet(programStyleSheet);
 		note.setIcon(QMessageBox::Warning);
 		note.setWindowTitle("Warning");
+
+		note.setStyleSheet(programStyleSheet);
+		// TODO translate buttons
+//                 note.setButtonText(QMessageBox::Close, "Close");
+
 		note.setText(translate(STR_NOTHINGPRINT));
 		note.exec();
 	}
@@ -2845,14 +2913,21 @@ int e2CmdWindow::CmdHelp()
 //====================>>> e2CmdWindow::CmdCalibration <<<====================
 int e2CmdWindow::CmdCalibration()
 {
-	int ret = QMessageBox::warning(this, QString(APP_NAME),
-								   translate(STR_BUSCALIBRA1) + QString(APP_NAME) + translate(STR_BUSCALIBRA2),
-								   QMessageBox::Yes | QMessageBox::No);
+	QMessageBox msgBox(QMessageBox::Warning, QString(APP_NAME), translate(STR_BUSCALIBRA1) + QString(APP_NAME) + translate(STR_BUSCALIBRA2),
+					   QMessageBox::Yes | QMessageBox::No);
+	msgBox.setStyleSheet(programStyleSheet);
+	// TODO translate buttons
+//                 msgBox.setButtonText(QMessageBox::Close, "Close");
+	int ret = msgBox.exec();
+// 	int ret = QMessageBox::warning(this, QString(APP_NAME),
+// 								   translate(STR_BUSCALIBRA1) + QString(APP_NAME) + translate(STR_BUSCALIBRA2),
+// 								   QMessageBox::Yes | QMessageBox::No);
 
 	if (ret == QMessageBox::Yes)
 	{
 		QMessageBox note;
 		note.setIcon(QMessageBox::Warning);
+		note.setStyleSheet(programStyleSheet);
 		note.setWindowTitle("Warning");
 		int err = Calibration();
 
@@ -2895,9 +2970,15 @@ int e2CmdWindow::CmdRead(int type)
 {
 	if (IsBufChanged() && awip->IsBufferValid() && verbose == verboseAll)
 	{
-		int ret = QMessageBox::warning(this, QString(APP_NAME),
-									   translate(STR_BUFCHANGED3),
-									   QMessageBox::Yes | QMessageBox::No);
+		QMessageBox msgBox(QMessageBox::Warning, QString(APP_NAME), translate(STR_BUFCHANGED3),
+						   QMessageBox::Yes | QMessageBox::No);
+		msgBox.setStyleSheet(programStyleSheet);
+		// TODO translate buttons
+//                 msgBox.setButtonText(QMessageBox::Close, "Close");
+		int ret = msgBox.exec();
+// 		int ret = QMessageBox::warning(this, QString(APP_NAME),
+// 									   translate(STR_BUFCHANGED3),
+// 									   QMessageBox::Yes | QMessageBox::No);
 
 		if (ret == QMessageBox::Yes)
 		{
@@ -2947,6 +3028,7 @@ int e2CmdWindow::CmdRead(int type)
 			{
 				QMessageBox note;
 				note.setIcon(QMessageBox::Information);
+				note.setStyleSheet(programStyleSheet);
 				note.setWindowTitle("Read");
 				note.setText(str);
 				note.exec();
@@ -3010,6 +3092,11 @@ int e2CmdWindow::CmdWrite(int type, bool verify)
 			QMessageBox note;
 			note.setIcon(QMessageBox::Warning);
 			note.setWindowTitle("Write");
+
+			note.setStyleSheet(programStyleSheet);
+			// TODO translate buttons
+//                 msgBox.setButtonText(QMessageBox::Close, "Close");
+
 			note.setText(translate(STR_NOTHINGWRITE));
 			note.exec();
 		}
@@ -3068,6 +3155,7 @@ int e2CmdWindow::CmdWrite(int type, bool verify)
 					//e2Prg->close();
 
 					QMessageBox note;
+					note.setStyleSheet(programStyleSheet);
 
 					if (rval > 0)     //23/10/1999
 					{
@@ -3217,6 +3305,7 @@ int e2CmdWindow::CmdReadCalibration(int idx)
 
 					QMessageBox note;
 					note.setIcon(QMessageBox::Information);
+					note.setStyleSheet(programStyleSheet);
 					note.setWindowTitle("Calibration");
 					note.setText(str);
 					note.exec();
@@ -3310,6 +3399,7 @@ int e2CmdWindow::CmdErase(int type)
 				QMessageBox note;
 				note.setIcon(QMessageBox::Information);
 				note.setWindowTitle("Warning");
+				note.setStyleSheet(programStyleSheet);
 				note.setText(translate(STR_MSGERASEOK));
 				note.exec();
 			}
@@ -3364,6 +3454,7 @@ int e2CmdWindow::CmdVerify(int type)
 		{
 			QMessageBox note;
 			note.setIcon(QMessageBox::Information);
+			note.setStyleSheet(programStyleSheet);
 			note.setWindowTitle("Warning");
 			note.setText(translate(STR_NOTHINGVERIFY));
 			note.exec();
@@ -3396,6 +3487,7 @@ int e2CmdWindow::CmdVerify(int type)
 			if (verbose != verboseNo)
 			{
 				note.setIcon(QMessageBox::Critical);
+				note.setStyleSheet(programStyleSheet);
 				note.setWindowTitle("Verify");
 				note.setText(translate(STR_MSGVERIFYFAIL2));
 				note.exec();
@@ -3408,6 +3500,7 @@ int e2CmdWindow::CmdVerify(int type)
 			if (verbose == verboseAll)
 			{
 				note.setIcon(QMessageBox::Information);
+				note.setStyleSheet(programStyleSheet);
 				note.setWindowTitle("Verify");
 				note.setText(translate(STR_MSGVERIFYOK));
 				note.exec();
@@ -3491,6 +3584,7 @@ int e2CmdWindow::CmdProgram()
 		{
 			note.setIcon(QMessageBox::Information);
 			note.setWindowTitle("Program");
+			note.setStyleSheet(programStyleSheet);
 			note.setText(translate(STR_MSGPROGRAMOK));
 			note.exec();
 		}
@@ -3506,6 +3600,7 @@ int e2CmdWindow::CmdProgram()
 
 			note.setIcon(QMessageBox::Critical);
 			note.setWindowTitle("Program");
+			note.setStyleSheet(programStyleSheet);
 			note.setText(str);
 			note.exec();
 		}
@@ -3661,6 +3756,7 @@ int e2CmdWindow::ScriptError(int line_number, int arg_index, const QString &s, c
 
 	QMessageBox note;
 	note.setIcon(QMessageBox::Critical);
+	note.setStyleSheet(programStyleSheet);
 	note.setWindowTitle("Script Error");
 
 	if (arg_index == 0)
@@ -4406,9 +4502,15 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 
 				if (!test_mode)
 				{
-					int ret = QMessageBox::warning(this, "PonyProg",
-												   QString(s),
-												   QMessageBox::Yes | QMessageBox::No);
+					QMessageBox msgBox(QMessageBox::Warning, QString(APP_NAME), QString(s),
+									   QMessageBox::Yes | QMessageBox::No);
+					msgBox.setStyleSheet(programStyleSheet);
+					// TODO translate buttons
+//                 msgBox.setButtonText(QMessageBox::Close, "Close");
+					int ret = msgBox.exec();
+// 					int ret = QMessageBox::warning(this, "PonyProg",
+// 												   QString(s),
+// 												   QMessageBox::Yes | QMessageBox::No);
 
 					if (ret == QMessageBox::Yes)
 					{
@@ -4485,6 +4587,7 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 
 	QMessageBox note;
 	note.setWindowTitle("Script information");
+	note.setStyleSheet(programStyleSheet);
 
 	if (result == OK)
 	{
@@ -4564,9 +4667,15 @@ int e2CmdWindow::CmdGetInfo()
 			if (rlv == 0)
 			{
 				//                              vYNReplyDialog yn(this);
-				int ret = QMessageBox::warning(this, "PonyProg",
-											   QString(STR_MSGBANKROLLOVER),
-											   QMessageBox::Yes | QMessageBox::No);
+				QMessageBox msgBox(QMessageBox::Warning, QString(APP_NAME), QString(STR_MSGBANKROLLOVER),
+								   QMessageBox::Yes | QMessageBox::No);
+				msgBox.setStyleSheet(programStyleSheet);
+				// TODO translate buttons
+//                 msgBox.setButtonText(QMessageBox::Close, "Close");
+				int ret = msgBox.exec();
+// 				int ret = QMessageBox::warning(this, "PonyProg",
+// 											   QString(STR_MSGBANKROLLOVER),
+// 											   QMessageBox::Yes | QMessageBox::No);
 
 
 				if (ret == QMessageBox::Yes)
@@ -4599,6 +4708,7 @@ int e2CmdWindow::CmdReset()
 	{
 		QMessageBox note;
 		note.setIcon(QMessageBox::Warning);
+		note.setStyleSheet(programStyleSheet);
 		note.setWindowTitle("Reset");
 		note.setText(translate(STR_MSGDEVRESET));
 		note.exec();
@@ -4611,6 +4721,7 @@ int e2CmdWindow::CmdReset()
 int e2CmdWindow::CmdDoubleSize()
 {
 	QMessageBox note;
+	note.setStyleSheet(programStyleSheet);
 
 	if (!awip->IsBufferValid())
 	{
@@ -4671,9 +4782,15 @@ int e2CmdWindow::CmdOpen(int type, const QString &fname, long relocation, int cl
 
 	if (IsBufChanged() && awip->IsBufferValid() && verbose == verboseAll)
 	{
-		int ret = QMessageBox::warning(this, QString(APP_NAME),
-									   translate(STR_BUFCHANGED2),
-									   QMessageBox::Yes | QMessageBox::No);
+		QMessageBox msgBox(QMessageBox::Warning, QString(APP_NAME), translate(STR_BUFCHANGED2),
+						   QMessageBox::Yes | QMessageBox::No);
+		msgBox.setStyleSheet(programStyleSheet);
+		// TODO translate buttons
+//                 msgBox.setButtonText(QMessageBox::Close, "Close");
+		int ret = msgBox.exec();
+// 		int ret = QMessageBox::warning(this, QString(APP_NAME),
+// 									   translate(STR_BUFCHANGED2),
+// 									   QMessageBox::Yes | QMessageBox::No);
 
 		if (ret == QMessageBox::Yes)
 		{
@@ -4738,9 +4855,16 @@ int e2CmdWindow::CmdFillBuf()
 		}
 		else
 		{
-			QMessageBox::warning(this, "Fill buffer",
-								 QString(STR_MSGBADPARAM),
-								 QMessageBox::Ok);
+			QMessageBox msgBox(QMessageBox::Warning, "Fill buffer",
+							   QString(STR_MSGBADPARAM),
+							   QMessageBox::Ok);
+			msgBox.setStyleSheet(programStyleSheet);
+			// TODO translate buttons
+//                 msgBox.setButtonText(QMessageBox::Close, "Close");
+			msgBox.exec();
+// 			QMessageBox::warning(this, "Fill buffer",
+// 								 QString(STR_MSGBADPARAM),
+// 								 QMessageBox::Ok);
 		}
 	}
 
@@ -5318,6 +5442,7 @@ int e2CmdWindow::CmdByteSwap()
 		{
 			QMessageBox note;
 			note.setIcon(QMessageBox::Information);
+			note.setStyleSheet(programStyleSheet);
 			note.setWindowTitle("Byte swap");
 			note.setText(translate(STR_BUFEMPTY));
 			note.exec();
@@ -6035,6 +6160,7 @@ int e2CmdWindow::OpenScript(const QString &file)
 			{
 				QMessageBox note;
 				note.setIcon(QMessageBox::Warning);
+				note.setStyleSheet(programStyleSheet);
 				note.setWindowTitle("Open script");
 				note.setText(translate(STR_MSGFILENOTFOUND));
 				note.exec();
@@ -6150,6 +6276,7 @@ int e2CmdWindow::OpenFile(const QString &file)
 				{
 					QMessageBox note;
 					note.setIcon(QMessageBox::Critical);
+					note.setStyleSheet(programStyleSheet);
 					note.setWindowTitle("Open file");
 					note.setText("Unable to load the file");	//TODO: translate message
 					note.exec();
@@ -6176,6 +6303,7 @@ int e2CmdWindow::OpenFile(const QString &file)
 			if (verbose != verboseNo)
 			{
 				QMessageBox note;
+				note.setStyleSheet(programStyleSheet);
 				note.setIcon(QMessageBox::Critical);
 				note.setWindowTitle("Open file");
 				note.setText(translate(STR_MSGFILENOTFOUND));
@@ -6228,6 +6356,7 @@ int e2CmdWindow::SaveFile(int force_select)
 {
 	int err = 0;
 	QMessageBox note;
+	note.setStyleSheet(programStyleSheet);
 
 	if (!force_select && awip->GetFileName().length() > 0)
 	{
@@ -6651,6 +6780,7 @@ void e2CmdWindow::PostInit()
 	if (E2Profile::GetBogoMips() == 0)
 	{
 		QMessageBox note;
+		note.setStyleSheet(programStyleSheet);
 		note.setIcon(QMessageBox::Information);
 		note.setWindowTitle("Calibration");
 		note.setText(translate(STR_MSGNEEDCALIB));
@@ -6660,6 +6790,7 @@ void e2CmdWindow::PostInit()
 	if (E2Profile::GetPortNumber() < 0)
 	{
 		QMessageBox note;
+		note.setStyleSheet(programStyleSheet);
 		note.setIcon(QMessageBox::Information);
 		note.setWindowTitle("Setup");
 		note.setText(translate(STR_MSGNEEDSETUP));
@@ -6824,9 +6955,15 @@ void e2CmdWindow::Exit()
 
 			if (IsBufChanged())
 			{
-				int ret = QMessageBox::warning(this, "PonyProg",
-											   translate(STR_MSGCLOSEWINSAVE),
-											   QMessageBox::Yes | QMessageBox::No);
+				QMessageBox msgBox(QMessageBox::Warning, "PonyProg", translate(STR_MSGCLOSEWINSAVE),
+								   QMessageBox::Yes | QMessageBox::No);
+				msgBox.setStyleSheet(programStyleSheet);
+				// TODO translate buttons
+//                 msgBox.setButtonText(QMessageBox::Close, "Close");
+				int ret = msgBox.exec();
+// 				int ret = QMessageBox::warning(this, "PonyProg",
+// 											   translate(STR_MSGCLOSEWINSAVE),
+// 											   QMessageBox::Yes | QMessageBox::No);
 
 				if (ret == QMessageBox::Yes)
 				{
