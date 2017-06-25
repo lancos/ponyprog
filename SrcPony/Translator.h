@@ -76,10 +76,10 @@ enum TR_CONSTS
 
 	//Dialog messages
 	STR_MSGVERSION,
-	STR_MSGYES,
-	STR_MSGNO,
-	STR_MSGOK,
-	STR_MSGTEST,
+	STR_YES,
+	STR_NO,
+	STR_OK,
+	STR_TEST,
 	STR_MSGFAILED,
 	STR_ABOUT,
 	STR_MSGPAGE,
@@ -416,9 +416,9 @@ enum TR_CONSTS
 	//----Retry dialog
 
 	//Button captions
-	STR_BTNABORT,
-	STR_BTNRETRY,
-	STR_BTNIGNORE,
+	STR_ABORT,
+	STR_RETRY,
+	STR_IGNORE,
 
 	//Dialog title
 	STR_MSGALERT,

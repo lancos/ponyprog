@@ -30,18 +30,21 @@
 
 
 #include <QMainWindow>
-#include <QMessageBox>
 #include <QTimer>
 #include <QTextDocument>
 #include <QLabel>
 #include <QLineEdit>
+
 #include <QProgressBar>
+
 #include <QCloseEvent>
 #include <QComboBox>
 #include <QKeyEvent>
 #include <QScrollArea>
 #include <QImage>
+
 #include <QProgressDialog>
+
 #include <QActionGroup>
 #include <QMenu>
 #include <QVector>

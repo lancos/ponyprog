@@ -53,15 +53,15 @@ e24xx_infoModalDialog::e24xx_infoModalDialog(QWidget *bw, int rlv, uint16_t crc,
 
 	if (rlv == 1)
 	{
-		txiFrom->setText(translate(STR_MSGYES));// SetCommandLabel(txtRllBnk, STR_MSGYES, e24xxCmds);
+		txiFrom->setText(translate(STR_YES));
 	}
 	else if (rlv == 2)
 	{
-		txiFrom->setText(translate(STR_MSGNO));//SetCommandLabel(txtRllBnk, STR_MSGNO, e24xxCmds);
+		txiFrom->setText(translate(STR_NO));
 	}
 	else
 	{
-		txiFrom->setText(translate(STR_MSGUNKNOWN));//SetCommandLabel(txtRllBnk, STR_MSGUNKNOWN, e24xxCmds);
+		txiFrom->setText(translate(STR_MSGUNKNOWN));
 	}
 
 	lblFrom->setText(translate(STR_MSGCRC)); // crc label

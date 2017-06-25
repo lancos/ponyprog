@@ -177,12 +177,11 @@ e2AppWinInfo::e2AppWinInfo(e2CmdWindow *p, const QString &name, BusIO **busvptr)
 
 		if (err != OK)
 		{
-			QMessageBox msgBox(QMessageBox::Critical, "Error", "Load I/O driver failed.");
+			//TODO: translate message
+			QMessageBox msgBox(QMessageBox::Critical, "Error", "Load I/O driver failed.", QMessageBox::Ok);
 			msgBox.setStyleSheet(cmdWin->getStyleSheet());
-			// TODO translate buttons
-//                 msgBox.setButtonText(QMessageBox::Yes, trUtf8("Ok"));
+			msgBox.setButtonText(QMessageBox::Ok, "Close");
 			msgBox.exec();
-// 			QMessageBox::critical(NULL, "Error", "Load I/O driver failed.");	//TODO: translate message
 		}
 
 		//imposta il bus iniziale (relativo al tipo di eeprom)
@@ -202,20 +201,19 @@ e2AppWinInfo::e2AppWinInfo(e2CmdWindow *p, const QString &name, BusIO **busvptr)
 
 			if (err == E2ERR_ACCESSDENIED)
 			{
+
 #ifdef  Q_OS_WIN32
-				QMessageBox msgBox(QMessageBox::Critical, "Error", QString("I/O access denied. Driver not found, try to install the software again"));
+				//TODO: translate message
+				QMessageBox msgBox(QMessageBox::Critical, "Error", QString("I/O access denied. Driver not found, try to install the software again"), QMessageBox::Ok);
 				msgBox.setStyleSheet(cmdWin->getStyleSheet());
-				// TODO translate buttons
-//                 msgBox.setButtonText(QMessageBox::Yes, trUtf8("Ok"));
+				msgBox.setButtonText(QMessageBox::Ok, "Close");
 				msgBox.exec();
-// 				QMessageBox::critical(NULL, QString("Error"), QString("I/O access denied. Driver not found, try to install the software again"));		//TODO: translate message
 #else
-				QMessageBox msgBox(QMessageBox::Critical, "Error", QString("I/O access denied. Run as root, or change the interface"));
+				//TODO: translate message
+				QMessageBox msgBox(QMessageBox::Critical, "Error", QString("I/O access denied. Run as root, or change the interface"), QMessageBox::Ok);
 				msgBox.setStyleSheet(cmdWin->getStyleSheet());
-				// TODO translate buttons
-//                 msgBox.setButtonText(QMessageBox::Yes, trUtf8("Ok"));
+				msgBox.setButtonText(QMessageBox::Ok, "Close");
 				msgBox.exec();
-// 				QMessageBox::critical(NULL,  QString("Error"),  QString("I/O access denied. Run as root, or change the interface"));		//TODO: translate message
 #endif
 			}
 

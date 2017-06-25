@@ -319,21 +319,17 @@ void e2Dialog::onTest()
 
 	if (test)
 	{
-		QMessageBox msgBox(QMessageBox::Critical, "Failed", translate(STR_MSGTEST) + " " + translate(STR_MSGFAILED));
+		QMessageBox msgBox(QMessageBox::Critical, "Failed", translate(STR_TEST) + " " + translate(STR_MSGFAILED), QMessageBox::Ok);
 		msgBox.setStyleSheet(cmdWin->getStyleSheet());
-		// TODO translate buttons
-//                 msgBox.setButtonText(QMessageBox::Yes, trUtf8("Ok"));
+		msgBox.setButtonText(QMessageBox::Ok, translate(STR_CLOSE));
 		msgBox.exec();
-// 		QMessageBox::critical(this, "Failed",  translate(STR_MSGTEST) + " " + translate(STR_MSGFAILED));
 	}
 	else
 	{
-		QMessageBox msgBox(QMessageBox::Information, "Info",  translate(STR_MSGTEST) + " " + translate(STR_MSGOK));
+		QMessageBox msgBox(QMessageBox::Information, "Info",  translate(STR_TEST) + " " + translate(STR_OK), QMessageBox::Ok);
 		msgBox.setStyleSheet(cmdWin->getStyleSheet());
-		// TODO translate buttons
-		//                 msgBox.setButtonText(QMessageBox::Yes, trUtf8("Ok"));
+		msgBox.setButtonText(QMessageBox::Ok, translate(STR_CLOSE));
 		msgBox.exec();
-// 		QMessageBox::information(this, "Info", translate(STR_MSGTEST) + " " + translate(STR_MSGOK));
 	}
 }
 

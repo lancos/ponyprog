@@ -31,7 +31,6 @@
 
 #include <QCoreApplication>
 #include <QString>
-// #include <QMessageBox>
 
 #include <QDebug>
 
