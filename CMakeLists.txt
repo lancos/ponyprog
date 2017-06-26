@@ -130,9 +130,14 @@ SET(PONYPROG_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX})
 #   SET(PONYPROG_ENABLE_SYMBOL_VISIBILITY_DEFAULT OFF)
 # ENDIF(MSVC)
 
+IF (CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.7)
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -fno-exceptions -fno-rtti")
+ELSE()
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fno-exceptions -fno-rtti")
+ENDIF()
 
 #on old versiong of GCC: -std=c++11 move to -std=c++0x
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fno-exceptions -fno-rtti")
+#SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fno-exceptions -fno-rtti")
 # SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-exceptions -fno-rtti")
 
 # options for gprof 
