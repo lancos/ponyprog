@@ -1062,22 +1062,10 @@ void e2CmdWindow::addI2C8Struct()
 	menuToGroup *mTmp = new menuToGroup();
 
 	mTmp->mnu = new QMenu("I2C Bus 8bit eeprom");
-	QAction *actionRecent = menuDevice->addMenu(mTmp->mnu);
-
 	mTmp->grp = new QActionGroup(this);
-// 	mTmp->info << eep24xx_map << eep24xx1A_map << eep24xx1B_map << eep24xx5_map;
-	mTmp->info << GetEEPSubTypeVector(E24XX) << GetEEPSubTypeVector(E24XX1_A) << GetEEPSubTypeVector(E24XX1_B) << GetEEPSubTypeVector(E24XX5);
 	mTmp->type << E24XX << E24XX1_A << E24XX1_B << E24XX5;
 
-	for (int i = 0; i < mTmp->info.count(); i++)
-	{
-		QString entry = mTmp->info[i].name;
-		QAction *tmpAction = new QAction(entry, actionRecent);
-		tmpAction->setCheckable(true);
-
-		mTmp->mnu->addAction(tmpAction);
-		mTmp->grp->addAction(tmpAction);
-	}
+	initMenuVector(mTmp);
 
 	connect(mTmp->grp, SIGNAL(triggered(QAction *)), this, SLOT(onSelectI2C8(QAction *)));
 	deviceMenu << *mTmp;
@@ -1092,22 +1080,10 @@ void e2CmdWindow::addI2C16Struct()
 	menuToGroup *mTmp = new menuToGroup();
 
 	mTmp->mnu = new QMenu("I2C Bus 16bit eeprom");
-	QAction *actionRecent = menuDevice->addMenu(mTmp->mnu);
-
 	mTmp->grp = new QActionGroup(this);
-// 	mTmp->info << eep24xx2_map;
-	mTmp->info << GetEEPSubTypeVector(E24XX2);
 	mTmp->type << E24XX2;
 
-	for (int i = 0; i < mTmp->info.count(); i++)
-	{
-		QString entry = mTmp->info[i].name;
-		QAction *tmpAction = new QAction(entry, actionRecent);
-		tmpAction->setCheckable(true);
-
-		mTmp->mnu->addAction(tmpAction);
-		mTmp->grp->addAction(tmpAction);
-	}
+	initMenuVector(mTmp);
 
 	connect(mTmp->grp, SIGNAL(triggered(QAction *)), this, SLOT(onSelectI2C16(QAction *)));
 	deviceMenu << *mTmp;
@@ -1122,22 +1098,10 @@ void e2CmdWindow::addI2CAT17Struct()
 	menuToGroup *mTmp = new menuToGroup();
 
 	mTmp->mnu =  new QMenu("I2C Bus AT17 eeprom");
-	QAction *actionRecent = menuDevice->addMenu(mTmp->mnu);
-
 	mTmp->grp = new QActionGroup(this);
-// 	mTmp->info << eep17xxx_map;
-	mTmp->info << GetEEPSubTypeVector(AT17XXX);
 	mTmp->type << AT17XXX;
 
-	for (int i = 0; i < mTmp->info.count(); i++)
-	{
-		QString entry = mTmp->info[i].name;
-		QAction *tmpAction = new QAction(entry, actionRecent);
-		tmpAction->setCheckable(true);
-
-		mTmp->mnu->addAction(tmpAction);
-		mTmp->grp->addAction(tmpAction);
-	}
+	initMenuVector(mTmp);
 
 	connect(mTmp->grp, SIGNAL(triggered(QAction *)), this, SLOT(onSelectI2CAT17(QAction *)));
 	deviceMenu << *mTmp;
@@ -1153,22 +1117,10 @@ void e2CmdWindow::addMW16Struct()
 	menuToGroup *mTmp = new menuToGroup();
 
 	mTmp->mnu = new QMenu("MicroWire16 eeprom");
-	QAction *actionRecent = menuDevice->addMenu(mTmp->mnu);
-
 	mTmp->grp = new QActionGroup(this);
-// 	mTmp->info << eep93x6_map;
-	mTmp->info << GetEEPSubTypeVector(E93X6);
 	mTmp->type << E93X6;
 
-	for (int i = 0; i < mTmp->info.count(); i++)
-	{
-		QString entry = mTmp->info[i].name;
-		QAction *tmpAction = new QAction(entry, actionRecent);
-		tmpAction->setCheckable(true);
-
-		mTmp->mnu->addAction(tmpAction);
-		mTmp->grp->addAction(tmpAction);
-	}
+	initMenuVector(mTmp);
 
 	connect(mTmp->grp, SIGNAL(triggered(QAction *)), this, SLOT(onSelectMW16(QAction *)));
 	deviceMenu << *mTmp;
@@ -1184,22 +1136,10 @@ void e2CmdWindow::addMW8Struct()
 	menuToGroup *mTmp = new menuToGroup();
 
 	mTmp->mnu = new QMenu("MicroWire8 eeprom");
-	QAction *actionRecent = menuDevice->addMenu(mTmp->mnu);
-
 	mTmp->grp = new QActionGroup(this);
-// 	mTmp->info << eep93xx8_map;
-	mTmp->info << GetEEPSubTypeVector(E93XX_8);
 	mTmp->type << E93XX_8;
 
-	for (int i = 0; i < mTmp->info.count(); i++)
-	{
-		QString entry = mTmp->info[i].name;
-		QAction *tmpAction = new QAction(entry, actionRecent);
-		tmpAction->setCheckable(true);
-
-		mTmp->mnu->addAction(tmpAction);
-		mTmp->grp->addAction(tmpAction);
-	}
+	initMenuVector(mTmp);
 
 	connect(mTmp->grp, SIGNAL(triggered(QAction *)), this, SLOT(onSelectMW8(QAction *)));
 	deviceMenu << *mTmp;
@@ -1215,22 +1155,10 @@ void e2CmdWindow::addSPIStruct()
 	menuToGroup *mTmp = new menuToGroup();
 
 	mTmp->mnu = new QMenu("SPI eeprom");
-	QAction *actionRecent = menuDevice->addMenu(mTmp->mnu);
-
 	mTmp->grp = new QActionGroup(this);
-// 	mTmp->info << eep250xx_map << eep25xxx_map;
-	mTmp->info << GetEEPSubTypeVector(E250XX) << GetEEPSubTypeVector(E25XXX);
 	mTmp->type << E250XX << E25XXX;
 
-	for (int i = 0; i < mTmp->info.count(); i++)
-	{
-		QString entry = mTmp->info[i].name;
-		QAction *tmpAction = new QAction(entry, actionRecent);
-		tmpAction->setCheckable(true);
-
-		mTmp->mnu->addAction(tmpAction);
-		mTmp->grp->addAction(tmpAction);
-	}
+	initMenuVector(mTmp);
 
 	connect(mTmp->grp, SIGNAL(triggered(QAction *)), this, SLOT(onSelectSPI(QAction *)));
 	deviceMenu << *mTmp;
@@ -1245,22 +1173,10 @@ void e2CmdWindow::addAT90Struct()
 	menuToGroup *mTmp = new menuToGroup();
 
 	mTmp->mnu = new QMenu("AVR micro");
-	QAction *actionRecent = menuDevice->addMenu(mTmp->mnu);
-
 	mTmp->grp = new QActionGroup(this);
-// 	mTmp->info << eepAt90s_map;
-	mTmp->info << GetEEPSubTypeVector(AT90SXX);
 	mTmp->type << AT90SXX;
 
-	for (int i = 0; i < mTmp->info.count(); i++)
-	{
-		QString entry = mTmp->info[i].name;
-		QAction *tmpAction = new QAction(entry, actionRecent);
-		tmpAction->setCheckable(true);
-
-		mTmp->mnu->addAction(tmpAction);
-		mTmp->grp->addAction(tmpAction);
-	}
+	initMenuVector(mTmp);
 
 	connect(mTmp->grp, SIGNAL(triggered(QAction *)), this, SLOT(onSelectAVR(QAction *)));
 	deviceMenu << *mTmp;
@@ -1276,22 +1192,10 @@ void e2CmdWindow::addAT89Struct()
 	menuToGroup *mTmp = new menuToGroup();
 
 	mTmp->mnu = new QMenu("AT89S micro");
-	QAction *actionRecent = menuDevice->addMenu(mTmp->mnu);
-
 	mTmp->grp = new QActionGroup(this);
-// 	mTmp->info << eepAt89s_map;
-	mTmp->info << GetEEPSubTypeVector(AT89SXX);
 	mTmp->type << AT89SXX;
 
-	for (int i = 0; i < mTmp->info.count(); i++)
-	{
-		QString entry = mTmp->info[i].name;
-		QAction *tmpAction = new QAction(entry, actionRecent);
-		tmpAction->setCheckable(true);
-
-		mTmp->mnu->addAction(tmpAction);
-		mTmp->grp->addAction(tmpAction);
-	}
+	initMenuVector(mTmp);
 
 	connect(mTmp->grp, SIGNAL(triggered(QAction *)), this, SLOT(onSelectAT89S(QAction *)));
 	deviceMenu << *mTmp;
@@ -1307,22 +1211,10 @@ void e2CmdWindow::addPIC16Struct()
 	menuToGroup *mTmp = new menuToGroup();
 
 	mTmp->mnu = new QMenu("PIC 16 micro");
-	QAction *actionRecent = menuDevice->addMenu(mTmp->mnu);
-
 	mTmp->grp = new QActionGroup(this);
-// 	mTmp->info << eepPic168xx_map << eepPic16_map;
-	mTmp->info << GetEEPSubTypeVector(PIC168XX) << GetEEPSubTypeVector(PIC16XX);
 	mTmp->type << PIC168XX << PIC16XX;
 
-	for (int i = 0; i < mTmp->info.count(); i++)
-	{
-		QString entry = mTmp->info[i].name;
-		QAction *tmpAction = new QAction(entry, actionRecent);
-		tmpAction->setCheckable(true);
-
-		mTmp->mnu->addAction(tmpAction);
-		mTmp->grp->addAction(tmpAction);
-	}
+	initMenuVector(mTmp);
 
 	connect(mTmp->grp, SIGNAL(triggered(QAction *)), this, SLOT(onSelectPIC16(QAction *)));
 	deviceMenu << *mTmp;
@@ -1338,22 +1230,10 @@ void e2CmdWindow::addPIC12Struct()
 	menuToGroup *mTmp = new menuToGroup();
 
 	mTmp->mnu = new QMenu("PIC 12 micro");
-	QAction *actionRecent = menuDevice->addMenu(mTmp->mnu);
-
 	mTmp->grp = new QActionGroup(this);
-// 	mTmp->info << eepPic125_map;
-	mTmp->info << GetEEPSubTypeVector(PIC125XX);
 	mTmp->type << PIC125XX;
 
-	for (int i = 0; i < mTmp->info.count(); i++)
-	{
-		QString entry = mTmp->info[i].name;
-		QAction *tmpAction = new QAction(entry, actionRecent);
-		tmpAction->setCheckable(true);
-
-		mTmp->mnu->addAction(tmpAction);
-		mTmp->grp->addAction(tmpAction);
-	}
+	initMenuVector(mTmp);
 
 	connect(mTmp->grp, SIGNAL(triggered(QAction *)), this, SLOT(onSelectPIC12(QAction *)));
 	deviceMenu << *mTmp;
@@ -1368,22 +1248,10 @@ void e2CmdWindow::addIMBUSStruct()
 	menuToGroup *mTmp = new menuToGroup();
 
 	mTmp->mnu = new QMenu("ImBus eeprom");
-	QAction *actionRecent = menuDevice->addMenu(mTmp->mnu);
-
 	mTmp->grp = new QActionGroup(this);
-// 	mTmp->info = eepnvm3060_map;
-	mTmp->info << GetEEPSubTypeVector(ENVMXXX);
 	mTmp->type << ENVMXXX;
 
-	for (int i = 0; i < mTmp->info.count(); i++)
-	{
-		QString entry = mTmp->info[i].name;
-		QAction *tmpAction = new QAction(entry, actionRecent);
-		tmpAction->setCheckable(true);
-
-		mTmp->mnu->addAction(tmpAction);
-		mTmp->grp->addAction(tmpAction);
-	}
+	initMenuVector(mTmp);
 
 	connect(mTmp->grp, SIGNAL(triggered(QAction *)), this, SLOT(onSelectImBus(QAction *)));
 	deviceMenu << *mTmp;
@@ -1398,22 +1266,10 @@ void e2CmdWindow::addSDEStruct()
 	menuToGroup *mTmp = new menuToGroup();
 
 	mTmp->mnu = new QMenu("SDE2506 eeprom");
-	QAction *actionRecent = menuDevice->addMenu(mTmp->mnu);
-
 	mTmp->grp = new QActionGroup(this);
-// 	mTmp->info << eep2506_map;
-	mTmp->info << GetEEPSubTypeVector(E2506XX);
 	mTmp->type << E2506XX;
 
-	for (int i = 0; i < mTmp->info.count(); i++)
-	{
-		QString entry = mTmp->info[i].name;
-		QAction *tmpAction = new QAction(entry, actionRecent);
-		tmpAction->setCheckable(true);
-
-		mTmp->mnu->addAction(tmpAction);
-		mTmp->grp->addAction(tmpAction);
-	}
+	initMenuVector(mTmp);
 
 	connect(mTmp->grp, SIGNAL(triggered(QAction *)), this, SLOT(onSelectSDE2506(QAction *)));
 	deviceMenu << *mTmp;
@@ -1428,27 +1284,35 @@ void e2CmdWindow::addX24CStruct()
 	menuToGroup *mTmp = new menuToGroup();
 
 	mTmp->mnu = new QMenu("X2444 eeprom");
-	QAction *actionRecent = menuDevice->addMenu(mTmp->mnu);
-
 	mTmp->grp = new QActionGroup(this);
-// 	mTmp->info << eep2444_map;
-	mTmp->info << GetEEPSubTypeVector(X24C44XX);
 	mTmp->type << X24C44XX;
 
-	for (int i = 0; i < mTmp->info.count(); i++)
-	{
-		QString entry = mTmp->info[i].name;
-		QAction *tmpAction = new QAction(entry, actionRecent);
-		tmpAction->setCheckable(true);
-
-		mTmp->mnu->addAction(tmpAction);
-		mTmp->grp->addAction(tmpAction);
-	}
+	initMenuVector(mTmp);
 
 	connect(mTmp->grp, SIGNAL(triggered(QAction *)), this, SLOT(onSelectX244(QAction *)));
 	deviceMenu << *mTmp;
 }
 
+
+void e2CmdWindow::initMenuVector(menuToGroup *vecMnu)
+{
+	QAction *actionRecent = menuDevice->addMenu(vecMnu->mnu);
+
+	for (int i = 0; i < vecMnu->type.count(); i++)
+	{
+		vecMnu->info << GetEEPSubTypeVector(vecMnu->type.at(i));
+	}
+
+	for (int i = 0; i < vecMnu->info.count(); i++)
+	{
+		QString entry = vecMnu->info[i].name;
+		QAction *tmpAction = new QAction(entry, actionRecent);
+		tmpAction->setCheckable(true);
+
+		vecMnu->mnu->addAction(tmpAction);
+		vecMnu->grp->addAction(tmpAction);
+	}
+}
 
 /**
  * @brief
@@ -1458,56 +1322,43 @@ void e2CmdWindow::createDeviceMenues()
 {
 	// to add into menu: menuDevice
 
-	// I2Cbus8
-	// eep24xx_map, eep24xx1A_map, eep24xx1B_map, eep24xx5_map
+	// I2Cbus8: eep24xx_map, eep24xx1A_map, eep24xx1B_map, eep24xx5_map
 	addI2C8Struct();
 
-	// I2Cbus16
-	// eep24xx2_map
+	// I2Cbus16: eep24xx2_map
 	addI2C16Struct();
 
-	// I2CbusAT17
-	// eep17xxx_map
+	// I2CbusAT17: eep17xxx_map
 	addI2CAT17Struct();
 
-	// MicroWire16
-	// eep93x6_map
+	// MicroWire16: eep93x6_map
 	addMW16Struct();
 
-	// MicroWire8
-	// eep93xx8_map
+	// MicroWire8: eep93xx8_map
 	addMW8Struct();
 
-	// SPI eeprom
-	// eep250xx_map, eep25xxx_map
+	// SPI eeprom: eep250xx_map, eep25xxx_map
 	addSPIStruct();
 
-	// AVR
-	// eepAt90_map
+	// AVR: eepAt90_map
 	addAT90Struct();
 
-	// AT89
-	// eepAt89_map
+	// AT89: eepAt89_map
 	addAT89Struct();
 
-	// PIC16
-	// eepPic168xx_map, eepPic16_map
+	// PIC16: eepPic168xx_map, eepPic16_map
 	addPIC16Struct();
 
-	// PIC12
-	// eepPic125_map
+	// PIC12: eepPic125_map
 	addPIC12Struct();
 
-	// ImBus
-	//eepnvm3060_map
+	// ImBus: eepnvm3060_map
 	addIMBUSStruct();
 
-	// SDE
-	//eep2506_map
+	// SDE: eep2506_map
 	addSDEStruct();
 
-	// X2444
-	//eep2444_map
+	// X2444: eep2444_map
 	addX24CStruct();
 
 	setMenuIndexes();

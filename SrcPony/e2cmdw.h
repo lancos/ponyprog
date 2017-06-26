@@ -300,6 +300,8 @@ class e2CmdWindow : public QMainWindow, public e2App, public Ui::MainWindow
 
 	int findItemInMenuVector(const QString &n);
 
+	void initMenuVector(menuToGroup *vecMnu);
+
 	bool readLangDir();
 	bool getLangTable();
 	void setLangGUI();
