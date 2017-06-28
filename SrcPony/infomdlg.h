@@ -102,7 +102,7 @@ class notesModalDialog : public QDialog, public cTranslator, public Ui::NotesDia
 
 };
 
-
+#if 0
 class editModalDialog : public QDialog, public cTranslator, public Ui::EditDialog
 {
 	Q_OBJECT
@@ -140,6 +140,7 @@ class editModalDialog2 : public QDialog, public cTranslator, public Ui::EditDial
   private:              //--------------------------------------- private
 	QString val;
 };
+#endif
 
 #endif
 

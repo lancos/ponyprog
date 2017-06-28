@@ -210,7 +210,7 @@ void notesModalDialog::onOk()
 	accept();
 }
 
-
+#if 0
 editModalDialog::editModalDialog(QWidget *bw, int curval, const QString title) :
 	QDialog(bw)
 {
@@ -362,7 +362,6 @@ void editModalDialog::onEdit()
 	connect(txiVal, SIGNAL(changed()), this, SLOT(onEdit()));
 }
 
-
 const int MAXLEN = 80;
 
 editModalDialog2::editModalDialog2(QWidget *bw, const QString curval, const QString title) :
@@ -428,4 +427,4 @@ void editModalDialog2::onOk()
 
 	accept();
 }
-
+#endif
