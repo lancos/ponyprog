@@ -126,7 +126,7 @@ void fuseModalDialog::onRead()
 
 int fuseModalDialog::eepFindFuses(long type)
 {
-	for (int k = 0; eep_bits.count(); k++)
+	for (int k = 0; k < eep_bits.count(); k++)
 	{
 		if (eep_bits.at(k).type == type)
 		{

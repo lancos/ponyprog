@@ -279,8 +279,7 @@ e2CmdWindow::e2CmdWindow(QWidget *parent) :
 
 	e2HexEdit->setAsciiFontColor(Qt::darkMagenta);
 	e2HexEdit->setHexFontColor(Qt::darkBlue);
-        e2HexEdit->setHexCaps(true);
-        
+	e2HexEdit->setHexCaps(true);
 	//      e2HexEdit->setFont(settings.value("Editor/Font").value<QFont>());
 	//      e2HexEdit->setAddressWidth(settings.value("AddressAreaWidth").toInt());
 	//      e2HexEdit->setBytesPerLine(settings.value("BytesPerLine").toInt());
