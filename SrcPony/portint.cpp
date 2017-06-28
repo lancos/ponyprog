@@ -114,7 +114,7 @@ PortInterface::PortInterface()
 	lcr_copy = ier_copy = -1;
 #endif
 
-#ifdef  WIN32
+#ifdef  Q_OS_WIN32
 	gfpOut32 = NULL;
 	gfpInp32 = NULL;
 	gfpIsInpOutDriverOpen = NULL;
@@ -156,7 +156,7 @@ PortInterface::~PortInterface()
 {
 	qDebug() <<  "PortInterface::~PortInterface()";
 
-#ifdef  WIN32
+#ifdef  Q_OS_WIN32
 
 	if (hInpOutDll != NULL)
 	{
@@ -172,7 +172,7 @@ int PortInterface::InPort(int nport) const
 {
 	qDebug() << "PortInterface::OutPort() ** " << (hex) << first_port << ", " <<  nport << (dec);
 
-#ifdef  WIN32
+#ifdef  Q_OS_WIN32
 
 	if (gfpInp32 == NULL)
 	{
@@ -195,7 +195,7 @@ int PortInterface::InPort(int nport) const
 		nport += first_port;
 	}
 
-#ifdef  WIN32
+#ifdef  Q_OS_WIN32
 	return gfpInp32(nport);
 #else
 	return inb(nport);
@@ -206,7 +206,7 @@ int PortInterface::OutPort(int val, int nport)
 {
 	qDebug() << "PortInterface::OutPort() ** " << (hex) << first_port << ", " << last_port << (dec);
 
-#ifdef  WIN32
+#ifdef  Q_OS_WIN32
 
 	if (gfpOut32 == NULL)
 	{
@@ -235,7 +235,7 @@ int PortInterface::OutPort(int val, int nport)
 	}
 
 	qDebug() << "PortInterface::outb(" << (hex) << val << ", " << nport << (dec) << ")";
-#ifdef  WIN32
+#ifdef  Q_OS_WIN32
 	gfpOut32(nport, val);
 #else
 	outb(val, nport);
@@ -247,7 +247,7 @@ int PortInterface::OutPortMask(int mask, int val)
 {
 	qDebug() << "PortInterface::OutPortMask(" << mask << ", " << val <<  ")";
 
-#ifdef  WIN32
+#ifdef  Q_OS_WIN32
 
 	if (gfpOut32 == NULL)
 	{
@@ -276,7 +276,7 @@ int PortInterface::OutPortMask(int mask, int val)
 
 	qDebug() << "PortInterface::outb(" << (hex) << cpwreg << ", " << (dec) << write_port << ")";
 
-#ifdef  WIN32
+#ifdef  Q_OS_WIN32
 	gfpOut32(write_port, cpwreg);
 #else
 	outb(cpwreg, write_port);
@@ -346,7 +346,7 @@ int PortInterface::OpenSerial(int no)
 		//Test if port exist
 		if (ser_ports[no].base > 0)
 		{
-#ifdef WIN32
+#ifdef Q_OS_WIN32
 			//Test if port is already in use
 			QString str = E2Profile::GetCOMDevName() + QString::number(no + 1);
 			hCom = CreateFile((LPCWSTR)str.utf16(),
@@ -403,7 +403,7 @@ int PortInterface::OpenSerial(int no)
 
 void PortInterface::CloseSerial()
 {
-#ifdef  WIN32
+#ifdef  Q_OS_WIN32
 
 	if (hCom != INVALID_HANDLE_VALUE)
 	{
@@ -442,7 +442,7 @@ int PortInterface::OpenParallel(int no)
 		//Test if port exist
 		if (par_ports[no].base)
 		{
-#ifdef WIN32
+#ifdef Q_OS_WIN32
 			QString str = E2Profile::GetLPTDevName() + QString::number(no + 1);
 			hCom = CreateFile((LPCWSTR)str.utf16(),
 							  GENERIC_READ | GENERIC_WRITE,
@@ -488,7 +488,7 @@ int PortInterface::OpenParallel(int no)
 
 void PortInterface::CloseParallel()
 {
-#ifdef  WIN32
+#ifdef  Q_OS_WIN32
 
 	if (hCom != INVALID_HANDLE_VALUE)
 	{
@@ -538,7 +538,7 @@ int PortInterface::GetParBasePort(int no)
 	}
 }
 
-#ifdef WIN32
+#ifdef Q_OS_WIN32
 
 #include <windows.h>
 
@@ -598,7 +598,7 @@ void PortInterface::DetectPorts()
 	E2Profile::GetCOMAddress(ser_ports[0].base, ser_ports[1].base, ser_ports[2].base, ser_ports[3].base);
 	E2Profile::GetLPTAddress(par_ports[0].base, par_ports[1].base, par_ports[2].base);
 
-#ifdef  WIN32
+#ifdef  Q_OS_WIN32
 
 	if (E2Profile::GetAutoDetectPorts())
 	{
@@ -635,7 +635,7 @@ void PortInterface::DetectPorts()
 }
 
 
-#ifdef  WIN32
+#ifdef  Q_OS_WIN32
 
 static int DetectPortsNT(const QString &ServiceName, const QString &PortFormat, base_len *ports, int nports);
 

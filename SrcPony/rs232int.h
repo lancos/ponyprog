@@ -32,7 +32,7 @@
 #include <termios.h>
 #endif
 
-#ifdef  WIN32
+#ifdef  Q_OS_WIN32
 #include <windows.h>
 #endif
 
@@ -83,7 +83,7 @@ class RS232Interface
 	bool wait_endTX_mode;
 
 	//      E2Profile *profile;
-#ifdef  WIN32
+#ifdef  Q_OS_WIN32
 	HANDLE hCom;
 
 	DWORD old_mask;

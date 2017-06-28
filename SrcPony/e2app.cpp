@@ -290,7 +290,7 @@ void e2App::SleepBus()
 vWindow *e2App::NewAppWin(vWindow *win, char *name,
 						  int w, int h, vAppWinInfo *winInfo)
 {
-#ifdef WIN32            // Yes it's a dirty hack here but clean in Windows sense, heha 130406
+#ifdef Q_OS_WIN32            // Yes it's a dirty hack here but clean in Windows sense, heha 130406
 	HKEY key;       // But I wouldn't change the very incomplete V-lib source.
 
 	if (!RegOpenKeyEx(HKEY_CURRENT_USER, "Software\\h#s\\PonyProg", 0, KEY_QUERY_VALUE, &key))

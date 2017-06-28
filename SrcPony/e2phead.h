@@ -39,7 +39,7 @@
 
 #define E2P_FVERSION    0x02
 
-#ifdef WIN32
+#ifdef Q_OS_WIN32
 #pragma pack(push,1)
 #endif
 
@@ -65,7 +65,7 @@ struct e2pHeader
 	uint16_t headCrc;
 } PACK;
 
-#ifdef WIN32
+#ifdef Q_OS_WIN32
 #pragma pack(pop)
 #endif
 

@@ -28,7 +28,7 @@
 #ifndef _WAIT_H
 #define _WAIT_H
 
-#ifdef  WIN32
+#ifdef  Q_OS_WIN32
 #include "windows.h"
 #endif
 
@@ -60,7 +60,7 @@ class Wait
 	static int bogokips;
 	static int htimer;
 
-#ifdef  WIN32
+#ifdef  Q_OS_WIN32
 	static LARGE_INTEGER mlpf;
 #endif
 };

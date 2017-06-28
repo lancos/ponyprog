@@ -50,14 +50,14 @@ Wait::~Wait()
 int Wait::bogokips = 0;
 int Wait::htimer = -1;
 
-#ifdef  WIN32
+#ifdef  Q_OS_WIN32
 LARGE_INTEGER Wait::mlpf;
 #endif
 
 //Check for a good hardware usec timer
 int Wait::CheckHwTimer()
 {
-#ifdef  WIN32
+#ifdef  Q_OS_WIN32
 	LARGE_INTEGER i1, i2;
 
 	htimer = 0;                                                             //Disable by default
@@ -142,7 +142,7 @@ void Wait::WaitMsec(int msec)
 #ifdef __linux__
 	usleep(msec * 1000);
 #else
-# ifdef WIN32
+# ifdef Q_OS_WIN32
 
 	if (msec > 30)
 	{
@@ -168,7 +168,7 @@ void Wait::WaitUsec(int usec)
 {
 	if (htimer)
 	{
-#ifdef  WIN32
+#ifdef  Q_OS_WIN32
 		LARGE_INTEGER i1, i2;
 
 		QueryPerformanceCounter(&i1);

@@ -360,7 +360,7 @@ int e2CmdWindow::CloseAppWin()
 		{
 			// EK 2017
 			// TODO we can do it about program settings: use QSettings
-#ifdef WIN32                            // Yes it's a dirty hack here but clean in Windows sense, heha 130406
+#ifdef Q_OS_WIN32                            // Yes it's a dirty hack here but clean in Windows sense, heha 130406
 			HKEY key;       // Save window position to Win7-safe, roaming hive of registry
 
 			if (!RegCreateKeyEx(HKEY_CURRENT_USER, "Software\\h#s\\PonyProg",

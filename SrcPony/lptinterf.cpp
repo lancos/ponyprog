@@ -31,7 +31,7 @@
 
 #include <QDebug>
 
-#ifdef  WIN32
+#ifdef  Q_OS_WIN32
 #include <windows.h>
 #endif
 

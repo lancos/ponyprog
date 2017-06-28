@@ -105,7 +105,7 @@ void PonyIOInterface::SetControlLine(int res)
 
 		qDebug() << "PonyIOInterface::SetControlLine() " << (hex) << lcrOfst  << (dec);
 
-#ifdef  WIN32
+#ifdef  Q_OS_WIN32
 		if (res)
 		{
 			SetCommBreak(hCom);

@@ -52,7 +52,7 @@ QString cTranslator::engText[] =
 	"No Name",
 
 	//Button captions
-#ifdef  WIN32
+#ifdef  Q_OS_WIN32
 	"&OK",
 	"&Cancel",
 	"&Help",
@@ -279,7 +279,7 @@ QString cTranslator::engText[] =
 	"Interface select",
 	"Interface type",
 	"COM Port select",
-#ifdef WIN32
+#ifdef Q_OS_WIN32
 	"COM",
 	// STR_LBLCOM2             = "COM2",
 	// STR_LBLCOM3             = "COM3",
@@ -291,7 +291,7 @@ QString cTranslator::engText[] =
 	// STR_LBLCOM4             = "ttyS3",
 #endif
 	"USB Port select",
-#ifdef WIN32
+#ifdef Q_OS_WIN32
 	"USB",
 	// STR_LBLUSB2             = "USB2",
 	// STR_LBLUSB3             = "USB3",
@@ -355,7 +355,7 @@ QString cTranslator::engText[] =
 	//----Fuse dialog
 
 	//Button captions
-#ifdef  WIN32
+#ifdef  Q_OS_WIN32
 	"C&lear All",
 	"&Set All",
 	"&Write",
@@ -385,7 +385,7 @@ QString cTranslator::engText[] =
 	//----Info dialog
 
 	//Button captions
-#ifdef  WIN32
+#ifdef  Q_OS_WIN32
 	"&Close",
 #else
 	"Close",
@@ -471,7 +471,7 @@ QString cTranslator::engText[] =
 	//----Retry dialog
 
 	//Button captions
-#ifdef  WIN32
+#ifdef  Q_OS_WIN32
 	"&Abort",
 	"&Retry",
 	"&Ignore",
