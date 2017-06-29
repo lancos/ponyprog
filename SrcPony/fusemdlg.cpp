@@ -158,6 +158,9 @@ void fuseModalDialog::getFuse(int l)
 void fuseModalDialog::initWidgets(const QString &msg, bool readonly)
 {
 	long type = cmdw->GetCurrentChipType();
+        
+        fuseEnabled = true;
+	lockEnabled = true;
 
 	chkHlp1->setText(translate(STR_FUSEDLGNOTECLR) + " (bit = 1)");
 	chkHlp1->setEnabled(false);
@@ -194,6 +197,10 @@ void fuseModalDialog::initWidgets(const QString &msg, bool readonly)
 
 		fuseBits = fuseWidget->getBitfield();
 	}
+	else
+	{
+		fuseEnabled = false;
+	}
 
 	unsigned int l = awip->GetLockBits();
 	if (currentBitField.lock.count() > 0)
@@ -204,6 +211,10 @@ void fuseModalDialog::initWidgets(const QString &msg, bool readonly)
 
 		lockBits = lockWidget->getBitfield();
 	}
+	else
+	{
+		lockEnabled = false;
+	}
 
 	displayBitFields();
 }
@@ -211,7 +222,16 @@ void fuseModalDialog::initWidgets(const QString &msg, bool readonly)
 
 void fuseModalDialog::displayBitFields()
 {
-	labelFuseLock->setText(QString().sprintf("Fuse: 0x%08X Lock: 0x%08X", fuseBits, lockBits));
+	QString s;
+	if (fuseEnabled == true)
+	{
+		s = QString().sprintf("Fuse: 0x%08X  ", fuseBits);
+	}
+	if (lockEnabled == true)
+	{
+		s +=  QString().sprintf("Lock: 0x%08X", lockBits);
+	}
+	labelFuseLock->setText(s);
 }
 
 

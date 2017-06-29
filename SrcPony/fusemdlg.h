@@ -89,6 +89,8 @@ class fuseModalDialog : public QDialog, public cTranslator, public Ui::FuseDialo
 
 	unsigned int fuseBits;
 	unsigned int lockBits;
+        bool fuseEnabled;
+	bool lockEnabled;
 
 	int currentChip;
 	ChipBits currentBitField;
