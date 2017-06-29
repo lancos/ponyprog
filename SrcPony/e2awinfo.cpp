@@ -201,20 +201,16 @@ e2AppWinInfo::e2AppWinInfo(e2CmdWindow *p, const QString &name, BusIO **busvptr)
 
 			if (err == E2ERR_ACCESSDENIED)
 			{
-
 #ifdef  Q_OS_WIN32
-				//TODO: translate message
-				QMessageBox msgBox(QMessageBox::Critical, "Error", QString("I/O access denied. Driver not found, try to install the software again"), QMessageBox::Ok);
-				msgBox.setStyleSheet(cmdWin->getStyleSheet());
-				msgBox.setButtonText(QMessageBox::Ok, "Close");
-				msgBox.exec();
+				QString msg = "I/O access denied. Driver not found, try to install the software again";
 #else
+				QString msg = "I/O access denied. Run as root, or change the interface";
+#endif
 				//TODO: translate message
-				QMessageBox msgBox(QMessageBox::Critical, "Error", QString("I/O access denied. Run as root, or change the interface"), QMessageBox::Ok);
+				QMessageBox msgBox(QMessageBox::Critical, "Error", msg, QMessageBox::Ok);
 				msgBox.setStyleSheet(cmdWin->getStyleSheet());
 				msgBox.setButtonText(QMessageBox::Ok, "Close");
 				msgBox.exec();
-#endif
 			}
 
 			cmdWin->ClosePort();
