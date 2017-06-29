@@ -274,7 +274,7 @@ e2CmdWindow::e2CmdWindow(QWidget *parent) :
 	//      e2HexEdit->setHighlightingColor(settings.value("Editor/HighlightingColor").value<QColor>());
 	//      e2HexEdit->setSelectionColor(settings.value("Editor/SelectionColor").value<QColor>());
 	//      e2HexEdit->setAddressAreaColor(settings.value("Editor/AddressAreaColor").value<QColor>());
-        e2HexEdit->setAddressFontColor(Qt::darkRed);
+	e2HexEdit->setAddressFontColor(Qt::darkRed);
 	//      e2HexEdit->setAsciiAreaColor(settings.value("Editor/AsciiAreaColor").value<QColor>());
 
 	e2HexEdit->setAsciiFontColor(Qt::darkMagenta);
@@ -374,7 +374,7 @@ int e2CmdWindow::CloseAppWin()
 		{
 			// EK 2017
 			// TODO we can do it about program settings: use QSettings
-#ifdef Q_OS_WIN32 
+#ifdef Q_OS_WIN32
 			HKEY key;       // Save window position to Win7-safe, roaming hive of registry
 
 			if (!RegCreateKeyEx(HKEY_CURRENT_USER, "Software\\h#s\\PonyProg",

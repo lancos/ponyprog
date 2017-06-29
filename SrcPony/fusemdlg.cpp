@@ -158,8 +158,8 @@ void fuseModalDialog::getFuse(int l)
 void fuseModalDialog::initWidgets(const QString &msg, bool readonly)
 {
 	long type = cmdw->GetCurrentChipType();
-        
-        fuseEnabled = true;
+
+	fuseEnabled = true;
 	lockEnabled = true;
 
 	chkHlp1->setText(translate(STR_FUSEDLGNOTECLR) + " (bit = 1)");
