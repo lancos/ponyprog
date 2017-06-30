@@ -46,7 +46,7 @@ BitFieldWidget::BitFieldWidget(QWidget *parent, QVector<BitInfo> &vInfo, QVector
 
 	lstComboBoxes = (QVector<QComboBox *>() << comboBox0 << comboBox1 << comboBox2 << comboBox3);
 
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < lstComboBoxes.count(); i++)
 	{
 		lstComboBoxes.at(i)->setHidden(true);
 	}
@@ -73,17 +73,26 @@ void BitFieldWidget::initWidget()
 			QTreeWidgetItem *itm = new QTreeWidgetItem();
 			int bitOffset = vecInfo->at(i).bit;
 			lastBit = bitOffset;
-			itm->setText(0, QString().sprintf("Bit %d, ", bitOffset) + vecInfo->at(i).ShortDescr);
+			QString sDes = vecInfo->at(i).ShortDescr;
+			itm->setText(0, QString().sprintf("Bit %d, ", bitOffset) + sDes);
 			if (vecInfo->at(i).LongDescr.length() > 0)
 			{
 				itm->setText(1, vecInfo->at(i).LongDescr);
 			}
+
 			itm->setFlags(itm->flags() | Qt::ItemIsUserCheckable);
+
 			itm->setCheckState(0, Qt::Unchecked);
 
 			if (bField & (1 << bitOffset))
 			{
 				itm->setCheckState(0, Qt::Checked);
+			}
+			if (sDes == "SPIEN")
+			{
+				itm->setFlags(itm->flags() ^ Qt::ItemIsEnabled);
+				itm->setCheckState(0, Qt::Checked);
+				bField |= (1 << bitOffset);
 			}
 			treeWidget->addTopLevelItem(itm);
 		}
