@@ -293,6 +293,8 @@ void BitFieldWidget::setMaskBits(const QString &cMask)
 		return;
 	}
 
+	int bitOffset = vecInfo->at(idx).bit;
+
 	for (int i = 0; i < bitStr.length(); i++)
 	{
 		Qt::CheckState st;
@@ -300,13 +302,13 @@ void BitFieldWidget::setMaskBits(const QString &cMask)
 		{
 			st = Qt::Checked;
 
-			bField |= (1 << idx);
+			bField |= (1 << bitOffset);
 		}
 		else
 		{
 			st = Qt::Unchecked;
 
-			bField &= ~(1 << idx);
+			bField &= ~(1 << bitOffset);
 		}
 
 		localField >>= 1;
@@ -329,6 +331,7 @@ void BitFieldWidget::setMaskBits(const QString &cMask)
 			break;
 		}
 
+		bitOffset++;
 		idx++;
 	}
 }
