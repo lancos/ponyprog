@@ -343,7 +343,7 @@ int e2CmdWindow::CloseAppWin()
 		if (!e2CmdWindow::exit_ok && IsBufChanged())
 		{
 			int ret = QMessageBox::warning(this, "PonyProg",
-										   STR_MSGCLOSEWINSAVE,
+										   translate(STR_MSGCLOSEWINSAVE),
 										   QMessageBox::Yes | QMessageBox::No);
 
 			if (ret == QMessageBox::Yes)
@@ -361,7 +361,7 @@ int e2CmdWindow::CloseAppWin()
 		else
 		{
 			int ret = QMessageBox::warning(this, "PonyProg",
-										   STR_MSGCLOSEWINEXIT,
+										   translate(STR_MSGCLOSEWINEXIT),
 										   QMessageBox::Yes | QMessageBox::No);
 
 			if (ret == QMessageBox::Yes)
@@ -884,7 +884,7 @@ int e2CmdWindow::OnError(int err_no, const QString &msgerr)
 
 	case DEVICE_LOCKED:
 	{
-		msg = QString("%1 (%2)").arg(STR_DEVLOCKED).arg(err_no);
+		msg = QString("%1 (%2)").arg(translate(STR_DEVLOCKED)).arg(err_no);
 
 		QMessageBox msgBox(QMessageBox::Question,  "Error", msg, QMessageBox::Ignore | QMessageBox::Abort | QMessageBox::Retry);
 		msgBox.setStyleSheet(programStyleSheet);
@@ -3007,7 +3007,7 @@ int e2CmdWindow::CmdWrite(int type, bool verify)
 
 							if (rval > 0)
 							{
-								//e2Prg->UpdateDialog(0, STR_MSGWRITINGFUSE);
+								//e2Prg->UpdateDialog(0, translate(STR_MSGWRITINGFUSE));
 								rval = awip->Write(CONFIG_TYPE, false, true);
 
 								if (rval > 0)
@@ -4394,7 +4394,7 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 
 						if (result == 99)
 						{
-							result = ScriptError(linecounter, 1, lst.at(1), STR_MSGFILENOTFOUND);
+							result = ScriptError(linecounter, 1, lst.at(1), translate(STR_MSGFILENOTFOUND));
 						}
 
 #endif
@@ -4527,7 +4527,7 @@ int e2CmdWindow::CmdGetInfo()
 			if (rlv == 0)
 			{
 				//                              vYNReplyDialog yn(this);
-				QMessageBox msgBox(QMessageBox::Warning, QString(APP_NAME), QString(STR_MSGBANKROLLOVER),
+				QMessageBox msgBox(QMessageBox::Warning, QString(APP_NAME), QString(translate(STR_MSGBANKROLLOVER)),
 								   QMessageBox::Yes | QMessageBox::No);
 				msgBox.setStyleSheet(programStyleSheet);
 				msgBox.setButtonText(QMessageBox::Yes, translate(STR_YES));
@@ -4708,7 +4708,7 @@ int e2CmdWindow::CmdFillBuf()
 		else
 		{
 			QMessageBox msgBox(QMessageBox::Warning, "Fill buffer",
-							   QString(STR_MSGBADPARAM),
+							   QString(translate(STR_MSGBADPARAM)),
 							   QMessageBox::Ok);
 			msgBox.setStyleSheet(programStyleSheet);
 			msgBox.setButtonText(QMessageBox::Ok, translate(STR_OK));
@@ -5372,7 +5372,7 @@ void e2CmdWindow::CmdRemoteMode()
         VerboseType old_verbose = verbose;
         verbose = verboseNo;    //No messages when running in remote mode
 
-                        e2Prg->setLabelText(STR_MSGACCEPTCMD);
+						e2Prg->setLabelText(translate(STR_MSGACCEPTCMD));
                         e2Prg->setValue(0);
 
         SocketServer srv(0, this);
@@ -6813,7 +6813,7 @@ void e2CmdWindow::Exit()
 			//else
 			//{
 			//      int ret = QMessageBox::warning(this, "PonyProg",
-			//                                                                 STR_MSGCLOSEWINEXIT,
+			//                                                                 translate(STR_MSGCLOSEWINEXIT),
 			//                                                                 QMessageBox::Yes | QMessageBox::No);
 			//      if ( ret == QMessageBox::Yes )
 			//      {

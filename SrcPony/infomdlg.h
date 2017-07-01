@@ -86,7 +86,7 @@ class notesModalDialog : public QDialog, public cTranslator, public Ui::NotesDia
 	virtual ~notesModalDialog();            // Destructor
 	//      QString GetId();
 	//      QString GetComment();
-	//      virtual int notesAction(char* msg = STR_MSGDEVNOTE);
+	//      virtual int notesAction(char* msg = translate(STR_MSGDEVNOTE));
 
   private slots:
 	void onOk();
