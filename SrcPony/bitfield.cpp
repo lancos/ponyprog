@@ -28,6 +28,7 @@
 
 #include <QDebug>
 #include <QString>
+#include <QMessageBox>
 
 #include "bitfield.h"
 
@@ -94,6 +95,12 @@ void BitFieldWidget::initWidget()
 				itm->setCheckState(0, Qt::Checked);
 				bField |= (1 << bitOffset);
 			}
+			if (sDes == "RSTDISBL")
+			{
+				itm->setCheckState(0, Qt::Unchecked);
+				bField &= ~(1 << bitOffset);
+			}
+
 			treeWidget->addTopLevelItem(itm);
 		}
 
@@ -350,6 +357,19 @@ void BitFieldWidget::onBitClicked(QTreeWidgetItem *itm, int col)
 	}
 
 	QString fuseName = t.mid(pos + 2);
+
+	if (fuseName == "RSTDISBL")
+	{
+		QMessageBox msgBox(QMessageBox::Warning, "Warning", "Attention! If you disable Reset pin you can't access the the chip anymore", QMessageBox::Yes | QMessageBox::No);
+// 		msgBox.setStyleSheet(programStyleSheet);
+		msgBox.setButtonText(QMessageBox::Yes, "Yes");
+		msgBox.setButtonText(QMessageBox::No, "No");
+		int res = msgBox.exec();
+		if (res == QMessageBox::No)
+		{
+			return;
+		}
+	}
 
 	t = t.left(pos);
 	t.remove("Bit ");
