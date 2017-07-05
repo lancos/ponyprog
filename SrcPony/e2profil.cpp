@@ -414,13 +414,20 @@ void E2Profile::SetSPIPageWrite(int page_write)
 
 int E2Profile::GetI2CBaseAddr()
 {
-	QString sp = s->value("I2CBaseAddress", "A0").toString();
+	QString sp = s->value("I2CBaseAddress", "0xA0").toString();
 	int rval = 0xA0;                //Default base address
 
 	if (sp.length())
 	{
 		bool ok;
-		rval = sp.toLong(&ok, 16);
+		if (sp.indexOf("0x") == 0)
+		{
+			rval = sp.mid(2).toLong(&ok, 16);
+		}
+		else
+		{
+			rval = sp.toLong(&ok, 10);
+		}
 
 		if (ok == false)
 		{
@@ -436,7 +443,7 @@ void E2Profile::SetI2CBaseAddr(int base_addr)
 {
 	if (base_addr >= 0x00 && base_addr < 0x100)
 	{
-		s->setValue("I2CBaseAddress", QString::number(base_addr, 16));
+		s->setValue("I2CBaseAddress", QString().sprintf("0x%X", base_addr));
 	}
 }
 
