@@ -42,8 +42,7 @@
 
 typedef struct
 {
-	// TODO QVector<long> type; for same descriptions of chip bits
-	long type; // chip id
+	QVector<long> type; // chip id's for same descriptions of chip bits
 	QVector<BitInfo> fuse;
 	QVector<MaskDescr> fuseDescr;
 	QVector<BitInfo> lock;
