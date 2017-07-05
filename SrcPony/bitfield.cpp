@@ -270,6 +270,8 @@ void BitFieldWidget::setMaskBits(const QString &cMask)
 
 	unsigned int localField = bitStr.toInt(&ok, 2);
 
+
+
 	int idx;
 	// at begin of string only
 	mskName = "^" + mskName + "\\d+";
@@ -307,13 +309,13 @@ void BitFieldWidget::setMaskBits(const QString &cMask)
 		Qt::CheckState st;
 		if (localField & 0x01)
 		{
-			st = Qt::Checked;
+			st = Qt::Unchecked;
 
 			bField |= (1 << bitOffset);
 		}
 		else
 		{
-			st = Qt::Unchecked;
+			st = Qt::Checked;
 
 			bField &= ~(1 << bitOffset);
 		}
@@ -445,7 +447,7 @@ void BitFieldWidget::onBitClicked(QTreeWidgetItem *itm, int col)
 
 			if (t.indexOf(QRegExp(msplt)) >= 0)
 			{
-				if (treeWidget->topLevelItem(iTree)->checkState(0) == Qt::Unchecked)
+				if (treeWidget->topLevelItem(iTree)->checkState(0) == Qt::Checked)
 				{
 					bitString = "0" + bitString;
 				}
