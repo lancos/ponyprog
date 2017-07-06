@@ -420,14 +420,8 @@ int E2Profile::GetI2CBaseAddr()
 	if (sp.length())
 	{
 		bool ok;
-		if (sp.indexOf("0x") == 0)
-		{
-			rval = sp.mid(2).toLong(&ok, 16);
-		}
-		else
-		{
-			rval = sp.toLong(&ok, 10);
-		}
+
+		rval = sp.toLong(&ok, 0);
 
 		if (ok == false)
 		{
