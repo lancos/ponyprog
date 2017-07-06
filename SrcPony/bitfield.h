@@ -91,6 +91,7 @@ class BitFieldWidget : public QWidget, public Ui::FormBitField
 	unsigned int bField;
 
 	QStringList maskList; // masks
+	QVector<int> maskBitSum;
 };
 
 #endif

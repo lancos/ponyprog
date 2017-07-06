@@ -153,7 +153,8 @@ void BitFieldWidget::createComboLists()
 		}
 
 		// when not all combinations are descripted
-		if (isExp(lst.count()) == false)
+// 		if (isExp(lst.count()) == false)
+		if ((1 << maskBitSum.at(i)) != lst.count())
 		{
 			lst << "Undefined combination";
 		}
@@ -169,6 +170,7 @@ void BitFieldWidget::createComboLists()
 void BitFieldWidget::scanMasks()
 {
 	maskList.clear();
+	maskBitSum.clear();
 
 	// analyse from mask entries
 	foreach (MaskDescr mdes, *vecDescr)
@@ -180,6 +182,19 @@ void BitFieldWidget::scanMasks()
 		if (maskList.indexOf(cMask) == -1)
 		{
 			maskList << cMask;
+			int numBits = 0;
+			QRegExp rx("(\\d+)");
+			int pos = 0;
+			while ((pos = rx.indexIn(mdes.mask, pos)) != -1)
+			{
+				QString n =  rx.cap(1);
+				numBits += n.length();
+
+				pos += rx.matchedLength();
+			}
+
+			qDebug() << mdes.mask << "bits" << numBits;
+			maskBitSum << numBits;
 		}
 	}
 
