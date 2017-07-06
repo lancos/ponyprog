@@ -207,7 +207,7 @@ class e2CmdWindow : public QMainWindow, public e2App, public Ui::MainWindow
 	void onReadCalibration(int idx);
 	void onWriteCalibration(int idx);
 	void onReadSecurity(bool display_dialog);
-	void onWriteSecurity();
+	//void onWriteSecurity();
 	void onFillBuf();
 	void onSpecialBits();
 	void onProgramOptions(); //
@@ -288,7 +288,7 @@ class e2CmdWindow : public QMainWindow, public e2App, public Ui::MainWindow
 	int CmdSetSerialNumber();
 	int CmdReadCalibration(int idx);
 	int CmdRunScript(bool test_mode = false);
-	int SpecialBits();
+	int SpecialBits(bool readonly = false);
 	int ProgramOptions();
 	int SerialNumberOptions();
 	int OscCalibOption();

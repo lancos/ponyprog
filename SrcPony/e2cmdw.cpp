@@ -726,7 +726,7 @@ void e2CmdWindow::translateGUI()
 	actionVerifyAll->setText(translate(STR_VERIFYALL));
 	actionVerifyFlash->setText(translate(STR_VERIFYPROG));
 	actionVerifyEep->setText(translate(STR_VERIFYDATA));
-	actionWriteSecurity->setText(translate(STR_WRITESECBITS));
+	//actionWriteSecurity->setText(translate(STR_WRITESECBITS));
 	actionErase->setText(translate(STR_ERASE));
 	actionReset->setText(translate(STR_RESET));
 	actionProgram->setText(translate(STR_PROGRAM));
@@ -1917,8 +1917,6 @@ void e2CmdWindow::createSignalSlotConnections()
 	// set serial number
 	connect(actionSetSN, SIGNAL(triggered()), this, SLOT(onSetSerialNumber()));
 
-	// clear all data
-	//      connect(actionErase, SIGNAL(triggered()), this, SLOT( onClearBuf(ALL_TYPE)));
 	//      connect(actionEraseFlash, SIGNAL(triggered()), this, SLOT( onClearBuf(PROG_TYPE)));
 	//      connect(actionEraseEep, SIGNAL(triggered()), this, SLOT( onClearBuf(DATA_TYPE)));
 
@@ -1926,14 +1924,16 @@ void e2CmdWindow::createSignalSlotConnections()
 	connect(actionEditNote, SIGNAL(triggered()), this, SLOT(onEditNote()));
 
 	// write security bits
-	connect(actionWriteSecurity, SIGNAL(triggered()), this, SLOT(onWriteSecurity()));
+	//connect(actionWriteSecurity, SIGNAL(triggered()), this, SLOT(onWriteSecurity()));
+
+	// clear buffer
+	connect(actionClearBuffer, SIGNAL(triggered()), this, SLOT(onClearBuf()));
 
 	// fill buffer
 	connect(actionFillBuffer, SIGNAL(triggered()), this, SLOT(onFillBuf()));
 
-
-	connect(actionWriteSecurity, SIGNAL(triggered()), this, SLOT(onSpecialBits()));
-
+	connect(actionLock, SIGNAL(triggered()), this, SLOT(onSpecialBits()));
+	connect(actionSpecialBits, SIGNAL(triggered()), this, SLOT(onSpecialBits()));
 
 	connect(actionOscOptions, SIGNAL(triggered()), this, SLOT(onOscCalibOption()));
 
@@ -2346,14 +2346,13 @@ void e2CmdWindow::onCalibration()
 	}
 }
 
-void e2CmdWindow::onWriteSecurity()
-{
-	if (IsAppReady())
-	{
-		CmdWriteSecurity();
-	}
-}
-
+//void e2CmdWindow::onWriteSecurity()
+//{
+//	if (IsAppReady())
+//	{
+//		CmdWriteSecurity();
+//	}
+//}
 
 void e2CmdWindow::onWriteHEndurance()
 {
@@ -2362,7 +2361,6 @@ void e2CmdWindow::onWriteHEndurance()
 		CmdWriteSpecial();
 	}
 }
-
 
 void e2CmdWindow::onEditBufToggle()
 {
@@ -2375,7 +2373,6 @@ void e2CmdWindow::onEditBufToggle()
 	// TODO
 	Draw();
 }
-
 
 void e2CmdWindow::onEditNote()
 {
@@ -4667,10 +4664,8 @@ int e2CmdWindow::CmdOpen(int type, const QString &fname, long relocation, int cl
 //====================>>> e2CmdWindow::CmdClearBuf <<<====================
 int e2CmdWindow::CmdClearBuf(int type)
 {
-	//      awip->FillBuffer();
+	//awip->FillBuffer();
 	awip->ClearBuffer(type);
-	// EK 2017
-	// TODO
 	Draw();
 	UpdateStatusBar();
 
@@ -4715,12 +4710,10 @@ int e2CmdWindow::CmdFillBuf()
 }
 
 //====================>>> e2CmdWindow::SpecialBits <<<====================
-int e2CmdWindow::SpecialBits()
+int e2CmdWindow::SpecialBits(bool readonly)
 {
-	//      int rval;
-	//      uint32_t lock, fuse;
-
-	bool readonly = false;
+	//int rval;
+	//uint32_t lock, fuse;
 
 	//If the current fuse settings is invalid try to read it from the device
 	if (!awip->IsFuseValid())
@@ -4734,8 +4727,8 @@ int e2CmdWindow::SpecialBits()
 	{
 		repeat = false;
 
-		//              lock = awip->GetLockBits();
-		//              fuse = awip->GetFuseBits();
+		//lock = awip->GetLockBits();
+		//fuse = awip->GetFuseBits();
 
 		long type = awip->GetEEPId(); // BuildE2PType(awip->GetEEPPriType(), awip->GetEEPSubType());
 

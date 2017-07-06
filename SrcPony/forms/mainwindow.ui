@@ -20,7 +20,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>26</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -62,7 +62,7 @@
     <addaction name="actionVerifyFlash"/>
     <addaction name="actionVerifyEep"/>
     <addaction name="separator"/>
-    <addaction name="actionWriteSecurity"/>
+    <addaction name="actionSpecialBits"/>
     <addaction name="actionErase"/>
     <addaction name="actionReset"/>
     <addaction name="separator"/>
@@ -410,7 +410,7 @@
     <string>Verify Data (EEPROM)</string>
    </property>
   </action>
-  <action name="actionWriteSecurity">
+  <action name="actionSpecialBits">
    <property name="text">
     <string>&amp;Security and Configuration Bits...</string>
    </property>
