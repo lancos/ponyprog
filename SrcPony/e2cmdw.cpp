@@ -3332,8 +3332,6 @@ int e2CmdWindow::CmdVerify(int type)
 	{
 		doProgress(translate(STR_MSGVERIFING));
 
-
-
 		int rval = awip->Verify(type);
 		//e2Prg->close();
 
@@ -3611,12 +3609,10 @@ int e2CmdWindow::ScriptError(int line_number, int arg_index, const QString &s, c
 {
 	QString str;
 
-	//      if (s.length() == 0)
-	//      {
-	//              arg = "";
-	//      }
-
-
+	//if (s.length() == 0)
+	//{
+	//	arg = "";
+	//}
 
 	if (arg_index == 0)
 	{
@@ -3646,8 +3642,8 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 {
 	int result = OK;
 	char buf[512];
-	//      char *lst.at(32];
-	//      int n;
+	//char *lst.at(32];
+	//int n;
 	int linecounter;
 
 	VerboseType old_verbose = verbose;
@@ -4443,8 +4439,6 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 		verbose = old_verbose;
 	}
 
-
-
 	if (result == OK)
 	{
 		if (verbose == verboseAll)
@@ -4764,8 +4758,8 @@ int e2CmdWindow::SpecialBits()
 					// ok or write
 					// EK 2017
 					// implemented in fuse dialog
-					//                                      awip->SetLockBits(lock);
-					//                                      awip->SetFuseBits(fuse);
+					//awip->SetLockBits(lock);
+					//awip->SetFuseBits(fuse);
 
 					if (res == 3)   //Program
 					{
@@ -4782,8 +4776,8 @@ int e2CmdWindow::SpecialBits()
 			{
 				// EK 2017
 				// implemented in block dialog
-				//                              awip->SetLockBits(lock);
-				//                              awip->SetFuseBits(fuse);
+				//awip->SetLockBits(lock);
+				//awip->SetFuseBits(fuse);
 			}
 		}
 	}
