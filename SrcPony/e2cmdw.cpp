@@ -2075,15 +2075,13 @@ void e2CmdWindow::onSaveAs()
 		if (a == actionSaveAs)
 		{
 			CmdSaveAs(ALL_TYPE);
-			return;
 		}
-
+		else
 		if (a == actionSaveFlashAs)
 		{
 			CmdSaveAs(PROG_TYPE);
-			return;
 		}
-
+		else
 		if (a == actionSaveEepAs)
 		{
 			CmdSaveAs(DATA_TYPE);
@@ -2115,19 +2113,17 @@ void e2CmdWindow::onWrite()
 	if (IsAppReady())
 	{
 		bool verify = E2Profile::GetVerifyAfterWrite();
-		SetAppBusy();
-
 		QAction *a = static_cast<QAction *>(sender());
+
+		SetAppBusy();
 
 		if (a == actionWriteAll)
 		{
 			CmdWrite(ALL_TYPE, verify);
-// 			return;
 		}
 		else if (a == actionWriteFlash)
 		{
 			CmdWrite(PROG_TYPE, verify);
-// 			return;
 		}
 		else if (a == actionWriteEep)
 		{
@@ -2179,27 +2175,30 @@ void e2CmdWindow::onVerify()
 {
 	if (IsAppReady())
 	{
-		SetAppBusy();
 		QAction *a = static_cast<QAction *>(sender());
+
+		SetAppBusy();
 
 		if (a == actionVerifyAll)
 		{
 			CmdVerify(ALL_TYPE);
-			return;
 		}
-
+		else
 		if (a == actionVerifyFlash)
 		{
 			CmdVerify(PROG_TYPE);
-			return;
 		}
-
+		else
 		if (a == actionVerifyEep)
 		{
 			CmdVerify(DATA_TYPE);
 		}
 
 		SetAppReady();
+	}
+	else
+	{
+		qDebug() << "onVerify() App not ready!!!";
 	}
 }
 
@@ -6037,7 +6036,7 @@ HIDDEN bool CmpExtension(const QString &name, const QString &ext)
 {
 	if ((name.length() > 0) && (ext.length() > 0))
 	{
-		int pos = name.lastIndexOf('.');    //cerca l'estensione
+		int pos = name.lastIndexOf('.');    //look for extension
 
 		if (pos > 0)
 		{
@@ -6740,6 +6739,7 @@ void e2CmdWindow::SetProgress(int progress)
 
 void e2CmdWindow::SetAppBusy()
 {
+	qDebug() << "SetAppBusy()";
 	app_status = AppBusy;
 	// EK 2017
 	// TODO
@@ -6748,6 +6748,7 @@ void e2CmdWindow::SetAppBusy()
 
 void e2CmdWindow::SetAppReady()
 {
+	qDebug() << "SetAppReady()";
 	app_status = AppReady;
 	// EK 2017
 	// TODO
