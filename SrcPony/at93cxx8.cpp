@@ -30,14 +30,11 @@
 #include "errcode.h"
 #include "eeptypes.h"
 
-
 #include <QDebug>
-
-#define BANK_SIZE       1
 
 //=====>>> Costruttore <<<======
 At93cxx8::At93cxx8(e2AppWinInfo *wininfo, BusIO *busp)
-	:       Device(wininfo, busp, BANK_SIZE)
+	:       Device(wininfo, busp, 1 /*BANK_SIZE*/)
 {
 	qDebug() << "At93cxx8::At93cxx8()";
 }

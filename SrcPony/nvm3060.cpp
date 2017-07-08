@@ -32,14 +32,11 @@
 
 #include <QDebug>
 
-
 #include "e2cmdw.h"
-
-#define BANK_SIZE       1
 
 //=====>>> Costruttore <<<======
 Nvm3060::Nvm3060(e2AppWinInfo *wininfo, BusIO *busp)
-	:       Device(wininfo, busp, BANK_SIZE)
+	:       Device(wininfo, busp, 1 /*BANK_SIZE*/)
 {
 	qDebug() << "Nvm3060::Nvm3060()";
 }

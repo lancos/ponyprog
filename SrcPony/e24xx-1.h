@@ -30,9 +30,6 @@
 
 #include "e24xx.h"
 
-#undef  BANK_SIZE
-#define BANK_SIZE       1
-
 class E24xx1 : public E24xx
 {
   public:               //---------------------------------------- public

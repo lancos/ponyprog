@@ -36,12 +36,9 @@
 #include "e2awinfo.h"
 #include "e2cmdw.h"
 
-#undef  BANK_SIZE
-#define BANK_SIZE       1
-
 //=====>>> Costruttore <<<======
 At90sxx::At90sxx(e2AppWinInfo *wininfo, BusIO *busp)
-	:       Device(wininfo, busp, BANK_SIZE)
+	:       Device(wininfo, busp, 1 /*BANK_SIZE*/)
 {
 	qDebug() << "At90sxx::At90sxx()";
 }

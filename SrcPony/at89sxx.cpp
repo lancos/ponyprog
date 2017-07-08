@@ -35,12 +35,9 @@
 
 #include <QDebug>
 
-#undef  BANK_SIZE
-#define BANK_SIZE       1
-
 //=====>>> Costruttore <<<======
 At89sxx::At89sxx(e2AppWinInfo *wininfo, BusIO *busp)
-	:       Device(wininfo, busp, BANK_SIZE)
+	:       Device(wininfo, busp, 1 /*BANK_SIZE*/)
 {
 	qDebug() << "At89sxx::At89sxx()";
 }

@@ -28,25 +28,18 @@
 #ifndef _E24XX_H
 #define _E24XX_H
 
-
 #include "types.h"
 
 #include "device.h"
 #include "i2cbus.h"
 
-
-#define BANK_SIZE       256
-#define MAX_BANK        128
-
 class e2AppWinInfo;
-
-
 
 class E24xx : public Device
 {
   public:               //---------------------------------------- public
 
-	E24xx(e2AppWinInfo *wininfo = 0, BusIO *busp = 0, int max_no_of_bank = 8, int def_banksize = BANK_SIZE);
+	E24xx(e2AppWinInfo *wininfo = 0, BusIO *busp = 0, int max_no_of_bank = 8, int def_banksize = 256);
 	virtual ~E24xx();
 
 	int Probe(int probe_size = 0);
@@ -66,7 +59,7 @@ class E24xx : public Device
 	int base_addr;                          //eeprom I2C base address
 	int n_bank;                                     //numero indirizzi (o banchi reali)
 
-	int eeprom_addr[MAX_BANK];              // indirizzi I2C a cui risponde la EEPROM
+	int eeprom_addr[128];              // indirizzi I2C a cui risponde la EEPROM
 
 	I2CBus *GetBus()
 	{

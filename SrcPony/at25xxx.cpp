@@ -30,8 +30,6 @@
 #include "errcode.h"
 #include "eeptypes.h"
 
-//#define       BANK_SIZE       1
-
 //=====>>> Costruttore <<<======
 At25xxx::At25xxx(e2AppWinInfo *wininfo, BusIO *busp)
 	:       At250xx(wininfo, busp)

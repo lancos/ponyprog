@@ -241,21 +241,25 @@ int E24xx::Verify(int type)
 	return rval;
 }
 
+#define MAX_BANK_SIZE	256
+
 // questa routine si aspetta che in ingresso i 256 bytes da programmare l'eeprom
 // siano memorizzati nel iicbuffer nelle locazioni da 1 (non da 0!) a 256
 int E24xx::bank_out(uint8_t const *copy_buf, int bank, long size, long idx)
 {
 	int k, j;
-	uint8_t buffer[BANK_SIZE + 1];
-
-	if (copy_buf == 0 || bank >= GetNoOfBank())
-	{
-		return BADPARAM;
-	}
+	uint8_t buffer[MAX_BANK_SIZE + 1];
 
 	if (size <= 0)
 	{
 		size = GetBankSize();
+	}
+
+	qDebug() << "E24xx::bank_out() = bank " << bank << ", size = " << size << ", idx = " << idx;
+
+	if (copy_buf == 0 || bank >= GetNoOfBank() || size > MAX_BANK_SIZE)
+	{
+		return BADPARAM;
 	}
 
 	memcpy(buffer + 1, copy_buf, size);
