@@ -26,8 +26,6 @@
 //=========================================================================//
 
 // #include <stdio.h>
-#include "portint.h"
-#include "errcode.h"
 
 #include <QDebug>
 #include <QString>
@@ -35,6 +33,8 @@
 #include <QTextStream>
 
 #include "globals.h"
+#include "portint.h"
+#include "errcode.h"
 
 #include "e2cmdw.h"
 
