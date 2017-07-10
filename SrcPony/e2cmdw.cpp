@@ -2878,7 +2878,7 @@ int e2CmdWindow::CmdRead(int type)
 		SetTitle();
 
 		rval = awip->Read(type);
-		//e2Prg->close();
+		e2Prg->reset();
 
 		if (rval > 0)
 		{
@@ -3018,9 +3018,7 @@ int e2CmdWindow::CmdWrite(int type, bool verify)
 						}
 					}
 
-					//e2Prg->close();
-
-
+					e2Prg->reset();
 
 					if (rval > 0)     //23/10/1999
 					{
@@ -3079,8 +3077,7 @@ int e2CmdWindow::CmdWrite(int type, bool verify)
 				} // if ( (rval = ...
 				else
 				{
-					//e2Prg->close();
-					//CheckEvents();
+					e2Prg->reset();
 
 					result = rval;
 
@@ -3109,8 +3106,6 @@ int e2CmdWindow::CmdWrite(int type, bool verify)
 			} // while (retry_flag)
 
 			ClearIgnoreFlag();
-
-			//e2Prg->close();
 		} // if ( yn.AskYN(...
 	} //else
 
@@ -3253,7 +3248,7 @@ int e2CmdWindow::CmdErase(int type)
 		doProgress(translate(STR_MSGERASING));
 
 		rval = awip->Erase(type);
-		//e2Prg->close();
+		e2Prg->reset();
 
 		if (rval > 0)
 		{
@@ -3329,7 +3324,7 @@ int e2CmdWindow::CmdVerify(int type)
 		doProgress(translate(STR_MSGVERIFING));
 
 		int rval = awip->Verify(type);
-		//e2Prg->close();
+		e2Prg->reset();
 
 		if (rval < 0)
 		{
@@ -4952,24 +4947,19 @@ int e2CmdWindow::CmdWriteLock()
 			doProgress(translate(STR_MSGWRITINGSEC));
 
 			rval = awip->SecurityWrite(0, true);
+			e2Prg->reset();
 
 			if (rval == OK)
 			{
-				//e2Prg->close();
-
 				//if (verbose == verboseAll)
 				//	note.setText("Security bits write successful");
 
 			} // if ( (rval = ...
 			else if (rval == NOTSUPPORTED)
 			{
-				//e2Prg->close();
 			}
 			else
 			{
-				//e2Prg->close();
-				//CheckEvents();
-
 				result = rval;
 
 				if (verbose != verboseNo)
@@ -5024,6 +5014,7 @@ int e2CmdWindow::CmdReadLock()
 		doProgress(translate(STR_MSGREADINGSEC));
 
 		rval = awip->SecurityRead(bits);
+		e2Prg->reset();
 
 		if (rval == OK)
 		{
@@ -5032,19 +5023,13 @@ int e2CmdWindow::CmdReadLock()
 			Draw();
 			UpdateStatusBar();
 
-			//e2Prg->close();
-
 			// orig deactivated     SpecialBits();
 		} // if ( (rval = ...
 		else if (rval == NOTSUPPORTED)
 		{
-			//e2Prg->close();
 		}
 		else
 		{
-			//e2Prg->close();
-			//CheckEvents();
-
 			result = rval;
 
 			if (verbose != verboseNo)
@@ -5104,22 +5089,17 @@ int e2CmdWindow::CmdReadSpecial()
 		{
 			rval = awip->FusesRead(bits);
 		}
+		e2Prg->reset();
 
 		if (rval == OK)
 		{
-			//e2Prg->close();
-
 			// orig deactivated     SpecialBits(1);
 		} // if ( (rval = ...
 		else if (rval == NOTSUPPORTED)
 		{
-			//e2Prg->close();
 		}
 		else
 		{
-			//e2Prg->close();
-			//CheckEvents();
-
 			result = rval;
 
 			if (verbose != verboseNo)
@@ -5215,23 +5195,18 @@ int e2CmdWindow::CmdWriteSpecial()
 			{
 				rval = awip->FusesWrite(0, true);
 			}
+			e2Prg->reset();
 
 			if (rval == OK)
 			{
-				//e2Prg->close();
-
 				//if (verbose == verboseAll)
 				//	note.setText("Special write successful");
 			} // if ( (rval = ...
 			else if (rval == NOTSUPPORTED)
 			{
-				//e2Prg->close();
 			}
 			else
 			{
-				//e2Prg->close();
-				//CheckEvents();
-
 				result = rval;
 
 				if (verbose != verboseNo)
