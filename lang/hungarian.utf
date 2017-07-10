@@ -1,0 +1,342 @@
+LANGUAGE_NAME
+hungarian
+LANGUAGE_CHARSET
+UTF-8
+t0=hungarian
+//Fill this with your reference, if it's empty""it will be invisible
+t1=Translator Credits:
+t2=
+t3=Soros Mikrokontroller Programozó
+t4=Legfrissebb verzió letöltése
+t5=ezen a címen:
+t6=Névtelen
+//Button captions
+t7=OK
+t8=Mégesem
+t9=Súgó
+t10=Próba
+t11=Hardware Ellenõrzés
+t12=Megjegyzés
+t13=Szerkesztés
+//Dialog messages
+t14=Verzió
+t15=Igen
+t16=Nem
+t17=Ok
+t18=Teszt
+t19=Hiba
+t20=Ezért
+t21=Oldal
+t22=Ismeretlen
+t23=Buffer \"%s\"megváltozott. Menti bezárás elõtt?
+t24=Buffer megváltozott. Menti megnyitás elõtt?
+t25=Semmit nem ment
+t26=Semmit nem tölt be
+t27=Semmit nem nyomtat
+t28=Semmit sem ír
+t29=Semmit sem ellenõriz
+t30=Busz idõzítés kalibráció.\nBiztos benne, hogy más alkalmazás nem használja
+t31=\n(a CPU-t és a HDD-t más alkalmazás egyidejûleg nem használhatja.)\nA Kalibráció több másodpercig is eltarthat. \nAkarja futtatni a Kalibrációt most?
+t32=Kalibráció OK
+t33=Kalibráció hibás
+t34=Akarja futtatni a Kalibrációt a Lehetõségek mennübõl\n az írás/olvasás végrehajtása elõtt
+t35=Akarja a Beállítást futtatni a Lehetõségek menübõl\naz írás/olvasás végrehajtása elõtt
+t36=Olvasás...
+t37=Olvasás megtörtént\nEszköz mérete:
+t38=Biztos benne, hogy írni akar az eszközbe?\nMinden elõzõ tartalom elveszik
+t39=Írás...
+t40=Ellenõrzés...
+t41=Írás megtörtént
+t42=Írás hibás
+t43=Törlés...
+t44=Törlés megtörtént
+t45=Nem lehet ellenõrizni. AZ eszköz hiányzik vagy hibás
+t46=Ellenõrzés hibás
+t47=Ellenõrzés megtörtént
+t48=Programozás megtörtént
+t49=Programozás hibás
+t50=Eszköz reset
+t51=Biztonsági bitek írása...
+t52=Biztonsági bitek írása közben hiba történt
+t53=Biztonsági bitek olvasása...
+t54=Biztonsági bitek olvasása közben hiba történt
+t55=Konfigurációs bitek olvasása
+t56=Konfigurációs bitek olvasása közben hiba történt
+t57=Konfigurációs bitek írása
+t58=Konfigurációs bitek írása közben hiba történt
+t59=Script hiba a sorban
+t60=Hibás parancs
+t61=Hibás argumentum
+t62=Argumentum hiányzik
+t63=Biztos benne, hogy folytatja?
+t64=Buffer üres
+t65=Ez az utasítás nem alkalmazható
+t66=Paraméterek beillesztése
+t67=Hibás paraméterek
+t68=Parancsok fogadása...
+t69=Eszköz tartalmának megnyitása
+t70=Program (FLASH) tartalmának megnyitása
+t71=Data (EEPROM) tartalmának megnyitása
+t72=Fájl nem található
+t73=Fájl mentése közben hiba történt
+t74=Eszköz tartalmának mentése másként
+t75=Program (FLASH) tartalmának mentése másként
+t76=Data (EEPROM) tartalmának mentése másként
+t77=Bezárta az utolsó ablakot is: Ki akar lépni?
+t78=Buffer tartalma megváltozott. Menti bezárás elõtt?
+t79=Script fájl megnyitása
+//Menu entries
+//Main Menu
+t80=Fájl
+t81=Szerkesztés
+t82=Eszköz
+t83=Parancs
+t84=Script
+t85=Utility
+t86=Beállítás
+t87=Lehetõségek
+t88=?
+//Menu File
+t89=Új Ablak
+t90=Eszköz fájl megnyitása...
+t91=Program (FLASH) Fájl megnyitása...
+t92=Data (EEPROM) Fájl megnyitása...
+t93=Eszköz fájl mentése
+t94=Eszköz fájl mentése másként...
+t95=Program (FLASH) Fájl mentése másként...
+t96=Data (EEPROM) Fájl mentése másként...
+t97=Fájl Újratöltése
+t98=Nyomtatás...
+t99=Bezárás
+t100=Kilép
+//Menu Edit
+t101=Szerkesztõ Megjegyzés...
+t102=Buffer szerkesztés engedélyezve
+//Menu Command
+t103=Mindent olvas
+t104=Program (FLASH) olvasás
+t105=Data (EEPROM) olvasás
+t106=Biztonsági és Konfigurációs bitek olvasása
+t107=Mindent ír
+t108=Program (FLASH) írás
+t109=Data (EEPROM) írás
+t110=Biztonsági és Konfigurációs bitek írása
+t111=Mindent ellenõriz
+t112=Program (FLASH) ellenõrzése
+t113=Data (EEPROM) ellenõrzése
+t114=Biztonsági és Konfigurációs bitek ellenõrzése
+t115=Törlés
+t116=Azonosítás
+t117=Reset
+t118=Program
+t119=Program Lehetõségek...
+//Menu Options
+t120=Csatoló beállítás...
+t121=Kalibráció
+t122=Távirányított mód
+//Menu Utility
+t123=Buffer törlése
+t124=Buffer feltöltése...
+t125=Double Bank
+t126=Byte csere
+t127=Szériaszám beállítás
+t128=Száriaszám konfigurálás...
+//Menu Help
+t129=Súgó
+t130=A programról
+//Menu Options
+t131=Log Fájl...
+//Menu Script
+t132=Szerkesztés...
+t133=Megnyitás és futtatás...
+t134=Automatikus megnyitás
+t135=Futtatás
+//Tool Bar
+//Dialog Messages
+t136=Eszköz tipus
+//Tool tips
+t137=Eszköz fájl megnyitás
+t138=Eszköz fájl mentés
+t139=Buffer nyomtatás
+t140=Fájlok újratöltése
+t141=Eszköz olvasás
+t142=Program Memória (FLASH) olvasás
+t143=Data Memória (EEPROM) olvasás
+t144=Biztonsági és Konfigurációs bitek olvasása
+t145=Eszköz írás
+t146=Program Memória (FLASH) írás
+t147=Data Memória (EEPROM) írás
+t148=Program Memória (FLASH) ellenõrzése
+t149=Data Memória (EEPROM) ellenõrzése
+t150=Biztonsági és Konfigurációs bitek ellenõrzése
+t151=Eszköz család választás
+t152=Eszköz tipus választás
+t153=Eszköz megjegyzések szerkesztése
+//Error Messages
+t154=Az eszköz nem válaszol
+t155=Hibás eszközválasztás, válassza ki a megfelelõ tipust
+t156=Eszköz hiányzik, ismeretlen vagy hibás
+t157=Vizsgálat nem engedélyezhetõ, az eszköz rossz vagy letiltott
+t158=Felhasználói megszakítás
+t159=Kommunikációs port nem nyitható meg
+t160=I/O hozzáférés megtiltva. Próbálkozzon I/O újrakonfigurálással.
+t161=Programozó kártya nem található
+t162=Hardware hiba! Ellenõrizze a kártya csatlakozását.
+t163=Busz foglalt vagy hardver hiba
+t164=Nem érkezik nyugta az eszköztõl
+t165=Eszköz hiányzik
+t166=Idõtúllépés a buszon
+t167=I2CBus Stop feltétel hiba (rossz idõzítés?)
+t168=Írás hiba
+t169=Hiba a (Blank) ellenõrzés során
+t170=Hiba szám
+t171=Script hiba
+//----Setup dialog
+//Dialog title
+t172=I/O port beállítás
+t173=Interfész kártya beállítás
+//Dialog messages
+t174=COM/LPT interfész
+t175=Soros
+t176=Párhuzamos
+t177=Interfész választás
+t178=Interfész tipus
+t179=Kommunikációs port választás
+t180=COM
+t183=Nyomtatóport választás
+t184=LPT
+t185=Vezérlõ vonalak polaritása
+t186=Invertált Reset
+t187=Invertált SCKL
+t188=Invertált D-IN
+t189=Invertált D-OUT
+//Tool tips
+t190=COM kommunikációs port
+t192=LPT kommunikációs port
+//----Fill dialog
+//Dialog title
+t193=Buffer feltöltés
+//Dialog messages: NB should be of the same size (number of char)
+t194=Tól
+t195=-ig
+t196=Érték
+//----Fuse dialog
+//Button captions
+t197=Mindet töröl
+t198=Mindet beállít
+t199=Írás
+t200=Olvasás
+//Dialog title
+t201=Biztonsági és Konfigurációs bitek
+//Dialog messages: NB should be of the same size (number of char)
+t202=Elsõ blokk
+t203=Blokkok száma
+t204=Magas tûrésû blokk
+//Tool tips
+t205=Minden bit '0'
+t206=Minden bit '1'
+t207=Bitek írása az eszközbe
+t208=Bitek olvasása az eszközbõl
+//----Info dialog
+//Button captions
+t209=Bezár
+//Dialog title
+t210=Eszköz Info
+//Dialog messages
+t211=Bank roll-over kapacitás:
+t212=Méret:
+t213=CRC:
+t214=Biztonsági blokk:
+t215=Magas tûrésû blokk:
+//----Char Edit dialog
+//Dialog title
+t216=Buffer szerkesztés
+//Dialog messages: NB should be of the same size (number of char)
+t217=Hexa
+t218=Decimális
+t219=Karakteres
+t220=Adja meg az új értéket
+t221=Írja be a szöveget a címtõl
+//Tool tips
+t222=Hexadecimális érték
+t223=Decimális érték
+t224=Karakteres érték
+//----Program Option dialog
+//Dialog title
+t225=Program Lehetõségek
+//Dialog messages
+t226=Fájlok újratöltése
+t227=Program memória (FLASH) olvasása
+t228=Data memória (EEPROM) olvasása
+t229=Szériaszám olvasása
+t230=Byte csere
+t231=Szériaszám beállítása
+t232=Törlés
+t233=Program memória (FLASH) írása
+t234=Data memória (EEPROM) írása
+t235=Biztonsági és Konfigurációs bitek írása
+t236=Biztonsági és Konfigurációs bitek ellenõrzése
+//----Serial Number dialog
+//Dialog title
+t237=Szériaszám konfigurálás
+//Dialog messages: NB should be of the same size (number of char)
+t238=Cím
+t239=Méret
+t240=Érték
+t241=Formátum
+//next 2 probably can't be translated
+t242=Növekvõ (Little Endian)
+t243=Csökkenõ (Big Endian)
+t244=Data memória offszet
+//Tool tips
+t245=Memória cím
+t246=Méret byte-okban
+t247=Következõ használt érték
+t248=Program memória helyett a Data memóriához tartozó címet mutatja
+t249=Legnagyobb byte az utolsó címen (Little Endian)
+t250=Legnagyobb byte az elsõ címen (Big Endian)
+//----Retry dialog
+//Button captions
+t251=Megszakítás
+t252=Újra
+t253=Kihagy
+//Dialog title
+t254=Figyelem!
+//----Notes dialog
+//Dialog title
+t255=Eszköz megjegyzések szerkesztése
+//----Progress dialog
+//Dialog title
+t256=Állapot
+//----Hardware check dialog
+t257=Hardware ellenõrzés
+//----About dialog
+t258=Hang kikapcsolása
+//---- Oscillator Calibration Byte
+t260=Oszcillátor beállító byte
+t261=Oszcillátor beállító byte olvasása
+t262=Oszcillátor beállítási lehetõségek...
+t263=Oszcillátor beállító byte olvasása successful
+t264=Chip azonosító
+t265=Megjegyzés
+t266=EEPROM Méret
+t267=FLASH Méret
+t268=Automatikus növelés
+t269=Növeli a szériaszámot minden 'Szériaszám beállítás' után
+t270=Can't know bank roll-over without modify and write, do you want to write?
+t271=Buffer changed. Save it before reading?
+t272=Open Program Memory (FLASH) File
+t273=Open Data Memory (EEPROM) File
+t274=Save Program Memory (FLASH) File
+t275=Save Data Memory (EEPROM) File
+t276=New Window
+t277=Launch program cycle
+t278=Execute script
+t279=Open setup dialog
+t280=Erase all the device to FF
+t281=Security and Configuration &Bits...
+t282=Security and Configuration Bits
+//These strings are added to the 'Configuration and security bits' dialog to explain
+t283=Refer to device datasheet, please
+t284=Checked items means programmed
+t285=UnChecked items means unprogrammed

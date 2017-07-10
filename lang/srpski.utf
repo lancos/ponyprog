@@ -1,0 +1,338 @@
+LANGUAGE_NAME
+srpski
+LANGUAGE_CHARSET
+UTF-8
+t0=Srpski
+t1=Prevodilac:
+t2=Fox
+t3=Serijski eprom programator
+t4=Zadnju verziju nacicete
+t5=na adresi:
+t6=Bez Imena
+//Button captions
+t7=U radu
+t8=Odustani
+t9=Pomoc
+t10=Proba
+t12=Napomena
+t13=Unos
+//Dialog messages
+t14=Verzija
+t15=Da
+t16=Ne
+t17=U redu
+t18=Test
+t19=Greska
+t20=Info
+t21=Strana
+t22=Nepoznat
+t23=Buffer \"%s\"izmenjen. Snimiti ga pre zatvaranja?
+t24=Buffer izmenjen. Snimiti ga pre otvaranja?
+t25=Nista za snimanje
+t26=Nista za ucitavanje
+t27=Nista za stampanje
+t28=Nista za zapisivanje
+t29=Nista za verifikaciju
+t30=Kalibracija vremena sabirnice.\nBudi siguran da ne radi ni jedna druga aplikacija osim
+t31=\n(CPU i HDD na cekanju)\nKalibracija moze potrajati vise sekundi.\nDa li zelite da pokrenete ukalibraciju sada?
+t32=Kalibracija uspesna
+t33=Greska u kalibraciji
+t34=Vi morate uraditi kalibraciju iz menija 'Opcije'\npre bilo koje 'citaj/pisi' operacije
+t35=Vi morate uraditi 'Podesavanja' iz menija 'Opcije'\npre bilo koje 'citaj/pisi' operacije
+t36=Citam...
+t37=Citanje uspesno\nVelicina uredjaja:
+t38=Jeste li sigurni da zelite programirati uredjaj?\nSav stari sadrzaj bice izgubljen
+t39=Programiram...
+t40=Verifikujem...
+t41=Programiranje uspesno
+t42=Programiranje neuspesno
+t43=Brisem...
+t44=Brisanje uspesno
+//t40=Verifikacija...
+t45=Ne mogu verifikovati, uredjaj nedostaje ili nije ispravan
+t46=Greska u verifikaciji
+t47=Verifikacija uspesna
+t48=Programiranje uspesno
+t49=Programiranje neuspesno
+t50=Uredjaj resetovan
+t51=Pisem bitove za zastitu...
+t52=Greska upisa bitova za zastitu
+t53=Citam bitove za zastitu...
+t54=Greska citanja bitova za zastitu
+t55=Citam bitove za konfiguraciju...
+t56=Greska citanja bitova za konfiguraciju
+t57=Pisem bitove za konfiguraciju...
+t58=Greska upisa bitova za konfiguraciju
+t64=Buffer prazan
+t65=Operacija nije podrzana
+t66=Unesi parametre
+t67=Losi parametri
+t68=Primam komande...
+t69=Otvori datoteku sa sadrzajem uredjaja
+t72=Datoteka nije pronadjena
+t73=Greska pri snimanju datoteke
+t74=Snimi datoteku kao
+t75=Snimi sadrzaj Program (FLASH) Datoteka Kao
+t76=Snimi Sadrzaj Podataka (EEPROM) Datoteka Kao
+t77=Zatvori zadnji prozor: Zelite li izaci?
+t78=Buffer promenjen. Snimiti ga pre zatvaranja?
+//Menu entries
+//Main Menu
+t80=&Datoteka
+t81=U&redjivanje
+t82=&Uredjaj
+t83=&Komanda
+t85=&Pomocni
+t86=Po&desavanje
+t87=&Opcije
+t88=&?
+//Menu File
+t89=&Novi Prozor
+t90=&Otvori Datoteku Uredjaja...
+t91=Otvori &Programsku Datoteku (FLASH)...
+t92=Otvori Datoteku za P&odatke (EEPROM)...
+t93=&Snimi Datoteku Uredjaja
+t94=Spremi Datoteku Uredjaja &Kao...
+t95=Spremi Programsku datoteku (&FLASH) kao...
+t96=Spremi datoteku Podataka (&EEPROM) kao...
+t97=&Ponovo ucitaj datoteke Datoteka
+t98=Sta&mpanje...
+t99=&Zatvori
+t100=&Izlaz
+//Menu Edit
+t101=Izmeni &Napomenu...
+t102=&Omogucena Izmena Buffer-a
+//Menu Command
+t103=&Citaj Sve
+t104=Citaj Program (FLASH)
+t105=Citaj Podatke (EEPROM)
+t106=Citaj Bitove za Zastitu i Konfiguraciju
+t107=&Snimi SVE
+t108=Snimi Program (&FLASH)
+t109=Snimi Podatke (EEPROM)
+t110=&Snimi Bitove za zastitu i Konfiguraciju
+t111=&Provjeri Sve
+t112=Provjeri Program (FLASH)
+t113=Provjeri Podatke (EEPROM)
+t114=&Provjeri Bitove za zastitu i Konfiguraciju
+t115=&Obrisi
+t116=&Procitaj Info
+t117=Rese&t
+t118=&Programiraj
+t119=Programske Opcije...
+//Menu Options
+t120=Podesavanje &Izgleda Programa...
+t121=&Kalibracija
+t122=&Udaljeni Mod
+//Menu Utility
+t123=&Ocisti Buffer
+t124=&Napuni Buffer...
+t125=&Dupla Banka
+t126=&Zamjeni Bajtove
+t127=Unesi Serijski&Broj
+t128=K&onfiguracija Serijskog Broja ...
+//Menu Help
+t129=&Pomoc
+t130=&O programu
+//Menu Options
+t131=&Log Datoteka...
+//Tool Bar
+//Dialog Messages
+t136=Tip Uredjaja
+//Tool tips
+t137=Otvori Datoteku Uredjaja
+t138=Snimi Datoteku Uredjaja
+t139=Stampaj sadrzaj Buffer-a
+t140=Ponovo ucitavanje Datoteka
+t141=Citaj Uredjaj
+t142=Citaj Programsku Memoriju (FLASH)
+t143=Citaj Memoriju za podatke (EEPROM)
+t144=Citaj Sigurnosne i Konfiguracijske Biteve
+t145=Snimi Uredjaj
+t146=Snimi Programsku Memoriju (FLASH)
+t147=Snimi Data Memoriju (EEPROM)
+t148=Verifikuj Programsku Memoriju (FLASH)
+t149=Verifikuj Data Memoriju (EEPROM)
+t150=Verifikuj Bitove za Zastitu i Konfiguraciju
+t151=Izaberi porodicu uredjaja
+t152=Izaberi tip uredjaja
+t153=Napisi napomenu o uredjaju
+//Error Messages
+t154=Uredjaj ne odgovara
+t155=Los uredjaj, izaberi ispravan tip
+t156=Uredjaj nedostaje ili nepoznat uredjaj
+t157=Ne mogu se prikljuciti, los uredjaj ili uredjaj zakljucan
+t158=Korisnik zahtjeva prekid
+t159=Komunikacioni port nije raspoloziv
+t160=Pristup I/O nije dozvoljen. Vi morate imati ovlastenje za pristup I/O
+t161=Programator nije pronadjen
+t162=Hardverska greska, da li je ploca pravilno prikljucena?
+t163=Sabirnica zauzeta ili hardverska greska
+t164=Uredjaj ne odgovara 'Acknowledge'
+t165=Nedostaje Uredjaj
+t166=Timeout na sabirnici
+t167=I2C sabirnica Stop greska (los tajming?)
+t168=Greska pri pisanju
+t169=Uredjaj nije prazan
+t170=Greska br.
+//----Setup dialog
+//Dialog title
+t172=Podesavanje I/O porta
+t173=Podesavanje Interfejs ploce
+//Dialog messages
+t174=COM/LPT interfejs
+t175=Serijski
+t176=Paralelni
+t177=Odaberi Interfejs
+t178=Vrsta Interfejsa
+t179=Izaberi COM port
+t180=COM
+t183=Izaberi LPT port
+t184=LPT
+t185=Izaberi Polaritet Kontrolnih linija
+t186=Invertovan Reset
+t187=Invertovan SCKL
+t188=Invertovan D-IN
+t189=Invertovan D-OUT
+//Tool tips
+t190=Izaberi serijski port COM
+t192=Izaberi paralelni port LPT
+//----Fill dialog
+//Dialog title
+t193=Napuni Buffer
+//Dialog messages: NB should be of the same size (number of char)
+t194=Iz
+t195=Na
+t196=Vrednos
+//----Fuse dialog
+//Button captions
+t197=Obrisi sve
+t198=Setuj sve
+t199=Upisi
+t200=Citaj
+//Dialog title
+t201=Bitove za Zastitu i Konfiguraciju
+//Dialog messages: NB should be of the same size (number of char)
+t202=Prvi Blok za zakljuc
+t203=Br. Blokova za zaklj
+t204=Blok visokog opterec
+//Tool tips
+t205=Svi bitovi na '0'
+t206=Svi bitovi na '1'
+t207=Upisi bit u uredjaj
+t208=Citaj bit iz uredjaja
+//----Info dialog
+//Button captions
+t209=Zatvori
+//Dialog title
+t210=Uredjaj Info
+//Dialog messages
+t211=Mogucnost roll-over banke:
+t212=Velicina:
+t213=CRC:
+t214=Sigurnosni blok:
+t215=Blok visokog opterecenja:
+//----Char Edit dialog
+//Dialog title
+t216=Editovanje Buffer-a
+//Dialog messages: NB should be of the same size (number of char)
+t217=Hex
+t218=Decimal
+t219=Karakter
+//Tool tips
+t222=Hexadecimalna vrednost
+t223=Decimalna vrednost
+t224=Karakt. vrednost
+//----Program Option dialog
+//Dialog title
+t225=Programske Opcije
+//Dialog messages
+t226=Ponovo Ucitaj Datoteku
+t227=Citaj Programsku memoriju (FLASH)
+t228=Citaj Data memoriju (EEPROM)
+t229=Citaj Serijski Broj
+t230=Zameni Bajtove
+t231=Unesi Serijski Broj
+t232=Obrisi
+t233=Zapisi Programsku memoriju (FLASH)
+t234=Zapisi memoriju podataka (EEPROM)
+t235=Zapisi Bitove za Zastitu i Konfiguraciju
+t236=Verifikuj Bitove za Zastitu i Konfiguraciju
+//----Serial Number dialog
+//Dialog title
+t237=Konfiguracija Serijskog Broja
+//Dialog messages: NB should be of the same size (number of char)
+t238=Adresa
+t239=Velicina
+t240=Vrednost
+t241=Format
+//next 2 probably can't be translated
+t242=Little endian
+t243=Big endian
+t244=Offset memorije podataka
+//Tool tips
+t245=Adresa Memorije
+t246=Velicina u bajtovima
+t247=Sledeca vrednost koja ce se koristiti
+t248=Podrazumeva Adresu relativnu na memoriju podataka umjesto Programske memorije
+t249=Najznacajniji bajt na visokoj adresi
+t250=Najznacajniji bajt na nizoj adresi
+//----Retry dialog
+//Button captions
+t251=Prekid
+t252=Ponovo
+t253=Ignorisi
+//Dialog title
+t254=Paznja
+//----Notes dialog
+//Dialog title
+t255=Uredi podatke o Uredjaju
+//----Progress dialog
+//Dialog title
+t256=Status
+//Script
+t84=Skri&pt
+t132=&Popravi...
+t133=&Ucitaj i startuj...
+t134=&Automatski ucitaj
+t135=&Startuj
+t59=Greska u skriptu na liniji
+t60=Losa komanda
+t61=Los argument
+t62=Argument nedostaje
+t63=Zelite li nastaviti?
+t79=Otvori skript datoteku
+t171=Greska u skriptu
+t70=Otvori programsku datoteku (FLASH)
+t71=Otvori datoteku za podatke (EEPROM)
+t220=Unesi novu vrijednost
+t221=Unesi text sa lokacije
+t258=Ugasi Zvuk
+//---- Oscillator Calibration Byte
+t260=Bajt za kalibraciju oscilatora
+t261=Procitaj Bajt za kalibraciju oscilatora
+t262=Opcije za kalibraciju oscilatora...
+t263=Citanje bajta za kalibraciju oscilatora uspesno
+t264=Cip Id
+t265=Napomena
+t266=Velicina EEPROM-a
+t267=Velicina FLASH-a
+t268=Automatsko povecavanje
+t269=Povecaj serijski broj posle svake 'postavi serijski broj' operacije
+t270=Nemogu da saznam roll-over bez modifikacije i upisa, da li zelite da upisem?
+t271=Bafer promenjen. Snimiti pre citanja?
+t272=Otvori fajl Programske Memorije (FLASH)
+t273=Otvori fajl Memorije Podataka (EEPROM)
+t274=Snimi fajl Programske Memorije (FLASH)
+t275=Snimi fajl Memorije Podataka (EEPROM)
+t276=Novi Prozor
+t277=Startuj programski ciklus
+t278=Izvrsi  skript
+t279=Otvori setap dijalog
+t280=Obrisi ceo uredjaj sa FF
+t281=Sigurnosni i Konfiguracioni &Bitovi...
+t282=Sigurnosni i Konfiguraconi Bitovi
+//These strings are added to the 'Configuration and security bits' dialog to explain
+t283=Refer to device datasheet, please
+t284=Checked items means programmed
+t285=UnChecked items means unprogrammed

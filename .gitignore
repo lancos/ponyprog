@@ -1,0 +1,6 @@
+.directory
+.kdev4
+build*
+*.kdev4
+CMakeLists.txt.user*
+ponyprog.pro.user*

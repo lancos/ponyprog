@@ -1,0 +1,342 @@
+LANGUAGE_NAME
+romaneste
+LANGUAGE_CHARSET
+UTF-8
+t0=romaneste
+//Fill this with your reference, if it's empty""it will be invisible
+t1=Translator
+t2=
+t3=Programator de Circuite Seriale
+t4=Obtineti ultima versiune a
+t5=la adresa:
+t6=Fara Nume
+//Button captions
+t7=OK
+t8=Anulare
+t9=Ajutor
+t10=Proba
+t11=Verificare Hardware
+t12=Note
+t13=Editare
+//Dialog messages
+t14=Versiune
+t15=Da
+t16=Nu
+t17=Ok
+t18=Test
+t19=Nereusit
+t20=Despre
+t21=Pagina
+t22=Necunoscut
+t23=Buffer \"%s\"modificat. Salvati inainte de inchidere?
+t24=Buffer modificat. Salvati inainte de inchidere?
+t25=Nimic de salvat
+t26=Nimic de incarcat
+t27=Nimic de printat
+t28=Nimic de scris
+t29=Nimic de verificat
+t30=Calibrarea timpului de bus.\nAsigurati-va ca nu ruleaza alte aplicatii in afara de
+t31=\n(CPU si hard disk-ul trebuie sa fie in repaus)\nCalibrarea poate dura cateva secunde.\nDoriti sa rulati calibrarea acum?
+t32=Calibrare reusita
+t33=Calibrare nereusita
+t34=Trebuie rulat Calibrare din meniul de Optiuni\ninaintea oricarei operatii de citire/scriere
+t35=Trebuie rulat Setup din meniul de Optiuni\ninaintea oricarei operatii de citire/scriere
+t36=Citire...
+t37=Citire reusita\nMarime Circuit:
+t38=Sunteti sigur ca doriti sa scrieti circuitul?\nTot continutul anterior se va pierde
+t39=Scriere...
+t40=Verificare...
+t41=Scriere reusita
+t42=Scriere nereusita
+t43=Stergere...
+t44=Stergere reusita
+t45=Nu se poate verifica, circuit lipsa sau circuit defect
+t46=Verificare nereusita
+t47=Verificare reusita
+t48=Programare reusita
+t49=Programare nereusita
+t50=Reset circuit
+t51=Scriere biti de securitate...
+t52=Scriere biti de securitate nereusita
+t53=Citire biti de securitate...
+t54=Citire biti de securitate nereusita
+t55=Citire biti de configurare...
+t56=Citire biti de configurare nereusita
+t57=Scriere biti de configurare...
+t58=Scriere biti de configurare nereusita
+t59=Eroare de script la linia
+t60=Comanda eronata
+t61=Argument eronat
+t62=Argument lipsa
+t63=Doriti sa continuati?
+t64=Buffer gol
+t65=Operatie nesuportata
+t66=Inserati parametri
+t67=Parametri eronati
+t68=Acceptare comenzi...
+t69=Deschidere fisier continut circuit
+t70=Deschidere fisier continut program (FLASH)
+t71=Deschidere fisier continut date (EEPROM)
+t72=Fisierul nu a fost gasit
+t73=Salvare fisier nereusita
+t74=Salvare fisier continut circuit ca
+t75=Salvare fisier continut program (FLASH) ca
+t76=Salvare fisier continut date (EEPROM) ca
+t77=Inchide ultima fereastra: doriti sa iesiti?
+t78=Buffer modificat. Salvati inainte de inchidere?
+t79=Deschidere fisier script
+//Menu entries
+//Main Menu
+t80=&Fisier
+t81=&Editare
+t82=&Circuit
+t83=Co&manda
+t84=Scri&pt
+t85=&Utilitare
+t86=&Setup
+t87=&Optiuni
+t88=&?
+//Menu File
+t89=Fereastra &Noua
+t90=Deschide Fisier &Circuit...
+t91=Deschide Fisier &Program (FLASH)...
+t92=Deschide Fisier &Date (EEPROM)...
+t93=Sa&lvare Fisier Circuit
+t94=Salvare Fisier Circuit C&a...
+t95=Salvare Fisier Program (&FLASH) Ca...
+t96=Salvare Fisier Data (&EEPROM) Ca...
+t97=&Reincarcare Fisier
+t98=Prin&tare...
+t99=&Inchidere
+t100=Ie&sire
+//Menu Edit
+t101=Editare &Note...
+t102=Editare Bu&ffer activata
+//Menu Command
+t103=&Citire Completa
+t104=Citire Program (FLASH)
+t105=Citire Data (EEPROM)
+t106=Citire &Biti de Securitate si Configuratie
+t107=&Scriere Completa
+t108=Scriere Program (&FLASH)
+t109=Scriere Data (EEPROM)
+t110=Scriere Biti de Securitate si Confi&guratie
+t111=&Verificare Completa
+t112=Verificare Program (FLASH)
+t113=Verificare Data (EEPROM)
+t114=Verificare Biti de Securitate si Config&uratie
+t115=S&tergere
+t116=Obtinere &Informatii
+t117=&Reset
+t118=&Programare
+t119=Optiuni Programare...
+//Menu Options
+t120=&Setup Interfata...
+t121=&Calibrare
+t122=Comanda la &Distanta
+//Menu Utility
+t123=&Stergere Buffer
+t124=&Umplere Buffer...
+t125=&Dublare Bank
+t126=&Byte Swap
+t127=Setup &numar de serie
+t128=&Configurare numar de serie...
+//Menu Help
+t129=&Ajutor
+t130=&Despre
+//Menu Options
+t131=&Fisier Log...
+//Menu Script
+t132=&Editare...
+t133=&Incarcare si Rulare...
+t134=&Auto incarcare
+t135=&Rulare
+//Tool Bar
+//Dialog Messages
+t136=Tip circuit
+//Tool tips
+t137=Deschidere Fisier Circuit
+t138=Salvare Fisier Circuit
+t139=Printare Buffer
+t140=Reincarcare Fisier
+t141=Citire Circuit
+t142=Citire Memorie Program (FLASH)
+t143=Citire Memorie Date (EEPROM)
+t144=Citire Biti de Securitate si Configuratie
+t145=Scriere circuit
+t146=Scriere Memorie Program (FLASH)
+t147=Scriere Memorie Data (EEPROM)
+t148=Verificare Memorie Program (FLASH)
+t149=Verificare Memorie Date (EEPROM)
+t150=Verificare Biti de Securitate si Configuratie
+t151=Selectati familia circuitului
+t152=Selectati tipul circuitului
+t153=Editare note circuit
+//Error Messages
+t154=Circuitul nu raspunde
+t155=Circuit eronat, selectati tipul corect
+t156=Circuit lipsa sau circuit necunoscut
+t157=Probare imposibila, circuit defect sau circuit protejat
+t158=Abandonare utilizator
+t159=Portul de comunicatie nu e disponibil
+t160=Acces I/O nepermis. Trebuie sa fiti in radacina pentru operatii I/O
+t161=Placa de programare nu a fost gasita
+t162=Eroare hardware, placa de programare este conectata corect?
+t163=Bus ocupat sau eroare hardware
+t164=Circuitul nu raspunde
+t165=Circuitul lipseste
+t166=Depasire timp pe bus
+t167=Eroare conditie de Stop pe bus-ul I2C (timpi incorecti?)
+t168=Eroare de scriere
+t169=Eroare de testare circuit sters
+t170=Eroare nr.
+t171=Eroare de script
+//----Setup dialog
+//Dialog title
+t172=Setup port I/O
+t173=Setup interfata placa de programare
+//Dialog messages
+t174=Interfata COM/LPT
+t175=Serial
+t176=Paralel
+t177=Selectare interfata
+t178=Tip interfata
+t179=Selectare port COM
+t180=COM
+t183=Selectare port LPT
+t184=LPT
+t185=Selectare Polaritate linii de Control
+t186=Reset Inversat
+t187=SCKL  Inversat
+t188=D-IN  Inversat
+t189=D-OUT Inversat
+//Tool tips
+t190=Selectare port serial COM
+t192=Selectare port paralel LPT
+//----Fill dialog
+//Dialog title
+t193=Umplere Buffer
+//Dialog messages: NB should be of the same size (number of char)
+t194=De la
+t195=La
+t196=Valoare
+//----Fuse dialog
+//Button captions
+t197=Stergere Completa
+t198=Setup Complet
+t199=Scriere
+t200=Citire
+//Dialog title
+t201=Biti de Configurare si Securitate
+//Dialog messages: NB should be of the same size (number of char)
+t202=Primul Block de Protejat
+t203=Nr. Blockuri de Protejat
+t204=Block cu anduranta ridicata
+//Tool tips
+t205=Toti bitii la '0'
+t206=Toti bitii la '1'
+t207=Scriere biti in circuit
+t208=Citire biti de la circuit
+//----Info dialog
+//Button captions
+t209=Inchidere
+//Dialog title
+t210=Informatii Circuit
+//Dialog messages
+t211=Capabilitate de bank roll-over:
+t212=Marime:
+t213=CRC:
+t214=Block de Securitate:
+t215=Block cu anduranta ridicata:
+//----Char Edit dialog
+//Dialog title
+t216=Editare Buffer
+//Dialog messages: NB should be of the same size (number of char)
+t217=Hexa
+t218=Zecimal
+t219=Caracter
+t220=Introduceti noua valoare
+t221=Introduceti text de la adresa
+//Tool tips
+t222=Valoare hexazecimala
+t223=Valoare zecimala
+t224=Valoare caracter
+//----Program Option dialog
+//Dialog title
+t225=Optiuni Programare
+//Dialog messages
+t226=Reincarcare Fisier
+t227=Citire Memorie Program (FLASH)
+t228=Citire Memorie Date (EEPROM)
+t229=Citire Numar de Serie
+t230=Byte Swap
+t231=Setup Numar de Serie
+t232=Stergere
+t233=Scriere Memorie Program (FLASH)
+t234=Scriere Memorie Date (EEPROM)
+t235=Scriere Biti de Securitate si Configurare
+t236=Verificare Biti de Securitate si Configurare
+//----Serial Number dialog
+//Dialog title
+t237=Configurare Numar de Serie
+//Dialog messages: NB should be of the same size (number of char)
+t238=Adresa
+t239=Marime
+t240=Valoare
+t241=Format
+//next 2 probably can't be translated
+t242=Little endian
+t243=Big endian
+t244=Offset Memorie Date
+//Tool tips
+t245=Adresa Memorie address
+t246=Marimea in byti
+t247=Urmatoarea valoare de utilizat
+t248=Adresa relativa la memoria de date in loc de memoria program
+t249=Cel mai semnificativ byte la adresa superioara
+t250=Cel mai semnificativ byte la adresa inferioara
+//----Retry dialog
+//Button captions
+t251=Anulare
+t252=Reincercare
+t253=Ignora
+//Dialog title
+t254=Alerta
+//----Notes dialog
+//Dialog title
+t255=Editare Note Circuit
+//----Progress dialog
+//Dialog title
+t256=Stare
+//----Hardware check dialog
+t257=Verificare Hardware
+//----About dialog
+t258=Dezactivare sunet
+//---- Oscillator Calibration Byte
+t260=Byte Calibrare Oscilator
+t261=Citire Byte Calibrare Oscilator
+t262=Optiuni Calibrare Oscilator...
+t263=Citire Byte Calibrare Oscilator reusita
+t264=Id Circuit
+t265=Note
+t266=Marime EEPROM
+t267=Marime FLASH
+t268=Auto Incrementare
+t269=Incrementare numar serial dupa fiecare operatie 'setup numar serial'
+t270=Nu se poate cunoaste capabilitatea de bank roll-over fara a modifica si a scrie, doriti sa scrieti?
+t271=Buffer modificat. Salvati inainte de citire?
+t272=Deschide Fisier Program in Memorie (FLASH)
+t273=Deschide Fisier Date in Memorie (FLASH)
+t274=Salveaza Fisier Program in Memorie (FLASH)
+t275=Salveaza Fisier Date in Memorie (FLASH)
+t276=Fereastra &Noua
+t277=Lanseaza Program
+t278=Executa Script
+t279=Deschide Dialogul de Configurare
+t280=Sterge toate circuitele pina la FF
+t281=&Biti de securitate si configurare...
+t282=Biti de securitate si configurare...
+//These strings are added to the 'Configuration and security bits' dialog to explain
+t283=Consultati documentatia device-ului
+t284=Casutele bifate inseamna programate
+t285=Casutele nebifate inseamna neprogramate

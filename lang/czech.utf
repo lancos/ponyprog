@@ -1,0 +1,338 @@
+LANGUAGE_NAME
+czech
+LANGUAGE_CHARSET
+UTF-8
+t0=czech
+t1=Translator Credits:
+t2=Dvorak Mirek
+t3=Seriovy Programator Obvodu
+t4=Stahnete si nejnovejsi verzi
+t5=na adrese :
+t6=Bez Jmena
+//Button captions
+t7=OK
+t8=Zrusit
+t9=Pomoc
+t10=Zkouska
+t12=Poznamka
+t13=Edituj
+//Dialog messages
+t14=Verze
+t15=Ano
+t16=Ne
+t17=Ok
+t18=Test
+t19=Chyba
+t20=Info
+t21=Strana
+t22=Neznamy
+t23=Buffer \"%s\"zmeneny. Ulozit ho pred zavrenim?
+t24=Buffer zmeneny. Ulozit ho pred otevrenim?
+t25=Neni co ulozit
+t26=Neni co nahrat
+t27=Neni co tisknout
+t28=Neni co zapsat
+t29=Neni co kontrolovat
+t30=Kalibrace casovani sbernice.\nZabezpecte, aby nebezela jina aplikace nez
+t31=\n(procesor a harddisk maji byt necinne)\nKalibrace muze trvat par sekund...\nChcete ted spustit kalibraci?
+t32=Kalibrace OK
+t33=Chybna kalibrace!
+t34=Musite spustit >Kalibrace< z menu Setup \npred jakymikoli  operacemi cteni/zapis
+t35=Musite spustit Setup programatoru z menu Setup \npred jakymikoli operacemi cteni/zapis
+t36=Ctu...
+t37=Cteni uspesne\nKapacita obvodu:
+t38=Chcete opravdu zacit obvod programovat?\nVsechny udaje v nem budou prepsany
+t39=Programuji...
+t40=Kontroluji...
+t41=Programovani uspesne
+t42=Programovani CHYBNE !
+t43=Mazu...
+t44=Mazani uspesne
+//t40=Kontroluji...
+t45=Nemohu kontrolovat, obvod nebyl nalezen nebo je chybny
+t46=Kontrola CHYBNA !
+t47=Kontrola uspesna
+t48=Programovani uspesne
+t49=Programovani CHYBNE !
+t50=Reset Obvodu
+t51=Zapisuji security bity...
+t52=Zapis security bitu CHYBNE !
+t53=Ctu security bity...
+t54=Cteni konfiguracnich bitu CHYBNE !
+t55=Cteni konfiguracnich bitu...
+t56=Cteni konfiguracnich bitu CHYBNE !
+t57=Zapisuji konfiguracni bity...
+t58=Zapis konfiguracnich bitu CHYBNE !
+t64=Buffer prazdny
+t65=Operace neni podporovana
+t66=Vloz parametry
+t67=Spatne parametry
+t68=Akceptuji prikazy...
+t69=Otevri soubor s daty
+t72=Soubor nenalezen
+t73=Chyba pri ukladani souboru
+t74=Uloz soubor s daty jako
+t75=Uloz Program (FLASH) do souboru jako
+t76=Uloz Data (EEPROM) do souboru Jako
+t77=Zavri posledni okno: chcete ukoncit program?
+t78=Buffer zmeneny. Ulozit ho pred zavrenim?
+//Menu entries
+//Main Menu
+t80=&Soubor
+t81=&Edituj
+t82=&Obvody
+t83=&Prikazy
+t85=&Utility
+t86=&Setup
+t87=&Nastaveni
+t88=&?
+//Menu File
+t89=&Nove Okno
+t90=&Otevri Datovy Soubor...
+t91=Otevri &Program (FLASH) Soubor...
+t92=Otevri &Data (EEPROM) Soubor...
+t93=&Save Device File
+t94=Uloz Datovy Soubor &Jako...
+t95=Uloz Program (&FLASH) Soubor Jako...
+t96=Uloz Data (&EEPROM) Soubor Jako...
+t97=&Znovunahrani Souboru
+t98=Nahra&j...
+t99=&Zavri
+t100=E&xit
+//Menu Edit
+t101=Edituj &Typy...
+t102=Editace Bu&ffru povolena
+//Menu Command
+t103=&Cti Vsechno
+t104=Cti Program (FLASH)
+t105=Cti Data (EEPROM)
+t106=Cti &Security a Configuration Bity
+t107=&Vypal Vsechno
+t108=Vypal Program (&FLASH)
+t109=Vypal Data (EEPROM)
+t110=Vy&pal Security a Configuration Bity
+t111=&Zkontroluj Vsechno
+t112=Zkontroluj Program (FLASH)
+t113=Zkontroluj Data (EEPROM)
+t114=Zkontrolu&j Security a Configuration Bity
+t115=&Vymaz
+t116=&Info
+t117=Rese&t
+t118=&Vypal
+t119=Nastaveni...
+//Menu Options
+t120=&Setup programatoru...
+t121=&Kalibrace
+t122=&Dalkovy Rezim
+//Menu Utility
+t123=&Vycisti Buffer
+t124=&Vypln Buffer...
+t125=&Dvojita Bank
+t126=&Prehod Byty
+t127=Nastav Seriove& Cislo
+t128=Konfig Serioveho C&isla...
+//Menu Help
+t129=&Pomocnik
+t130=&O programu
+//Menu Options
+t131=&Log Soubor...
+//Tool Bar
+//Dialog Messages
+t136=Typ.Obvodu
+//Tool tips
+t137=Otevri Datovy Soubor
+t138=Uloz Datovy Soubor
+t139=Vyttiskni Buffer
+t140=Znovunahrani Souboru
+t141=Cti Obvod
+t142=Cti Program Memory (FLASH)
+t143=Cti Data Memory (EEPROM)
+t144=Cti Security a Configuration Bity
+t145=Vypal Obvod
+t146=Vypal Program Memory (FLASH)
+t147=Vypal Data Memory (EEPROM)
+t148=Kontroluj Program Memory (FLASH)
+t149=Kontroluj Data Memory (EEPROM)
+t150=Kontroluj Security and Configuration Bity
+t151=Vyber druh obvodu
+t152=Vyber typ obvodu
+t153=Edituj typ obvodu
+//Error Messages
+t154=Obvod Neodpovida
+t155=Spatny typ obvodu, vyberte spravny
+t156=Obvod nepripojeny nebo je neznamy
+t157=Nemozne testovat, spatny nebo zamceny obvod
+t158=Preruseni uzivatelem
+t159=Komunikacny port nedostupny
+t160=I/O pristup zakazany. Musite byt administrator !
+t161=Programator nenalezen
+t162=Chyba hardwaru, je programator dobre pripojeny?
+t163=Sbernice zatizena nebo chyba hardwaru
+t164=Zadna Odezva z Obvodu I2C
+t165=I2C:Nepripojeny Obvod
+t166=I2C:Cas komunikace uplynul
+t167=I2C:Chyba komunikace (spatne casovani?)
+t168=Chyba pri zapisu do obvodu
+t169=Obvod neni prazdny
+t170=Chyba c.
+//----Setup dialog
+//Dialog title
+t172=Nastaveni I/O portu
+t173=Nastaveni programatoru
+//Dialog messages
+t174=COM/LPT Programator
+t175=Seriovy
+t176=Paralelni
+t177=Druh
+t178=Typ
+t179=Vyber COM Portu
+t180=COM
+t183=Vyber LPT Portu
+t184=LPT
+t185=Vyber Polaritu Kontrolnich Signalu
+t186=Invertuj Reset
+t187=Invertuj SCKL
+t188=Invertuj D-IN
+t189=Invertuj D-OUT
+//Tool tips
+t190=Vyber seriovy port COM
+t192=Vyber paralelni port LPT
+//----Fill dialog
+//Dialog title
+t193=Vypln Buffer
+//Dialog messages: NB should be of the same size (number of char)
+t194=Od adresy
+t195=Po adresu
+t196=Hodnotou
+//----Fuse dialog
+//Button captions
+t197=Vymaz Vsechny
+t198=Nastav Vsechny
+t199=Vypal
+t200=Cti
+//Dialog title
+t201=Configuration a Security bity
+//Dialog messages: NB should be of the same size (number of char)
+t202=Prvni Blok na Uzamceni
+t203=Pocet Bloku na Uzamceni
+t204=High-endurance blok
+//Tool tips
+t205=Vsechny bity do '0'
+t206=Vsechny bity do '1'
+t207=Vypal bity do obvodu
+t208=Cti bity z obvodu
+//----Info dialog
+//Button captions
+t209=Zavri
+//Dialog title
+t210=Info o Obvode
+//Dialog messages
+t211=Podpora 'Bank roll-over' :
+t212=Velkost:
+t213=CRC:
+t214=Security blok:
+t215=High endurance blok:
+//----Char Edit dialog
+//Dialog title
+t216=Editovat Buffer
+//Dialog messages: NB should be of the same size (number of char)
+t217=Hexa
+t218=Dec.
+t219=Znaky
+//Tool tips
+t222=Hexadecimalni hodnota
+t223=Decimalni hodnota
+t224=Znakovy udaj
+//----Program Option dialog
+//Dialog title
+t225=Programovaci Moznosti
+//Dialog messages
+t226=Znovunahraj Soubory
+t227=Cti Program memory (FLASH)
+t228=Cti Data memory (EEPROM)
+t229=Cti Seriove Cislo
+t230=Prehod Bajty
+t231=Nastav Seriove Cislo
+t232=Vymaz
+t233=Zapis Program memory (FLASH)
+t234=Zapis Data memory (EEPROM)
+t235=Zapis Security a Config bity
+t236=Kontroluj Security a Config bity
+//----Serial Number dialog
+//Dialog title
+t237=Konfig serioveho cisla
+//Dialog messages: NB should be of the same size (number of char)
+t238=Adresa
+t239=Velikost
+t240=Hodnota
+t241=Format
+//next 2 probably can't be translated
+t242=INTEL
+t243=MOTOROLA
+t244=Relativne k Datove  Pameti
+//Tool tips
+t245=Adresa v pameti
+t246=Velikost v bajtech
+t247=Hodnota ktera bude pouzita
+t248=Povoli pouziti Adresy relativni k Datove pameti namisto k Programove pameti
+t249=MSB na vyssi adrese - INTEL format
+t250=MSB na nizsi adrese - MOTOROLA format
+//----Retry dialog
+//Button captions
+t251=Zrusit
+t252=Opakovat
+t253=Ignorovat
+//Dialog title
+t254=Upozorneni
+//----Notes dialog
+//Dialog title
+t255=Editovat typ obvodu
+//----Progress dialog
+//Dialog title
+t256=Stav
+//Script
+t84=Skri&pt
+t132=&Editovani...
+t133=&Nahraj  a  Spust ...
+t134=&Nahraj Automaticky
+t135=&Spust
+t59=Chyba ve skriptu na radku
+t60=Spatny prikaz
+t61=Spatny argument
+t62=Chybejici argument
+t63=Chces pokracovat?
+t79=Otevri skript
+t171=Chyba skriptu
+t70=Otevri programovy (FLASH) soubor
+t71=Otevri datovy (EEPROM) soubor
+t220=Vloz novou hodnotu
+t221=Vloz text z pozice
+t258=Zrus zvuk
+//---- Oscillator Calibration Byte
+t260=Kalibracni Byte Oscilatoru
+t261=Precti Kalibracni Byte Osc.
+t262=Moznosti Kalibracniho Bytu Osc...
+t263=Precteni Kalibracniho Bytu Osc. uspesne
+t264=Chip Id
+t265=Poznamka
+t266=EEPROM Size
+t267=FLASH Size
+t268=Auto Increment
+t269=Zvys seriove cislo po kazde operaci 'set serial number'
+t270=Can't know bank roll-over without modify and write, do you want to write?
+t271=Buffer zmenen. Ulozit pøed ctenim?
+t272=Open Program Memory (FLASH) File
+t273=Open Data Memory (EEPROM) File
+t274=Save Program Memory (FLASH) File
+t275=Save Data Memory (EEPROM) File
+t276=Nove Okno
+t277=Launch program cycle
+t278=Vykonej script
+t279=Otevri setup dialog
+t280=Erase all the device to FF
+t281=Security and Configuration &Bits...
+t282=Security and Configuration Bits
+//These strings are added to the 'Configuration and security bits' dialog to explain
+t283=Refer to device datasheet, please
+t284=Checked items means programmed
+t285=UnChecked items means unprogrammed

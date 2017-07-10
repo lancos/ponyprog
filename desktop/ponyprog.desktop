@@ -1,0 +1,12 @@
+[Desktop Entry]
+Version=3.0.0
+Name=Ponyprog
+Comment=EEPROM and microcontroller flasher
+GenericName=Ponyprog
+TryExec=ponyprog
+Exec=ponyprog
+Terminal=false
+Icon=ponyprog.png
+Type=Application
+Categories=Hardware;Qt;
+

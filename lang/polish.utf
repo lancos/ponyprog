@@ -1,0 +1,342 @@
+LANGUAGE_NAME
+polish
+LANGUAGE_CHARSET
+UTF-8
+t0=Polski
+//Fill this with your reference, if it's empty""it will be invisible
+t1=Kredyty translatorów:
+t2=Rafal Gisko & poprawione przez MopIC'a
+t3=Programator szeregowy
+t4=sci¹gnij najnowsz¹ wersjê
+t5=spod adresu:
+t6=bez nazwy
+//Button captions
+t7=OK
+t8=Anuluj
+t9=Pomoc
+t10=Próba
+t11=Test sprzêtowy
+t12=Nota
+t13=Edycja
+//Dialog messages
+t14=Wersja
+t15=Tak
+t16=Nie
+t17=Ok
+t18=Test
+t19=B³¹d
+t20=O
+t21=Strona
+t22=Nieznany
+t23=Bufor \"%s\"siê zmieni³. Zapisaæ przed zamkniêciem?
+t24=Bufor siê zmieni³. Zapisaæ go przed otwarciem?
+t25=Nie ma nic do zachowania
+t26=Nie ma nic do za³adowania
+t27=Nie ma nic do drukowania
+t28=Nie ma nic do zapisu
+t29=Nie ma nic do weryfikacji
+t30=Kalibracja prêdkoci zegara.\nUpewnij siê, ¿e ¿aden inny program nie pracuje na tym komputerze
+t31=\n(CPU oraz dysk twardy musz¹ byæ bezczynne)\nKalibracja zabierze trochê czasu.\nCzy chcesz teraz uruchomiæ kalibracjê?
+t32=Kalibracja OK
+t33=B³¹d podczas kalibracji
+t34=Musisz uruchomiæ Kalibracjê z menu Opcje\nprzed jak¹kolwiek operacj¹ zapisu lub odczytu
+t35=Musisz uruchomiæ Ustawienia z menu Opcje\nprzed jak¹kolwiek operacj¹ zapisu lub odczytu
+t36=Odczyt...
+t37=Odczyt zakoñczy³ siê sukcesem\nPojemnoæ uk³adu:
+t38=Czy na pewno chcesz zapisaæ do uk³adu?\nWszystkie poprzednie dane zostan¹ utracone!
+t39=Zapis...
+t40=Weryfikacja...
+t41=Zapis zakoñcz³ siê pomylnie
+t42=Wyst¹pi³ b³¹d zapisu
+t43=Kasowanie...
+t44=Kasowanie zakoñczy³o siê pomylnie
+t45=Nie mo¿na weryfikowaæ, brak sterownika lub jest uskodzone
+t46=Wystapi³ b³¹d weryfikacji
+t47=Weryfikacja zakoñczy³a siê sukcesem
+t48=Programowanie zakoñczy³o siê pomylnie
+t49=Wyst¹pi³ b³ad programowania
+t50=Reset sterownika
+t51=Zapis bitów ochronnych...
+t52=Wyst¹pi³ b³¹d zapisu bitów ochronnych
+t53=Odczyt bitów ochronnych...
+t54=Wyst¹pi³ b³¹d odczytu bitów ochronnych
+t55=Odczyt bitów konfiguracyjnych...
+t56=Wyst¹pi³ b³¹d odczytu bitów konfiguracyjnych
+t57=Zapis bitów konfiguracyjnych...
+t58=Wyst¹pi³ b³¹d zapisu bitów konfiguracyjnych
+t59=B³ad skryptu w lini
+t60=Z³a instrukcja
+t61=Z³y argument
+t62=Brakuje argumentu
+t63=Czy chcesz kontynuowaæ?
+t64=Bufor jest pusty
+t65=Operacja nie jest dostêpna
+t66=Wprowad parametry
+t67=Z³e parametry
+t68=Akceptowanie instrukcji...
+t69=Otwórz uk³ad zawarty w pliku
+t70=Otwórz program (FLASH) zawarty w pliku
+t71=Otwórz dane (EEPROM) zawarte w pliku
+t72=Pliku nie znaleziono
+t73=B³¹d zapisu pliku
+t74=Zachowaj zawartoæ uk³adu w pliku jako
+t75=Zachowaj program (FLASH) w pliku jako
+t76=Zachowaj dane (EEPROM) w pliku jako
+t77=Zamkniêto ostatnie okno: Czy chcesz zakoñczyæ pracê?
+t78=Bufor siê zmieni³. Zachowaæ go przed zamkniêciem?
+t79=Otwórz plik skryptu
+//Menu entries
+//Main Menu
+t80=&Plik
+t81=&Edycja
+t82=&Uk³ady
+t83=Pol&ecenie
+t84=Skry&pt
+t85=&Narzêdzia
+t86=U&stawienia
+t87=&Opcje
+t88=&?
+//Menu File
+t89=&Nowe okno
+t90=&Otwórz plik uk³adu...
+t91=Otwórz &plik (FLASH) programu...
+t92=Otwórz plik (EEPROM) &danych...
+t93=&Zachowaj plik u³adu
+t94=Zachowaj plik uk³adu &jako...
+t95=Zachowaj program(&FLASH) w pliku jako...
+t96=Zachowaj dane (&EEPROM) w pliku jako...
+t97=Z&a³aduj ponownie pliki
+t98=Dru&kuj...
+t99=&Zamknij
+t100=W&yjd z programu
+//Menu Edit
+t101=Edytuj &Notatkê...
+t102=Bu&for edycji w³¹czony
+//Menu Command
+t103=&Odczyt wszystkiego
+t104=Odczyt programu (FLASH)
+t105=Odczyt danych (EEPROM)
+t106=Odczyt &bitów ochronnych i konfiguracyjnych
+t107=&Zapisz wszystko
+t108=Zapisz program (&FLASH)
+t109=Zapisz dane (EEPROM)
+t110=Zap&is bitów ochronnych i konfiguracyjnych
+t111=&Weryfikuj wszystko
+t112=Weryfikacja programu (FLASH)
+t113=Weryfikacja danych (EEPROM)
+t114=Weryf&ikacja bitów ochronnych i konfiguracyjnych
+t115=&Kasuj
+t116=&Informacje
+t117=Rese&t
+t118=&Programuj
+t119=Opcje programowania...
+//Menu Options
+t120=&Ustawienia interfejsu...
+t121=&Kalibracja
+t122=&Tryb zdalny
+//Menu Utility
+t123=&Czyæ bufor
+t124=&Wype³nij bufor...
+t125=&Podwojny bank
+t126=&Zamieñ bajty
+t127=Ustaw numer&seryjny
+t128=Konfigurac&ja numeru seryjnego...
+//Menu Help
+t129=&Pomoc
+t130=&O programie
+//Menu Options
+t131=P&lik log...
+//Menu Script
+t132=&Edycja...
+t133=&Za³aduj i uruchom...
+t134=Z&a³aduj automatycznie
+t135=U&ruchom
+//Tool Bar
+//Dialog Messages
+t136=Typ uk³.
+//Tool tips
+t137=Otwórz plik uk³adu
+t138=Zachowaj plik uk³adu
+t139=Drukuj bufor
+t140=Za³aduj ponownie pliki
+t141=Odczyt z uk³adu
+t142=Odczyt zawartoæ pamiêci (FLASH)
+t143=Odczyt zawartoæ pamiêci (EEPROM)
+t144=Odczyt bitów konfiguracyjnych i ochronnych
+t145=Zapis do uk³adu
+t146=Zapis programu w pamiêci (FLASH)
+t147=Zapis danych w pamiêci (EEPROM)
+t148=Weryfikacja programu w pamiêci (FLASH)
+t149=Weryfikacja danych w pamiêci (EEPROM)
+t150=Weryfikacja bitów ochronnych i konfiguracyjnych
+t151=Wybór rodziny uk³adów
+t152=Wybór typu uk³adu
+t153=Edycja noty o uk³adzie
+//Error Messages
+t154=Uk³ad nie odpowiada
+t155=Z³y uk³ad, wybierz poprawny jego typ
+t156=Brakuje uk³adu lub nieznany typ
+t157=Nie mo¿na próbowaæ, z³y uk³ad lub jest zablokowany
+t158=Przerwane przez u¿ytkownika
+t159=Port komunikacyjny nie jest dostêpny
+t160=Komunikacja I/O jest niedostêpna. Musisz byæ zalogowany jako root aby korzystaæ z operacji I/O
+t161=Nie wykryto programatora
+t162=B³¹d sprzêtowy, czy programator zosta³ prawid³owo pod³¹czony?
+t163=Zajête linie lub b³¹d sprzêtowy
+t164=Brak sygna³u potwierdzenia z uk³adu
+t165=Brakuje uzr¹dzenia
+t166=Przekroczono czas na lini
+t167=B³¹d na lini I2CBus (z³e taktowanie?)
+t168=B³ad zapisu
+t169=B³¹d podczas sprawdzania czystoci
+t170=B³¹d n.
+t171=B³¹d skryptu
+//----Setup dialog
+//Dialog title
+t172=Ustawienia portu I/O
+t173=Panel ustawienia interfejsu
+//Dialog messages
+t174=COM/LPT interfejs
+t175=Szeregowy
+t176=Równoleg³y
+t177=Wybór interfejsu
+t178=Typ interfejsu
+t179=Wybór portu COM
+t180=COM
+t183=Wybór portu LPT
+t184=LPT
+t185=Select Polarity of the Control lines
+t186=Zaneguj Reset
+t187=Zaneguj SCKL
+t188=Zaneguj D-IN
+t189=Zaneguj D-OUT
+//Tool tips
+t190=Wybierz port szeregowy COM
+t192=Wybierz port równoleg³y LPT
+//----Fill dialog
+//Dialog title
+t193=Wype³nij bufor
+//Dialog messages: NB should be of the same size (number of char)
+t194=Od
+t195=Do
+t196=Wartoæ
+//----Fuse dialog
+//Button captions
+t197=Wyczyæ wszystko
+t198=Ustaw wszystko
+t199=Zapis
+t200=Odczyt
+//Dialog title
+t201=Konfiguracja i bity ochronne
+//Dialog messages: NB should be of the same size (number of char)
+t202=Pierwszy blok do zablokowania
+t203=Numer bloku do zablokowania
+t204=Najwy¿szy blok do zablokowania
+//Tool tips
+t205=Wszystkie bity na '0'
+t206=Wszystkie bity na '1'
+t207=Zapis bitów do uk³adu
+t208=Odczyt bitów z uk³adu
+//----Info dialog
+//Button captions
+t209=Zamknij
+//Dialog title
+t210=Informacje o uk³adzie
+//Dialog messages
+t211=Mo¿liwoæ banku pamiêci:
+t212=Rozmiar:
+t213=CRC:
+t214=Zabezpieczone bloki:
+t215=Najwy¿szy zabezpieczony blok:
+//----Char Edit dialog
+//Dialog title
+t216=Edycja buforu
+//Dialog messages: NB should be of the same size (number of char)
+t217=Hex
+t218=Dec
+t219=Znak
+t220=Wprowad now¹ wartoæ
+t221=Wprowad tekst od adresu
+//Tool tips
+t222=Wartoæ HEX
+t223=Wartoæ DEC
+t224=Wartoæ znakowa
+//----Program Option dialog
+//Dialog title
+t225=Opcje programowania
+//Dialog messages
+t226=Za³aduj ponownie pliki
+t227=Odczyt danych z pamiêci (FLASH)
+t228=Odczyt zawartoci pamiêci (EEPROM)
+t229=Odczyt numeru seryjnego
+t230=Zamieñ bajt
+t231=Ustaw numer seryjny
+t232=Kasuj
+t233=Zapis danych do pamiêci (FLASH)
+t234=Zapis danych do pamiêci (EEPROM)
+t235=Zapis bitów ochronnych i konfiguracyjnych
+t236=Weryfikacja bitów ochronnych i konfiguracyjnych
+//----Serial Number dialog
+//Dialog title
+t237=Konfiguracja numeru seryjnego
+//Dialog messages: NB should be of the same size (number of char)
+t238=Adres
+t239=Rozmiar
+t240=Wartoæ
+t241=Format
+//next 2 probably can't be translated
+t242=Little endian
+t243=Big endian
+t244=Przesuniêcie w pamieci danych
+//Tool tips
+t245=Adres pamiêci
+t246=Rozmiar w bajtach
+t247=Nastêpna wartoæ zostanie u¿yta
+t248=Pobierz adres wzglêdny do pamiêci danych zamiast pamiêci programu
+t249=Bardziej znacz¹cy bajt na starszej czêci adresowej
+t250=Bardziej znacz¹cy bajt na m³odszej czêci adresowej
+//----Retry dialog
+//Button captions
+t251=Anuluj
+t252=Powtórz
+t253=Ignoruj
+//Dialog title
+t254=Alarm
+//----Notes dialog
+//Dialog title
+t255=Edycja noty o uk³adzie
+//----Progress dialog
+//Dialog title
+t256=Status
+//----Hardware check dialog
+t257=Test sprzêtowy
+//----About dialog
+t258=Dwiêk wy³¹czony
+//---- Oscillator Calibration Byte
+t260=Bajt kalibracyjny oscylatora
+t261=Odczyt bajtu kalibracji oscylatora
+t262=Opcje kalibracji oscylatora...
+t263=Odczyt bajtu kalibracji oscylatora udany
+t264=Chip Id
+t265=Nota
+t266=Rozmiar EEPROM'u
+t267=Rozmiar FLASH'a
+t268=Auto Inkrementacja
+t269=Zwiêksz wartoæ numeru seryjnego po ka¿dej operacji 'Ustaw numer seryjny'
+t270=Nie mo¿na rozpoznaæ przewiniêcia banku pamiêci bez modyfikacji i zapisu, czy chcesz zapisaæ?
+t271=Bufor siê zmieni³. Zachowaæ go przed odczytem?
+t272=Otwórz plik pamiêci programu (FLASH)
+t273=Otwórz plik pamiêci danych (EEPROM)
+t274=Zapisz plik pamiêci programu (FLASH)
+t275=Zapisz plik pamiêci danych (EEPROM)
+t276=Nowe okno
+t277=Rozpocznij cykl programowania
+t278=Wykonaj skrypt
+t279=Otwórz okno ustawieñ
+t280=Wyma¿ ca³y uk³ad z FF
+t281=&Bity zabezpieczeñ i konfiguracji...
+t282=Bity zabezpieczeñ i konfiguracji
+//These strings are added to the 'Configuration and security bits' dialog to explain
+t283=Zajrzyj do dokumentacji technicznej uk³adu
+t284=Zaznaczona pozycja oznacza zaprogramowany bit
+t285=Odznaczona pozycja oznacza bit niezaprogramowany

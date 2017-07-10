@@ -1,0 +1,34 @@
+#!/bin/sh
+#
+# Author: Aaron Voisine <aaron@voisine.org>
+# Inkscape Modifications: Michael Wybrow <mjwybrow@users.sourceforge.net>
+# Ponyprog Modifications: Timothy M. Shead <tshead@k-3d.com>
+
+echo "INFO: Starting $0"
+
+PONYPROG_BUNDLE="`echo "$0" | sed -e 's/\/Contents\/MacOS\/Ponyprog//'`"
+PONYPROG_RESOURCES="$PONYPROG_BUNDLE/Contents/Resources"
+PONYPROG_TEMP="/tmp/ponyprog/$UID"
+PONYPROG_ETC="$PONYPROG_TEMP/etc"
+PONYPROG_PANGO_RC_FILE="$PONYPROG_ETC/pango/pangorc"
+
+rm -rf "$PONYPROG_TEMP"
+mkdir -p "$PONYPROG_ETC/pango"
+
+sed -e 's|/opt/local/etc|'"$PONYPROG_ETC|g" "$PONYPROG_RESOURCES/etc/pango/pangorc" > "$PONYPROG_ETC/pango/pangorc"
+sed -e 's|/opt/local|\"'"$PONYPROG_RESOURCES|g" -e "s/\.so/.so\"/g" "$PONYPROG_RESOURCES/etc/pango/pango.modules" > "$PONYPROG_ETC/pango/pango.modules"
+sed -e 's|/opt/local|'"$PONYPROG_RESOURCES|g" -e "s/\.so/.so\"/g" "$PONYPROG_RESOURCES/etc/gtk-2.0/gdk-pixbuf.loaders" > "$PONYPROG_ETC/gdk-pixbuf.loaders"
+cp -f "$PONYPROG_RESOURCES/etc/pango/pangox.aliases" "$PONYPROG_ETC/pango/pangox.aliases"
+
+export "DYLD_LIBRARY_PATH=$PONYPROG_RESOURCES/lib"
+export "FONTCONFIG_PATH=$PONYPROG_RESOURCES/etc/fonts"
+export "GDK_PIXBUF_MODULE_FILE=$PONYPROG_ETC/gdk-pixbuf.loaders"
+export "GTK_PATH=$PONYPROG_RESOURCES/lib/gtk-2.0"
+export "PANGO_RC_FILE=$PONYPROG_PANGO_RC_FILE"
+export "PATH=$PONYPROG_RESOURCES/bin:$PATH"
+
+export
+exec "$PONYPROG_RESOURCES/bin/ponyprog" "--log-level=debug" "--plugins=$PONYPROG_RESOURCES/lib/ponyprog/plugins" "--share=$PONYPROG_RESOURCES/share/ponyprog" "--ui=$PONYPROG_RESOURCES/lib/ponyprog/plugins/ponyprog-ngui.module"
+
+echo "INFO: Finishing $0"
+
