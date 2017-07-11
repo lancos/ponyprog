@@ -178,9 +178,9 @@ class e2CmdWindow : public QMainWindow, public e2App, public Ui::MainWindow
 	void onRead(); //
 	void onErase(); //
 	void onVerify(); //
-	void onRunScript(); //
+	//void onRunScript();
 	void onLoadScript(); //
-	//      void onDebugger();  //
+	//void onDebugger();
 	void onReset(); //
 	void onInterfSetup();  //
 	void onGetInfo(); //
@@ -347,6 +347,8 @@ class e2CmdWindow : public QMainWindow, public e2App, public Ui::MainWindow
 	//      void SetChipSubType(int pritype, int subtype = 0);
 	void UpdateMenuType(long new_type = 0, long old_type = 0);
 	void UpdateFileMenu();
+	void UpdateScriptMenu();
+
 	//      int TypeToMenuId(long type);
 	//      long MenuIdToType(QAction * id);
 	//      void MenuIdToCbxId(int id, int &idx1, int &idx2);
@@ -386,7 +388,6 @@ class e2CmdWindow : public QMainWindow, public e2App, public Ui::MainWindow
 	int idxX244;
 
 	QString selectedLang;
-	QStringList lastScriptsList;
 
 	QFont sysFont;
 	short fontSize;
@@ -409,7 +410,7 @@ class e2CmdWindow : public QMainWindow, public e2App, public Ui::MainWindow
 	QMenu *filesMenu;
 
 	QActionGroup *fileListgrp;
-	QActionGroup *scrListAction;
+	QActionGroup *scrListgrp;
 
 	QAction *actionScriptList;
 	QAction *actionFileList;

@@ -191,9 +191,8 @@ e2CmdWindow::e2CmdWindow(QWidget *parent) :
 		exit(returnValue);  //Se AppMain ritorna un valore != 0 esce immediatamente
 	}
 
-	createScriptList();
-
 	createFileList();
+	createScriptList();
 
 	// menu creation for all devices
 	createDeviceMenues();
@@ -425,30 +424,10 @@ void e2CmdWindow::createFileList()
  */
 void e2CmdWindow::createScriptList()
 {
-	lastScriptsList = E2Profile::GetLastScripts();
-
-	if (lastScriptsList.count() == 0)
-	{
-		return;
-	}
-
 	scrptsMenu = new QMenu("Last scripts"); // TODO translate this
 	actionScriptList = menuScript->addMenu(scrptsMenu);
 
-	scrListAction = new QActionGroup(this);
-
-	foreach (QString entry, lastScriptsList)
-	{
-		if (entry.length() > 0)
-		{
-			QAction *tmpAction = new QAction(entry, actionScriptList);
-
-			scrptsMenu->addAction(tmpAction);
-			scrListAction->addAction(tmpAction);
-		}
-	}
-
-	connect(scrListAction, SIGNAL(triggered(QAction *)), this, SLOT(onSelectScript(QAction *)));
+	scrListgrp = new QActionGroup(this);
 }
 
 
@@ -493,31 +472,6 @@ void e2CmdWindow::onSelectFile(QAction *a)
 // 		QMessageBox::critical(this, "File error", translate(STR_MSGFILENOTFOUND), QMessageBox::Close);
 	}
 }
-
-
-/**
- * @brief slot from scrAction
- *
- */
-void e2CmdWindow::onSelectScript(QAction *a)
-{
-	if (IsAppReady())
-	{
-		SetAppBusy();
-
-		QString sp = a->text();
-
-		if (sp.length() > 0)
-		{
-			script_name = sp;
-
-			CmdRunScript();
-		}
-
-		SetAppReady();
-	}
-}
-
 
 /**
  * @brief scan the directory with translations. language files are with .utf extentions
@@ -1887,9 +1841,10 @@ void e2CmdWindow::createSignalSlotConnections()
 
 	// load script
 	connect(actionLoadScript, SIGNAL(triggered()), this, SLOT(onLoadScript()));
+	connect(actionScript, SIGNAL(triggered()), this, SLOT(onLoadScript()));
 
 	// run script
-	connect(actionRunScript, SIGNAL(triggered()), this, SLOT(onRunScript()));
+	//connect(actionRunScript, SIGNAL(triggered()), this, SLOT(onRunScript()));
 
 	// reset
 	connect(actionReset, SIGNAL(triggered()), this, SLOT(onReset()));
@@ -1916,6 +1871,7 @@ void e2CmdWindow::createSignalSlotConnections()
 
 	// set serial number
 	connect(actionSetSN, SIGNAL(triggered()), this, SLOT(onSetSerialNumber()));
+	connect(actionSerial_Number, SIGNAL(triggered()), this, SLOT(onSetSerialNumber()));
 
 	//      connect(actionEraseFlash, SIGNAL(triggered()), this, SLOT( onClearBuf(PROG_TYPE)));
 	//      connect(actionEraseEep, SIGNAL(triggered()), this, SLOT( onClearBuf(DATA_TYPE)));
@@ -2203,29 +2159,50 @@ void e2CmdWindow::onVerify()
 	}
 }
 
-
 /**
- * @brief slot to run the last script
+ * @brief slot from scrAction
+ *
  */
+void e2CmdWindow::onSelectScript(QAction *a)
+{
+	if (IsAppReady())
+	{
+		QString fname = a->text();
+		fname.replace("~", QDir().homePath());
+
+		if (QFile().exists(fname))
+		{
+			script_name = fname;
+
+			SetAppBusy();
+			CmdRunScript();
+			SetAppReady();
+		}
+	}
+}
+
+#if 0
 void e2CmdWindow::onRunScript()
 {
 	if (IsAppReady())
 	{
-		SetAppBusy();
-
-		QString sp = E2Profile::GetLastScripts().at(0);
-
-		if (sp.length() > 0)
+		QStringList lst = E2Profile::GetLastScripts();
+		if (lst.count() > 0)
 		{
-			script_name = sp;
+			QString sp = E2Profile::GetLastScripts().at(0);
 
-			CmdRunScript();
+			if (sp.length() > 0)
+			{
+				script_name = sp;
+
+				SetAppBusy();
+				CmdRunScript();
+				SetAppReady();
+			}
 		}
-
-		SetAppReady();
 	}
 }
-
+#endif
 
 void e2CmdWindow::onLoadScript()
 {
@@ -2237,24 +2214,11 @@ void e2CmdWindow::onLoadScript()
 		if (rv == OK)
 		{
 			E2Profile::SetLastScript(script_name);
-
-			QString str = translate(STR_RUNSCR);//[MAXPATH];
-			str += script_name;
-
-			// TODO GUI submenu item
-			menuScript->setTitle(str);
-			menuScript->setEnabled(true);
+			UpdateScriptMenu();
 
 			CmdRunScript();
 		}
 
-		/**     else
-		        {
-		                SetStringAll(actionRunFile, "");
-		                actionRunFile, false, Sensitive);
-
-		                script_name[0] = '\0';
-		        } **/
 		SetAppReady();
 	}
 }
@@ -3627,15 +3591,11 @@ int e2CmdWindow::ScriptError(int line_number, int arg_index, const QString &s, c
 	return CMD_SCRIPTERROR;
 }
 
-// EK 2017
-// TODO overwork it to remove "strcasecmp" calls to QString
 //====================>>> e2CmdWindow::CmdRunScript <<<====================
 int e2CmdWindow::CmdRunScript(bool test_mode)
 {
 	int result = OK;
 	char buf[512];
-	//char *lst.at(32];
-	//int n;
 	int linecounter;
 
 	VerboseType old_verbose = verbose;
@@ -3649,6 +3609,10 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 	{
 		return BADPARAM;
 	}
+
+	QString fpath = QFileInfo(script_name).absolutePath();
+	qDebug() << "Set current path: " << fpath;
+	QDir::setCurrent(fpath);
 
 	QFile fh(script_name);
 
@@ -3674,6 +3638,7 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 
 		if (n == 0)
 		{
+			//Line empty: do nothing
 			continue;
 		}
 
@@ -4374,8 +4339,7 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 				{
 					if (!test_mode)
 					{
-						// EK 2017
-						// TODO lst.at(1) is the script name
+						//Warning! security risk!
 #if 0
 						vOS os;
 						result = os.vRunProcess(lst.at(1), 0, 0, /*Wait*/ 1, /*minimize*/ 0);
@@ -4384,7 +4348,21 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 						{
 							result = ScriptError(linecounter, 1, lst.at(1), translate(STR_MSGFILENOTFOUND));
 						}
+#else
+						QStringList alst = lst;
+						alst.removeFirst();
+						alst.removeFirst();
 
+						QProcess process;
+						process.start(lst.at(1), alst);
+						if (!process.waitForStarted(500))
+						{
+							result = ScriptError(linecounter, 1, lst.at(1), translate(STR_MSGFILENOTFOUND));
+						}
+						else
+						{
+							process.waitForFinished(1000);
+						}
 #endif
 					}
 				}
@@ -4417,12 +4395,6 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 				result = ScriptError(linecounter, 0, lst.at(0));   //Bad command
 			}
 		}
-
-		//              }
-		//              else
-		//              {
-		//                      //Line empty: do nothing
-		//              }
 	} //while
 
 	//If in scriptMode don't restore the normal verbose yet
@@ -5300,7 +5272,7 @@ int e2CmdWindow::CmdSelectDevice(long new_type, bool init)
 		UpdateMenuType(new_type);
 
 		first_line = 0;
-		//      curIndex = 0;
+		//curIndex = 0;
 		Draw();
 		awip->RecalcCRC();
 		UpdateStatusBar();
@@ -5315,7 +5287,7 @@ int e2CmdWindow::CmdSelectDevice(long new_type, bool init)
 			UpdateMenuType(new_type, old_type);
 
 			first_line = 0;
-			//      curIndex = 0;
+			//curIndex = 0;
 			Draw();
 			awip->RecalcCRC();
 			UpdateStatusBar();
@@ -5413,7 +5385,7 @@ int e2CmdWindow::CmdSetSerialNumber()
 		}
 
 		awip->RecalcCRC();
-		//      awip->BufChanged();
+		//awip->BufChanged();
 
 		if (E2Profile::GetSerialNumAutoInc())
 		{
@@ -5442,7 +5414,7 @@ int e2CmdWindow::IsBufChanged() const
 //==================>>> e2CmdWindow::UpdateStatusBar <<<=======================
 void e2CmdWindow::UpdateStatusBar()
 {
-	//      int is_splitted = awip->GetSplittedInfo() > 0 && awip->GetSplittedInfo() != awip->GetSize();
+	//int is_splitted = awip->GetSplittedInfo() > 0 && awip->GetSplittedInfo() != awip->GetSize();
 
 	if (lblStringID == NULL || lblEEPInfo == NULL)
 	{
@@ -5943,8 +5915,9 @@ int e2CmdWindow::OpenScript(const QString &file)
 		else
 		{
 			QString fltr = convertFilterListToString(script_filter);
+			QString open_path = QDir::homePath();			//TODO: load from settings E2Profile::GetLastScriptPath();
 
-			fileName = QFileDialog::getOpenFileName(this, translate(STR_MSGOPENSCRIPT), QDir::homePath(), fltr);
+			fileName = QFileDialog::getOpenFileName(this, translate(STR_MSGOPENSCRIPT), open_path, fltr);
 		}
 	}
 
@@ -6273,35 +6246,37 @@ QString e2CmdWindow::GetFileName()
 	}
 }
 
-void e2CmdWindow::UpdateFileMenu()
+void e2CmdWindow::UpdateScriptMenu()
 {
 // 	QString sp;
 
 	if (!scriptMode)
 	{
-		QStringList sl = E2Profile::GetLastScripts();
-
-		disconnect(scrListAction, SIGNAL(triggered(QAction *)), this, SLOT(onSelectScript(QAction *)));
+		disconnect(scrListgrp, SIGNAL(triggered(QAction *)), this, SLOT(onSelectScript(QAction *)));
 
 		scrptsMenu->clear();
 		// removeAllActions()
-		while (scrListAction->actions().count())
+		while (scrListgrp->actions().count())
 		{
-			scrListAction->removeAction(scrListAction->actions().first());
+			scrListgrp->removeAction(scrListgrp->actions().first());
 		}
+
+		QStringList sl = E2Profile::GetLastScripts();
 
 		foreach (QString entry, sl)
 		{
-			if (entry.length())
+			if (entry.length() > 0 && QFile().exists(entry))
 			{
-				QAction *tmpAction = new QAction(entry, actionScriptList);
+				QString fname = entry;
+				fname.replace(QDir().homePath(), "~");
+				QAction *tmpAction = new QAction(fname, actionScriptList);
 
 				scrptsMenu->addAction(tmpAction);
-				scrListAction->addAction(tmpAction);
+				scrListgrp->addAction(tmpAction);
 			}
 		}
 
-		connect(scrListAction, SIGNAL(triggered(QAction *)), this, SLOT(onSelectScript(QAction *)));
+		connect(scrListgrp, SIGNAL(triggered(QAction *)), this, SLOT(onSelectScript(QAction *)));
 
 #if 0
 		if (sp.length() > 0)
@@ -6320,7 +6295,10 @@ void e2CmdWindow::UpdateFileMenu()
 		}
 #endif
 	}
+}
 
+void e2CmdWindow::UpdateFileMenu()
+{
 	//Remove any previous menu and create it again with updated list
 	disconnect(fileListgrp, SIGNAL(triggered(QAction *)), this, SLOT(onSelectFile(QAction *)));
 
@@ -6575,6 +6553,7 @@ void e2CmdWindow::PostInit()
 	UpdateStrFromBuf();
 	SetTitle();
 	UpdateFileMenu();
+	UpdateScriptMenu();
 
 	CmdSelectDevice(E2Profile::GetLastDevType(), true);
 

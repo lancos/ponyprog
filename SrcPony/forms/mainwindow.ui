@@ -78,7 +78,6 @@
     </property>
     <addaction name="actionLoadScript"/>
     <addaction name="separator"/>
-    <addaction name="actionRunScript"/>
    </widget>
    <widget class="QMenu" name="menuUtility">
     <property name="title">
@@ -530,7 +529,7 @@
   </action>
   <action name="actionByteSwap">
    <property name="text">
-    <string>ByteSwap</string>
+    <string>&amp;ByteSwap</string>
    </property>
   </action>
  </widget>
