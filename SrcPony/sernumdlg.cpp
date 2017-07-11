@@ -122,7 +122,7 @@ void SerNumDialog::setTextWidgets()
 void SerNumDialog::onOk()
 {
 	bool ok;
-	int l = txiLoc->text().toLong(&ok);
+	long l = txiLoc->text().toLong(&ok, 0);
 
 	if (ok == true)
 	{
@@ -137,7 +137,7 @@ void SerNumDialog::onOk()
 		return;
 	}
 
-	l = txiLen->text().toLong(&ok);
+	l = txiLen->text().toLong(&ok, 0);
 
 	if (ok == true)
 	{
@@ -152,11 +152,11 @@ void SerNumDialog::onOk()
 		return;
 	}
 
-	int v = txiVal->text().toLong(&ok);
+	l = txiVal->text().toLong(&ok, 0);
 
 	if (ok == true)
 	{
-		val = v;
+		val = l;
 	}
 	else
 	{

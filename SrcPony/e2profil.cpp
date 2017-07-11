@@ -1161,6 +1161,7 @@ void E2Profile::SetSerialNumVal(unsigned long val)
 int E2Profile::GetSerialNumAddress(long &start, int &size, bool &mtype)
 {
 	QString sp;
+	bool ok;
 
 	start = 0;
 	size = 1;
@@ -1168,7 +1169,12 @@ int E2Profile::GetSerialNumAddress(long &start, int &size, bool &mtype)
 
 	if ((sp = s->value("SerialNumberAddr", "0").toString()).length())
 	{
-		start = sp.toLong();
+		start = sp.toLong(&ok, 0);
+
+		if (!ok)
+		{
+			start = 0;
+		}
 	}
 
 	if ((sp = s->value("SerialNumberSize", "1").toString()).length())
@@ -1889,6 +1895,7 @@ void E2Profile::SetSoundEnabled(bool enabled)
 int E2Profile::GetCalibrationAddress(long &start, int &size, bool &mtype)
 {
 	QString sp;
+	bool ok;
 
 	start = 0;
 	size = 1;
@@ -1896,7 +1903,12 @@ int E2Profile::GetCalibrationAddress(long &start, int &size, bool &mtype)
 
 	if ((sp = s->value("OscCalibrationAddr", "0").toString()).length())
 	{
-		start = sp.toLong();
+		start = sp.toLong(&ok, 0);
+
+		if (!ok)
+		{
+			start = 0;
+		}
 	}
 
 	if ((sp = s->value("OscCalibrationSize", "1").toString()).length())

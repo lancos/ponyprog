@@ -3674,22 +3674,27 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 			if (n >= 2)
 			{
 				long reloc_off = 0;
+				bool ok = true;
 
 				if (n >= 3)
 				{
-					reloc_off = lst.at(2).toLong();
+					reloc_off = lst.at(2).toLong(&ok, 0);
+
+					if (!ok)
+					{
+						result = ScriptError(linecounter, 2, lst.at(2));
+					}
 				}
 
-				if (!FileExist(lst.at(1)))
+				if (ok && !FileExist(lst.at(1)))
 				{
+					ok = false;
 					result = ScriptError(linecounter, 1, lst.at(1), translate(STR_MSGFILENOTFOUND));
 				}
-				else
+
+				if (ok && !test_mode)
 				{
-					if (!test_mode)
-					{
-						result = CmdOpen(ALL_TYPE, lst.at(1).toLatin1().constData(), reloc_off, 0);        //Don't clear buffer before load on script
-					}
+					result = CmdOpen(ALL_TYPE, lst.at(1), reloc_off, 0);        //Don't clear buffer before load on script
 				}
 			}
 			else if (n == 1)
@@ -3705,22 +3710,27 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 			if (n >= 2)
 			{
 				long reloc_off = 0;
+				bool ok = true;
 
 				if (n >= 3)
 				{
-					reloc_off = lst.at(2).toLong();
+					reloc_off = lst.at(2).toLong(&ok, 0);
+
+					if (!ok)
+					{
+						result = ScriptError(linecounter, 2, lst.at(2));
+					}
 				}
 
-				if (!FileExist(lst.at(1)))
+				if (ok && !FileExist(lst.at(1)))
 				{
+					ok = false;
 					result = ScriptError(linecounter, 1, lst.at(1), translate(STR_MSGFILENOTFOUND));
 				}
-				else
+
+				if (ok && !test_mode)
 				{
-					if (!test_mode)
-					{
-						result = CmdOpen(PROG_TYPE, lst.at(1).toLatin1().constData(), reloc_off, 0);        //Don't clear buffer before load on script
-					}
+					result = CmdOpen(PROG_TYPE, lst.at(1), reloc_off, 0);        //Don't clear buffer before load on script
 				}
 			}
 			else if (n == 1)
@@ -3736,22 +3746,27 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 			if (n >= 2)
 			{
 				long reloc_off = 0;
+				bool ok = true;
 
 				if (n >= 3)
 				{
-					reloc_off = lst.at(2).toLong();
+					reloc_off = lst.at(2).toLong(&ok, 0);
+
+					if (!ok)
+					{
+						result = ScriptError(linecounter, 2, lst.at(2));
+					}
 				}
 
-				if (!FileExist(lst.at(1)))
+				if (ok && !FileExist(lst.at(1)))
 				{
+					ok = false;
 					result = ScriptError(linecounter, 1, lst.at(1), translate(STR_MSGFILENOTFOUND));
 				}
-				else
+
+				if (ok && !test_mode)
 				{
-					if (!test_mode)
-					{
-						result = CmdOpen(DATA_TYPE, lst.at(1).toLatin1(), reloc_off, 0);        //Don't clear buffer before load on script
-					}
+					result = CmdOpen(DATA_TYPE, lst.at(1), reloc_off, 0);        //Don't clear buffer before load on script
 				}
 			}
 			else if (n == 1)
@@ -4019,10 +4034,15 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 		{
 			if (n >= 2)
 			{
-				if (!test_mode)
+				bool ok;
+				long fuse = lst.at(1).toLong(&ok, 0);
+
+				if (!ok)
 				{
-					int fuse;
-					fuse = lst.at(1).toLong();
+					result = ScriptError(linecounter, 1, lst.at(1));
+				}
+				else if (!test_mode)
+				{
 					awip->SetFuseBits(fuse);
 					result = CmdWriteSpecial();
 				}
@@ -4039,12 +4059,16 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 		{
 			if (n >= 2)
 			{
-				if (!test_mode)
+				bool ok;
+				long fuse = lst.at(1).toLong(&ok, 0);
+
+				if (!ok)
 				{
-					int fuse;
-					fuse = lst.at(1).toLong();
+					result = ScriptError(linecounter, 1, lst.at(1));
+				}
+				else if (!test_mode)
+				{
 					awip->SetFuseBits(fuse);
-					result = OK;
 				}
 			}
 			else     //Argument missing
@@ -4056,10 +4080,15 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 		{
 			if (n >= 2)
 			{
-				if (!test_mode)
+				bool ok;
+				long lock = lst.at(1).toLong(&ok, 0);
+
+				if (!ok)
 				{
-					int lock;
-					lock = lst.at(1).toLong();
+					result = ScriptError(linecounter, 1, lst.at(1));
+				}
+				else if (!test_mode)
+				{
 					awip->SetLockBits(lock);
 					result = CmdWriteLock();
 				}
@@ -4076,10 +4105,15 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 		{
 			if (n >= 2)
 			{
-				if (!test_mode)
+				bool ok;
+				long lock = lst.at(1).toLong(&ok, 0);
+
+				if (!ok)
 				{
-					int lock;
-					lock = lst.at(1).toLong();
+					result = ScriptError(linecounter, 1, lst.at(1));
+				}
+				else if (!test_mode)
+				{
 					awip->SetLockBits(lock);
 				}
 			}
@@ -4111,66 +4145,80 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 		}
 		else if (cmdbuf == "SERIALNUMBER")
 		{
-			if (!test_mode)
+			if (n >= 2)
 			{
-				if (n >= 2)
+				bool ok = false;
+				long sernum = lst.at(1).toLong(&ok, 0);
+
+				if (!ok)
 				{
-					int sernum = lst.at(1).toLong();
+					result = ScriptError(linecounter, 1, lst.at(1));
+				}
+				else if (!test_mode)
+				{
 					E2Profile::SetSerialNumVal(sernum);
 				}
+			}
 
-				if (n >= 3)
+			if (n >= 3)
+			{
+				long start = 0;
+				int size = 1;
+				bool mtype = false;
+				E2Profile::GetSerialNumAddress(start, size, mtype);
+
+				bool ok = false;
+				start = lst.at(2).toLong(&ok, 0);       //address location
+
+				if (!ok)
 				{
-					long start;
-					int size;
-					bool mtype;
-					start = 0;
-					size = 1;
-					mtype = false;
-					E2Profile::GetSerialNumAddress(start, size, mtype);
+					result = ScriptError(linecounter, 2, lst.at(2));
+				}
 
-					if (n >= 3)
+				if (ok && n >= 4)
+				{
+					size = lst.at(3).toInt(&ok);    //address size
+
+					if (!ok)
 					{
-						start = lst.at(2).toLong();       //address location
+						result = ScriptError(linecounter, 3, lst.at(3));
 					}
+				}
 
-					if (n >= 4)
+				if (ok && n >= 5)
+				{
+					if (lst.at(4) == "DATA")               //offset
 					{
-						size = lst.at(3).toInt();                            //address size
+						mtype = true;
 					}
+				}
 
-					if (n >= 5)
-					{
-						if (lst.at(4) == "DATA")               //offset
-						{
-							mtype = true;
-						}
-					}
-
+				if (ok && !test_mode)
+				{
 					E2Profile::SetSerialNumAddress(start, size, mtype);
 				}
 
-				if (n >= 6)
+				if (ok && n >= 6)
 				{
 					FmtEndian fmt;
 					fmt = E2Profile::GetSerialNumFormat();
 
-					if (n >= 6)
+					if ("LITTLEENDIAN" == lst.at(5))
 					{
-						if ("LITTLEENDIAN" == lst.at(5))
-						{
-							fmt = FMT_LITTLE_ENDIAN;
-						}
-						else
-						{
-							fmt = FMT_BIG_ENDIAN;
-						}
+						fmt = FMT_LITTLE_ENDIAN;
+					}
+					else
+					{
+						fmt = FMT_BIG_ENDIAN;
 					}
 
-					E2Profile::SetSerialNumFormat(fmt);
+					if (!test_mode)
+					{
+						E2Profile::SetSerialNumFormat(fmt);
+					}
 				}
 
-				if (n >= 7)
+				if (ok && n >= 7)
 				{
 					bool autoinc = E2Profile::GetSerialNumAutoInc();
 
@@ -4179,10 +4227,16 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 						autoinc = ("NO" == lst.at(6)) ? false : true;
 					}
 
-					E2Profile::SetSerialNumAutoInc(autoinc);
+					if (!test_mode)
+					{
+						E2Profile::SetSerialNumAutoInc(autoinc);
+					}
 				}
 
-				result = CmdSetSerialNumber();
+				if (ok && !test_mode)
+				{
+					result = CmdSetSerialNumber();
+				}
 			}
 		}
 		else
@@ -4190,42 +4244,48 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 			//READ-CALIBRATION <address>[mem][osc_index]
 			if (cmdbuf == "READ-CALIBRATION")
 			{
-				if (!test_mode)
+				long start = 0;
+				int size = 1;
+				bool mtype = false;
+				E2Profile::GetCalibrationAddress(start, size, mtype);
+
+				int osc_index = 0;
+				bool ok = true;
+
+				if (n >= 2)
 				{
-					if (n >= 2)
+					start = lst.at(1).toLong(&ok, 0);      //address location
+					if (!ok)
 					{
-						long start;
-						int size;
-						bool mtype;
+						result = ScriptError(linecounter, 1, lst.at(1));
+					}
 
-						start = 0;
-						size = 1;
-						mtype = false;
-						E2Profile::GetCalibrationAddress(start, size, mtype);
-
-						if (n >= 2)
+					if (n >= 3)
+					{
+						if (lst.at(2) == "DATA")        //offset
 						{
-							start = lst.at(1).toLong();      //address location
+							mtype = true;
 						}
+					}
 
-						if (n >= 3)
-						{
-							if (lst.at(2) == "DATA")        //offset
-							{
-								mtype = true;
-							}
-						}
-
+					if (ok && !test_mode)
+					{
 						E2Profile::SetCalibrationAddress(start, size, mtype);
 					}
 
-					int osc_index = 0;
-
-					if (n >= 4)
+					if (ok && n >= 4)
 					{
-						osc_index = lst.at(3).toInt();                               //address size
-					}
+						osc_index = lst.at(3).toInt(&ok);            //address size
 
+						if (!ok)
+						{
+							result = ScriptError(linecounter, 3, lst.at(3));
+						}
+					}
+				}
+
+				if (ok && !test_mode)
+				{
 					result = CmdReadCalibration(osc_index);
 				}
 			}
@@ -4268,25 +4328,48 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 			{
 				if (n >= 4)
 				{
-					int from, val, to;
-					val = lst.at(1).toLong();
-					from = lst.at(2).toLong();
-					to = lst.at(3).toLong();
+					long from, val, to;
+					bool ok = true;
 
-					if (from < to && from >= 0)
+					val = lst.at(1).toLong(&ok, 0);
+					if (!ok)
 					{
-						if (!test_mode)
-						{
-							awip->FillBuffer(from, val, to - from + 1);
-							// EK 2017
-							// TODO
-							Draw();
-							UpdateStatusBar();
-						}
+						result = ScriptError(linecounter, 1, lst.at(1));
 					}
 					else
 					{
-						result = ScriptError(linecounter, 2, lst.at(2));
+						from = lst.at(2).toLong(&ok, 0);
+						if (!ok)
+						{
+							result = ScriptError(linecounter, 2, lst.at(2));
+						}
+						else
+						{
+							to = lst.at(3).toLong(&ok, 0);
+							if (!ok)
+							{
+								result = ScriptError(linecounter, 3, lst.at(3));
+							}
+						}
+					}
+
+					if (ok)
+					{
+						if (from < to && from >= 0)
+						{
+							if (!test_mode)
+							{
+								awip->FillBuffer(from, val, to - from + 1);
+								// EK 2017
+								// TODO
+								Draw();
+								UpdateStatusBar();
+							}
+						}
+						else
+						{
+							result = ScriptError(linecounter, 2, lst.at(2));
+						}
 					}
 				}
 				else if (n == 1)
@@ -4375,14 +4458,18 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 			{
 				if (n >= 2)
 				{
-					if (!test_mode)
+					bool ok = false;
+					long msec = lst.at(1).toInt(&ok);
+
+					if (!ok)
+					{
+						result = ScriptError(linecounter, 1, lst.at(1));
+					}
+					else if (!test_mode)
 					{
 						Wait w;
-						int msec = lst.at(1).toInt();
 						w.WaitMsec(msec);
 					}
-
-					result = OK;
 				}
 				else
 				{
