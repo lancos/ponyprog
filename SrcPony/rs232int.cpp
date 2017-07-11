@@ -484,7 +484,7 @@ long RS232Interface::WriteSerial(uint8_t *buffer, long len)
 
 	if (fd != INVALID_HANDLE_VALUE)
 	{
-		long nleft, nwritten;
+		long nleft;
 		uint8_t *ptr;
 
 		ptr = buffer;
@@ -492,7 +492,7 @@ long RS232Interface::WriteSerial(uint8_t *buffer, long len)
 
 		while (nleft > 0)
 		{
-			nwritten = write(fd, ptr, nleft);
+			long nwritten = write(fd, ptr, nleft);
 
 			if (nwritten <= 0)
 			{
