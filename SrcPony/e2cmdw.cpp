@@ -1962,6 +1962,7 @@ void e2CmdWindow::createSignalSlotConnections()
 	//connect(actionCalibration, SIGNAL(triggered()), this, SLOT(onReadCalibration(int idx)));
 	// interface setup
 	connect(actionInterfaceSetup, SIGNAL(triggered()), this, SLOT(onInterfSetup()));
+	connect(actionSetup, SIGNAL(triggered()), this, SLOT(onInterfSetup()));
 	//      connect(actiontWriteCalibration, SIGNAL(triggered()), this, SLOT( onWriteCalibration(int idx)));
 	//      connect(actiontReadSecurity, SIGNAL(triggered()), this, SLOT( onReadSecurity(bool display_dialog)));
 

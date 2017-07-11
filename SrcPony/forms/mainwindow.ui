@@ -20,7 +20,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>23</height>
+     <height>32</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -74,7 +74,7 @@
    </widget>
    <widget class="QMenu" name="menuScript">
     <property name="title">
-     <string>Scri&amp;pt</string>
+     <string>Sc&amp;ript</string>
     </property>
     <addaction name="actionLoadScript"/>
     <addaction name="separator"/>
@@ -87,6 +87,7 @@
     <addaction name="actionClearBuffer"/>
     <addaction name="actionFillBuffer"/>
     <addaction name="actionDoubleBank"/>
+    <addaction name="actionByteSwap"/>
     <addaction name="actionSetSN"/>
     <addaction name="separator"/>
     <addaction name="actionSNConfig"/>
@@ -489,11 +490,6 @@
     <string>&amp;Double Bank</string>
    </property>
   </action>
-  <action name="actionByteSwap">
-   <property name="text">
-    <string>Byte Swap</string>
-   </property>
-  </action>
   <action name="actionSetSN">
    <property name="text">
     <string>&amp;Set SerialNumber</string>
@@ -530,6 +526,11 @@
   <action name="actionAboutQt">
    <property name="text">
     <string>About &amp;Qt</string>
+   </property>
+  </action>
+  <action name="actionByteSwap">
+   <property name="text">
+    <string>ByteSwap</string>
    </property>
   </action>
  </widget>
