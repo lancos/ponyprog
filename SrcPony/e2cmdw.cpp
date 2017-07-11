@@ -2033,13 +2033,11 @@ void e2CmdWindow::onSaveAs()
 		{
 			CmdSaveAs(ALL_TYPE);
 		}
-		else
-		if (a == actionSaveFlashAs)
+		else if (a == actionSaveFlashAs)
 		{
 			CmdSaveAs(PROG_TYPE);
 		}
-		else
-		if (a == actionSaveEepAs)
+		else if (a == actionSaveEepAs)
 		{
 			CmdSaveAs(DATA_TYPE);
 		}
@@ -2140,13 +2138,11 @@ void e2CmdWindow::onVerify()
 		{
 			CmdVerify(ALL_TYPE);
 		}
-		else
-		if (a == actionVerifyFlash)
+		else if (a == actionVerifyFlash)
 		{
 			CmdVerify(PROG_TYPE);
 		}
-		else
-		if (a == actionVerifyEep)
+		else if (a == actionVerifyEep)
 		{
 			CmdVerify(DATA_TYPE);
 		}
