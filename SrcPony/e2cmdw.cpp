@@ -4324,7 +4324,7 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 			{
 				if (n >= 4)
 				{
-					long from, val, to;
+					long val, from = 0, to = 0;
 					bool ok = true;
 
 					val = lst.at(1).toLong(&ok, 0);
