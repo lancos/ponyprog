@@ -6051,8 +6051,6 @@ HIDDEN QStringList filterInfo = QStringList({ "E2P (*.e2p)", "Intel (*.hex)", "S
 
 HIDDEN int filterIndex = 0;
 
-
-
 HIDDEN void AddExtension(QString &name)
 {
 	int p = name.lastIndexOf('.');  //look for extension
@@ -6063,7 +6061,6 @@ HIDDEN void AddExtension(QString &name)
 		name += filter.at(filterIndex).mid(1);
 	}
 }
-
 
 HIDDEN bool CmpExtension(const QString &name, const QString &ext)
 {
@@ -6263,8 +6260,6 @@ int e2CmdWindow::SaveFile(int force_select)
 
 		if (fn.length())
 		{
-			AddExtension(fn);
-
 			//Save the old name in case some error occurs, so it can restore it
 			QString oldname = awip->GetFileName();
 			int fidx = filterNameToIndex(sFilter, filterInfo);
@@ -6274,6 +6269,7 @@ int e2CmdWindow::SaveFile(int force_select)
 				awip->SetFileBuf((enum FileType)filterIndex);   //????? Ci vorrebbe un controllo separato dall'estensione sul tipo di file (combobox)
 			}
 			E2Profile::SetDefaultFileType(awip->GetFileBuf());
+			AddExtension(fn);
 			awip->SetFileName(fn);
 
 			if ((err = awip->Save()) <= 0)
