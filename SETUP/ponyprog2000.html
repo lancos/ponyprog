@@ -6,9 +6,9 @@
 </head>
 
 <body bgcolor="#FFFFFF">
-<p align="center"> <strong><font size="5">PonyProg2000 documentation<br>
+<p align="center"> <strong><font size="5">PonyProg v.3 documentation<br>
 </font><font size="2">by<br>
-  </font></strong><a href="http://www.lancos.com"><img src="Lancos.jpg" alt="LancOS - Lanconelli Open Systems" WIDTH="460" HEIGHT="100" border="0"></a></p>
+  </font></strong><a href="http://www.lancos.com"><img src="Lancos.jpg" alt="LancOS - Lanconelli Open Systems" border="0"></a></p>
 
 <p align="center"><a href="http://www.lancos.com">http://www.LancOS.com</a><br>
 </p>
@@ -371,7 +371,7 @@
 
 <p>With RedHat <b>Linux</b> 6.2/7.0 login as root and execute the command<br>
   <i># tar xvfzP ponyprog-X.XXX.tar.gz<br>
-  # chmod +s /usr/local/bin/ponyprog2000</i> <b>(optional)</b></p>
+  # chmod +s /usr/local/bin/ponyprog</i> <b>(optional)</b></p>
 <p> If you want to use parallel port interfaces without run PonyProg as root you 
   need also a 2.4.x kernel and <i>parport</i>, <i>parport_pc</i> and <i>ppdev</i> 
   kernel modules. insmod all three modules before to execute PonyProg.<br>
@@ -450,7 +450,7 @@
   the device type and the notes will be recorded in the file. The .bin format 
   is raw binary format, it's commonly used to export the file to other programs.</p>
 
-<p><img src="prog-saveas.jpg" alt="SaveAs screen shot" WIDTH="568" HEIGHT="408"></p>
+<p><img src="prog-saveas.jpg" alt="SaveAs screen shot"></p>
 
 <hr>
 <h2><a name="s2.1.7">2.1.7 Save</a> Program (FLASH) File</h2>
@@ -506,7 +506,7 @@
   These two fields are free text editing, and are useful for a description of 
   the device programmed and the meaning of its content.</p>
 
-<p><img src="prog-note.jpg" alt="Edit note screen shot" WIDTH="730" HEIGHT="157"></p>
+<p><img src="prog-note.jpg" alt="Edit note screen shot"></p>
 
 <hr>
 <h2><a name="s2.2.2">2.2.2 Security Bits</a></h2>
@@ -516,9 +516,9 @@
   dumps show the configuration bits for some microcontroller families. Note that 
   disabled bits (grayed) are not used or not modificable.</p>
 <p><b>AVR AT90S4433</b> Security and Fuse bits<br>
-  <img src="avr4433fuse.jpg" width="639" height="144"> </p>
+  <img src="avr4433fuse.jpg"> </p>
 <p><b>PIC 16F84</b><br>
-  <img src="pic16f84fuse.jpg" width="527" height="137"> </p>
+  <img src="pic16f84fuse.jpg"> </p>
 <ul>
   <li>CP: if checked all memory is code protected</li>
   <li>PWRTE: if checked power-up timer is enabled</li>
@@ -555,9 +555,9 @@
   </li>
 </ul>
 <p><b>AT89S8252<br>
-  <img src="at89s8252fuse.jpg" width="481" height="139"> </b></p>
+  <img src="at89s8252fuse.jpg"> </b></p>
 <p><b>Microchp 24C65<br>
-  <img src="24C65fuse.jpg" width="273" height="236"> </b></p>
+  <img src="24C65fuse.jpg"> </b></p>
 <p> The dialog ask you to insert the first block and the number of blocks to lock. 
   When the device is locked you can't do a &quot;write security&quot; or a &quot;write 
   high endurance&quot; anymore. To lock the device the number of blocks must be 
@@ -578,7 +578,7 @@
   mode of the current window, so if there are more than one buffer window opened, 
   the edit mode of other windows are left unchanged.</p>
 
-<p><img src="prog-edit.jpg" alt="Edit screen shot" WIDTH="188" HEIGHT="198"></p>
+<!--p><img src="prog-edit.jpg" alt="Edit screen shot"></p-->
 
 <hr>
 
@@ -612,7 +612,7 @@
 <p>Read the content of a device in the current window buffer.&nbsp; This operation 
   can take a while to execute, so a dialog box shows the operation progression. 
   If you want to stop the current read just press the &quot;Abort&quot; button. 
-  <img src="rdprogress.jpg" width="215" height="131"><br>
+  <img src="rdprogress.jpg"><br>
   Finally a dialog box showing the result of the operation appears.<br>
   If the program report the message &quot;Device not responding&quot; means that 
   you missed to connect the device to read, or the interface is not configured 
@@ -628,7 +628,7 @@
   device is missing, or the device is locked, or the device is a preproduction 
   device a dialog box appears. It asks you if you want to abort operation, retry 
   or ignore the error. In case of a preproduction device just select &quot;Ignore&quot;.<br>
-  <img src="devmissing.jpg" width="295" height="97"></p>
+  <img src="devmissing.jpg"></p>
 <hr>
 <h2><a name="s2.4.2">2.4.2 Read Program (FLASH)</a></h2>
 <p>This command is available only for splitted Program/Data devices. The buffer 
@@ -730,7 +730,7 @@
 <hr>
 <h2><a name="s2.4.16">2.4.16 Program Options</a></h2>
 <p>Select the commands to execute with the Program command.<br>
-  <img src="progoptions.jpg" width="291" height="404"> </p>
+  <img src="progoptions.jpg"> </p>
 <hr>
 <h2><a name="s2.5">2.5 Utility</a></h2>
 <h2><a name="s2.5.1">2.5.1 Clear Buffer</a></h2>
@@ -741,7 +741,7 @@
   the addresses fo fill (from - to locations), and the value of the character 
   to fill. You can insert the value either in decimal (i.e. 45), hexadecimal (i.e. 
   0x45) or octal (i.e. 045) base.<br>
-  <img src="filldlg.jpg" width="188" height="201"> </p>
+  <img src="filldlg.jpg"> </p>
 <hr>
 <h2><a name="s2.5.3">2.5.3 Double bank</a></h2>
 
@@ -775,7 +775,7 @@ while the big endiand is 12 - 34.</p>
 <h2><a name="s2.5.6">2.5.6 Serial Number Config</a></h2>
 <p>This command open a dialog box where you can configure the serial number locations, 
   value, format and size.<br>
-  <img src="sernumdlg.jpg" width="265" height="271"> </p>
+  <img src="sernumdlg.jpg"> </p>
 <hr>
 <h2><a name="s2.6">2.6 Setup</a></h2>
 
@@ -786,7 +786,7 @@ while the big endiand is 12 - 34.</p>
   (see <a href="http://www.lancos.com/prog.html#hardware">PonyProg Hardware interfaces</a> 
   for more info). Note that only SI Prog support all devices.</p>
 
-<p><img src="prog-setup.jpg" alt="Setup screen shot" WIDTH="400" HEIGHT="352"> 
+<p><img src="prog-setup.jpg" alt="Setup screen shot"> 
 
 <ul>
   <li><strong>SI-Prog interface</strong> select &quot;serial&quot; check-box and 
