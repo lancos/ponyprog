@@ -206,6 +206,7 @@ e2CmdWindow::e2CmdWindow(QWidget *parent) :
 	//      UpdateMenuType(E2Profile::GetLastDevType());
 
 	// The Canvas
+	qbuf = new QBuffer(this);
 	e2HexEdit = new QHexEdit(this); //e2TextCanvasPane(this);
 	setCentralWidget(e2HexEdit);
 	e2HexEdit->setFocus();
@@ -301,6 +302,7 @@ e2CmdWindow::~e2CmdWindow()
 
 	//      delete e2Menu;
 	delete e2HexEdit;
+	delete qbuf;
 	// EK 2017
 	// TODO remove created QAction* lists and other
 
@@ -2504,6 +2506,7 @@ int e2CmdWindow::CmdSave(int type, const QString &fname, long relocation)
 
 	if (awip->IsBufferValid())
 	{
+		UpdateBuffer();
 		oldfname = awip->GetFileName();
 		awip->SetSaveRelocation(relocation);
 		awip->SetSaveType(type);
@@ -2545,6 +2548,7 @@ int e2CmdWindow::CmdSaveAs(int type, long relocation)
 
 	if (awip->IsBufferValid())
 	{
+		UpdateBuffer();
 		oldfname = awip->GetFileName();
 		awip->SetSaveRelocation(relocation);
 		awip->SetSaveType(type);
@@ -2940,6 +2944,7 @@ int e2CmdWindow::CmdWrite(int type, bool verify)
 			int rval;
 			int retry_flag = 1;
 
+			UpdateBuffer();
 			ClearIgnoreFlag();
 
 			while (retry_flag)
@@ -6509,6 +6514,18 @@ void e2CmdWindow::UpdateFileMenu()
 #endif
 }
 
+//Update the buffer with edit changes
+void e2CmdWindow::UpdateBuffer()
+{
+	if (e2HexEdit->isModified())
+	{
+		const char *ptr = e2HexEdit->data().constData();
+		memcpy(awip->GetBufPtr(), ptr, awip->GetSize());
+		awip->BufChanged();
+		Draw();
+	}
+}
+
 void e2CmdWindow::Draw()
 {
 	if (awip == 0)
@@ -6521,14 +6538,13 @@ void e2CmdWindow::Draw()
 		return;
 	}
 
-	QBuffer *b = new QBuffer(this);
-	b->setData(reinterpret_cast<char *>(awip->GetBufPtr()), awip->GetSize());
+	qbuf->setData(reinterpret_cast<char *>(awip->GetBufPtr()), awip->GetSize());
 	//         dev.open();
 	//         dev.read(reinterpret_cast<char*>(awip->GetBufPtr()), awip->GetBufSize());
 
 	//      QByteArray databuf = QByteArray(reinterpret_cast<char*>(awip->GetBufPtr()), awip->GetBufSize());
 	// qDebug() << databuf;
-	e2HexEdit->setData(*b);
+	e2HexEdit->setData(*qbuf);
 	//         dev.close();
 #if 0
 	int no_line;

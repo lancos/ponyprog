@@ -99,7 +99,6 @@ class e2CmdWindow : public QMainWindow, public e2App, public Ui::MainWindow
 	//      virtual void KeyIn(vKey keysym, unsigned int shift);
 
 	void About();
-	void Draw(/*int rows = 0, int cols = 0*/);
 	void Print();
 	//      int NextLine();
 	//      int PrevLine();
@@ -318,6 +317,8 @@ class e2CmdWindow : public QMainWindow, public e2App, public Ui::MainWindow
 
 	void doProgress(const QString &text);
 
+	void Draw(/*int rows = 0, int cols = 0*/);
+	void UpdateBuffer();
 
 	menuToGroup *searchMenuInDeviceVector(int new_type);
 
@@ -425,6 +426,7 @@ class e2CmdWindow : public QMainWindow, public e2App, public Ui::MainWindow
 
 	// Standard elements
 	QHexEdit *e2HexEdit;             // For the canvas
+	QBuffer *qbuf;
 
 	QProgressDialog *e2Prg;
 
