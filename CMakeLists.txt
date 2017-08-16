@@ -31,7 +31,7 @@ ENDIF()
 #debug or release
 
 OPTION (USE_DEBUGGER "Include in binary file debug information" OFF)
-SET(USE_DEBUGGER true)
+# SET(USE_DEBUGGER true)
 
 #enable or disable profiling info
 # SET(USE_PROFILER false)
