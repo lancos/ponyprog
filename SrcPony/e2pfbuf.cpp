@@ -216,7 +216,7 @@ int e2pFileBuf::Load(int loadtype, long relocation_offset)
 int e2pFileBuf::Save(int savetype, long relocation_offset)
 {
 	e2pHeader hdr;
-	int rval, create_file = 0;
+	int rval;
 
 	if (FileBuf::GetNoOfBlock() <= 0)
 	{
@@ -224,16 +224,6 @@ int e2pFileBuf::Save(int savetype, long relocation_offset)
 	}
 
 	QFile fh(FileBuf::GetFileName());
-
-	if (!fh.exists())
-	{
-		create_file = 1;
-	}
-
-	if (!fh.open(QIODevice::ReadWrite))
-	{
-		return CREATEERROR;
-	}
 
 	//Header settings
 	memset(&hdr, 0, sizeof(hdr));           //Clear all to zero first
@@ -243,36 +233,29 @@ int e2pFileBuf::Save(int savetype, long relocation_offset)
 	unsigned char *localbuf;
 	localbuf = new unsigned char[hdr.e2pSize];
 
-	QDataStream datastream(&fh);
-
 	if (localbuf)
 	{
 		long s = GetSplitted();
 
-		int rv = 0;
+		memset(localbuf, 0xff, hdr.e2pSize);
 
-		if (!create_file)
+		if (fh.exists())
 		{
+			if (!fh.open(QIODevice::ReadOnly))
+			{
+				delete[] localbuf;
+				return CREATEERROR;
+			}
+			QDataStream datastream(&fh);
+
 			//Initialize local buffer
 			//  if the file already exist read the current content
 			//  otherwise set the localbuffer to 0xFF
-			rv = fh.seek(sizeof(hdr));
-
-			if (rv == 0)
+			if (fh.seek(sizeof(hdr)))
 			{
-				rv = datastream.readRawData((char *)localbuf, hdr.e2pSize);
+				datastream.readRawData((char *)localbuf, hdr.e2pSize);
 			}
-			else
-			{
-				rv = 0;
-			}
-
-			fh.seek(0);
-		}
-
-		if (!rv)
-		{
-			memset(localbuf, 0xff, hdr.e2pSize);
+			fh.close();
 		}
 
 		if (savetype == ALL_TYPE)
@@ -310,15 +293,25 @@ int e2pFileBuf::Save(int savetype, long relocation_offset)
 		hdr.e2pCrc = mcalc_crc(localbuf, hdr.e2pSize);
 		hdr.headCrc = mcalc_crc(&hdr, sizeof(hdr) - sizeof(hdr.headCrc));
 
-		//Write to file
-		if (datastream.writeRawData((char *)&hdr, sizeof(hdr)) &&                //Write the header
-				datastream.writeRawData((char *)localbuf, hdr.e2pSize))   //Write the buffer
+		if (fh.open(QIODevice::WriteOnly | QIODevice::Truncate))
 		{
-			rval = GetNoOfBlock();
+			QDataStream datastream(&fh);
+
+			//Write to file
+			if (datastream.writeRawData((char *)&hdr, sizeof(hdr)) &&         //Write the header
+					datastream.writeRawData((char *)localbuf, hdr.e2pSize))   //Write the buffer
+			{
+				rval = GetNoOfBlock();
+			}
+			else
+			{
+				rval = WRITEERROR;
+			}
+			fh.close();
 		}
 		else
 		{
-			rval = WRITEERROR;
+			rval = CREATEERROR;
 		}
 
 		delete[] localbuf;
@@ -328,6 +321,5 @@ int e2pFileBuf::Save(int savetype, long relocation_offset)
 		rval = OUTOFMEMORY;
 	}
 
-	fh.close();
 	return rval;
 }
