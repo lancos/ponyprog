@@ -1,0 +1,13 @@
+*.dll
+*.exe
+audio
+bearer
+iconengines
+imageformats
+lang
+mediaservice
+Output
+platforms
+playlistformats
+printsupport
+translations

@@ -1,6 +1,5 @@
-; PonyProg2000 setup script.
-; Copyright by Claudio Lanconelli 1999-2007
-
+; PonyProg setup script.
+; Copyright by Claudio Lanconelli 1999-2017
 
 [Setup]
 AppName={#APPNAME}
@@ -13,18 +12,32 @@ AppCopyright={#APPCOPYRIGHT}
 DefaultDirName={pf}\{#APPNAME}
 DefaultGroupName={#APPNAME}
 Compression=lzma2/max
-SolidCompression=no
+SolidCompression=yes
 LicenseFile=license.txt
 ChangesAssociations=yes
 PrivilegesRequired=admin
-;run in 32bit mode only due to dlportio.sys
+;run in 32bit mode only due to dlportio.sys (no more true with inpout32.dll)
 ;ArchitecturesAllowed=x86
+OutputBaseFilename={#APPNAME}-setup
 
 ;I never tested with WinNT 3.51, may be we need to replace 3.51 with 4.00
 MinVersion=5.0
 
 [Files]
-;Source: "PONYPROG.EXE"; DestDir: "{app}"
+Source: "{#APPNAME}.exe"; DestDir: "{app}"
+Source: "*.dll"; DestDir: "{app}"
+Source: "audio\*"; DestDir: "{app}\audio"
+Source: "bearer\*"; DestDir: "{app}\bearer"
+Source: "iconengines\*"; DestDir: "{app}\iconengines"
+Source: "imageformats\*"; DestDir: "{app}\imageformats"
+Source: "mediaservice\*"; DestDir: "{app}\mediaservice"
+Source: "platforms\*"; DestDir: "{app}\platforms"
+Source: "playlistformats\*"; DestDir: "{app}\playlistformats"
+Source: "printsupport\*"; DestDir: "{app}\printsupport"
+Source: "translations\*"; DestDir: "{app}\translations"
+
+Source: "lang\*"; DestDir: "{app}\lang"
+
 ;Source: "PONYPROG.INI"; DestDir: "{app}"; Permissions: users-modify
 ;Source: "PONYPROG.HTML"; DestDir: "{app}"
 Source: "OKSOUND.WAV"; DestDir: "{app}"

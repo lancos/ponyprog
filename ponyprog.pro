@@ -8,6 +8,8 @@ QT  += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport multimedia
 
+#CONFIG += rtti_off exceptions_off warn_on windeployqt
+
 TARGET = ponyprog
 TEMPLATE = app
 DESTDIR = build
@@ -72,7 +74,7 @@ message(ponyprog: Detected Qt version: \"$$QT_VERSION\")
 message(ponyprog: Build destination directory: \"$$DESTDIR\")
 message(ponyprog: Prefix directory: \"$$PREFIX\")
 message(ponyprog: Build revision: \"$$APP_REVISION\")
-message(ponyprog: lrelease executable name: \"$$LRELEASE_EXECUTABLE\")
+#message(ponyprog: lrelease executable name: \"$$LRELEASE_EXECUTABLE\")
 
 # to add automatically in the source code
 VERSION = $$APP_VERSION
@@ -300,8 +302,6 @@ unix:!macx: LIBS += -L/usr/local/lib
 
 RESOURCES += SrcPony/ponyprog.qrc
 
-
-
 CONFIG(debug, debug|release) {
     # debug configuration
     # QMAKE_CXXFLAGS_DEBUG += ...
@@ -321,11 +321,24 @@ QMAKE_CXXFLAGS += -std=c++11 -Wno-unused-parameter
 # EK 2017 
 # i hope, it's right...
 win32 {
-    isEmpty(QTDIR):QTDIR = "c:\Qt\5.8.0"
-    isEmpty(MINGWDIR):MINGWDIR = "C:\Qt\Qt5.8.0\Tools\mingw530_32"
+    target.path = $$PWD/distribution/innosetup
+
+    ponydeploy.path = $$PWD/distribution/innosetup
+    ponydeploy.extra = windeployqt --no-angle --no-opengl-sw --release --list relative $$PWD/distribution/innosetup/${TARGET}
+
+    lang.path = $$PWD/distribution/innosetup/lang
+    lang.files = lang/*
+
+    #DEPLOY_TARGET = $$shell_quote($$shell_path($${OUT_PWD}/release/$${TARGET}$${TARGET_CUSTOM_EXT}))
+
+#    isEmpty(QTDIR):QTDIR = "c:/Qt/Qt$$QT_VERSION/$$QT_VERSION/mingw530_32"
+#    isEmpty(MINGWDIR):MINGWDIR = "c:/Qt/Qt$$QT_VERSION/Tools/mingw530_32"
     isEmpty(ISCC):ISCC = "c:\Program Files\Inno Setup 5\ISCC.exe"
 
-    win32setup.depends  = make_first
+#    message(ponyprog: MINGWdir: \"$$MINGWDIR\")
+    message(ponyprog: ISCCdir: \"$$ISCC\")
+
+    win32setup.depends  = install
     win32setup.target   = win32setup
     win32setup.commands = $$ISCC /DAPPNAME=$$APP_NAME \
                        /DAPPVERSION=$$APP_VERSION \
@@ -333,6 +346,9 @@ win32 {
                        $$PWD/distribution/innosetup/ponyprog.iss
 
     QMAKE_EXTRA_TARGETS += win32setup
+
+    INSTALLS += target lang ponydeploy
+    #QMAKE_POST_LINK = windeployqt --no-angle --no-opengl-sw --release --list relative ${TARGET}
 }
 
 
