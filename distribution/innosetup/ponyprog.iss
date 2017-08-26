@@ -18,7 +18,7 @@ ChangesAssociations=yes
 PrivilegesRequired=admin
 ;run in 32bit mode only due to dlportio.sys (no more true with inpout32.dll)
 ;ArchitecturesAllowed=x86
-OutputBaseFilename={#APPNAME}-setup
+OutputBaseFilename={#APPNAME}-{#APPVERSION}-setup
 
 ;I never tested with WinNT 3.51, may be we need to replace 3.51 with 4.00
 MinVersion=5.0
@@ -38,40 +38,28 @@ Source: "translations\*"; DestDir: "{app}\translations"
 
 Source: "lang\*"; DestDir: "{app}\lang"
 
-;Source: "PONYPROG.INI"; DestDir: "{app}"; Permissions: users-modify
-;Source: "PONYPROG.HTML"; DestDir: "{app}"
-Source: "OKSOUND.WAV"; DestDir: "{app}"
-Source: "LANCOS.JPG"; DestDir: "{app}"
-;Source: "24C65FUSE.JPG"; DestDir: "{app}"
-;Source: "AT89S8252FUSE.JPG"; DestDir: "{app}"
-;Source: "AVR4433FUSE.JPG"; DestDir: "{app}"
-;Source: "DEVMISSING.JPG"; DestDir: "{app}"
-;Source: "FILLDLG.JPG"; DestDir: "{app}"
-;Source: "PIC16F84FUSE.JPG"; DestDir: "{app}"
-;Source: "PROG-EDIT.JPG"; DestDir: "{app}"
-;Source: "PROG-NOTE.JPG"; DestDir: "{app}"
-;Source: "PROGOPTIONS.JPG"; DestDir: "{app}"
-;Source: "PROG-SAVEAS.JPG"; DestDir: "{app}"
-;Source: "PROG-SETUP.JPG"; DestDir: "{app}"
-;Source: "RDPROGRESS.JPG"; DestDir: "{app}"
-;Source: "SERNUMDLG.JPG"; DestDir: "{app}"
-;Source: "README.TXT"; DestDir: "{app}"; Flags: isreadme
-;Source: "INSTALLDRIVER.EXE"; DestDir: "{app}"
+Source: "{#APPNAME}.ini"; DestDir: "{app}"; Permissions: users-modify
+Source: "{#APPNAME}.html"; DestDir: "{app}"
+Source: "oksound.wav"; DestDir: "{app}"
+Source: "*.jpg"; DestDir: "{app}"
+Source: "Readme.txt"; DestDir: "{app}"; Flags: isreadme
+Source: "PonyProg.url"; DestDir: "{app}"
+Source: "installdriver.exe"; DestDir: "{app}"
+Source: "inpout32.dll"; DestDir: "{app}"
 ;Source: "INPOUT32.DLL"; DestDir: "{sys}"; Flags: sharedfile promptifolder
-;Source: "PonyProg.url"; DestDir: "{app}"
 
 [UninstallDelete] 
-Type: files; Name: "{app}\BOGOMIPS.OUT"
+Type: files; Name: "{app}\bogomips.out"
 
-;[Icons]
-;Name: "{group}\PonyProg"; Filename: "{app}\PONYPROG.EXE"; WorkingDir: "{app}"
-;Name: "{group}\Visit LancOS PonyProg Web Site"; Filename: "{app}\PonyProg.url"
+[Icons]
+Name: "{group}\PonyProg"; Filename: "{app}\{#APPNAME}.exe"; WorkingDir: "{app}"
+Name: "{group}\Visit LancOS PonyProg Web Site"; Filename: "{app}\PonyProg.url"
 
-;[Run] 
-;Filename: "{app}\INSTALLDRIVER.EXE"; Parameters: "install"; StatusMsg: "Installing I/O driver..."
+[Run] 
+Filename: "{app}\installdriver.exe"; Parameters: "install"; StatusMsg: "Installing I/O driver..."
 
-;[UninstallRun] 
-;Filename: "{app}\INSTALLDRIVER.EXE"; Parameters: "remove"
+[UninstallRun] 
+Filename: "{app}\installdriver.exe"; Parameters: "remove"
 
 ;[Registry]
 ;Root: HKCR; Subkey: ".e2p"; ValueType: string; ValueName: ""; ValueData: "PonyProgFile"; Flags: uninsdeletevalue

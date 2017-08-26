@@ -8,7 +8,7 @@ QT  += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport multimedia
 
-#CONFIG += rtti_off exceptions_off warn_on windeployqt
+CONFIG += rtti_off exceptions_off warn_on
 
 TARGET = ponyprog
 TEMPLATE = app
@@ -307,19 +307,18 @@ CONFIG(debug, debug|release) {
     # QMAKE_CXXFLAGS_DEBUG += ...
 } else {
     # release configuration
-    QMAKE_CXXFLAGS_RELEASE -= -O2
-    QMAKE_CXXFLAGS_RELEASE += -O3
-    QMAKE_CXXFLAGS_RELEASE += -fno-exceptions -fno-rtti
+    #QMAKE_CXXFLAGS_RELEASE -= -O2
+    #QMAKE_CXXFLAGS_RELEASE += -O3
+    #QMAKE_CXXFLAGS_RELEASE += -fno-exceptions -fno-rtti
     DEFINES += QT_NO_DEBUG_OUTPUT QT_USE_FAST_CONCATENATION QT_USE_FAST_OPERATOR_PLUS
 }
 
 # -Wall are already on the command line (where does it come from?)
 # for old GCC -std=c++11 move to -std=c++0x
-QMAKE_CXXFLAGS += -std=c++11 -Wno-unused-parameter
+QMAKE_CXXFLAGS += -Wno-unused-parameter
 # QMAKE_CXXFLAGS += -Wno-unused-parameter -Wall
 
 # EK 2017 
-# i hope, it's right...
 win32 {
     target.path = $$PWD/distribution/innosetup
 
@@ -328,6 +327,12 @@ win32 {
 
     lang.path = $$PWD/distribution/innosetup/lang
     lang.files = lang/*
+
+    inpoutdll.path = $$PWD/distribution/innosetup
+    inpoutdll.files = InpOutLib/Win32/inpout32.dll
+
+    inpoutexe.path = $$PWD/distribution/innosetup
+    inpoutexe.files = InpOutLib/InstallDriver/InstallDriver.exe
 
     #DEPLOY_TARGET = $$shell_quote($$shell_path($${OUT_PWD}/release/$${TARGET}$${TARGET_CUSTOM_EXT}))
 
@@ -347,7 +352,7 @@ win32 {
 
     QMAKE_EXTRA_TARGETS += win32setup
 
-    INSTALLS += target lang ponydeploy
+    INSTALLS += target lang inpoutexe inpoutdll ponydeploy
     #QMAKE_POST_LINK = windeployqt --no-angle --no-opengl-sw --release --list relative ${TARGET}
 }
 
