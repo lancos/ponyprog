@@ -19,6 +19,8 @@ PrivilegesRequired=admin
 ;run in 32bit mode only due to dlportio.sys (no more true with inpout32.dll)
 ;ArchitecturesAllowed=x86
 OutputBaseFilename={#APPNAME}-{#APPVERSION}-setup
+RestartIfNeededByRun=yes
+;AlwaysRestart=yes
 
 ;I never tested with WinNT 3.51, may be we need to replace 3.51 with 4.00
 MinVersion=5.0
