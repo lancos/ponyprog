@@ -10,14 +10,22 @@ OPTION (USE_QT5 "Using of Qt5 version for compiling" ON)
 
 IF(${USE_QT5})
     SET(USE_QT_VERSION 5)
+    FIND_PACKAGE(Qt5Widgets)
 ELSE(${USE_QT5})
     SET(USE_QT_VERSION 4)
 ENDIF(${USE_QT5})
 
 
 # # SET(FILES_TO_TRANSLATE)
+IF(WIN32)
+    IF(MSVC)
+        SET (CMAKE_PREFIX_PATH "C:\\Qt\\Qt5.9.1\\5.9.1\\msvc2010\\")
+    ENDIF()
 
-
+    IF(MinGW)
+        SET (CMAKE_PREFIX_PATH "C:\\Qt\\Qt5.9.1\\5.9.1\\mingw53_32\\")
+    ENDIF()
+ENDIF()
 
 #disable -rdynamic
 # SET(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "")
