@@ -43,6 +43,7 @@
 #include <QProcess>
 #include <QDebug>
 #include <QMessageBox>
+#include <QDesktopServices>
 
 #include "qhexedit.h"
 
@@ -2743,19 +2744,21 @@ int e2CmdWindow::CmdHelp()
 	if (file.exists())
 	{
 		str = GetHelpFile();
+		QDesktopServices::openUrl(QUrl::fromLocalFile(str));
 	}
 	else
 	{
-		str = "http://www.lancos.com/e2p/ponyprog2000.html";
+// 		str = "http://www.lancos.com/e2p/ponyprog2000.html";
+		QDesktopServices::openUrl(QUrl("http://www.lancos.com/e2p/ponyprog2000.html"));
 	}
-
+#if 0
 #ifdef __linux__
 	//system(str.toLatin1().constData());
 	QProcess::execute("xdg-open", (QStringList() << str));
 #else
 	ShellExecute(NULL, L"open", (LPCWSTR)str.utf16(), NULL, NULL, SW_SHOWNORMAL);
 #endif
-
+#endif
 	return OK;
 }
 
