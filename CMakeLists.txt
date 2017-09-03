@@ -15,15 +15,14 @@ ELSE(${USE_QT5})
     SET(USE_QT_VERSION 4)
 ENDIF(${USE_QT5})
 
-
 # # SET(FILES_TO_TRANSLATE)
 IF(WIN32)
     IF(MSVC)
-        SET (CMAKE_PREFIX_PATH "C:\\Qt\\Qt5.9.1\\5.9.1\\msvc2010\\")
+        SET (CMAKE_PREFIX_PATH "${QTDIR}\\msvc2015\\")
     ENDIF()
 
     IF(MinGW)
-        SET (CMAKE_PREFIX_PATH "C:\\Qt\\Qt5.9.1\\5.9.1\\mingw53_32\\")
+        SET (CMAKE_PREFIX_PATH "${QTDIR}\\mingw53_32\\")
     ENDIF()
 ENDIF()
 
