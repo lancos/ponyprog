@@ -10,7 +10,6 @@ OPTION (USE_QT5 "Using of Qt5 version for compiling" ON)
 
 IF(${USE_QT5})
     SET(USE_QT_VERSION 5)
-#     FIND_PACKAGE(Qt5Widgets)
 ELSE(${USE_QT5})
     SET(USE_QT_VERSION 4)
 ENDIF(${USE_QT5})
