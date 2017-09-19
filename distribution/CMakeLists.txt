@@ -78,12 +78,12 @@ SET( PONYPROG_CPACK_PACKAGE_LICENSE "GPL2" )
 #	)
 # MESSAGE("CMAKE_CURRENT_SOURCE_DIR distr ${CMAKE_CURRENT_SOURCE_DIR} : ${PROJECT_SOURCE_DIR}")
 # Get a SourceForge username so we can upload distributables to the FRS
-IF(WIN32)
-	SET( PONYPROG_SOURCEFORGE_USERNAME "$ENV{USERNAME}" CACHE STRING "SourceForge user account name, for uploading distribution files." )
-ELSE(WIN32)
-	SET( PONYPROG_SOURCEFORGE_USERNAME "$ENV{USER}" CACHE STRING "SourceForge user account name, for uploading distribution files." )
-ENDIF(WIN32)
-MARK_AS_ADVANCED(PONYPROG_SOURCEFORGE_USERNAME)
+# IF(WIN32)
+# 	SET( PONYPROG_SOURCEFORGE_USERNAME "$ENV{USERNAME}" CACHE STRING "SourceForge user account name, for uploading distribution files." )
+# ELSE(WIN32)
+# 	SET( PONYPROG_SOURCEFORGE_USERNAME "$ENV{USER}" CACHE STRING "SourceForge user account name, for uploading distribution files." )
+# ENDIF(WIN32)
+# MARK_AS_ADVANCED(PONYPROG_SOURCEFORGE_USERNAME)
 
 
 
