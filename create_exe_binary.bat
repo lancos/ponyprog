@@ -17,7 +17,7 @@ cmake -G "MinGW Makefiles" ^
 -DCMAKE_C_COMPILER="gcc"  ^
 -DCMAKE_CXX_COMPILER="c++" ^
 -DCMAKE_MAKE_PROGRAM="mingw32-make" ^
--DUSE_DEBUGGER="OFF" ..
+-DUSE_DEBUGGER="ON" ..
 
 echo "Compile sources"
 

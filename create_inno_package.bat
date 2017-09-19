@@ -6,10 +6,10 @@ SET QTDIR=C:/Qt/Qt5.9.1
 ECHO %qtdir%
 REM PATH=c:/Program Files/CMake/bin;c:/Qt/Qt5.9.1/Tools/mingw530_32/bin/;%PATH%
 
-rd /s /q "build"
-mkdir "build"
+rd /s /q "build-inno"
+mkdir "build-inno"
 
-cd build
+cd "build-inno"
 
 cmake -G "MinGW Makefiles" ^
 -DCMAKE_PREFIX_PATH="%QTDIR%/5.9.1/mingw53_32/;%QTDIR%/5.9.1/mingw53_32/lib/;%QTDIR%/Tools/mingw530_32/i686-w64-mingw32/lib/" ^
@@ -19,7 +19,7 @@ cmake -G "MinGW Makefiles" ^
 -DCMAKE_MAKE_PROGRAM="mingw32-make" ^
 -DUSE_DEBUGGER="OFF" ..
 
-echo "Compile sources"
+ECHO "Compile sources"
 
 mingw32-make 
 
