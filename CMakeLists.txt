@@ -10,7 +10,7 @@ OPTION (USE_QT5 "Using of Qt5 version for compiling" ON)
 
 IF(${USE_QT5})
     SET(USE_QT_VERSION 5)
-    FIND_PACKAGE(Qt5Widgets)
+#     FIND_PACKAGE(Qt5Widgets)
 ELSE(${USE_QT5})
     SET(USE_QT_VERSION 4)
 ENDIF(${USE_QT5})
@@ -18,11 +18,11 @@ ENDIF(${USE_QT5})
 # # SET(FILES_TO_TRANSLATE)
 IF(WIN32)
     IF(MSVC)
-        SET (CMAKE_PREFIX_PATH "${QTDIR}\\msvc2015\\")
+        SET (CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH}:${QTDIR}\\msvc2015\\")
     ENDIF()
 
     IF(MinGW)
-        SET (CMAKE_PREFIX_PATH "${QTDIR}\\mingw53_32\\")
+        SET (CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH}:${QTDIR}\\mingw53_32\\")
     ENDIF()
 ENDIF()
 
@@ -38,9 +38,9 @@ ENDIF()
 
 MESSAGE(STATUS "Qt version for compiling: " ${USE_QT_VERSION})
 
-IF(NOT ${USE_QT_VERSION} MATCHES "4" AND NOT ${USE_QT_VERSION} MATCHES "5")
-  MESSAGE(FATAL_ERROR "-- Qt version must be set to 4 or 5!")
-ENDIF()
+# IF(NOT ${USE_QT_VERSION} MATCHES "4" AND NOT ${USE_QT_VERSION} MATCHES "5")
+#   MESSAGE(FATAL_ERROR "-- Qt version must be set to 4 or 5!")
+# ENDIF()
 
 #debug or release
 
@@ -91,43 +91,32 @@ SET(CURRENT_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR})
 
 
 # Set the PonyProg version
-# this for generating of version file from README file
+# this for generating of version file from HISTORY file
 # the idea is to descript all changes in this file, the ne changes are in the top of file
-# see the patched README file in this commit
-#cat README | grep -E  '^[0-9]+\.[0-9]+\.[0-9]+' | head -n 1
-EXECUTE_PROCESS (
-   COMMAND cat HISTORY
-   COMMAND grep -E  "^[0-9]+\\.[0-9]+\\.[0-9]+"
-   COMMAND head -n 1
-   WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-   RESULT_VARIABLE APP_VERSION
-   OUTPUT_VARIABLE DESCRIBE_STRING
-   OUTPUT_STRIP_TRAILING_WHITESPACE)
-
-
-IF(NOT DESCRIBE_STRING)
-  SET(DESCRIBE_STRING "no valid git tag for ${PROJECT_NAME} found")
-ELSE()
-  STRING(REGEX MATCH "([0-9]+\\.[0-9]+\\.[0-9]+)" APP_VERSION "${DESCRIBE_STRING}" )
-  IF (NOT APP_VERSION)
-    SET(DESCRIBE_STRING "no valid git tag ${PROJECT_NAME}-x.x.x found")
-  ENDIF()
-ENDIF()
+FILE(READ "HISTORY" DESCRIBE_STRING)
+STRING(REGEX MATCH "([0-9]+\\.[0-9]+\\.[0-9]+)" APP_VERSION "${DESCRIBE_STRING}" )
 
 MESSAGE(STATUS "Version info: ${APP_VERSION}") 
 SET(VERSION ${APP_VERSION})
 
 # 
-SET(APP_VERSION "3.0.0")
+# SET(APP_VERSION "3.0.0")
 SET(APP_AUTHOR "Claudio Lanconelli")
 SET(APP_EMAIL "PonyProg2000@gmail.com")
 SET(APP_NAME "PonyProg")
 
-EXECUTE_PROCESS (
-      COMMAND date +"%d.%m.%Y"
-      COMMAND sed -e "s/\"//g"
-      OUTPUT_VARIABLE APP_BUILD_DATE
-      OUTPUT_STRIP_TRAILING_WHITESPACE)
+IF(WIN32)
+  EXECUTE_PROCESS (
+    COMMAND "cmd" " /c date /t"
+    OUTPUT_VARIABLE APP_BUILD_DATE
+    OUTPUT_STRIP_TRAILING_WHITESPACE)
+ELSE()
+  EXECUTE_PROCESS (
+    COMMAND date +"%d.%m.%Y"
+    OUTPUT_VARIABLE APP_BUILD_DATE
+    OUTPUT_STRIP_TRAILING_WHITESPACE)
+    STRING(REGEX REPLACE "\"" "" APP_BUILD_DATE ${APP_BUILD_DATE})
+ENDIF()
 
 MESSAGE(STATUS "Version build date: ${APP_BUILD_DATE}")
 

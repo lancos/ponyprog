@@ -11,7 +11,7 @@ fi
 CPU_NUM=$(nproc --all)
 echo "cpu cores: $CPU_NUM"
 
-DIRECTORY="build-bin"
+DIRECTORY="build"
 
 if [ ! -d "$DIRECTORY" ]; then
   # Control will enter here if $DIRECTORY exists.
