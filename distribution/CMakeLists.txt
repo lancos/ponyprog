@@ -1,5 +1,5 @@
 # Setup automatic generation of the changelog
-MESSAGE(STATUS "CPack for Linux configuration..." )
+MESSAGE(STATUS "Generate installation variables..." )
 
 SET( CPACK_SOURCE_PACKAGE_FILE_NAME "ponyprog-${APP_VERSION}" )
 SET( CPACK_SOURCE_IGNORE_FILES
