@@ -8,5 +8,5 @@ Exec=ponyprog
 Terminal=false
 Icon=ponyprog.png
 Type=Application
-Categories=Hardware;Qt;
+Categories=Utility;Qt;
 
