@@ -1,8 +1,0 @@
-#!/bin/sh
-
-set -e
-
-setcap 'cap_sys_tty_config=+ep' /usr/bin/ponyprog
-
-
-exit 0
