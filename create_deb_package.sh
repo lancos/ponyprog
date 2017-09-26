@@ -39,12 +39,9 @@ if [ -d "$DIRECTORY" ]; then
     cd ..
     mv ./$DIRECTORY/$DEB_PACKAGE_FILE_NAME .
     
-    exit 0
-    
     # warning! for the strange cmake versions
     # for example cmake 3.7.2
     # now fix the permission errors and md5sums
-
     mkdir fix_up_deb
     dpkg-deb -x $DEB_PACKAGE_FILE_NAME fix_up_deb
     dpkg-deb --control $DEB_PACKAGE_FILE_NAME fix_up_deb/DEBIAN
