@@ -8,13 +8,13 @@ if [ ! -x "$CMD" ]; then
    exit 1
 fi
 
-CMD=$(type -p rpmbuild)
-
-if [ ! -x "$CMD" ]; then
-   # not found exit
-   echo "please install rpmbuild and restart this script"
-   exit 1
-fi
+# CMD=$(type -p rpmbuild)
+# 
+# if [ ! -x "$CMD" ]; then
+#    # not found exit
+#    echo "please install rpmbuild and restart this script"
+#    exit 1
+# fi
 
 CPU_NUM=$(nproc --all)
 echo "cpu cores: $CPU_NUM"
