@@ -54,6 +54,18 @@ INSTALL(DIRECTORY "${PROJECT_SOURCE_DIR}/distribution/innosetup/"
         FILES_MATCHING PATTERN "*.jpg" PATTERN "*.html"
         ) 
         
+INSTALL(FILES "${PROJECT_SOURCE_DIR}/InpOutLib/Win32/inpout32.dll" 
+        DESTINATION  ${bin_dir}
+        COMPONENT "driver" 
+        PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ GROUP_EXECUTE GROUP_READ WORLD_EXECUTE WORLD_READ
+        ) 
+     
+INSTALL(FILES "${PROJECT_SOURCE_DIR}/InpOutLib/InstallDriver/InstallDriver.exe" 
+        DESTINATION  ${bin_dir}
+        COMPONENT "driver" 
+        PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ GROUP_EXECUTE GROUP_READ WORLD_EXECUTE WORLD_READ
+        ) 
+        
 INSTALL_QT_LIBS(Core Gui Widgets PrintSupport Multimedia)
         
 CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/package-binary-nsis.cpack.in ${CMAKE_CURRENT_BINARY_DIR}/package-binary-nsis.cpack)
