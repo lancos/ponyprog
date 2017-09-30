@@ -30,7 +30,7 @@ fi
 if [ -d "$DIRECTORY" ]; then
     cd "$DIRECTORY"
     rm * -rf
-    cmake -DUSE_DEBUGGER=OFF ..
+    cmake -DUSE_DEBUGGER=OFF -DUSE_QT5=OFF ..
     make -j$CPU_NUM
     strip -s ponyprog
     make package-binary-deb
@@ -38,7 +38,7 @@ if [ -d "$DIRECTORY" ]; then
     PROJECT_NAME=$(echo ${DEB_PACKAGE_FILE_NAME%.*})
     cd ..
     mv ./$DIRECTORY/$DEB_PACKAGE_FILE_NAME .
-    
+
     # warning! for the strange cmake versions
     # for example cmake 3.7.2
     # now fix the permission errors and md5sums
