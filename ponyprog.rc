@@ -9,8 +9,8 @@ VWINDOWICON             ICON    "icon1.ico"
 VAPPICON                ICON    "ponyprog.ico"
 
 1 VERSIONINFO
-FILEVERSION     2,0,8,4
-PRODUCTVERSION  2,0,8,4
+FILEVERSION     2,0,8,5
+PRODUCTVERSION  2,0,8,5
 BEGIN
   BLOCK "StringFileInfo"
   BEGIN
@@ -18,12 +18,12 @@ BEGIN
     BEGIN
       VALUE "CompanyName", "www.LancOS.com"
       VALUE "FileDescription", "Serial Device Programmer"
-      VALUE "FileVersion", "2.08d"
+      VALUE "FileVersion", "2.08e"
       VALUE "InternalName", "PonyProg"
       VALUE "LegalCopyright", "Claudio Lanconelli"
       VALUE "OriginalFilename", "ponyprog2000.exe"
       VALUE "ProductName", "PonyProg"
-      VALUE "ProductVersion", "2.08d"
+      VALUE "ProductVersion", "2.08e"
     END
   END
 
