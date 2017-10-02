@@ -1411,7 +1411,7 @@ const FuseBit eep_fusebits[] = {
 		0x00,{0}, 0x07,{0,0,0,0, 0,"BOOTSZ1 ","BOOTSZ0 ","BOOTRST "}, 0x5F,{"RSTDISBL ","DWEN ","SPIEN ","WDTON ","EESAVE ","BODLEVEL2 ","BODLEVEL1 ","BODLEVEL0 "}, 0xFF,{"CKDIV8 ","CKOUT ","SUT1 ","SUT0 ","CKSEL3 ","CKSEL2 ","CKSEL1 ","CKSEL0 "} },
 	{ ATmega328, // new (RG 22.06.2012)
 		0x00,{0}, 0x00,{0}, 0x00,{0}, 0x3F,{0,0,"BootLock12 ","BootLock11 ","BootLock02 ","BootLock01 ","Lock2 ","Lock1 "},
-		0x00,{0}, 0x07,{0,0,0,0, 0,"BOOTSZ1 ","BOOTSZ0 ","BOOTRST "}, 0x5F,{"RSTDISBL ","DWEN ","SPIEN ","WDTON ","EESAVE ","BODLEVEL2 ","BODLEVEL1 ","BODLEVEL0 "}, 0xFF,{"CKDIV8 ","CKOUT ","SUT1 ","SUT0 ","CKSEL3 ","CKSEL2 ","CKSEL1 ","CKSEL0 "} },
+		0x00,{0}, 0x07,{0,0,0,0, 0,"BODLEVEL2 ","BODLEVEL1 ","BODLEVEL0 "}, 0x5F,{"RSTDISBL ","DWEN ","SPIEN ","WDTON ","EESAVE ","BOOTSZ1 ","BOOTSZ0 ","BOOTRST "}, 0xFF,{"CKDIV8 ","CKOUT ","SUT1 ","SUT0 ","CKSEL3 ","CKSEL2 ","CKSEL1 ","CKSEL0 "} },
 	{ ATmega164,
 		0x00,{0}, 0x00,{0}, 0x00,{0}, 0x3F,{0,0,"BootLock12 ","BootLock11 ","BootLock02 ","BootLock01 ","Lock2 ","Lock1 "},
 		0x00,{0}, 0x07,{0,0,0,0, 0,"BODLEVEL2 ","BODLEVEL1 ","BODLEVEL0 "}, 0xDF,{"OCDEN ","JTAGEN ","SPIEN ","WDTON ","EESAVE ","BOOTSZ1 ","BOOTSZ0 ","BOOTRST "},	0xFF,{"CKDIV8 ","CKOUT ","SUT1 ","SUT0 ","CKSEL3 ","CKSEL2 ","CKSEL1 ","CKSEL0 "} },
