@@ -99,6 +99,7 @@
 #define ATmega2560	0x030037
 #define ATmega2561	0x030038
 #define ATmega328	0x030039 // new (RG 22.06.2012)
+#define ATmega1284	0x03003A // new (RG 10.06.2017)
 
 #define	ATtiny11	0x030080
 #define	ATtiny10	0x030081
@@ -111,6 +112,10 @@
 #define ATtiny261	0x030088
 #define ATtiny461	0x030089
 #define ATtiny861	0x03008A
+#define ATtiny24	0x03008B
+#define ATtiny44	0x03008C
+#define ATtiny84	0x03008D
+#define ATtiny4313	0x03008E // new 16.09.2015 @RG
 
 #define AT90CAN32	0x030100
 #define AT90CAN64	0x030101

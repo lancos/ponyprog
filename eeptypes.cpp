@@ -220,6 +220,7 @@ long eepAt90s_vector[MAXEEPSUBTYPE] = {
 	ATmega128,
 	ATmega1280,
 	ATmega1281,
+	ATmega1284,  // new (RG 10.06.2017)
 	ATmega2560,
 	ATmega2561,
 
@@ -227,13 +228,17 @@ long eepAt90s_vector[MAXEEPSUBTYPE] = {
 	ATtiny13,
 	ATtiny15,
 	ATtiny22,
+	ATtiny24,      // new 08.01.2015 @RG
 	ATtiny25,
 	ATtiny26,
 	ATtiny261,
 //	ATtiny28,
 	ATtiny2313,
+	ATtiny4313,    // new 16.09.2015 @RG
+	ATtiny44,      // new 08.01.2015 @RG
 	ATtiny45,
 	ATtiny461,
+	ATtiny84,      // new 08.01.2015 @RG
 	ATtiny85,
 	ATtiny861
 };
@@ -280,6 +285,7 @@ int eepAt90s_size[MAXEEPSUBTYPE] = {
 	KB(128)+KB(4),	//mega128
 	KB(128)+KB(4),	//mega1280
 	KB(128)+KB(4),	//mega1281
+	KB(128)+KB(4),	//mega1284 new (RG 10.06.2017)
 	KB(256)+KB(4),	//mega2560
 	KB(256)+KB(4),	//mega2561
 
@@ -287,13 +293,17 @@ int eepAt90s_size[MAXEEPSUBTYPE] = {
 	KB(1)+64,		//tiny13
 	KB(1)+64,		//tiny15
 	KB(2)+128,		//tiny22
+	KB(2)+128,		//tiny24      // new 08.01.2015 @RG
 	KB(2)+128,		//tiny25
 	KB(2)+128,		//tiny26
 	KB(2)+128,		//tiny261
 //	KB(2),			//tiny28
 	KB(2)+128,		//tiny2313
+	KB(4)+256,		//tiny4313    // new 16.09.2015 @RG
+	KB(4)+256,		//tiny44      // new 08.01.2015 @RG
 	KB(4)+256,		//tiny45
 	KB(4)+256,		//tiny461
+	KB(8)+512,		//tiny84      // new 08.01.2015 @RG
 	KB(8)+512,		//tiny85
 	KB(8)+512		//tiny861
 };
@@ -339,6 +349,7 @@ int eepAt90s_split[MAXEEPSUBTYPE] = {
 	KB(128),	//mega128
 	KB(128),	//mega1280
 	KB(128),	//mega1281
+	KB(128),	//mega1284 new (RG 10.06.2017)
 	KB(256),	//mega2560
 	KB(256),	//mega2561
 
@@ -346,13 +357,17 @@ int eepAt90s_split[MAXEEPSUBTYPE] = {
 	KB(1),		//tiny13
 	KB(1),		//tiny15
 	KB(2),		//tiny22
+	KB(2),		//tiny24      // new 08.01.2015 @RG
 	KB(2),		//tiny25
 	KB(2),		//tiny26
 	KB(2),		//tiny261
 //	KB(2),		//tiny28
 	KB(2),		//tiny2313
+	KB(4),		//tiny4313    // new 16.09.2015 @RG
+	KB(4),		//tiny44      // new 08.01.2015 @RG
 	KB(4),		//tiny45
 	KB(4),		//tiny461
+	KB(8),		//tiny84      // new 08.01.2015 @RG
 	KB(8),		//tiny85
 	KB(8)		//tiny861
 };
@@ -398,6 +413,7 @@ int eepAt90s_wpagesize[MAXEEPSUBTYPE] = {
 	256,		//mega128
 	256,		//mega1280
 	256,		//mega1281
+	256,		//mega1284 new (RG 10.06.2017)
 	256,		//mega2560
 	256,		//mega2561
 
@@ -405,13 +421,17 @@ int eepAt90s_wpagesize[MAXEEPSUBTYPE] = {
 	32,			//tiny13
 	0,			//tiny15
 	0,			//tiny22
+	32,			//tiny24      // new 08.01.2015 @RG
 	32,			//tiny25
 	32,			//tiny26
 	32,			//tiny261
 //	0,			//tiny28
 	32,			//tiny2313
+	64,			//tiny4313    // new 16.09.2015 @RG
+	64,			//tiny44      // new 08.01.2015 @RG
 	64,			//tiny45
 	64,			//tiny461
+	64,			//tiny84      // new 08.01.2015 @RG
 	64,			//tiny85
 	64			//tiny861
 };
@@ -458,6 +478,7 @@ char const *eepAt90str_vector[MAXEEPSUBTYPE] = {
 	"ATmega128",
 	"ATmega1280",
 	"ATmega1281",
+	"ATmega1284", // new (RG 10.06.2017)
 	"ATmega2560",
 	"ATmega2561",
 
@@ -465,13 +486,17 @@ char const *eepAt90str_vector[MAXEEPSUBTYPE] = {
 	"ATtiny13",
 	"ATtiny15",
 	"ATtiny22",
+	"ATtiny24",      // new 08.01.2015 @RG
 	"ATtiny25",
 	"ATtiny26",
 	"ATtiny261",
 //	"ATtiny28",
 	"ATtiny2313",
+	"ATtiny4313",    // new 16.09.2015 @RG
+	"ATtiny44",      // new 08.01.2015 @RG
 	"ATtiny45",
 	"ATtiny461",
+	"ATtiny84",      // new 08.01.2015 @RG
 	"ATtiny85",
 	"ATtiny861",
 	0
@@ -1342,6 +1367,21 @@ const FuseBit eep_fusebits[] = {
 	{ ATtiny2313,
 		0x00,{0}, 0x00,{0}, 0x00,{0}, 0x03,{0,0,0,0,0, 0,"Lock2 ","Lock1 "},
 		0x00,{0}, 0x01,{0,0,0,0, 0,0,0, "SPMEN "}, 0xDE,{"DWEN ","EESAVE ","SPIEN ","WDTON ","BODLEVEL2 ","BODLEVEL1 ","BODLEVEL0 ","RSTDISBL "}, 0xFF,{"CKDIV8 ","CKOUT ","SUT1 ","SUT0 ","CKSEL3 ","CKSEL2 ","CKSEL1 ","CKSEL0 "} },
+
+    { ATtiny4313,   //new 16.09.2015 @RG
+		0x00,{0}, 0x00,{0}, 0x00,{0}, 0x03,{0,0,0,0,0, 0,"Lock2 ","Lock1 "},
+		0x00,{0}, 0x01,{0,0,0,0, 0,0,0, "SPMEN "}, 0xDE,{"DWEN ","EESAVE ","SPIEN ","WDTON ","BODLEVEL2 ","BODLEVEL1 ","BODLEVEL0 ","RSTDISBL "}, 0xFF,{"CKDIV8 ","CKOUT ","SUT1 ","SUT0 ","CKSEL3 ","CKSEL2 ","CKSEL1 ","CKSEL0 "} },
+
+	{ ATtiny24,      // new 08.01.2015 @RG
+		0x00,{0}, 0x00,{0}, 0x00,{0}, 0x03,{0,0,0,0,0, 0,"Lock2 ","Lock1 "},
+		0x00,{0}, 0x01,{0,0,0,0, 0,0,0, "SELFPRGEN "}, 0x5F,{"RSTDISBL ","DWEN ","SPIEN ","WDTON ","EESAVE ","BODLEVEL2 ","BODLEVEL1 ","BODLEVEL0 "}, 0xFF,{"CKDIV8 ","CKOUT ","SUT1 ","SUT0 ","CKSEL3 ","CKSEL2 ","CKSEL1 ","CKSEL0 "} },
+	{ ATtiny44,      // new 08.01.2015 @RG
+		0x00,{0}, 0x00,{0}, 0x00,{0}, 0x03,{0,0,0,0,0, 0,"Lock2 ","Lock1 "},
+		0x00,{0}, 0x01,{0,0,0,0, 0,0,0, "SELFPRGEN "}, 0x5F,{"RSTDISBL ","DWEN ","SPIEN ","WDTON ","EESAVE ","BODLEVEL2 ","BODLEVEL1 ","BODLEVEL0 "}, 0xFF,{"CKDIV8 ","CKOUT ","SUT1 ","SUT0 ","CKSEL3 ","CKSEL2 ","CKSEL1 ","CKSEL0 "} },
+	{ ATtiny84,      // new 08.01.2015 @RG
+		0x00,{0}, 0x00,{0}, 0x00,{0}, 0x03,{0,0,0,0,0, 0,"Lock2 ","Lock1 "},
+		0x00,{0}, 0x01,{0,0,0,0, 0,0,0, "SELFPRGEN "}, 0x5F,{"RSTDISBL ","DWEN ","SPIEN ","WDTON ","EESAVE ","BODLEVEL2 ","BODLEVEL1 ","BODLEVEL0 "}, 0xFF,{"CKDIV8 ","CKOUT ","SUT1 ","SUT0 ","CKSEL3 ","CKSEL2 ","CKSEL1 ","CKSEL0 "} },
+
 	{ ATtiny25,
 		0x00,{0}, 0x00,{0}, 0x00,{0}, 0x03,{0,0,0,0,0, 0,"Lock2 ","Lock1 "},
 		0x00,{0}, 0x01,{0,0,0,0, 0,0,0, "SELFPRGEN "}, 0x5F,{"RSTDISBL ","DWEN ","SPIEN ","WDTON ","EESAVE ","BODLEVEL2 ","BODLEVEL1 ","BODLEVEL0 "}, 0xFF,{"CKDIV8 ","CKOUT ","SUT1 ","SUT0 ","CKSEL3 ","CKSEL2 ","CKSEL1 ","CKSEL0 "} },
@@ -1379,6 +1419,9 @@ const FuseBit eep_fusebits[] = {
 		0x00,{0}, 0x00,{0}, 0x00,{0}, 0x3F,{0,0,"BootLock12 ","BootLock11 ","BootLock02 ","BootLock01 ","Lock2 ","Lock1 "},
 		0x00,{0}, 0x07,{0,0,0,0, 0,"BODLEVEL2 ","BODLEVEL1 ","BODLEVEL0 "}, 0xDF,{"OCDEN ","JTAGEN ","SPIEN ","WDTON ","EESAVE ","BOOTSZ1 ","BOOTSZ0 ","BOOTRST "},	0xFF,{"CKDIV8 ","CKOUT ","SUT1 ","SUT0 ","CKSEL3 ","CKSEL2 ","CKSEL1 ","CKSEL0 "} },
 	{ ATmega644,
+		0x00,{0}, 0x00,{0}, 0x00,{0}, 0x3F,{0,0,"BootLock12 ","BootLock11 ","BootLock02 ","BootLock01 ","Lock2 ","Lock1 "},
+		0x00,{0}, 0x07,{0,0,0,0, 0,"BODLEVEL2 ","BODLEVEL1 ","BODLEVEL0 "}, 0xDF,{"OCDEN ","JTAGEN ","SPIEN ","WDTON ","EESAVE ","BOOTSZ1 ","BOOTSZ0 ","BOOTRST "},	0xFF,{"CKDIV8 ","CKOUT ","SUT1 ","SUT0 ","CKSEL3 ","CKSEL2 ","CKSEL1 ","CKSEL0 "} },
+	{ ATmega1284, // new (RG 10.06.2017)
 		0x00,{0}, 0x00,{0}, 0x00,{0}, 0x3F,{0,0,"BootLock12 ","BootLock11 ","BootLock02 ","BootLock01 ","Lock2 ","Lock1 "},
 		0x00,{0}, 0x07,{0,0,0,0, 0,"BODLEVEL2 ","BODLEVEL1 ","BODLEVEL0 "}, 0xDF,{"OCDEN ","JTAGEN ","SPIEN ","WDTON ","EESAVE ","BOOTSZ1 ","BOOTSZ0 ","BOOTRST "},	0xFF,{"CKDIV8 ","CKOUT ","SUT1 ","SUT0 ","CKSEL3 ","CKSEL2 ","CKSEL1 ","CKSEL0 "} },
 	{ ATmega640,

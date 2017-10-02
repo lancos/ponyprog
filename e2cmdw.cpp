@@ -191,7 +191,11 @@ static Menu2Type index_menu_type[] = {
 	{m_attiny26, ATtiny26},
 //	{m_attiny28, ATtiny28},
 	{m_attiny2313, ATtiny2313},
+	{m_attiny4313, ATtiny4313},  // new 16.09.2015 @RG
 	{m_attiny13, ATtiny13},
+	{m_attiny24, ATtiny24},      // new 08.01.2015 @RG
+	{m_attiny44, ATtiny44},      // new 08.01.2015 @RG
+	{m_attiny84, ATtiny84},      // new 08.01.2015 @RG
 	{m_attiny25, ATtiny25},
 	{m_attiny45, ATtiny45},
 	{m_attiny85, ATtiny85},
@@ -208,6 +212,7 @@ static Menu2Type index_menu_type[] = {
 	{m_atmega640, ATmega640},
 	{m_atmega1280, ATmega1280},
 	{m_atmega1281, ATmega1281},
+	{m_atmega1284, ATmega1284}, // new ATmega1284 (RG 10.06.2017)
 	{m_atmega2560, ATmega2560},
 	{m_atmega2561, ATmega2561},
 	{m_at90can32, AT90CAN32},
@@ -390,6 +395,10 @@ static vMenu avrMenu[] = {
 	{"", m_attiny15, isSens, notChk, noKeyLbl, noKey, noSub},
 	{"", m_attiny22, isSens, notChk, noKeyLbl, noKey, noSub},
 	{"", m_attiny2313, isSens, notChk, noKeyLbl, noKey, noSub},
+	{"", m_attiny4313, isSens, notChk, noKeyLbl, noKey, noSub},    // new 16.09.2015 @RG
+	{"", m_attiny24, isSens, notChk, noKeyLbl, noKey, noSub},      // new 08.01.2015 @RG
+	{"", m_attiny44, isSens, notChk, noKeyLbl, noKey, noSub},      // new 08.01.2015 @RG
+	{"", m_attiny84, isSens, notChk, noKeyLbl, noKey, noSub},      // new 08.01.2015 @RG
 	{"", m_attiny25, isSens, notChk, noKeyLbl, noKey, noSub},
 	{"", m_attiny45, isSens, notChk, noKeyLbl, noKey, noSub},
 	{"", m_attiny85, isSens, notChk, noKeyLbl, noKey, noSub},
@@ -421,6 +430,7 @@ static vMenu avrMenu[] = {
 	{"", m_atmega128, isSens, notChk, noKeyLbl, noKey, noSub},
 	{"", m_atmega1280, isSens, notChk, noKeyLbl, noKey, noSub},
 	{"", m_atmega1281, isSens, notChk, noKeyLbl, noKey, noSub},
+	{"", m_atmega1284, isSens, notChk, noKeyLbl, noKey, noSub}, // new Atmega1284P (RG 22.06.2012)
 	{"", m_atmega2560, isSens, notChk, noKeyLbl, noKey, noSub},
 	{"", m_atmega2561, isSens, notChk, noKeyLbl, noKey, noSub},
 	{NULL}
@@ -1653,13 +1663,14 @@ void e2CmdWindow::WindowCommand(ItemVal id, ItemVal val, CmdType cType)
 	case m_attiny15:
 	case m_attiny22:
 	case m_attiny26:
-	case m_attiny2313:
+	case m_attiny2313: case m_attiny4313: // new m_attiny4313 16.09.2015 @RG
 	case m_attiny13:
 //	case m_attiny28:
+    case m_attiny24: case m_attiny44: case m_attiny84:      // new 08.01.2015 @RG
 	case m_attiny25: case m_attiny45: case m_attiny85:
 	case m_attiny261: case m_attiny461: case m_attiny861:
 	case m_atmega48: case m_atmega88: case m_atmega168: case m_atmega328: // new Atmega328 (RG 22.06.2012)
-	case m_atmega164: case m_atmega324: case m_atmega644:
+	case m_atmega164: case m_atmega324: case m_atmega644: case m_atmega1284:  // new Atmega1284P (RG 10.06.2017)
 	case m_atmega640: case m_atmega1280: case m_atmega1281:
 	case m_atmega2560: case m_atmega2561:
 	case m_at90can32: case m_at90can64: case m_at90can128:
@@ -2320,18 +2331,35 @@ int e2CmdWindow::CmdReadCalibration(int idx)
 		long loc;
 		int size;
 		bool mtype;
+		bool enabled;
 
 		loc = 0; size = 1; mtype = false;
-		THEAPP->GetCalibrationAddress(loc, size, mtype);
-
-		if (mtype)
-			loc += awip->GetSplittedInfo();
+		enabled = false;
+		THEAPP->GetCalibrationAddress(enabled, loc, size, mtype);
 
 		rval = awip->ReadOscCalibration(idx);
 
 		if (rval >= 0)
 		{
-			if	(	(size > 0 && size <= 4) &&
+			if (verbose == verboseAll)
+			{
+				char str[MAXMSG];
+
+				if (strlen(STR_MSGREADCALIBOK) + 20 < MAXMSG)
+					snprintf(str, MAXMSG, STR_MSGREADCALIBOK ": 0x%02X (%d)", rval, rval);
+				else
+					strncpy(str, "Translate error: STR_MSGREADCALIBOK", MAXMSG);
+				str[MAXMSG-1] = '\0';
+
+				vNoticeDialog note(this);
+				note.Notice(str);
+			}
+
+			if (mtype)
+				loc += awip->GetSplittedInfo();
+
+			if	(	enabled &&
+					(size > 0 && size <= 4) &&
 					(loc + size <= awip->GetBufSize())
 				)
 			{
@@ -2344,45 +2372,6 @@ int e2CmdWindow::CmdReadCalibration(int idx)
 
 				Draw();
 				UpdateStatusBar();
-
-				if (verbose == verboseAll)
-				{
-					char str[MAXMSG];
-
-					if (strlen(STR_MSGREADCALIBOK) + 20 < MAXMSG)
-						snprintf(str, MAXMSG, STR_MSGREADCALIBOK ": 0x%02X (%d)", rval, rval);
-					else
-						strncpy(str, "Translate error: STR_MSGREADCALIBOK", MAXMSG);
-					str[MAXMSG-1] = '\0';
-
-					vNoticeDialog note(this);
-					note.Notice(str);
-				}
-			}
-			else
-			{
-				result = BADPARAM;
-
-				if (verbose != verboseNo)
-				{
-					rval = OnError(result);
-					if (rval == 0)	//Abort
-					{
-						retry_flag = 0;
-						THEAPP->ClearIgnoreFlag();
-					}
-					if (rval == 1)	//Retry
-					{
-						retry_flag = 1;
-						THEAPP->ClearIgnoreFlag();
-					}
-					else
-					if (rval == 2)	//Ignore
-					{
-						retry_flag = 1;
-						THEAPP->SetIgnoreFlag();
-					}
-				}
 			}
 		}
 		else
@@ -3216,25 +3205,24 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 			{
 				if (!test_mode)
 				{
-					if (n >= 2)
-					{
-						long start;
-						int size;
-						bool mtype;
+					long start;
+					int size;
+					bool mtype;
+					bool enabled;
 
-						start = 0; size = 1; mtype = false;
-						THEAPP->GetCalibrationAddress(start, size, mtype);
-						if (n >= 2 && arg[1])
-						{
-							start = strtol(arg[1],NULL,0);		//address location
-						}
-						if (n >= 3 && arg[2])
-						{
-							if (strcmp(arg[2], "DATA") == 0)	//offset
-								mtype = true;
-						}
-						THEAPP->SetCalibrationAddress(start, size, mtype);
+					start = 0; size = 1; mtype = false;
+					enabled = false;
+					THEAPP->GetCalibrationAddress(enabled, start, size, mtype);
+					if (n >= 2 && arg[1])
+					{
+						start = strtol(arg[1],NULL,0);		//address location
 					}
+					if (n >= 3 && arg[2])
+					{
+						if (strcmp(arg[2], "DATA") == 0)	//offset
+							mtype = true;
+					}
+					THEAPP->SetCalibrationAddress(true, start, size, mtype);
 
 					int osc_index = 0;
 
@@ -3244,6 +3232,7 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 					}
 
 					result = CmdReadCalibration(osc_index);
+					THEAPP->SetCalibrationAddress(enabled, start, size, mtype);
 				}
 			}
 			else
@@ -3635,41 +3624,49 @@ int e2CmdWindow::CmdFillBuf()
 //====================>>> e2CmdWindow::SpecialBits <<<====================
 int e2CmdWindow::SpecialBits(int readonly)
 {
-	int rval;
+	int rval, abort = 0;
+	int result = OK;
 	uint32_t lock, fuse;
 
 	//If the current fuse settings is invalid try to read it from the device
 	if (!awip->IsFuseValid())
-		CmdReadSecurity(false);	//call with 'false' to avoid recursion!!!
+	{
+		result = CmdReadSecurity(false);	//call with 'false' to avoid recursion!!!
+		abort = THEAPP->GetAbortFlag();		// 18.09.2015 @RG
+	}
 
-	int repeat;
-	do {
-		repeat = 0;
+	// fix: do not show "Security and configurations bit" dialog after clicking abort button in alert dialog in case of Bad/unknown device detected - 18.09.2015 @RG
+	if (!abort && result == OK)
+	{
+		int repeat;
+		do {
+			repeat = 0;
 
-		lock = awip->GetLockBits();
-		fuse = awip->GetFuseBits();
+			lock = awip->GetLockBits();
+			fuse = awip->GetFuseBits();
 
-		fuseModalDialog e2Fuse(this);
-		rval = e2Fuse.fuseAction(" ", BuildE2PType(awip->GetEEPPriType(), awip->GetEEPSubType()), lock, fuse, readonly);
-		if (rval != 0)	//OK
-		{
-			if (rval == 3)	//Read
+			fuseModalDialog e2Fuse(this);
+			rval = e2Fuse.fuseAction(" ", BuildE2PType(awip->GetEEPPriType(), awip->GetEEPSubType()), lock, fuse, readonly);
+			if (rval != 0)	//OK
 			{
-				CmdReadSecurity(false);
-				repeat = 1;
-			}
-			else
-			{
-				awip->SetLockBits(lock);
-				awip->SetFuseBits(fuse);
-
-				if (rval == 2)	//Program
+				if (rval == 3)	//Read
 				{
-					CmdWriteSecurity();
+					CmdReadSecurity(false);
+					repeat = 1;
+				}
+				else
+				{
+					awip->SetLockBits(lock);
+					awip->SetFuseBits(fuse);
+
+					if (rval == 2)	//Program
+					{
+						CmdWriteSecurity();
+					}
 				}
 			}
-		}
-	} while (repeat);
+		} while (repeat);
+	}
 
 	return OK;
 }
@@ -3735,14 +3732,15 @@ int e2CmdWindow::OscCalibOption()
 	uint8_t val = 0;
 	bool memtype = false;
 	int size = 1;
+	bool enable = true;
 
-	THEAPP->GetCalibrationAddress(loc, size, memtype);
+	THEAPP->GetCalibrationAddress(enable, loc, size, memtype);
 
 	OscCalibDialog dlg(this, awip);
-	int rval = dlg.OscCalibAction(loc, memtype, val);
+	int rval = dlg.OscCalibAction(enable, loc, memtype, val);
 	if (rval)
 	{
-		THEAPP->SetCalibrationAddress(loc, size, memtype);
+		THEAPP->SetCalibrationAddress(enable, loc, size, memtype);
 	}
 
 	return OK;
@@ -3962,6 +3960,7 @@ int e2CmdWindow::CmdReadLock()
 				{
 					retry_flag = 0;
 					THEAPP->ClearIgnoreFlag();
+					THEAPP->SetAbortFlag(); // 18.09.2015 @RG
 				}
 				if (rval == 1)	//Retry
 				{

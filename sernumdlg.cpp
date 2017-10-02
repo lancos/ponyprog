@@ -68,6 +68,8 @@ enum {
 	rdbLittleEnd,
 	rdbBigEnd,
 
+	chkEnableLoc,
+
 	LastId
 };
 //@V@:EndIds
@@ -191,10 +193,11 @@ static DialogCmd OscCalibCmds[] =
 	{C_TextIn,txiVal, 0,"",NoList,CA_None,notSens,NoFrame,frmSN,txiLoc,10,STR_MSGOSCCALIBCFG},
 
 	{C_CheckBox, chkMemOffset, 0,STR_MSGOFFSET,NoList,CA_None,isSens,NoFrame,0,frmSN, 0,STR_TTSNOFFSET},
+	{C_CheckBox, chkEnableLoc, 0,"Save",NoList,CA_None,isSens,NoFrame,0,chkMemOffset, 0,"Save the result in the buffer at given location"},
 
-	{C_Button, M_Cancel, 0, STR_BTNCANC, NoList,CA_None, isSens,NoFrame, 0, chkMemOffset},
-	{C_Button, M_OK, 0, STR_BTNOK, NoList, CA_DefaultButton, isSens, NoFrame, M_Cancel, chkMemOffset},
-	{C_Button, btnRead,0,STR_BTNREAD, NoList, CA_None, isSens,NoFrame, M_OK, chkMemOffset,	0, STR_READOSCCALIB},
+	{C_Button, M_Cancel, 0, STR_BTNCANC, NoList,CA_None, isSens,NoFrame, 0, chkEnableLoc},
+	{C_Button, M_OK, 0, STR_BTNOK, NoList, CA_DefaultButton, isSens, NoFrame, M_Cancel, chkEnableLoc},
+	{C_Button, btnRead,0,STR_BTNREAD, NoList, CA_None, isSens,NoFrame, M_OK, chkEnableLoc,	0, STR_READOSCCALIB},
 
 
 	{C_EndOfList,0,0,0,0,CA_None,0,0,0}
@@ -218,7 +221,7 @@ OscCalibDialog::~OscCalibDialog()
 }
 
 //======================>>> OscCalibDialog::OscCalibAction <<<======================
-int OscCalibDialog::OscCalibAction(long &cLoc, bool &cMemType, uint8_t &cVal)
+int OscCalibDialog::OscCalibAction(bool &cEnable, long &cLoc, bool &cMemType, uint8_t &cVal)
 {
 	cLoc = (cLoc < 0) ? 0 : cLoc;
 
@@ -231,6 +234,7 @@ int OscCalibDialog::OscCalibAction(long &cLoc, bool &cMemType, uint8_t &cVal)
 	SetCommandLabel(txiVal, str3, OscCalibCmds);
 
 	SetCommandObject(chkMemOffset, cMemType, OscCalibCmds);
+	SetCommandObject(chkEnableLoc, cEnable, OscCalibCmds);
 
 	AddDialogCmds(OscCalibCmds);		// add the predefined commands
 
@@ -247,6 +251,7 @@ int OscCalibDialog::OscCalibAction(long &cLoc, bool &cMemType, uint8_t &cVal)
 	cVal = (uint8_t)strtol(str,NULL,0);
 
 	cMemType = GetValue(chkMemOffset) ? true : false;
+	cEnable = GetValue(chkEnableLoc) ? true : false;
 
 	return (ans == M_OK);
 }

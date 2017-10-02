@@ -1378,12 +1378,17 @@ int E2Profile::SetSoundEnabled(bool enabled)
 }
 
 
-int E2Profile::GetCalibrationAddress(long &start, int &size, bool &mtype)
+int E2Profile::GetCalibrationAddress(bool &enabled, long &start, int &size, bool &mtype)
 {
 	char const *sp;
 
-	start = 0; size = 1; mtype = false;
+	enabled = true; start = 0; size = 1; mtype = false;
 
+	if ( (sp = GetParameter("OscCalibrationEnabled")) )
+	{
+		if (sp && strcasecmp(sp, "NO") == 0)
+			enabled = false;
+	}
 	if ( (sp = GetParameter("OscCalibrationAddr")) )
 	{
 		start = strtol(sp,NULL,0);
@@ -1401,22 +1406,33 @@ int E2Profile::GetCalibrationAddress(long &start, int &size, bool &mtype)
 	return OK;
 }
 
-int E2Profile::SetCalibrationAddress(unsigned long start, int size, bool mtype)
+int E2Profile::SetCalibrationAddress(bool enabled, unsigned long start, int size, bool mtype)
 {
-	int rval = BADPARAM;
-	char str[MAXNUMDIGIT];
+	int rval = OK;
 
-	if (start >= 0)
+	if (enabled)
 	{
-		if ( hexnum2str(start, str, MAXNUMDIGIT) == OK )
-			rval = SetParameter("OscCalibrationAddr", str);
+		char str[MAXNUMDIGIT];
+		rval = BADPARAM;
+
+		SetParameter("OscCalibrationEnabled", "YES");
+
+		if (start >= 0)
+		{
+			if ( hexnum2str(start, str, MAXNUMDIGIT) == OK )
+				rval = SetParameter("OscCalibrationAddr", str);
+		}
+		if (size >= 1)
+		{
+			if ( decnum2str(size, str, MAXNUMDIGIT) == OK )
+				rval = SetParameter("OscCalibrationSize", str);
+		}
+		rval = SetParameter("OscCalibrationType", mtype ? "DATA" : "PROG");
 	}
-	if (size >= 1)
+	else
 	{
-		if ( decnum2str(size, str, MAXNUMDIGIT) == OK )
-			rval = SetParameter("OscCalibrationSize", str);
+		SetParameter("OscCalibrationEnabled", "NO");
 	}
-	rval = SetParameter("OscCalibrationType", mtype ? "DATA" : "PROG");
 
 	return rval;
 }

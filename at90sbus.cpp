@@ -235,9 +235,10 @@ int At90sBus::WriteLockBits(uint32_t param, long model)
 		val2 = ~(param & 0x06);
 		break;
 
-	case ATtiny2313:
+	case ATtiny2313: case ATtiny4313: // new ATtiny4313 16.09.2015 @RG
 	case ATtiny26:
 	case ATtiny13:
+    case ATtiny24: case ATtiny44: case ATtiny84: //new 08.01.2015 @RG
 	case ATtiny25: case ATtiny45: case ATtiny85:
 	case ATtiny261: case ATtiny461: case ATtiny861:
 		val1 = WriteLock0;
@@ -258,7 +259,7 @@ int At90sBus::WriteLockBits(uint32_t param, long model)
 	case ATmega169:
 	case ATmega8515: case ATmega8535:
 	case ATmega48: case ATmega88: case ATmega168: case ATmega328: // new ATmega328 (RG 22.06.2012)
-	case ATmega164: case ATmega324: case ATmega644:
+	case ATmega164: case ATmega324: case ATmega644: case ATmega1284: // new ATmega1284P (RG 10.06.2017)
 	case ATmega640: case ATmega1280: case ATmega1281:
 	case ATmega2560: case ATmega2561:
 	case AT90CAN32: case AT90CAN64: case AT90CAN128:
@@ -367,7 +368,8 @@ int At90sBus::WriteFuseBits(uint32_t param, long model)
 		break;
 
 	//Three byte fuse
-	case ATtiny2313:
+	case ATtiny2313: case ATtiny4313: // new ATtiny4313 16.09.2015 @RG
+    case ATtiny24: case ATtiny44: case ATtiny84: // new 08.01.2015 @RG
 	case ATtiny25: case ATtiny45: case ATtiny85:
 	case ATtiny261: case ATtiny461: case ATtiny861:
 	case ATmega128:
@@ -375,7 +377,7 @@ int At90sBus::WriteFuseBits(uint32_t param, long model)
 	case ATmega162:
 	case ATmega169:
 	case ATmega48: case ATmega88: case ATmega168: case ATmega328: // new ATmega328 (RG 22.06.2012)
-	case ATmega164: case ATmega324: case ATmega644:
+	case ATmega164: case ATmega324: case ATmega644: case ATmega1284: // new ATmega1284P (RG 10.06.2017)
 	case AT90CAN32: case AT90CAN64: case AT90CAN128:
 	case ATmega640: case ATmega1280: case ATmega1281:
 	case ATmega2560: case ATmega2561:
@@ -507,7 +509,8 @@ uint32_t At90sBus::ReadFuseBits(long model)
 		break;
 
 	//Three byte fuse
-	case ATtiny2313:
+	case ATtiny2313: case ATtiny4313: // new ATtiny4313 16.09.2015 @RG
+    case ATtiny24: case ATtiny44: case ATtiny84: // new 08.01.2015 @RG
 	case ATtiny25: case ATtiny45: case ATtiny85:
 	case ATtiny261: case ATtiny461: case ATtiny861:
 	case ATmega128:
@@ -515,7 +518,7 @@ uint32_t At90sBus::ReadFuseBits(long model)
 	case ATmega162:
 	case ATmega169:
 	case ATmega48: case ATmega88: case ATmega168: case ATmega328: // new ATmega328 (RG 22.06.2012)
-	case ATmega164: case ATmega324: case ATmega644:
+	case ATmega164: case ATmega324: case ATmega644: case ATmega1284: // new ATmega1284 (RG 10.06.2017)
 	case AT90CAN32: case AT90CAN64: case AT90CAN128:
 	case ATmega640: case ATmega1280: case ATmega1281:
 	case ATmega2560: case ATmega2561:
@@ -602,7 +605,8 @@ uint32_t At90sBus::ReadLockBits(long model)
 
 	case ATtiny13:
 	case ATtiny26:
-	case ATtiny2313:
+	case ATtiny2313: case ATtiny4313: // new ATtiny4313 16.09.2015 @RG
+    case ATtiny24: case ATtiny44: case ATtiny84: // new 08.01.2015 @RG
 	case ATtiny25: case ATtiny45: case ATtiny85:
 	case ATtiny261: case ATtiny461: case ATtiny861:
 		SendDataByte(ReadLock0);
@@ -624,7 +628,7 @@ uint32_t At90sBus::ReadLockBits(long model)
 	case ATmega169:
 	case ATmega8515: case ATmega8535:
 	case ATmega48: case ATmega88: case ATmega168: case ATmega328: // new ATmega328 (RG 22.06.2012)
-	case ATmega164: case ATmega324: case ATmega644:
+	case ATmega164: case ATmega324: case ATmega644: case ATmega1284: // new ATmega1284 (RG 10.06.2017)
 	case AT90CAN32: case AT90CAN64: case AT90CAN128:
 	case ATmega640: case ATmega1280: case ATmega1281:
 	case ATmega2560: case ATmega2561:

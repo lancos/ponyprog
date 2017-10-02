@@ -172,8 +172,8 @@ class E2Profile : public Profile
 	long GetProgramOptions();
 	int SetProgramOptions(long prog_option);
 
-	int GetCalibrationAddress(long &start, int &size, bool &mtype);
-	int SetCalibrationAddress(unsigned long start, int size, bool mtype);
+	int GetCalibrationAddress(bool &enabled, long &start, int &size, bool &mtype);
+	int SetCalibrationAddress(bool enabled, unsigned long start, int size, bool mtype);
 
 	char const *GetLogFileName();
 	int SetLogFileName(char const *name);

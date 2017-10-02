@@ -35,10 +35,10 @@
 #define	AUTHORNAME	"Claudio Lanconelli"
 #define	AUTHORMAIL	"PonyProg2000@gmail.com"
 #define	AUTHORWEB	"http://www.LancOS.com"
-#define COPYRIGHTYEAR	"1997-2013"
+#define COPYRIGHTYEAR	"1997-2017"
 #define	APPNAME_EXT	STR_APPNAME_EXT
 
-#define	APPVERSION	"2.08d Beta"
+#define	APPVERSION	"2.08e Beta"
 
 #define	THEAPP	((e2App*)theApp)
 
