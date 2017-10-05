@@ -188,8 +188,8 @@ class E2Profile
 	static long GetProgramOptions();
 	static void SetProgramOptions(long prog_option);
 
-	static int GetCalibrationAddress(long &start, int &size, bool &mtype);
-	static void SetCalibrationAddress(unsigned long start, int size, bool mtype);
+	static int GetCalibrationAddress(bool &enabled, long &start, int &size, bool &mtype);
+	static void SetCalibrationAddress(bool enabled, unsigned long start, int size, bool mtype);
 
 	static QString GetLogFileName();
 	static void SetLogFileName(const QString &name);

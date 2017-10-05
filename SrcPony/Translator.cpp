@@ -540,6 +540,7 @@ QString cTranslator::engText[] =
 	"Refer to device datasheet, please",
 	"Checked items means programmed",
 	"UnChecked items means unprogrammed",
+	"Save the result in the buffer at given location",
 	""
 };
 

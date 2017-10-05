@@ -199,16 +199,18 @@ OscCalibDialog::OscCalibDialog(QWidget *bw, e2AppWinInfo *aw, const QString titl
 	loc = 0;
 	val = 0;
 	memtype = false;
+	enabled = false;
 	size = 1;
 
 	qDebug() << "OscCalibDialog::OscCalibDialog()";
 
-	E2Profile::GetCalibrationAddress(loc, size, memtype);
+	E2Profile::GetCalibrationAddress(enabled, loc, size, memtype);
 
 	lblLoc->setText(translate(STR_MSGADDRESS));
 	lblVal->setText(translate(STR_MSGVALUE));
 
 	chkMemOffset->setText(translate(STR_MSGOFFSET));
+	chkEnabled->setText(translate(STR_CALIBRENABLED));
 
 	QString str1;
 	QString str3;
@@ -222,6 +224,7 @@ OscCalibDialog::OscCalibDialog(QWidget *bw, e2AppWinInfo *aw, const QString titl
 	txiVal->setText(str3);
 
 	chkMemOffset->setChecked(memtype);
+	chkEnabled->setChecked(enabled);
 
 
 	pushOk->setText(translate(STR_BTNOK));
@@ -277,8 +280,9 @@ void OscCalibDialog::onOk()
 	}
 
 	memtype = chkMemOffset->isChecked();
+	enabled = chkEnabled->isChecked();
 
-	E2Profile::SetCalibrationAddress(loc, size, memtype);
+	E2Profile::SetCalibrationAddress(enabled, loc, size, memtype);
 
 	accept();
 }

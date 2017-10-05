@@ -81,6 +81,7 @@ class OscCalibDialog : public QDialog, public cTranslator, public Ui::OscCalibrD
 	long loc;
 	uint8_t val;
 	bool memtype;
+	bool enabled;
 	int size;
 
 	e2AppWinInfo *awip;

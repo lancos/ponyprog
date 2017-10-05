@@ -1891,14 +1891,23 @@ void E2Profile::SetSoundEnabled(bool enabled)
 }
 
 
-int E2Profile::GetCalibrationAddress(long &start, int &size, bool &mtype)
+int E2Profile::GetCalibrationAddress(bool &enabled, long &start, int &size, bool &mtype)
 {
 	QString sp;
 	bool ok;
 
+	enabled = true;
 	start = 0;
 	size = 1;
 	mtype = false;
+
+	if ((sp = s->value("OscCalibrationEnabled", "NO").toString()).length())
+	{
+		if (sp == "NO")
+		{
+			enabled = false;
+		}
+	}
 
 	if ((sp = s->value("OscCalibrationAddr", "0").toString()).length())
 	{
@@ -1927,8 +1936,10 @@ int E2Profile::GetCalibrationAddress(long &start, int &size, bool &mtype)
 }
 
 
-void E2Profile::SetCalibrationAddress(unsigned long start, int size, bool mtype)
+void E2Profile::SetCalibrationAddress(bool enabled, unsigned long start, int size, bool mtype)
 {
+	s->setValue("OscCalibrationEnabled", enabled ? "YES" : "NO");
+
 	//      if (start >= 0)
 	{
 		s->setValue("OscCalibrationAddr", QString::number(start));
