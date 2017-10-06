@@ -80,8 +80,8 @@ SET(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 # INCLUDE(PONYPROGOutOfSourceBuild) # Disallow in-source builds
 INCLUDE(GenerateDEF) # Convenience macro for linking Win32 DLLs using MSVC
 INCLUDE(Dependencies)
-INCLUDE(WordSize) # Detect 32/64 bit platform
-INCLUDE(Compiler) # Detect problematic compilers
+# INCLUDE(WordSize) # Detect 32/64 bit platform
+# INCLUDE(Compiler) # Detect problematic compilers
 
 
 SET(QtApp_RCCS  "${CMAKE_CURRENT_SOURCE_DIR}/ponyprog.qrc")
