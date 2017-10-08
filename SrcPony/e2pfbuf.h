@@ -19,10 +19,9 @@
 // General Public License for more details.                                //
 //                                                                         //
 // You should have received a copy of the GNU  General Public License      //
-// along with this program (see COPYING);     if not, write to the         //
+// along with this program (see LICENSE);     if not, write to the         //
 // Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. //
 //                                                                         //
-//-------------------------------------------------------------------------//
 //=========================================================================//
 
 #ifndef _E2PFBUF_H
