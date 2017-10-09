@@ -1,39 +1,50 @@
 -----------------
 PREPARE FOR BUILD
 -----------------
-# ./config.sh [install_prefix]
-
-for example:
-# ./config.sh $HOME
+For compiling with Qt4 should be installed libqtcore4, libqtgui4, libqt4-dev, packages
+Compiling with Qt5 needs qtbase5-dev, qtmultimedia5-dev, libqt5printsupport5, libqt5multimedia5 
+Name of packages can be different on distributions.
 
 ---------------
 BUILD for Linux
 ---------------
-On Debian systems you need the following packages installed to build:
-# sudo apt-get install build-essential libx11-dev libxt-dev libxext-dev libxaw7-dev
+On linux systems you need the following packages installed to build: cmake, make, g++ and selected Qt packages
+For the compiling of only binary file with debugging information:
 
-# make clean
-# make
+# ./create_elf_binary.sh
 
-test the executable:
-# bin/ponyprog2000
+In this shell script you can change followed options in the line: 
+cmake -DUSE_DEBUGGER=ON -DUSE_QT5=OFF ..
 
-and install (optional):
-# sudo make install
-
-the sudo command is not needed if you install in $HOME
+USE_DEBUGGER ON/OFF: the debug information in binary file
+USE_QT5      ON/OFF: select Qt5 or Qt4
+USE_PROFILER ON/OFF: include the information for profiling 
 
 
-After launching ponyprog it creates ~/.PonyProg2000rc file with all the settings.
-You may need to edit it and change
-ttyLockDir=/var/lock
-The directory where PonyProg creates the lock for serial ports (should be writeable)
+After compiling the linux binary you can test the executable:
+# ./ponyprog
 
-ttyDevName=ttyS
-Is the name of the serial port device without the trailing number
+Or with debugger:
+# gdb -ex run --args ./ponyprog
 
-HtmlBrowseApp=konqueror
-Is your html preferred browser (firefox, konqueror, netscape, ...)
+But for direct communication about TTY be sure, than you have access rights. 
+Your username must be added to the tty group. Same playing for the LPT case.
+The other possibility tu run the program is 'sudo' tool.
+
+For generating of debian installer file (deb) please run the script
+# ./create_deb_package.sh 
+
+Install the package 
+# sudo dpkg -i ./ponyprog*.deb
+
+
+The installation set the capabilities from postinst script:
+# setcap 'cap_sys_tty_config=+ep' /usr/bin/ponyprog
+
+
+For generating of rpm file you call the script 
+# ./create_rpm_package.sh 
+
 
 -----------------------------
 BUILD for Windows using mingw
@@ -43,7 +54,7 @@ You can cross-build from Linux (tested on Ubuntu 12.04) or build from Windows wi
 # make -f Makefile.win clean
 # make -f Makefile.win
 
-You will find ponyprog2000.exe in bin/win
+You will find ponyprog.exe in bin/win
 
 -----------------------------
 BUILD for Windows using MSVC

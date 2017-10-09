@@ -37,20 +37,9 @@ ENDIF()
 
 MESSAGE(STATUS "Qt version for compiling: " ${USE_QT_VERSION})
 
-# IF(NOT ${USE_QT_VERSION} MATCHES "4" AND NOT ${USE_QT_VERSION} MATCHES "5")
-#   MESSAGE(FATAL_ERROR "-- Qt version must be set to 4 or 5!")
-# ENDIF()
-
-#debug or release
-
 OPTION (USE_DEBUGGER "Include in binary file debug information" OFF)
-# SET(USE_DEBUGGER true)
-
-#enable or disable profiling info
-# SET(USE_PROFILER false)
 
 OPTION (USE_PROFILER "Include in binary file profiling information" OFF)
-
 
 
 IF(${USE_DEBUGGER})
@@ -65,7 +54,6 @@ INCLUDE(CheckIncludeFile)
 INCLUDE(CheckIncludeFileCXX)
 INCLUDE(TestCXXAcceptsFlag)
 INCLUDE(CheckCXXCompilerFlag)
-# INCLUDE(FindPkgConfig)
 
 
 SET(TARGET_NAME ponyprog )
@@ -77,14 +65,11 @@ SET(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 
 
-# INCLUDE(PONYPROGOutOfSourceBuild) # Disallow in-source builds
+INCLUDE(OutOfSourceBuild) # Disallow in-source builds
+
 INCLUDE(GenerateDEF) # Convenience macro for linking Win32 DLLs using MSVC
 INCLUDE(Dependencies)
-# INCLUDE(WordSize) # Detect 32/64 bit platform
-# INCLUDE(Compiler) # Detect problematic compilers
 
-
-SET(QtApp_RCCS  "${CMAKE_CURRENT_SOURCE_DIR}/ponyprog.qrc")
 
 SET(CURRENT_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR})
 
@@ -138,9 +123,6 @@ ELSE()
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fno-exceptions -fno-rtti")
 ENDIF()
 
-#on old versiong of GCC: -std=c++11 move to -std=c++0x
-#SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fno-exceptions -fno-rtti")
-# SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-exceptions -fno-rtti")
 
 # options for gprof 
 IF(${USE_PROFILER})
@@ -168,8 +150,6 @@ IF(${USE_QT_VERSION} MATCHES "4")
 ELSE()
     FIND_PACKAGE(Qt5 COMPONENTS Core PrintSupport Gui Widgets Multimedia REQUIRED QUIET)
 
-#     FIND_PACKAGE(Qt5 COMPONENTS LinguistTools  REQUIRED QUIET)
-    
     IF(NOT Qt5Widgets_FOUND)
         MESSAGE(FATAL_ERROR "Qt5 could not be found. "
         "If it's INSTALLed in a non-standard location, specify the path to qmake in QT_QMAKE_EXECUTABLE. "
@@ -269,9 +249,6 @@ ADD_CUSTOM_TARGET (tags
     COMMAND  ctags -R -f tags ${CMAKE_SOURCE_DIR}/SrcPony
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 )
-# MESSAGE("CMAKE_SOURCE_DIR main ${CMAKE_SOURCE_DIR}")
-# MESSAGE("CMAKE_CURRENT_BINARY_DIR main ${CMAKE_CURRENT_BINARY_DIR}")
-# INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
 
 
 # Setup module enabled/disabled defaults ...
