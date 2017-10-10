@@ -75,4 +75,4 @@ ADD_CUSTOM_TARGET(package-binary-nsis
 	)
 
 
-INCLUDE(CPack)
+# INCLUDE(CPack)

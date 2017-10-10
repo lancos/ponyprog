@@ -140,5 +140,5 @@ ADD_CUSTOM_TARGET(package-binary-tgz
 
 # Note ... we intentionally don't provide upload capability for Posix packages, and leave distribution to the experts
 
-INCLUDE(CPack)
+# INCLUDE(CPack)
 

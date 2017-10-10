@@ -1,30 +1,22 @@
 # Setup automatic generation of the changelog
 MESSAGE(STATUS "Generate installation variables..." )
+ADD_CUSTOM_TARGET(changelog
+	COMMAND ${HGCOMMAND} log > ${PONYPROG_BINARY_DIR}/ChangeLog
+	WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+	)
 
 
 SET( CPACK_SOURCE_PACKAGE_FILE_NAME "ponyprog-${APP_VERSION}" )
-SET( CPACK_SOURCE_IGNORE_FILES
-    "/\\\\.svn/"
-    "/\\\\.kdev4/"
-    "/\\\\.git/"
-    "/pics/"
-    "/build/"
-    "~$"
-    "\\\\.pcs$"
-#     "TODO.txt"
-#     "CMakeLists.txt.user"
-#     "/doxygen/"
-#     "${CMAKE_BINARY_DIR}"
-)
+
 
 
 # --- Package generation
-SET( PONYPROG_CPACK_BUILD_CONFIG "Release_and_Debug" )
-SET( PONYPROG_CPACK_PACKAGE_NAME ${CMAKE_PROJECT_NAME})
-SET( PONYPROG_CPACK_PACKAGE_VENDOR "Lancos" )
-SET( PONYPROG_CPACK_PACKAGE_INSTALL_DIRECTORY "PONYPROG ${APP_VERSION}" )
-SET( PONYPROG_CPACK_PACKAGE_INSTALL_REGISTRY_KEY "PONYPROG ${APP_VERSION}" )
-SET( PONYPROG_CPACK_PACKAGE_HOMEPAGE "http://ponyprog.sourceforge.net/" )
+# SET( CPACK_BUILD_CONFIG "Release_and_Debug" )
+# SET( CPACK_PACKAGE_NAME ${CMAKE_PROJECT_NAME})
+SET( CPACK_PACKAGE_VENDOR "Lancos" )
+SET( CPACK_PACKAGE_INSTALL_DIRECTORY "PONYPROG ${APP_VERSION}" )
+SET( CPACK_PACKAGE_INSTALL_REGISTRY_KEY "PONYPROG ${APP_VERSION}" )
+SET( CPACK_PACKAGE_HOMEPAGE "http://ponyprog.sourceforge.net/" )
 
 
 # Setup global packaging parameters ...
@@ -34,11 +26,27 @@ SET( PONYPROG_CPACK_INSTALL_CMAKE_PROJECTS "${CURRENT_BUILD_DIR};ponyprog;ALL;/"
 SET( PONYPROG_CPACK_PACKAGE_FILE_NAME "ponyprog-setup-${APP_VERSION}" )
 SET( PONYPROG_CPACK_PACKAGE_VERSION "${APP_VERSION}" )
 SET( PONYPROG_CPACK_RESOURCE_FILE_LICENSE "${PROJECT_SOURCE_DIR}/LICENSE" )
-SET( PONYPROG_CPACK_SOURCE_IGNORE_FILES "/CVS/;/.svn/;/.git/;/.hg/" )
+
 SET( PONYPROG_CPACK_SOURCE_INSTALLED_DIRECTORIES "${PROJECT_SOURCE_DIR};/" )
 SET( PONYPROG_CPACK_SOURCE_PACKAGE_FILE_NAME "ponyprog-source-${APP_VERSION}" )
+SET( PONYPROG_CPACK_SOURCE_IGNORE_FILES
+    "/\\\\.svn/"
+    "/\\\\.kdev4/*"
+    "/\\\\.git/*"
+    "/pics/"
+    "/build*/*"
+    "\\\\.deb"
+    "\\\\.kdev4"
+    "/ponyprog$"
+#     "~$"
+#     "/ponyprog"
+#     "TODO.txt"
+#     "CMakeLists.txt.user"
+#     "/doxygen/"
+#     "${CMAKE_BINARY_DIR}"
+)
 
-# SET( PONYPROG_CPACK_PACKAGE_NAME ${CMAKE_PROJECT_NAME} )
+SET( PONYPROG_CPACK_PACKAGE_NAME ${CMAKE_PROJECT_NAME} )
 # SET( PONYPROG_CPACK_PACKAGE_VERSION ${APP_VERSION} )
 SET( PONYPROG_CPACK_PACKAGE_RELEASE 0 )
 SET( PONYPROG_CPACK_PACKAGE_MAINTAINER "${APP_AUTHOR} <${APP_EMAIL}>" )
@@ -103,6 +111,9 @@ ENDMACRO(PONYPROG_CHECK_INSTALLED_VERSION)
 #     SET(CPACK_PACKAGE_INSTALL_DIRECTORY "/usr")
 # ENDIF(UNIX AND NOT APPLE)
 
+# Generate source packages
+ADD_SUBDIRECTORY(source)
+
 # Generate platform-specific binary packages
 IF(APPLE)
 	ADD_SUBDIRECTORY(osx)
@@ -116,7 +127,6 @@ IF(WIN32)
 	ADD_SUBDIRECTORY(win32)
 ENDIF(WIN32)
 
-# Generate source packages
-# ADD_SUBDIRECTORY(source)
+
 # INCLUDE(CPack)
 
