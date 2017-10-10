@@ -36,6 +36,8 @@ SET( PONYPROG_CPACK_SOURCE_IGNORE_FILES
     "/pics/"
     "/build*/*"
     "\\\\.deb"
+    "\\\\.rpm"
+    "\\\\.zip"
     "\\\\.kdev4"
     "/ponyprog$"
 #     "~$"
