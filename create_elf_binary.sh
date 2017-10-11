@@ -22,7 +22,7 @@ fi
 if [ -d "$DIRECTORY" ]; then
     cd "$DIRECTORY"
     rm * -rf
-    cmake -DUSE_DEBUGGER=ON ..
+    cmake -DUSE_DEBUGGER=OFF -DUSE_QT5=OFF ..
     make -j$CPU_NUM
     cd ..
     mv ./$DIRECTORY/ponyprog .

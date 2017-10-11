@@ -9,7 +9,7 @@ Name of packages can be different on distributions.
 BUILD for Linux
 ---------------
 On linux systems you need the following packages installed to build: cmake, make, g++ and selected Qt packages
-For the compiling of only binary file with debugging information:
+To build the executable binary file run the script:
 
 # ./create_elf_binary.sh
 
@@ -31,7 +31,7 @@ But for direct communication about TTY be sure, than you have access rights.
 Your username must be added to the tty group. Same playing for the LPT case.
 The other possibility tu run the program is 'sudo' tool.
 
-For generating of debian installer file (deb) please run the script
+To generate the debian installer file (deb) please run the script:
 # ./create_deb_package.sh 
 
 Install the package 
@@ -42,21 +42,16 @@ The installation set the capabilities from postinst script:
 # setcap 'cap_sys_tty_config=+ep' /usr/bin/ponyprog
 
 
-For generating of rpm file you call the script 
+To generate the rpm file run the script :
 # ./create_rpm_package.sh 
 
 
 -----------------------------
 BUILD for Windows using mingw
 -----------------------------
-You can cross-build from Linux (tested on Ubuntu 12.04) or build from Windows with mingw package installed
+Install QT SDK 5.
 
-# make -f Makefile.win clean
-# make -f Makefile.win
+To build the executable file run the script:
+# create_exe_binary.bat
 
-You will find ponyprog.exe in bin/win
-
------------------------------
-BUILD for Windows using MSVC
------------------------------
-This is not supported anymore.
+You will find ponyprog.exe in the build directory.

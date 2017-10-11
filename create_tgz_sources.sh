@@ -10,10 +10,10 @@ fi
 
 # because of removing of all files in directory
 if [ -d "$DIRECTORY" ]; then
-    rm ./ponyprog-source-*.*
+    rm -f ./ponyprog-source-*.*
     cd "$DIRECTORY"
     rm * -rf
-    cmake -DUSE_DEBUGGER=ON ..
+    cmake -DUSE_DEBUGGER=OFF -DUSE_QT5=OFF ..
     #make -j$CPU_NUM
     make package-source-tgz
     cd ..

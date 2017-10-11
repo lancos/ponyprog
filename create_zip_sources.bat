@@ -25,8 +25,8 @@ cmake -G "MinGW Makefiles" ^
 -DCMAKE_MAKE_PROGRAM="mingw32-make" ^
 -DUSE_DEBUGGER="OFF" -DUSE_QT5="ON" ..
 
-echo "Compile sources"
+echo "Build source zip"
 
-mingw32-make 
+mingw32-make package-source-zip
 
 cd ..
