@@ -39,6 +39,7 @@ SET( PONYPROG_CPACK_SOURCE_IGNORE_FILES
     "\\\\.rpm"
     "\\\\.zip"
     "\\\\.kdev4"
+    "/cppreport"
     "/ponyprog$"
 #     "~$"
 #     "/ponyprog"

@@ -15,7 +15,7 @@ if [ -d "$DIRECTORY" ]; then
     rm * -rf
     cmake -DUSE_DEBUGGER=ON ..
     #make -j$CPU_NUM
-    make package-source-zip
+    make package-source-tgz
     cd ..
-    mv ./$DIRECTORY/distribution/source/PonyProg*/ponyprog-source-*.zip .
+    mv ./$DIRECTORY/distribution/source/PonyProg*/ponyprog-source-*.tar.gz .
 fi
