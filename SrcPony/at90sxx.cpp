@@ -211,6 +211,11 @@ static IdType IdArray[] =
 	{0x91, 0x07,    ATtiny28},              //only HV parallel prog
 
 	{0x91, 0x0A,    ATtiny2313},
+	{0x92, 0x0D,    ATtiny4313},    // new 16.09.2015 @RG
+
+	{0x91, 0x0B,    ATtiny24},      // new 08.01.2015 @RG
+	{0x92, 0x07,    ATtiny44},      // new 08.01.2015 @RG
+	{0x93, 0x0C,    ATtiny84},      // new 08.01.2015 @RG
 
 	{0x91, 0x08,    ATtiny25},
 	{0x92, 0x06,    ATtiny45},
@@ -244,6 +249,7 @@ static IdType IdArray[] =
 	{0x96, 0x08,    ATmega640},
 	{0x97, 0x03,    ATmega1280},
 	{0x97, 0x04,    ATmega1281},
+	{0x97, 0x05,    ATmega1284},     // new ATmega1284P (RG 10.06.2017)
 	{0x98, 0x01,    ATmega2560},
 	{0x98, 0x02,    ATmega2561},
 
