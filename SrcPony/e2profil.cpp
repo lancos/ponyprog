@@ -98,7 +98,14 @@ void E2Profile::SetBogoMips(int value)
 
 long E2Profile::GetLastDevType()
 {
+	QString vrs = s->value("PonyProgVers", "pre").toString();
+
 	QString sp = s->value("DeviceType", "24XX Auto").toString();
+
+	if (vrs == "pre") // init for old configurations
+	{
+		sp = "24XX Auto";
+	}
 
 	if (sp.length())
 	{
@@ -124,6 +131,8 @@ long E2Profile::GetLastDevType()
 void E2Profile::SetLastDevType(long devtype)
 {
 	QString sp = GetEEPTypeString(devtype);
+
+	s->setValue("PonyProgVers", "3.0.0");
 
 	if (sp.length())
 	{
