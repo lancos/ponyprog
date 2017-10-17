@@ -130,7 +130,7 @@ static QVector<chipInfo> const eepAT90_map =
 	{"ATtiny84", ATtiny84, (KB(8) + 512), KB(8), 64, -1}, // new 08.01.2015 @RG
 	{"ATtiny85", ATtiny85, (KB(8) + 512), KB(8), 64, -1},
 	{"ATtiny861", ATtiny861, (KB(8) + 512), KB(8), 64, -1},
-	
+
 	//      "AVR  Auto", AT90S0000
 	{"AT90S1200", AT90S1200, (KB(1) + 64), KB(1), 0, -1},
 	{"AT90S2313", AT90S2313, (KB(2) + 128), KB(2), 0, -1},
