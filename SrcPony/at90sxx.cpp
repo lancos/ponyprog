@@ -481,13 +481,7 @@ int At90sxx::Verify(int type)
 
 	if (GetSize() >= GetSplitted())
 	{
-		unsigned char *localbuf;
-		localbuf = new unsigned char[GetSize()];
-
-		if (localbuf == 0)
-		{
-			return OUTOFMEMORY;
-		}
+        unsigned char *localbuf = new unsigned char[GetSize()];
 
 		int v_data = OK, v_prog = OK, v_config = OK;
 

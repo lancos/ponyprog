@@ -132,11 +132,6 @@ int X2444::Verify(int type)
 		unsigned char *localbuf;
 		localbuf = new unsigned char[size];
 
-		if (localbuf == 0)
-		{
-			return OUTOFMEMORY;
-		}
-
 		rval = GetBus()->Read(0, localbuf, size);
 
 		if (rval != size)

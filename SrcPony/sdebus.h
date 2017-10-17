@@ -52,7 +52,6 @@ class Sde2506Bus : public BusIO
 	int SendControlBit(int opcode)
 	{
 		return SendDataWord(opcode, 1);
-		WaitUsec(5);
 	}
 	int SendAddress(int addr)
 	{

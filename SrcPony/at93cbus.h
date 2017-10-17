@@ -52,9 +52,9 @@ class At93cBus : public MicroWireBus
 
 	int Erase(int type = 0);
 
-	int CalcAddressSize(int mem_size) const
+    int CalcAddressSize(int mem_size) const override
 	{
-		return MicroWireBus::CalcAddressSize(mem_size, organization);
+        return MicroWireBus::CalcAddressSize(mem_size);
 	}
 
 

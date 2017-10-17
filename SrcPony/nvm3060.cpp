@@ -188,13 +188,7 @@ int Nvm3060::Verify(int type)
 
 		GetBus()->UseSecondaryAddress(false);
 
-		unsigned char *localbuf;
-		localbuf = new unsigned char[size];
-
-		if (localbuf == 0)
-		{
-			return OUTOFMEMORY;
-		}
+        unsigned char *localbuf = new unsigned char[size];
 
 		rval = GetBus()->Read(start_addr, localbuf, size);
 

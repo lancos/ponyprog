@@ -66,8 +66,11 @@ At89sBus::At89sBus(BusInterface *ptr)
 	  ReadLockBits0(0x24), ReadLockBits1(0x00),
 	  WriteLockBits0(0xAC), WriteLockBits1(0xE0), OldWriteLockBits1(0x07),
 	  ReadSignatureByte(0x28),
-	  twd_erase(50),
-	  oldmode(true)
+      enable_datapage_polling(false),
+      enable_progpage_polling(false),
+      twd_erase(50),
+      twd_prog(20),
+      oldmode(true)
 {
 }
 
