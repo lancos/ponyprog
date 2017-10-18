@@ -286,7 +286,7 @@ class e2CmdWindow : public QMainWindow, public e2App, public Ui::MainWindow
 	void reateToolBarNotice();
 	void createStatusWidgets();
 
-	int findItemInMenuVector(const QString &n);
+	//int findItemInMenuVector(const QString &n);
 
 	void addMenuVector(menuToGroup *vecMnu, const QString &filter = "");
 
@@ -309,7 +309,7 @@ class e2CmdWindow : public QMainWindow, public e2App, public Ui::MainWindow
 	void Draw(/*int rows = 0, int cols = 0*/);
 	void UpdateBuffer();
 
-	menuToGroup *searchMenuInDeviceVector(int new_type);
+// 	menuToGroup *searchMenuInDeviceVector(int new_type);
 
 	void createDeviceMenues();
 	void addI2C8Struct();;

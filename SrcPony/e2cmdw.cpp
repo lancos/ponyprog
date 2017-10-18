@@ -1367,7 +1367,7 @@ void e2CmdWindow::doProgress(const QString &text)
 //	qDebug() << "progress dialog finished";
 //}
 
-
+#if 0
 int e2CmdWindow::findItemInMenuVector(const QString &n)
 {
 	for (int idx = 0; idx < deviceMenu.count(); idx++)
@@ -1380,7 +1380,7 @@ int e2CmdWindow::findItemInMenuVector(const QString &n)
 
 	return -1;
 }
-
+#endif
 
 /**
  * @brief slot for signal from action group
@@ -1398,10 +1398,14 @@ void e2CmdWindow::onSelectChip(QAction *a)
 
 	selectTypeSubtype(t, st);
 
-	// TODO ???
-// 	currentAct->setChecked(false);
+	//
+	if (currentAct != NULL)
+	{
+		currentAct->setChecked(false);
+	}
+
 	currentAct = a;
-// 	currentAct->setChecked(true);
+	currentAct->setChecked(true);
 }
 
 
@@ -1432,7 +1436,7 @@ void e2CmdWindow::selectTypeSubtype(const QString &t, const QString &st)
 		{
 			if (deviceMenu.at(i).title == t_tmp)
 			{
-				qDebug() << "gefunden" << deviceMenu.at(i).title;
+				// qDebug() << "gefunden" << deviceMenu.at(i).title;
 				currentMenu = (menuToGroup *)&deviceMenu.at(i);
 				break;
 			}
@@ -1446,10 +1450,10 @@ void e2CmdWindow::selectTypeSubtype(const QString &t, const QString &st)
 
 		QStringList l;
 
-		qDebug() << "filter" << currentMenu->title;
+		// qDebug() << "filter" << currentMenu->title;
 		if (currentMenu->filter.length() > 0)
 		{
-			qDebug() << "filter" << currentMenu << currentMenu->filter;
+			// qDebug() << "filter" << currentMenu << currentMenu->filter;
 			foreach (chipInfo cInf, currentMenu->info)
 			{
 				if (cInf.name.indexOf(currentMenu->filter) == 0)
@@ -1513,7 +1517,10 @@ void e2CmdWindow::selectTypeSubtype(const QString &t, const QString &st)
 }
 
 
-
+/**
+ * @brief slot from selecto font size menu
+ *
+ */
 void e2CmdWindow::selectFontSize(QAction *mnu)
 {
 	QString lngStr;
@@ -1562,6 +1569,10 @@ void e2CmdWindow::setFontForWidgets()
 	//     }
 }
 
+/**
+ * @brief create menu with action group for font size selection
+ *
+ */
 void e2CmdWindow::createFontSizeMenu()
 {
 	QMenu *m = new QMenu("Font size");
@@ -5519,6 +5530,10 @@ void e2CmdWindow::onDevType(int t)
 	if (deviceMenu[t].info.count())
 	{
 		new_id = deviceMenu[t].info.at(0).id;
+		if (currentAct != NULL)
+		{
+			currentAct->setChecked(false);
+		}
 	}
 
 	CmdSelectDevice(new_id);
@@ -5549,6 +5564,7 @@ void e2CmdWindow::onDevSubType(int st)
 }
 
 // not in using
+#if 0
 menuToGroup *e2CmdWindow::searchMenuInDeviceVector(int pre_type)
 {
 	menuToGroup *pM = NULL;
@@ -5570,7 +5586,7 @@ menuToGroup *e2CmdWindow::searchMenuInDeviceVector(int pre_type)
 
 	return NULL;
 }
-
+#endif
 
 void e2CmdWindow::UpdateMenues(menuToGroup &mnu, QAction &act)
 {
@@ -5585,8 +5601,17 @@ void e2CmdWindow::UpdateMenues(menuToGroup &mnu, QAction &act)
 		Q_CHECK_PTR(cbxEEPType);
 		Q_CHECK_PTR(cbxEEPSubType);
 
+		if (currentAct != NULL)
+		{
+			currentAct->setChecked(false);
+		}
+
 // 		qDebug() << mnu.title << act.text();
 		selectTypeSubtype(mnu.title, act.text());
+
+		act.setChecked(true);
+
+		currentAct = &act;
 	}
 }
 
