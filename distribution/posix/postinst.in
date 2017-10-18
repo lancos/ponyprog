@@ -3,7 +3,13 @@
 # errors shouldn't cause script to exit
 set +e
 
-setcap 'cap_sys_tty_config=+ep' /usr/bin/ponyprog
+#only get the real usernames 
+for usrnm in $(cat /etc/passwd | grep /home | grep -v false | cut -d':' -f1);
+do
+  usermod -a -G dialout $usrnm
+done
+
+#setcap 'cap_sys_tty_config=+ep' /usr/bin/ponyprog
 
 # clear error termination state
 set -e
