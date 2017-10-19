@@ -5590,8 +5590,8 @@ menuToGroup *e2CmdWindow::searchMenuInDeviceVector(int pre_type)
 
 void e2CmdWindow::UpdateMenues(menuToGroup &mnu, QAction &act)
 {
-	Q_CHECK_PTR(mnu);
-	Q_CHECK_PTR(act);
+	Q_CHECK_PTR(&mnu);
+	Q_CHECK_PTR(&act);
 
 	Q_CHECK_PTR(currentMenu);
 	Q_CHECK_PTR(currentAct);
