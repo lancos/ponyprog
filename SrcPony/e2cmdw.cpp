@@ -1409,17 +1409,18 @@ void e2CmdWindow::onSelectChip(QAction *a)
 }
 
 
-void e2CmdWindow::selectTypeSubtype(const QString &t, const QString &st)
+void e2CmdWindow::selectTypeSubtype(const QString &tp, const QString &subtp)
 {
-	QString t_tmp = t;
+	QString t_tmp = tp;
 	t_tmp = t_tmp.remove("&");
 
-	QString st_tmp = st;
+	QString st_tmp = subtp;
 	st_tmp = st_tmp.remove("&");
 
-	qDebug() << "selectTypeSubtype" << t_tmp << st_tmp;
+// 	qDebug() << "selectTypeSubtype" << t_tmp << st_tmp << currentMenu->title;
+//         bool rebuildSubmenu = true;
 
-	if (currentMenu == NULL || (currentMenu != NULL && currentMenu->title != t_tmp)) // update the type combobox
+	if (currentMenu == NULL || (currentMenu != NULL && currentMenu->title != t_tmp) || cbxEEPSubType->count() == 0) // update the type combobox
 	{
 		int nt = cbxEEPType->findText(t_tmp);
 
@@ -1438,12 +1439,22 @@ void e2CmdWindow::selectTypeSubtype(const QString &t, const QString &st)
 			{
 				// qDebug() << "gefunden" << deviceMenu.at(i).title;
 				currentMenu = (menuToGroup *)&deviceMenu.at(i);
+
 				break;
 			}
 		}
 
-		// rebuild the subtype list
+		// rebuildSubmenu = true;
+//         }
 
+		// rebuild the subtype list
+//         if (cbxEEPSubType->count() == 0 || cbxEEPSubType-> != st_tmp)
+//         {
+//                 rebuildSubmenu = true;
+//         }
+//
+//         if (rebuildSubmenu == true)
+//         {
 		disconnect(cbxEEPSubType, SIGNAL(currentIndexChanged(int)), this, SLOT(onDevSubType(int)));
 
 		cbxEEPSubType->clear();
@@ -5593,9 +5604,6 @@ void e2CmdWindow::UpdateMenues(menuToGroup &mnu, QAction &act)
 	Q_CHECK_PTR(&mnu);
 	Q_CHECK_PTR(&act);
 
-	Q_CHECK_PTR(currentMenu);
-	Q_CHECK_PTR(currentAct);
-
 	if (currentMenu != &mnu || currentAct != &act) // main menu was changed
 	{
 		Q_CHECK_PTR(cbxEEPType);
@@ -5631,7 +5639,7 @@ void e2CmdWindow::UpdateMenuType(long new_type/*, long old_type*/)
 
 	int new_pritype = GetE2PPriType(new_type);
 
-	qDebug() << "UpdateMenuType" << new_type << "pre" << new_pritype;
+	qDebug() << "UpdateMenuType, hex:" << (hex) << new_type << "pre" << new_pritype << (dec);
 
 	menuToGroup *newMenu = NULL;
 	QAction *newAct = NULL;
