@@ -834,7 +834,7 @@ int e2AppWinInfo::Save()
 {
 	int rval;
 
-    uint8_t *localbuf = new uint8_t[GetBufSize()];
+	uint8_t *localbuf = new uint8_t[GetBufSize()];
 
 	//save buffer
 	memcpy(localbuf, GetBufPtr(), GetBufSize());

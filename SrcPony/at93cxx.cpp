@@ -122,7 +122,7 @@ int At93cxx::Verify(int type)
 
 	int size = GetNoOfBank() * GetBankSize();
 	int asize = GetBus()->CalcAddressSize(GetAddrSize());
-    unsigned char *localbuf = new unsigned char[size];
+	unsigned char *localbuf = new unsigned char[size];
 
 	int rval = 1;
 

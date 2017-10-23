@@ -36,7 +36,7 @@
 class MicroWireBus : public BusIO
 {
   public:                //------------------------------- public
-    MicroWireBus(BusInterface *ptr = nullptr);
+	MicroWireBus(BusInterface *ptr = nullptr);
 	virtual ~MicroWireBus();
 
 	//      long Read(int addr, uint8_t *data, long length);
@@ -44,7 +44,7 @@ class MicroWireBus : public BusIO
 
 	int Reset();
 
-    virtual int CalcAddressSize(int mem_size) const;
+	virtual int CalcAddressSize(int mem_size) const;
 
 	void SetDelay();
 

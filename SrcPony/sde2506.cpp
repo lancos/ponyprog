@@ -125,7 +125,7 @@ int Sde2506::Verify(int type)
 	if (type & PROG_TYPE)
 	{
 		int size = GetNoOfBank() * GetBankSize();
-        unsigned char *localbuf = new unsigned char[size];
+		unsigned char *localbuf = new unsigned char[size];
 
 		rval = GetBus()->Read(0, localbuf, size);
 

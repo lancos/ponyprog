@@ -277,7 +277,7 @@ int At89sxx::Verify(int type)
 
 	if (GetSize() >= GetSplitted())
 	{
-        unsigned char *localbuf = new unsigned char[GetSize()];
+		unsigned char *localbuf = new unsigned char[GetSize()];
 
 		int v_data = OK, v_prog = OK, v_config = OK;
 

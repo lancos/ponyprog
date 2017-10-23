@@ -622,7 +622,7 @@ void e2CmdWindow::setLang(QAction *mnu)
 {
 	QString lngStr;
 	qDebug() << "setLang";
-    //mnu = langGroup->checkedAction();
+	//mnu = langGroup->checkedAction();
 
 	lngStr = mnu->text();
 	lngStr = lngStr.remove("&");
@@ -3341,7 +3341,7 @@ int e2CmdWindow::CmdProgram()
 		verbose = verboseErr;        //Disable all ok messages
 	}
 
-    if ((prog_opt & RELOAD_YES))
+	if ((prog_opt & RELOAD_YES))
 	{
 		result = CmdReload();
 	}
@@ -3641,7 +3641,7 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 			continue;
 		}
 
-        QString cmdbuf = lst.at(0).toUpper();
+		QString cmdbuf = lst.at(0).toUpper();
 
 		if (cmdbuf == "SELECTDEVICE")
 		{
@@ -5507,15 +5507,15 @@ void e2CmdWindow::UpdateStatusBar()
 	}
 
 
-    lblStringID->setText(" ");
+	lblStringID->setText(" ");
 
-    if(awip)
-    {
-        QString buf;
-        buf.sprintf(STATUSBAR_PRINT, GetDevSize(), awip->GetCRC(), awip->IsBufChanged() ? '*' : ' ');
-        lblEEPInfo->setText(buf);
-        lblStringID->setText(awip->GetStringID());
-    }
+	if (awip)
+	{
+		QString buf;
+		buf.sprintf(STATUSBAR_PRINT, GetDevSize(), awip->GetCRC(), awip->IsBufChanged() ? '*' : ' ');
+		lblEEPInfo->setText(buf);
+		lblStringID->setText(awip->GetStringID());
+	}
 
 }
 
