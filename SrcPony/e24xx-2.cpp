@@ -83,11 +83,6 @@ int E24xx2::Write(int probe, int type)
 	long size = GetSize();
 	unsigned char *localbuf = new unsigned char[writepage_size + 2];
 
-	if (localbuf == 0)
-	{
-		return OUTOFMEMORY;
-	}
-
 	int rval = OK;
 
 	if (type & PROG_TYPE)
@@ -210,11 +205,6 @@ int E24xx2::Verify(int type)
 
 	long readpage_size = 256;
 	unsigned char *localbuf = new unsigned char[readpage_size];
-
-	if (localbuf == 0)
-	{
-		return OUTOFMEMORY;
-	}
 
 	GetBus()->ReadStart();
 

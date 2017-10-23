@@ -304,11 +304,6 @@ int At17xxx::Verify(int type)
 
 	unsigned char *localbuf = new unsigned char[readpage_size];
 
-	if (localbuf == 0)
-	{
-		return OUTOFMEMORY;
-	}
-
 	GetBus()->ReadStart();
 
 	rval = 1;               //true

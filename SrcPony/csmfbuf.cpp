@@ -205,12 +205,12 @@ int csmFileBuf::Load(int loadtype, long relocation_offfset)
 			}
 		}
 
-		if (okline_counter == 0)
-		{
-			rval = BADFILETYPE;
-		}
-
 		rval = addr;
+
+        if (okline_counter == 0)
+        {
+            rval = BADFILETYPE;
+        }
 	}
 
 	fh.close();

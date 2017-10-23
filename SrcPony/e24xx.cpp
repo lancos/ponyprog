@@ -196,11 +196,6 @@ int E24xx::Verify(int type)
 
 	unsigned char *localbuf = new unsigned char[GetBankSize()];
 
-	if (localbuf == 0)
-	{
-		return OUTOFMEMORY;
-	}
-
 	GetBus()->ReadStart();
 
 	int rval = 1;

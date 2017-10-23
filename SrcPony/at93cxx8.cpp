@@ -132,11 +132,6 @@ int At93cxx8::Verify(int type)
 	unsigned char *localbuf;
 	localbuf = new unsigned char[size];
 
-	if (localbuf == 0)
-	{
-		return OUTOFMEMORY;
-	}
-
 	int rval = 1;
 
 	if (type & PROG_TYPE)

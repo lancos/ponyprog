@@ -280,7 +280,7 @@ int MicroWireBus::Reset(void)
 }
 
 
-int MicroWireBus::CalcAddressSize(int mem_size, int org) const
+int MicroWireBus::CalcAddressSize(int mem_size) const
 {
 	if (mem_size-- <= 0)
 	{

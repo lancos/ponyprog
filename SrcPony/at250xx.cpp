@@ -125,13 +125,7 @@ int At250xx::Verify(int type)
 	}
 
 	int size = GetNoOfBank() * GetBankSize();
-	unsigned char *localbuf;
-	localbuf = new unsigned char[size];
-
-	if (localbuf == 0)
-	{
-		return OUTOFMEMORY;
-	}
+    unsigned char *localbuf = new unsigned char[size];
 
 	int rval = 1;
 
