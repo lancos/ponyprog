@@ -192,6 +192,7 @@ long Sde2506Bus::Read(int addr, uint8_t *data, long length, int page_size)
 		//Send command opcode
 		SendAddress(addr++);
 		SendControlBit(0);              //SB = 0 --> Read op
+		WaitUsec(5);
 		clearCE();
 
 		SendDataBit(1);
@@ -230,6 +231,7 @@ long Sde2506Bus::Write(int addr, uint8_t const *data, long length, int page_size
 		SendAddress(curaddr);
 
 		SendControlBit(1);                      //SB = 1 --> Write/Erase op
+		WaitUsec(5);
 		clearCE();
 
 		SendDataBit(1);                         //Start erase

@@ -274,7 +274,7 @@ FORMS    += SrcPony/forms/aboutdlg.ui \
 
 # for next version, when script for ts files convertion is implemented
 #TRANSLATIONS += localization/qtbase_cs.ts 
-	    
+
 # TODO: please check this
 #win32:LIBS += -L$$PWD/windows/
 #win64:LIBS += -L$$PWD/windows/

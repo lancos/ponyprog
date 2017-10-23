@@ -132,11 +132,11 @@ class e2CmdWindow : public QMainWindow, public e2App, public Ui::MainWindow
 
 	void SetProgress(int progress = 0);
 
-	int IsAppBusy()
+	bool IsAppBusy()
 	{
 		return (app_status == AppBusy);
 	}
-	int IsAppReady()
+	bool IsAppReady()
 	{
 		return (app_status == AppReady);
 	}
@@ -312,7 +312,7 @@ class e2CmdWindow : public QMainWindow, public e2App, public Ui::MainWindow
 // 	menuToGroup *searchMenuInDeviceVector(int new_type);
 
 	void createDeviceMenues();
-	void addI2C8Struct();;
+	void addI2C8Struct();
 	void addI2C16Struct();
 	void addI2CAT17Struct();
 	void addMW16Struct();

@@ -166,11 +166,6 @@ int mE2401::Verify(int type)
 	long size = GetSize();
 	unsigned char *localbuf = new unsigned char[size];
 
-	if (localbuf == 0)
-	{
-		return OUTOFMEMORY;
-	}
-
 	GetBus()->ReadStart();
 
 	int rval = 1;

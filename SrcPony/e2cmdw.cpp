@@ -247,11 +247,6 @@ e2CmdWindow::e2CmdWindow(QWidget *parent) :
 	{
 		BusIO **b = GetBusVectorPtr();
 
-		if (!b)
-		{
-			exit(-1);
-		}
-
 		awip = new e2AppWinInfo(this, "", b);
 		//              qDebug() << b << a;
 		PostInit(); // removed from e2AppWinInfo
@@ -630,7 +625,7 @@ void e2CmdWindow::setLang(QAction *mnu)
 {
 	QString lngStr;
 	qDebug() << "setLang";
-	mnu = langGroup->checkedAction();
+	//mnu = langGroup->checkedAction();
 
 	lngStr = mnu->text();
 	lngStr = lngStr.remove("&");
@@ -3233,7 +3228,7 @@ int e2CmdWindow::CmdProgram()
 		verbose = verboseErr;        //Disable all ok messages
 	}
 
-	if (result == OK && (prog_opt & RELOAD_YES))
+	if ((prog_opt & RELOAD_YES))
 	{
 		result = CmdReload();
 	}
@@ -3533,8 +3528,7 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 			continue;
 		}
 
-		QString cmdbuf = lst.at(0);
-		cmdbuf.toUpper();
+		QString cmdbuf = lst.at(0).toUpper();
 
 		if (cmdbuf == "SELECTDEVICE")
 		{
@@ -5400,12 +5394,17 @@ void e2CmdWindow::UpdateStatusBar()
 		return;
 	}
 
-	QString buf;
-	//*** 13/09/99
-	buf.sprintf(STATUSBAR_PRINT, GetDevSize(), awip->GetCRC(), awip->IsBufChanged() ? '*' : ' ');
 
-	lblEEPInfo->setText(buf);
-	lblStringID->setText(!awip ? " " : awip->GetStringID());
+	lblStringID->setText(" ");
+
+	if (awip)
+	{
+		QString buf;
+		buf.sprintf(STATUSBAR_PRINT, GetDevSize(), awip->GetCRC(), awip->IsBufChanged() ? '*' : ' ');
+		lblEEPInfo->setText(buf);
+		lblStringID->setText(awip->GetStringID());
+	}
+
 }
 
 

@@ -100,106 +100,98 @@ int e2pFileBuf::Load(int loadtype, long relocation_offset)
 	if (datastream.readRawData((char *)&hdr, sizeof(e2pHeader)) &&
 			strncmp(hdr.fileID, id_string, E2P_ID_SIZE) == 0)
 	{
-		unsigned char *localbuf;
-		localbuf = new unsigned char[hdr.e2pSize];
+		unsigned char *localbuf = new unsigned char[hdr.e2pSize];
 
-		if (localbuf)
+		//Controlla il CRC dell'Header
+		if (mcalc_crc(&hdr, sizeof(hdr) - sizeof(hdr.headCrc)) == hdr.headCrc &&
+				//Check for CRC in memory
+				fcalc_crc(fh, sizeof(e2pHeader), 0) == hdr.e2pCrc &&
+				//read buffer
+				datastream.readRawData((char *)localbuf, hdr.e2pSize))
+			//                      fread(FileBuf::GetBufPtr(), hdr.e2pSize, 1, fh) )
 		{
-			//Controlla il CRC dell'Header
-			if (mcalc_crc(&hdr, sizeof(hdr) - sizeof(hdr.headCrc)) == hdr.headCrc &&
-					//Check for CRC in memory
-					fcalc_crc(fh, sizeof(e2pHeader), 0) == hdr.e2pCrc &&
-					//read buffer
-					datastream.readRawData((char *)localbuf, hdr.e2pSize))
-				//                      fread(FileBuf::GetBufPtr(), hdr.e2pSize, 1, fh) )
+			SetEEpromType(hdr.e2pType);  //set eeprom device type (and block size too)
+			//FileBuf::SetNoOfBlock( hdr.e2pSize / FileBuf::GetBlockSize() );
+
+			if (hdr.fversion > 0)
 			{
-				SetEEpromType(hdr.e2pType);  //set eeprom device type (and block size too)
-				//FileBuf::SetNoOfBlock( hdr.e2pSize / FileBuf::GetBlockSize() );
-
-				if (hdr.fversion > 0)
-				{
-					SetLockBits(((uint32_t)hdr.e2pExtLockBits << 8) | hdr.e2pLockBits);
-					SetFuseBits(((uint32_t)hdr.e2pExtFuseBits << 8) | hdr.e2pFuseBits);
-				}
-				else
-				{
-					//Old file version
-					if (GetE2PPriType(hdr.e2pType) == PIC16XX ||
-							GetE2PPriType(hdr.e2pType) == PIC168XX ||
-							GetE2PPriType(hdr.e2pType) == PIC125XX)
-					{
-						SetLockBits(((uint32_t)hdr.e2pLockBits << 8) | hdr.e2pFuseBits);
-					}
-					else
-					{
-						SetLockBits(hdr.e2pLockBits);
-						SetFuseBits(hdr.e2pFuseBits);
-					}
-
-				}
-
-				if (hdr.fversion > 1)
-				{
-					SetSplitted(((uint32_t)hdr.split_size_High << 16) | hdr.split_size_Low);
-				}
-				else
-				{
-					SetSplitted(hdr.split_size_Low);
-				}
-
-				SetStringID(hdr.e2pStringID);
-				SetComment(hdr.e2pComment);
-				SetRollOver(hdr.flags & 7);
-				SetCRC(hdr.e2pCrc);
-
-				//Copy the content into the buffer
-				if (loadtype == ALL_TYPE)
-				{
-					if (hdr.e2pSize <= GetBufSize())
-					{
-						memcpy(FileBuf::GetBufPtr(), localbuf, hdr.e2pSize);
-					}
-				}
-				else if (loadtype == PROG_TYPE)
-				{
-					long s = GetSplitted();
-
-					if (s <= 0)
-					{
-						s = hdr.e2pSize;
-					}
-
-					//if splittedInfo == 0 then copy ALL
-					if (s <= hdr.e2pSize && s <= GetBufSize())
-					{
-						memcpy(FileBuf::GetBufPtr(), localbuf, s);
-					}
-				}
-				else if (loadtype == DATA_TYPE)
-				{
-					long s = GetSplitted();
-
-					if (s >= 0 &&
-							s < hdr.e2pSize &&
-							hdr.e2pSize <= GetBufSize())
-					{
-						memcpy(FileBuf::GetBufPtr() + s, localbuf + s, hdr.e2pSize - s);
-					}
-				}
-
-				rval = GetNoOfBlock();
+				SetLockBits(((uint32_t)hdr.e2pExtLockBits << 8) | hdr.e2pLockBits);
+				SetFuseBits(((uint32_t)hdr.e2pExtFuseBits << 8) | hdr.e2pFuseBits);
 			}
 			else
 			{
-				rval = READERROR;
+				//Old file version
+				if (GetE2PPriType(hdr.e2pType) == PIC16XX ||
+						GetE2PPriType(hdr.e2pType) == PIC168XX ||
+						GetE2PPriType(hdr.e2pType) == PIC125XX)
+				{
+					SetLockBits(((uint32_t)hdr.e2pLockBits << 8) | hdr.e2pFuseBits);
+				}
+				else
+				{
+					SetLockBits(hdr.e2pLockBits);
+					SetFuseBits(hdr.e2pFuseBits);
+				}
+
 			}
 
-			delete[] localbuf;
+			if (hdr.fversion > 1)
+			{
+				SetSplitted(((uint32_t)hdr.split_size_High << 16) | hdr.split_size_Low);
+			}
+			else
+			{
+				SetSplitted(hdr.split_size_Low);
+			}
+
+			SetStringID(hdr.e2pStringID);
+			SetComment(hdr.e2pComment);
+			SetRollOver(hdr.flags & 7);
+			SetCRC(hdr.e2pCrc);
+
+			//Copy the content into the buffer
+			if (loadtype == ALL_TYPE)
+			{
+				if (hdr.e2pSize <= GetBufSize())
+				{
+					memcpy(FileBuf::GetBufPtr(), localbuf, hdr.e2pSize);
+				}
+			}
+			else if (loadtype == PROG_TYPE)
+			{
+				long s = GetSplitted();
+
+				if (s <= 0)
+				{
+					s = hdr.e2pSize;
+				}
+
+				//if splittedInfo == 0 then copy ALL
+				if (s <= hdr.e2pSize && s <= GetBufSize())
+				{
+					memcpy(FileBuf::GetBufPtr(), localbuf, s);
+				}
+			}
+			else if (loadtype == DATA_TYPE)
+			{
+				long s = GetSplitted();
+
+				if (s >= 0 &&
+						s < hdr.e2pSize &&
+						hdr.e2pSize <= GetBufSize())
+				{
+					memcpy(FileBuf::GetBufPtr() + s, localbuf + s, hdr.e2pSize - s);
+				}
+			}
+
+			rval = GetNoOfBlock();
 		}
 		else
 		{
-			rval = OUTOFMEMORY;
+			rval = READERROR;
 		}
+
+		delete[] localbuf;
 	}
 	else
 	{
@@ -229,96 +221,88 @@ int e2pFileBuf::Save(int savetype, long relocation_offset)
 	strncpy(hdr.fileID, id_string, E2P_ID_SIZE);    //Id
 	hdr.e2pSize = FileBuf::GetNoOfBlock() * FileBuf::GetBlockSize();
 
-	unsigned char *localbuf;
-	localbuf = new unsigned char[hdr.e2pSize];
+	unsigned char *localbuf = new unsigned char[hdr.e2pSize];
 
-	if (localbuf)
+	long s = GetSplitted();
+
+	memset(localbuf, 0xff, hdr.e2pSize);
+
+	if (fh.exists())
 	{
-		long s = GetSplitted();
-
-		memset(localbuf, 0xff, hdr.e2pSize);
-
-		if (fh.exists())
+		if (!fh.open(QIODevice::ReadOnly))
 		{
-			if (!fh.open(QIODevice::ReadOnly))
-			{
-				delete[] localbuf;
-				return CREATEERROR;
-			}
-			QDataStream datastream(&fh);
-
-			//Initialize local buffer
-			//  if the file already exist read the current content
-			//  otherwise set the localbuffer to 0xFF
-			if (fh.seek(sizeof(hdr)))
-			{
-				datastream.readRawData((char *)localbuf, hdr.e2pSize);
-			}
-			fh.close();
+			delete[] localbuf;
+			return CREATEERROR;
 		}
+		QDataStream datastream(&fh);
 
-		if (savetype == ALL_TYPE)
+		//Initialize local buffer
+		//  if the file already exist read the current content
+		//  otherwise set the localbuffer to 0xFF
+		if (fh.seek(sizeof(hdr)))
 		{
-			memcpy(localbuf, FileBuf::GetBufPtr(), hdr.e2pSize);
+			datastream.readRawData((char *)localbuf, hdr.e2pSize);
 		}
-		else if (savetype == DATA_TYPE)
+		fh.close();
+	}
+
+	if (savetype == ALL_TYPE)
+	{
+		memcpy(localbuf, FileBuf::GetBufPtr(), hdr.e2pSize);
+	}
+	else if (savetype == DATA_TYPE)
+	{
+		if (hdr.e2pSize > s)
 		{
-			if (hdr.e2pSize > s)
-			{
-				memcpy(localbuf + s, FileBuf::GetBufPtr() + s, hdr.e2pSize - s);
-			}
+			memcpy(localbuf + s, FileBuf::GetBufPtr() + s, hdr.e2pSize - s);
 		}
-		else if (savetype == PROG_TYPE)
+	}
+	else if (savetype == PROG_TYPE)
+	{
+		if (s > 0 &&  s <= hdr.e2pSize)
 		{
-			if (s > 0 &&  s <= hdr.e2pSize)
-			{
-				memcpy(localbuf, FileBuf::GetBufPtr(), s);
-			}
+			memcpy(localbuf, FileBuf::GetBufPtr(), s);
 		}
+	}
 
-		hdr.fversion = E2P_FVERSION;
+	hdr.fversion = E2P_FVERSION;
 
-		hdr.e2pLockBits = (uint8_t)(GetLockBits() & 0xFF);
-		hdr.e2pExtLockBits = (uint16_t)(GetLockBits() >> 8);
-		hdr.e2pFuseBits = (uint8_t)(GetFuseBits() & 0xFF);
-		hdr.e2pExtFuseBits = (uint16_t)(GetFuseBits() >> 8);
+	hdr.e2pLockBits = (uint8_t)(GetLockBits() & 0xFF);
+	hdr.e2pExtLockBits = (uint16_t)(GetLockBits() >> 8);
+	hdr.e2pFuseBits = (uint8_t)(GetFuseBits() & 0xFF);
+	hdr.e2pExtFuseBits = (uint16_t)(GetFuseBits() >> 8);
 
-		hdr.e2pType = GetEEpromType();
-		strncpy(hdr.e2pStringID, GetStringID().toLatin1().constData(), 28);
-		strncpy(hdr.e2pComment, GetComment().toLatin1().constData(), 85);
-		hdr.flags = GetRollOver() & 7;
-		hdr.split_size_Low = (uint16_t)GetSplitted();
-		hdr.split_size_High = (uint16_t)(GetSplitted() >> 16);
-		hdr.e2pCrc = mcalc_crc(localbuf, hdr.e2pSize);
-		hdr.headCrc = mcalc_crc(&hdr, sizeof(hdr) - sizeof(hdr.headCrc));
+	hdr.e2pType = GetEEpromType();
+	strncpy(hdr.e2pStringID, GetStringID().toLatin1().constData(), 28);
+	strncpy(hdr.e2pComment, GetComment().toLatin1().constData(), 85);
+	hdr.flags = GetRollOver() & 7;
+	hdr.split_size_Low = (uint16_t)GetSplitted();
+	hdr.split_size_High = (uint16_t)(GetSplitted() >> 16);
+	hdr.e2pCrc = mcalc_crc(localbuf, hdr.e2pSize);
+	hdr.headCrc = mcalc_crc(&hdr, sizeof(hdr) - sizeof(hdr.headCrc));
 
-		if (fh.open(QIODevice::WriteOnly | QIODevice::Truncate))
+	if (fh.open(QIODevice::WriteOnly | QIODevice::Truncate))
+	{
+		QDataStream datastream(&fh);
+
+		//Write to file
+		if (datastream.writeRawData((char *)&hdr, sizeof(hdr)) &&         //Write the header
+				datastream.writeRawData((char *)localbuf, hdr.e2pSize))   //Write the buffer
 		{
-			QDataStream datastream(&fh);
-
-			//Write to file
-			if (datastream.writeRawData((char *)&hdr, sizeof(hdr)) &&         //Write the header
-					datastream.writeRawData((char *)localbuf, hdr.e2pSize))   //Write the buffer
-			{
-				rval = GetNoOfBlock();
-			}
-			else
-			{
-				rval = WRITEERROR;
-			}
-			fh.close();
+			rval = GetNoOfBlock();
 		}
 		else
 		{
-			rval = CREATEERROR;
+			rval = WRITEERROR;
 		}
-
-		delete[] localbuf;
+		fh.close();
 	}
 	else
 	{
-		rval = OUTOFMEMORY;
+		rval = CREATEERROR;
 	}
+
+	delete[] localbuf;
 
 	return rval;
 }
