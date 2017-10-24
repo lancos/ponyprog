@@ -32,6 +32,14 @@
 #include <QTreeWidget>
 
 
+//=========================================================================//
+//
+// E. Kalinowski
+// description for fuse/lock bits is under: 
+// http://eleccelerator.com/fusecalc/
+// http://www.engbedded.com/cgi-bin/fcx.cgi?
+//
+//=========================================================================//
 
 //======================>>> fuseModalDialog::fuseModalDialog <<<==================
 fuseModalDialog::fuseModalDialog(e2CmdWindow *bw, e2AppWinInfo *p, bool readonly, const QString &msg) :
@@ -1214,14 +1222,14 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ 5, "SUT1", "" },
 			{ 6, "CKOUT", "Clock output on PORTD2" },
 			{ 7, "CKDIV8", "Divide clock by 8 internally" },
-			{ 8, "RSTDISBL", "Reset Disabled (Enable PA2 as i/o pin)" },
-			{ 9, "BODLEVEL0", "" },
-			{ 10, "BODLEVEL1", "" },
-			{ 11, "BODLEVEL2", "" },
+			{ 8, "BODLEVEL0", "" },
+			{ 9, "BODLEVEL1", "" },
+			{ 10, "BODLEVEL2", "" },
+                        { 11, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle" },
 			{ 12, "WDTON", "Watch-dog Timer always on" },
 			{ 13, "SPIEN", "Serial program downloading (SPI) enabled" },
-			{ 14, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle" },
-			{ 15, "DWEN", "Debug Wire enable" },
+			{ 14, "DWEN", "Debug Wire enable" },
+                        { 15, "RSTDISBL", "Reset Disabled (Enable PA2 as i/o pin)" },
 			{ 16, "SELFPRGEN", "Self programming enable" }
 		},
 		{
@@ -1271,10 +1279,10 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ "CKSEL=0100 SUT=01", "Int. RC Osc. 8 MHz; Start-up time: 14 CK + 4.1 ms" },
 			{ "CKSEL=0100 SUT=10", "Int. RC Osc. 8 MHz; Start-up time: 14 CK + 65 ms" },
 
-			{ "BODLEVEL=11", "Brown-out detection disabled" },
-			{ "BODLEVEL=10", "Brown-out detection level at VCC=1.8 V" },
-			{ "BODLEVEL=01", "Brown-out detection level at VCC=2.7 V" },
-			{ "BODLEVEL=00", "Brown-out detection level at VCC=4.3 V" }
+			{ "BODLEVEL=111", "Brown-out detection disabled" },
+			{ "BODLEVEL=110", "Brown-out detection level at VCC=1.8 V" },
+			{ "BODLEVEL=101", "Brown-out detection level at VCC=2.7 V" },
+			{ "BODLEVEL=100", "Brown-out detection level at VCC=4.3 V" }
 		},
 		{
 			// lock
@@ -1289,7 +1297,102 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		}
 	},
 	{
-		{ ATtiny24, ATtiny25, ATtiny44, ATtiny84 }, // new 08.01.2015 @RG, EK : possible diff descriptions for bit combinations
+		{ ATtiny24, ATtiny44, ATtiny84 }, // new 08.01.2015 @RG, EK : possible diff descriptions for bit combinations
+		{
+			// fuse
+			{ 0, "CKSEL0", "" },
+			{ 1, "CKSEL1", "" },
+			{ 2, "CKSEL2", "" },
+			{ 3, "CKSEL3", "" },
+			{ 4, "SUT0", "" },
+			{ 5, "SUT1", "" },
+			{ 6, "CKOUT", "Clock output on PORTB2" },
+			{ 7, "CKDIV8", "Divide clock by 8 internally" },
+			{ 8, "BODLEVEL0", "" },
+			{ 9, "BODLEVEL1", "" },
+			{ 10, "BODLEVEL2", "" },
+			{ 11, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle" },
+			{ 12, "WDTON", "Watch-dog Timer always on" },
+			{ 13, "SPIEN", "Serial program downloading (SPI) enabled" },
+			{ 14, "DWEN", "Debug Wire enable" },
+			{ 15, "RSTDISBL", "Reset Disabled (Enable PB5 as i/o pin)" },
+			{ 16, "SELFPRGEN", "Self Programming enable" }
+		},
+		{
+			// fuse mask description
+			{ "CKSEL=0000 SUT=00", "Ext. Clock; Start-up time PWRDWN/RESET: 6 CK/14 CK + 0 ms" },
+			{ "CKSEL=0000 SUT=01", "Ext. Clock; Start-up time PWRDWN/RESET: 6 CK/14 CK + 4.1 ms" },
+			{ "CKSEL=0000 SUT=10", "Ext. Clock; Start-up time PWRDWN/RESET: 6 CK/14 CK + 65 ms" },
+			{ "CKSEL=1001 SUT=01", "Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 0 ms" },
+			{ "CKSEL=1001 SUT=10", "Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 4.1 ms" },
+			{ "CKSEL=1001 SUT=11", "Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 65 ms" },
+			{ "CKSEL=1000 SUT=10", "Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 0 ms" },
+			{ "CKSEL=1000 SUT=11", "Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 4.1 ms" },
+			{ "CKSEL=1001 SUT=00", "Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 65 ms" },
+			{ "CKSEL=1000 SUT=00", "Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time PWRDWN/RESET: 258 CK/14 CK + 4.1 ms" },
+			{ "CKSEL=1000 SUT=01", "Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time PWRDWN/RESET: 258 CK/14 CK + 65 ms" },
+			{ "CKSEL=1011 SUT=01", "Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 0 ms" },
+			{ "CKSEL=1011 SUT=10", "Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 4.1 ms" },
+			{ "CKSEL=1011 SUT=11", "Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 65 ms" },
+			{ "CKSEL=1010 SUT=10", "Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 0 ms" },
+			{ "CKSEL=1010 SUT=11", "Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 4.1 ms" },
+			{ "CKSEL=1011 SUT=00", "Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 65 ms" },
+			{ "CKSEL=1010 SUT=00", "Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time PWRDWN/RESET: 258 CK/14 CK + 4.1 ms" },
+			{ "CKSEL=1010 SUT=01", "Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time PWRDWN/RESET: 258 CK/14 CK + 65 ms" },
+			{ "CKSEL=1101 SUT=01", "Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 0 ms" },
+			{ "CKSEL=1101 SUT=10", "Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 4.1 ms" },
+			{ "CKSEL=1101 SUT=11", "Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 65 ms" },
+			{ "CKSEL=1100 SUT=10", "Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 0 ms" },
+			{ "CKSEL=1100 SUT=11", "Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 4.1 ms" },
+			{ "CKSEL=1101 SUT=00", "Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 65 ms" },
+			{ "CKSEL=1100 SUT=00", "Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time PWRDWN/RESET: 258 CK/14 CK + 4.1 ms" },
+			{ "CKSEL=1100 SUT=01", "Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time PWRDWN/RESET: 258 CK/14 CK + 65 ms" },
+			{ "CKSEL=1111 SUT=01", "Ext. Crystal Osc.; Frequency 8.0- MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 0 ms" },
+			{ "CKSEL=1111 SUT=10", "Ext. Crystal Osc.; Frequency 8.0- MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 4.1 ms" },
+			{ "CKSEL=1111 SUT=11", "Ext. Crystal Osc.; Frequency 8.0- MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 65 ms" },
+			{ "CKSEL=1110 SUT=10", "Ext. Crystal Osc.; Frequency 8.0- MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 0 ms" },
+			{ "CKSEL=1110 SUT=11", "Ext. Crystal Osc.; Frequency 8.0- MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 4.1 ms" },
+			{ "CKSEL=1111 SUT=00", "Ext. Crystal Osc.; Frequency 8.0- MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 65 ms" },
+			{ "CKSEL=1110 SUT=00", "Ext. Crystal Osc.; Frequency 8.0- MHz; Start-up time PWRDWN/RESET: 258 CK/14 CK + 4.1 ms" },
+			{ "CKSEL=1110 SUT=01", "Ext. Crystal Osc.; Frequency 8.0- MHz; Start-up time PWRDWN/RESET: 258 CK/14 CK + 65 ms" },
+			{ "CKSEL=0110 SUT=00", "Ext. Low-Freq. Crystal; Start-up time PWRDWN/RESET: 1K CK/14 CK + 0 ms" },
+			{ "CKSEL=0110 SUT=01", "Ext. Low-Freq. Crystal; Start-up time PWRDWN/RESET: 1K CK/14 CK + 4 ms" },
+			{ "CKSEL=0110 SUT=10", "Ext. Low-Freq. Crystal; Start-up time PWRDWN/RESET: 32K CK/14 CK + 64 ms" },
+			{ "CKSEL=0010 SUT=00", "Int. RC Osc. 8 MHz; Start-up time PWRDWN/RESET: 6 CK/14 CK + 0 ms" },
+			{ "CKSEL=0010 SUT=01", "Int. RC Osc. 8 MHz; Start-up time PWRDWN/RESET: 6 CK/14 CK + 4 ms" },
+			{ "CKSEL=0010 SUT=10", "Int. RC Osc. 8 MHz; Start-up time PWRDWN/RESET: 6 CK/14 CK + 64 ms" },
+			{ "CKSEL=0001 SUT=01", "PLL Clock; Start-up time PWRDWN/RESET: 16K CK/14 CK + 4 ms" },
+			{ "CKSEL=0001 SUT=11", "PLL Clock; Start-up time PWRDWN/RESET: 16K CK/14 CK + 64 ms" },
+			{ "CKSEL=0001 SUT=00", "PLL Clock; Start-up time PWRDWN/RESET: 1K CK/14 CK + 4 ms" },
+			{ "CKSEL=0001 SUT=10", "PLL Clock; Start-up time PWRDWN/RESET: 1K CK/14 CK + 64 ms" },
+			{ "CKSEL=0100 SUT=00", "WD. Osc. 128 kHz; Start-up time PWRDWN/RESET: 6 CK/14 CK + 0 ms" },
+			{ "CKSEL=0100 SUT=01", "WD. Osc. 128 kHz; Start-up time PWRDWN/RESET: 6 CK/14 CK + 4 ms" },
+			{ "CKSEL=0100 SUT=10", "WD. Osc. 128 kHz; Start-up time PWRDWN/RESET: 6 CK/14 CK + 64 ms" },
+
+			{ "BODLEVEL=111", "Brown-out detection disabled" },
+			{ "BODLEVEL=110", "Brown-out detection level at VCC=1.8 V" },
+                        { "BODLEVEL=001", "Brown-out detection level at VCC=1.9 V" },
+                        { "BODLEVEL=000", "Brown-out detection level at VCC=2.0 V" },
+                        { "BODLEVEL=010", "Brown-out detection level at VCC=2.2 V" },
+                        { "BODLEVEL=011", "Brown-out detection level at VCC=2.3 V" },
+			{ "BODLEVEL=101", "Brown-out detection level at VCC=2.7 V" },
+			{ "BODLEVEL=100", "Brown-out detection level at VCC=4.3 V" }
+		},
+		{
+			// lock
+			{ 0, "Lock1", "" },
+			{ 1, "Lock2", "" }
+		},
+		{
+			// lock mask description
+			{ "Lock=11", "Mode 1: No memory lock features enabled" },
+			{ "Lock=10", "Mode 2: Further programming disabled" },
+			{ "Lock=00", "Mode 3: Further programming and verification disabled" }
+		}
+	},
+
+	{
+		{ ATtiny25, ATtiny45, ATtiny85 },
 		{
 			// fuse
 			{ 0, "CKSEL0", "" },
@@ -1382,101 +1485,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ "Lock=00", "Mode 3: Further programming and verification disabled" }
 		}
 	},
-
-	{
-		{ ATtiny45 },
-		{
-			// fuse
-			{ 0, "CKSEL0", "" },
-			{ 1, "CKSEL1", "" },
-			{ 2, "CKSEL2", "" },
-			{ 3, "CKSEL3", "" },
-			{ 4, "SUT0", "" },
-			{ 5, "SUT1", "" },
-			{ 6, "CKOUT", "Clock output on PORTB4" },
-			{ 7, "CKDIV8", "Divide clock by 8 internally" },
-			{ 8, "BODLEVEL0", "" },
-			{ 9, "BODLEVEL1", "" },
-			{ 10, "BODLEVEL2", "" },
-			{ 11, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle" },
-			{ 12, "WDTON", "Watch-dog Timer always on" },
-			{ 13, "SPIEN", "Serial program downloading (SPI) enabled" },
-			{ 14, "DWEN", "Debug Wire enable" },
-			{ 15, "RSTDISBL", "Reset Disabled (Enable PB5 as i/o pin)" },
-			{ 16, "SELFPRGEN", "Self Programming enable" }
-		},
-		{
-			// fuse mask description
-			{ "CKSEL=0011 SUT=11", "ATtiny15 Comp: Int. RC Osc. 6.4 MHz; Start-up time PWRDWN/RESET: 1 CK/14 CK + 0 ms" },
-			{ "CKSEL=0011 SUT=10", "ATtiny15 Comp: Int. RC Osc. 6.4 MHz; Start-up time PWRDWN/RESET: 6 CK/14 CK + 4 ms" },
-			{ "CKSEL=0011 SUT=00", "ATtiny15 Comp: Int. RC Osc. 6.4 MHz; Start-up time PWRDWN/RESET: 6 CK/14 CK + 64 ms" },
-			{ "CKSEL=0011 SUT=01", "ATtiny15 Comp: Int. RC Osc. 6.4 MHz; Start-up time PWRDWN/RESET: 6 CK/14 CK + 64 ms" },
-			{ "CKSEL=0000 SUT=00", "Ext. Clock; Start-up time PWRDWN/RESET: 6 CK/14 CK + 0 ms" },
-			{ "CKSEL=0000 SUT=01", "Ext. Clock; Start-up time PWRDWN/RESET: 6 CK/14 CK + 4.1 ms" },
-			{ "CKSEL=0000 SUT=10", "Ext. Clock; Start-up time PWRDWN/RESET: 6 CK/14 CK + 65 ms" },
-			{ "CKSEL=1001 SUT=01", "Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 0 ms" },
-			{ "CKSEL=1001 SUT=10", "Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 4.1 ms" },
-			{ "CKSEL=1001 SUT=11", "Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 65 ms" },
-			{ "CKSEL=1000 SUT=10", "Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 0 ms" },
-			{ "CKSEL=1000 SUT=11", "Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 4.1 ms" },
-			{ "CKSEL=1001 SUT=00", "Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 65 ms" },
-			{ "CKSEL=1000 SUT=00", "Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time PWRDWN/RESET: 258 CK/14 CK + 4.1 ms" },
-			{ "CKSEL=1000 SUT=01", "Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time PWRDWN/RESET: 258 CK/14 CK + 65 ms" },
-			{ "CKSEL=1011 SUT=01", "Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 0 ms" },
-			{ "CKSEL=1011 SUT=10", "Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 4.1 ms" },
-			{ "CKSEL=1011 SUT=11", "Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 65 ms" },
-			{ "CKSEL=1010 SUT=10", "Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 0 ms" },
-			{ "CKSEL=1010 SUT=11", "Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 4.1 ms" },
-			{ "CKSEL=1011 SUT=00", "Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 65 ms" },
-			{ "CKSEL=1010 SUT=00", "Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time PWRDWN/RESET: 258 CK/14 CK + 4.1 ms" },
-			{ "CKSEL=1010 SUT=01", "Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time PWRDWN/RESET: 258 CK/14 CK + 65 ms" },
-			{ "CKSEL=1101 SUT=01", "Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 0 ms" },
-			{ "CKSEL=1101 SUT=10", "Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 4.1 ms" },
-			{ "CKSEL=1101 SUT=11", "Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 65 ms" },
-			{ "CKSEL=1100 SUT=10", "Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 0 ms" },
-			{ "CKSEL=1100 SUT=11", "Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 4.1 ms" },
-			{ "CKSEL=1101 SUT=00", "Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 65 ms" },
-			{ "CKSEL=1100 SUT=00", "Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time PWRDWN/RESET: 258 CK/14 CK + 4.1 ms" },
-			{ "CKSEL=1100 SUT=01", "Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time PWRDWN/RESET: 258 CK/14 CK + 65 ms" },
-			{ "CKSEL=1111 SUT=01", "Ext. Crystal Osc.; Frequency 8.0- MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 0 ms" },
-			{ "CKSEL=1111 SUT=10", "Ext. Crystal Osc.; Frequency 8.0- MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 4.1 ms" },
-			{ "CKSEL=1111 SUT=11", "Ext. Crystal Osc.; Frequency 8.0- MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 65 ms" },
-			{ "CKSEL=1110 SUT=10", "Ext. Crystal Osc.; Frequency 8.0- MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 0 ms" },
-			{ "CKSEL=1110 SUT=11", "Ext. Crystal Osc.; Frequency 8.0- MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 4.1 ms" },
-			{ "CKSEL=1111 SUT=00", "Ext. Crystal Osc.; Frequency 8.0- MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 65 ms" },
-			{ "CKSEL=1110 SUT=00", "Ext. Crystal Osc.; Frequency 8.0- MHz; Start-up time PWRDWN/RESET: 258 CK/14 CK + 4.1 ms" },
-			{ "CKSEL=1110 SUT=01", "Ext. Crystal Osc.; Frequency 8.0- MHz; Start-up time PWRDWN/RESET: 258 CK/14 CK + 65 ms" },
-			{ "CKSEL=0110 SUT=00", "Ext. Low-Freq. Crystal; Start-up time PWRDWN/RESET: 1K CK/14 CK + 0 ms" },
-			{ "CKSEL=0110 SUT=01", "Ext. Low-Freq. Crystal; Start-up time PWRDWN/RESET: 1K CK/14 CK + 4 ms" },
-			{ "CKSEL=0110 SUT=10", "Ext. Low-Freq. Crystal; Start-up time PWRDWN/RESET: 32K CK/14 CK + 64 ms" },
-			{ "CKSEL=0010 SUT=00", "Int. RC Osc. 8 MHz; Start-up time PWRDWN/RESET: 6 CK/14 CK + 0 ms" },
-			{ "CKSEL=0010 SUT=01", "Int. RC Osc. 8 MHz; Start-up time PWRDWN/RESET: 6 CK/14 CK + 4 ms" },
-			{ "CKSEL=0010 SUT=10", "Int. RC Osc. 8 MHz; Start-up time PWRDWN/RESET: 6 CK/14 CK + 64 ms" },
-			{ "CKSEL=0001 SUT=01", "PLL Clock; Start-up time PWRDWN/RESET: 16K CK/14 CK + 4 ms" },
-			{ "CKSEL=0001 SUT=11", "PLL Clock; Start-up time PWRDWN/RESET: 16K CK/14 CK + 64 ms" },
-			{ "CKSEL=0001 SUT=00", "PLL Clock; Start-up time PWRDWN/RESET: 1K CK/14 CK + 4 ms" },
-			{ "CKSEL=0001 SUT=10", "PLL Clock; Start-up time PWRDWN/RESET: 1K CK/14 CK + 64 ms" },
-			{ "CKSEL=0100 SUT=00", "WD. Osc. 128 kHz; Start-up time PWRDWN/RESET: 6 CK/14 CK + 0 ms" },
-			{ "CKSEL=0100 SUT=01", "WD. Osc. 128 kHz; Start-up time PWRDWN/RESET: 6 CK/14 CK + 4 ms" },
-			{ "CKSEL=0100 SUT=10", "WD. Osc. 128 kHz; Start-up time PWRDWN/RESET: 6 CK/14 CK + 64 ms" },
-
-			{ "BODLEVEL=111", "Brown-out detection disabled" },
-			{ "BODLEVEL=110", "Brown-out detection level at VCC=1.8 V" },
-			{ "BODLEVEL=101", "Brown-out detection level at VCC=2.7 V" },
-			{ "BODLEVEL=100", "Brown-out detection level at VCC=4.3 V" }
-		},
-		{
-			// lock
-			{ 0, "Lock1", "" },
-			{ 1, "Lock2", "" }
-		},
-		{
-			// lock mask description
-			{ "Lock=11", "Mode 1: No memory lock features enabled" },
-			{ "Lock=10", "Mode 2: Further programming disabled" },
-			{ "Lock=00", "Mode 3: Further programming and verification disabled" }
-		}
-	},
+#if 0
 	{
 		{ ATtiny85 },
 		{
@@ -1571,9 +1580,9 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ "Lock=00", "Mode 3: Further programming and verification disabled" }
 		}
 	},
-
+#endif
 	{
-		{ ATtiny261 },
+		{ ATtiny261, ATtiny461, ATtiny861 },
 		{
 			// fuse
 			{ 0, "CKSEL0", "" },
@@ -1667,7 +1676,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ "Lock=00", "Mode 3: Further programming and verification disabled" }
 		}
 	},
-
+#if 0
 	{
 		{ ATtiny461 },
 		{
@@ -1859,7 +1868,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ "Lock=00", "Mode 3: Further programming and verification disabled" }
 		}
 	},
-
+#endif
 	{
 		{ ATmega48 },
 		{
