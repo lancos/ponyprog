@@ -2394,10 +2394,10 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ "CKSEL=0010 SUT=01", "Int. RC Osc.; Start-up time: 6 CK + 4.1 ms" },
 			{ "CKSEL=0010 SUT=10", "Int. RC Osc.; Start-up time: 6 CK + 65 ms" },
 
-			{ "BOOTSZ=01", "Boot Flash section size=1024 words Boot start address=$3C00" },
-			{ "BOOTSZ=00", "Boot Flash section size=2048 words Boot start address=$3800" },
-			{ "BOOTSZ=11", "Boot Flash section size=256 words Boot start address=$3F00" },
-			{ "BOOTSZ=10", "Boot Flash section size=512 words Boot start address=$3E00" },
+			{ "BOOTSZ=01", "Boot Flash section size=1024 words Boot start address=$1C00" },
+			{ "BOOTSZ=00", "Boot Flash section size=2048 words Boot start address=$1800" },
+			{ "BOOTSZ=11", "Boot Flash section size=256 words Boot start address=$1F00" },
+			{ "BOOTSZ=10", "Boot Flash section size=512 words Boot start address=$1E00" },
 
 			{ "BODLEVEL=111", "Brown-out detection disabled" },
 			{ "BODLEVEL=110", "Brown-out detection level at VCC=1.8 V" },
@@ -2551,7 +2551,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 	},
 
 	{
-		{ ATmega644, ATmega1284 }, // new (RG 10.06.2017), EK : possible diff descriptions for bit combinations
+		{ ATmega644 }, // new (RG 10.06.2017), EK : possible diff descriptions for bit combinations
 		{
 			// fuse
 			{ 0, "CKSEL0", "" },
@@ -2669,6 +2669,125 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		}
 	},
 
+        {
+		{ ATmega1284 }, // new (RG 10.06.2017), EK : possible diff descriptions for bit combinations
+		{
+			// fuse
+			{ 0, "CKSEL0", "" },
+			{ 1, "CKSEL1", "" },
+			{ 2, "CKSEL2", "" },
+			{ 3, "CKSEL3", "" },
+			{ 4, "SUT0", "" },
+			{ 5, "SUT1", "" },
+			{ 6, "CKOUT", "Clock output on PORTB1" },
+			{ 7, "CKDIV8", "Divide clock by 8 internally" },
+			{ 8, "BOOTRST", "Boot Reset vector Enabled (default address=$0000)" },
+			{ 9, "BOOTSZ0", "" },
+			{ 10, "BOOTSZ1", "" },
+			{ 11, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle" },
+			{ 12, "WDTON", "Watch-dog Timer always on" },
+			{ 13, "SPIEN", "Serial program downloading (SPI) enabled" },
+			{ 14, "JTAGEN", "JTAG Interface Enabled" },
+			{ 15, "OCDEN", "On-Chip Debug Enabled" },
+			{ 16, "BODLEVEL0", "" },
+			{ 17, "BODLEVEL1", "" },
+			{ 18, "BODLEVEL2", "" }
+		},
+		{
+			// fuse mask description
+			{ "CKSEL=0000 SUT=00", "Ext. Clock; Start-up time: 6 CK + 0 ms" },
+			{ "CKSEL=0000 SUT=01", "Ext. Clock; Start-up time: 6 CK + 4.1 ms" },
+			{ "CKSEL=0000 SUT=10", "Ext. Clock; Start-up time: 6 CK + 65 ms" },
+			{ "CKSEL=1001 SUT=01", "Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time: 16K CK + 0 ms" },
+			{ "CKSEL=1001 SUT=10", "Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time: 16K CK + 4.1 ms" },
+			{ "CKSEL=1001 SUT=11", "Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time: 16K CK + 65 ms" },
+			{ "CKSEL=1000 SUT=10", "Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time: 1K CK + 0 ms" },
+			{ "CKSEL=1000 SUT=11", "Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time: 1K CK + 4.1 ms" },
+			{ "CKSEL=1001 SUT=00", "Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time: 1K CK + 65 ms" },
+			{ "CKSEL=1000 SUT=00", "Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time: 258 CK + 4.1 ms" },
+			{ "CKSEL=1000 SUT=01", "Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time: 258 CK + 65 ms" },
+			{ "CKSEL=1011 SUT=01", "Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time: 16K CK + 0 ms" },
+			{ "CKSEL=1011 SUT=10", "Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time: 16K CK + 4.1 ms" },
+			{ "CKSEL=1011 SUT=11", "Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time: 16K CK + 65 ms" },
+			{ "CKSEL=1010 SUT=10", "Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time: 1K CK + 0 ms" },
+			{ "CKSEL=1010 SUT=11", "Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time: 1K CK + 4.1 ms" },
+			{ "CKSEL=1011 SUT=00", "Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time: 1K CK + 65 ms" },
+			{ "CKSEL=1010 SUT=00", "Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time: 258 CK + 4.1 ms" },
+			{ "CKSEL=1010 SUT=01", "Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time: 258 CK + 65 ms" },
+			{ "CKSEL=1101 SUT=01", "Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time: 16K CK + 0 ms" },
+			{ "CKSEL=1101 SUT=10", "Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time: 16K CK + 4.1 ms" },
+			{ "CKSEL=1101 SUT=11", "Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time: 16K CK + 65 ms" },
+			{ "CKSEL=1100 SUT=10", "Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time: 1K CK + 0 ms" },
+			{ "CKSEL=1100 SUT=11", "Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time: 1K CK + 4.1 ms" },
+			{ "CKSEL=1101 SUT=00", "Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time: 1K CK + 65 ms" },
+			{ "CKSEL=1100 SUT=00", "Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time: 258 CK + 4.1 ms" },
+			{ "CKSEL=1100 SUT=01", "Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time: 258 CK + 65 ms" },
+			{ "CKSEL=1111 SUT=01", "Ext. Crystal Osc.; Frequency 8.0- MHz; Start-up time: 16K CK + 0 ms" },
+			{ "CKSEL=1111 SUT=10", "Ext. Crystal Osc.; Frequency 8.0- MHz; Start-up time: 16K CK + 4.1 ms" },
+			{ "CKSEL=1111 SUT=11", "Ext. Crystal Osc.; Frequency 8.0- MHz; Start-up time: 16K CK + 65 ms" },
+			{ "CKSEL=1110 SUT=10", "Ext. Crystal Osc.; Frequency 8.0- MHz; Start-up time: 1K CK + 0 ms" },
+			{ "CKSEL=1110 SUT=11", "Ext. Crystal Osc.; Frequency 8.0- MHz; Start-up time: 1K CK + 4.1 ms" },
+			{ "CKSEL=1111 SUT=00", "Ext. Crystal Osc.; Frequency 8.0- MHz; Start-up time: 1K CK + 65 ms" },
+			{ "CKSEL=1110 SUT=00", "Ext. Crystal Osc.; Frequency 8.0- MHz; Start-up time: 258 CK + 4.1 ms" },
+			{ "CKSEL=1110 SUT=01", "Ext. Crystal Osc.; Frequency 8.0- MHz; Start-up time: 258 CK + 65 ms" },
+			{ "CKSEL=0100 SUT=00", "Ext. Low-Freq. Crystal; Start-up time: 1K CK + 0 ms" },
+			{ "CKSEL=0100 SUT=01", "Ext. Low-Freq. Crystal; Start-up time: 1K CK + 4.1 ms" },
+			{ "CKSEL=0100 SUT=10", "Ext. Low-Freq. Crystal; Start-up time: 1K CK + 65 ms" },
+			{ "CKSEL=0101 SUT=00", "Ext. Low-Freq. Crystal; Start-up time: 32K CK + 0 ms" },
+			{ "CKSEL=0101 SUT=01", "Ext. Low-Freq. Crystal; Start-up time: 32K CK + 4.1 ms" },
+			{ "CKSEL=0101 SUT=10", "Ext. Low-Freq. Crystal; Start-up time: 32K CK + 65 ms" },
+			{ "CKSEL=0111 SUT=01", "Full Swing Oscillator; Start-up time: 16K CK + 0 ms; Crystal Osc.; BOD enabled" },
+			{ "CKSEL=0111 SUT=10", "Full Swing Oscillator; Start-up time: 16K CK + 4.1 ms; Crystal Osc.; fast rising power" },
+			{ "CKSEL=0111 SUT=11", "Full Swing Oscillator; Start-up time: 16K CK + 65 ms; Crystal Osc.; slowly rising power" },
+			{ "CKSEL=0110 SUT=10", "Full Swing Oscillator; Start-up time: 1K CK + 0 ms; Ceramic res.; BOD enable" },
+			{ "CKSEL=0110 SUT=11", "Full Swing Oscillator; Start-up time: 1K CK + 4.1 ms; Ceramic res.; fast rising power" },
+			{ "CKSEL=0111 SUT=00", "Full Swing Oscillator; Start-up time: 1K CK + 65 ms; Ceramic res.; slowly rising power" },
+			{ "CKSEL=0110 SUT=00", "Full Swing Oscillator; Start-up time: 258 CK + 4.1 ms; Ceramic res.; fast rising power" },
+			{ "CKSEL=0110 SUT=01", "Full Swing Oscillator; Start-up time: 258 CK + 65 ms; Ceramic res.; slowly rising power" },
+			{ "CKSEL=0011 SUT=00", "Int. 128kHz RC Osc.; Start-up time: 6 CK + 0 ms" },
+			{ "CKSEL=0011 SUT=01", "Int. 128kHz RC Osc.; Start-up time: 6 CK + 4 ms" },
+			{ "CKSEL=0011 SUT=10", "Int. 128kHz RC Osc.; Start-up time: 6 CK + 64 ms" },
+			{ "CKSEL=0010 SUT=00", "Int. RC Osc.; Start-up time: 6 CK + 0 ms" },
+			{ "CKSEL=0010 SUT=01", "Int. RC Osc.; Start-up time: 6 CK + 4.1 ms" },
+			{ "CKSEL=0010 SUT=10", "Int. RC Osc.; Start-up time: 6 CK + 65 ms" },
+
+			{ "BOOTSZ=01", "Boot Flash section size=1024 words Boot start address=$FC00" },
+			{ "BOOTSZ=00", "Boot Flash section size=2048 words Boot start address=$F800" },
+			{ "BOOTSZ=11", "Boot Flash section size=256 words Boot start address=$FF00" },
+			{ "BOOTSZ=10", "Boot Flash section size=512 words Boot start address=$FE00" },
+
+			{ "BODLEVEL=111", "Brown-out detection disabled" },
+			{ "BODLEVEL=110", "Brown-out detection level at VCC=1.8 V" },
+			{ "BODLEVEL=101", "Brown-out detection level at VCC=2.7 V" },
+			{ "BODLEVEL=100", "Brown-out detection level at VCC=4.3 V" }
+		},
+		{
+			// lock
+			{ 0, "Lock1", "" },
+			{ 1, "Lock2", "" },
+			{ 2, "BootLock1", "" },
+			{ 3, "BootLock2", "" },
+			{ 4, "BootLoad1", "" },
+			{ 5, "BootLoad2", "" }
+		},
+		{
+			// lock mask description
+			{ "Lock=11", "Mode 1: No memory lock features enabled" },
+			{ "Lock=10", "Mode 2: Further programming disabled" },
+			{ "Lock=00", "Mode 3: Further programming and verification disabled" },
+
+			{ "BootLock=11", "Application Protection Mode 1: No lock on SPM and LPM in Application Section" },
+			{ "BootLock=10", "Application Protection Mode 2: SPM prohibited in Application Section" },
+			{ "BootLock=00", "Application Protection Mode 3: LPM and SPM prohibited in Application Section" },
+			{ "BootLock=01", "Application Protection Mode 4: LPM prohibited in Application Section" },
+
+			{ "BootLoad=11", "Boot Loader Protection Mode 1: No lock on SPM and LPM in Boot Loader Section" },
+			{ "BootLoad=10", "Boot Loader Protection Mode 2: SPM prohibited in Boot Loader Section" },
+			{ "BootLoad=00", "Boot Loader Protection Mode 3: LPM and SPM prohibited in Boot Loader Section" },
+			{ "BootLoad=01", "Boot Loader Protection Mode 4: LPM prohibited in Boot Loader Section" }
+		}
+	},
+        
 	{
 		{ ATmega640 },
 		{
