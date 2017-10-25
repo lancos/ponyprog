@@ -35,7 +35,7 @@
 //=========================================================================//
 //
 // E. Kalinowski
-// description for fuse/lock bits is under: 
+// description for fuse/lock bits is under:
 // http://eleccelerator.com/fusecalc/
 // http://www.engbedded.com/cgi-bin/fcx.cgi?
 //
@@ -1225,11 +1225,11 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ 8, "BODLEVEL0", "" },
 			{ 9, "BODLEVEL1", "" },
 			{ 10, "BODLEVEL2", "" },
-                        { 11, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle" },
+			{ 11, "EESAVE", "Preserve EEPROM memory through the Chip Erase cycle" },
 			{ 12, "WDTON", "Watch-dog Timer always on" },
 			{ 13, "SPIEN", "Serial program downloading (SPI) enabled" },
 			{ 14, "DWEN", "Debug Wire enable" },
-                        { 15, "RSTDISBL", "Reset Disabled (Enable PA2 as i/o pin)" },
+			{ 15, "RSTDISBL", "Reset Disabled (Enable PA2 as i/o pin)" },
 			{ 16, "SELFPRGEN", "Self programming enable" }
 		},
 		{
@@ -1371,10 +1371,10 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 
 			{ "BODLEVEL=111", "Brown-out detection disabled" },
 			{ "BODLEVEL=110", "Brown-out detection level at VCC=1.8 V" },
-                        { "BODLEVEL=001", "Brown-out detection level at VCC=1.9 V" },
-                        { "BODLEVEL=000", "Brown-out detection level at VCC=2.0 V" },
-                        { "BODLEVEL=010", "Brown-out detection level at VCC=2.2 V" },
-                        { "BODLEVEL=011", "Brown-out detection level at VCC=2.3 V" },
+			{ "BODLEVEL=001", "Brown-out detection level at VCC=1.9 V" },
+			{ "BODLEVEL=000", "Brown-out detection level at VCC=2.0 V" },
+			{ "BODLEVEL=010", "Brown-out detection level at VCC=2.2 V" },
+			{ "BODLEVEL=011", "Brown-out detection level at VCC=2.3 V" },
 			{ "BODLEVEL=101", "Brown-out detection level at VCC=2.7 V" },
 			{ "BODLEVEL=100", "Brown-out detection level at VCC=4.3 V" }
 		},
@@ -1968,7 +1968,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 	},
 
 	{
-		{ ATmega88 },
+		{ ATmega88, ATmega168 },
 		{
 			// fuse
 			{ 0, "CKSEL0", "" },
@@ -2053,26 +2053,40 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ "BODLEVEL=110", "Brown-out detection level at VCC=1.8 V" },
 			{ "BODLEVEL=101", "Brown-out detection level at VCC=2.7 V" },
 			{ "BODLEVEL=100", "Brown-out detection level at VCC=4.3 V" },
-                        
-                        // extended
-			{ "BOOTSZ=00", "Boot Flash section size=1024 words Boot start address=$0C00" },
-			{ "BOOTSZ=11", "Boot Flash section size=128 words Boot start address=$0F80" },
-			{ "BOOTSZ=10", "Boot Flash section size=256 words Boot start address=$0F00" },
-			{ "BOOTSZ=01", "Boot Flash section size=512 words Boot start address=$0E00" }
+
+			// extended
+			{ "BOOTSZ=00", "Boot Flash section size=1024 words Boot start address=$xC00", "Atmega88: $0C00, ATmega168: $1C00" },
+			{ "BOOTSZ=11", "Boot Flash section size=128 words Boot start address=$xF80", "Atmega88: $0F80, ATmega168: $1F80" },
+			{ "BOOTSZ=10", "Boot Flash section size=256 words Boot start address=$xF00", "Atmega88: $0F00, ATmega168: $1F00" },
+			{ "BOOTSZ=01", "Boot Flash section size=512 words Boot start address=$xE00", "Atmega88: $0E00, ATmega168: $1E00" }
 		},
 		{
 			// lock
 			{ 0, "Lock1", "" },
-			{ 1, "Lock2", "" }
+			{ 1, "Lock2", "" },
+			{ 2, "BootLock1", "" },
+			{ 3, "BootLock2", "" },
+			{ 4, "BootLoad1", "" },
+			{ 5, "BootLoad2", "" }
 		},
 		{
 			// lock mask description
 			{ "Lock=11", "Mode 1: No memory lock features enabled" },
 			{ "Lock=10", "Mode 2: Further programming disabled" },
-			{ "Lock=00", "Mode 3: Further programming and verification disabled" }
+			{ "Lock=00", "Mode 3: Further programming and verification disabled" },
+
+			{ "BootLock=11", "Application Protection Mode 1: No lock on SPM and LPM in Application Section" },
+			{ "BootLock=10", "Application Protection Mode 2: SPM prohibited in Application Section" },
+			{ "BootLock=00", "Application Protection Mode 3: LPM and SPM prohibited in Application Section" },
+			{ "BootLock=01", "Application Protection Mode 4: LPM prohibited in Application Section" },
+
+			{ "BootLoad=11", "Boot Loader Protection Mode 1: No lock on SPM and LPM in Boot Loader Section" },
+			{ "BootLoad=10", "Boot Loader Protection Mode 2: SPM prohibited in Boot Loader Section" },
+			{ "BootLoad=00", "Boot Loader Protection Mode 3: LPM and SPM prohibited in Boot Loader Section" },
+			{ "BootLoad=01", "Boot Loader Protection Mode 4: LPM prohibited in Boot Loader Section" }
 		}
 	},
-
+#if 0
 	{
 		{ ATmega168 },
 		{
@@ -2192,7 +2206,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ "BootLoad=01", "Boot Loader Protection Mode 4: LPM prohibited in Boot Loader Section" }
 		}
 	},
-
+#endif
 	{
 		{ ATmega328 },
 		{
@@ -2668,8 +2682,8 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ "BootLoad=01", "Boot Loader Protection Mode 4: LPM prohibited in Boot Loader Section" }
 		}
 	},
-
-        {
+#if 0
+	{
 		{ ATmega1284 }, // new (RG 10.06.2017), EK : possible diff descriptions for bit combinations
 		{
 			// fuse
@@ -2787,7 +2801,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ "BootLoad=01", "Boot Loader Protection Mode 4: LPM prohibited in Boot Loader Section" }
 		}
 	},
-        
+#endif
 	{
 		{ ATmega640 },
 		{
@@ -2908,7 +2922,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 	},
 
 	{
-		{ ATmega1280, ATmega1281 },
+		{ ATmega1280, ATmega1281, ATmega1284 },
 		{
 			// fuse
 			{ 0, "CKSEL0", "" },
@@ -3556,7 +3570,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 	},
 
 	{
-		{ ATmega8515 },
+		{ ATmega8515, ATmega8535 },
 		{
 			// fuse
 			{ 0, "CKSEL0", "" },
@@ -3668,7 +3682,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ "BootLoad=01", "Boot Loader Protection Mode 4: LPM prohibited in Boot Loader Section" }
 		}
 	},
-
+#if 0
 	{
 		{ ATmega8535 },
 		{
@@ -3782,9 +3796,9 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ "BootLoad=01", "Boot Loader Protection Mode 4: LPM prohibited in Boot Loader Section" }
 		}
 	},
-
+#endif
 	{
-		{ ATmega64 },
+		{ ATmega64, ATmega128 },
 		{
 			// fuse
 			{ 0, "CKSEL0", "" },
@@ -3867,10 +3881,10 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ "CKSEL=0100 SUT=01", "Int. RC Osc. 8 MHz; Start-up time: 6 CK + 4 ms" },
 			{ "CKSEL=0100 SUT=10", "Int. RC Osc. 8 MHz; Start-up time: 6 CK + 64 ms" },
 
-			{ "BOOTSZ=01", "Boot Flash section size=1024 words Boot start address=$7C00" },
-			{ "BOOTSZ=00", "Boot Flash section size=2048 words Boot start address=$7800" },
-			{ "BOOTSZ=11", "Boot Flash section size=256 words Boot start address=$7F00" },
-			{ "BOOTSZ=10", "Boot Flash section size=512 words Boot start address=$7E00" }
+			{ "BOOTSZ=01", "Boot Flash section size=1024 words Boot start address=$xC00", "ATmega64: $7C00, ATmega128: $FC00" },
+			{ "BOOTSZ=00", "Boot Flash section size=2048 words Boot start address=$x800", "ATmega64: $7800, ATmega128: $F800"  },
+			{ "BOOTSZ=11", "Boot Flash section size=256 words Boot start address=$xF00", "ATmega64: $7F00, ATmega128: $FF00"  },
+			{ "BOOTSZ=10", "Boot Flash section size=512 words Boot start address=$xE00", "ATmega64: $7E00, ATmega128: $FE00"  }
 		},
 		{
 			// lock
@@ -3898,7 +3912,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ "BootLoad=01", "Boot Loader Protection Mode 4: LPM prohibited in Boot Loader Section" }
 		}
 	},
-
+#if 0
 	{
 		{ ATmega128 },
 		{
@@ -4014,7 +4028,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ "BootLoad=01", "Boot Loader Protection Mode 4: LPM prohibited in Boot Loader Section" }
 		}
 	},
-
+#endif
 	{
 		{ ATmega16 },
 		{

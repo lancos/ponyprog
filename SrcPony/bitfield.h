@@ -52,6 +52,7 @@ typedef struct
 {
 	const QString mask;
 	const QString LongDescr;
+	const QString ExtDescr; // for tooltips and so
 } MaskDescr;
 
 
