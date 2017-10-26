@@ -4282,7 +4282,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ 15, "OCDEN", "On-Chip Debug Enabled" },
 			{ 17, "BODLEVEL0", "" },
 			{ 18, "BODLEVEL1", "" },
-			{ 19, "BODLEVEL1", "" },
+			{ 19, "BODLEVEL2", "" },
 			{ 20, "M161C", "ATmega161 compability mode" }
 		},
 		{
@@ -4343,10 +4343,10 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ "BODLEVEL=101", "Brown-out detection level at VCC=2.7 V" },
 			{ "BODLEVEL=100", "Brown-out detection level at VCC=4.3 V" },
 
-			{ "BOOTSZ=01", "Boot Flash section size=1024 words Boot start address=$1C00" },
-			{ "BOOTSZ=00", "Boot Flash section size=2048 words Boot start address=$1800" },
-			{ "BOOTSZ=11", "Boot Flash section size=256 words Boot start address=$1F00" },
-			{ "BOOTSZ=10", "Boot Flash section size=512 words Boot start address=$1E00" }
+			{ "BOOTSZ=01", "Boot Flash section size=512 words Boot start address=$1E00" },
+			{ "BOOTSZ=00", "Boot Flash section size=1024 words Boot start address=$1C00" },
+			{ "BOOTSZ=11", "Boot Flash section size=128 words Boot start address=$1F80" },
+			{ "BOOTSZ=10", "Boot Flash section size=256 words Boot start address=$1F00" }
 		},
 		{
 			// lock
@@ -4452,10 +4452,10 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ "BODLEVEL=101", "Brown-out detection level at VCC=2.7 V" },
 			{ "BODLEVEL=100", "Brown-out detection level at VCC=4.3 V" },
 
-			{ "BOOTSZ=01", "Boot Flash section size=1024 words Boot start address=$1C00" },
-			{ "BOOTSZ=00", "Boot Flash section size=2048 words Boot start address=$1800" },
-			{ "BOOTSZ=11", "Boot Flash section size=256 words Boot start address=$1F00" },
-			{ "BOOTSZ=10", "Boot Flash section size=512 words Boot start address=$1E00" }
+			{ "BOOTSZ=01", "Boot Flash section size=512 words Boot start address=$1E00" },
+			{ "BOOTSZ=00", "Boot Flash section size=1024 words Boot start address=$1C00" },
+			{ "BOOTSZ=11", "Boot Flash section size=128 words Boot start address=$1F80" },
+			{ "BOOTSZ=10", "Boot Flash section size=256 words Boot start address=$1F00" }
 		},
 		{
 			// lock
