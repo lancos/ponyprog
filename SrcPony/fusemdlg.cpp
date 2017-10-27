@@ -368,7 +368,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 	},
 #endif
 	{
-		{ AT90CAN32 },
+		{ AT90CAN32, AT90CAN64, AT90CAN128 },
 		{
 			// fuse
 			// byte low
@@ -436,10 +436,10 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ "CKSEL=0010 SUT=01", "Int. RC Osc.; Start-up time: 6 CK + 4.1 ms" },
 			{ "CKSEL=0010 SUT=10", "Int. RC Osc.; Start-up time: 6 CK + 65 ms" },
 
-			{ "BOOTSZ=10", "Boot Flash section size=1024 words Boot start address=$3C00" },
-			{ "BOOTSZ=01", "Boot Flash section size=2048 words Boot start address=$3800" },
-			{ "BOOTSZ=00", "Boot Flash section size=4096 words Boot start address=$3000" },
-			{ "BOOTSZ=11", "Boot Flash section size=512 words Boot start address=$3E00" },
+			{ "BOOTSZ=10", "Boot Flash section size=1024 words Boot start address=$nC00", "AT90CAN32: $3C00, AT90CAN64: $7C00, AT90CAN128: $FC00" },
+			{ "BOOTSZ=01", "Boot Flash section size=2048 words Boot start address=$n800", "AT90CAN32: $3800, AT90CAN64: $7800, AT90CAN128: $F800" },
+			{ "BOOTSZ=00", "Boot Flash section size=4096 words Boot start address=$n000", "AT90CAN32: $3000, AT90CAN64: $7000, AT90CAN128: $F000" },
+			{ "BOOTSZ=11", "Boot Flash section size=512 words Boot start address=$nE00", "AT90CAN32: $3E00, AT90CAN64: $7E00, AT90CAN128: $FE00" },
 
 			{ "BODLEVEL=111", "Brown-out detection disabled" },
 			{ "BODLEVEL=000", "Brown-out detection level at VCC=2.5 V" },
@@ -476,7 +476,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ "BootLoad=01", "Boot Loader Protection Mode 4: LPM prohibited in Boot Loader Section" }
 		}
 	},
-
+#if 0
 	{
 		{ AT90CAN64 },
 		{
@@ -690,7 +690,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ "BootLoad=01", "Boot Loader Protection Mode 4: LPM prohibited in Boot Loader Section" }
 		}
 	},
-
+#endif 
 	{
 		{ AT90S1200 },
 		{
