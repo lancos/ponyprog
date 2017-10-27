@@ -2563,7 +2563,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ "BootLoad=01", "Boot Loader Protection Mode 4: LPM prohibited in Boot Loader Section" }
 		}
 	},
-
+#if 0
 	{
 		{ ATmega644 }, // new (RG 10.06.2017), EK : possible diff descriptions for bit combinations
 		{
@@ -2682,7 +2682,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ "BootLoad=01", "Boot Loader Protection Mode 4: LPM prohibited in Boot Loader Section" }
 		}
 	},
-#if 0
+
 	{
 		{ ATmega1284 }, // new (RG 10.06.2017), EK : possible diff descriptions for bit combinations
 		{
@@ -2801,7 +2801,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ "BootLoad=01", "Boot Loader Protection Mode 4: LPM prohibited in Boot Loader Section" }
 		}
 	},
-#endif
+
 	{
 		{ ATmega640 },
 		{
@@ -2920,9 +2920,9 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ "BootLoad=01", "Boot Loader Protection Mode 4: LPM prohibited in Boot Loader Section" }
 		}
 	},
-
+#endif
 	{
-		{ ATmega1280, ATmega1281, ATmega1284 },
+		{ ATmega640, ATmega644, ATmega1280, ATmega1281, ATmega1284, ATmega2560, ATmega2561 },
 		{
 			// fuse
 			{ 0, "CKSEL0", "" },
@@ -2931,7 +2931,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ 3, "CKSEL3", "" },
 			{ 4, "SUT0", "" },
 			{ 5, "SUT1", "" },
-			{ 6, "CKOUT", "Clock output on PORTE7" },
+			{ 6, "CKOUT", "Clock output on PORTE7" }, // EK: different ports
 			{ 7, "CKDIV8", "Divide clock by 8 internally" },
 			{ 8, "BOOTRST", "Boot Reset vector Enabled (default address=$0000)" },
 			{ 9, "BOOTSZ0", "" },
@@ -3003,10 +3003,10 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ "CKSEL=0010 SUT=01", "Int. RC Osc.; Start-up time: 6 CK + 4.1 ms" },
 			{ "CKSEL=0010 SUT=10", "Int. RC Osc.; Start-up time: 6 CK + 65 ms" },
 
-			{ "BOOTSZ=01", "Boot Flash section size=1024 words Boot start address=$FC00" },
-			{ "BOOTSZ=00", "Boot Flash section size=2048 words Boot start address=$F800" },
-			{ "BOOTSZ=11", "Boot Flash section size=256 words Boot start address=$FF00" },
-			{ "BOOTSZ=10", "Boot Flash section size=512 words Boot start address=$FE00" },
+			{ "BOOTSZ=01", "Boot Flash section size=2048 words Boot start address=$n800", "ATmega640: $7800, ATmega644: $7800, ATmega1280: $F800, ATmega1281: $F800, ATmega1284: $F800, ATmega2560: $1800 ATmega2560: $1800" },
+			{ "BOOTSZ=00", "Boot Flash section size=4096 words Boot start address=$n000", "ATmega640: $7000, ATmega644: $7000, ATmega1280: $F000, ATmega1281: $F000, ATmega1284: $F000, ATmega2560: $1000 ATmega2560: $1000"  },
+			{ "BOOTSZ=11", "Boot Flash section size=512 words Boot start address=$nE00", "ATmega640: $7E00, ATmega644: $7E00, ATmega1280: $FE00, ATmega1281: $FE00, ATmega1284: $FE00, ATmega2560: $1E00 ATmega2560: $1E00"  },
+			{ "BOOTSZ=10", "Boot Flash section size=1024 words Boot start address=$nC00", "ATmega640: $7C00, ATmega644: $7C00, ATmega1280: $FC00, ATmega1281: $FC00, ATmega1284: $FC00, ATmega2560: $1C00 ATmega2560: $1C00"  },
 
 			{ "BODLEVEL=111", "Brown-out detection disabled" },
 			{ "BODLEVEL=110", "Brown-out detection level at VCC=1.8 V" },
@@ -3158,7 +3158,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ "BootLoad=01", "Boot Loader Protection Mode 4: LPM prohibited in Boot Loader Section" }
 		}
 	},
-#endif
+
 	{
 		{ ATmega2560, ATmega2561 },
 		{
@@ -3277,7 +3277,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ "BootLoad=01", "Boot Loader Protection Mode 4: LPM prohibited in Boot Loader Section" }
 		}
 	},
-#if 0
+
 	{
 		{ ATmega2561 },
 		{
