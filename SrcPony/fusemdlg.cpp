@@ -172,6 +172,8 @@ void fuseModalDialog::initWidgets(const QString &msg, bool readonly)
 	fuseEnabled = true;
 	lockEnabled = true;
 
+	QString nm = GetEEPTypeString(type);
+
 	chkHlp1->setText(translate(STR_FUSEDLGNOTECLR) + " (bit = 1)");
 	chkHlp1->setEnabled(false);
 	chkHlp0->setText(translate(STR_FUSEDLGNOTESET) + " (bit = 0)");
@@ -201,7 +203,7 @@ void fuseModalDialog::initWidgets(const QString &msg, bool readonly)
 	unsigned int f = awip->GetFuseBits();
 	if (currentBitField.fuse.count() > 0)
 	{
-		fuseWidget = new BitFieldWidget(this, currentBitField.fuse, currentBitField.fuseDescr, f);
+		fuseWidget = new BitFieldWidget(this, currentBitField.fuse, currentBitField.fuseDescr, f, nm);
 		tabWidget->addTab(fuseWidget, "Fuse");
 		connect(fuseWidget, SIGNAL(displayBitFields(int)), this, SLOT(getFuse(int)));
 
@@ -215,7 +217,7 @@ void fuseModalDialog::initWidgets(const QString &msg, bool readonly)
 	unsigned int l = awip->GetLockBits();
 	if (currentBitField.lock.count() > 0)
 	{
-		lockWidget = new BitFieldWidget(this, currentBitField.lock, currentBitField.lockDescr, l);
+		lockWidget = new BitFieldWidget(this, currentBitField.lock, currentBitField.lockDescr, l, nm);
 		tabWidget->addTab(lockWidget, "Lock");
 		connect(lockWidget, SIGNAL(displayBitFields(int)), this, SLOT(getLock(int)));
 
