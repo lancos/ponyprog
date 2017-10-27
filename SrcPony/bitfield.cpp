@@ -158,7 +158,7 @@ void BitFieldWidget::createComboLists()
 					if (posExtText >= 0)
 					{
 						posExtText += chipName.length();
-						QString addrTxt = mdes.ExtDescr.mid(posExtText + 2, 5);
+						QString addrTxt = mdes.ExtDescr.simplified().mid(posExtText + 2, 5);
 
 						tStr.replace(posBeg + 1, 5, addrTxt);
 					}
