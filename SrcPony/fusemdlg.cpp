@@ -690,7 +690,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ "BootLoad=01", "Boot Loader Protection Mode 4: LPM prohibited in Boot Loader Section" }
 		}
 	},
-#endif 
+#endif
 	{
 		{ AT90S1200 },
 		{
@@ -834,7 +834,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ "Lock=00", "Mode 3: Further programming and verification disabled" }
 		}
 	},
-#endif
+
 	{
 		{ AT90S2333 }, // ???
 		{
@@ -861,9 +861,9 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ "Lock=00", "Mode 3: Further programming and verification disabled" }
 		}
 	},
-
+#endif
 	{
-		{ AT90S4433 },
+		{ AT90S2333, AT90S4433 },
 		{
 			// fuse
 			{ 0, "CKSEL0", "" },
@@ -2410,10 +2410,10 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ "CKSEL=0010 SUT=01", "Int. RC Osc.; Start-up time: 6 CK + 4.1 ms" },
 			{ "CKSEL=0010 SUT=10", "Int. RC Osc.; Start-up time: 6 CK + 65 ms" },
 
-			{ "BOOTSZ=01", "Boot Flash section size=1024 words Boot start address=$1C00" },
-			{ "BOOTSZ=00", "Boot Flash section size=2048 words Boot start address=$1800" },
-			{ "BOOTSZ=11", "Boot Flash section size=256 words Boot start address=$1F00" },
-			{ "BOOTSZ=10", "Boot Flash section size=512 words Boot start address=$1E00" },
+			{ "BOOTSZ=01", "Boot Flash section size=512 words Boot start address=$1C00" },
+			{ "BOOTSZ=00", "Boot Flash section size=1024 words Boot start address=$1800" },
+			{ "BOOTSZ=11", "Boot Flash section size=128 words Boot start address=$1F00" },
+			{ "BOOTSZ=10", "Boot Flash section size=256 words Boot start address=$1E00" },
 
 			{ "BODLEVEL=111", "Brown-out detection disabled" },
 			{ "BODLEVEL=110", "Brown-out detection level at VCC=1.8 V" },
