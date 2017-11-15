@@ -14,3 +14,4 @@ install:
 script:
 - qmake ponyprog.pro -r -spec linux-g++-64 CONFIG+=debug QMAKE_CXX=g++-5 QMAKE_LINK=g++-5
 - make
+
