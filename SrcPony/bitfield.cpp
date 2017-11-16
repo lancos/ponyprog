@@ -33,10 +33,12 @@
 
 
 //=========================>>> BitFieldWidget::BitFieldWidget <<<====================
-BitFieldWidget::BitFieldWidget(QWidget *parent, QVector<BitInfo> &vInfo, QVector<MaskDescr> &vMask, unsigned int field) :
+BitFieldWidget::BitFieldWidget(QWidget *parent, QVector<BitInfo> &vInfo, QVector<MaskDescr> &vMask, unsigned int field, const QString &chipNm) :
 	QWidget(parent)
 {
 	setupUi(this);
+
+	chipName = chipNm;
 
 	vecInfo = &vInfo;
 
@@ -147,7 +149,26 @@ void BitFieldWidget::createComboLists()
 		{
 			if (mdes.mask.indexOf(QRegExp(currentMask)) >= 0)
 			{
-				lst << mdes.LongDescr;
+				int posBeg = mdes.LongDescr.indexOf("=$n");
+				if (posBeg > 0)
+				{
+					QString tStr = mdes.LongDescr;
+					// TODO replace text with text from mdes.ExtDescr
+					int posExtText = mdes.ExtDescr.indexOf(chipName + ": ");
+					if (posExtText >= 0)
+					{
+						posExtText += chipName.length();
+						QString addrTxt = mdes.ExtDescr.simplified().mid(posExtText + 2, 5);
+
+						tStr.replace(posBeg + 1, 5, addrTxt);
+					}
+
+					lst << tStr;
+				}
+				else
+				{
+					lst << mdes.LongDescr;
+				}
 			}
 		}
 
