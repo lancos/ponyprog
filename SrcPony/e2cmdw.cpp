@@ -2,7 +2,7 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2019   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
@@ -24,7 +24,7 @@
 //                                                                         //
 //=========================================================================//
 
-
+#include <QtCore>
 #include <QPainter>
 #include <QPrinter>
 #include <QPrintDialog>
@@ -504,7 +504,7 @@ bool e2CmdWindow::readLangDir()
 
 	qDebug() << "readLangDir path:" << path << ", Saved: " << lngDirName;
 
-#ifdef __linux__
+#ifdef Q_OS_LINUX
 	dirsLang << lngDirName << "/usr/share/ponyprog/lang" << "/usr/local/share/ponyprog/lang" << path;
 #else
 	dirsLang << lngDirName << path;
@@ -2630,7 +2630,7 @@ int e2CmdWindow::CmdHelp()
 		QDesktopServices::openUrl(QUrl("http://www.lancos.com/e2p/ponyprog2000.html"));
 	}
 #if 0
-#ifdef __linux__
+#ifdef Q_OS_LINUX
 	//system(str.toLatin1().constData());
 	QProcess::execute("xdg-open", (QStringList() << str));
 #else
@@ -4851,7 +4851,7 @@ int e2CmdWindow::CmdWriteLock()
 	                                if ((nb = atoi(r)) != 0)
 	                                {
 	                                        char str[MAXMSG];
-	                                        sprintf(str, "Security bits write succesful (%d,%d)", sb, nb);
+											sprintf(str, "Security bits write successful (%d,%d)", sb, nb);
 
 	                                        int err = awip->SecurityWrite( ((sb << 4) & 0xF0) | (nb & 0x0F) );
 	                                        if (err)
@@ -5114,7 +5114,7 @@ int e2CmdWindow::CmdWriteSpecial()
 	                        else
 	                        {
 	                                result = OK;
-	                                note.setText("High endurance block write succesful");
+									note.setText("High endurance block write successful");
 	                        }
 	                }
 	        }

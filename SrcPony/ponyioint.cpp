@@ -2,7 +2,7 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2019   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
@@ -30,6 +30,7 @@
 #include "e2cmdw.h"
 
 #include <QDebug>
+#include <QtCore>
 
 /* modem control register bits
  * bit 0: DTR  (pin 4)
@@ -43,20 +44,20 @@
 * bit 7: DCD  (pin 1)
 */
 
-# define WB_SCL 1               /* COM: rts (pin 7) */
-# define WB_SDA 0               /* COM: dtr (pin 4) */
+#define WB_SCL 1               /* COM: rts (pin 7) */
+#define WB_SDA 0               /* COM: dtr (pin 4) */
 # undef RB_SCL                  /* Not used */
-# define RB_SDA 4               /* COM: cts (pin 8) */
-# define RB_TEST 5              /* COM: dsr (pin 6) */
+#define RB_SDA 4               /* COM: cts (pin 8) */
+#define RB_TEST 5              /* COM: dsr (pin 6) */
 
-# define WF_SCL (1 << WB_SCL)
-# define WF_SDA (1 << WB_SDA)
-//# define RF_SCL (1 << RB_SCL)
-# define RF_SDA (1 << RB_SDA)
-# define RF_TEST (1 << RB_TEST)
+#define WF_SCL (1 << WB_SCL)
+#define WF_SDA (1 << WB_SDA)
+//#define RF_SCL (1 << RB_SCL)
+#define RF_SDA (1 << RB_SDA)
+#define RF_TEST (1 << RB_TEST)
 
-#ifdef  __linux__
-# include <sys/io.h>
+#ifdef Q_OS_LINUX
+//# include <sys/io.h>
 # include <unistd.h>
 #endif
 
@@ -104,7 +105,7 @@ void PonyIOInterface::SetControlLine(int res)
 
 		qDebug() << "PonyIOInterface::SetControlLine() " << (hex) << lcrOfst  << (dec);
 
-#ifdef  Q_OS_WIN32
+#ifdef Q_OS_WIN32
 		if (res)
 		{
 			SetCommBreak(hCom);

@@ -2,8 +2,8 @@ PROJECT(ponyprog)
 
 # Configure CMake ...
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8 FATAL_ERROR)
-CMAKE_POLICY(SET CMP0003 OLD)
-CMAKE_POLICY(SET CMP0015 OLD)
+# CMAKE_POLICY(SET CMP0003 OLD)
+# CMAKE_POLICY(SET CMP0015 OLD)
 
 # set the Qt version to 4 or 5
 OPTION (USE_QT5 "Using of Qt5 version for compiling" ON)
@@ -109,7 +109,7 @@ MESSAGE(STATUS "Version build date: ${APP_BUILD_DATE}")
 # 
 SET(PONYPROG_PACKAGE ponyprog)
 SET(PONYPROG_HOST ${CMAKE_SYSTEM} ${CMAKE_SYSTEM_PROCESSOR})
-SET(PONYPROG_COPYRIGHT "Copyright (c) 1997-2017   ${APP_AUTHOR}, All Rights Reserved.")
+SET(PONYPROG_COPYRIGHT "Copyright (c) 1997-2019   ${APP_AUTHOR}, All Rights Reserved.")
 SET(PONYPROG_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX})
 
 # Setup high-level build options
@@ -157,6 +157,16 @@ ELSE()
         "If it's INSTALLed in a non-standard location, specify the path to qmake in QT_QMAKE_EXECUTABLE. "
         "You can do it in interactive mode (ccmake instead of cmake) or using -DVAR=VAL syntax.")
     ENDIF(NOT Qt5Widgets_FOUND)
+
+    IF(NOT Qt5PrintSupport_FOUND)
+        MESSAGE(FATAL_ERROR "Qt5 PrintSupport development files are not found. "
+        "Qt5PrintSupport development package is to install.")
+    ENDIF(NOT Qt5PrintSupport_FOUND)
+
+    IF(NOT Qt5Multimedia_FOUND)
+        MESSAGE(FATAL_ERROR "Qt5 Multimedia development files are not found. "
+        "Qt5Multimedia development package is to install.")
+    ENDIF(NOT Qt5Multimedia_FOUND)
 ENDIF()
 
 # for this feature install debhelper or 

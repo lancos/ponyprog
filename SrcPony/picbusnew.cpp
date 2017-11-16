@@ -2,7 +2,7 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2019   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
@@ -30,8 +30,9 @@
 
 #include "globals.h"
 
-#ifdef  __linux__
-//#  include <asm/io.h>
+#include <QtCore>
+
+#ifdef Q_OS_LINUX
 #  include <unistd.h>
 #else
 #  ifdef        __BORLANDC__

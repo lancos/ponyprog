@@ -2,7 +2,7 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2019   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
@@ -126,7 +126,7 @@ int Pic168xx::QueryType(long &type)
 int Pic168xx::Probe(int probe_size)
 {
 	int rv = OK;
-	long type;
+	long type = 0;
 
 	rv = QueryType(type);
 //	int pritype = GetE2PPriType(type);

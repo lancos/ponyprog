@@ -2,7 +2,7 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2019   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
@@ -25,8 +25,9 @@
 //=========================================================================//
 
 #include <stdio.h>
+#include <QtCore>
 
-#ifdef __linux__
+#ifdef Q_OS_LINUX
 #include <unistd.h>
 #include <sys/time.h>
 #endif
@@ -49,14 +50,14 @@ Wait::~Wait()
 int Wait::bogokips = 0;
 int Wait::htimer = -1;
 
-#ifdef  Q_OS_WIN32
+#ifdef Q_OS_WIN32
 LARGE_INTEGER Wait::mlpf;
 #endif
 
 //Check for a good hardware usec timer
 int Wait::CheckHwTimer()
 {
-#ifdef  Q_OS_WIN32
+#ifdef Q_OS_WIN32
 	LARGE_INTEGER i1, i2;
 
 	htimer = 0;                                                             //Disable by default
@@ -79,7 +80,6 @@ int Wait::CheckHwTimer()
 			}
 		}
 	}
-
 #else
 	struct timeval t1, t2;
 
@@ -99,7 +99,6 @@ int Wait::CheckHwTimer()
 			break;
 		}
 	}
-
 #endif
 
 	return htimer;
@@ -138,11 +137,9 @@ inline int Wait::GetBogoKips()
 
 void Wait::WaitMsec(int msec)
 {
-#ifdef __linux__
+#ifdef Q_OS_LINUX
 	usleep(msec * 1000);
-#else
-# ifdef Q_OS_WIN32
-
+#elif defined(Q_OS_WIN32)
 	if (msec > 30)
 	{
 		Sleep(msec);
@@ -151,8 +148,6 @@ void Wait::WaitMsec(int msec)
 	{
 		WaitUsec(msec * 1000);
 	}
-
-# endif
 #endif
 }
 
@@ -167,7 +162,7 @@ void Wait::WaitUsec(int usec)
 {
 	if (htimer)
 	{
-#ifdef  Q_OS_WIN32
+#ifdef Q_OS_WIN32
 		LARGE_INTEGER i1, i2;
 
 		QueryPerformanceCounter(&i1);
@@ -179,7 +174,6 @@ void Wait::WaitUsec(int usec)
 			QueryPerformanceCounter(&i2);
 		}
 		while ((long)(i2.QuadPart - i1.QuadPart) < i_usec);
-
 #else
 		struct timeval t1, t2;
 
@@ -193,7 +187,6 @@ void Wait::WaitUsec(int usec)
 			gettimeofday(&t2, NULL);
 		}
 		while (timercmp(&t2, &t1, <));  // EK 2017 is it right???
-
 #endif
 	}
 	else

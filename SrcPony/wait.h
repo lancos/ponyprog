@@ -2,7 +2,7 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2019   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
@@ -27,7 +27,9 @@
 #ifndef _WAIT_H
 #define _WAIT_H
 
-#ifdef  Q_OS_WIN32
+#include <QtCore>
+
+#ifdef Q_OS_WIN32
 #include "windows.h"
 #endif
 
@@ -59,7 +61,7 @@ class Wait
 	static int bogokips;
 	static int htimer;
 
-#ifdef  Q_OS_WIN32
+#ifdef Q_OS_WIN32
 	static LARGE_INTEGER mlpf;
 #endif
 };

@@ -2,7 +2,7 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2019   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
@@ -27,11 +27,13 @@
 #ifndef _RS232INTERFACE_H
 #define _RS232INTERFACE_H
 
-#ifdef  __linux__
+#include <QtCore>
+
+#ifdef Q_OS_LINUX
 #include <termios.h>
 #endif
 
-#ifdef  Q_OS_WIN32
+#ifdef Q_OS_WIN32
 #include <windows.h>
 #endif
 
@@ -82,13 +84,13 @@ class RS232Interface
 	bool wait_endTX_mode;
 
 	//      E2Profile *profile;
-#ifdef  Q_OS_WIN32
+#ifdef Q_OS_WIN32
 	HANDLE hCom;
 
 	DWORD old_mask;
 	COMMTIMEOUTS old_timeout;
 	DCB old_dcb;
-#elif defined(__linux__)
+#elif defined(Q_OS_LINUX)
 	int fd;
 	struct termios old_termios;
 #endif

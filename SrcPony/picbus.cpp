@@ -2,7 +2,7 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2019   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
@@ -29,6 +29,7 @@
 #include "errcode.h"
 
 #include <QDebug>
+#include <QtCore>
 
 #include "globals.h"
 #include "e2profil.h"
@@ -36,8 +37,7 @@
 
 class e2CmdWindow;
 
-#ifdef  __linux__
-//#  include <asm/io.h>
+#ifdef Q_OS_LINUX
 #  include <unistd.h>
 #else
 #  ifdef        __BORLANDC__

@@ -2,7 +2,7 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2019   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
@@ -28,6 +28,7 @@
 #include <QDebug>
 #include <QTextStream>
 #include <QMessageBox>
+#include <QtCore>
 
 // #include "MainWindow.h"
 #include "Translator.h"
@@ -51,7 +52,7 @@ QString cTranslator::engText[] =
 	"No Name",
 
 	//Button captions
-#ifdef  Q_OS_WIN32
+#ifdef Q_OS_WIN32
 	"&OK",
 	"&Cancel",
 	"&Help",
@@ -105,7 +106,7 @@ QString cTranslator::engText[] =
 	"Cannot verify, device missing or bad device",
 	"Verify Failed",
 	"Verify successful",
-	"Program succesful",
+	"Program successful",
 	"Program Failed",
 	"Device reset",
 	"Writing security bits...",
@@ -354,7 +355,7 @@ QString cTranslator::engText[] =
 	//----Fuse dialog
 
 	//Button captions
-#ifdef  Q_OS_WIN32
+#ifdef Q_OS_WIN32
 	"C&lear All",
 	"&Set All",
 	"&Write",
@@ -384,7 +385,7 @@ QString cTranslator::engText[] =
 	//----Info dialog
 
 	//Button captions
-#ifdef  Q_OS_WIN32
+#ifdef Q_OS_WIN32
 	"&Close",
 #else
 	"Close",
@@ -470,7 +471,7 @@ QString cTranslator::engText[] =
 	//----Retry dialog
 
 	//Button captions
-#ifdef  Q_OS_WIN32
+#ifdef Q_OS_WIN32
 	"&Abort",
 	"&Retry",
 	"&Ignore",

@@ -2,7 +2,7 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2019   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
@@ -33,13 +33,13 @@
 
 #include "e2cmdw.h"
 
-
+#include <QtCore>
 #include <QDebug>
 
 /*Attenzione!! il format Intel Hex e` Little Endian */
 #undef  _BIG_ENDIAN_
 
-#ifndef __linux__
+#ifdef Q_OS_WIN32
 #  ifdef        __BORLANDC__
 #    define     __inline__
 #  else // _MICROSOFT_ VC++

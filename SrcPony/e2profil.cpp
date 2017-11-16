@@ -2,7 +2,7 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2019   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
@@ -29,6 +29,7 @@
 #include <QString>
 #include <QStringList>
 #include <QSettings>
+#include <QtCore>
 
 #include "version.h"
 #include "e2profil.h"
@@ -1470,7 +1471,7 @@ void E2Profile::SetDevDir(const QString &name)
 }
 #endif
 
-#ifdef __linux__
+#ifdef Q_OS_LINUX
 
 static QString retrieve_ttyS_name()
 {
@@ -1559,7 +1560,7 @@ QString E2Profile::GetCOMDevName()
 
 	if (sp.length() == 0)
 	{
-#ifdef __linux__
+#ifdef Q_OS_LINUX
 		sp = retrieve_ttyS_name();
 #else
 		sp = "COM";
@@ -1584,7 +1585,7 @@ QStringList E2Profile::GetCOMDevList()
 
 	if (lst.count() == 0)
 	{
-#ifdef __linux__
+#ifdef Q_OS_LINUX
 		lst = retrieve_ttyS_list();
 		if (lst.count() == 0)
 		{
@@ -1624,7 +1625,7 @@ QString E2Profile::GetLPTDevName()
 
 	if (sp.length() == 0)
 	{
-#ifdef __linux__
+#ifdef Q_OS_LINUX
 		sp = QString("/dev/parport");
 #else
 		sp = QString("LPT");
@@ -1650,7 +1651,7 @@ QStringList E2Profile::GetLPTDevList()
 	if (lst.count() == 0)
 	{
 		QString sname = E2Profile::GetLPTDevName();
-#ifdef __linux__
+#ifdef Q_OS_LINUX
 		for (int i = 0; i < MAX_LPTPORTS; i++)
 #else
 		for (int i = 1; i <= MAX_LPTPORTS; i++)

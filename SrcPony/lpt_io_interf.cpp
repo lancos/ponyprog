@@ -2,7 +2,7 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2019   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
@@ -28,13 +28,13 @@
 #include "errcode.h"
 
 #include <QDebug>
+#include <QtCore>
 
-#ifdef  Q_OS_WIN32
+#ifdef Q_OS_WIN32
 #include <windows.h>
 #endif
 
-#ifdef  __linux__
-// #include <stdio.h>
+#ifdef Q_OS_LINUX
 #include <unistd.h>
 #include <fcntl.h>
 #endif

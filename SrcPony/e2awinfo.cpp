@@ -2,7 +2,7 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2019   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
@@ -35,7 +35,7 @@
 #include <QMessageBox>
 #include <QString>
 #include <QDebug>
-
+#include <QtCore>
 
 //======================>>> e2AppWinInfo::e2AppWinInfo <<<=======================
 e2AppWinInfo::e2AppWinInfo(e2CmdWindow *p, const QString &name, BusIO **busvptr) :
@@ -200,7 +200,7 @@ e2AppWinInfo::e2AppWinInfo(e2CmdWindow *p, const QString &name, BusIO **busvptr)
 
 			if (err == E2ERR_ACCESSDENIED)
 			{
-#ifdef  Q_OS_WIN32
+#ifdef Q_OS_WIN32
 				QString msg = "I/O access denied. Driver not found, try to install the software again";
 #else
 				QString msg = "I/O access denied. Run as root, or change the interface";

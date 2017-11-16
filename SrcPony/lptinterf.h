@@ -2,7 +2,7 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2019   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
@@ -27,6 +27,7 @@
 #ifndef _LPTINTERFACE_H
 #define _LPTINTERFACE_H
 
+#include <QtCore>
 #include "types.h"
 
 #define LPTCON_CLOSEHANDLE      -1
@@ -73,7 +74,7 @@ class LPTInterface
   protected:             //------------------------------- protected
 
   private:               //------------------------------- private
-#ifdef __linux__
+#ifdef Q_OS_LINUX
 	int hLpt;
 #endif
 	LPTCONDATA lpt_control;

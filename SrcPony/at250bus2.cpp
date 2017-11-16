@@ -2,7 +2,7 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2017   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2019   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
@@ -28,11 +28,12 @@
 #include "at250bus2.h"
 #include "errcode.h"
 
+#include <QtCore>
 #include <QDebug>
 
 #include "e2cmdw.h"
 
-#ifndef __linux__
+#ifdef Q_OS_WIN32
 #  ifdef        __BORLANDC__
 #    define     __inline__
 #  else // _MICROSOFT_ VC++
