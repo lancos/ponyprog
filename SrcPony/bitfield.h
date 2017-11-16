@@ -40,9 +40,10 @@
  */
 typedef struct
 {
-	int  bit;
-	const QString ShortDescr;
-	const QString LongDescr;
+	int  bit;                 // bit number
+	const QString ShortDescr; // first column
+	const QString LongDescr;  // second column
+	const QString ExtDescr;   // for additional infos
 } BitInfo;
 
 /**
@@ -50,8 +51,9 @@ typedef struct
  */
 typedef struct
 {
-	const QString mask;
-	const QString LongDescr;
+	const QString mask;      // in mask are coded name of mask and bits
+	const QString LongDescr; //
+	const QString ExtDescr;  // for additional infos
 } MaskDescr;
 
 
@@ -59,7 +61,7 @@ class BitFieldWidget : public QWidget, public Ui::FormBitField
 {
 	Q_OBJECT
   public:               //---------------------------------------- public
-	BitFieldWidget(QWidget *parent, QVector<BitInfo> &vInfo, QVector<MaskDescr> &vMask, unsigned int field);
+	BitFieldWidget(QWidget *parent, QVector<BitInfo> &vInfo, QVector<MaskDescr> &vMask, unsigned int field, const QString &chipNm);
 	virtual ~BitFieldWidget();          // Destructor
 
 	unsigned int getBitfield();
@@ -86,6 +88,8 @@ class BitFieldWidget : public QWidget, public Ui::FormBitField
 
 	QVector<BitInfo> *vecInfo;
 	QVector<MaskDescr> *vecDescr;
+
+	QString chipName;
 
 	unsigned int bField;
 
