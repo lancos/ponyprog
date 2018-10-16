@@ -52,7 +52,7 @@ struct base_len
 
 class PortInterface
 {
-  public:                //------------------------------- public
+  public:
 	PortInterface();
 	virtual ~PortInterface();
 
@@ -81,7 +81,7 @@ class PortInterface
 	virtual int OutPort(int val, int no = -1);
 	virtual int OutPortMask(int mask, int val);
 
-  protected:             //------------------------------- protected
+  protected:
 	uint8_t GetCPWReg()
 	{
 		return cpwreg;
@@ -95,7 +95,7 @@ class PortInterface
 		read_port;              // Number of input port (read I/O port address)
 	uint8_t cpwreg;                 // write register image in memory (the content is the same of the hardware register)
 
-  private:               //------------------------------- private
+  private:
 	int IOperm(int a, int b, int c);
 
 	void DetectPorts();

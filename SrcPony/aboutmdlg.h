@@ -40,17 +40,17 @@ class e2CmdWindow;
 class AboutModalDialog :  public QDialog, public cTranslator, public Ui::AboutDialog
 {
 	Q_OBJECT
-  public:               //---------------------------------------- public
+  public:
 	AboutModalDialog(QWidget *bw = 0, const QString title = "About");
 	virtual ~AboutModalDialog();            // Destructor
 
-  protected:    //--------------------------------------- protected
+  protected:
 
   private slots:
 	void onChkStart(bool);
 	void onHelp();
 
-  private:              //--------------------------------------- private
+  private:
 
 	e2CmdWindow *cmdw;
 };

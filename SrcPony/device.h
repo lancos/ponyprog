@@ -37,7 +37,7 @@ class e2AppWinInfo;
 
 class Device
 {
-  public:               //---------------------------------------- public
+  public:
 
 	Device(e2AppWinInfo *wininfo = 0, BusIO *busp = 0, int b_size = 0);
 	virtual ~Device();
@@ -135,7 +135,7 @@ class Device
 		return detected_signature;
 	}
 
-  protected:    //--------------------------------------- protected
+  protected:
 	void SetBankSize(int size)
 	{
 		if (size > 0)
@@ -168,7 +168,7 @@ class Device
 	long detected_type;
 	QString detected_signature;
 
-  private:              //--------------------------------------- private
+  private:
 
 	e2AppWinInfo *awi;      // pointer to container object
 	BusIO *bus;                     // bus used by the device

@@ -35,7 +35,7 @@
 //Formato di bus generico seriale
 class BusIO : public Wait
 {
-  public:                //------------------------------- public
+  public:
 	BusIO(BusInterface *p = 0);
 	//      virtual ~BusIO() { }
 
@@ -181,7 +181,7 @@ class BusIO : public Wait
 		}
 	}
 
-  protected:             //------------------------------- protected
+  protected:
 
 	int     err_no;                 //error code
 	int     last_addr;
@@ -190,7 +190,7 @@ class BusIO : public Wait
 
 	BusInterface *busI;
 
-  private:               //------------------------------- private
+  private:
 
 	int CheckAbort(int progress = 0);
 

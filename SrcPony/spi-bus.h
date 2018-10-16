@@ -32,7 +32,7 @@
 
 class SPIBus : public BusIO
 {
-  public:                //------------------------------- public
+  public:
 	SPIBus(BusInterface *ptr = 0, bool cpha = false);
 	virtual ~SPIBus();
 
@@ -44,7 +44,7 @@ class SPIBus : public BusIO
 		fall_edge_sample = cpha;
 	}
 
-  protected:             //------------------------------- protected
+  protected:
 
 	int SendDataByte(int by);
 	int RecDataByte();

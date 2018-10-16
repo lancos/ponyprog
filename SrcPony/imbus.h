@@ -31,7 +31,7 @@
 
 class IMBus : public BusIO
 {
-  public:                //------------------------------- public
+  public:
 	IMBus(BusInterface *ptr = 0);
 	virtual ~IMBus();
 
@@ -47,7 +47,7 @@ class IMBus : public BusIO
 	void SetDataMode(int val);
 	void SetProgDelay(int val);
 
-  protected:             //------------------------------- protected
+  protected:
 
 	int SendAddrWord(int wo);
 	int SendDataWord(long wo, int wlen = 8);
@@ -65,7 +65,7 @@ class IMBus : public BusIO
 		busI->SetControlLine(0);
 	}
 
-  private:               //------------------------------- private
+  private:
 
 	int StatusLocation;
 	bool SecondaryAddress;

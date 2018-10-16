@@ -31,7 +31,7 @@
 
 class At93cBus : public MicroWireBus
 {
-  public:                //------------------------------- public
+  public:
 	At93cBus(BusInterface *ptr = 0);
 	//      virtual ~At93cBus();
 
@@ -58,14 +58,14 @@ class At93cBus : public MicroWireBus
 	//}
 
 
-  protected:             //------------------------------- protected
+  protected:
 
 	int SendCmdOpcode(int opcode)
 	{
 		return SendDataWord(opcode, 3);
 	}
 
-  private:               //------------------------------- private
+  private:
 
 	//Command Opcode
 	const uint8_t ReadCode;

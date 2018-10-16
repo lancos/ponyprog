@@ -32,7 +32,7 @@
 
 class E24xx2 : public E24xx
 {
-  public:               //---------------------------------------- public
+  public:
 
 	E24xx2(e2AppWinInfo *wininfo = 0, BusIO *busp = 0);
 	//      virtual ~E24xx2();
@@ -49,9 +49,9 @@ class E24xx2 : public E24xx
 	int HighEnduranceRead(uint32_t &block_no);
 	int HighEnduranceWrite(uint32_t block_no);
 
-  protected:    //--------------------------------------- protected
+  protected:
 
-  private:              //--------------------------------------- private
+  private:
 
 	int const SecurityReadCode;
 	int const SecurityWriteCode;

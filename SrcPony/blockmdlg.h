@@ -41,16 +41,16 @@
 class blockDialog : public QDialog, public cTranslator, public Ui::EditDialog
 {
 	Q_OBJECT
-  public:               //---------------------------------------- public
+  public:
 	blockDialog(e2CmdWindow *bw, e2AppWinInfo *p, bool readonly = false, const QString &msg = "");
 	virtual ~blockDialog();          // Destructor
 
-  protected:    //--------------------------------------- protected
+  protected:
 
   private slots:
 	void onOk();
 
-  private:              //--------------------------------------- private
+  private:
 	e2AppWinInfo *awip;
 	uint32_t lock, fuse;
 };

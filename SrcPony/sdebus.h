@@ -32,7 +32,7 @@
 
 class Sde2506Bus : public BusIO
 {
-  public:                //------------------------------- public
+  public:
 	Sde2506Bus(BusInterface *ptr = 0);
 	virtual ~Sde2506Bus();
 
@@ -43,7 +43,7 @@ class Sde2506Bus : public BusIO
 
 	void SetDelay();
 
-  protected:             //------------------------------- protected
+  protected:
 
 	int SendDataWord(int wo, int wlen = 8);
 	int RecDataWord(int wlen = 8);
@@ -67,7 +67,7 @@ class Sde2506Bus : public BusIO
 		busI->SetControlLine(1);
 	}
 
-  private:               //------------------------------- private
+  private:
 
 	int SendDataBit(int b);
 	int RecDataBit();

@@ -39,7 +39,7 @@ class e2AppWinInfo;
 
 class FileBuf
 {
-  public:               //---------------------------------------- public
+  public:
 
 	FileBuf(e2AppWinInfo *wininfo = 0);
 	virtual ~FileBuf();
@@ -86,7 +86,7 @@ class FileBuf
 	//              { return awi->GetCRC(); }
 	void SetCRC(uint16_t c);
 
-  protected:    //--------------------------------------- protected
+  protected:
 
 	uint8_t *GetBufPtr() const;
 	long GetBufSize() const;
@@ -97,7 +97,7 @@ class FileBuf
 
 	// Informazioni addizionali sull'eeprom che vengono salvate nel file
 
-  private:              //--------------------------------------- private
+  private:
 
 	e2AppWinInfo *awi;      //puntatore alla AppWinInfo che contiene questo FileBuffer
 };

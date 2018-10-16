@@ -32,7 +32,7 @@
 
 class PicBus : public BusIO
 {
-  public:                //------------------------------- public
+  public:
 	PicBus(BusInterface *ptr = 0);
 	virtual ~PicBus();
 
@@ -53,7 +53,7 @@ class PicBus : public BusIO
 
 	void SetDelay();
 
-  protected:             //------------------------------- protected
+  protected:
 
 	int SendDataWord(long wo, int wlen = 16);
 	long RecDataWord(int wlen = 16);
@@ -89,7 +89,7 @@ class PicBus : public BusIO
 	const uint8_t BeginEraseProgCode;
 	const uint8_t BeginProgOnlyCode;
 
-  private:               //------------------------------- private
+  private:
 
 	int SendDataBit(int b);
 	int RecDataBit();

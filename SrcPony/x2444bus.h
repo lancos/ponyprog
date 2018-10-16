@@ -33,7 +33,7 @@
 
 class X2444Bus : public MicroWireBus
 {
-  public:                //------------------------------- public
+  public:
 	X2444Bus(BusInterface *ptr = 0);
 
 	long Read(int addr, uint8_t *data, long length, int page_size = 0);
@@ -51,11 +51,11 @@ class X2444Bus : public MicroWireBus
 		return organization;
 	}
 
-  protected:             //------------------------------- protected
+  protected:
 
 	void SendCmdAddr(int cmd, int addr);
 
-  private:               //------------------------------- private
+  private:
 
 	//Command Opcode
 	const uint8_t ReadCode;

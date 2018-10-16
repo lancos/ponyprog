@@ -31,7 +31,7 @@
 
 class At90sBus : public SPIBus
 {
-  public:                //------------------------------- public
+  public:
 	At90sBus(BusInterface *ptr = 0);
 	//      virtual ~At90sBus();
 
@@ -55,7 +55,7 @@ class At90sBus : public SPIBus
 		old1200mode = val;
 	}
 
-  protected:             //------------------------------- protected
+  protected:
 
 	//Programming commands
 	const uint8_t EnableProg0, EnableProg1;
@@ -98,7 +98,7 @@ class At90sBus : public SPIBus
 
 	bool old1200mode;
 
-  private:               //------------------------------- private
+  private:
 
 	bool enable_flashpage_polling;
 };

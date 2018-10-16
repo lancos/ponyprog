@@ -31,7 +31,7 @@
 
 class I2CBus : public BusIO
 {
-  public:                //------------------------------- public
+  public:
 	I2CBus(BusInterface *ptr = 0);
 	virtual ~I2CBus();
 
@@ -52,7 +52,7 @@ class I2CBus : public BusIO
 
 	void SetDelay();
 
-  protected:             //------------------------------- protected
+  protected:
 
 	int CheckBusy();
 	int SendStart();
@@ -64,7 +64,7 @@ class I2CBus : public BusIO
 	int RecByteMast(int ack);
 	int RecByteMastLSB(int ack);
 
-  private:               //------------------------------- private
+  private:
 
 
 	void setSCLSDA()

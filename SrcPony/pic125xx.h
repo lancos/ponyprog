@@ -35,7 +35,7 @@
 
 class Pic125xx : public Device
 {
-  public:               //---------------------------------------- public
+  public:
 
 	Pic125xx(e2AppWinInfo *wininfo = 0, BusIO *busp = 0);
 	virtual ~Pic125xx();
@@ -49,7 +49,7 @@ class Pic125xx : public Device
 	int SecurityRead(uint32_t &bits);
 	int SecurityWrite(uint32_t bits);
 
-  protected:    //--------------------------------------- protected
+  protected:
 
 	Pic12Bus *GetBus()
 	{
@@ -60,7 +60,7 @@ class Pic125xx : public Device
 	//      virtual int WriteProg();
 	virtual int VerifyProg(unsigned char *localbuf);
 
-  private:              //--------------------------------------- private
+  private:
 
 	uint16_t config_word;
 };

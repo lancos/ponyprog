@@ -60,14 +60,14 @@ typedef struct
 class BitFieldWidget : public QWidget, public Ui::FormBitField
 {
 	Q_OBJECT
-  public:               //---------------------------------------- public
+  public:
 	BitFieldWidget(QWidget *parent, QVector<BitInfo> &vInfo, QVector<MaskDescr> &vMask, unsigned int field, const QString &chipNm);
 	virtual ~BitFieldWidget();          // Destructor
 
 	unsigned int getBitfield();
 
 
-  protected:    //--------------------------------------- protected
+  protected:
 
   signals:
 	void displayBitFields(int field);
@@ -83,7 +83,7 @@ class BitFieldWidget : public QWidget, public Ui::FormBitField
 	void setMaskBits(const QString &m);//, unsigned int bits);
 	bool isExp(unsigned int a);
 
-  private:              //--------------------------------------- private
+  private:
 	QVector<QComboBox *> lstComboBoxes;
 
 	QVector<BitInfo> *vecInfo;

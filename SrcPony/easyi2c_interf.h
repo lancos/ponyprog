@@ -31,7 +31,7 @@
 
 class EasyI2CInterface : public LptExtInterface
 {
-  public:                //------------------------------- public
+  public:
 	EasyI2CInterface(bool use_io = false);
 
 	virtual int Open(int com_no);
@@ -46,9 +46,9 @@ class EasyI2CInterface : public LptExtInterface
 	virtual int IsClockDataDOWN() ;
 	virtual int TestPort(int port);
 
-  protected:             //------------------------------- protected
+  protected:
 
-  private:               //------------------------------- private
+  private:
 
 };
 

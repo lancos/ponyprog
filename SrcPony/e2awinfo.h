@@ -86,7 +86,7 @@ class e2CmdWindow;
 
 class e2AppWinInfo // : public QObject
 {
-  public:               //---------------------------------------- public
+  public:
 
 	e2AppWinInfo(e2CmdWindow *p = 0, const QString &name = "", BusIO **busptr = 0);
 	~e2AppWinInfo();
@@ -275,10 +275,10 @@ class e2AppWinInfo // : public QObject
 		return eep ? eep->GetDetectedSignatureStr() : "";
 	}
 
-  protected:    //--------------------------------------- protected
+  protected:
 //	e2CmdWindow* cmdWin;
 
-  private:              //--------------------------------------- private
+  private:
 	int OpenBus();
 	void SleepBus();
 	void SetBlockSize(int blk)

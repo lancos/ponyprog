@@ -49,7 +49,7 @@ typedef struct
 
 class LPTInterface
 {
-  public:                //------------------------------- public
+  public:
 	LPTInterface();
 	virtual ~LPTInterface();
 
@@ -71,9 +71,9 @@ class LPTInterface
 		return last_ctrl;
 	}
 
-  protected:             //------------------------------- protected
+  protected:
 
-  private:               //------------------------------- private
+  private:
 #ifdef Q_OS_LINUX
 	int hLpt;
 #endif

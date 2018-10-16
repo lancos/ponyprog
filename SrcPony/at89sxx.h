@@ -35,7 +35,7 @@
 
 class At89sxx : public Device
 {
-  public:               //---------------------------------------- public
+  public:
 
 	At89sxx(e2AppWinInfo *wininfo = 0, BusIO *busp = 0);
 	//      virtual ~At89sxx();
@@ -58,11 +58,11 @@ class At89sxx : public Device
 		return static_cast<At89sBus *>(Device::GetBus());
 	}
 
-  protected:    //--------------------------------------- protected
+  protected:
 
 	int QueryType(long &type);
 
-  private:              //--------------------------------------- private
+  private:
 
 };
 #endif

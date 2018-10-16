@@ -44,7 +44,7 @@
 
 class RS232Interface
 {
-  public:               //------------------------------- public
+  public:
 
 	RS232Interface();
 	virtual ~RS232Interface();
@@ -68,11 +68,11 @@ class RS232Interface
 	int GetSerialCTS() const;
 	int SetSerialRTSDTR(int state);
 
-  protected:            //------------------------------- protected
+  protected:
 
 	void WaitForTxEmpty();
 
-  private:              //------------------------------- private
+  private:
 
 	QString m_devname;
 

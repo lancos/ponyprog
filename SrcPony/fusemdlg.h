@@ -52,7 +52,7 @@ typedef struct
 class fuseModalDialog : public QDialog, public cTranslator, public Ui::FuseDialog
 {
 	Q_OBJECT
-  public:               //---------------------------------------- public
+  public:
 	fuseModalDialog(e2CmdWindow *bw, e2AppWinInfo *p, bool readonly = false, const QString &msg = "");
 	virtual ~fuseModalDialog();             // Destructor
 
@@ -65,7 +65,7 @@ class fuseModalDialog : public QDialog, public cTranslator, public Ui::FuseDialo
 	void onRead();
 	void onProg();
 
-  protected:    //--------------------------------------- protected
+  protected:
 
 
   private:
@@ -76,7 +76,7 @@ class fuseModalDialog : public QDialog, public cTranslator, public Ui::FuseDialo
 	int  eepFindFuses(long type);
 
 
-  private:              //--------------------------------------- private
+  private:
 	static QVector<ChipBits> eep_bits;
 
 	e2CmdWindow *cmdw;

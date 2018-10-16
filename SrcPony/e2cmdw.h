@@ -91,7 +91,7 @@ class e2CmdWindow : public QMainWindow, public e2App, public Ui::MainWindow
 {
 	Q_OBJECT
 
-  public:               //---------------------------------------- public
+  public:
 	e2CmdWindow(QWidget *parent = 0);
 	virtual ~e2CmdWindow();
 	//      virtual int CloseAppWin();
@@ -299,7 +299,7 @@ class e2CmdWindow : public QMainWindow, public e2App, public Ui::MainWindow
 	void createFileList();
 
 
-  private:              //--------------------------------------- private
+  private:
 	void createSignalSlotConnections();
 	QString convertFilterListToString(const QStringList &lst);
 	int filterNameToIndex(const QString &s, const QStringList &lst);

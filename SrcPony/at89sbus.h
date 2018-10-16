@@ -31,7 +31,7 @@
 
 class At89sBus : public SPIBus
 {
-  public:                //------------------------------- public
+  public:
 	At89sBus(BusInterface *ptr = 0);
 	//      virtual ~At89sBus();
 
@@ -68,7 +68,7 @@ class At89sBus : public SPIBus
 		oldmode = old;
 	}
 
-  protected:             //------------------------------- protected
+  protected:
 
 	//Programming commands
 	const uint8_t EnableProg0, EnableProg1;
@@ -99,7 +99,7 @@ class At89sBus : public SPIBus
 	int WaitReadyAfterWrite(int type, long addr, int data, long timeout = 5000);
 	bool CheckBlankPage(uint8_t const *data, long length);
 
-  private:               //------------------------------- private
+  private:
 
 	bool enable_datapage_polling, enable_progpage_polling;
 

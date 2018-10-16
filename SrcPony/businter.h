@@ -35,7 +35,7 @@
 
 class BusInterface
 {
-  public:                //------------------------------- public
+  public:
 	BusInterface()
 	{
 		cmd2cmd_delay = 0;
@@ -140,7 +140,7 @@ class BusInterface
 		return (installed >= 0) ? true : false;
 	}
 
-  protected:             //------------------------------- protected
+  protected:
 	void Install(int val)
 	{
 		installed = val;
@@ -156,7 +156,7 @@ class BusInterface
 
 	int             old_portno;             // TestSave() save the status here
 
-  private:               //------------------------------- private
+  private:
 	int             installed;              // -1 --> not installed, >= 0 number if the installed port
 	int             cmd2cmd_delay;  // <> 0 if a delay between commands is needed
 };

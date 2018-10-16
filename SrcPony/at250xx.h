@@ -35,7 +35,7 @@
 
 class At250xx : public Device
 {
-  public:               //---------------------------------------- public
+  public:
 
 	At250xx(e2AppWinInfo *wininfo = 0, BusIO *busp = 0);
 	virtual ~At250xx();
@@ -45,14 +45,14 @@ class At250xx : public Device
 	virtual int Write(int probe = 1, int type = ALL_TYPE);
 	virtual int Verify(int type = ALL_TYPE);
 
-  protected:    //--------------------------------------- protected
+  protected:
 
 	At250Bus *GetBus()
 	{
 		return static_cast<At250Bus *>(Device::GetBus());
 	}
 
-  private:              //--------------------------------------- private
+  private:
 
 };
 #endif

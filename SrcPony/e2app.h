@@ -73,7 +73,7 @@ enum AppStatus
 
 class e2App : public cTranslator
 {
-  public:               //---------------------------------------- public
+  public:
 
 	e2App();
 	virtual ~e2App();
@@ -173,11 +173,11 @@ class e2App : public cTranslator
 
 	QString script_name;
 
-  protected:    //--------------------------------------- protected
+  protected:
 	// AppWinInfo associated with this window
 	e2AppWinInfo *awip;
 
-  private:              //--------------------------------------- private
+  private:
 	void initSettings();
 	void LookForBogoMips(); //should get bogomips
 

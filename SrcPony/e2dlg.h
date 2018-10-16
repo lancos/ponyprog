@@ -45,11 +45,11 @@ class e2Dialog : public QDialog, public cTranslator, public Ui::E2Dialog
 {
 	Q_OBJECT
 
-  public:               //---------------------------------------- public
+  public:
 	e2Dialog(QWidget *bw, const QString title = translate(STR_MSGINTSETUP));
 	virtual ~e2Dialog();            // Destructor
 
-  protected:    //--------------------------------------- protected
+  protected:
 
   private slots:
 	void onOk();
@@ -59,7 +59,7 @@ class e2Dialog : public QDialog, public cTranslator, public Ui::E2Dialog
 	void onSelectCOM(int i);
 	void onSelectLPT(int i);
 
-  private:              //--------------------------------------- private
+  private:
 	int Test(int p = -1, bool open_only = false) const;
 	void setWidgetsText();
 	void getSettings();

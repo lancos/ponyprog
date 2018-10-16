@@ -35,7 +35,7 @@
 
 class Pic16xx : public Device
 {
-  public:               //---------------------------------------- public
+  public:
 
 	Pic16xx(e2AppWinInfo *wininfo = 0, BusIO *busp = 0);
 	virtual ~Pic16xx();
@@ -51,7 +51,7 @@ class Pic16xx : public Device
 	int SecurityRead(uint32_t &bits);
 	int SecurityWrite(uint32_t bits);
 
-  protected:    //--------------------------------------- protected
+  protected:
 
 	PicBus *GetBus()
 	{
@@ -69,7 +69,7 @@ class Pic16xx : public Device
 	**/
 	virtual int CodeProtectAdjust(uint16_t &config, int read = 0);
 
-  private:              //--------------------------------------- private
+  private:
 
 };
 #endif

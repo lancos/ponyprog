@@ -31,7 +31,7 @@
 
 class E24xx5 : public E24xx
 {
-  public:               //---------------------------------------- public
+  public:
 
 	E24xx5(e2AppWinInfo *wininfo = 0, BusIO *busp = 0);
 	virtual ~E24xx5();
@@ -41,12 +41,12 @@ class E24xx5 : public E24xx
 	virtual int Write(int probe = 1, int type = ALL_TYPE);
 	//      int Verify(int type = ALL_TYPE);
 
-  protected:    //--------------------------------------- protected
+  protected:
 
 	//      int bank_out(uint8_t const *copy_buf, int bank_no, long size = -1);
 	//      int bank_in(uint8_t *copy_buf, int bank_no, long size = -1);
 
-  private:              //--------------------------------------- private
+  private:
 
 };
 #endif

@@ -40,18 +40,18 @@
 class FillDialog : public QDialog, public cTranslator, public Ui::EditDialog
 {
 	Q_OBJECT
-  public:               //---------------------------------------- public
+  public:
 	FillDialog(QWidget *bw, long &cfrom, long &cto, int &cval, long max_addr, const QString title = translate(STR_LBLFILLBUF));
 	virtual ~FillDialog();          // Destructor
 
 
-  protected:    //--------------------------------------- protected
+  protected:
 
   private slots:
 	void onOk();
 
 
-  private:              //--------------------------------------- private
+  private:
 
 	long *pFrom, *pTo;
 	int *pVal;

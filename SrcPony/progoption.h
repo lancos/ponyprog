@@ -42,19 +42,19 @@
 class progOptionDialog : public QDialog, public cTranslator, public Ui::ProgOptDialog
 {
 	Q_OBJECT
-  public:               //---------------------------------------- public
+  public:
 	progOptionDialog(QWidget *bw, long type, int &reload, int &reep, int &erase, int &flash, int &eeprom, int &lock, const QString title = translate(STR_MSGPROGOPT));
 	virtual ~progOptionDialog();            // Destructor
 
   private slots:
 	void onOk();
 
-  protected:    //--------------------------------------- protected
+  protected:
 
   private:
 	void setTextWidgets();
 
-  private:              //--------------------------------------- private
+  private:
 	QVector <QCheckBox *> chk;
 	e2CmdWindow *cmdw;
 };

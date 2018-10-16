@@ -37,7 +37,7 @@
 
 class MotorolaSFileBuf : public FileBuf
 {
-  public:               //---------------------------------------- public
+  public:
 
 	MotorolaSFileBuf(e2AppWinInfo *wininfo = 0);
 	virtual ~MotorolaSFileBuf();
@@ -45,9 +45,9 @@ class MotorolaSFileBuf : public FileBuf
 	virtual int Load(int loadtype = ALL_TYPE, long relocation_offset = 0);
 	virtual int Save(int savetype = ALL_TYPE, long relocation_offset = 0);
 
-  protected:    //--------------------------------------- protected
+  protected:
 
-  private:              //--------------------------------------- private
+  private:
 
 	int WriteRecord(QTextStream &outs, uint8_t *bptr, long curaddr, long recsize, int fmt);
 	int ParseRecord(char *lbufPC, uint8_t *buf_startP, uint8_t *buf_endP, long offset, int nocopy);

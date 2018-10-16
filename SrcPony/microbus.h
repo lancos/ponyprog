@@ -35,7 +35,7 @@
 
 class MicroWireBus : public BusIO
 {
-  public:                //------------------------------- public
+  public:
 	MicroWireBus(BusInterface *ptr = nullptr);
 	virtual ~MicroWireBus();
 
@@ -48,7 +48,7 @@ class MicroWireBus : public BusIO
 
 	void SetDelay();
 
-  protected:             //------------------------------- protected
+  protected:
 
 	int SendDataWord(int wo, int wlen, int lsb = 0);
 	int RecDataWord(int wlen, int lsb = 0);
@@ -69,7 +69,7 @@ class MicroWireBus : public BusIO
 		busI->SetControlLine(0);
 	}
 
-  private:               //------------------------------- private
+  private:
 
 	int SendDataBit(int b);
 	int RecDataBit();

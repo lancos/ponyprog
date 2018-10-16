@@ -33,7 +33,7 @@
 
 class Pic168xx : public Pic16xx
 {
-  public:               //---------------------------------------- public
+  public:
 
 	Pic168xx(e2AppWinInfo *wininfo = 0, BusIO *busp = 0);
 	virtual ~Pic168xx();
@@ -43,7 +43,7 @@ class Pic168xx : public Pic16xx
 	int Write(int probe = 1, int type = ALL_TYPE);
 	//      int Verify(int type = ALL_TYPE);
 
-  protected:    //--------------------------------------- protected
+  protected:
 
 	PicBus *GetBus()
 	{
@@ -53,7 +53,7 @@ class Pic168xx : public Pic16xx
 	int QueryType(long &type);
 	int CodeProtectAdjust(uint16_t &config, int read = 0);
 
-  private:              //--------------------------------------- private
+  private:
 
 };
 #endif

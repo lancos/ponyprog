@@ -31,7 +31,7 @@
 
 class At250BigBus: public At250Bus
 {
-  public:                //------------------------------- public
+  public:
 	At250BigBus(BusInterface *ptr = 0);
 
 	long Read(int addr, uint8_t *data, long length, int page_size = 0);
@@ -39,12 +39,12 @@ class At250BigBus: public At250Bus
 
 	//      int Reset();
 
-  protected:             //------------------------------- protected
+  protected:
 
 	//      int ReadEEPByte(int addr);
 	//      void WriteEEPByte(int addr, int data);
 
-  private:               //------------------------------- private
+  private:
 
 	//Programming commands
 	//      const uint8_t WriteEnable;

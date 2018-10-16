@@ -43,7 +43,7 @@
 class e24xx_infoModalDialog : public QDialog, public cTranslator, public Ui::EditDialog
 {
 	Q_OBJECT
-  public:               //---------------------------------------- public
+  public:
 	e24xx_infoModalDialog(QWidget *bw, int rlv, uint16_t crc, long size, const QString title = translate(STR_MSGDEVINFO));
 	virtual ~e24xx_infoModalDialog();               // Destructor
 	//      virtual int infoAction(char* msg = "Device Info");
@@ -51,9 +51,9 @@ class e24xx_infoModalDialog : public QDialog, public cTranslator, public Ui::Edi
   private slots:
 	void onOk();
 
-  protected:    //--------------------------------------- protected
+  protected:
 
-  private:              //--------------------------------------- private
+  private:
 
 };
 
@@ -62,7 +62,7 @@ class e24xx_infoModalDialog : public QDialog, public cTranslator, public Ui::Edi
 class other_infoModalDialog : public QDialog, public cTranslator, public Ui::EditDialog
 {
 	Q_OBJECT
-  public:               //---------------------------------------- public
+  public:
 	other_infoModalDialog(QWidget *bw, long fsize, long esize, uint16_t crc, const QString title = translate(STR_MSGDEVINFO));
 	virtual ~other_infoModalDialog();               // Destructor
 	//      virtual int infoAction(char* msg = "Device Info");
@@ -70,9 +70,9 @@ class other_infoModalDialog : public QDialog, public cTranslator, public Ui::Edi
   private slots:
 	void onOk();
 
-  protected:    //--------------------------------------- protected
+  protected:
 
-  private:              //--------------------------------------- private
+  private:
 
 };
 
@@ -80,7 +80,7 @@ class other_infoModalDialog : public QDialog, public cTranslator, public Ui::Edi
 class notesModalDialog : public QDialog, public cTranslator, public Ui::NotesDialog
 {
 	Q_OBJECT
-  public:               //---------------------------------------- public
+  public:
 	notesModalDialog(QWidget *bw, QString &id, QString &cm, const QString title = translate(STR_MSGDEVNOTE));
 	virtual ~notesModalDialog();            // Destructor
 	//      QString GetId();
@@ -90,9 +90,9 @@ class notesModalDialog : public QDialog, public cTranslator, public Ui::NotesDia
   private slots:
 	void onOk();
 
-  protected:    //--------------------------------------- protected
+  protected:
 
-  private:              //--------------------------------------- private
+  private:
 	QString *id_ptr;
 	QString *cm_ptr;
 
@@ -105,7 +105,7 @@ class notesModalDialog : public QDialog, public cTranslator, public Ui::NotesDia
 class editModalDialog : public QDialog, public cTranslator, public Ui::EditDialog
 {
 	Q_OBJECT
-  public:               //---------------------------------------- public
+  public:
 	editModalDialog(QWidget *bw, int curval = 0, const QString title = translate(STR_MSGEDITBUG));
 	virtual ~editModalDialog();             // Destructor
 	//      virtual int editAction(char* msg, int &retval);
@@ -115,9 +115,9 @@ class editModalDialog : public QDialog, public cTranslator, public Ui::EditDialo
 	void onOk();
 	void onEdit();
 
-  protected:    //--------------------------------------- protected
+  protected:
 
-  private:              //--------------------------------------- private
+  private:
 	int oldval;
 };
 
@@ -125,7 +125,7 @@ class editModalDialog : public QDialog, public cTranslator, public Ui::EditDialo
 class editModalDialog2 : public QDialog, public cTranslator, public Ui::EditDialog
 {
 	Q_OBJECT
-  public:               //---------------------------------------- public
+  public:
 	editModalDialog2(QWidget *bw, const QString curval = "", const QString title = translate(STR_MSGEDITBUG));
 	virtual ~editModalDialog2();            // Destructor
 	//      virtual int editAction(char* msg, char *text, int len);
@@ -134,9 +134,9 @@ class editModalDialog2 : public QDialog, public cTranslator, public Ui::EditDial
   private slots:
 	void onOk();
 
-  protected:    //--------------------------------------- protected
+  protected:
 
-  private:              //--------------------------------------- private
+  private:
 	QString val;
 };
 #endif

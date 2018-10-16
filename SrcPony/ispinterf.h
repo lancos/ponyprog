@@ -31,7 +31,7 @@
 
 class AvrISPInterface : public LptExtInterface
 {
-  public:                //------------------------------- public
+  public:
 	AvrISPInterface(bool use_io = false);
 
 	virtual int Open(int com_no);
@@ -51,9 +51,9 @@ class AvrISPInterface : public LptExtInterface
 	int SetPower(bool onoff);
 	void SetControlLine(int res = 1);
 
-  protected:             //------------------------------- protected
+  protected:
 
-  private:               //------------------------------- private
+  private:
 	int GetPresence();
 };
 
