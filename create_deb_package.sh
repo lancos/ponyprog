@@ -30,7 +30,7 @@ fi
 if [ -d "$DIRECTORY" ]; then
     cd "$DIRECTORY"
     rm * -rf
-    cmake -DUSE_DEBUGGER=OFF -DUSE_QT5=OFF ..
+    cmake -DUSE_DEBUGGER=OFF -DUSE_QT5=ON ..
     make -j$CPU_NUM
     strip -s ponyprog
     make package-binary-deb
