@@ -4041,7 +4041,7 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 			{ 17, "BODLEVEL0", "" },
 			{ 18, "BODLEVEL1", "" },
 			{ 19, "BODLEVEL1", "" },
-			{ 20, "M161C", "ATmega161 compability mode" }
+			{ 20, "M161C", "ATmega161 compatibility mode" }
 		},
 		{
 			// fuse mask description

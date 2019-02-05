@@ -4963,7 +4963,7 @@ int e2CmdWindow::CmdWriteLock()
 	                                if ((nb = atoi(r)) != 0)
 	                                {
 	                                        char str[MAXMSG];
-	                                        sprintf(str, "Security bits write succesful (%d,%d)", sb, nb);
+											sprintf(str, "Security bits write successful (%d,%d)", sb, nb);
 
 	                                        int err = awip->SecurityWrite( ((sb << 4) & 0xF0) | (nb & 0x0F) );
 	                                        if (err)
@@ -5226,7 +5226,7 @@ int e2CmdWindow::CmdWriteSpecial()
 	                        else
 	                        {
 	                                result = OK;
-	                                note.setText("High endurance block write succesful");
+									note.setText("High endurance block write successful");
 	                        }
 	                }
 	        }

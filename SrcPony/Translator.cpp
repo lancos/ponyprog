@@ -105,7 +105,7 @@ QString cTranslator::engText[] =
 	"Cannot verify, device missing or bad device",
 	"Verify Failed",
 	"Verify successful",
-	"Program succesful",
+	"Program successful",
 	"Program Failed",
 	"Device reset",
 	"Writing security bits...",
