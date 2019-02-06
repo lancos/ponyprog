@@ -126,7 +126,7 @@ int Pic168xx::QueryType(long &type)
 int Pic168xx::Probe(int probe_size)
 {
 	int rv = OK;
-	long type;
+	long type = 0;
 
 	rv = QueryType(type);
 //	int pritype = GetE2PPriType(type);
