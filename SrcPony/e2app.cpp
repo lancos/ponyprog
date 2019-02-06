@@ -184,7 +184,7 @@ void e2App::initSettings()
 	E2Profile::GetAt89PageOp();
 	E2Profile::Get8253FallEdge();
 
-#ifdef  Q_OS_LINUX
+#ifdef Q_OS_LINUX
 	E2Profile::GetHtmlBrowseApp();
 	E2Profile::GetLockDir();
 	E2Profile::GetDevDir();

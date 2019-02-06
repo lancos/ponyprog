@@ -52,7 +52,7 @@ QString cTranslator::engText[] =
 	"No Name",
 
 	//Button captions
-#ifdef  Q_OS_WIN32
+#ifdef Q_OS_WIN32
 	"&OK",
 	"&Cancel",
 	"&Help",
@@ -355,7 +355,7 @@ QString cTranslator::engText[] =
 	//----Fuse dialog
 
 	//Button captions
-#ifdef  Q_OS_WIN32
+#ifdef Q_OS_WIN32
 	"C&lear All",
 	"&Set All",
 	"&Write",
@@ -385,7 +385,7 @@ QString cTranslator::engText[] =
 	//----Info dialog
 
 	//Button captions
-#ifdef  Q_OS_WIN32
+#ifdef Q_OS_WIN32
 	"&Close",
 #else
 	"Close",
@@ -471,7 +471,7 @@ QString cTranslator::engText[] =
 	//----Retry dialog
 
 	//Button captions
-#ifdef  Q_OS_WIN32
+#ifdef Q_OS_WIN32
 	"&Abort",
 	"&Retry",
 	"&Ignore",

@@ -57,7 +57,7 @@ LARGE_INTEGER Wait::mlpf;
 //Check for a good hardware usec timer
 int Wait::CheckHwTimer()
 {
-#ifdef  Q_OS_WIN32
+#ifdef Q_OS_WIN32
 	LARGE_INTEGER i1, i2;
 
 	htimer = 0;                                                             //Disable by default

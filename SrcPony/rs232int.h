@@ -84,7 +84,7 @@ class RS232Interface
 	bool wait_endTX_mode;
 
 	//      E2Profile *profile;
-#ifdef  Q_OS_WIN32
+#ifdef Q_OS_WIN32
 	HANDLE hCom;
 
 	DWORD old_mask;

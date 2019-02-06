@@ -314,7 +314,7 @@ int RS232Interface::SetSerialBreak(int state)
 /**
 void RS232Interface::SetSerialEventMask(long mask)
 {
-#ifdef  Q_OS_WIN32
+#ifdef Q_OS_WIN32
         if (hCom != INVALID_HANDLE_VALUE )
                 SetCommMask(hCom, mask);
 #endif
