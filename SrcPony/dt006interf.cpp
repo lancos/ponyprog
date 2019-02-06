@@ -57,18 +57,18 @@
  */
 
 //DT-006 card
-# define WB_DOUT 0              // DATA (pin 2)
-# define WB_RST 2               // DATA (pin 4)
-# define WB_SCK 3               // DATA (pin 5)
+#define WB_DOUT 0              // DATA (pin 2)
+#define WB_RST 2               // DATA (pin 4)
+#define WB_SCK 3               // DATA (pin 5)
 
-# define RB_DIN 7               // STATUS (pin 11)
+#define RB_DIN 7               // STATUS (pin 11)
 
 
-# define WF_SCK         (1 << WB_SCK)
-# define WF_DOUT        (1 << WB_DOUT)
-# define WF_RST         (1 << WB_RST)
+#define WF_SCK         (1 << WB_SCK)
+#define WF_DOUT        (1 << WB_DOUT)
+#define WF_RST         (1 << WB_RST)
 
-# define RF_DIN         (1 << RB_DIN)
+#define RF_DIN         (1 << RB_DIN)
 
 
 Dt006Interface::Dt006Interface(bool use_io)

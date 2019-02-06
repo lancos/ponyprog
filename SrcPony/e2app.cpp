@@ -30,10 +30,10 @@
 
 #include <QCoreApplication>
 #include <QString>
-
+#include <QtCore>
 #include <QDebug>
 
-#ifdef  __linux__
+#ifdef Q_OS_LINUX
 #include <sys/time.h>
 #include <unistd.h>
 #include <signal.h>
@@ -184,7 +184,7 @@ void e2App::initSettings()
 	E2Profile::GetAt89PageOp();
 	E2Profile::Get8253FallEdge();
 
-#ifdef  __linux__
+#ifdef  Q_OS_LINUX
 	E2Profile::GetHtmlBrowseApp();
 	E2Profile::GetLockDir();
 	E2Profile::GetDevDir();

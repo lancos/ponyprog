@@ -25,7 +25,7 @@
 //=========================================================================//
 
 // #include <stdio.h>
-
+#include <QtCore>
 #include <QDebug>
 #include <QString>
 #include <QFile>
@@ -37,7 +37,7 @@
 
 #include "e2cmdw.h"
 
-#ifdef  __linux__
+#ifdef Q_OS_LINUX
 # include <sys/io.h>
 # include <unistd.h>
 
@@ -109,11 +109,11 @@ PortInterface::PortInterface()
 	//      par_ports_base[1] = 0x278;
 	//      par_ports_base[2] = 0x3BC;
 
-#ifdef __linux__
+#ifdef Q_OS_LINUX
 	lcr_copy = ier_copy = -1;
 #endif
 
-#ifdef  Q_OS_WIN32
+#ifdef Q_OS_WIN32
 	gfpOut32 = NULL;
 	gfpInp32 = NULL;
 	gfpIsInpOutDriverOpen = NULL;
@@ -142,7 +142,6 @@ PortInterface::PortInterface()
 	{
 		qDebug() << "Unable to load InpOut32 DLL!";
 	}
-
 #endif
 
 	cpwreg = read_port = write_port = 0;
@@ -155,15 +154,13 @@ PortInterface::~PortInterface()
 {
 	qDebug() <<  "PortInterface::~PortInterface()";
 
-#ifdef  Q_OS_WIN32
-
+#ifdef Q_OS_WIN32
 	if (hInpOutDll != NULL)
 	{
 		//All done
 		FreeLibrary(hInpOutDll);
 		hInpOutDll = NULL;
 	}
-
 #endif
 }
 
@@ -171,13 +168,11 @@ int PortInterface::InPort(int nport) const
 {
 	qDebug() << "PortInterface::OutPort() ** " << (hex) << first_port << ", " <<  nport << (dec);
 
-#ifdef  Q_OS_WIN32
-
+#ifdef Q_OS_WIN32
 	if (gfpInp32 == NULL)
 	{
 		return E2ERR_OPENFAILED;
 	}
-
 #endif
 
 	if (first_port == 0)
@@ -194,7 +189,7 @@ int PortInterface::InPort(int nport) const
 		nport += first_port;
 	}
 
-#ifdef  Q_OS_WIN32
+#ifdef Q_OS_WIN32
 	return gfpInp32(nport);
 #else
 	return inb(nport);
@@ -205,13 +200,11 @@ int PortInterface::OutPort(int val, int nport)
 {
 	qDebug() << "PortInterface::OutPort() ** " << (hex) << first_port << ", " << last_port << (dec);
 
-#ifdef  Q_OS_WIN32
-
+#ifdef Q_OS_WIN32
 	if (gfpOut32 == NULL)
 	{
 		return E2ERR_OPENFAILED;
 	}
-
 #endif
 
 	if (first_port == 0)
@@ -234,7 +227,7 @@ int PortInterface::OutPort(int val, int nport)
 	}
 
 	qDebug() << "PortInterface::outb(" << (hex) << val << ", " << nport << (dec) << ")";
-#ifdef  Q_OS_WIN32
+#ifdef Q_OS_WIN32
 	gfpOut32(nport, val);
 #else
 	outb(val, nport);
@@ -246,13 +239,11 @@ int PortInterface::OutPortMask(int mask, int val)
 {
 	qDebug() << "PortInterface::OutPortMask(" << mask << ", " << val <<  ")";
 
-#ifdef  Q_OS_WIN32
-
+#ifdef Q_OS_WIN32
 	if (gfpOut32 == NULL)
 	{
 		return E2ERR_OPENFAILED;
 	}
-
 #endif
 
 	if (write_port == 0)
@@ -275,7 +266,7 @@ int PortInterface::OutPortMask(int mask, int val)
 
 	qDebug() << "PortInterface::outb(" << (hex) << cpwreg << ", " << (dec) << write_port << ")";
 
-#ifdef  Q_OS_WIN32
+#ifdef Q_OS_WIN32
 	gfpOut32(write_port, cpwreg);
 #else
 	outb(cpwreg, write_port);
@@ -375,7 +366,6 @@ int PortInterface::OpenSerial(int no)
 					CloseSerial();
 				}
 			}
-
 #else   //Linux
 			ret_val = OpenPort(&ser_ports[no]);
 
@@ -390,7 +380,6 @@ int PortInterface::OpenSerial(int no)
 				read_port = GetFirstPort() + msrOfst;
 				cpwreg = 0;
 			}
-
 #endif
 		}
 	}
@@ -402,15 +391,13 @@ int PortInterface::OpenSerial(int no)
 
 void PortInterface::CloseSerial()
 {
-#ifdef  Q_OS_WIN32
-
+#ifdef Q_OS_WIN32
 	if (hCom != INVALID_HANDLE_VALUE)
 	{
 		SetCommMask(hCom, old_mask);
 		CloseHandle(hCom);
 		hCom = INVALID_HANDLE_VALUE;
 	}
-
 #else
 #define BREAK_MASK      0x40
 
@@ -420,7 +407,6 @@ void PortInterface::CloseSerial()
 		outb(ier_copy, GetFirstPort() + ierOfst);
 		lcr_copy = ier_copy = -1;
 	}
-
 #endif
 	read_port = write_port = 0;
 
@@ -477,7 +463,6 @@ int PortInterface::OpenParallel(int no)
 				read_port = GetFirstPort() + statOfst;
 				cpwreg = 0;
 			}
-
 #endif
 		}
 	}
@@ -487,14 +472,12 @@ int PortInterface::OpenParallel(int no)
 
 void PortInterface::CloseParallel()
 {
-#ifdef  Q_OS_WIN32
-
+#ifdef Q_OS_WIN32
 	if (hCom != INVALID_HANDLE_VALUE)
 	{
 		CloseHandle(hCom);
 		hCom = INVALID_HANDLE_VALUE;
 	}
-
 #endif
 
 	read_port = write_port = 0;
@@ -597,8 +580,7 @@ void PortInterface::DetectPorts()
 	E2Profile::GetCOMAddress(ser_ports[0].base, ser_ports[1].base, ser_ports[2].base, ser_ports[3].base);
 	E2Profile::GetLPTAddress(par_ports[0].base, par_ports[1].base, par_ports[2].base);
 
-#ifdef  Q_OS_WIN32
-
+#ifdef Q_OS_WIN32
 	if (E2Profile::GetAutoDetectPorts())
 	{
 		LPTCount = 0;           // No printer ports counted
@@ -634,7 +616,7 @@ void PortInterface::DetectPorts()
 }
 
 
-#ifdef  Q_OS_WIN32
+#ifdef Q_OS_WIN32
 
 static int DetectPortsNT(const QString &ServiceName, const QString &PortFormat, base_len *ports, int nports);
 

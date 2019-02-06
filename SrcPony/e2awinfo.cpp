@@ -35,7 +35,7 @@
 #include <QMessageBox>
 #include <QString>
 #include <QDebug>
-
+#include <QtCore>
 
 //======================>>> e2AppWinInfo::e2AppWinInfo <<<=======================
 e2AppWinInfo::e2AppWinInfo(e2CmdWindow *p, const QString &name, BusIO **busvptr) :

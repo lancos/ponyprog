@@ -29,11 +29,11 @@
 #include "errcode.h"
 
 #include <QDebug>
+#include <QtCore>
 
 #include "e2cmdw.h"
 
-#ifdef  __linux__
-//#  include <asm/io.h>
+#ifdef Q_OS_LINUX
 #  include <unistd.h>
 #else
 #  ifdef        __BORLANDC__
@@ -123,7 +123,7 @@ int Sde2506Bus::RecDataBit()
 	return b;
 }
 
-//* OK, ora ci alziamo di un livello: operiamo sul byte
+// OK, ora ci alziamo di un livello: operiamo sul byte
 int Sde2506Bus::SendDataWord(int wo, int wlen)
 {
 	int k;

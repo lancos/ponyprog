@@ -25,7 +25,7 @@
 //=========================================================================//
 
 // #include <stdio.h>
-
+#include <QtCore>
 #include <QDebug>
 #include <QString>
 
@@ -33,7 +33,7 @@
 #include "rs232int.h"
 #include "errcode.h"
 
-#ifdef  __linux__
+#ifdef Q_OS_LINUX
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/time.h>
@@ -64,9 +64,9 @@ RS232Interface::RS232Interface()
 
 	wait_endTX_mode = false;
 
-#ifdef  Q_OS_WIN32
+#ifdef Q_OS_WIN32
 	hCom = INVALID_HANDLE_VALUE;
-#elif defined(__linux__)
+#elif defined(Q_OS_LINUX)
 	fd = INVALID_HANDLE_VALUE;
 #endif
 
@@ -84,7 +84,7 @@ RS232Interface::~RS232Interface()
 }
 
 
-#ifdef  __linux__
+#ifdef Q_OS_LINUX
 static int fd_clear_flag(int fd, int flags);
 #endif
 
@@ -114,7 +114,7 @@ int RS232Interface::OpenSerial(QString devname)
 
 	m_devname = devname;
 
-#ifdef  Q_OS_WIN32
+#ifdef Q_OS_WIN32
 	hCom = CreateFile((LPCWSTR)m_devname.utf16(),
 					  GENERIC_READ | GENERIC_WRITE,
 					  0,              /* comm devices must be opened w/exclusive-access */
@@ -144,7 +144,7 @@ int RS232Interface::OpenSerial(QString devname)
 
 		ret_val = OK;
 	}
-#elif defined(__linux__)
+#elif defined(Q_OS_LINUX)
 
 	fd = INVALID_HANDLE_VALUE;
 
@@ -232,7 +232,7 @@ int RS232Interface::OpenSerial(QString devname)
 		fd_clear_flag(fd, O_NONBLOCK);          //Restore to blocking mode
 		ret_val = OK;
 	}
-#endif  /*__linux__*/
+#endif  /*Q_OS_LINUX*/
 
 	qDebug() << "RS232Interface::OpenSerial() = " << ret_val << " O";
 
@@ -244,7 +244,7 @@ void RS232Interface::CloseSerial()
 {
 	qDebug() << "RS232Interface::CloseSerial()";
 
-#ifdef  Q_OS_WIN32
+#ifdef Q_OS_WIN32
 
 	if (hCom != INVALID_HANDLE_VALUE)
 	{
@@ -257,7 +257,7 @@ void RS232Interface::CloseSerial()
 		hCom = INVALID_HANDLE_VALUE;
 	}
 
-#elif defined(__linux__)
+#elif defined(Q_OS_LINUX)
 
 	if (fd != INVALID_HANDLE_VALUE)
 	{
@@ -273,7 +273,7 @@ int RS232Interface::SetSerialBreak(int state)
 {
 	int result = E2ERR_OPENFAILED;
 
-#ifdef  Q_OS_WIN32
+#ifdef Q_OS_WIN32
 
 	if (hCom != INVALID_HANDLE_VALUE)
 	{
@@ -289,7 +289,7 @@ int RS232Interface::SetSerialBreak(int state)
 		result = OK;
 	}
 
-#elif defined(__linux__)
+#elif defined(Q_OS_LINUX)
 
 #if defined(TIOCSBRK) && defined(TIOCCBRK) //check if available for compilation 
 
@@ -323,14 +323,14 @@ void RS232Interface::SetSerialEventMask(long mask)
 
 void RS232Interface::SerialFlushRx()
 {
-#ifdef  Q_OS_WIN32
+#ifdef Q_OS_WIN32
 
 	if (hCom != INVALID_HANDLE_VALUE)
 	{
 		PurgeComm(hCom, PURGE_RXCLEAR);
 	}
 
-#elif defined(__linux__)
+#elif defined(Q_OS_LINUX)
 
 	if (fd != INVALID_HANDLE_VALUE)
 	{
@@ -342,14 +342,14 @@ void RS232Interface::SerialFlushRx()
 
 void RS232Interface::SerialFlushTx()
 {
-#ifdef  Q_OS_WIN32
+#ifdef Q_OS_WIN32
 
 	if (hCom != INVALID_HANDLE_VALUE)
 	{
 		PurgeComm(hCom, PURGE_TXCLEAR);
 	}
 
-#elif defined(__linux__)
+#elif defined(Q_OS_LINUX)
 
 	if (fd != INVALID_HANDLE_VALUE)
 	{
@@ -361,7 +361,7 @@ void RS232Interface::SerialFlushTx()
 
 void RS232Interface::WaitForTxEmpty()
 {
-#ifdef  Q_OS_WIN32
+#ifdef Q_OS_WIN32
 	DWORD evento;
 
 	if (hCom != INVALID_HANDLE_VALUE)
@@ -373,7 +373,7 @@ void RS232Interface::WaitForTxEmpty()
 		while (!(evento & EV_TXEMPTY));
 	}
 
-#elif defined(__linux__)
+#elif defined(Q_OS_LINUX)
 
 	if (fd != INVALID_HANDLE_VALUE)
 	{
@@ -387,7 +387,7 @@ long RS232Interface::ReadSerial(uint8_t *buffer, long len)
 {
 	long retval = E2ERR_OPENFAILED;
 
-#ifdef  Q_OS_WIN32
+#ifdef Q_OS_WIN32
 
 	if (hCom != INVALID_HANDLE_VALUE)
 	{
@@ -399,7 +399,7 @@ long RS232Interface::ReadSerial(uint8_t *buffer, long len)
 		}
 	}
 
-#elif defined(__linux__)
+#elif defined(Q_OS_LINUX)
 
 	if (fd != INVALID_HANDLE_VALUE)
 	{
@@ -467,7 +467,7 @@ long RS232Interface::WriteSerial(uint8_t *buffer, long len)
 {
 	long retval = E2ERR_OPENFAILED;
 
-#ifdef  Q_OS_WIN32
+#ifdef Q_OS_WIN32
 
 	if (hCom != INVALID_HANDLE_VALUE)
 	{
@@ -479,7 +479,7 @@ long RS232Interface::WriteSerial(uint8_t *buffer, long len)
 		}
 	}
 
-#elif defined(__linux__)
+#elif defined(Q_OS_LINUX)
 
 	if (fd != INVALID_HANDLE_VALUE)
 	{
@@ -520,7 +520,7 @@ int RS232Interface::SetSerialParams(long speed, int bits, int parity, int stops,
 {
 	int result = E2ERR_OPENFAILED;
 
-#ifdef  Q_OS_WIN32
+#ifdef Q_OS_WIN32
 
 	if (hCom != INVALID_HANDLE_VALUE)
 	{
@@ -579,7 +579,7 @@ int RS232Interface::SetSerialParams(long speed, int bits, int parity, int stops,
 		}
 	}
 
-#elif defined(__linux__)
+#elif defined(Q_OS_LINUX)
 
 	if (fd != INVALID_HANDLE_VALUE)
 	{
@@ -767,7 +767,7 @@ int RS232Interface::SetSerialTimeouts(long init_read, long while_read)
 		read_total_timeout = init_read;
 	}
 
-#ifdef  Q_OS_WIN32
+#ifdef Q_OS_WIN32
 
 	if (hCom != INVALID_HANDLE_VALUE)
 	{
@@ -808,7 +808,7 @@ int RS232Interface::SetSerialTimeouts(long init_read, long while_read)
 		}
 	}
 
-#elif defined(__linux__)
+#elif defined(Q_OS_LINUX)
 	result = OK;
 #endif
 
@@ -819,7 +819,7 @@ int RS232Interface::SetSerialDTR(int dtr)
 {
 	int result = E2ERR_OPENFAILED;
 
-#ifdef  Q_OS_WIN32
+#ifdef Q_OS_WIN32
 
 	if (hCom != INVALID_HANDLE_VALUE)
 	{
@@ -829,7 +829,7 @@ int RS232Interface::SetSerialDTR(int dtr)
 		}
 	}
 
-#elif defined(__linux__)
+#elif defined(Q_OS_LINUX)
 	int flags;
 
 	ioctl(fd, TIOCMGET, &flags);
@@ -853,7 +853,7 @@ int RS232Interface::SetSerialRTS(int rts)
 {
 	int result = E2ERR_OPENFAILED;
 
-#ifdef  Q_OS_WIN32
+#ifdef Q_OS_WIN32
 
 	if (hCom != INVALID_HANDLE_VALUE)
 	{
@@ -863,7 +863,7 @@ int RS232Interface::SetSerialRTS(int rts)
 		}
 	}
 
-#elif defined(__linux__)
+#elif defined(Q_OS_LINUX)
 	int flags;
 
 	ioctl(fd, TIOCMGET, &flags);
@@ -887,7 +887,7 @@ int RS232Interface::SetSerialRTSDTR(int state)
 {
 	int result = E2ERR_OPENFAILED;
 
-#ifdef  Q_OS_WIN32
+#ifdef Q_OS_WIN32
 
 	if (hCom != INVALID_HANDLE_VALUE)
 	{
@@ -905,7 +905,7 @@ int RS232Interface::SetSerialRTSDTR(int state)
 		result = OK;
 	}
 
-#elif defined(__linux__)
+#elif defined(Q_OS_LINUX)
 
 	int flags;
 	ioctl(fd, TIOCMGET, &flags);
@@ -930,7 +930,7 @@ int RS232Interface::GetSerialDSR() const
 {
 	int result = E2ERR_OPENFAILED;
 
-#ifdef  Q_OS_WIN32
+#ifdef Q_OS_WIN32
 
 	if (hCom != INVALID_HANDLE_VALUE)
 	{
@@ -942,7 +942,7 @@ int RS232Interface::GetSerialDSR() const
 		}
 	}
 
-#elif defined(__linux__)
+#elif defined(Q_OS_LINUX)
 
 	int flags;
 
@@ -960,7 +960,7 @@ int RS232Interface::GetSerialCTS() const
 {
 	int result = E2ERR_OPENFAILED;
 
-#ifdef  Q_OS_WIN32
+#ifdef Q_OS_WIN32
 
 	if (hCom != INVALID_HANDLE_VALUE)
 	{
@@ -972,7 +972,7 @@ int RS232Interface::GetSerialCTS() const
 		}
 	}
 
-#elif defined(__linux__)
+#elif defined(Q_OS_LINUX)
 
 	int flags;
 
@@ -986,7 +986,7 @@ int RS232Interface::GetSerialCTS() const
 	return result;
 }
 
-#ifdef  __linux__
+#ifdef Q_OS_LINUX
 static int fd_clear_flag(int fd, int flags)
 {
 	int val;

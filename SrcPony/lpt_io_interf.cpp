@@ -28,13 +28,13 @@
 #include "errcode.h"
 
 #include <QDebug>
+#include <QtCore>
 
-#ifdef  Q_OS_WIN32
+#ifdef Q_OS_WIN32
 #include <windows.h>
 #endif
 
-#ifdef  __linux__
-// #include <stdio.h>
+#ifdef Q_OS_LINUX
 #include <unistd.h>
 #include <fcntl.h>
 #endif

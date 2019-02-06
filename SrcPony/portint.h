@@ -27,6 +27,8 @@
 #ifndef _PORTINTERFACE_H
 #define _PORTINTERFACE_H
 
+#include <QtCore>
+
 #include "types.h"
 
 #ifdef  Q_OS_WIN32

@@ -29,10 +29,11 @@
 #include "errcode.h"
 
 #include <QDebug>
+#include <QtCore>
 
 #include "e2cmdw.h"
 
-#ifdef  __linux__
+#ifdef Q_OS_LINUX
 #  include <unistd.h>
 #else
 #  ifdef        __BORLANDC__

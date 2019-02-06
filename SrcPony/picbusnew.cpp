@@ -30,8 +30,9 @@
 
 #include "globals.h"
 
-#ifdef  __linux__
-//#  include <asm/io.h>
+#include <QtCore>
+
+#ifdef Q_OS_LINUX
 #  include <unistd.h>
 #else
 #  ifdef        __BORLANDC__

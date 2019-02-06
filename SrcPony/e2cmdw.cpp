@@ -24,7 +24,7 @@
 //                                                                         //
 //=========================================================================//
 
-
+#include <QtCore>
 #include <QPainter>
 #include <QPrinter>
 #include <QPrintDialog>
@@ -501,7 +501,7 @@ bool e2CmdWindow::readLangDir()
 
 	qDebug() << "readLangDir path:" << path << ", Saved: " << lngDirName;
 
-#ifdef __linux__
+#ifdef Q_OS_LINUX
 	dirsLang << lngDirName << "/usr/share/ponyprog/lang" << "/usr/local/share/ponyprog/lang" << path;
 #else
 	dirsLang << lngDirName << path;
@@ -2746,7 +2746,7 @@ int e2CmdWindow::CmdHelp()
 		QDesktopServices::openUrl(QUrl("http://www.lancos.com/e2p/ponyprog2000.html"));
 	}
 #if 0
-#ifdef __linux__
+#ifdef Q_OS_LINUX
 	//system(str.toLatin1().constData());
 	QProcess::execute("xdg-open", (QStringList() << str));
 #else

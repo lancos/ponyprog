@@ -28,6 +28,7 @@
 #include <QDebug>
 #include <QTextStream>
 #include <QMessageBox>
+#include <QtCore>
 
 // #include "MainWindow.h"
 #include "Translator.h"

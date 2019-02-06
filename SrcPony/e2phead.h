@@ -29,6 +29,7 @@
 #define _EP2HEAD_H
 
 #include <QString>
+#include <QtCore>
 
 #include "types.h"
 

@@ -29,18 +29,18 @@
 #include "e2profil.h"
 
 #include <QDebug>
+#include <QtCore>
 
-#ifdef  Q_OS_WIN32
+#ifdef Q_OS_WIN32
 #include <windows.h>
 #endif
 
-#ifdef __linux__
+#ifdef Q_OS_LINUX
 
 //If you use latest kernel (2.4.xx) you should use standard ppdev.o module and include ppdev.h
 //otherwise install the ppuser module, and include the file ppuser.h
 #define USE_K2_4_PPDEV  1
 
-// #include <stdio.h>
 #include <termios.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -48,11 +48,11 @@
 
 #if USE_K2_4_PPDEV == 1
 # include "linux/ppdev.h"
-# define PARPORTDEVNAME "/dev/parport%d"
+#define PARPORTDEVNAME "/dev/parport%d"
 //N.B. be sure to issue a "chmod 666 /dev/parport?"
 #else
 # include "ppuser.h"
-# define PARPORTDEVNAME "/dev/ppuser%d0"
+#define PARPORTDEVNAME "/dev/ppuser%d0"
 //N.B. be sure to issue a "chmod 666 /dev/ppuser?"
 #endif
 
@@ -72,7 +72,7 @@ LPTInterface::LPTInterface()
 	last_ctrl = last_data = 0;
 	lpt_control.LPPort = -1;         //no used port
 
-#ifdef __linux__
+#ifdef Q_OS_LINUX
 	hLpt = INVALID_HANDLE_VALUE;
 #endif
 }
@@ -86,7 +86,7 @@ LPTInterface::~LPTInterface()
 
 void LPTInterface::Close()
 {
-#ifdef __linux__
+#ifdef Q_OS_LINUX
 	qDebug() << "LPTInterface::Close() I ** hLpt = " << hLpt;
 
 	if (hLpt != INVALID_HANDLE_VALUE)
@@ -109,7 +109,7 @@ void LPTInterface::SetPort(int port_no)
 	{
 		lpt_control.LPPort = port_no;
 
-#ifdef __linux__
+#ifdef Q_OS_LINUX
 		if (hLpt != INVALID_HANDLE_VALUE)
 		{
 			ioctl(hLpt, PPRELEASE, 0);
@@ -148,7 +148,7 @@ int LPTInterface::InDataPort(int port_no)
 
 	int ret_val = E2ERR_NOTINSTALLED;
 
-#ifdef __linux__
+#ifdef Q_OS_LINUX
 	if (port_no >= 0 && port_no < MAX_LPTPORTS
 			&& port_no != lpt_control.LPPort)
 	{
@@ -189,7 +189,6 @@ int LPTInterface::InDataPort(int port_no)
 			ret_val = lpt_control.LPByte;
 		}
 	}
-
 #endif
 	qDebug() << "LPTInterface::InDataPort() = " << ret_val << " (" << lpt_control.LPByte << ")";
 
@@ -212,8 +211,7 @@ int LPTInterface::OutDataPort(int val, int port_no)
 
 	int ret_val = E2ERR_NOTINSTALLED;
 
-#ifdef __linux__
-
+#ifdef Q_OS_LINUX
 	if (port_no >= 0 && port_no < MAX_LPTPORTS
 			&& port_no != lpt_control.LPPort)
 	{
@@ -252,7 +250,6 @@ int LPTInterface::OutDataPort(int val, int port_no)
 			ret_val = OK;
 		}
 	}
-
 #endif
 	qDebug() << "LPTInterface::OutDataPort() = " << ret_val;
 
@@ -275,8 +272,7 @@ int LPTInterface::OutControlPort(int val, int port_no)
 
 	int ret_val = E2ERR_NOTINSTALLED;
 
-#ifdef __linux__
-
+#ifdef Q_OS_LINUX
 	if (port_no >= 0 && port_no < MAX_LPTPORTS
 			&& port_no != lpt_control.LPPort)
 	{
@@ -315,7 +311,6 @@ int LPTInterface::OutControlPort(int val, int port_no)
 			ret_val = OK;
 		}
 	}
-
 #endif
 	qDebug() << "LPTInterface::OutControlPort() = " << ret_val;
 
@@ -326,7 +321,7 @@ int LPTInterface::OutDataMask(int mask, int val)
 {
 	int ret_val = E2ERR_NOTINSTALLED;
 
-#ifdef __linux__
+#ifdef Q_OS_LINUX
 	if (hLpt != INVALID_HANDLE_VALUE)
 	{
 		if (val == 0)
@@ -353,7 +348,7 @@ int LPTInterface::OutControlMask(int mask, int val)
 {
 	int ret_val = E2ERR_NOTINSTALLED;
 
-#ifdef __linux__
+#ifdef Q_OS_LINUX
 	if (hLpt != INVALID_HANDLE_VALUE)
 	{
 		if (val == 0)
