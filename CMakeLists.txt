@@ -155,6 +155,16 @@ ELSE()
         "If it's INSTALLed in a non-standard location, specify the path to qmake in QT_QMAKE_EXECUTABLE. "
         "You can do it in interactive mode (ccmake instead of cmake) or using -DVAR=VAL syntax.")
     ENDIF(NOT Qt5Widgets_FOUND)
+
+    IF(NOT Qt5PrintSupport_FOUND)
+        MESSAGE(FATAL_ERROR "Qt5 PrintSupport development files are not found. "
+        "Qt5PrintSupport development package is to install.")
+    ENDIF(NOT Qt5PrintSupport_FOUND)
+
+    IF(NOT Qt5Multimedia_FOUND)
+        MESSAGE(FATAL_ERROR "Qt5 Multimedia development files are not found. "
+        "Qt5Multimedia development package is to install.")
+    ENDIF(NOT Qt5Multimedia_FOUND)
 ENDIF()
 
 # for this feature install debhelper or 
