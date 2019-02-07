@@ -65,7 +65,7 @@ int PortInterface::IOperm(int a, int b, int c)
 }
 
 #define outb(x, p)
-#define inb(p)
+#define inb(p)	0
 #endif
 
 #endif
