@@ -140,7 +140,6 @@ e2CmdWindow::e2CmdWindow(QWidget *parent) :
 		msgBox.setStyleSheet(programStyleSheet);
 		msgBox.setButtonText(QMessageBox::Close, "Close");
 		msgBox.exec();
-// 		QMessageBox::warning(this, "Warning", "Directory with other languages not found\nDefault GUI language is english", QMessageBox::Close);
 	}
 
 
@@ -224,8 +223,6 @@ e2CmdWindow::e2CmdWindow(QWidget *parent) :
 		msgBox.setStyleSheet(programStyleSheet);
 		msgBox.setButtonText(QMessageBox::Close, "Close");
 		msgBox.exec();
-// 		QMessageBox::warning(this, "Language file error",
-// 							 "Can't open language file!\nDefault GUI language is english", QMessageBox::Close);
 
 		E2Profile::SetCurrentLang("english");
 	}
@@ -470,7 +467,6 @@ void e2CmdWindow::onSelectFile(QAction *a)
 		msgBox.setStyleSheet(programStyleSheet);
 		msgBox.setButtonText(QMessageBox::Close, translate(STR_CLOSE));
 		msgBox.exec();
-// 		QMessageBox::critical(this, "File error", translate(STR_MSGFILENOTFOUND), QMessageBox::Close);
 	}
 }
 
@@ -754,8 +750,6 @@ bool e2CmdWindow::getLangTable()
 		msgBox.setStyleSheet(programStyleSheet);
 		msgBox.setButtonText(QMessageBox::Close, translate(STR_CLOSE));
 		msgBox.exec();
-// 		QMessageBox::warning(this, "Warning", "Language file not exists!\n\n"
-// 							 + E2Profile::GetLangDir() + "\n\n" + fileLang, QMessageBox::Close);
 		// not found
 		return (false);
 	}
@@ -2286,9 +2280,6 @@ void e2CmdWindow::onAskToSave()
 		msgBox.setButtonText(QMessageBox::Yes, translate(STR_YES));
 		msgBox.setButtonText(QMessageBox::No, translate(STR_NO));
 		int ret = msgBox.exec();
-// 		int ret = QMessageBox::warning(this, "PonyProg",
-// 									   str,
-// 									   QMessageBox::Yes | QMessageBox::No);
 
 		if (ret == QMessageBox::Yes)
 		{
@@ -2474,10 +2465,6 @@ int e2CmdWindow::CmdLastFile(int index)
 			msgBox.setButtonText(QMessageBox::No, translate(STR_NO));
 			int ret = msgBox.exec();
 
-// 			int ret = QMessageBox::warning(this, QString(APP_NAME),
-// 										   "Buffer changed. Save it before to close?",		//TODO: translate message
-// 										   QMessageBox::Yes | QMessageBox::No);
-
 			if (ret == QMessageBox::Yes)
 			{
 				awip->SetSaveType(ALL_TYPE);    //??
@@ -2658,9 +2645,9 @@ int e2CmdWindow::CmdCalibration()
 
 		if (err == OK)
 		{
-			QMessageBox note(QMessageBox::Information, "Calibration", translate(STR_BUSCALIBRAOK), QMessageBox::Close);
+			QMessageBox note(QMessageBox::Information, "Calibration", translate(STR_BUSCALIBRAOK), QMessageBox::Ok);
 			note.setStyleSheet(programStyleSheet);
-			note.setButtonText(QMessageBox::Close, translate(STR_CLOSE));
+			note.setButtonText(QMessageBox::Ok, translate(STR_CLOSE));
 			note.exec();
 			UpdateStatusBar();
 		}
@@ -2669,9 +2656,9 @@ int e2CmdWindow::CmdCalibration()
 			QString str;
 			str = QString("%1 (%2)").arg(translate(STR_BUSCALIBRAFAIL)).arg(err);
 
-			QMessageBox note(QMessageBox::Critical, "Calibration", str, QMessageBox::Close);
+			QMessageBox note(QMessageBox::Critical, "Calibration", str, QMessageBox::Ok);
 			note.setStyleSheet(programStyleSheet);
-			note.setButtonText(QMessageBox::Close, translate(STR_CLOSE));
+			note.setButtonText(QMessageBox::Ok, translate(STR_CLOSE));
 			note.exec();
 		}
 	}
@@ -2748,9 +2735,9 @@ int e2CmdWindow::CmdRead(int type)
 
 			if (verbose == verboseAll)
 			{
-				QMessageBox note(QMessageBox::Information, "Read", str, QMessageBox::Close);
+				QMessageBox note(QMessageBox::Information, "Read", str, QMessageBox::Ok);
 				note.setStyleSheet(programStyleSheet);
-				note.setButtonText(QMessageBox::Close, translate(STR_CLOSE));
+				note.setButtonText(QMessageBox::Ok, translate(STR_CLOSE));
 				note.exec();
 			}
 		}
@@ -2809,10 +2796,10 @@ int e2CmdWindow::CmdWrite(int type, bool verify)
 	{
 		if (verbose != verboseNo)
 		{
-			QMessageBox note(QMessageBox::Warning, "Write", translate(STR_NOTHINGWRITE), QMessageBox::Close);
+			QMessageBox note(QMessageBox::Warning, "Write", translate(STR_NOTHINGWRITE), QMessageBox::Ok);
 
 			note.setStyleSheet(programStyleSheet);
-			note.setButtonText(QMessageBox::Close, translate(STR_CLOSE));
+			note.setButtonText(QMessageBox::Ok, translate(STR_CLOSE));
 			note.exec();
 		}
 
@@ -2895,9 +2882,9 @@ int e2CmdWindow::CmdWrite(int type, bool verify)
 
 						if (verbose == verboseAll)
 						{
-							QMessageBox note(QMessageBox::Information, "Write", translate(STR_MSGWRITEOK), QMessageBox::Close);
+							QMessageBox note(QMessageBox::Information, "Write", translate(STR_MSGWRITEOK), QMessageBox::Ok);
 							note.setStyleSheet(programStyleSheet);
-							note.setButtonText(QMessageBox::Close, translate(STR_CLOSE));
+							note.setButtonText(QMessageBox::Ok, translate(STR_CLOSE));
 //
 							note.exec();
 						}
@@ -2906,9 +2893,9 @@ int e2CmdWindow::CmdWrite(int type, bool verify)
 					{
 						if (verbose != verboseNo)
 						{
-							QMessageBox note(QMessageBox::Warning, "Write", translate(STR_MSGWRITEFAIL), QMessageBox::Close);
+							QMessageBox note(QMessageBox::Warning, "Write", translate(STR_MSGWRITEFAIL), QMessageBox::Ok);
 							note.setStyleSheet(programStyleSheet);
-							note.setButtonText(QMessageBox::Close, translate(STR_CLOSE));
+							note.setButtonText(QMessageBox::Ok, translate(STR_CLOSE));
 //
 							note.exec();
 						}
@@ -3018,9 +3005,9 @@ int e2CmdWindow::CmdReadCalibration(int idx)
 					QString str;
 					str = translate(STR_MSGREADCALIBOK) + QString().sprintf(": 0x%02X (%d)", rval, rval);
 
-					QMessageBox note(QMessageBox::Information, "Calibration", str, QMessageBox::Close);
+					QMessageBox note(QMessageBox::Information, "Calibration", str, QMessageBox::Ok);
 					note.setStyleSheet(programStyleSheet);
-					note.setButtonText(QMessageBox::Close, translate(STR_CLOSE));
+					note.setButtonText(QMessageBox::Ok, translate(STR_CLOSE));
 					note.exec();
 				}
 			}
@@ -3109,10 +3096,10 @@ int e2CmdWindow::CmdErase(int type)
 
 			if (verbose == verboseAll)
 			{
-				QMessageBox note(QMessageBox::Information, "Warning", translate(STR_MSGERASEOK), QMessageBox::Close);
+				QMessageBox note(QMessageBox::Information, "Warning", translate(STR_MSGERASEOK), QMessageBox::Ok);
 
 				note.setStyleSheet(programStyleSheet);
-				note.setButtonText(QMessageBox::Close, translate(STR_CLOSE));
+				note.setButtonText(QMessageBox::Ok, translate(STR_CLOSE));
 				note.exec();
 			}
 		}
@@ -3164,9 +3151,9 @@ int e2CmdWindow::CmdVerify(int type)
 	{
 		if (verbose != verboseNo)
 		{
-			QMessageBox note(QMessageBox::Information, "Warning", translate(STR_NOTHINGVERIFY), QMessageBox::Close);
+			QMessageBox note(QMessageBox::Information, "Warning", translate(STR_NOTHINGVERIFY), QMessageBox::Ok);
 			note.setStyleSheet(programStyleSheet);
-			note.setButtonText(QMessageBox::Close, translate(STR_CLOSE));
+			note.setButtonText(QMessageBox::Ok, translate(STR_CLOSE));
 			note.exec();
 		}
 
@@ -3206,9 +3193,9 @@ int e2CmdWindow::CmdVerify(int type)
 
 			if (verbose == verboseAll)
 			{
-				QMessageBox note(QMessageBox::Information, "Verify", translate(STR_MSGVERIFYOK), QMessageBox::Close);
+				QMessageBox note(QMessageBox::Information, "Verify", translate(STR_MSGVERIFYOK), QMessageBox::Ok);
 				note.setStyleSheet(programStyleSheet);
-				note.setButtonText(QMessageBox::Close, translate(STR_CLOSE));
+				note.setButtonText(QMessageBox::Ok, translate(STR_CLOSE));
 				note.exec();
 			}
 		}
@@ -3288,9 +3275,9 @@ int e2CmdWindow::CmdProgram()
 
 		if (verbose == verboseAll)
 		{
-			QMessageBox note(QMessageBox::Information, "Program", translate(STR_MSGPROGRAMOK), QMessageBox::Close);
+			QMessageBox note(QMessageBox::Information, "Program", translate(STR_MSGPROGRAMOK), QMessageBox::Ok);
 			note.setStyleSheet(programStyleSheet);
-			note.setButtonText(QMessageBox::Close, translate(STR_CLOSE));
+			note.setButtonText(QMessageBox::Ok, translate(STR_CLOSE));
 			note.exec();
 		}
 	}
@@ -4382,9 +4369,9 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 	{
 		if (verbose == verboseAll)
 		{
-			QMessageBox note(QMessageBox::Information, "Script information", translate(STR_MSGPROGRAMOK), QMessageBox::Close);
+			QMessageBox note(QMessageBox::Information, "Script information", translate(STR_MSGPROGRAMOK), QMessageBox::Ok);
 			note.setStyleSheet(programStyleSheet);
-			note.setButtonText(QMessageBox::Close, translate(STR_CLOSE));
+			note.setButtonText(QMessageBox::Ok, translate(STR_CLOSE));
 			note.exec();
 		}
 	}
@@ -4392,9 +4379,9 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 	{
 		if (verbose == verboseAll)
 		{
-			QMessageBox note(QMessageBox::Warning, "Script information", translate(STR_OPABORTED), QMessageBox::Close);
+			QMessageBox note(QMessageBox::Warning, "Script information", translate(STR_OPABORTED), QMessageBox::Ok);
 			note.setStyleSheet(programStyleSheet);
-			note.setButtonText(QMessageBox::Close, translate(STR_CLOSE));
+			note.setButtonText(QMessageBox::Ok, translate(STR_CLOSE));
 			note.exec();
 		}
 	}
@@ -4495,12 +4482,9 @@ int e2CmdWindow::CmdReset()
 
 	if (verbose == verboseAll)
 	{
-		QMessageBox note;
-		note.setIcon(QMessageBox::Warning);
+		QMessageBox note(QMessageBox::Warning, "Reset", translate(STR_MSGDEVRESET), QMessageBox::Ok);
 		note.setStyleSheet(programStyleSheet);
-		note.setWindowTitle("Reset");
-		note.setText(translate(STR_MSGDEVRESET));
-		note.setButtonText(QMessageBox::Close, translate(STR_CLOSE));
+		note.setButtonText(QMessageBox::Ok, translate(STR_CLOSE));
 		note.exec();
 	}
 
@@ -4512,9 +4496,9 @@ int e2CmdWindow::CmdDoubleSize()
 {
 	if (!awip->IsBufferValid())
 	{
-		QMessageBox note(QMessageBox::Warning, "Double size", translate(STR_BUFEMPTY), QMessageBox::Close);
+		QMessageBox note(QMessageBox::Warning, "Double size", translate(STR_BUFEMPTY), QMessageBox::Ok);
 		note.setStyleSheet(programStyleSheet);
-		note.setButtonText(QMessageBox::Close, translate(STR_CLOSE));
+		note.setButtonText(QMessageBox::Ok, translate(STR_CLOSE));
 		note.exec();
 	}
 	else
@@ -5198,9 +5182,9 @@ int e2CmdWindow::CmdByteSwap()
 
 		if (verbose != verboseNo)
 		{
-			QMessageBox note(QMessageBox::Information, "Byte swap", translate(STR_BUFEMPTY), QMessageBox::Close);
+			QMessageBox note(QMessageBox::Information, "Byte swap", translate(STR_BUFEMPTY), QMessageBox::Ok);
 			note.setStyleSheet(programStyleSheet);
-			note.setButtonText(QMessageBox::Close, translate(STR_CLOSE));
+			note.setButtonText(QMessageBox::Ok, translate(STR_CLOSE));
 			note.exec();
 		}
 	}
@@ -5892,8 +5876,6 @@ int e2CmdWindow::OpenScript(const QString &file)
 			{
 				QMessageBox note(QMessageBox::Warning, "Open script", translate(STR_MSGFILENOTFOUND), QMessageBox::Yes);
 				note.setStyleSheet(programStyleSheet);
-// 				note.setWindowTitle("Open script");
-// 				note.setText(translate(STR_MSGFILENOTFOUND));
 				note.setButtonText(QMessageBox::Yes, translate(STR_YES));
 				note.exec();
 			}
@@ -6516,17 +6498,17 @@ void e2CmdWindow::PostInit()
 
 	if (E2Profile::GetBogoMips() == 0)
 	{
-		QMessageBox note(QMessageBox::Information, "Calibration", translate(STR_MSGNEEDCALIB), QMessageBox::Close);
+		QMessageBox note(QMessageBox::Information, "Calibration", translate(STR_MSGNEEDCALIB), QMessageBox::Ok);
 		note.setStyleSheet(programStyleSheet);
-		note.setButtonText(QMessageBox::Close, translate(STR_CLOSE));
+		note.setButtonText(QMessageBox::Ok, translate(STR_CLOSE));
 		note.exec();
 	}
 
 	if (E2Profile::GetPortNumber() < 0)
 	{
-		QMessageBox note(QMessageBox::Information, "Setup", translate(STR_MSGNEEDSETUP), QMessageBox::Close);
+		QMessageBox note(QMessageBox::Information, "Setup", translate(STR_MSGNEEDSETUP), QMessageBox::Ok);
 		note.setStyleSheet(programStyleSheet);
-		note.setButtonText(QMessageBox::Close, translate(STR_CLOSE));
+		note.setButtonText(QMessageBox::Ok, translate(STR_CLOSE));
 		note.exec();
 	}
 }
