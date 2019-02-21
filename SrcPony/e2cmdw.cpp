@@ -1532,6 +1532,8 @@ void e2CmdWindow::selectFontSize(QAction *mnu)
 	QString lngStr;
 
 	lngStr = mnu->text();
+	lngStr.remove(QChar('&'));
+
 	fontSize = lngStr.toInt();
 
 	mnu->setChecked(true);
