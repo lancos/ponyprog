@@ -172,6 +172,7 @@ SOURCES  += SrcPony/aboutmdlg.cpp \
             SrcPony/filldlg.cpp \
             SrcPony/interfconv.cpp \
             SrcPony/lptinterf.cpp \
+            SrcPony/mpsse_interf.cpp \
             SrcPony/nvm3060.cpp \
             SrcPony/pic16xx.cpp \
             SrcPony/x2444bus.cpp \
@@ -251,6 +252,7 @@ HEADERS  += SrcPony/e2app.h \
             SrcPony/blockmdlg.h \
             SrcPony/intfbuf.h \
             SrcPony/lptinterf.h \
+            SrcPony/mpsse_interf.h \
             SrcPony/nvm3060.h \
             SrcPony/pic16xx.h \
             SrcPony/ppuser.h \
@@ -284,6 +286,8 @@ FORMS    += SrcPony/forms/aboutdlg.ui \
 
 # in case of manually installations, not from repositories
 unix:!macx: LIBS += -L/usr/local/lib 
+
+unix:!macx: QMAKE_CXXFLAGS += -I/usr/include/libftdi1
 
 
 # # Make sure QM translations are generated.
