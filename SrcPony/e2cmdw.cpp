@@ -5924,7 +5924,7 @@ int e2CmdWindow::OpenFile(const QString &file)
 		{
 			QString oldfname = awip->GetFileName();
 			awip->SetFileName(fileName);
-			long old_type = awip->GetEEPId();			//EEP type can be changed by E2P file load
+			//long old_type = awip->GetEEPId();			//EEP type can be changed by E2P file load
 
 			rval = awip->Load();
 
