@@ -46,8 +46,9 @@
 
 MpsseInterface::MpsseInterface()
 {
-	//qDebug() << "MpsseInterface::MpsseInterface()";
+	qDebug() << "MpsseInterface::MpsseInterface()";
 
+	MpsseInterface::List();
 	//DeInstall();
 	//old_portno = GetInstalled();
 	fd_ctrl = fd_clock = fd_datain = fd_dataout = -1;
@@ -60,20 +61,20 @@ MpsseInterface::~MpsseInterface()
 
 void MpsseInterface::List()
 {
-	using namespace Ftdi;
+	//using namespace Ftdi;
 
 	// Parse args
-	int vid = 0x0403, pid = 0x6010;
+	int vid = 0x0403, pid = 0xcff8;	//0x6010;
 
 	// Print whole list
 	Ftdi::Context ctx = Ftdi::Context();
 	Ftdi::List *list = Ftdi::List::find_all(ctx, vid, pid);
 	for (Ftdi::List::iterator it = list->begin(); it != list->end(); it++)
 	{
-		//qDebug() << "FTDI (" << &*it << "): "
-		qDebug() << it->vendor() << ", ";
-		//<< it->description() << ", "
-		//<< it->serial();
+		qDebug() << "FTDI (" << &*it << "): "
+			<< QString::fromStdString(it->vendor()) << ", "
+			<< QString::fromStdString(it->description()) << ", "
+			<< QString::fromStdString(it->serial());
 
 		// Open test
 		if(it->open() == 0)
@@ -103,10 +104,10 @@ int MpsseInterface::InitPins()
 	qDebug() << "DataIn=" << pin_datain << ", DataOut=" << pin_dataout;
 
 #ifdef Q_OS_LINUX
-	fd_ctrl = gpio_open(pin_ctrl, GPIO_OUT);
-	fd_clock = gpio_open(pin_clock, GPIO_OUT);
-	fd_datain = gpio_open(pin_datain, GPIO_IN);
-	fd_dataout = gpio_open(pin_dataout, GPIO_OUT);
+	//fd_ctrl = gpio_open(pin_ctrl, GPIO_OUT);
+	//fd_clock = gpio_open(pin_clock, GPIO_OUT);
+	//fd_datain = gpio_open(pin_datain, GPIO_IN);
+	//fd_dataout = gpio_open(pin_dataout, GPIO_OUT);
 
 	if (fd_ctrl < 0 || fd_clock < 0 || fd_datain < 0 || fd_dataout < 0)
 	{
@@ -121,10 +122,10 @@ int MpsseInterface::InitPins()
 void MpsseInterface::DeInitPins()
 {
 #ifdef Q_OS_LINUX
-	gpio_close(pin_ctrl, fd_ctrl);
-	gpio_close(pin_clock, fd_clock);
-	gpio_close(pin_datain, fd_datain);
-	gpio_close(pin_dataout, fd_dataout);
+	//gpio_close(pin_ctrl, fd_ctrl);
+	//gpio_close(pin_clock, fd_clock);
+	//gpio_close(pin_datain, fd_datain);
+	//gpio_close(pin_dataout, fd_dataout);
 	fd_ctrl = fd_clock = fd_datain = fd_dataout = -1;
 #endif
 }

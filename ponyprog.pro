@@ -287,8 +287,9 @@ FORMS    += SrcPony/forms/aboutdlg.ui \
 # in case of manually installations, not from repositories
 unix:!macx: LIBS += -L/usr/local/lib 
 
-unix:!macx: QMAKE_CXXFLAGS += -I/usr/include/libftdi1
-
+#libftdi
+unix:!macx: QMAKE_CXXFLAGS += $$system(pkg-config libftdipp1 --cflags)
+unix:!macx: LIBS += $$system(pkg-config libftdipp1 --libs)
 
 # # Make sure QM translations are generated.
 # lrelease.input = TRANSLATIONS

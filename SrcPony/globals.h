@@ -66,8 +66,8 @@ enum HInterfaceType
 	EASYI2C_IO,
 	DT006_API,
 	DT006_IO,
-	//      JDM_IO,
 	LINUXSYSFS_IO,
+	FTDI_MPSSE,
 	LAST_HT
 };
 

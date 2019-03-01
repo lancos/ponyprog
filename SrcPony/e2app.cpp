@@ -383,11 +383,6 @@ void e2App::SetInterfaceType(HInterfaceType type)
 	switch (type)
 	{
 	//Interface initializers
-	case SIPROG_API:
-		iType = SIPROG_API;
-		busIntp = &siprog_apiI;
-		break;
-
 	case SIPROG_IO:
 		iType = SIPROG_IO;
 		busIntp = &siprog_ioI;
@@ -427,10 +422,6 @@ void e2App::SetInterfaceType(HInterfaceType type)
 		jdm_apiI.SetCmd2CmdDelay(E2Profile::GetJDMCmd2CmdDelay());
 		break;
 
-	//      case JDM_IO:
-	//              iType = JDM_IO;
-	//              busIntp = &jdm_ioI;
-	//              break;
 	case DT006_API:
 		iType = DT006_API;
 		busIntp = &dt006_apiI;
@@ -450,8 +441,14 @@ void e2App::SetInterfaceType(HInterfaceType type)
 		busIntp = &linuxsysfs_ioI;
 		break;
 
-	default:
-		iType = SIPROG_API;             //20/07/99 -- to prevent crash
+	case FTDI_MPSSE:
+		iType = FTDI_MPSSE;
+		busIntp = &mpsseI;
+		break;
+
+	case SIPROG_API:
+	default:	             //20/07/99 -- to prevent crash
+		iType = SIPROG_API;
 		busIntp = &siprog_apiI;
 		break;
 	}
