@@ -4,3 +4,6 @@ build*
 *.kdev4
 CMakeLists.txt.user*
 ponyprog.pro.user*
+doxygen/html
+doxygen/latex
+SrcPony/version.h
