@@ -25,7 +25,6 @@
 //=========================================================================//
 // FTDI mpsse IO
 
-#include "ftdi.hpp"
 #include "mpsse_interf.h"
 #include "errcode.h"
 #include "e2cmdw.h"
@@ -35,14 +34,11 @@
 #include <QProcess>
 #include <QString>
 
-#define GPIO_OUT                        true
-#define GPIO_IN                         false
-
-#ifdef Q_OS_LINUX
-# include <errno.h>
-# include <unistd.h>
-# include <fcntl.h>
-#endif
+//#ifdef Q_OS_LINUX
+//# include <errno.h>
+//# include <unistd.h>
+//# include <fcntl.h>
+//#endif
 
 MpsseInterface::MpsseInterface()
 {
@@ -64,11 +60,10 @@ void MpsseInterface::List()
 	//using namespace Ftdi;
 
 	// Parse args
-	int vid = 0x0403, pid = 0xcff8;	//0x6010;
+	//int vid = 0x0403, pid = 0xcff8;	//0x6010;
 
 	// Print whole list
-	Ftdi::Context ctx = Ftdi::Context();
-	Ftdi::List *list = Ftdi::List::find_all(ctx, vid, pid);
+	Ftdi::List *list = Ftdi::List::find_all(ctx, usb_vid, usb_pid);
 	for (Ftdi::List::iterator it = list->begin(); it != list->end(); it++)
 	{
 		qDebug() << "FTDI (" << &*it << "): "
@@ -95,52 +90,61 @@ int MpsseInterface::SetPower(bool onoff)
 
 int MpsseInterface::InitPins()
 {
-	pin_ctrl = E2Profile::GetGpioPinCtrl();
-	pin_datain = E2Profile::GetGpioPinDataIn();
-	pin_dataout = E2Profile::GetGpioPinDataOut();
-	pin_clock = E2Profile::GetGpioPinClock();
+	int result = 0;
 
-	qDebug() << "MpsseInterface::InitPins Ctrl=" << pin_ctrl << ", Clock= " << pin_clock;
-	qDebug() << "DataIn=" << pin_datain << ", DataOut=" << pin_dataout;
+	pin_ctrl = E2Profile::GetMpssePinCtrl();
+	pin_datain = E2Profile::GetMpssePinDataIn();
+	pin_dataout = E2Profile::GetMpssePinDataOut();
+	pin_clock = E2Profile::GetMpssePinClock();
 
-#ifdef Q_OS_LINUX
-	//fd_ctrl = gpio_open(pin_ctrl, GPIO_OUT);
-	//fd_clock = gpio_open(pin_clock, GPIO_OUT);
-	//fd_datain = gpio_open(pin_datain, GPIO_IN);
-	//fd_dataout = gpio_open(pin_dataout, GPIO_OUT);
+	uint8_t pins_mask = (1 << pin_ctrl) | (1 << pin_dataout) | (1 << pin_clock);
 
-	if (fd_ctrl < 0 || fd_clock < 0 || fd_datain < 0 || fd_dataout < 0)
-	{
-		DeInitPins();
-		return E2ERR_OPENFAILED;
-	}
+	qDebug() << "MpsseInterface::InitPins mask=" << pins_mask
+			<< " Ctrl=" << pin_ctrl
+			<< ", Clock=" << pin_clock
+			<< ", DataIn=" << pin_datain << ", DataOut=" << pin_dataout;
 
-#endif
-	return OK;
+	result = ctx.set_bitmode(pins_mask, BITMODE_MPSSE);
+	ctx.flush(ctx.Input|ctx.Output);
+	return result;
 }
 
 void MpsseInterface::DeInitPins()
 {
-#ifdef Q_OS_LINUX
-	//gpio_close(pin_ctrl, fd_ctrl);
-	//gpio_close(pin_clock, fd_clock);
-	//gpio_close(pin_datain, fd_datain);
-	//gpio_close(pin_dataout, fd_dataout);
-	fd_ctrl = fd_clock = fd_datain = fd_dataout = -1;
-#endif
 }
 
-int MpsseInterface::Open(int com_no)
+int MpsseInterface::Open(int port)
 {
-	qDebug() << "MpsseInterface::Open(" << com_no << ") IN";
+	qDebug() << "MpsseInterface::Open(" << port << ") IN";
 
 	int ret_val = OK;
 
-	if (GetInstalled() != com_no)
+	if (GetInstalled() != port)
 	{
-		if ((ret_val = InitPins()) == OK)
+		int result;
+		result = ctx.set_interface(INTERFACE_A);
+		Q_ASSERT(result != 0);
+		result = ctx.open(usb_vid, usb_pid);
+		if (result == 0)
 		{
-			Install(com_no);
+			ctx.reset();
+			//ctx.flush();
+			ctx.set_read_chunk_size(64);
+			ctx.set_write_chunk_size(64);
+			//ctx.set_event_char();
+			//ctx.set_error_char();
+			//ctx.set_usb_read_timeout(0);
+			//ctx.set_usb_write_timeout(5000);
+			ctx.set_latency(1);
+			ctx.set_bitmode(0, BITMODE_RESET);
+			result = InitPins();
+			Q_ASSERT(result != 0);
+			Install(port);
+		}
+		else
+		{
+			qDebug() << ctx.error_string();
+			ret_val = result;
 		}
 	}
 
@@ -157,6 +161,7 @@ void MpsseInterface::Close()
 	{
 		SetPower(false);
 		DeInitPins();
+		ctx.close();
 		DeInstall();
 	}
 

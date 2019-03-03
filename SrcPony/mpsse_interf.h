@@ -28,6 +28,7 @@
 #define _MPSSE_INTERFACE_H
 
 #include "businter.h"
+#include "ftdi.hpp"
 
 class MpsseInterface : public BusInterface
 {
@@ -54,12 +55,17 @@ class MpsseInterface : public BusInterface
 
 	void List();
 
+	const int usb_vid = 0x0403;
+	const int usb_pid = 0xcff8;
+
   protected:
 	//      int GetPresence() const;
 
   private:
 	int InitPins();
 	void DeInitPins();
+
+	Ftdi::Context ctx;
 
 	int pin_ctrl;
 	int pin_datain;
