@@ -272,6 +272,16 @@ class E2Profile
 	static void SetGpioPinDataIn(int pin);
 	static void SetGpioPinDataOut(int pin);
 
+	static int GetMpssePinCtrl();
+	static int GetMpssePinClock();
+	static int GetMpssePinDataIn();
+	static int GetMpssePinDataOut();
+
+	static void SetMpssePinCtrl(int pin);
+	static void SetMpssePinClock(int pin);
+	static void SetMpssePinDataIn(int pin);
+	static void SetMpssePinDataOut(int pin);
+
 	static bool GetEditBufferEnabled();
 	static void SetEditBufferEnabled(bool enable);
 

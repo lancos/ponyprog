@@ -2305,3 +2305,100 @@ void E2Profile::SetEditBufferEnabled(bool enable)
 {
 	s->setValue("Editor/ReadOnlyMode", !enable);
 }
+
+#undef DEF_GPIO_CTRL
+#undef DEF_GPIO_DATAIN
+#undef DEF_GPIO_DATAOUT
+#undef DEF_GPIO_CLOCK
+
+#define DEF_GPIO_CTRL                   1  //Rst pin 16
+#define DEF_GPIO_DATAIN                 2  //Miso pin 13
+#define DEF_GPIO_DATAOUT                3  //Mosi pin 11
+#define DEF_GPIO_CLOCK                  4  //Clock pin 18
+
+int E2Profile::GetMpssePinCtrl()
+{
+	QString sp;
+	int rval = DEF_GPIO_CTRL;               //Default pin number
+
+	sp = s->value("MpssePinCtrl", "").toString();
+
+	if (sp.length())
+	{
+		rval = sp.toInt();
+	}
+
+	return rval;
+}
+
+
+void E2Profile::SetMpssePinCtrl(int pin)
+{
+	s->setValue("MpssePinCtrl", QString::number(pin));
+}
+
+
+int E2Profile::GetMpssePinClock()
+{
+	QString sp;
+	int rval = DEF_GPIO_CLOCK;              //Default pin number
+
+	sp = s->value("MpssePinClock").toString();
+
+	if (sp.length())
+	{
+		rval = sp.toInt();
+	}
+
+	return rval;
+}
+
+
+void E2Profile::SetMpssePinClock(int pin)
+{
+	s->setValue("MpssePinClock", QString::number(pin));
+}
+
+
+int E2Profile::GetMpssePinDataIn()
+{
+	QString sp;
+	int rval = DEF_GPIO_DATAIN;             //Default pin number
+
+	sp = s->value("MpssePinDataIn").toString();
+
+	if (sp.length())
+	{
+		rval = sp.toInt();
+	}
+
+	return rval;
+}
+
+
+void E2Profile::SetMpssePinDataIn(int pin)
+{
+	s->setValue("MpssePinDataIn", QString::number(pin));
+}
+
+
+int E2Profile::GetMpssePinDataOut()
+{
+	QString sp;
+	int rval = DEF_GPIO_DATAOUT;    //Default pin number
+
+	sp = s->value("MpssePinDataOut").toString();
+
+	if (sp.length())
+	{
+		rval = sp.toInt();
+	}
+
+	return rval;
+}
+
+
+void E2Profile::SetMpssePinDataOut(int pin)
+{
+	s->setValue("MpssePinDataOut", QString::number(pin));
+}
