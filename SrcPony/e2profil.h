@@ -282,6 +282,9 @@ class E2Profile
 	static void SetMpssePinDataIn(int pin);
 	static void SetMpssePinDataOut(int pin);
 
+	static QString GetMpsseInterfacePort();
+	static void SetMpsseInterfacePort(const QString &intname);
+
 	static bool GetEditBufferEnabled();
 	static void SetEditBufferEnabled(bool enable);
 

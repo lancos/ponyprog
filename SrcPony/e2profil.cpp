@@ -2331,7 +2331,6 @@ int E2Profile::GetMpssePinCtrl()
 	return rval;
 }
 
-
 void E2Profile::SetMpssePinCtrl(int pin)
 {
 	s->setValue("MpssePinCtrl", QString::number(pin));
@@ -2352,7 +2351,6 @@ int E2Profile::GetMpssePinClock()
 
 	return rval;
 }
-
 
 void E2Profile::SetMpssePinClock(int pin)
 {
@@ -2375,7 +2373,6 @@ int E2Profile::GetMpssePinDataIn()
 	return rval;
 }
 
-
 void E2Profile::SetMpssePinDataIn(int pin)
 {
 	s->setValue("MpssePinDataIn", QString::number(pin));
@@ -2397,8 +2394,25 @@ int E2Profile::GetMpssePinDataOut()
 	return rval;
 }
 
-
 void E2Profile::SetMpssePinDataOut(int pin)
 {
 	s->setValue("MpssePinDataOut", QString::number(pin));
+}
+
+QString E2Profile::GetMpsseInterfacePort()
+{
+	QString sp = s->value("MpsseInterfacePort", "A").toString();
+
+	if (sp.length() == 0)
+	{
+		sp = "A";
+	}
+
+	return sp;
+}
+
+void E2Profile::SetMpsseInterfacePort(const QString &intname)
+{
+	if (intname.length())
+		s->setValue("MpsseInterfacePort", intname);
 }

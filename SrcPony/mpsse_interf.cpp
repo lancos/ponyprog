@@ -122,7 +122,16 @@ int MpsseInterface::Open(int port)
 	if (GetInstalled() != port)
 	{
 		int result;
-		result = ctx.set_interface(INTERFACE_A);
+		QString qs = E2Profile::GetMpsseInterfacePort();
+
+		if (QString::compare(qs, "A", Qt::CaseInsensitive))
+			result = ctx.set_interface(INTERFACE_A);
+		else if (QString::compare(qs, "B", Qt::CaseInsensitive))
+			result = ctx.set_interface(INTERFACE_B);
+		else if (QString::compare(qs, "C", Qt::CaseInsensitive))
+			result = ctx.set_interface(INTERFACE_C);
+		else
+			result = ctx.set_interface(INTERFACE_D);
 		Q_ASSERT(result != 0);
 		result = ctx.open(usb_vid, usb_pid);
 		if (result == 0)
