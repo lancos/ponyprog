@@ -113,6 +113,36 @@ void MpsseInterface::DeInitPins()
 {
 }
 
+int MpsseInterface::SetFrequency(uint32_t freq)
+{
+	int32_t divisor;
+	uint8_t buf[3];
+
+	Q_ASSERT(freq > 0);
+
+	divisor = (6000000 / freq) - 1;
+	if (divisor < 0)
+	{
+		qDebug() << "Frequency high " << freq;
+		divisor = 0;
+	}
+
+	if (divisor > 65535)
+	{
+		qDebug() << "Frequency low " << freq;
+		divisor = 65535;
+	}
+
+	qDebug() <<  "Frequency " << (6000000/(divisor+1)) << ", Divisor " << divisor;
+
+	buf[0] = TCK_DIVISOR;
+	buf[1] = (uint8_t)divisor;
+	buf[2] = (uint8_t)(divisor >> 8);
+
+	return ctx.write(buf, sizeof(buf));
+}
+
+
 int MpsseInterface::Open(int port)
 {
 	qDebug() << "MpsseInterface::Open(" << port << ") IN";
@@ -123,17 +153,18 @@ int MpsseInterface::Open(int port)
 	{
 		int result;
 		QString qs = E2Profile::GetMpsseInterfacePort();
+		ftdi_interface interf = INTERFACE_A;
 
-		if (QString::compare(qs, "A", Qt::CaseInsensitive))
-			result = ctx.set_interface(INTERFACE_A);
-		else if (QString::compare(qs, "B", Qt::CaseInsensitive))
-			result = ctx.set_interface(INTERFACE_B);
+		if (QString::compare(qs, "B", Qt::CaseInsensitive))
+			interf = INTERFACE_B;
 		else if (QString::compare(qs, "C", Qt::CaseInsensitive))
-			result = ctx.set_interface(INTERFACE_C);
-		else
-			result = ctx.set_interface(INTERFACE_D);
-		Q_ASSERT(result != 0);
-		result = ctx.open(usb_vid, usb_pid);
+			interf = INTERFACE_C;
+		else if (QString::compare(qs, "D", Qt::CaseInsensitive))
+			interf = INTERFACE_D;
+
+		result = ctx.set_interface(interf);
+		if (result == 0)
+			result = ctx.open(usb_vid, usb_pid);
 		if (result == 0)
 		{
 			ctx.reset();
@@ -152,8 +183,8 @@ int MpsseInterface::Open(int port)
 		}
 		else
 		{
-			qDebug() << ctx.error_string();
-			ret_val = result;
+			qWarning() << "MpsseInterface::Open() " << ctx.error_string();
+			ret_val = E2ERR_OPENFAILED;
 		}
 	}
 

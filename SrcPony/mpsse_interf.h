@@ -65,6 +65,8 @@ class MpsseInterface : public BusInterface
 	int InitPins();
 	void DeInitPins();
 
+	int SetFrequency(uint32_t freq);
+
 	Ftdi::Context ctx;
 
 	int pin_ctrl;
