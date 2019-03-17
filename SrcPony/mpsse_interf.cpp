@@ -47,7 +47,12 @@ MpsseInterface::MpsseInterface()
 	MpsseInterface::List();
 	//DeInstall();
 	//old_portno = GetInstalled();
-	fd_ctrl = fd_clock = fd_datain = fd_dataout = -1;
+	last_data = read_data = 0;
+
+	pin_ctrl = (1 << 9);
+	pin_datain = 4;
+	pin_dataout = 2;
+	pin_clock = 1;
 }
 
 MpsseInterface::~MpsseInterface()
@@ -92,12 +97,14 @@ int MpsseInterface::InitPins()
 {
 	int result = 0;
 
-	pin_ctrl = E2Profile::GetMpssePinCtrl();
-	pin_datain = E2Profile::GetMpssePinDataIn();
-	pin_dataout = E2Profile::GetMpssePinDataOut();
-	pin_clock = E2Profile::GetMpssePinClock();
+	pin_ctrl = 1 << E2Profile::GetMpssePinCtrl();
+	pin_datain = 1 << E2Profile::GetMpssePinDataIn();
+	pin_dataout = 1 << E2Profile::GetMpssePinDataOut();
+	pin_clock = 1 << E2Profile::GetMpssePinClock();
 
-	uint8_t pins_mask = (1 << pin_ctrl) | (1 << pin_dataout) | (1 << pin_clock);
+	//00011011 --> 0x1B
+	uint8_t pins_mask = pin_ctrl | pin_dataout | pin_clock;
+	pins_mask |= (1 << 4);
 
 	qDebug() << "MpsseInterface::InitPins mask=" << pins_mask
 			<< " Ctrl=" << pin_ctrl
@@ -178,7 +185,7 @@ int MpsseInterface::Open(int port)
 			ctx.set_latency(1);
 			ctx.set_bitmode(0, BITMODE_RESET);
 			result = InitPins();
-			Q_ASSERT(result != 0);
+			Q_ASSERT(result == 0);
 			Install(port);
 		}
 		else
@@ -208,100 +215,130 @@ void MpsseInterface::Close()
 	qDebug() << "MpsseInterface::Close() OUT";
 }
 
-// Per l'AVR e` la linea di RESET
+int MpsseInterface::SendPins()
+{
+	int ret;
+	uint8_t buf[6];
+	uint16_t pin_directions = pin_clock | pin_ctrl | pin_dataout;
+
+	//00011011 --> 0x1B
+	pin_directions |= (1 << 4) | (1 << 11);
+
+
+	buf[0] = SET_BITS_LOW;
+	buf[1] = last_data & 0xff;
+	buf[2] = pin_directions & 0xff;
+	buf[3] = SET_BITS_HIGH;
+	buf[4] = (last_data >> 8) & 0xff;
+	buf[5] = (pin_directions >> 8) & 0xff;
+	ret = ctx.write(buf, sizeof(buf));
+
+	if (ret == sizeof(buf))
+	{
+		return OK;
+	}
+	else
+	{
+		qWarning("MpsseInterface::SendPins() write failed (%s)\n", ctx.error_string());
+		return -1;
+	}
+}
+
+int MpsseInterface::GetPins()
+{
+	int ret;
+	uint8_t buf[2];
+	uint8_t cmd[] = {GET_BITS_LOW, GET_BITS_HIGH, SEND_IMMEDIATE};
+	ret = ctx.write(cmd, sizeof(cmd));
+
+	if (ret == sizeof(cmd))
+	{
+		do {
+			ret = ctx.read(buf, sizeof(buf));
+		} while (ret == 0);
+		if (ret < 0)
+		{
+			qWarning("MpsseInterface::GetPins() write failed (%s)\n", ctx.error_string());
+			return -1;
+		}
+		else
+		{
+			read_data = buf[0] | ((int)buf[1] << 8);
+			qWarning("MpsseInterface::GetPins()=%u\n", read_data);
+			return OK;
+		}
+	}
+	else
+	{
+		qWarning("MpsseInterface::GetPins() write failed (%s)\n", ctx.error_string());
+		return -1;
+	}
+}
+
+void MpsseInterface::OutDataMask(int mask, int val)
+{
+	if (val == 0)
+	{
+		last_data &= ~mask;
+	}
+	else if (val == 1)
+	{
+		last_data |= mask;
+	}
+	else
+	{
+		last_data ^= mask;
+	}
+}
+
 void MpsseInterface::SetControlLine(int res)
 {
-	qDebug() << "MpsseInterface::SetControlLine(" << res << ") *** Inst=" <<  IsInstalled() << ", fd=" << fd_ctrl;
+	qDebug() << "MpsseInterface::SetControlLine(" << res << ") *** Inst=" <<  IsInstalled();
 
 	if (IsInstalled())
 	{
 		if (cmdWin->GetPolarity() & RESETINV)
-		{
 			res = !res;
-		}
 
-#ifdef Q_OS_LINUX
-		int ret;
-
-		if (res)
+		OutDataMask(pin_ctrl, (res != 0));
+		if (SendPins() != OK)
 		{
-			ret = write(fd_ctrl, "1", 2);
+			qWarning("MpsseInterface::SetControlLine() write failed\n");
 		}
-		else
-		{
-			ret = write(fd_ctrl, "0", 2);
-		}
-
-		if (ret != 2)
-		{
-			qWarning("MpsseInterface::SetControlLine() write failed (%d)\n", ret);
-			exit(1);
-		}
-#endif
 	}
 }
 
 void MpsseInterface::SetDataOut(int sda)
 {
-	qDebug() << "MpsseInterface::SetDataOut(" << sda << ") *** Inst=" << IsInstalled() << ", fd=" << fd_dataout;
+	qDebug() << "MpsseInterface::SetDataOut(" << sda << ") *** Inst=" << IsInstalled();
 
 	if (IsInstalled())
 	{
 		if ((cmdWin->GetPolarity() & DOUTINV))
-		{
 			sda = !sda;
-		}
 
-#ifdef Q_OS_LINUX
-		int ret;
-
-		if (sda)
+		OutDataMask(pin_dataout, (sda != 0));
+		if (SendPins() != OK)
 		{
-			ret = write(fd_dataout, "1", 2);
+			qWarning("MpsseInterface::SetDataOut() write failed\n");
 		}
-		else
-		{
-			ret = write(fd_dataout, "0", 2);
-		}
-
-		if (ret != 2)
-		{
-			qWarning("MpsseInterface::SetDataOut() write failed (%d)\n", ret);
-			exit(1);
-		}
-#endif
 	}
 }
 
 void MpsseInterface::SetClock(int scl)
 {
-	qDebug() << "MpsseInterface::SetClock(" << scl << ") *** Inst=" << IsInstalled() << ", fd=" << fd_clock;
+	qDebug() << "MpsseInterface::SetClock(" << scl << ") *** Inst=" << IsInstalled();
 
 	if (IsInstalled())
 	{
 		if ((cmdWin->GetPolarity() & CLOCKINV))
-		{
 			scl = !scl;
-		}
 
-#ifdef Q_OS_LINUX
-		int ret;
-
-		if (scl)
+		OutDataMask(pin_clock, (scl != 0));
+		if (SendPins() != OK)
 		{
-			ret = write(fd_clock, "1", 2);
+			qWarning("MpsseInterface::SetClock() write failed\n");
 		}
-		else
-		{
-			ret = write(fd_clock, "0", 2);
-		}
-
-		if (ret != 2)
-		{
-			qWarning("MpsseInterface::SetClock() write failed (%d)\n", ret);
-			exit(1);
-		}
-#endif
 	}
 }
 
@@ -311,8 +348,20 @@ void MpsseInterface::SetClockData()
 
 	if (IsInstalled())
 	{
-		SetClock(1);
-		SetDataOut(1);
+		int scl = 1, sda = 1;
+
+		if ((cmdWin->GetPolarity() & CLOCKINV))
+			scl = !scl;
+
+		if ((cmdWin->GetPolarity() & DOUTINV))
+			sda = !sda;
+
+		OutDataMask(pin_clock, scl);
+		OutDataMask(pin_dataout, sda);
+		if (SendPins() != OK)
+		{
+			qWarning("MpsseInterface::SetClockData() write failed\n");
+		}
 	}
 }
 
@@ -323,8 +372,20 @@ void MpsseInterface::ClearClockData()
 
 	if (IsInstalled())
 	{
-		SetClock(0);
-		SetDataOut(0);
+		int scl = 0, sda = 0;
+
+		if ((cmdWin->GetPolarity() & CLOCKINV))
+			scl = !scl;
+
+		if ((cmdWin->GetPolarity() & DOUTINV))
+			sda = !sda;
+
+		OutDataMask(pin_clock, scl);
+		OutDataMask(pin_dataout, sda);
+		if (SendPins() != OK)
+		{
+			qWarning("MpsseInterface::SetClockData() write failed\n");
+		}
 	}
 }
 
@@ -332,30 +393,26 @@ int MpsseInterface::GetDataIn()
 {
 	if (IsInstalled())
 	{
-		unsigned int val = 0;
-#ifdef Q_OS_LINUX
-		int ret;
-		char ch;
+		unsigned int val;
 
-		lseek(fd_datain, 0L, SEEK_SET);
-		ret = read(fd_datain, &ch, 1);
-		val = (ch == '0') ? 0 : 1;
-
-		if (ret < 1)
+		if (GetPins() != OK)
 		{
-			qWarning("MpsseInterface::GetDataIn() read failed (%d)\n", ret);
-			exit(1);
-		}
-#endif
-		qDebug() << "MpsseInterface::GetDataIn()=" << val << ", fd=" << fd_datain;
-
-		if (cmdWin->GetPolarity() & DININV)
-		{
-			return !val;
+			qWarning("MpsseInterface::SetDataIn() read failed\n");
+			return -1;
 		}
 		else
 		{
-			return val;
+			val = (read_data & pin_datain) ? 1 : 0;
+			qDebug() << "MpsseInterface::GetDataIn()=" << val;
+
+			if (cmdWin->GetPolarity() & DININV)
+			{
+				return !val;
+			}
+			else
+			{
+				return val;
+			}
 		}
 	}
 	else
