@@ -35,7 +35,6 @@
 class e2CmdWindow;
 
 
-//======================>>> infoModalDialog::infoModalDialog <<<==================
 e24xx_infoModalDialog::e24xx_infoModalDialog(QWidget *bw, int rlv, uint16_t crc, long size, const QString title) :
 	QDialog(bw)
 {
@@ -87,7 +86,6 @@ e24xx_infoModalDialog::e24xx_infoModalDialog(QWidget *bw, int rlv, uint16_t crc,
 }
 
 
-//===================>>> infoModalDialog::~infoModalDialog <<<====================
 e24xx_infoModalDialog::~e24xx_infoModalDialog()
 {
 	qDebug() << "infoModalDialog::~infoModalDialog()";
@@ -100,7 +98,6 @@ void e24xx_infoModalDialog::onOk()
 }
 
 
-//======================>>> infoModalDialog::infoModalDialog <<<==================
 other_infoModalDialog::other_infoModalDialog(QWidget *bw, long fsize, long esize, uint16_t crc, const QString title) :
 	QDialog(bw)
 {
@@ -141,7 +138,6 @@ other_infoModalDialog::other_infoModalDialog(QWidget *bw, long fsize, long esize
 }
 
 
-//===================>>> infoModalDialog::~infoModalDialog <<<====================
 other_infoModalDialog::~other_infoModalDialog()
 {
 	qDebug() << "infoModalDialog::~infoModalDialog()";

@@ -31,7 +31,6 @@
 #include "sernumdlg.h"
 
 
-//=========================>>> SerNumDialog::SerNumDialog <<<====================
 SerNumDialog::SerNumDialog(QWidget *bw, const QString title) :
 	QDialog(bw)
 {
@@ -92,7 +91,6 @@ SerNumDialog::SerNumDialog(QWidget *bw, const QString title) :
 	qDebug() << "SerNumDialog::SerNumDialog()";
 }
 
-//======================>>> SerNumDialog::~SerNumDialog <<<======================
 SerNumDialog::~SerNumDialog()
 {
 	qDebug() << "SerNumDialog::~SerNumDialog()";
@@ -188,7 +186,6 @@ void SerNumDialog::onOk()
 
 
 
-//=========================>>> OscCalibDialog::OscCalibDialog <<<====================
 OscCalibDialog::OscCalibDialog(QWidget *bw, e2AppWinInfo *aw, const QString title) :
 	QDialog(bw)
 {
@@ -239,7 +236,6 @@ OscCalibDialog::OscCalibDialog(QWidget *bw, e2AppWinInfo *aw, const QString titl
 }
 
 
-//======================>>> OscCalibDialog::~OscCalibDialog <<<======================
 OscCalibDialog::~OscCalibDialog()
 {
 	qDebug() << "OscCalibDialog::~OscCalibDialog()";

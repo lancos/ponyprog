@@ -49,14 +49,12 @@
 
 #include "e2awinfo.h"
 
-//======================>>> IntelFileBuf::IntelFileBuf <<<=======================
 IntelFileBuf::IntelFileBuf(e2AppWinInfo *wininfo)
 	: FileBuf(wininfo)
 {
 	file_type = INTEL;
 }
 
-//======================>>> IntelFileBuf::~IntelFileBuf <<<=======================
 IntelFileBuf::~IntelFileBuf()
 {
 }
@@ -172,7 +170,6 @@ int IntelFileBuf::WriteAddressRecord(QFile &fh, long curaddr, bool linear_addres
 
 #define min(a,b)        ( (a < b) ? a : b )
 
-//======================>>> IntelFileBuf::Save <<<=======================
 int IntelFileBuf::Save(int savetype, long relocation_offset)
 {
 	QFile fh(FileBuf::GetFileName());
@@ -261,7 +258,6 @@ int IntelFileBuf::Save(int savetype, long relocation_offset)
 }
 
 
-//======================>>> IntelFileBuf::Load <<<=======================
 int IntelFileBuf::Load(int loadtype, long relocation_offset)
 {
 	int rval = OK;

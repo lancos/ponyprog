@@ -29,13 +29,11 @@
 #include "errcode.h"
 #include "eeptypes.h"
 
-//=====>>> Costruttore <<<======
 At25xxx::At25xxx(e2AppWinInfo *wininfo, BusIO *busp)
 	:       At250xx(wininfo, busp)
 {
 }
 
-//--- Distruttore
 At25xxx::~At25xxx()
 {
 }

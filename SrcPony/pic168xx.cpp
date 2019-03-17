@@ -34,13 +34,11 @@
 #include "e2cmdw.h"
 #include "e2awinfo.h"
 
-//=====>>> Costruttore <<<======
 Pic168xx::Pic168xx(e2AppWinInfo *wininfo, BusIO *busp)
 	:       Pic16xx(wininfo, busp)
 {
 }
 
-//--- Distruttore
 Pic168xx::~Pic168xx()
 {
 }

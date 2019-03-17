@@ -32,7 +32,6 @@
 
 #include <QDebug>
 
-//=====>>> Costruttore <<<======
 X2444::X2444(e2AppWinInfo *wininfo, BusIO *busp)
 	:       Device(wininfo, busp, 2)
 {

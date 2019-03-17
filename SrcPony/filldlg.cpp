@@ -34,7 +34,6 @@
 
 class e2CmdWindow;
 
-//=========================>>> FillDialog::FillDialog <<<====================
 FillDialog::FillDialog(QWidget *bw, long &cfrom, long &cto, int &cval, long max_addr, const QString title) :
 	QDialog(bw)
 {
@@ -83,7 +82,6 @@ FillDialog::FillDialog(QWidget *bw, long &cfrom, long &cto, int &cval, long max_
 }
 
 
-//======================>>> FillDialog::~FillDialog <<<======================
 FillDialog::~FillDialog()
 {
 	qDebug() << "FillDialog::~FillDialog()";

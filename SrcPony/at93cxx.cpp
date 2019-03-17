@@ -34,14 +34,12 @@
 
 #define BANK_SIZE       2               //16 bit organization
 
-//=====>>> Costruttore <<<======
 At93cxx::At93cxx(e2AppWinInfo *wininfo, BusIO *busp)
 	:       Device(wininfo, busp, BANK_SIZE)
 {
 	qDebug() << "At93cxx::At93cxx()";
 }
 
-//--- Distruttore
 At93cxx::~At93cxx()
 {
 	qDebug() << "At93cxx::~At93cxx()";

@@ -33,7 +33,6 @@
 #include "eeptypes.h"
 
 
-//=====>>> Costruttore <<<======
 E24xx5::E24xx5(e2AppWinInfo *wininfo, BusIO *busp)
 	:       E24xx(wininfo, busp, 128)
 {
@@ -45,7 +44,6 @@ E24xx5::E24xx5(e2AppWinInfo *wininfo, BusIO *busp)
 }
 
 
-//--- Distruttore
 E24xx5::~E24xx5()
 {
 }

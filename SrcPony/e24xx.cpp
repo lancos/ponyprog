@@ -36,7 +36,6 @@
 
 #include <QDebug>
 
-//=====>>> Costruttore <<<======
 E24xx::E24xx(e2AppWinInfo *wininfo, BusIO *busp, int max_no_of_bank, int def_banksize)
 	:       Device(wininfo, busp, def_banksize),
 			max_bank(max_no_of_bank),
@@ -58,14 +57,12 @@ E24xx::E24xx(e2AppWinInfo *wininfo, BusIO *busp, int max_no_of_bank, int def_ban
 	***/
 }
 
-//--- Distruttore
 E24xx::~E24xx()
 {
 }
 
 //Determina a quali indirizzi I2C si mappa, e
 // se probe_size == 1 anche la dimensione (numero di banchi)
-//---
 int E24xx::Probe(int probe_size)
 {
 	int addr, error, k;
@@ -355,7 +352,6 @@ int E24xx::bank_in(uint8_t *copy_buf, int bank, long size, long idx)
 
 #define CMP_LEN 16
 
-//====================>>> E24xx::BankRollOverDetect <<<====================
 int E24xx::BankRollOverDetect(int force)
 {
 	int rlv = 0;

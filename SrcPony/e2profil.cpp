@@ -41,7 +41,6 @@
 //QSettings *E2Profile::s = new QSettings("ponyprog.ini", QSettings::IniFormat);
 QSettings *E2Profile::s = new QSettings(APP_NAME);
 
-//=====>>> Costruttore <<<======
 #if 0
 E2Profile::E2Profile(const QString &nm)  :
 	s(0)

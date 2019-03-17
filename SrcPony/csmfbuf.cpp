@@ -34,7 +34,6 @@
 #include "errcode.h"
 
 
-//======================>>> csmFileBuf::csmFileBuf <<<=======================
 csmFileBuf::csmFileBuf(e2AppWinInfo *wininfo)
 	: FileBuf(wininfo)
 {
@@ -43,7 +42,6 @@ csmFileBuf::csmFileBuf(e2AppWinInfo *wininfo)
 
 #define MAXLINE 1023
 
-//======================>>> csmFileBuf::Load <<<=======================
 int csmFileBuf::Load(int loadtype, long relocation_offfset)
 {
 	extern int GetE2PSubType(unsigned long x);
@@ -236,7 +234,6 @@ static const char header[] =
 	"PHONE	NUMBER	=	=\n"
 	"CUSTOMER	COMPLAINT	=	=";
 
-//======================>>> csmFileBuf::Save <<<=======================
 int csmFileBuf::Save(int savetype, long relocation_offfset)
 {
 	int rval = 0;

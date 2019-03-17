@@ -30,7 +30,6 @@
 #include <QDebug>
 
 
-//=========================>>> blockDialog::blockDialog <<<====================
 blockDialog::blockDialog(e2CmdWindow *bw, e2AppWinInfo *p, bool readonly, const QString &msg) :
 	QDialog(bw)
 {
@@ -82,7 +81,6 @@ blockDialog::blockDialog(e2CmdWindow *bw, e2AppWinInfo *p, bool readonly, const 
 }
 
 
-//======================>>> blockDialog::~blockDialog <<<======================
 blockDialog::~blockDialog()
 {
 	qDebug() << "blockDialog::~blockDialog()";

@@ -38,7 +38,6 @@
 
 static char const *id_string = "E2P!Lanc";
 
-//======================>>> e2pFileBuf::e2pFileBuf <<<=======================
 e2pFileBuf::e2pFileBuf(e2AppWinInfo *wininfo)
 	: FileBuf(wininfo)
 {
@@ -46,7 +45,6 @@ e2pFileBuf::e2pFileBuf(e2AppWinInfo *wininfo)
 	Q_ASSERT_X(sizeof(struct e2pHeader) == 152, "e2pFileBuf", "Bad size for e2pHeader");
 }
 
-//======================>>> e2pFileBuf::~e2pFileBuf <<<=======================
 e2pFileBuf::~e2pFileBuf()
 {
 }
@@ -79,7 +77,6 @@ void e2pFileBuf::check_offsets()
 }
 ***/
 
-//======================>>> e2pFileBuf::Load <<<=======================
 int e2pFileBuf::Load(int loadtype, long relocation_offset)
 {
 	extern int GetE2PSubType(unsigned long x);
@@ -203,7 +200,6 @@ int e2pFileBuf::Load(int loadtype, long relocation_offset)
 	return rval;
 }
 
-//======================>>> e2pFileBuf::Save <<<=======================
 int e2pFileBuf::Save(int savetype, long relocation_offset)
 {
 	e2pHeader hdr;

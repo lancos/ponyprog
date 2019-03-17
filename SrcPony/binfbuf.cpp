@@ -32,21 +32,18 @@
 #include "errcode.h"
 
 
-//======================>>> binFileBuf::binFileBuf <<<=======================
 binFileBuf::binFileBuf(e2AppWinInfo *wininfo)
 	: FileBuf(wininfo)
 {
 	file_type = BIN;
 }
 
-//======================>>> binFileBuf::~binFileBuf <<<=======================
 binFileBuf::~binFileBuf()
 {
 }
 
 #include "crc.h"
 
-//======================>>> binFileBuf::Load <<<=======================
 int binFileBuf::Load(int loadtype, long relocation_offset)
 {
 	QFile fh(GetFileName());
@@ -120,7 +117,6 @@ int binFileBuf::Load(int loadtype, long relocation_offset)
 	return rval;
 }
 
-//======================>>> binFileBuf::Save <<<=======================
 int binFileBuf::Save(int savetype, long relocation_offset)
 {
 	QFile fh(FileBuf::GetFileName());

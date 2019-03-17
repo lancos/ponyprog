@@ -33,21 +33,18 @@
 
 #include <QDebug>
 
-//=====>>> Costruttore <<<======
 Sde2506::Sde2506(e2AppWinInfo *wininfo, BusIO *busp)
 	:       Device(wininfo, busp, 1 /*BANK_SIZE*/)
 {
 	qDebug() << "Sde2506::Sde2506()";
 }
 
-//--- Distruttore
 Sde2506::~Sde2506()
 {
 	qDebug() <<  "Sde2506::~Sde2506()";
 }
 
 // determina il numero di banchi (dimensione) dell'eeprom
-//---
 int Sde2506::Probe(int probe_size)
 {
 	qDebug() << "Sde2506::Probe(" << probe_size << ")";

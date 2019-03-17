@@ -35,14 +35,12 @@
 #include "e2awinfo.h"
 #include "e2cmdw.h"
 
-//=====>>> Costruttore <<<======
 At90sxx::At90sxx(e2AppWinInfo *wininfo, BusIO *busp)
 	:       Device(wininfo, busp, 1 /*BANK_SIZE*/)
 {
 	qDebug() << "At90sxx::At90sxx()";
 }
 
-//--- Distruttore
 At90sxx::~At90sxx()
 {
 	qDebug() << "At90sxx::~At90sxx()";
@@ -324,7 +322,6 @@ int At90sxx::QueryType(long &type)
 // device is locked, the probe don't work and returns the
 // error DEVICE_LOCKED.
 // If the device is missing return 0.
-//---
 int At90sxx::Probe(int probe_size)
 {
 	int rv;

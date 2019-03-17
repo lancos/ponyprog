@@ -34,13 +34,11 @@
 #include "e2awinfo.h"
 #include "errcode.h"
 
-//======================>>> FileBuf::FileBuf <<<=======================
 FileBuf::FileBuf(e2AppWinInfo *wininfo)
 {
 	SetAWInfo(wininfo);
 }
 
-//======================>>> FileBuf::~FileBuf <<<=======================
 FileBuf::~FileBuf()
 {
 }
@@ -83,13 +81,11 @@ int FileBuf::GetBlockSize() const
 	return awi->GetBlockSize();
 }
 
-//======================>>> FileBuf::SetNewFile <<<=======================
 void FileBuf::SetFileName(const QString &name)
 {
 	awi->SetFileName(name);
 }
 
-//======================>>> FileBuf::GetFileName <<<=======================
 QString FileBuf::GetFileName()
 {
 	return awi->GetFileName();
@@ -160,25 +156,21 @@ void FileBuf::SetCRC(uint16_t c)
 	awi->SetCRC(c);
 }
 
-//======================>>> FileBuf::GetEEpromType <<<=======================
 long FileBuf::GetEEpromType() const
 {
 	return awi->GetEEPId();
 }
 
-//======================>>> FileBuf::GetEEpromPriType <<<=======================
 int FileBuf::GetEEpromPriType() const
 {
 	return GetE2PPriType(awi->GetEEPId());
 }
 
-//======================>>> FileBuf::GetEEpromSubType <<<=======================
 int FileBuf::GetEEpromSubType() const
 {
 	return GetE2PSubType(awi->GetEEPId());
 }
 
-//======================>>> FileBuf::SetEEpromType <<<=======================
 void FileBuf::SetEEpromType(int pritype, int subtype)
 {
 	extern long BuildE2PType(int pritype, int subtype);
@@ -192,7 +184,6 @@ void FileBuf::SetEEpromType(unsigned long id)
 }
 
 
-//======================>>> FileBuf::GetFileSize <<<=======================
 long FileBuf::GetFileSize(QFile &fh)
 {
 	if (fh.exists())

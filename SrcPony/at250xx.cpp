@@ -31,19 +31,16 @@
 
 #include <QDebug>
 
-//=====>>> Costruttore <<<======
 At250xx::At250xx(e2AppWinInfo *wininfo, BusIO *busp)
 	:       Device(wininfo, busp, 1 /*BANK_SIZE*/)
 {
 }
 
-//--- Distruttore
 At250xx::~At250xx()
 {
 }
 
 // determina il numero di banchi (dimensione) dell'eeprom
-//---
 int At250xx::Probe(int probe_size)
 {
 	qDebug() << "At250xx::Probe("  << probe_size << ")";

@@ -33,21 +33,18 @@
 
 #include "e2cmdw.h"
 
-//=====>>> Costruttore <<<======
 Nvm3060::Nvm3060(e2AppWinInfo *wininfo, BusIO *busp)
 	:       Device(wininfo, busp, 1 /*BANK_SIZE*/)
 {
 	qDebug() << "Nvm3060::Nvm3060()";
 }
 
-//--- Distruttore
 Nvm3060::~Nvm3060()
 {
 	qDebug() <<  "Nvm3060::~Nvm3060()";
 }
 
 // determina il numero di banchi (dimensione) dell'eeprom
-//---
 int Nvm3060::Probe(int probe_size)
 {
 	qDebug() << "Nvm3060::Probe(" << probe_size << ")";

@@ -35,7 +35,6 @@
 
 
 
-//======================>>> progOptionDialog::progOptionDialog <<<==================
 progOptionDialog::progOptionDialog(QWidget *bw, long type, int &reload, int &reep, int &erase, int &flash, int &eeprom, int &lock, const QString title) :
 	QDialog(bw)
 {
@@ -64,7 +63,6 @@ progOptionDialog::progOptionDialog(QWidget *bw, long type, int &reload, int &ree
 	qDebug() << "progOptionDialog::progOptionDialog()";
 }
 
-//===================>>> progOptionDialog::~progOptionDialog <<<====================
 progOptionDialog::~progOptionDialog()
 {
 	qDebug() << "progOptionDialog::~progOptionDialog()";

@@ -35,14 +35,12 @@
 
 #define CONFIG_SIZE     ( 8 * sizeof(uint16_t) )
 
-//=====>>> Costruttore <<<======
 Pic125xx::Pic125xx(e2AppWinInfo *wininfo, BusIO *busp)
 	:       Device(wininfo, busp, 1 /*BANK_SIZE*/)
 {
 	config_word = 0xffff;
 }
 
-//--- Distruttore
 Pic125xx::~Pic125xx()
 {
 }

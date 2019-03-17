@@ -33,7 +33,6 @@
 
 #include <QDebug>
 
-//=====>>> Costruttore <<<======
 mE2401::mE2401(e2AppWinInfo *wininfo, BusIO *busp, int def_banksize)
 	:       Device(wininfo, busp, def_banksize),
 			timeout_loop(200),
@@ -44,7 +43,6 @@ mE2401::mE2401(e2AppWinInfo *wininfo, BusIO *busp, int def_banksize)
 
 //Determina a quali indirizzi I2C si mappa, e
 // se probe_size == 1 anche la dimensione (numero di banchi)
-//---
 int mE2401::Probe(int probe_size)
 {
 	int retval = 1;

@@ -36,7 +36,6 @@
 #include "errcode.h"
 #include "eeptypes.h"
 
-//=====>>> Costruttore <<<======
 E24xx2::E24xx2(e2AppWinInfo *wininfo, BusIO *busp)
 	:       E24xx(wininfo, busp),
 			SecurityReadCode(0xC0),

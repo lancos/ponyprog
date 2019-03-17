@@ -41,7 +41,6 @@
 //
 //=========================================================================//
 
-//======================>>> fuseModalDialog::fuseModalDialog <<<==================
 fuseModalDialog::fuseModalDialog(e2CmdWindow *bw, e2AppWinInfo *p, bool readonly, const QString &msg) :
 	QDialog(bw)
 {
@@ -76,7 +75,6 @@ fuseModalDialog::fuseModalDialog(e2CmdWindow *bw, e2AppWinInfo *p, bool readonly
 }
 
 
-//===================>>> fuseModalDialog::~fuseModalDialog <<<====================
 fuseModalDialog::~fuseModalDialog()
 {
 	qDebug() << "fuseModalDialog::~fuseModalDialog()";

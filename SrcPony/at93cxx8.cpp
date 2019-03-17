@@ -31,21 +31,18 @@
 
 #include <QDebug>
 
-//=====>>> Costruttore <<<======
 At93cxx8::At93cxx8(e2AppWinInfo *wininfo, BusIO *busp)
 	:       Device(wininfo, busp, 1 /*BANK_SIZE*/)
 {
 	qDebug() << "At93cxx8::At93cxx8()";
 }
 
-//--- Distruttore
 At93cxx8::~At93cxx8()
 {
 	qDebug() << "At93cxx8::~At93cxx8()";
 }
 
 // determina il numero di banchi (dimensione) dell'eeprom
-//---
 int At93cxx8::Probe(int probe_size)
 {
 	qDebug() << "At93cxx8::Probe()";

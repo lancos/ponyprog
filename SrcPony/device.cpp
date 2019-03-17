@@ -28,7 +28,6 @@
 #include "device.h"             // Header file
 #include "e2awinfo.h"
 
-//=====>>> Costruttore <<<======
 Device::Device(e2AppWinInfo *wininfo, BusIO *busp, int b_size)
 	:       detected_type(0),
 			awi(wininfo),
@@ -43,7 +42,6 @@ Device::Device(e2AppWinInfo *wininfo, BusIO *busp, int b_size)
 	DefaultBankSize();
 }
 
-//--- Distruttore
 Device::~Device()
 {
 }

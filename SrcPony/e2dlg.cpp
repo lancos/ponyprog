@@ -38,7 +38,6 @@
 
 class e2CmdWindow;
 
-//=========================>>> e2Dialog::e2Dialog <<<====================
 e2Dialog::e2Dialog(QWidget *bw, const QString title)
 	: QDialog(bw),
 	  lpt_no(2),
@@ -76,7 +75,6 @@ e2Dialog::e2Dialog(QWidget *bw, const QString title)
 }
 
 
-//======================>>> e2Dialog::~e2Dialog <<<======================
 e2Dialog::~e2Dialog()
 {
 	qDebug() << "e2Dialog::~e2Dialog()";

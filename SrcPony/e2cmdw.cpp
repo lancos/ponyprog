@@ -76,7 +76,6 @@ e2CmdWindow *cmdWin;
 QVector<menuToGroup> deviceMenu;
 
 
-//==================>>> e2CmdWindow::About <<<=======================
 void e2CmdWindow::About()
 {
 	AboutModalDialog about(this, translate(STR_ABOUT) + " " APP_NAME);
@@ -86,7 +85,6 @@ void e2CmdWindow::About()
 	about.exec();
 }
 
-//====================>>> e2CmdWindow::e2CmdWindow <<<====================
 e2CmdWindow::e2CmdWindow(QWidget *parent) :
 	QMainWindow(parent),
 	e2App(),
@@ -288,7 +286,6 @@ e2CmdWindow::e2CmdWindow(QWidget *parent) :
 //{
 //}
 
-//====================>>> e2CmdWindow::~e2CmdWindow <<<====================
 e2CmdWindow::~e2CmdWindow()
 {
 	qDebug() << "e2CmdWindow::~e2CmdWindow()";
@@ -316,7 +313,6 @@ e2CmdWindow::~e2CmdWindow()
 
 
 #if 0
-//======================>>> e2CmdWindow::CloseAppWin <<<===========================
 int e2CmdWindow::CloseAppWin()
 {
 	if (!IsAppReady())
@@ -2370,7 +2366,6 @@ void e2CmdWindow::onByteSwap()
 HIDDEN int FileExist(const QString &name);
 HIDDEN bool CmpExtension(const QString &name, const QString &ext);
 
-//====================>>> e2CmdWindow::CmdSave <<<====================
 int e2CmdWindow::CmdSave(int type, const QString &fname, long relocation)
 {
 	int result = OK;
@@ -2412,7 +2407,6 @@ int e2CmdWindow::CmdSave(int type, const QString &fname, long relocation)
 	return result;
 }
 
-//====================>>> e2CmdWindow::CmdSaveAs <<<====================
 int e2CmdWindow::CmdSaveAs(int type, long relocation)
 {
 	int result = OK;
@@ -2449,7 +2443,6 @@ int e2CmdWindow::CmdSaveAs(int type, long relocation)
 	return result;
 }
 
-//====================>>> e2CmdWindow::CmdLastFile <<<====================
 int e2CmdWindow::CmdLastFile(int index)
 {
 	int result = OK;
@@ -2488,7 +2481,6 @@ int e2CmdWindow::CmdLastFile(int index)
 }
 
 
-//====================>>> e2CmdWindow::CmdReload <<<====================
 int e2CmdWindow::CmdReload()
 {
 	int result = OK;
@@ -2573,7 +2565,6 @@ int e2CmdWindow::CmdReload()
 	return result;
 }
 
-//====================>>> e2CmdWindow::CmdPrint <<<====================
 int e2CmdWindow::CmdPrint()
 {
 	if (awip->IsBufferValid())
@@ -2601,7 +2592,6 @@ int e2CmdWindow::PlaySoundMsg(bool val)
 	return OK;
 }
 
-//====================>>> e2CmdWindow::CmdHelp <<<====================
 int e2CmdWindow::CmdHelp()
 {
 	QString str;
@@ -2629,7 +2619,6 @@ int e2CmdWindow::CmdHelp()
 	return OK;
 }
 
-//====================>>> e2CmdWindow::CmdCalibration <<<====================
 int e2CmdWindow::CmdCalibration()
 {
 	QMessageBox msgBox(QMessageBox::Warning, QString(APP_NAME), translate(STR_BUSCALIBRA1) + QString(APP_NAME) + translate(STR_BUSCALIBRA2),
@@ -2666,7 +2655,6 @@ int e2CmdWindow::CmdCalibration()
 	return OK;
 }
 
-//====================>>> e2CmdWindow::CmdWrite <<<====================
 // int e2CmdWindow::CmdWrite(int type)
 // {
 // 	int res;
@@ -2677,7 +2665,6 @@ int e2CmdWindow::CmdCalibration()
 // }
 
 
-//====================>>> e2CmdWindow::CmdRead <<<====================
 int e2CmdWindow::CmdRead(int type)
 {
 	if (IsBufChanged() && awip->IsBufferValid() && verbose == verboseAll)
@@ -2781,7 +2768,6 @@ int e2CmdWindow::CmdRead(int type)
 }
 
 
-//====================>>> e2CmdWindow::CmdWrite <<<====================
 int e2CmdWindow::CmdWrite(int type, bool verify)
 {
 	int result = OK;
@@ -2949,7 +2935,6 @@ int e2CmdWindow::CmdWrite(int type, bool verify)
 	return result;
 }
 
-//====================>>> e2CmdWindow::CmdReadCalibration <<<====================
 int e2CmdWindow::CmdReadCalibration(int idx)
 {
 	ClearIgnoreFlag();
@@ -3070,7 +3055,6 @@ int e2CmdWindow::CmdReadCalibration(int idx)
 	return result;
 }
 
-//====================>>> e2CmdWindow::CmdErase <<<====================
 int e2CmdWindow::CmdErase(int type)
 {
 	ClearIgnoreFlag();
@@ -3142,7 +3126,6 @@ int e2CmdWindow::CmdErase(int type)
 	return result;
 }
 
-//====================>>> e2CmdWindow::CmdVerify <<<====================
 int e2CmdWindow::CmdVerify(int type)
 {
 	int result = OK;
@@ -3204,7 +3187,6 @@ int e2CmdWindow::CmdVerify(int type)
 	return result;
 }
 
-//====================>>> e2CmdWindow::CmdProgram <<<====================
 int e2CmdWindow::CmdProgram()
 {
 	int result = OK;
@@ -3466,7 +3448,6 @@ int e2CmdWindow::ScriptError(int line_number, int arg_index, const QString &s, c
 	return CMD_SCRIPTERROR;
 }
 
-//====================>>> e2CmdWindow::CmdRunScript <<<====================
 int e2CmdWindow::CmdRunScript(bool test_mode)
 {
 	int result = OK;
@@ -4414,7 +4395,6 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 	return result;
 }
 
-//====================>>> e2CmdWindow::CmdGetInfo <<<====================
 int e2CmdWindow::CmdGetInfo()
 {
 	long fsize, esize, tsize;
@@ -4491,7 +4471,6 @@ int e2CmdWindow::CmdReset()
 	return OK;
 }
 
-//====================>>> e2CmdWindow::CmdDoubleSize <<<====================
 int e2CmdWindow::CmdDoubleSize()
 {
 	if (!awip->IsBufferValid())
@@ -4524,7 +4503,6 @@ int e2CmdWindow::CmdDoubleSize()
 	return OK;
 }
 
-//====================>>> e2CmdWindow::CmdSetDeviceType <<<====================
 int e2CmdWindow::CmdSetDeviceType(int val)
 {
 	long new_type = CbxIdToType(val, 0);
@@ -4535,7 +4513,6 @@ int e2CmdWindow::CmdSetDeviceType(int val)
 	return CmdSelectDevice(new_type);
 }
 
-//====================>>> e2CmdWindow::CmdSetDeviceSubType <<<====================
 int e2CmdWindow::CmdSetDeviceSubType(int val)
 {
 	int v1 = cbxEEPType->currentIndex();
@@ -4546,7 +4523,6 @@ int e2CmdWindow::CmdSetDeviceSubType(int val)
 	return CmdSelectDevice(new_type);
 }
 
-//====================>>> e2CmdWindow::CmdOpen <<<====================
 int e2CmdWindow::CmdOpen(int type, const QString &fname, long relocation, int clear_buffer)
 {
 	int result = OK;
@@ -4587,7 +4563,6 @@ int e2CmdWindow::CmdOpen(int type, const QString &fname, long relocation, int cl
 	return result;
 }
 
-//====================>>> e2CmdWindow::CmdClearBuf <<<====================
 int e2CmdWindow::CmdClearBuf(int type)
 {
 	//awip->FillBuffer();
@@ -4601,7 +4576,6 @@ int e2CmdWindow::CmdClearBuf(int type)
 
 // EK 2017
 // TODO to check this
-//====================>>> e2CmdWindow::CmdFillBuf <<<====================
 int e2CmdWindow::CmdFillBuf()
 {
 	static long fromAddr = 0, toAddr = 0xFFFF;
@@ -4635,7 +4609,6 @@ int e2CmdWindow::CmdFillBuf()
 	return OK;
 }
 
-//====================>>> e2CmdWindow::SpecialBits <<<====================
 int e2CmdWindow::SpecialBits(bool readonly)
 {
 	//int rval;
@@ -4707,7 +4680,6 @@ int e2CmdWindow::SpecialBits(bool readonly)
 
 // EK 2017
 // TODO ???
-//====================>>> e2CmdWindow::ProgramOptions <<<====================
 int e2CmdWindow::ProgramOptions()
 {
 	//      int rval;
@@ -4743,7 +4715,6 @@ int e2CmdWindow::ProgramOptions()
 	return OK;
 }
 
-//==================>>> e2CmdWindow::SerialNumberOptions <<<=======================
 int e2CmdWindow::SerialNumberOptions()
 {
 	SerNumDialog dlg(this) ; //, loc, memtype, autoinc, fmt, size, val);
@@ -4752,7 +4723,6 @@ int e2CmdWindow::SerialNumberOptions()
 	return OK;
 }
 
-//==================>>> e2CmdWindow::OscCalibOption <<<=======================
 int e2CmdWindow::OscCalibOption()
 {
 	OscCalibDialog dlg(this, awip);
@@ -4762,7 +4732,6 @@ int e2CmdWindow::OscCalibOption()
 }
 
 
-//====================>>> e2CmdWindow::CmdReadSecurity <<<====================
 int e2CmdWindow::CmdReadSecurity(bool display_dialog)
 {
 	int result;
@@ -4782,7 +4751,6 @@ int e2CmdWindow::CmdReadSecurity(bool display_dialog)
 	return result;
 }
 
-//====================>>> e2CmdWindow::CmdWriteSecurity <<<====================
 int e2CmdWindow::CmdWriteSecurity()
 {
 	int result;
@@ -4811,7 +4779,6 @@ int e2CmdWindow::CmdWriteSecurity()
 	return result;
 }
 
-//====================>>> e2CmdWindow::CmdWriteLock <<<====================
 int e2CmdWindow::CmdWriteLock()
 {
 	int result = OK;
@@ -4924,7 +4891,6 @@ int e2CmdWindow::CmdWriteLock()
 	return result;
 }
 
-//====================>>> e2CmdWindow::CmdReadLock <<<====================
 int e2CmdWindow::CmdReadLock()
 {
 	int result = OK;
@@ -4993,7 +4959,6 @@ int e2CmdWindow::CmdReadLock()
 	return result;
 }
 
-//====================>>> e2CmdWindow::CmdReadSpecial <<<====================
 int e2CmdWindow::CmdReadSpecial()
 {
 	int result = OK;
@@ -5064,7 +5029,6 @@ int e2CmdWindow::CmdReadSpecial()
 }
 
 // TODO E2464
-//====================>>> e2CmdWindow::CmdWriteSpecial <<<====================
 int e2CmdWindow::CmdWriteSpecial()
 {
 	int result = OK;
@@ -5171,7 +5135,6 @@ int e2CmdWindow::CmdWriteSpecial()
 	return result;
 }
 
-//====================>>> e2CmdWindow::CmdByteSwap <<<====================
 int e2CmdWindow::CmdByteSwap()
 {
 	int result = OK;
@@ -5202,7 +5165,6 @@ int e2CmdWindow::CmdByteSwap()
 
 // EK 2017
 // TODO check this
-//====================>>> e2CmdWindow::CmdEditNote <<<====================
 int e2CmdWindow::CmdEditNote()
 {
 	QString str1 = awip->GetStringID();
@@ -5220,7 +5182,6 @@ int e2CmdWindow::CmdEditNote()
 	return OK;
 }
 
-//====================>>> e2CmdWindow::CmdSelectDevice <<<====================
 // EK 2017
 // new_type is the chip id
 int e2CmdWindow::CmdSelectDevice(long new_type, bool init)
@@ -5259,7 +5220,6 @@ int e2CmdWindow::CmdSelectDevice(long new_type, bool init)
 }
 
 /**
-//==================>>> e2CmdWindow::CmdRemoteMode <<<=======================
 void e2CmdWindow::CmdRemoteMode()
 {
         VerboseType old_verbose = verbose;
@@ -5278,7 +5238,6 @@ void e2CmdWindow::CmdRemoteMode()
 }
 **/
 
-//==================>>> e2CmdWindow::CmdSetSerialNumber <<<=======================
 int e2CmdWindow::CmdSetSerialNumber()
 {
 	long loc = 0;
@@ -5358,19 +5317,16 @@ int e2CmdWindow::CmdSetSerialNumber()
 	return OK;
 }
 
-//===================>>> e2CmdWindow::GetDevSize <<<=========================
 long e2CmdWindow::GetDevSize() const
 {
 	return awip->GetSize() == AUTOSIZE_ID ? 0 : awip->GetSize();
 }
 
-//===================>>> e2CmdWindow::IsBufChanged <<<=========================
 int e2CmdWindow::IsBufChanged() const
 {
 	return awip->IsBufChanged();
 }
 
-//==================>>> e2CmdWindow::UpdateStatusBar <<<=======================
 void e2CmdWindow::UpdateStatusBar()
 {
 	//int is_splitted = awip->GetSplittedInfo() > 0 && awip->GetSplittedInfo() != awip->GetSize();
@@ -5395,7 +5351,6 @@ void e2CmdWindow::UpdateStatusBar()
 
 
 /**
-//==================>>> e2CmdWindow::SetChipSubType <<<=======================
 void e2CmdWindow::SetChipSubType(int pritype, int subtype)
 {
         long type = BuildE2PType(pritype, subtype);
@@ -5437,7 +5392,6 @@ void e2CmdWindow::SetChipSubType(int pritype, int subtype)
 **/
 
 /**
-//==================>>> e2CmdWindow::UpdateChipType <<<=======================
 void e2CmdWindow::UpdateChipType(int pritype, int subtype)
 {
         if (pritype < 0)
@@ -5609,7 +5563,6 @@ void e2CmdWindow::UpdateMenues(menuToGroup &mnu, QAction &act)
 }
 
 
-//==================>>> e2CmdWindow::UpdateMenuType <<<=======================
 void e2CmdWindow::UpdateMenuType(long new_type/*, long old_type*/)
 {
 	if (!IsAppReady())
@@ -5795,7 +5748,6 @@ void e2CmdWindow::CbxMenuInit()
 	//      EditMenu[2].checked = 0;
 }
 
-//==================>>> e2CmdWindow::UpdateStrFromBuf <<<=======================
 void e2CmdWindow::UpdateStrFromBuf()
 {
 	QString s;
@@ -5815,7 +5767,6 @@ void e2CmdWindow::UpdateStrFromBuf()
 	}
 }
 
-//==================>>> e2CmdWindow::UpdateStrFromStr <<<=======================
 void e2CmdWindow::UpdateStrFromStr(const QString &s1, const QString &s2)
 {
 	if (s1.length())
@@ -5928,7 +5879,6 @@ HIDDEN bool CmpExtension(const QString &name, const QString &ext)
 	return false;
 }
 
-//====================>>> e2CmdWindow::OpenFile <<<====================
 int e2CmdWindow::OpenFile(const QString &file)
 {
 	QString fileName;
@@ -6058,7 +6008,6 @@ QString e2CmdWindow::convertFilterListToString(const QStringList &lst)
 
 
 
-//====================>>> e2CmdWindow::SaveFile <<<====================
 int e2CmdWindow::SaveFile(int force_select)
 {
 	int err = 0;
@@ -6516,7 +6465,6 @@ void e2CmdWindow::PostInit()
 // EK 2017
 // TODO to check this
 // TODO QPainter convert to QTextDocument ??
-//====================>>> e2CmdWindow::Print <<<====================
 void e2CmdWindow::Print()
 {
 	int no_line = (awip->GetSize() + awip->GetHexPerLine() - 1) / awip->GetHexPerLine();
@@ -6611,7 +6559,6 @@ void e2CmdWindow::ClearIgnoreFlag()
 }
 
 //Update the progress bar
-//=====================>>> e2App::SetProgress <<<==============================
 void e2CmdWindow::SetProgress(int progress)
 {
 	// EK 2017

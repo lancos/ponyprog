@@ -50,7 +50,6 @@
 
 // #include "e2awinfo.h"
 
-//======================>>> MotorolaSFileBuf::MotorolaSFileBuf <<<=======================
 MotorolaSFileBuf::MotorolaSFileBuf(e2AppWinInfo *wininfo)
 	: FileBuf(wininfo)
 {
@@ -61,7 +60,6 @@ MotorolaSFileBuf::MotorolaSFileBuf(e2AppWinInfo *wininfo)
 	lowestAddr = 0x7fffffff;
 }
 
-//======================>>> MotorolaSFileBuf::~MotorolaS1FileBuf <<<=======================
 MotorolaSFileBuf::~MotorolaSFileBuf()
 {
 }
@@ -194,7 +192,6 @@ int MotorolaSFileBuf::WriteRecord(QTextStream &outs, uint8_t *bptr, long curaddr
 
 #define min(a,b)        ( (a < b) ? a : b )
 
-//======================>>> MotorolaSFileBuf::Save <<<=======================
 int MotorolaSFileBuf::Save(int savetype, long relocation_offset)
 {
 	QFile fh(FileBuf::GetFileName());
@@ -304,7 +301,6 @@ int MotorolaSFileBuf::Save(int savetype, long relocation_offset)
 }
 
 
-//======================>>> MotorolaSFileBuf::Load <<<=======================
 int MotorolaSFileBuf::Load(int loadtype, long relocation_offset)
 {
 	int rval = OK;
@@ -427,7 +423,6 @@ int MotorolaSFileBuf::Load(int loadtype, long relocation_offset)
 	return rval;
 }
 
-//======================>>> MotorolaSFileBuf::ParseRecord <<<=======================
 /* Function: ParseRecord
 **      Parses an S-record in the buffer and writes it into the buffer
 **      if it is has a valid checksum.

@@ -37,7 +37,6 @@
 #include <QDebug>
 #include <QtCore>
 
-//======================>>> e2AppWinInfo::e2AppWinInfo <<<=======================
 e2AppWinInfo::e2AppWinInfo(e2CmdWindow *p, const QString &name, BusIO **busvptr) :
 	hex_per_line(16),
 	buffer_size(BUFFER_SIZE),
@@ -230,7 +229,6 @@ e2AppWinInfo::e2AppWinInfo(e2CmdWindow *p, const QString &name, BusIO **busvptr)
 }
 
 
-//======================>>> e2AppWinInfo::~e2AppWinInfo <<<=======================
 e2AppWinInfo::~e2AppWinInfo()
 {
 	qDebug() << "e2AppWinInfo::~e2AppWinInfo()";
@@ -272,7 +270,6 @@ int e2AppWinInfo::OpenBus()
 }
 
 
-//===================>>> e2AppWinInfo::Reset <<<=============
 void e2AppWinInfo::Reset()
 {
 	cmdWin->OpenBus(eep->GetBus());
@@ -280,7 +277,6 @@ void e2AppWinInfo::Reset()
 }
 
 
-//======================>>> e2AppWinInfo::SetEEProm <<<=======================
 void e2AppWinInfo::SetEEProm(unsigned long id)
 {
 	//      extern long BuildE2PType(int x, int y = 0);
@@ -536,7 +532,6 @@ void e2AppWinInfo::SetEEProm(unsigned long id)
 	SetBlockSize(eep->GetBankSize());
 }
 
-//======================>>> e2AppWinInfo::Read <<<=======================
 int e2AppWinInfo::Read(int type, int raise_power, int leave_on)
 {
 	int probe = !GetE2PSubType(eep_id);
@@ -602,7 +597,6 @@ int e2AppWinInfo::Read(int type, int raise_power, int leave_on)
 	return rval;
 }
 
-//======================>>> e2AppWinInfo::Write <<<=======================
 int e2AppWinInfo::Write(int type, int raise_power, int leave_on)
 {
 	int probe = !GetE2PSubType(eep_id);
@@ -638,7 +632,6 @@ int e2AppWinInfo::Write(int type, int raise_power, int leave_on)
 	return rval;
 }
 
-//======================>>> e2AppWinInfo::Verify <<<=======================
 int e2AppWinInfo::Verify(int type, int raise_power, int leave_on)
 {
 	int rval = OK;
@@ -665,7 +658,6 @@ int e2AppWinInfo::Verify(int type, int raise_power, int leave_on)
 	return rval;
 }
 
-//======================>>> e2AppWinInfo::Erase <<<=======================
 int e2AppWinInfo::Erase(int type, int raise_power, int leave_on)
 {
 	int rval = OK;
@@ -692,7 +684,6 @@ int e2AppWinInfo::Erase(int type, int raise_power, int leave_on)
 	return rval;
 }
 
-//===================>>> e2AppWinInfo::BankRollOverDetect <<<=============
 int e2AppWinInfo::BankRollOverDetect(int force)
 {
 	if (OpenBus() == OK)
@@ -705,7 +696,6 @@ int e2AppWinInfo::BankRollOverDetect(int force)
 	return roll_over;
 }
 
-//======================>>> e2AppWinInfo::Load <<<=======================
 int e2AppWinInfo::Load()
 {
 	int rval;
@@ -793,7 +783,6 @@ int e2AppWinInfo::Load()
 	return rval;
 }
 
-//======================>>> e2AppWinInfo::LoadFile <<<=======================
 int e2AppWinInfo::LoadFile()
 {
 	if (clear_buffer_before_load)
@@ -829,7 +818,6 @@ int e2AppWinInfo::LoadFile()
 	return rval;
 }
 
-//======================>>> e2AppWinInfo::Save <<<=======================
 int e2AppWinInfo::Save()
 {
 	int rval;
@@ -948,13 +936,11 @@ int e2AppWinInfo::Save()
 	return rval;
 }
 
-//====================>>> e2AppWinInfo::GetLoadRelocation <<<===================
 long e2AppWinInfo::GetLoadRelocation() const
 {
 	return load_relocation;
 }
 
-//===================>>> e2AppWinInfo::SetLoadRelocation <<<====================
 void e2AppWinInfo::SetLoadRelocation(long val)
 {
 	if (val >= 0 && val < GetBufSize())
@@ -963,13 +949,11 @@ void e2AppWinInfo::SetLoadRelocation(long val)
 	}
 }
 
-//====================>>> e2AppWinInfo::GetSaveRelocation <<<===================
 long e2AppWinInfo::GetSaveRelocation() const
 {
 	return save_relocation;
 }
 
-//===================>>> e2AppWinInfo::SetSaveRelocation <<<====================
 void e2AppWinInfo::SetSaveRelocation(long val)
 {
 	if (val >= 0 && val < GetBufSize())
@@ -979,13 +963,11 @@ void e2AppWinInfo::SetSaveRelocation(long val)
 }
 
 
-//======================>>> e2AppWinInfo::GetLoadType <<<=======================
 int e2AppWinInfo::GetLoadType() const
 {
 	return load_type;
 }
 
-//======================>>> e2AppWinInfo::SetLoadType <<<=======================
 int e2AppWinInfo::SetLoadType(int val)
 {
 	int rval = 0;
@@ -999,13 +981,11 @@ int e2AppWinInfo::SetLoadType(int val)
 	return rval;
 }
 
-//======================>>> e2AppWinInfo::GetSaveType <<<=======================
 int e2AppWinInfo::GetSaveType() const
 {
 	return save_type;
 }
 
-//======================>>> e2AppWinInfo::SetSaveType <<<=======================
 int e2AppWinInfo::SetSaveType(int val)
 {
 	int rval = 0;
@@ -1019,20 +999,17 @@ int e2AppWinInfo::SetSaveType(int val)
 	return rval;
 }
 
-//======================>>> e2AppWinInfo::SetLockBits <<<=======================
 void e2AppWinInfo::SetLockBits(uint32_t bits)
 {
 	lock_bits = bits;
 }
 
-//======================>>> e2AppWinInfo::SetFuseBits <<<=======================
 void e2AppWinInfo::SetFuseBits(uint32_t bits)
 {
 	fuse_bits = bits;
 	fuse_ok = true;
 }
 
-//======================>>> e2AppWinInfo::GetSize <<<=======================
 long e2AppWinInfo::GetSize() const
 {
 	return (long)GetNoOfBlock() * (long)GetBlockSize();
@@ -1378,7 +1355,6 @@ uint16_t e2AppWinInfo::RecalcCRC()
 
 // #include <ctype.h>
 
-//======================>>> e2AppWinInfo::Dump <<<=======================
 QString e2AppWinInfo::Dump(int line, int type)
 {
 	long idx;

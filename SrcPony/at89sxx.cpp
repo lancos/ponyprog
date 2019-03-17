@@ -34,7 +34,6 @@
 
 #include <QDebug>
 
-//=====>>> Costruttore <<<======
 At89sxx::At89sxx(e2AppWinInfo *wininfo, BusIO *busp)
 	:       Device(wininfo, busp, 1 /*BANK_SIZE*/)
 {

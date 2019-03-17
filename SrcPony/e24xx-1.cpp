@@ -34,14 +34,12 @@
 #include "errcode.h"
 #include "eeptypes.h"
 
-//=====>>> Costruttore <<<======
 E24xx1::E24xx1(e2AppWinInfo *wininfo, BusIO *busp)
 	:       E24xx(wininfo, busp, 8, 128)            //Max 8 bank of 128 bytes
 {
 	//      SetBankSize(1);
 }
 
-//--- Distruttore
 E24xx1::~E24xx1()
 {
 }

@@ -33,7 +33,6 @@
 #include "errcode.h"
 #include "eeptypes.h"
 
-//=====>>> Costruttore <<<======
 At17xxx::At17xxx(e2AppWinInfo *wininfo, BusIO *busp)
 	:       E24xx(wininfo, busp, 8, 1)
 {

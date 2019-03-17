@@ -32,7 +32,6 @@
 #include "bitfield.h"
 
 
-//=========================>>> BitFieldWidget::BitFieldWidget <<<====================
 BitFieldWidget::BitFieldWidget(QWidget *parent, QVector<BitInfo> &vInfo, QVector<MaskDescr> &vMask, unsigned int field, const QString &chipNm) :
 	QWidget(parent)
 {
@@ -57,7 +56,6 @@ BitFieldWidget::BitFieldWidget(QWidget *parent, QVector<BitInfo> &vInfo, QVector
 }
 
 
-//======================>>> BitFieldWidget::~BitFieldWidget <<<======================
 BitFieldWidget::~BitFieldWidget()
 {
 	qDebug() << "BitFieldWidget::~BitFieldWidget()";
