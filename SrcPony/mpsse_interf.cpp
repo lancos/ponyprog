@@ -162,11 +162,11 @@ int MpsseInterface::Open(int port)
 		QString qs = E2Profile::GetMpsseInterfacePort();
 		ftdi_interface interf = INTERFACE_A;
 
-		if (QString::compare(qs, "B", Qt::CaseInsensitive))
+		if (qs.compare("B", Qt::CaseInsensitive) == 0)
 			interf = INTERFACE_B;
-		else if (QString::compare(qs, "C", Qt::CaseInsensitive))
+		else if (qs.compare("C", Qt::CaseInsensitive) == 0)
 			interf = INTERFACE_C;
-		else if (QString::compare(qs, "D", Qt::CaseInsensitive))
+		else if (qs.compare("D", Qt::CaseInsensitive) == 0)
 			interf = INTERFACE_D;
 
 		result = ctx.set_interface(interf);
@@ -186,6 +186,8 @@ int MpsseInterface::Open(int port)
 			ctx.set_bitmode(0, BITMODE_RESET);
 			result = InitPins();
 			Q_ASSERT(result == 0);
+			last_data = 0;
+			SendPins();
 			Install(port);
 		}
 		else
@@ -223,7 +225,7 @@ int MpsseInterface::SendPins()
 
 	//00011011 --> 0x1B
 	pin_directions |= (1 << 4) | (1 << 11);
-
+	last_data &= ~((1 << 4) | (1 << 11));
 
 	buf[0] = SET_BITS_LOW;
 	buf[1] = last_data & 0xff;
@@ -293,7 +295,7 @@ void MpsseInterface::OutDataMask(int mask, int val)
 
 void MpsseInterface::SetControlLine(int res)
 {
-	qDebug() << "MpsseInterface::SetControlLine(" << res << ") *** Inst=" <<  IsInstalled();
+	//qDebug() << "MpsseInterface::SetControlLine(" << res << ") *** Inst=" <<  IsInstalled();
 
 	if (IsInstalled())
 	{
@@ -310,7 +312,7 @@ void MpsseInterface::SetControlLine(int res)
 
 void MpsseInterface::SetDataOut(int sda)
 {
-	qDebug() << "MpsseInterface::SetDataOut(" << sda << ") *** Inst=" << IsInstalled();
+	//qDebug() << "MpsseInterface::SetDataOut(" << sda << ") *** Inst=" << IsInstalled();
 
 	if (IsInstalled())
 	{
@@ -327,7 +329,7 @@ void MpsseInterface::SetDataOut(int sda)
 
 void MpsseInterface::SetClock(int scl)
 {
-	qDebug() << "MpsseInterface::SetClock(" << scl << ") *** Inst=" << IsInstalled();
+	//qDebug() << "MpsseInterface::SetClock(" << scl << ") *** Inst=" << IsInstalled();
 
 	if (IsInstalled())
 	{
@@ -344,7 +346,7 @@ void MpsseInterface::SetClock(int scl)
 
 void MpsseInterface::SetClockData()
 {
-	qDebug() << "MpsseInterface::SetClockData() *** Inst=" << IsInstalled();
+	//qDebug() << "MpsseInterface::SetClockData() *** Inst=" << IsInstalled();
 
 	if (IsInstalled())
 	{
@@ -368,7 +370,7 @@ void MpsseInterface::SetClockData()
 
 void MpsseInterface::ClearClockData()
 {
-	qDebug() << "MpsseInterface::ClearClockData() *** Inst=" << IsInstalled();
+	//qDebug() << "MpsseInterface::ClearClockData() *** Inst=" << IsInstalled();
 
 	if (IsInstalled())
 	{
@@ -403,7 +405,7 @@ int MpsseInterface::GetDataIn()
 		else
 		{
 			val = (read_data & pin_datain) ? 1 : 0;
-			qDebug() << "MpsseInterface::GetDataIn()=" << val;
+			//qDebug() << "MpsseInterface::GetDataIn()=" << val;
 
 			if (cmdWin->GetPolarity() & DININV)
 			{
