@@ -34,7 +34,7 @@
 class e2CmdWindow;
 
 SIProgInterface::SIProgInterface()
-	: RS232Interface()
+	: SerialInterface()
 {
 	//qDebug() << "SIProgInterface::SIProgInterface()";
 
@@ -87,7 +87,7 @@ int SIProgInterface::Open(int com_no)
 
 	if (GetInstalled() != com_no)
 	{
-		if ((ret_val = RS232Interface::OpenSerial(com_no)) == OK)
+		if ((ret_val = SerialInterface::OpenSerial(com_no)) == OK)
 		{
 			//      SetSerialEventMask(0);
 			//SetPower(true);  //08/02/1998 -- ora diamo alimentazione prima di ogni operazione e la togliamo subito dopo
@@ -110,11 +110,34 @@ void SIProgInterface::Close()
 		SetPower(false);
 		//SetCommMask(hCom, old_mask);
 		DeInstall();
-		RS232Interface::CloseSerial();
+		SerialInterface::CloseSerial();
 	}
 
 	qDebug() << "SIProgInterface::Close() OUT";
 }
+
+
+int SIProgInterface::OpenUSB(int vid, int pid)
+{
+	qDebug() << "SIProgInterface::OpenUSB(" << vid << pid << ") IN *** Inst=" << IsInstalled();
+
+	int ret_val = OK;
+	int vid_intern;
+	int pid_intern;
+
+	if ((ret_val = SerialInterface::OpenUSB(vid, pid)) == OK)
+	{
+		//      SetSerialEventMask(0);
+		//SetPower(true);  //08/02/1998 -- ora diamo alimentazione prima di ogni operazione e la togliamo subito dopo
+
+// 		USBSetVidPid(vid, pid);
+	}
+
+	qDebug() << "SIProgInterface::OpenUSB() = " << ret_val << " OUT";
+
+	return ret_val;
+}
+
 
 void SIProgInterface::SetDataOut(int sda)
 {

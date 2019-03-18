@@ -202,6 +202,7 @@ void e2App::initSettings()
 	returnValue = 0;
 	script_name = "";
 }
+
 int e2App::OpenPort(int port)
 {
 	if (usb_vendor > 0 && usb_product > 0)

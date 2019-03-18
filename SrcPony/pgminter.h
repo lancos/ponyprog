@@ -30,13 +30,14 @@
 #include "businter.h"
 #include "rs232int.h"
 
-class SIProgInterface : public BusInterface, public RS232Interface
+class SIProgInterface : public BusInterface, public SerialInterface
 {
   public:
 	SIProgInterface();
 	//      virtual ~SIProgInterface();
 
 	virtual int Open(int com_no);
+	virtual int OpenUSB(int vid, int pid);
 	virtual void Close();
 
 	virtual void SetDataOut(int sda = 1);
@@ -49,6 +50,7 @@ class SIProgInterface : public BusInterface, public RS232Interface
 	virtual int IsClockDataDOWN() ;
 
 	virtual int TestPort(int port);
+
 	//      int TestSave(int port);
 	//      void TestRestore();
 

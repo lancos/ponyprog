@@ -160,6 +160,12 @@ class BusInterface
 
 	bool IsInstalled() const
 	{
+		// high prio
+		if (usb_pid > 0 && usb_vid > 0)
+		{
+			return true;
+		}
+
 		return (installed >= 0) ? true : false;
 	}
 
@@ -374,6 +380,8 @@ class BusInterface
 	void DeInstall()
 	{
 		installed = -1;
+		usb_pid = 0;
+		usb_vid = 0;
 	}
 
 	int GetInstalled() const

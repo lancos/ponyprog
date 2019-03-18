@@ -25,6 +25,7 @@
 //=========================================================================//
 
 // #include <stdio.h>
+#include <QApplication>
 #include <QtCore>
 #include <QDebug>
 #include <QString>
@@ -45,9 +46,9 @@
 #define INVALID_HANDLE_VALUE    -1
 #endif
 
-RS232Interface::RS232Interface()
+SerialInterface::SerialInterface()
 {
-	qDebug() << "RS232Interface::RS232Interface()";
+	qDebug() << "SerialInterface::SerialInterface()";
 
 	//      profile = prof;
 
@@ -64,6 +65,9 @@ RS232Interface::RS232Interface()
 
 	wait_endTX_mode = false;
 
+	// pointer to ch341
+	uartProg = 0;
+
 #ifdef Q_OS_WIN32
 	hCom = INVALID_HANDLE_VALUE;
 #elif defined(Q_OS_LINUX)
@@ -73,12 +77,12 @@ RS232Interface::RS232Interface()
 	//By default com_no == 0, so don't open any serial port if the constructor is called with zero paramameters
 //	OpenSerial(com_no);
 
-	qDebug() << "RS232Interface::RS232Interface() O";
+	qDebug() << "SerialInterface::SerialInterface() O";
 }
 
-RS232Interface::~RS232Interface()
+SerialInterface::~SerialInterface()
 {
-	qDebug() << "RS232Interface::~RS232Interface()";
+	qDebug() << "SerialInterface::~SerialInterface()";
 
 	CloseSerial();
 }
@@ -88,7 +92,11 @@ RS232Interface::~RS232Interface()
 static int fd_clear_flag(int fd, int flags);
 #endif
 
-int RS232Interface::OpenSerial(int no)
+/**
+ * @brief
+ *
+ */
+int SerialInterface::OpenSerial(int no)
 {
 	int ret_val = E2ERR_OPENFAILED;
 	QString devname;
@@ -106,9 +114,52 @@ int RS232Interface::OpenSerial(int no)
 	return ret_val;
 }
 
-int RS232Interface::OpenSerial(QString devname)
+/**
+ * @brief
+ *
+ */
+int SerialInterface::OpenUSB(uint16_t vid, uint16_t pid)
 {
-	qDebug() << "RS232Interface::OpenSerial(" << devname << ") I";
+	int ret_val = E2ERR_OPENFAILED;
+
+	if (vid > 0 && pid > 0)
+	{
+		if (uartProg != 0)
+		{
+			CloseSerial();
+		}
+
+		uartProg = new ch341;
+		uartProg->Open(vid, pid);
+
+		if (SetSerialTimeouts() != OK)
+		{
+			qDebug() << "SerialInterface::OpenUSB SetSerialTimeouts() failed";
+			CloseSerial();
+		}
+		else if (SetSerialParams() != OK)
+		{
+			qDebug() << "SerialInterface::OpenUSB SetSerialParams() failed";
+			CloseSerial();
+		}
+		else
+		{
+			SetSerialTimeouts();
+			SetSerialParams();
+
+			ret_val = OK;
+		}
+	}
+	return ret_val;
+}
+
+/**
+ * @brief
+ *
+ */
+int SerialInterface::OpenSerial(QString devname)
+{
+	qDebug() << "SerialInterface::OpenSerial(" << devname << ") I";
 
 	int ret_val = E2ERR_OPENFAILED;
 
@@ -148,15 +199,15 @@ int RS232Interface::OpenSerial(QString devname)
 
 	fd = INVALID_HANDLE_VALUE;
 
-	qDebug() << "RS232Interface::OpenSerial() now open the device " << m_devname;
+	qDebug() << "SerialInterface::OpenSerial() now open the device " << m_devname;
 
 	fd = open(m_devname.toLatin1().constData(), O_RDWR | O_NONBLOCK | O_EXCL);
 
-	qDebug() << "RS232Interface::OpenSerial open result = " << fd;
+	qDebug() << "SerialInterface::OpenSerial open result = " << fd;
 
 	if (fd < 0)
 	{
-		qDebug() << "RS232Interface::OpenSerial can't open the device " << devname;
+		qDebug() << "SerialInterface::OpenSerial can't open the device " << devname;
 		return ret_val;
 	}
 
@@ -166,7 +217,7 @@ int RS232Interface::OpenSerial(QString devname)
 	// Check if available during runtime
 	if ((ioctl(fd, TIOCSBRK, 0) == -1) || (ioctl(fd, TIOCCBRK, 0) == -1))
 	{
-		qDebug() << "RS232Interface::OpenPort IOCTL not available";
+		qDebug() << "SerialInterface::OpenPort IOCTL not available";
 		close(fd);
 		fd = INVALID_HANDLE_VALUE;
 		return ret_val;
@@ -183,7 +234,7 @@ int RS232Interface::OpenSerial(QString devname)
 
 	if (ioctl(fd, TIOCMGET, &flags) == -1)
 	{
-		qDebug() << "RS232Interface::OpenPort IOCTL not available";
+		qDebug() << "SerialInterface::OpenPort IOCTL not available";
 		close(fd);
 		fd = INVALID_HANDLE_VALUE;
 		return ret_val;
@@ -194,7 +245,7 @@ int RS232Interface::OpenSerial(QString devname)
 
 		if (ioctl(fd, TIOCMSET, &flags) == -1)
 		{
-			qDebug() << "RS232Interface::OpenPort IOCTL not available";
+			qDebug() << "SerialInterface::OpenPort IOCTL not available";
 			close(fd);
 			fd = INVALID_HANDLE_VALUE;
 			return ret_val;
@@ -202,28 +253,28 @@ int RS232Interface::OpenSerial(QString devname)
 	}
 #endif /*TIOCMGET */
 
-	qDebug() << "RS232Interface::OpenPort GETATTR";
+	qDebug() << "SerialInterface::OpenPort GETATTR";
 
 	if (tcgetattr(fd, &old_termios) == -1)
 	{
-		qDebug() << "RS232Interface::OpenPort GETATTR failed";
+		qDebug() << "SerialInterface::OpenPort GETATTR failed";
 
 		close(fd);
 		fd = INVALID_HANDLE_VALUE;
 		return ret_val;
 	}
 
-	qDebug() << "RS232Interface::OpenPort SetTimeouts && Params";
+	qDebug() << "SerialInterface::OpenPort SetTimeouts && Params";
 
 	if (SetSerialTimeouts() != OK)
 	{
-		qDebug() << "RS232Interface::OpenPort SetSerialTimeouts() failed";
+		qDebug() << "SerialInterface::OpenPort SetSerialTimeouts() failed";
 		close(fd);
 		fd = INVALID_HANDLE_VALUE;
 	}
 	else if (SetSerialParams() != OK)
 	{
-		qDebug() << "RS232Interface::OpenPort SetSerialParams() failed";
+		qDebug() << "SerialInterface::OpenPort SetSerialParams() failed";
 		close(fd);
 		fd = INVALID_HANDLE_VALUE;
 	}
@@ -234,15 +285,26 @@ int RS232Interface::OpenSerial(QString devname)
 	}
 #endif  /*Q_OS_LINUX*/
 
-	qDebug() << "RS232Interface::OpenSerial() = " << ret_val << " O";
+	qDebug() << "SerialInterface::OpenSerial() = " << ret_val << " O";
 
 	return ret_val;
 }
 
-
-void RS232Interface::CloseSerial()
+/**
+ * @brief
+ *
+ */
+void SerialInterface::CloseSerial()
 {
-	qDebug() << "RS232Interface::CloseSerial()";
+	qDebug() << "SerialInterface::CloseSerial()";
+
+	if (uartProg != 0)
+	{
+		//TODO disconnect? when flashing runs?
+		// close the usb
+		delete uartProg;
+		uartProg = 0;
+	}
 
 #ifdef Q_OS_WIN32
 
@@ -269,9 +331,20 @@ void RS232Interface::CloseSerial()
 #endif
 }
 
-int RS232Interface::SetSerialBreak(int state)
+/**
+ * @brief
+ *
+ */
+int SerialInterface::SetSerialBreak(int state)
 {
 	int result = E2ERR_OPENFAILED;
+
+	if (uartProg != 0)
+	{
+		result = uartProg->SetBreakControl(state);
+
+		return result;
+	}
 
 #ifdef Q_OS_WIN32
 
@@ -303,7 +376,7 @@ int RS232Interface::SetSerialBreak(int state)
 	}
 
 #else
-	qDebug() << "RS232Interface::SetSerialBreak Can't get IOCTL";
+	qDebug() << "SerialInterface::SetSerialBreak Can't get IOCTL";
 #endif
 
 #endif
@@ -312,7 +385,7 @@ int RS232Interface::SetSerialBreak(int state)
 }
 
 /**
-void RS232Interface::SetSerialEventMask(long mask)
+void SerialInterface::SetSerialEventMask(long mask)
 {
 #ifdef Q_OS_WIN32
         if (hCom != INVALID_HANDLE_VALUE )
@@ -321,8 +394,17 @@ void RS232Interface::SetSerialEventMask(long mask)
 }
 **/
 
-void RS232Interface::SerialFlushRx()
+/**
+ * @brief
+ *
+ */
+void SerialInterface::SerialFlushRx()
 {
+	if (uartProg != 0)
+	{
+		// TODO flushRx
+		// this function is not in use
+	}
 #ifdef Q_OS_WIN32
 
 	if (hCom != INVALID_HANDLE_VALUE)
@@ -340,8 +422,13 @@ void RS232Interface::SerialFlushRx()
 #endif
 }
 
-void RS232Interface::SerialFlushTx()
+void SerialInterface::SerialFlushTx()
 {
+	if (uartProg != 0)
+	{
+		//TODO flushTx
+		// this function is not in use
+	}
 #ifdef Q_OS_WIN32
 
 	if (hCom != INVALID_HANDLE_VALUE)
@@ -359,8 +446,20 @@ void RS232Interface::SerialFlushTx()
 #endif
 }
 
-void RS232Interface::WaitForTxEmpty()
+void SerialInterface::WaitForTxEmpty()
 {
+	if (uartProg != 0)
+	{
+		// TODO to check this
+		uint32_t completed;
+		do
+		{
+			completed = uartProg->GetStatusTx();
+			QApplication::processEvents();
+		}
+		while (!completed);
+	}
+
 #ifdef Q_OS_WIN32
 	DWORD evento;
 
@@ -383,9 +482,40 @@ void RS232Interface::WaitForTxEmpty()
 #endif
 }
 
-long RS232Interface::ReadSerial(uint8_t *buffer, long len)
+long SerialInterface::ReadSerial(uint8_t *buffer, long len)
 {
 	long retval = E2ERR_OPENFAILED;
+
+	if (uartProg != 0)
+	{
+		long nread, nleft;
+		uint8_t *ptr;
+
+		nleft = len;
+		ptr = buffer;
+
+		while (nleft > 0)
+		{
+// 			nread = uartProg->Read(ptr, nleft);
+
+			if (nread < 0)
+			{
+				nleft = -1;
+				break;  //Error
+			}
+
+			nleft -= nread;
+			ptr   += nread;
+
+			QApplication::processEvents();
+		}
+
+		if (nleft >= 0)
+		{
+			retval = (len - nleft);
+		}
+		return retval;
+	}
 
 #ifdef Q_OS_WIN32
 
@@ -463,9 +593,35 @@ long RS232Interface::ReadSerial(uint8_t *buffer, long len)
 	return retval;
 }
 
-long RS232Interface::WriteSerial(uint8_t *buffer, long len)
+long SerialInterface::WriteSerial(uint8_t *buffer, long len)
 {
 	long retval = E2ERR_OPENFAILED;
+
+	if (uartProg != 0)
+	{
+		long nleft;
+		uint8_t *ptr;
+
+		ptr = buffer;
+		nleft = len;
+
+		while (nleft > 0)
+		{
+			long nwritten = 0;// = uartProg->Write(ptr, nleft);
+
+			if (nwritten <= 0)
+			{
+				return retval;        //return error
+			}
+
+			nleft -= nwritten;
+			ptr   += nwritten;
+		}
+
+		retval = len;
+
+		return retval;
+	}
 
 #ifdef Q_OS_WIN32
 
@@ -516,9 +672,49 @@ long RS232Interface::WriteSerial(uint8_t *buffer, long len)
 }
 
 // -1 ---> Not Change
-int RS232Interface::SetSerialParams(long speed, int bits, int parity, int stops, int flow_control)
+int SerialInterface::SetSerialParams(long speed, int bits, int parity, int stops, int flow_control)
 {
 	int result = E2ERR_OPENFAILED;
+
+	if (uartProg != 0)
+	{
+		if (speed >= 300 && speed <= 115200)
+		{
+			actual_speed = speed;
+		}
+
+		if (bits >= 1 && bits <= 16)
+		{
+			actual_bits = bits;
+		}
+		uartProg->SetBits(bits);
+
+		if (parity == 'N' || parity == 'E' || parity == 'O')
+		{
+			actual_parity = parity;
+		}
+		uartProg->SetParity(parity);
+
+		if (stops >= 1 && stops <= 2)
+		{
+			actual_stops = stops;
+		}
+		uartProg->SetStops(stops);
+
+		if (flow_control >= 0 && flow_control <= 2)
+		{
+			actual_flowcontrol = flow_control;
+		}
+		uartProg->SetFlowControl(flow_control);
+
+		result = uartProg->SetBaudRate(speed);
+		if (result)
+		{
+			// TODO message
+		}
+
+		return result;
+	}
 
 #ifdef Q_OS_WIN32
 
@@ -753,7 +949,7 @@ int RS232Interface::SetSerialParams(long speed, int bits, int parity, int stops,
 }
 
 //At the moment the while_read (interval timeout) is not used with Linux
-int RS232Interface::SetSerialTimeouts(long init_read, long while_read)
+int SerialInterface::SetSerialTimeouts(long init_read, long while_read)
 {
 	long result = E2ERR_OPENFAILED;
 
@@ -765,6 +961,13 @@ int RS232Interface::SetSerialTimeouts(long init_read, long while_read)
 	if (init_read >= 0)
 	{
 		read_total_timeout = init_read;
+	}
+
+	if (uartProg != 0)
+	{
+		// TODO
+
+		return OK;
 	}
 
 #ifdef Q_OS_WIN32
@@ -815,9 +1018,20 @@ int RS232Interface::SetSerialTimeouts(long init_read, long while_read)
 	return result;
 }
 
-int RS232Interface::SetSerialDTR(int dtr)
+int SerialInterface::SetSerialDTR(int dtr)
 {
 	int result = E2ERR_OPENFAILED;
+
+	if (uartProg != 0)
+	{
+		result = uartProg->SetDTR(dtr);
+
+		if (result)
+		{
+			// TODO message
+		}
+		return result;
+	}
 
 #ifdef Q_OS_WIN32
 
@@ -849,9 +1063,19 @@ int RS232Interface::SetSerialDTR(int dtr)
 	return result;
 }
 
-int RS232Interface::SetSerialRTS(int rts)
+int SerialInterface::SetSerialRTS(int rts)
 {
 	int result = E2ERR_OPENFAILED;
+
+	if (uartProg != 0)
+	{
+		result = uartProg->SetRTS(rts);
+		if (result)
+		{
+			//TODO message
+		}
+		return result;
+	}
 
 #ifdef Q_OS_WIN32
 
@@ -883,9 +1107,20 @@ int RS232Interface::SetSerialRTS(int rts)
 	return result;
 }
 
-int RS232Interface::SetSerialRTSDTR(int state)
+int SerialInterface::SetSerialRTSDTR(int state)
 {
 	int result = E2ERR_OPENFAILED;
+
+	if (uartProg != 0)
+	{
+		result = uartProg->SetRTSDTR(state);
+
+		if (result)
+		{
+			//TODO message
+		}
+		return result;
+	}
 
 #ifdef Q_OS_WIN32
 
@@ -926,9 +1161,16 @@ int RS232Interface::SetSerialRTSDTR(int state)
 	return result;
 }
 
-int RS232Interface::GetSerialDSR() const
+int SerialInterface::GetSerialDSR() const
 {
 	int result = E2ERR_OPENFAILED;
+
+	if (uartProg != 0)
+	{
+		result = uartProg->GetDSR();
+
+		return result;
+	}
 
 #ifdef Q_OS_WIN32
 
@@ -956,9 +1198,17 @@ int RS232Interface::GetSerialDSR() const
 	return result;
 }
 
-int RS232Interface::GetSerialCTS() const
+int SerialInterface::GetSerialCTS() const
 {
 	int result = E2ERR_OPENFAILED;
+
+	if (uartProg != 0)
+	{
+		// TODO to check bits
+		result = uartProg->GetCTS();
+
+		return result;
+	}
 
 #ifdef Q_OS_WIN32
 
