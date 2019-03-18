@@ -1,0 +1,17 @@
+# udev rule that sets permissions for CH341A programmer in Linux.
+# Put this file in /etc/udev/rules.d and reload udev rules or reboot to install
+#SUBSYSTEM=="usb", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="5512", MODE="0666", GROUP="plugdev"
+
+# CH341A in UART mode
+SUBSYSTEM=="usb", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="5523", MODE="0666", GROUP="plugdev"
+
+# CH340G in UART mode
+SUBSYSTEM=="usb", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="7523", MODE="0666", GROUP="plugdev"
+
+# to activate it later, after interface implementation 
+# CP210x UART
+#SUBSYSTEMS=="usb", ATTRS{idVendor}=="10c4", ATTRS{idProduct}=="ea60", MODE="0666", GROUP="plugdev"
+
+# PL2303 UART
+#SUBSYSTEMS=="usb", ATTRS{idVendor}=="067b", ATTRS{idProduct}=="2303", MODE="0666", GROUP="plugdev"
+
