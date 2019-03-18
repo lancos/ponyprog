@@ -1,6 +1,7 @@
 #CMakeLists.txt
 
 SET(PONY_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/aboutmdlg.cpp
+                 ${CMAKE_CURRENT_SOURCE_DIR}/usbwatcher.cpp
                  ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
                  ${CMAKE_CURRENT_SOURCE_DIR}/Translator.cpp
                  ${CMAKE_CURRENT_SOURCE_DIR}/e2app.cpp
@@ -150,6 +151,7 @@ SET(PONY_NOMOC_HEADERS
                  
                  
 SET(PONY_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/fusemdlg.h
+                 ${CMAKE_CURRENT_SOURCE_DIR}/usbwatcher.h 
                  ${CMAKE_CURRENT_SOURCE_DIR}/bitfield.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/filldlg.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/blockmdlg.h
