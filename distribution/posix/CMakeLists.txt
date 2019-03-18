@@ -48,6 +48,12 @@ INSTALL(FILES "${PROJECT_SOURCE_DIR}/copyright"
         ) 
 # MESSAGE("PROJECT_SOURCE_DIR ${PROJECT_SOURCE_DIR}")
 
+INSTALL(FILES "${PROJECT_SOURCE_DIR}/udev/rules.d/99-ponyprog.rules" 
+        DESTINATION "/lib/udev/rules.d/" 
+        COMPONENT "application" 
+        PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ
+        )
+
 INSTALL(FILES "${PROJECT_SOURCE_DIR}/desktop/ponyprog.desktop"
         DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/applications/"
         COMPONENT "application"
