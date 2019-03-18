@@ -97,22 +97,35 @@ int MpsseInterface::InitPins()
 {
 	int result = 0;
 
+	last_data = 0;
+	pin_directions = 0;
+
 	pin_ctrl = 1 << E2Profile::GetMpssePinCtrl();
 	pin_datain = 1 << E2Profile::GetMpssePinDataIn();
 	pin_dataout = 1 << E2Profile::GetMpssePinDataOut();
 	pin_clock = 1 << E2Profile::GetMpssePinClock();
 
-	//00011011 --> 0x1B
-	uint8_t pins_mask = pin_ctrl | pin_dataout | pin_clock;
-	pins_mask |= (1 << 4);
-
-	qDebug() << "MpsseInterface::InitPins mask=" << pins_mask
+	qDebug() << "MpsseInterface::InitPins"
 			<< " Ctrl=" << pin_ctrl
 			<< ", Clock=" << pin_clock
 			<< ", DataIn=" << pin_datain << ", DataOut=" << pin_dataout;
 
-	result = ctx.set_bitmode(pins_mask, BITMODE_MPSSE);
-	ctx.flush(ctx.Input|ctx.Output);
+	result = ctx.set_bitmode(0, BITMODE_MPSSE);
+	if (result == 0)
+	{
+		ctx.flush(ctx.Input|ctx.Output);
+
+		//00011011 --> 0x1B
+		int new_data = 0;
+		int new_directions = pin_ctrl | pin_dataout | pin_clock;
+		new_directions |= (1 << 4) | (1 << 11);
+
+		//Force update
+		last_data = ~new_data & 0xffff;
+		pin_directions = ~new_directions & 0xffff;
+		SendPins(new_data, new_directions);	//set pins to ZERO
+	}
+
 	return result;
 }
 
@@ -186,8 +199,7 @@ int MpsseInterface::Open(int port)
 			ctx.set_bitmode(0, BITMODE_RESET);
 			result = InitPins();
 			Q_ASSERT(result == 0);
-			last_data = 0;
-			SendPins();
+			//TestPins();
 			Install(port);
 		}
 		else
@@ -217,33 +229,92 @@ void MpsseInterface::Close()
 	qDebug() << "MpsseInterface::Close() OUT";
 }
 
-int MpsseInterface::SendPins()
+int MpsseInterface::SendPins(int new_data, int new_directions)
 {
 	int ret;
 	uint8_t buf[6];
-	uint16_t pin_directions = pin_clock | pin_ctrl | pin_dataout;
+	int ch_data, ch_dir;
+	int idx = 0;
+
+	if (new_directions >= 0)	//-1 don't change directions
+	{
+		ch_dir = (new_directions ^ pin_directions) & 0xffff;
+	}
+	else
+	{
+		new_directions = pin_directions;
+		ch_dir = 0;
+	}
+
+	new_data &= ~((1 << 4) | (1 << 11));
+
+	//what's changed
+	ch_data = (new_data ^ last_data) & 0xffff;
+
+	if ((ch_data & 0x00ff) != 0 || (ch_dir & 0x00ff) != 0)	//low byte
+	{
+		buf[idx++] = SET_BITS_LOW;
+		buf[idx++] = new_data & 0xff;
+		buf[idx++] = new_directions & 0xff;
+	}
+	if ((ch_data & 0xff00) != 0 || (ch_dir & 0xff00) != 0)	//high byte
+	{
+		buf[idx++] = SET_BITS_HIGH;
+		buf[idx++] = (new_data >> 8) & 0xff;
+		buf[idx++] = (new_directions >> 8) & 0xff;
+	}
+
+	if (idx > 0)
+	{
+		ret = ctx.write(buf, idx);
+		if (ret == idx)
+		{
+			last_data = new_data;
+			pin_directions = new_directions;
+			ret = OK;
+		}
+		else
+		{
+			qWarning("MpsseInterface::SendPins() write failed (%s)\n", ctx.error_string());
+			ret = -1;
+		}
+	}
+	else
+	{
+		ret = OK;
+	}
+	return ret;
+}
+
+int MpsseInterface::TestPins()
+{
+	int ret, k, idx;
+	uint8_t buf[6 * 8];
 
 	//00011011 --> 0x1B
 	pin_directions |= (1 << 4) | (1 << 11);
 	last_data &= ~((1 << 4) | (1 << 11));
 
-	buf[0] = SET_BITS_LOW;
-	buf[1] = last_data & 0xff;
-	buf[2] = pin_directions & 0xff;
-	buf[3] = SET_BITS_HIGH;
-	buf[4] = (last_data >> 8) & 0xff;
-	buf[5] = (pin_directions >> 8) & 0xff;
-	ret = ctx.write(buf, sizeof(buf));
+	idx = 0;
+	for (k = 0; k < 8; k++)
+	{
+		last_data = OutDataMask(pin_clock, 2);
 
-	if (ret == sizeof(buf))
-	{
-		return OK;
+		buf[idx++] = SET_BITS_LOW;
+		buf[idx++] = last_data & 0xff;
+		buf[idx++] = pin_directions & 0xff;
+		buf[idx++] = SET_BITS_HIGH;
+		buf[idx++] = (last_data >> 8) & 0xff;
+		buf[idx++] = (pin_directions >> 8) & 0xff;
 	}
-	else
+	ret = ctx.write(buf, idx);
+	if (ret != idx)
 	{
-		qWarning("MpsseInterface::SendPins() write failed (%s)\n", ctx.error_string());
+		qWarning("MpsseInterface::TestPins() write failed (%s)\n", ctx.error_string());
 		return -1;
 	}
+
+	return OK;
 }
 
 int MpsseInterface::GetPins()
@@ -266,7 +337,7 @@ int MpsseInterface::GetPins()
 		else
 		{
 			read_data = buf[0] | ((int)buf[1] << 8);
-			qWarning("MpsseInterface::GetPins()=%u\n", read_data);
+			//qDebug("MpsseInterface::GetPins()=%u\n", read_data);
 			return OK;
 		}
 	}
@@ -274,22 +345,6 @@ int MpsseInterface::GetPins()
 	{
 		qWarning("MpsseInterface::GetPins() write failed (%s)\n", ctx.error_string());
 		return -1;
-	}
-}
-
-void MpsseInterface::OutDataMask(int mask, int val)
-{
-	if (val == 0)
-	{
-		last_data &= ~mask;
-	}
-	else if (val == 1)
-	{
-		last_data |= mask;
-	}
-	else
-	{
-		last_data ^= mask;
 	}
 }
 
@@ -302,8 +357,7 @@ void MpsseInterface::SetControlLine(int res)
 		if (cmdWin->GetPolarity() & RESETINV)
 			res = !res;
 
-		OutDataMask(pin_ctrl, (res != 0));
-		if (SendPins() != OK)
+		if (SendPins(OutDataMask(pin_ctrl, (res != 0))) != OK)
 		{
 			qWarning("MpsseInterface::SetControlLine() write failed\n");
 		}
@@ -319,8 +373,7 @@ void MpsseInterface::SetDataOut(int sda)
 		if ((cmdWin->GetPolarity() & DOUTINV))
 			sda = !sda;
 
-		OutDataMask(pin_dataout, (sda != 0));
-		if (SendPins() != OK)
+		if (SendPins(OutDataMask(pin_dataout, (sda != 0))) != OK)
 		{
 			qWarning("MpsseInterface::SetDataOut() write failed\n");
 		}
@@ -336,8 +389,7 @@ void MpsseInterface::SetClock(int scl)
 		if ((cmdWin->GetPolarity() & CLOCKINV))
 			scl = !scl;
 
-		OutDataMask(pin_clock, (scl != 0));
-		if (SendPins() != OK)
+		if (SendPins(OutDataMask(pin_clock, (scl != 0))) != OK)
 		{
 			qWarning("MpsseInterface::SetClock() write failed\n");
 		}
@@ -358,9 +410,8 @@ void MpsseInterface::SetClockData()
 		if ((cmdWin->GetPolarity() & DOUTINV))
 			sda = !sda;
 
-		OutDataMask(pin_clock, scl);
-		OutDataMask(pin_dataout, sda);
-		if (SendPins() != OK)
+		int n_data = OutDataMask(pin_clock, scl);
+		if (SendPins(OutDataMask(n_data, pin_dataout, sda)) != OK)
 		{
 			qWarning("MpsseInterface::SetClockData() write failed\n");
 		}
@@ -382,9 +433,8 @@ void MpsseInterface::ClearClockData()
 		if ((cmdWin->GetPolarity() & DOUTINV))
 			sda = !sda;
 
-		OutDataMask(pin_clock, scl);
-		OutDataMask(pin_dataout, sda);
-		if (SendPins() != OK)
+		int n_data = OutDataMask(pin_clock, scl);
+		if (SendPins(OutDataMask(n_data, pin_dataout, sda)) != OK)
 		{
 			qWarning("MpsseInterface::SetClockData() write failed\n");
 		}

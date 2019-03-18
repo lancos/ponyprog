@@ -66,19 +66,35 @@ class MpsseInterface : public BusInterface
 	void DeInitPins();
 
 	int SetFrequency(uint32_t freq);
-	int SendPins();
+	int SendPins(int new_data, int new_directions = -1);
 	int GetPins();
-	void OutDataMask(int mask, int val);
+	int TestPins();
+
+	unsigned int OutDataMask(int old_val, int mask, int val)
+	{
+		if (val == 0)
+			return old_val & ~mask;
+		else if (val == 1)
+			return old_val | mask;
+		else
+			return old_val ^ mask;
+	}
+	unsigned int OutDataMask(int mask, int val)
+	{
+		return OutDataMask(last_data, mask, val);
+	}
 
 	Ftdi::Context ctx;
 
-	unsigned int last_data;
-	unsigned int read_data;
+	int pin_directions;
 
-	unsigned int pin_ctrl;
-	unsigned int pin_datain;
-	unsigned int pin_dataout;
-	unsigned int pin_clock;
+	int last_data;
+	int read_data;
+
+	int pin_ctrl;
+	int pin_datain;
+	int pin_dataout;
+	int pin_clock;
 };
 
 #endif
