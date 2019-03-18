@@ -29,6 +29,7 @@
 
 #include "types.h"
 #include "errcode.h"
+#include "wait.h"
 
 #include <QDebug>
 
@@ -140,6 +141,16 @@ class BusInterface
 		return (installed >= 0) ? true : false;
 	}
 
+	virtual void WaitMsec(unsigned int msec)
+	{
+		w.WaitMsec(msec);
+	}
+
+	virtual void WaitUsec(unsigned int usec)
+	{
+		w.WaitUsec(usec);
+	}
+
   protected:
 	void Install(int val)
 	{
@@ -159,6 +170,8 @@ class BusInterface
   private:
 	int             installed;              // -1 --> not installed, >= 0 number if the installed port
 	int             cmd2cmd_delay;  // <> 0 if a delay between commands is needed
+
+	Wait w;
 };
 
 #endif

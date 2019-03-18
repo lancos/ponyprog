@@ -28,12 +28,12 @@
 #define _BUSIO_H
 
 #include "types.h"
-#include "wait.h"
+//#include "wait.h"
 #include "businter.h"
 #include "errcode.h"
 
 //Formato di bus generico seriale
-class BusIO : public Wait
+class BusIO
 {
   public:
 	BusIO(BusInterface *p = 0);
@@ -45,6 +45,7 @@ class BusIO : public Wait
 	}
 	virtual void Close()
 	{
+		Q_ASSERT(busI != 0);
 		busI->Close();
 	}
 	virtual int Error();
@@ -181,6 +182,12 @@ class BusIO : public Wait
 		}
 	}
 
+	void WaitMsec(unsigned int msec)
+	{
+		Q_ASSERT(busI != 0);
+		busI->WaitMsec(msec);
+	}
+
   protected:
 
 	int     err_no;                 //error code
@@ -189,6 +196,12 @@ class BusIO : public Wait
 	unsigned int shot_delay;		//delay unit to perform bus timing
 
 	BusInterface *busI;
+
+	void WaitUsec(unsigned int usec)
+	{
+		Q_ASSERT(busI != 0);
+		busI->WaitUsec(usec);
+	}
 
   private:
 
