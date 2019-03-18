@@ -135,7 +135,7 @@ inline int Wait::GetBogoKips()
 	return Wait::bogokips;
 }
 
-void Wait::WaitMsec(int msec)
+void Wait::WaitMsec(unsigned int msec)
 {
 #ifdef Q_OS_LINUX
 	usleep(msec * 1000);
@@ -158,8 +158,11 @@ void Wait::WaitMsec(int msec)
 #pragma optimize( "", off )
 #endif
 
-void Wait::WaitUsec(int usec)
+void Wait::WaitUsec(unsigned int usec)
 {
+	if (usec == 0)
+		return;
+
 	if (htimer)
 	{
 #ifdef Q_OS_WIN32

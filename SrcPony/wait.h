@@ -40,8 +40,8 @@ class Wait
 	Wait();
 	virtual ~Wait();
 
-	void WaitMsec(int msec);
-	void WaitUsec(int usec);
+	void WaitMsec(unsigned int msec);
+	void WaitUsec(unsigned int usec);
 
 	void SetBogoKips();
 

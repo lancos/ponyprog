@@ -186,7 +186,7 @@ class BusIO : public Wait
 	int     err_no;                 //error code
 	int     last_addr;
 
-	int shot_delay;         //delay unit to perform bus timing
+	unsigned int shot_delay;		//delay unit to perform bus timing
 
 	BusInterface *busI;
 
