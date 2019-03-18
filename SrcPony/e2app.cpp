@@ -43,7 +43,6 @@
 
 //const int idAskToSave = 100; // Dummy Command
 
-//=========================>>> e2App::e2App <<<==========================
 e2App::e2App() :
 	awip(0),
 	port_number(0)
@@ -84,13 +83,15 @@ e2App::e2App() :
 	busvetp[X2444B - 1] = &x2444B;
 	busvetp[S2430B - 1] = &s2430B;
 
+	usb_vendor = 0;
+	usb_product = 0;
+
 	SetInterfaceType();     //Set default interface
 
 	initSettings();
 }
 
 
-//=========================>>> e2App::e2App <<<==========================
 e2App::~e2App()
 {
 	qDebug() << "e2App::~e2App()";
@@ -201,9 +202,16 @@ void e2App::initSettings()
 	returnValue = 0;
 	script_name = "";
 }
-//=====================>>> e2App::OpenPort <<<==============================
 int e2App::OpenPort(int port)
 {
+	if (usb_vendor > 0 && usb_product > 0)
+	{
+		ClosePort();
+		busIntp->SetUSBVid(usb_vendor);
+		busIntp->SetUSBPid(usb_product);
+// 		return iniBus->OpenUSB(usb_vendor, usb_product);
+	}
+
 	qDebug() << "e2App::OpenPort(" << port << ")";
 
 	if (port >= 0)
@@ -215,17 +223,25 @@ int e2App::OpenPort(int port)
 	return iniBus->Open(GetPort());
 }
 
-
-//=====================>>> e2App::ClosePort <<<==============================
 void e2App::ClosePort()
 {
 	qDebug() << "e2App::ClosePort() iniBus=" << (hex) << iniBus << (dec);
 	iniBus->Close();
 }
 
-//=====================>>> e2App::TestPort <<<==============================
 int e2App::TestPort(int port, bool open_only)
 {
+	if (usb_vendor > 0 && usb_product > 0)
+	{
+		qDebug() << "e2App::TestUSBPort(port=" << usb_vendor << usb_product << ", open_only=" << open_only << ")";
+
+		int rv = OK;
+
+		qDebug() << "e2App::TestPort() = " << rv;
+
+		return rv;
+	}
+
 	qDebug() << "e2App::TestPort(port=" << port << ", open_only=" << open_only << ")";
 
 	int rv = (open_only) ?
@@ -237,7 +253,6 @@ int e2App::TestPort(int port, bool open_only)
 	return rv;
 }
 
-//=====================>>> e2App::OpenBus <<<==============================
 int e2App::OpenBus(BusIO *p)
 {
 	qDebug() << "e2App::OpenBus(" << (hex) << p << (dec) << ")";
@@ -245,6 +260,33 @@ int e2App::OpenBus(BusIO *p)
 	iniBus->Close();
 
 	qDebug() << "e2App::OpenBus() ** Close";
+
+	if (usb_vendor > 0 && usb_product > 0)
+	{
+// 		iniBus = p;
+// 		int rv;
+		busIntp->SetUSBVid(usb_vendor);
+		busIntp->SetUSBPid(usb_product);
+//         rv = iniBus->Open(usb_vendor, usb_product);
+//
+// 		qDebug() << "e2App::OpenBus() ** OpenUSB = " << rv;
+//
+// 		if (rv == OK)
+// 		{
+// 			rv = busIntp->SetPower(true);
+//
+// 			qDebug() << "e2App::OpenBus() ** SetPower";
+//
+// 			//Power up delay
+// 			iniBus->WaitMsec(E2Profile::GetPowerUpDelay());
+//
+// 			qDebug() << "e2App::OpenBus() ** Reset";
+//
+// 			iniBus->Reset();        //28/10/98
+// 		}
+//
+// 		return rv;
+	}
 
 	iniBus = p;
 	int rv = iniBus->Open(GetPort());
@@ -270,7 +312,6 @@ int e2App::OpenBus(BusIO *p)
 	return rv;
 }
 
-//=====================>>> e2App::SleepBus <<<==============================
 void e2App::SleepBus()
 {
 	qDebug() << "e2App::CloseBus() iniBus=" << (hex) << iniBus << (dec);
@@ -284,7 +325,6 @@ void e2App::SleepBus()
 // EK 2017
 // TODO to remove this to init function
 #if 0
-//=====================>>> e2App::NewAppWin <<<==========================
 vWindow *e2App::NewAppWin(vWindow *win, char *name,
 						  int w, int h, vAppWinInfo *winInfo)
 {
@@ -341,7 +381,6 @@ vWindow *e2App::NewAppWin(vWindow *win, char *name,
 
 #endif
 
-//=====================>>> e2App::Calibration <<<==============================
 int e2App::Calibration()
 {
 	qDebug() << "e2App::Calibration()";
@@ -356,7 +395,6 @@ int e2App::Calibration()
 
 #if 0
 // EK 2017
-//=====================>>> e2App::AppCommand <<<==============================
 void e2App::AppCommand(vWindow *win, ItemVal id, ItemVal val, CmdType cType)
 {
 	// Commands not processed by the window will be passed here
@@ -366,7 +404,6 @@ void e2App::AppCommand(vWindow *win, ItemVal id, ItemVal val, CmdType cType)
 }
 #endif
 
-//=========================>>> e2App::KeyIn <<<==============================
 // EK 2017 key event filter
 #if 0
 void e2App::KeyIn(vWindow *win, vKey key, unsigned int shift)
@@ -377,67 +414,59 @@ void e2App::KeyIn(vWindow *win, vKey key, unsigned int shift)
 }
 #endif
 
-//=======================>>> e2App::SetInterface <<<=========================
 void e2App::SetInterfaceType(HInterfaceType type)
 {
+	iType = type;
+
 	switch (type)
 	{
 	//Interface initializers
 	case SIPROG_IO:
-		iType = SIPROG_IO;
 		busIntp = &siprog_ioI;
 		break;
 
 	case EASYI2C_API:
-		iType = EASYI2C_API;
 		busIntp = &easyi2c_apiI;
 		easyi2c_apiI.SetIOmode(false);
 		easyi2c_apiI.Close();
 		break;
 
 	case EASYI2C_IO:
-		iType = EASYI2C_IO;
 		busIntp = &easyi2c_ioI;
 		easyi2c_ioI.SetIOmode(true);
 		easyi2c_ioI.Close();
 		break;
 
 	case AVRISP:
-		iType = AVRISP;
 		busIntp = &avrisp_apiI;
 		avrisp_apiI.SetIOmode(false);
 		avrisp_apiI.Close();
 		break;
 
 	case AVRISP_IO:
-		iType = AVRISP_IO;
 		busIntp = &avrisp_ioI;
 		avrisp_ioI.SetIOmode(true);
 		avrisp_ioI.Close();
 		break;
 
 	case JDM_API:
-		iType = JDM_API;
 		busIntp = &jdm_apiI;
 		jdm_apiI.SetCmd2CmdDelay(E2Profile::GetJDMCmd2CmdDelay());
 		break;
 
 	case DT006_API:
-		iType = DT006_API;
 		busIntp = &dt006_apiI;
 		dt006_apiI.SetIOmode(false);
 		dt006_apiI.Close();
 		break;
 
 	case DT006_IO:
-		iType = DT006_IO;
 		busIntp = &dt006_ioI;
 		dt006_ioI.SetIOmode(true);
 		dt006_ioI.Close();
 		break;
 
-	case LINUXSYSFS_IO:
-		iType = LINUXSYSFS_IO;
+	case LINUXSYSFS_IO: // GPIO
 		busIntp = &linuxsysfs_ioI;
 		break;
 
@@ -447,6 +476,10 @@ void e2App::SetInterfaceType(HInterfaceType type)
 		jtagkeyI.ConfigPins(E2Profile::GetMpssePinCtrl(), E2Profile::GetMpssePinDataIn(), E2Profile::GetMpssePinDataOut(), E2Profile::GetMpssePinClock());
 		jtagkeyI.SetUSBVid(0x0403);
 		jtagkeyI.SetUSBPid(0xcff8);
+		break;
+
+	case USB_AUTO:
+		busIntp = &siprog_apiI;
 		break;
 
 	case SIPROG_API:

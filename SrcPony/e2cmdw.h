@@ -24,12 +24,12 @@
 //                                                                         //
 //=========================================================================//
 
+
 #ifndef e2CMDW_H
 #define e2CMDW_H
 
 
 #include <QMainWindow>
-#include <QTimer>
 #include <QTextDocument>
 #include <QLabel>
 #include <QLineEdit>
@@ -49,12 +49,11 @@
 #include <QVector>
 #include <QFont>
 
-
 #include "device.h"
 #include "Translator.h"
 #include "e2app.h"
 #include "e2awinfo.h"
-
+#include "usbwatcher.h"
 
 #include "ui_mainwindow.h"
 #include "qhexedit.h"
@@ -164,8 +163,12 @@ class e2CmdWindow : public QMainWindow, public e2App, public Ui::MainWindow
 		return programStyleSheet;
 	}
 
-
   private slots:
+	void usb_hotplug(const quint16 &vid, const quint16 &pid);
+	void usb_detach();
+
+	void onUSBDisconn();
+	void onUSBConn();
 // 	void onNew();
 	void onOpen(); //
 	void onSave(); //
@@ -298,12 +301,10 @@ class e2CmdWindow : public QMainWindow, public e2App, public Ui::MainWindow
 	void createScriptList();
 	void createFileList();
 
-
   private:
 	void createSignalSlotConnections();
 	QString convertFilterListToString(const QStringList &lst);
 	int filterNameToIndex(const QString &s, const QStringList &lst);
-
 	void doProgress(const QString &text);
 
 	void Draw(/*int rows = 0, int cols = 0*/);
@@ -362,10 +363,10 @@ class e2CmdWindow : public QMainWindow, public e2App, public Ui::MainWindow
 	void selectTypeSubtype(const QString &t, const QString &st);
 	int ScriptError(int line_number, int arg_index, const QString &s, const QString msg = "");
 
-
   private:
-	QString selectedLang;
+	USBWatcher *hotplugUSB;
 
+	QString selectedLang;
 	QFont sysFont;
 	short fontSize;
 
@@ -385,7 +386,6 @@ class e2CmdWindow : public QMainWindow, public e2App, public Ui::MainWindow
 
 	QLineEdit *txtEEPInfo;
 	QLineEdit *txtStringID;
-	//      QProgressBar *statusProgress;
 	QMenu *scrptsMenu;
 	QMenu *filesMenu;
 

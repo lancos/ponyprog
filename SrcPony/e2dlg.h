@@ -2,7 +2,7 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2007   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2019   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
@@ -32,14 +32,10 @@
 #include <QObject>
 
 
-//#include "e2cmdw.h"
 #include "Translator.h"
 #include "globals.h"
 
 #include "ui_e2dlg.h"
-
-
-//class e2CmdWindow;
 
 class e2Dialog : public QDialog, public cTranslator, public Ui::E2Dialog
 {
@@ -54,10 +50,9 @@ class e2Dialog : public QDialog, public cTranslator, public Ui::E2Dialog
   private slots:
 	void onOk();
 	void onTest();
-	void onChangePort(bool);
-	void onSelectNum(int i);
-	void onSelectCOM(int i);
-	void onSelectLPT(int i);
+	void onChangeMain(int i);
+	void onChangeType(int i);
+	void onChangePortNum(int i);
 
   private:
 	int Test(int p = -1, bool open_only = false) const;
@@ -67,9 +62,7 @@ class e2Dialog : public QDialog, public cTranslator, public Ui::E2Dialog
 
 	QStringList lptList;
 	QStringList comList;
-	QStringList usbList;
 
-	//e2CmdWindow* cmdWin;
 	int port_no;                    //Idex of selected port in portList
 	int lpt_no, com_no;
 	HInterfaceType interf_type;

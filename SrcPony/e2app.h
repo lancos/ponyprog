@@ -31,6 +31,8 @@
 #include <QApplication>
 #include <QCoreApplication>
 
+#include <libusb.h>
+
 #include "Translator.h"
 // #include "busio.h"
 
@@ -96,6 +98,7 @@ class e2App : public cTranslator
 	//      }
 	int TestPort(int port = -1, bool open_only = false);
 	int OpenPort(int port = -1);
+
 	void SetInitialBus(BusIO *p)
 	{
 		if (p)
@@ -178,6 +181,9 @@ class e2App : public cTranslator
 	// AppWinInfo associated with this window
 	e2AppWinInfo *awip;
 
+	uint16_t usb_vendor;
+	uint16_t usb_product;
+
   private:
 	void initSettings();
 	void LookForBogoMips(); //should get bogomips
@@ -209,6 +215,7 @@ class e2App : public cTranslator
 	//      JdmIOInterface jdm_ioI;
 	LinuxSysFsInterface linuxsysfs_ioI;
 	MpsseInterface jtagkeyI;
+
 
 	int port_number;        //port number used
 	BusIO *iniBus;                           //pointer to current Bus

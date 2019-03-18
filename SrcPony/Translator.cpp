@@ -542,6 +542,10 @@ QString cTranslator::engText[] =
 	"Checked items means programmed",
 	"UnChecked items means unprogrammed",
 	"Save the result in the buffer at given location",
+	"USB port auto detection",
+	"USB device hotpluged",
+	"USB device detached",
+	"Select number:",
 	""
 };
 

@@ -68,6 +68,7 @@ enum HInterfaceType
 	DT006_IO,
 	LINUXSYSFS_IO,
 	FTDI_JTAGKEY,
+	USB_AUTO, // for ch341a, ch340g, cp210x, pl2303, ftdi
 	LAST_HT
 };
 

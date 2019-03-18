@@ -46,6 +46,7 @@
 
 #include "qhexedit.h"
 
+#include "ch341a.h"
 #include "version.h"
 #include "e2profil.h"
 #include "e2dlg.h"
@@ -64,7 +65,6 @@
 
 #define STATUSBAR_FORM  "    Size     0 Bytes     CRC  0000h      "
 #define STATUSBAR_PRINT "    Size %5ld Bytes     CRC  %04Xh     %c"
-
 
 class e2AppWinInfo;
 
@@ -131,6 +131,13 @@ e2CmdWindow::e2CmdWindow(QWidget *parent) :
 		setStyleSheet(programStyleSheet);
 	}
 
+	int rc = 0;
+	hotplugUSB = new USBWatcher(this);
+
+	connect(hotplugUSB, SIGNAL(USBConnected(const quint16 &, const quint16 &)), this, SLOT(usb_hotplug(const quint16 &, const quint16 &)));
+	connect(hotplugUSB, SIGNAL(USBDisconnected()), this, SLOT(usb_detach()));
+
+	hotplugUSB->start();
 
 	if (readLangDir() == false)   // init from langFiles variable in format "filename:language"
 	{
@@ -292,6 +299,12 @@ e2CmdWindow::~e2CmdWindow()
 
 	// Now put a delete for each new in the constructor.
 
+
+	if (hotplugUSB)
+	{
+		delete hotplugUSB;
+	}
+
 	//      delete e2Menu;
 	delete e2HexEdit;
 	delete qbuf;
@@ -310,6 +323,28 @@ e2CmdWindow::~e2CmdWindow()
 	}
 }
 
+void e2CmdWindow::usb_hotplug(const uint16_t &vid, const uint16_t &pid)
+{
+	if (usb_vendor && usb_product)
+	{
+		// TODO translate this
+		statusbar->showMessage("PonyProg is already connected to USB programmer", 2000);
+		return;
+	}
+
+	usb_vendor = vid;
+	usb_product = pid;
+
+	statusbar->showMessage(translate(STR_HOTPLUGED) + QString().sprintf(": USB VendorID %x, ProductID %x", usb_vendor, usb_product), 2000);
+}
+
+void e2CmdWindow::usb_detach()
+{
+	statusbar->showMessage(translate(STR_DETACHED) + QString().sprintf(": USB VendorID %x, ProductID %x", usb_vendor, usb_product), 2000);
+
+	usb_vendor = 0;
+	usb_product = 0;
+}
 
 
 #if 0
@@ -1608,6 +1643,27 @@ void e2CmdWindow::onDtaChanged()
 	}
 }
 
+
+void e2CmdWindow::onUSBDisconn()
+{
+	qDebug() << "e2CmdWindow::onUSBDisconn()";
+
+	usb_vendor = 0;
+	usb_product = 0;
+}
+
+
+void e2CmdWindow::onUSBConn()
+{
+	qDebug() << "e2CmdWindow::onUSBConn()";
+
+	if (usb_vendor > 0 && usb_product > 0)
+	{
+		qDebug() << "Configure " << (hex) << usb_vendor << usb_product << (dec);
+	}
+}
+
+
 /**
  * @brief create all SIGNAL -> SLOT connections
  * EK 2017
@@ -2365,6 +2421,7 @@ void e2CmdWindow::onByteSwap()
 
 HIDDEN int FileExist(const QString &name);
 HIDDEN bool CmpExtension(const QString &name, const QString &ext);
+
 
 int e2CmdWindow::CmdSave(int type, const QString &fname, long relocation)
 {
@@ -4804,7 +4861,7 @@ int e2CmdWindow::CmdWriteLock()
 	                                if ((nb = atoi(r)) != 0)
 	                                {
 	                                        char str[MAXMSG];
-											sprintf(str, "Security bits write successful (%d,%d)", sb, nb);
+	                                        sprintf(str, "Security bits write succesful (%d,%d)", sb, nb);
 
 	                                        int err = awip->SecurityWrite( ((sb << 4) & 0xF0) | (nb & 0x0F) );
 	                                        if (err)
@@ -5064,7 +5121,7 @@ int e2CmdWindow::CmdWriteSpecial()
 	                        else
 	                        {
 	                                result = OK;
-									note.setText("High endurance block write successful");
+	                                note.setText("High endurance block write succesful");
 	                        }
 	                }
 	        }
@@ -6005,7 +6062,6 @@ QString e2CmdWindow::convertFilterListToString(const QStringList &lst)
 
 	return fltr;
 }
-
 
 
 int e2CmdWindow::SaveFile(int force_select)

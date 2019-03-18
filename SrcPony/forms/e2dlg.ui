@@ -10,61 +10,14 @@
     <x>0</x>
     <y>0</y>
     <width>330</width>
-    <height>336</height>
+    <height>319</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_5">
-   <item row="4" column="0" colspan="2">
-    <widget class="QFrame" name="frmPolsel">
-     <property name="frameShape">
-      <enum>QFrame::StyledPanel</enum>
-     </property>
-     <property name="frameShadow">
-      <enum>QFrame::Raised</enum>
-     </property>
-     <layout class="QGridLayout" name="gridLayout">
-      <item row="0" column="0" colspan="2">
-       <widget class="QLabel" name="lblPol1">
-        <property name="text">
-         <string>TextLabel</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QCheckBox" name="chkPol1">
-        <property name="text">
-         <string>CheckBox</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QCheckBox" name="chkPol3">
-        <property name="text">
-         <string>CheckBox</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
-       <widget class="QCheckBox" name="chkPol2">
-        <property name="text">
-         <string>CheckBox</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <widget class="QCheckBox" name="chkPol4">
-        <property name="text">
-         <string>CheckBox</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="5" column="0" colspan="2">
+   <item row="3" column="0" colspan="2">
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <spacer name="horizontalSpacer">
@@ -102,58 +55,81 @@
      </item>
     </layout>
    </item>
-   <item row="0" column="0" colspan="2">
-    <widget class="QLabel" name="lblMainMsg">
-     <property name="text">
-      <string>I/O port settings</string>
+   <item row="2" column="0" colspan="2">
+    <widget class="QGroupBox" name="grpPolsel">
+     <property name="enabled">
+      <bool>true</bool>
      </property>
-    </widget>
-   </item>
-   <item row="3" column="0" colspan="2">
-    <widget class="QGroupBox" name="frmComsel">
-     <layout class="QGridLayout" name="gridLayout_3">
-      <item row="0" column="1">
-       <widget class="QComboBox" name="cbxInterfNum">
-        <property name="toolTip">
-         <string notr="true"/>
+     <property name="title">
+      <string>Text</string>
+     </property>
+     <property name="flat">
+      <bool>false</bool>
+     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="0">
+       <widget class="QCheckBox" name="chkPol1">
+        <property name="text">
+         <string>CheckBox</string>
         </property>
        </widget>
       </item>
-      <item row="0" column="0">
-       <widget class="QLabel" name="label">
+      <item row="0" column="1">
+       <widget class="QCheckBox" name="chkPol3">
         <property name="text">
-         <string>Select number</string>
+         <string>CheckBox</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QCheckBox" name="chkPol2">
+        <property name="text">
+         <string>CheckBox</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QCheckBox" name="chkPol4">
+        <property name="text">
+         <string>CheckBox</string>
         </property>
        </widget>
       </item>
      </layout>
     </widget>
    </item>
-   <item row="1" column="0" colspan="2">
-    <widget class="QFrame" name="frmPortsel">
-     <property name="frameShape">
-      <enum>QFrame::StyledPanel</enum>
+   <item row="0" column="0" rowspan="2" colspan="2">
+    <widget class="QGroupBox" name="grpPortsel">
+     <property name="autoFillBackground">
+      <bool>false</bool>
      </property>
-     <property name="frameShadow">
-      <enum>QFrame::Raised</enum>
+     <property name="flat">
+      <bool>false</bool>
      </property>
-     <layout class="QGridLayout" name="gridLayout_4">
-      <item row="0" column="0">
-       <widget class="QRadioButton" name="rdbComPort">
-        <property name="text">
-         <string>RadioButton</string>
+     <layout class="QGridLayout" name="gridLayout_3">
+      <item row="1" column="0" colspan="2">
+       <widget class="Line" name="line_2">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
         </property>
        </widget>
       </item>
       <item row="2" column="0">
-       <widget class="QRadioButton" name="rdbLptPort">
+       <widget class="QLabel" name="labelType">
         <property name="text">
-         <string>RadioButton</string>
+         <string>Interface type</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="labelMain">
+        <property name="text">
+         <string>Select interface</string>
         </property>
        </widget>
       </item>
       <item row="2" column="1">
-       <widget class="QComboBox" name="cbxInterfLPT">
+       <widget class="QComboBox" name="cbxInterfType">
         <property name="toolTip">
          <string notr="true"/>
         </property>
@@ -169,7 +145,7 @@
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QComboBox" name="cbxInterfCOM">
+       <widget class="QComboBox" name="cbxInterfMain">
         <property name="toolTip">
          <string notr="true"/>
         </property>
@@ -181,7 +157,21 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="0" colspan="2">
+      <item row="4" column="0">
+       <widget class="QLabel" name="labelNum">
+        <property name="text">
+         <string>Select number</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1">
+       <widget class="QComboBox" name="cbxInterfNum">
+        <property name="toolTip">
+         <string notr="true"/>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0" colspan="2">
        <widget class="Line" name="line">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
