@@ -59,6 +59,7 @@ class e2Dialog : public QDialog, public cTranslator, public Ui::E2Dialog
 	void setWidgetsText();
 	void getSettings();
 	void setSettings();
+	void activateTTYSettings(bool set);
 
 	QStringList lptList;
 	QStringList comList;

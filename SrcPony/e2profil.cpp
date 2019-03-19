@@ -95,6 +95,57 @@ void E2Profile::SetBogoMips(int value)
 
 #include "eeptypes.h"
 
+QString E2Profile::GetBaudrate()
+{
+	return s->value("Baudrate", "9600").toString();
+}
+
+QString E2Profile::GetParity()
+{
+	return s->value("Parity", "None").toString();
+}
+
+
+QString E2Profile::GetDatabits()
+{
+	return s->value("Databits", "8 bits").toString();
+}
+
+
+QString E2Profile::GetFlowcontrol()
+{
+	return s->value("FlowControl", "None").toString();
+}
+
+QString E2Profile::GetStopbits()
+{
+	return s->value("Stopbits", "1 bit").toString();
+}
+
+void E2Profile::SetBaudrate(const QString &str)
+{
+	s->setValue("Baudrate", str);
+}
+
+void E2Profile::SetDatabits(const QString &str)
+{
+	s->setValue("Databits", str);
+}
+
+void E2Profile::SetParity(const QString &str)
+{
+	s->setValue("Parity", str);
+}
+
+void E2Profile::SetStopbits(const QString &str)
+{
+	s->setValue("Stopbits", str);
+}
+
+void E2Profile::SetFlowcontrol(const QString &str)
+{
+	s->setValue("FlowControl", str);
+}
 
 long E2Profile::GetLastDevType()
 {

@@ -100,6 +100,21 @@ class E2Profile
 	static long GetLastDevType();
 	static void SetLastDevType(long devtype);
 
+	static QString GetBaudrate();
+	static void SetBaudrate(const QString &s);
+
+	static QString GetDatabits();
+	static void SetDatabits(const QString &s);
+
+	static QString GetParity();
+	static void SetParity(const QString &s);
+
+	static QString GetStopbits();
+	static void SetStopbits(const QString &s);
+
+	static QString GetFlowcontrol();
+	static void SetFlowcontrol(const QString &s);
+
 	static QString GetLastFile(int &data, int index = 0);
 // 	static QString GetPrevFile(int &data);
 	static void SetLastFile(const QString &name, int data = ALL_TYPE);

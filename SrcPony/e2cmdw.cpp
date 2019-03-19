@@ -302,6 +302,7 @@ e2CmdWindow::~e2CmdWindow()
 
 	if (hotplugUSB)
 	{
+		hotplugUSB->terminate();
 		delete hotplugUSB;
 	}
 
@@ -6705,6 +6706,13 @@ void e2CmdWindow::Exit()
 			//              really_close = true;
 			//      }
 			//}
+		}
+
+
+		if (hotplugUSB)
+		{
+			hotplugUSB->terminate();
+			delete hotplugUSB;
 		}
 
 		qApp->quit();

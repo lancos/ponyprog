@@ -56,9 +56,15 @@ e2Dialog::e2Dialog(QWidget *bw, const QString title)
 
 	qDebug() << "e2Dialog::e2Dialog()";
 
+	cbxBaudrate->addItems(QStringList() << "300" << "1200" << "2400" << "4800" << "9600" << "14400" << "19200" << "28800" << "38400" << "57600" << "115200");
+	cbxDatabits->addItems(QStringList() << "5 bits" << "6 bits" << "7 bits" << "8 bits");
+	cbxParity->addItems(QStringList() << "None" << "Even" << "Odd");
+	cbxStopbits->addItems(QStringList() << "1 bit" << "2 bits");
+	cbxFlowControl->addItems(QStringList() << "None" << "RTS/CTS" << "DTR/DSR" << "XON/XOFF");
+
 	setWidgetsText();
 
-	// main selection for COM/LPT/CH341A
+	// main selection for COM/LPT/USB
 	connect(cbxInterfMain, SIGNAL(currentIndexChanged(int)), this, SLOT(onChangeMain(int)));
 	// selection of subtype
 	connect(cbxInterfType, SIGNAL(currentIndexChanged(int)), this, SLOT(onChangeType(int)));
@@ -87,6 +93,12 @@ extern QStringList GetInterfList(int vector);
  */
 void e2Dialog::onChangeMain(int i)
 {
+	disconnect(cbxInterfMain, SIGNAL(currentIndexChanged(int)), this, SLOT(onChangeMain(int)));
+
+	cbxInterfMain->setCurrentIndex(i);
+
+	connect(cbxInterfMain, SIGNAL(currentIndexChanged(int)), this, SLOT(onChangeMain(int)));
+
 	interf_type = VindexToInterfType(i, 0);
 	qDebug() << "IntefType: " << (int)interf_type << ", index = " << i;
 
@@ -102,6 +114,15 @@ void e2Dialog::onChangeMain(int i)
 // 	cbxInterfType->setCurrentIndex(0);
 	onChangeType(0);
 //	interf_type = (HInterfaceType)(i + 3);
+}
+
+void e2Dialog::activateTTYSettings(bool set)
+{
+	cbxBaudrate->setEnabled(set);
+	cbxDatabits->setEnabled(set);
+	cbxParity->setEnabled(set);
+	cbxStopbits->setEnabled(set);
+	cbxFlowControl->setEnabled(set);
 }
 
 /**
@@ -124,14 +145,22 @@ void e2Dialog::onChangeType(int i)
 	{
 	case 0: // tty
 		cbxInterfNum->addItems(comList);
+		// TODO is it right??
+#ifdef Q_OS_WIN32
+		activateTTYSettings(false);
+#else
+		activateTTYSettings(true);
+#endif
 		break;
 
 	case 1: // lpt
 		cbxInterfNum->addItems(lptList);
+		activateTTYSettings(false);
 		break;
 
 	case 2: // usb autodetect ch341a
 		cbxInterfNum->addItems(QStringList("Autodetect"));
+		activateTTYSettings(true);
 		break;
 	}
 
@@ -235,6 +264,12 @@ void e2Dialog::getSettings()
 	chkPol2->setChecked((cmdWin->GetPolarity() & CLOCKINV) ? 1 : 0);
 	chkPol3->setChecked((cmdWin->GetPolarity() & DININV) ? 1 : 0);
 	chkPol4->setChecked((cmdWin->GetPolarity() & DOUTINV) ? 1 : 0);
+
+	cbxBaudrate->setCurrentText(E2Profile::GetBaudrate());
+	cbxDatabits->setCurrentText(E2Profile::GetDatabits());
+	cbxParity->setCurrentText(E2Profile::GetParity());
+	cbxStopbits->setCurrentText(E2Profile::GetStopbits());
+	cbxFlowControl->setCurrentText(E2Profile::GetFlowcontrol());
 }
 
 void e2Dialog::setSettings()
@@ -287,6 +322,12 @@ void e2Dialog::setSettings()
 	E2Profile::SetParInterfType(interf_type);
 	E2Profile::SetPortNumber(port_no);
 	E2Profile::SetPolarityControl(cmdWin->GetPolarity());
+
+	E2Profile::SetBaudrate(cbxBaudrate->currentText());
+	E2Profile::SetDatabits(cbxDatabits->currentText());
+	E2Profile::SetParity(cbxParity->currentText());
+	E2Profile::SetStopbits(cbxStopbits->currentText());
+	E2Profile::SetFlowcontrol(cbxFlowControl->currentText());
 
 	qDebug() << "PortNo: " << port_no;
 }

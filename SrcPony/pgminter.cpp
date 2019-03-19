@@ -54,7 +54,7 @@ void SIProgInterface::SetControlLine(int res)
 	{
 		if (cmdWin->GetPolarity() & RESETINV)
 		{
-			res = !res;
+			res = res ? 0 : 1;
 		}
 
 		SetSerialBreak(res);
@@ -147,7 +147,7 @@ void SIProgInterface::SetDataOut(int sda)
 	{
 		if (cmdWin->GetPolarity() & DOUTINV)
 		{
-			sda = !sda;
+			sda = sda ? 0 : 1;
 		}
 
 		SetSerialDTR(sda);
@@ -162,7 +162,7 @@ void SIProgInterface::SetClock(int scl)
 	{
 		if (cmdWin->GetPolarity() & CLOCKINV)
 		{
-			scl = !scl;
+			scl = scl ? 0 : 1;
 		}
 
 		SetSerialRTS(scl);

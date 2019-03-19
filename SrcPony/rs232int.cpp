@@ -302,6 +302,8 @@ void SerialInterface::CloseSerial()
 	{
 		//TODO disconnect? when flashing runs?
 		// close the usb
+		uartProg->Close();
+
 		delete uartProg;
 		uartProg = 0;
 	}
@@ -482,6 +484,9 @@ void SerialInterface::WaitForTxEmpty()
 #endif
 }
 
+/**
+ * @brief this function is not in using
+ */
 long SerialInterface::ReadSerial(uint8_t *buffer, long len)
 {
 	long retval = E2ERR_OPENFAILED;
@@ -496,6 +501,7 @@ long SerialInterface::ReadSerial(uint8_t *buffer, long len)
 
 		while (nleft > 0)
 		{
+			// TODO ???
 // 			nread = uartProg->Read(ptr, nleft);
 
 			if (nread < 0)
@@ -593,6 +599,9 @@ long SerialInterface::ReadSerial(uint8_t *buffer, long len)
 	return retval;
 }
 
+/**
+ * @brief this function is not in using
+ */
 long SerialInterface::WriteSerial(uint8_t *buffer, long len)
 {
 	long retval = E2ERR_OPENFAILED;
@@ -607,6 +616,7 @@ long SerialInterface::WriteSerial(uint8_t *buffer, long len)
 
 		while (nleft > 0)
 		{
+			// TODO ???
 			long nwritten = 0;// = uartProg->Write(ptr, nleft);
 
 			if (nwritten <= 0)
@@ -671,10 +681,65 @@ long SerialInterface::WriteSerial(uint8_t *buffer, long len)
 	return retval;
 }
 
-// -1 ---> Not Change
+// EK: now it works with settings from e2dlg popup
 int SerialInterface::SetSerialParams(long speed, int bits, int parity, int stops, int flow_control)
 {
 	int result = E2ERR_OPENFAILED;
+
+	// read settings
+
+	if (speed == -1)
+	{
+		speed = E2Profile::GetBaudrate().toInt();
+	}
+
+	if (parity == -1)
+	{
+		// only first char: N, O, E
+		parity = E2Profile::GetParity().at(0).toLatin1();
+	}
+
+	if (bits == -1)
+	{
+		// convert from char to number
+		bits = E2Profile::GetDatabits().at(0).toLatin1() - 0x30;
+	}
+
+	if (stops == -1)
+	{
+		// convert from char to number
+		stops = E2Profile::GetStopbits().at(0).toLatin1() - 0x30;
+	}
+
+	if (flow_control == -1)
+	{
+		char c = E2Profile::GetFlowcontrol().at(0).toLatin1();
+		if (c == 'N')
+		{
+			// none flow control
+			flow_control = 0;
+		}
+
+		if (c == 'R')
+		{
+			// RTS/CTS
+			flow_control = 1;
+		}
+
+		if (c == 'X')
+		{
+			// XON/XOFF
+			flow_control = 2;
+		}
+
+		if (c == 'D')
+		{
+			// DTR/DSR
+			flow_control = 3;
+		}
+	}
+
+	// end read of settings
 
 	if (uartProg != 0)
 	{
