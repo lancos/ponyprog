@@ -30,6 +30,79 @@
 #include "businter.h"
 #include "ftdi.hpp"
 
+#include <QBitArray>
+
+class MpsseCommandQueue
+{
+  public:
+	MpsseCommandQueue()
+	{
+		clear();
+	}
+
+	void clear()
+	{
+		cmdidx = 0;
+		datain_low_count = datain_high_count = 0;
+	}
+
+	int getSize()
+	{
+		return cmdidx;
+	}
+
+	bool append(uint8_t dat)
+	{
+		if (cmdidx < sizeof(cmdbuf))
+		{
+			if (dat == GET_BITS_LOW)
+				datain_low_count++;
+			else
+			if (dat == GET_BITS_HIGH)
+				datain_high_count++;
+
+			cmdbuf[cmdidx++] = dat;
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	unsigned int getDataInCount()
+	{
+		return datain_low_count + datain_high_count;
+	}
+
+	uint8_t *getBuffer()
+	{
+		return cmdbuf;
+	}
+
+	bool isFull()
+	{
+		return (cmdidx >= sizeof(cmdbuf));
+	}
+
+	bool almostFull(int n = 6)
+	{
+		return (cmdidx >= sizeof(cmdbuf) - n);
+	}
+
+	bool isEmpty()
+	{
+		return (cmdidx == 0);
+	}
+
+  private:
+	uint8_t cmdbuf[1024];
+	unsigned int cmdidx;
+
+	unsigned int datain_low_count;
+	unsigned int datain_high_count;
+};
+
 class MpsseInterface : public BusInterface
 {
   public:
@@ -54,6 +127,7 @@ class MpsseInterface : public BusInterface
 	void SetControlLine(int res = 1);
 
 	void List();
+	int Flush();
 
 	const int usb_vid = 0x0403;
 	const int usb_pid = 0xcff8;
@@ -67,7 +141,9 @@ class MpsseInterface : public BusInterface
 
 	int SetFrequency(uint32_t freq);
 	int SendPins(int new_data, int new_directions = -1);
-	int GetPins();
+	void GetPinsCommit(int data_mask = -1);
+	int ReadQueuedPins();
+	QBitArray ParseQueuedPin(int data_mask = -1);
 	int TestPins();
 
 	unsigned int OutDataMask(int old_val, int mask, int val)
@@ -86,6 +162,11 @@ class MpsseInterface : public BusInterface
 
 	Ftdi::Context ctx;
 
+	MpsseCommandQueue cmdbuf;
+	bool queue_mode;
+	uint8_t in_buffer[1024];
+	unsigned int in_datacount;
+
 	int pin_directions;
 
 	int last_data;
@@ -95,6 +176,7 @@ class MpsseInterface : public BusInterface
 	int pin_datain;
 	int pin_dataout;
 	int pin_clock;
+	int pin_clockin;	//0 if unused
 };
 
 #endif

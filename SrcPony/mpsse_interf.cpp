@@ -34,12 +34,6 @@
 #include <QProcess>
 #include <QString>
 
-//#ifdef Q_OS_LINUX
-//# include <errno.h>
-//# include <unistd.h>
-//# include <fcntl.h>
-//#endif
-
 MpsseInterface::MpsseInterface()
 {
 	qDebug() << "MpsseInterface::MpsseInterface()";
@@ -53,6 +47,11 @@ MpsseInterface::MpsseInterface()
 	pin_datain = 4;
 	pin_dataout = 2;
 	pin_clock = 1;
+	pin_clockin = 0;
+
+	cmdbuf.clear();
+
+	queue_mode = false;
 }
 
 MpsseInterface::~MpsseInterface()
@@ -171,7 +170,8 @@ int MpsseInterface::Open(int port)
 
 	if (GetInstalled() != port)
 	{
-		int result;
+		queue_mode = false;
+
 		QString qs = E2Profile::GetMpsseInterfacePort();
 		ftdi_interface interf = INTERFACE_A;
 
@@ -182,7 +182,7 @@ int MpsseInterface::Open(int port)
 		else if (qs.compare("D", Qt::CaseInsensitive) == 0)
 			interf = INTERFACE_D;
 
-		result = ctx.set_interface(interf);
+		int result = ctx.set_interface(interf);
 		if (result == 0)
 			result = ctx.open(usb_vid, usb_pid);
 		if (result == 0)
@@ -190,7 +190,7 @@ int MpsseInterface::Open(int port)
 			ctx.reset();
 			//ctx.flush();
 			ctx.set_read_chunk_size(64);
-			ctx.set_write_chunk_size(64);
+			ctx.set_write_chunk_size(1024);
 			//ctx.set_event_char();
 			//ctx.set_error_char();
 			//ctx.set_usb_read_timeout(0);
@@ -199,7 +199,8 @@ int MpsseInterface::Open(int port)
 			ctx.set_bitmode(0, BITMODE_RESET);
 			result = InitPins();
 			Q_ASSERT(result == 0);
-			//TestPins();
+			queue_mode = true;
+			TestPins();
 			Install(port);
 		}
 		else
@@ -229,12 +230,32 @@ void MpsseInterface::Close()
 	qDebug() << "MpsseInterface::Close() OUT";
 }
 
+int MpsseInterface::Flush()
+{
+	int ret = OK;
+
+	if (!cmdbuf.isEmpty())
+	{
+		ret = ctx.write(cmdbuf.getBuffer(), cmdbuf.getSize());
+		if (ret == cmdbuf.getSize())
+		{
+			cmdbuf.clear();
+			ret = OK;
+		}
+		else
+		{
+			qWarning("MpsseInterface::Flush() write failed (%s)\n", ctx.error_string());
+			ret = -1;
+		}
+	}
+	return ret;
+}
+
 int MpsseInterface::SendPins(int new_data, int new_directions)
 {
-	int ret;
-	uint8_t buf[6];
 	int ch_data, ch_dir;
-	int idx = 0;
+
+	Q_ASSERT(!cmdbuf.almostFull());
 
 	if (new_directions >= 0)	//-1 don't change directions
 	{
@@ -253,41 +274,93 @@ int MpsseInterface::SendPins(int new_data, int new_directions)
 
 	if ((ch_data & 0x00ff) != 0 || (ch_dir & 0x00ff) != 0)	//low byte
 	{
-		buf[idx++] = SET_BITS_LOW;
-		buf[idx++] = new_data & 0xff;
-		buf[idx++] = new_directions & 0xff;
+		cmdbuf.append(SET_BITS_LOW);
+		cmdbuf.append(new_data & 0xff);
+		cmdbuf.append(new_directions & 0xff);
 	}
 	if ((ch_data & 0xff00) != 0 || (ch_dir & 0xff00) != 0)	//high byte
 	{
-		buf[idx++] = SET_BITS_HIGH;
-		buf[idx++] = (new_data >> 8) & 0xff;
-		buf[idx++] = (new_directions >> 8) & 0xff;
+		cmdbuf.append(SET_BITS_HIGH);
+		cmdbuf.append((new_data >> 8) & 0xff);
+		cmdbuf.append((new_directions >> 8) & 0xff);
 	}
 
-	if (idx > 0)
+	if (queue_mode || Flush() == OK)
 	{
-		ret = ctx.write(buf, idx);
-		if (ret == idx)
-		{
-			last_data = new_data;
-			pin_directions = new_directions;
-			ret = OK;
-		}
-		else
-		{
-			qWarning("MpsseInterface::SendPins() write failed (%s)\n", ctx.error_string());
-			ret = -1;
-		}
+		last_data = new_data;
+		pin_directions = new_directions;
 	}
-	else
+
+	return OK;
+}
+
+void MpsseInterface::GetPinsCommit(int data_mask)
+{
+	if (data_mask < 0)
+		data_mask = pin_datain;
+
+	Q_ASSERT(!cmdbuf.almostFull(2));
+
+	if (data_mask & 0x00ff)
+		cmdbuf.append(GET_BITS_LOW);
+	if (data_mask & 0xff00)
+		cmdbuf.append(GET_BITS_HIGH);
+}
+
+int MpsseInterface::ReadQueuedPins()
+{
+	Q_ASSERT(!cmdbuf.almostFull(1));
+
+	cmdbuf.append(SEND_IMMEDIATE);
+	in_datacount = cmdbuf.getDataInCount();		//store datacount before the flush
+
+	Q_ASSERT(in_datacount > 0 && in_datacount <= sizeof(in_buffer));
+
+	int ret = Flush();
+	if (ret == OK)
 	{
+		int count, remain;
+		count = 0;
+		remain = in_datacount;
+		do {
+			ret = ctx.read(in_buffer + count, remain);
+			if (ret < 0)
+			{
+				qWarning("MpsseInterface::ReadPins() read failed (%s)\n", ctx.error_string());
+				return -1;
+			}
+			else
+			{
+				remain -= ret;
+				count += ret;
+			}
+		} while (remain > 0);
+
 		ret = OK;
 	}
 	return ret;
 }
 
+QBitArray MpsseInterface::ParseQueuedPin(int data_mask)
+{
+	if (data_mask < 0)
+		data_mask = pin_datain;
+
+	Q_ASSERT(in_datacount > 0);
+
+	QBitArray ba(in_datacount);
+
+	for (unsigned int idx = 0; idx < in_datacount; idx++)
+	{
+		if (in_buffer[idx] & data_mask)
+			ba.setBit(idx, true);
+	}
+	return ba;
+}
+
 int MpsseInterface::TestPins()
 {
+#if 0
 	int ret, k, idx;
 	uint8_t buf[6 * 8];
 
@@ -313,39 +386,26 @@ int MpsseInterface::TestPins()
 		qWarning("MpsseInterface::TestPins() write failed (%s)\n", ctx.error_string());
 		return -1;
 	}
-
-	return OK;
-}
-
-int MpsseInterface::GetPins()
-{
-	int ret;
-	uint8_t buf[2];
-	uint8_t cmd[] = {GET_BITS_LOW, GET_BITS_HIGH, SEND_IMMEDIATE};
-	ret = ctx.write(cmd, sizeof(cmd));
-
-	if (ret == sizeof(cmd))
+#else
+	for (int k = 0; k < 8; k++)
 	{
-		do {
-			ret = ctx.read(buf, sizeof(buf));
-		} while (ret == 0);
-		if (ret < 0)
-		{
-			qWarning("MpsseInterface::GetPins() write failed (%s)\n", ctx.error_string());
-			return -1;
-		}
-		else
-		{
-			read_data = buf[0] | ((int)buf[1] << 8);
-			//qDebug("MpsseInterface::GetPins()=%u\n", read_data);
-			return OK;
-		}
+		SendPins(OutDataMask(pin_clock, 2));
+		SendPins(OutDataMask(pin_clock, 2));
+		GetPinsCommit();
+	}
+	if (ReadQueuedPins() != OK)
+	{
+		qWarning("MpsseInterface::TestPins() read failed\n");
+		return -1;
 	}
 	else
 	{
-		qWarning("MpsseInterface::GetPins() write failed (%s)\n", ctx.error_string());
-		return -1;
+		QBitArray ba = ParseQueuedPin();
+		qDebug() << "Readpin: " << ba;
 	}
+#endif
+
+	return OK;
 }
 
 void MpsseInterface::SetControlLine(int res)
@@ -445,17 +505,20 @@ int MpsseInterface::GetDataIn()
 {
 	if (IsInstalled())
 	{
-		unsigned int val;
-
-		if (GetPins() != OK)
+		GetPinsCommit();
+		if (ReadQueuedPins() != OK)
 		{
-			qWarning("MpsseInterface::SetDataIn() read failed\n");
+			qWarning("MpsseInterface::GetDataIn() read failed\n");
 			return -1;
 		}
 		else
 		{
-			val = (read_data & pin_datain) ? 1 : 0;
-			//qDebug() << "MpsseInterface::GetDataIn()=" << val;
+			QBitArray ba = ParseQueuedPin();
+			unsigned int val = 0;
+
+			if (!ba.isEmpty())
+				val = ba.testBit(0);
+			qDebug() << "MpsseInterface::GetDataIn()=" << val;
 
 			if (cmdWin->GetPolarity() & DININV)
 			{
