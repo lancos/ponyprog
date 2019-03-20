@@ -132,8 +132,23 @@ class MpsseInterface : public BusInterface
 	const int usb_vid = 0x0403;
 	const int usb_pid = 0xcff8;
 
+	void SetQueueMode(bool val)
+	{
+		if (val != queue_mode)
+		{
+			//Flush();
+			ctx.flush();
+			cmdbuf.clear();
+			queue_mode = val;
+		}
+	}
+	bool GetQueueMode()
+	{
+		return queue_mode;
+	}
+
   protected:
-	//      int GetPresence() const;
+	//int GetPresence() const;
 
   private:
 	int InitPins();
@@ -144,8 +159,10 @@ class MpsseInterface : public BusInterface
 	void GetPinsCommit(int data_mask = -1);
 	int ReadQueuedPins();
 	QBitArray ParseQueuedPin(int data_mask = -1);
+
 	int TestPins();
 
+	//utility to set/reset/toggle a pin
 	unsigned int OutDataMask(int old_val, int mask, int val)
 	{
 		if (val == 0)
@@ -162,8 +179,9 @@ class MpsseInterface : public BusInterface
 
 	Ftdi::Context ctx;
 
-	MpsseCommandQueue cmdbuf;
 	bool queue_mode;
+	MpsseCommandQueue cmdbuf;
+
 	uint8_t in_buffer[1024];
 	unsigned int in_datacount;
 
