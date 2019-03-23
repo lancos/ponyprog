@@ -30,34 +30,21 @@
 #include "spi-bus.h"
 #include "errcode.h"
 
-
 #include "e2cmdw.h"
 
 #include <QDebug>
 #include <QtCore>
 
-#ifdef Q_OS_LINUX
-#  include <unistd.h>
-#else
-#  ifdef        __BORLANDC__
-#    define     __inline__
-#  else // _MICROSOFT_ VC++
-#    define     __inline__ __inline
-#    define _export
-#  endif
-#endif
-
-// Costruttore
-SPIBus::SPIBus(BusInterface *ptr, bool cpha)
+SPIBus::SPIBus(BusInterface *ptr, int bpw, bool cpha, bool cpol)
 	: BusIO(ptr),
-	  fall_edge_sample(cpha)
+	  m_bits_per_word(bpw),
+	  m_cpol(cpol),
+	  m_cpha(cpha)
 {
 }
 
-// Distruttore
 SPIBus::~SPIBus()
 {
-	//      Close();
 }
 
 void SPIBus::SetDelay()
@@ -92,7 +79,7 @@ void SPIBus::SetDelay()
 		break;
 	}
 
-	BusIO::SetDelay(n);
+	busI->SetDelay(n);
 
 	qDebug() << "SPIBus::SetDelay() = " << n;
 }
@@ -100,87 +87,27 @@ void SPIBus::SetDelay()
 
 int SPIBus::SendDataBit(int b)
 {
-	if (fall_edge_sample)
-	{
-		setSCK();               //be sure the SCK line is high
-		bitMOSI(b);
-		WaitUsec(shot_delay);
-		clearSCK();             //slave latches data bit now!
-		WaitUsec(shot_delay);
-	}
-	else
-	{
-		clearSCK();             //be sure the SCK line is low
-		bitMOSI(b);
-		WaitUsec(shot_delay);
-		setSCK();               //slave latches data bit now!
-		WaitUsec(shot_delay);
-		clearSCK();
-	}
+	busI->SPI_xferBit(b, GetMode());
 
 	return OK;
 }
 
-// ritorna un numero negativo se c'e` un errore, altrimenti 0 o 1
 int SPIBus::RecDataBit()
 {
-	register uint8_t b;
-
-	if (fall_edge_sample)
-	{
-		setSCK();               //be sure the SCK line is high
-		WaitUsec(shot_delay);
-		clearSCK();
-		b = getMISO();
-		WaitUsec(shot_delay);
-	}
-	else
-	{
-		clearSCK();             //be sure the SCK line is low
-		WaitUsec(shot_delay);
-		setSCK();
-		b = getMISO();
-		WaitUsec(shot_delay);
-		clearSCK();
-	}
-
-	return b;
+	return busI->SPI_xferBit(1, GetMode());
 }
 
-// OK, ora ci alziamo di un livello: operiamo sul byte
 int SPIBus::SendDataByte(int by)
 {
-	int k;
-
-	clearSCK();
-
-	//MSbit (7) sent first
-	for (k = 7; k >= 0; k--)
-	{
-		SendDataBit(by & (1 << k));
-	}
-
-	setMOSI();
+	busI->SPI_xferWord(by, GetMode());
 
 	return OK;
 }
 
 int SPIBus::RecDataByte()
 {
-	int k, val = 0;
-
-	setMOSI();
-	clearSCK();
-
-	for (k = 7; k >= 0; k--)
-		if (RecDataBit())
-		{
-			val |= 1 << k;
-		}
-
-	return val;
+	return busI->SPI_xferWord(0xff, GetMode());
 }
-
 
 int SPIBus::Reset(void)
 {

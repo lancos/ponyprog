@@ -130,7 +130,7 @@ void IMBus::SetDelay()
 		break;
 	}
 
-	BusIO::SetDelay(n);
+	busI->SetDelay(n);
 
 	qDebug() << "IMBus::SetDelay() = " << n;
 }
@@ -139,9 +139,9 @@ int IMBus::SendDataBit(int b)
 {
 	clearCLK();             //set clock low
 	bitDI(b);
-	WaitUsec(shot_delay);
+	ShotDelay();
 	setCLK();               //device latch data bit now!
-	WaitUsec(shot_delay);
+	ShotDelay();
 
 	return OK;
 }
@@ -152,10 +152,10 @@ int IMBus::RecDataBit()
 	register uint8_t b;
 
 	clearCLK();                             //the eeprom set data now
-	WaitUsec(shot_delay);
+	ShotDelay();
 	setCLK();
 	b = getDO();
-	WaitUsec(shot_delay);
+	ShotDelay();
 
 	return b;
 }
@@ -163,9 +163,9 @@ int IMBus::RecDataBit()
 int IMBus::IdentPulse()
 {
 	clearIdent();
-	WaitUsec(shot_delay);
+	ShotDelay();
 	setIdent();
-	WaitUsec(shot_delay);
+	ShotDelay();
 
 	return OK;
 }

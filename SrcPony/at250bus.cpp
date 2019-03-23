@@ -60,11 +60,11 @@ At250Bus::At250Bus(BusInterface *ptr)
 
 void At250Bus::EndCycle()
 {
-	//      WaitUsec(1);
+	//WaitUsec(1);
 	setNCS();
-	WaitUsec(shot_delay * 2);
+	ShotDelay(2);
 	clearNCS();
-	WaitUsec(shot_delay);
+	ShotDelay();
 }
 
 int At250Bus::ReadEEPByte(int addr)
@@ -74,7 +74,7 @@ int At250Bus::ReadEEPByte(int addr)
 	SendDataByte(ReadData | (((addr >> 8) & 1) << 3));
 	SendDataByte(addr);
 
-	WaitUsec(shot_delay);
+	ShotDelay();
 
 	rv = RecDataByte();
 
@@ -138,7 +138,7 @@ int At250Bus::Reset(void)
 
 	SPIBus::Reset();
 
-	WaitUsec(shot_delay);
+	ShotDelay();
 
 	//      SendDataByte(WriteEnable);
 	//      EndCycle();

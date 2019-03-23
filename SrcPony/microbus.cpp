@@ -95,7 +95,7 @@ void MicroWireBus::SetDelay()
 		break;
 	}
 
-	BusIO::SetDelay(n);
+	busI->SetDelay(n);
 
 	qDebug() << "MicroWire::SetDelay() = " << n;
 }
@@ -106,11 +106,11 @@ int MicroWireBus::SendDataBit(int b)
 	clearCLK();             //si assicura che SCK low
 	bitDI(b);
 
-	WaitUsec(shot_delay);
+	ShotDelay();
 
 	setCLK();               //device latch data bit now!
 
-	WaitUsec(shot_delay);
+	ShotDelay();
 
 	clearCLK();
 
@@ -124,11 +124,11 @@ int MicroWireBus::RecDataBit()
 
 	clearCLK();             //si assicura che SCK low
 
-	WaitUsec(shot_delay);
+	ShotDelay();
 
 	setCLK();
 
-	WaitUsec(shot_delay);
+	ShotDelay();
 
 	b = getDO();
 	clearCLK();
@@ -139,7 +139,7 @@ int MicroWireBus::RecDataBit()
 int MicroWireBus::RecDataBitShort()
 {
 	clearCLK();             //si assicura che SCK low
-	WaitUsec(shot_delay);
+	ShotDelay();
 	return getDO();
 }
 
@@ -239,11 +239,11 @@ int MicroWireBus::WaitReadyAfterWrite(long timeout)
 	clearCLK();
 	ClearReset();   //27/05/98
 
-	WaitUsec(shot_delay);
+	ShotDelay();
 
 	SetReset();             //27/05/98
 
-	WaitUsec(shot_delay);
+	ShotDelay();
 
 	clearCLK();
 

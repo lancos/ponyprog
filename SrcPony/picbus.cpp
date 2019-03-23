@@ -104,7 +104,7 @@ void PicBus::SetDelay()
 		break;
 	}
 
-	BusIO::SetDelay(n);
+	busI->SetDelay(n);
 
 	qDebug() << "PICBus::SetDelay() = " << n;
 }
@@ -114,11 +114,11 @@ int PicBus::SendDataBit(int b)
 	setCLK();               //set SCK high
 	bitDI(b);
 
-	WaitUsec(shot_delay);
+	ShotDelay();
 
 	clearCLK();             //device latch data bit now!
 
-	WaitUsec(shot_delay);
+	ShotDelay();
 
 	return OK;
 }
@@ -130,12 +130,12 @@ int PicBus::RecDataBit()
 
 	setCLK();               //set SCK high (Pic output data now)
 
-	WaitUsec(shot_delay);
+	ShotDelay();
 
 	b = getDO();    // sampling data on falling edge
 	clearCLK();
 
-	WaitUsec(shot_delay);
+	ShotDelay();
 
 	return b;
 }

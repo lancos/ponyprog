@@ -57,7 +57,6 @@
 I2CBus::I2CBus(BusInterface *ptr)
 	: BusIO(ptr)
 {
-	shot_delay = 0;
 }
 
 // Destructor
@@ -101,7 +100,7 @@ int I2CBus::SendStart()
 	}
 
 #else
-	WaitUsec(shot_delay / 2);
+	WaitUsec(GetDelay() / 2);
 #endif
 
 	if ((err = CheckBusy()))
@@ -110,9 +109,9 @@ int I2CBus::SendStart()
 	}
 
 	clearSDA();
-	WaitUsec(shot_delay);   // tHD;STA = 4 usec
+	ShotDelay();   // tHD;STA = 4 usec
 	clearSCL();
-	WaitUsec(shot_delay / 2);
+	WaitUsec(GetDelay() / 2);
 
 	return 0;
 }
@@ -120,9 +119,9 @@ int I2CBus::SendStart()
 int I2CBus::SendStop()
 {
 	clearSCL();
-	WaitUsec(shot_delay + 1);
+	WaitUsec(GetDelay() + 1);
 	clearSDA();
-	WaitUsec(shot_delay + 1);
+	WaitUsec(GetDelay() + 1);
 	setSCL();
 #ifdef  SCLTIMEOUT
 
@@ -143,11 +142,11 @@ int I2CBus::SendStop()
 	}
 
 #else
-	WaitUsec(shot_delay / 2);
+	WaitUsec(GetDelay() / 2);
 #endif
-	WaitUsec(shot_delay + 1); // tSU;STOP = 4.7 usec
+	WaitUsec(GetDelay() + 1); // tSU;STOP = 4.7 usec
 	setSDA();
-	WaitUsec(shot_delay / 2 + 1);
+	WaitUsec(GetDelay() / 2 + 1);
 
 	if (getSDA() == 0)
 	{
@@ -156,7 +155,7 @@ int I2CBus::SendStop()
 	}
 
 	//tBUF = 4.7 usec
-	WaitUsec(shot_delay);
+	ShotDelay();
 
 	return 0;
 }
@@ -164,7 +163,7 @@ int I2CBus::SendStop()
 int I2CBus::SendBitMast(int b)
 {
 	bitSDA(b);
-	WaitUsec(shot_delay / 2 + 1);   // tSU;DAT = 250 nsec (tLOW / 2 = 2 usec)
+	WaitUsec(GetDelay() / 2 + 1);   // tSU;DAT = 250 nsec (tLOW / 2 = 2 usec)
 	setSCL();
 
 	/* Se SCL e` ancora 0 significa che uno Slave sta` rallentando
@@ -187,16 +186,16 @@ int I2CBus::SendBitMast(int b)
 #endif
 	}
 
-	WaitUsec(shot_delay / 2); // tHIGH / 2 = 2 usec
+	WaitUsec(GetDelay() / 2); // tHIGH / 2 = 2 usec
 
 	if (!getSDA() != !b)
 	{
 		return IICERR_SDACONFLICT;
 	}
 
-	WaitUsec(shot_delay / 2); // tHIGH / 2 = 2 usec
+	WaitUsec(GetDelay() / 2); // tHIGH / 2 = 2 usec
 	clearSCL();
-	WaitUsec(shot_delay / 2); // tHD;DATA = 300 nsec (tLOW / 2 = 2 usec)
+	WaitUsec(GetDelay() / 2); // tHD;DATA = 300 nsec (tLOW / 2 = 2 usec)
 
 	return 0;
 }
@@ -207,7 +206,7 @@ int I2CBus::RecBitMast()
 	register uint8_t b;
 
 	setSDA();               // to receive data SDA must be high
-	WaitUsec(shot_delay / 2 + 1);   // tSU;DAT = 250 nsec (tLOW / 2 = 2 usec)
+	WaitUsec(GetDelay() / 2 + 1);   // tSU;DAT = 250 nsec (tLOW / 2 = 2 usec)
 	setSCL();
 
 	/* Se SCL e` ancora 0 significa che uno Slave sta` rallentando
@@ -230,11 +229,11 @@ int I2CBus::RecBitMast()
 #endif
 	}
 
-	WaitUsec(shot_delay / 2); // tHIGH / 2 = 2 usec
+	WaitUsec(GetDelay() / 2); // tHIGH / 2 = 2 usec
 	b = getSDA();
-	WaitUsec(shot_delay / 2); // tHIGH / 2 = 2 usec
+	WaitUsec(GetDelay() / 2); // tHIGH / 2 = 2 usec
 	clearSCL();
-	WaitUsec(shot_delay / 2); // tHD;DATA = 300 nsec (tLOW / 2 = 2 usec)
+	WaitUsec(GetDelay() / 2); // tHD;DATA = 300 nsec (tLOW / 2 = 2 usec)
 
 	return b;
 }
@@ -380,7 +379,7 @@ void I2CBus::SetDelay()
 		break;
 	}
 
-	BusIO::SetDelay(n);
+	busI->SetDelay(n);
 
 	qDebug() << "I2CBus::SetDelay() = " << n;
 }

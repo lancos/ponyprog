@@ -33,17 +33,16 @@
 
 #include <QDebug>
 
-
 class BusInterface
 {
   public:
 	BusInterface()
+		: old_portno(-1),
+		  installed(-1),
+		  cmd2cmd_delay(0),
+		  shot_delay(5)
 	{
-		cmd2cmd_delay = 0;
-		installed = -1;
-		old_portno = -1;
 	}
-	//      virtual ~BusInterface();
 
 	virtual int Open(int port) = 0;
 	virtual void Close() = 0;
@@ -151,6 +150,102 @@ class BusInterface
 		w.WaitUsec(usec);
 	}
 
+	virtual void ShotDelay(int n = 1)
+	{
+		w.WaitUsec(shot_delay * n);
+	}
+
+	virtual int SPI_xferBit(int b, int mode = 0)
+	{
+		int ret = 0;
+
+		switch (mode)
+		{
+		case 3:
+			SetClock(0);
+			SetDataOut(b);
+			ShotDelay();
+			SetClock(1);
+			ret = GetDataIn();
+			ShotDelay();
+			break;
+		case 2:
+			SetDataOut(b);
+			ShotDelay();
+			SetClock(0);
+			ret = GetDataIn();
+			ShotDelay();
+			SetClock(1);
+			break;
+		case 1:
+			SetClock(1);
+			SetDataOut(b);
+			ShotDelay();
+			SetClock(0);
+			ret = GetDataIn();
+			ShotDelay();
+			break;
+		case 0:
+		default:
+			SetDataOut(b);
+			ShotDelay();
+			SetClock(1);
+			ret = GetDataIn();
+			ShotDelay();
+			SetClock(0);
+			break;
+		}
+		return ret;
+	}
+
+	virtual unsigned long SPI_xferWord(unsigned long word_out, int mode = 0, int bpw = 8, bool lsb_first = false)
+	{
+		uint32_t word_in = 0;
+		uint32_t bitmask;
+
+		switch (mode)
+		{
+		case 3:
+		case 2:
+			SetClock(1);
+			break;
+		case 1:
+		case 0:
+		default:
+			SetClock(0);
+			break;
+		}
+
+		if (lsb_first)
+			bitmask = 1;
+		else
+			bitmask = 1 << (bpw - 1);
+
+		for (int k = 0; k < bpw; k++)
+		{
+			if (SPI_xferBit(word_out & bitmask, mode))
+				word_in |= bitmask;
+
+			if (lsb_first)
+				bitmask <<= 1;
+			else
+				bitmask >>= 1;
+		}
+		SetDataOut(1);
+
+		return word_in;
+	}
+
+	void SetDelay(int delay)
+	{
+		if (delay >= 0)
+			shot_delay = delay;
+	}
+	int GetDelay() const
+	{
+		return shot_delay;
+	}
+
   protected:
 	void Install(int val)
 	{
@@ -165,11 +260,12 @@ class BusInterface
 		return installed;
 	}
 
-	int             old_portno;             // TestSave() save the status here
+	int old_portno;             // TestSave() save the status here
 
   private:
-	int             installed;              // -1 --> not installed, >= 0 number if the installed port
-	int             cmd2cmd_delay;  // <> 0 if a delay between commands is needed
+	int installed;              // -1 --> not installed, >= 0 number if the installed port
+	int cmd2cmd_delay;			// <> 0 if a delay between commands is needed
+	unsigned int shot_delay;	//delay unit to perform bus timing
 
 	Wait w;
 };

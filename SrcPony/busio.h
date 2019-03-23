@@ -157,11 +157,10 @@ class BusIO
 		}
 	}
 
-	virtual void SetDelay();
-	virtual void SetDelay(int delay);
 	int GetDelay() const
 	{
-		return shot_delay;
+		Q_ASSERT(busI != 0);
+		return busI->GetDelay();
 	}
 
 	long GetLastProgrammedAddress() const
@@ -193,14 +192,18 @@ class BusIO
 	int     err_no;                 //error code
 	int     last_addr;
 
-	unsigned int shot_delay;		//delay unit to perform bus timing
-
 	BusInterface *busI;
 
 	void WaitUsec(unsigned int usec)
 	{
 		Q_ASSERT(busI != 0);
 		busI->WaitUsec(usec);
+	}
+
+	void ShotDelay(int n = 1)
+	{
+		Q_ASSERT(busI != 0);
+		busI->ShotDelay(n);
 	}
 
   private:

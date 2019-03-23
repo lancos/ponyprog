@@ -91,7 +91,7 @@ void Sde2506Bus::SetDelay()
 		break;
 	}
 
-	BusIO::SetDelay(n);
+	busI->SetDelay(n);
 
 	qDebug() << "Sde2506Bus::SetDelay() = " << n;
 }
@@ -99,10 +99,10 @@ void Sde2506Bus::SetDelay()
 int Sde2506Bus::SendDataBit(int b)
 {
 	clearCLK();             //si assicura che SCK low
-	WaitUsec(shot_delay);
+	ShotDelay();
 	setCLK();
 	bitDI(b);
-	WaitUsec(shot_delay);
+	ShotDelay();
 	clearCLK();             //device latch data bit now!
 
 	return OK;
@@ -114,10 +114,10 @@ int Sde2506Bus::RecDataBit()
 	register uint8_t b;
 
 	clearCLK();             //the eeprom set data now
-	WaitUsec(shot_delay);
+	ShotDelay();
 	setCLK();
 	b = getDO();
-	WaitUsec(shot_delay);   //hold time
+	ShotDelay();   //hold time
 	clearCLK();
 
 	return b;
@@ -136,7 +136,7 @@ int Sde2506Bus::SendDataWord(int wo, int wlen)
 		SendDataBit(wo & (1 << k));
 	}
 
-	WaitUsec(shot_delay);
+	ShotDelay();
 	setDI();
 
 	return OK;
@@ -198,7 +198,7 @@ long Sde2506Bus::Read(int addr, uint8_t *data, long length, int page_size)
 		SendDataBit(1);
 		*data++ = RecDataWord();
 
-		WaitUsec(shot_delay + 1);
+		WaitUsec(GetDelay() + 1);
 		setCE();
 
 		if ((len % 4) == 0)
@@ -239,9 +239,9 @@ long Sde2506Bus::Write(int addr, uint8_t const *data, long length, int page_size
 		WaitReadyAfterWrite();
 		setCE();                                        //End erase
 
-		WaitUsec(shot_delay / 2 + 1);   //perform write
+		WaitUsec(GetDelay() / 2 + 1);   //perform write
 		clearDI();
-		WaitUsec(shot_delay);
+		ShotDelay();
 		clearCE();
 
 		SendDataBit(0);                 //Start write

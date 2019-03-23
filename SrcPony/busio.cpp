@@ -31,7 +31,6 @@
 BusIO::BusIO(BusInterface *p)
 	:       err_no(0),
 			last_addr(0),
-			shot_delay(5),
 			busI(p),
 			old_progress(0),
 			last_programmed_addr(0)
@@ -60,17 +59,4 @@ int BusIO::Error()
 	int old_val = err_no;
 	err_no = 0;
 	return old_val;
-}
-
-void BusIO::SetDelay()
-{
-	shot_delay = 5; //basic timing of 5usec
-}
-
-void BusIO::SetDelay(int delay)
-{
-	if (delay >= 0)
-	{
-		shot_delay = delay;
-	}
 }

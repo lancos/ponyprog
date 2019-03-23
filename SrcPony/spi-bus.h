@@ -30,18 +30,73 @@
 #include "busio.h"
 #include "pgminter.h"
 
+//Some useful flags
+#define SPIMODE_CPHA		0x01		// clock phase/edge
+#define SPIMODE_CPOL		0x02		// clock polarity
+
+enum {
+	SPI_MODE_0 = (0 | 0),
+	SPI_MODE_1 = (0 | SPIMODE_CPHA),
+	SPI_MODE_2 = (SPIMODE_CPOL | 0),
+	SPI_MODE_3 = (SPIMODE_CPOL | SPIMODE_CPHA)
+};
+
 class SPIBus : public BusIO
 {
   public:
-	SPIBus(BusInterface *ptr = 0, bool cpha = false);
+	SPIBus(BusInterface *ptr = 0, int bpw = 8, bool cpha = false, bool cpol = false);
 	virtual ~SPIBus();
 
 	virtual int Reset();
 
 	void SetDelay();
+
+	void SetBitsPerWord(int val)
+	{
+		if (val > 0 && val <= 32)
+			m_bits_per_word = val;
+	}
+	int GetBitsPerWord()
+	{
+		return m_bits_per_word;
+	}
+
 	void SetFallingPhase(bool cpha)
 	{
-		fall_edge_sample = cpha;
+		m_cpha = cpha;
+	}
+	bool GetFallingPhase()
+	{
+		return m_cpha;
+	}
+	void SetClockPolarity(bool cpol)
+	{
+		m_cpol = cpol;
+	}
+	bool GetClockPolarity()
+	{
+		return m_cpol;
+	}
+
+	void SetMode(int mode)
+	{
+		m_cpol = ((mode & SPIMODE_CPOL) != 0);
+		m_cpha = ((mode & SPIMODE_CPHA) != 0);
+	}
+	void SetMode(bool cpha, bool cpol)
+	{
+		m_cpol = cpol;
+		m_cpha = cpha;
+	}
+	int GetMode()
+	{
+		int mode = 0;
+		if (m_cpol)
+			mode |= SPIMODE_CPOL;
+		if (m_cpha)
+			mode |= SPIMODE_CPHA;
+
+		return mode;
 	}
 
   protected:
@@ -72,6 +127,7 @@ class SPIBus : public BusIO
 	int RecDataBit();
 
   private:
+
 	void bitMOSI(int b)
 	{
 		busI->SetDataOut(b);
@@ -92,7 +148,9 @@ class SPIBus : public BusIO
 		return busI->GetDataIn();
 	}
 
-	bool fall_edge_sample;
+	int m_bits_per_word;	//max 32bit word
+	bool m_cpol;	//clock polarity
+	bool m_cpha;	//rising edge vs fall edge sample
 };
 
 #endif

@@ -60,7 +60,7 @@ long At250BigBus::Read(int addr, uint8_t *data, long length, int page_size)
 	SendDataByte((addr >> 8) & 0xFF);       //MSB
 	SendDataByte(addr       & 0xFF);        //LSB
 
-	WaitUsec(shot_delay);
+	ShotDelay();
 
 	for (len = 0; len < length; len++)
 	{

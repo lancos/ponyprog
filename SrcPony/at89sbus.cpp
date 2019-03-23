@@ -106,7 +106,7 @@ void At89sBus::SetDelay()
 		break;
 	}
 
-	BusIO::SetDelay(n);
+	busI->SetDelay(n);
 
 	qDebug() << "At89sBus::SetDelay() = " << n;
 }

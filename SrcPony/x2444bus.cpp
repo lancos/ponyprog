@@ -81,7 +81,7 @@ long X2444Bus::Read(int addr, uint8_t *data, long length, int page_size)
 
 	//Prima assicuriamoci una recall
 	clearCS();
-	WaitUsec(shot_delay);
+	ShotDelay();
 	setCS();
 
 	SendCmdAddr(RecallCode, 0xff);
@@ -91,7 +91,7 @@ long X2444Bus::Read(int addr, uint8_t *data, long length, int page_size)
 	{
 		//17/08/98 -- now repeat the command every word
 		clearCS();
-		WaitUsec(shot_delay);
+		ShotDelay();
 		setCS();
 
 		//Send command opcode and address
@@ -142,21 +142,21 @@ long X2444Bus::Write(int addr, uint8_t const *data, long length, int page_size)
 	WriteStart();
 
 	clearCS();                      //17/08/98 -- may be it's not needed
-	WaitUsec(shot_delay);
+	ShotDelay();
 	setCS();
 
 	//Recall eeprom from ram
 	SendCmdAddr(RecallCode, 0xff);
 
 	clearCS();
-	WaitUsec(shot_delay);
+	ShotDelay();
 	setCS();
 
 	//Write enable
 	SendCmdAddr(WriteEnableCode, 0xff);
 
 	clearCS();
-	WaitUsec(shot_delay);
+	ShotDelay();
 	setCS();
 
 	if (organization == ORG16)
@@ -187,10 +187,10 @@ long X2444Bus::Write(int addr, uint8_t const *data, long length, int page_size)
 		SendCmdAddr(WriteCode, curaddr);
 		SendDataWord(val, organization, 1);
 
-		WaitUsec(shot_delay);
+		ShotDelay();
 
 		clearCS();
-		WaitUsec(shot_delay);
+		ShotDelay();
 		setCS();
 
 		if ((curaddr & 1))

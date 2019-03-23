@@ -109,7 +109,7 @@ void Pic12Bus::SetDelay()
 		break;
 	}
 
-	BusIO::SetDelay(n);
+	busI->SetDelay(n);
 
 	qDebug() << "PIC12Bus::SetDelay() = " << n;
 }
@@ -119,11 +119,11 @@ int Pic12Bus::SendDataBit(int b)
 	setCLK();               //set SCK high
 	bitDI(b);
 
-	WaitUsec(shot_delay);
+	ShotDelay();
 
 	clearCLK();             //device latch data bit now!
 
-	WaitUsec(shot_delay);
+	ShotDelay();
 
 	return OK;
 }
@@ -135,12 +135,12 @@ int Pic12Bus::RecDataBit()
 
 	setCLK();               //set SCK high (Pic output data now)
 
-	WaitUsec(shot_delay);
+	ShotDelay();
 
 	b = getDO();    // sampling data on falling edge
 	clearCLK();
 
-	WaitUsec(shot_delay);
+	ShotDelay();
 
 	return b;
 }
@@ -162,7 +162,7 @@ int Pic12Bus::SendDataWord(long wo, int wlen)
 	setDI();
 
 	//1 usec from a command to the next
-	WaitUsec(shot_delay / 4 + 1);
+	WaitUsec(GetDelay() / 4 + 1);
 
 	return OK;
 }
@@ -182,7 +182,7 @@ long Pic12Bus::RecDataWord(int wlen)
 			val |= 1 << k;
 		}
 
-	WaitUsec(shot_delay / 4 + 1);
+	WaitUsec(GetDelay() / 4 + 1);
 
 	return val;
 }
