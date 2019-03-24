@@ -5843,10 +5843,10 @@ int e2CmdWindow::OpenScript(const QString &file)
 }
 
 
-HIDDEN QStringList filter = QStringList({ "*.e2p", "*.hex", "*.mot", "*.bin", "*.csm", "*.rom", "*.eep", "*" });
+HIDDEN QStringList filter = QStringList({ "*.e2p", "*.hex", "*.mot", "*.bin", "*.csm", "*" });
 //                                         ^^^^^    ^^^^^    ^^^^^    ^^^^^    ^^^^^
 //                                       form E2P  form Intel  form S-rec, form Binary (Raw), CSM,    gli altri non aggiungono ulteriori formati
-HIDDEN QStringList filterInfo = QStringList({ "E2P (*.e2p)", "Intel (*.hex)", "S-rec (*.mot)", "Raw (*.bin)", "CSM (*.csm)", "(*.rom)", "(*.eep)", "*" });
+HIDDEN QStringList filterInfo = QStringList({ "E2P files (*.e2p)", "Intel hex files (*.hex)", "S-rec mot files (*.mot)", "Binary files (*.bin)", "CSM (*.csm)",  "No filter (*)" });
 
 HIDDEN int filterIndex = 0;
 
