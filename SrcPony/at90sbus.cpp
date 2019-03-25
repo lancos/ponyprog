@@ -95,7 +95,6 @@ int At90sBus::ReadProgByte(long addr)
 
 	//Se fosse little-endian sarebbe l'inverso
 #ifdef  _BIG_ENDIAN_
-
 	if (!lsb)
 #else
 	if (lsb)
@@ -124,7 +123,6 @@ void At90sBus::WriteProgByte(long addr, int data)
 
 	//Se fosse little-endian sarebbe l'inverso
 #ifdef  _BIG_ENDIAN_
-
 	if (!lsb)
 #else
 	if (lsb)
