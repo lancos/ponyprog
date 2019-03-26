@@ -87,26 +87,38 @@ void SPIBus::SetDelay()
 
 int SPIBus::SendDataBit(int b)
 {
-	busI->SPI_xferBit(b, GetMode());
+	int err = OK;
+	busI->SPI_xferBit(err, b, GetMode() | SPIMODE_WRONLY);
 
-	return OK;
+	return err;
 }
 
 int SPIBus::RecDataBit()
 {
-	return busI->SPI_xferBit(1, GetMode());
+	int err = OK;
+	int rv = busI->SPI_xferBit(err, 1, GetMode() | SPIMODE_RDONLY);
+	if (err == OK)
+		return rv;
+	else
+		return err;
 }
 
 int SPIBus::SendDataByte(int by)
 {
-	busI->SPI_xferWord(by, GetMode());
+	int err = OK;
+	busI->SPI_xferWord(err, by, GetMode() | SPIMODE_WRONLY);
 
-	return OK;
+	return err;
 }
 
 int SPIBus::RecDataByte()
 {
-	return busI->SPI_xferWord(0xff, GetMode());
+	int err = OK;
+	int rv = busI->SPI_xferWord(err, 0xff, GetMode() | SPIMODE_RDONLY);
+	if (err == OK)
+		return rv;
+	else
+		return err;
 }
 
 int SPIBus::Reset(void)

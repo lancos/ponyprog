@@ -33,6 +33,8 @@
 //Some useful flags
 #define SPIMODE_CPHA		0x01		// clock phase/edge
 #define SPIMODE_CPOL		0x02		// clock polarity
+#define SPIMODE_RDONLY		0x04
+#define SPIMODE_WRONLY		0x08
 
 enum {
 	SPI_MODE_0 = (0 | 0),

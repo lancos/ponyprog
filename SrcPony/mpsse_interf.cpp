@@ -199,8 +199,8 @@ int MpsseInterface::Open(int port)
 			ctx.set_bitmode(0, BITMODE_RESET);
 			result = InitPins();
 			Q_ASSERT(result == 0);
-			queue_mode = true;
-			TestPins();
+			//queue_mode = true;
+			//TestPins();
 			Install(port);
 		}
 		else
@@ -381,6 +381,108 @@ int MpsseInterface::TestPins()
 	}
 
 	return OK;
+}
+
+uint8_t MpsseInterface::SPI_xferByte(int &err, uint8_t by, int mode, int bpw, bool lsb_first)
+{
+	int cmd = MPSSE_BITMODE;
+	int len = bpw - 1;	//0 --> 1bit, .. 7 --> 8bits
+	uint8_t ret_byte = 0;
+
+	if (lsb_first)
+		cmd |= MPSSE_LSB;
+
+	//We accept 0 --> default R+W, SPIMODE_WRONLY --> W, SPIMODE_RDONLY --> R, (SPIMODE_WRONLY|SPIMODE_RDONLY) --> Invalid
+	Q_ASSERT((mode & (SPIMODE_WRONLY|SPIMODE_RDONLY)) != (SPIMODE_WRONLY|SPIMODE_RDONLY));
+	Q_ASSERT(bpw <= 8);
+
+	if ((mode & SPIMODE_WRONLY) != 0)
+	{
+		cmd |= MPSSE_DO_WRITE;
+	}
+	else
+	if ((mode & SPIMODE_RDONLY) != 0)
+	{
+		cmd |= MPSSE_DO_READ;
+	}
+	else
+	{
+		cmd |= (MPSSE_DO_WRITE | MPSSE_DO_READ);
+	}
+
+	err = OK;
+
+	cmdbuf.append(cmd);
+	cmdbuf.append(len);
+	if ((cmd & MPSSE_DO_WRITE) != 0)
+		cmdbuf.append(by);
+
+	if ((cmd & MPSSE_DO_READ) != 0)
+	{
+		int ret = Flush();
+		if (ret == OK)
+		{
+			int timeout = 1000;
+			do {
+				ret = ctx.read(&ret_byte, 1);
+				if (ret < 0)
+				{
+					qWarning("MpsseInterface::ReadPins() read failed (%s)\n", ctx.error_string());
+					err = -1;
+				}
+			} while (ret == 0 && --timeout > 0);
+
+			if (ret == 1)
+				err = OK;
+			else
+				err = E2P_TIMEOUT;
+		}
+	}
+	else
+	if (!queue_mode)
+	{
+		Flush();
+	}
+
+	return ret_byte;
+}
+
+unsigned long MpsseInterface::SPI_xferWord(int &err, unsigned long word_out, int mode, int bpw, bool lsb_first)
+{
+	int nbit, nshift;
+	unsigned long word_in = 0;
+
+	if (lsb_first)
+	{
+		nshift = 0;
+		do {
+			nbit = (bpw > 8) ? 8 : bpw;
+			word_in |= (SPI_xferByte(err, word_out & 0xff, mode, nbit, true) << nshift);
+			word_out >>= 8;
+			bpw -= nbit;
+			nshift += nbit;
+		} while (bpw > 0);
+	}
+	else
+	{
+		nbit = bpw % 8;
+		nshift = (bpw / 8) * 8;
+		if (nbit > 0)
+		{
+			word_in <<= 8;
+			word_in |= SPI_xferByte(err, (word_out >> nshift) & 0xff, mode, nbit, false);
+			bpw -= nbit;
+		}
+		while (bpw > 0)
+		{
+			nshift -= 8;
+			word_in <<= 8;
+			word_in |= SPI_xferByte(err, (word_out >> nshift) & 0xff, mode, 8, false);
+			bpw -= 8;
+		}
+	}
+
+	return word_in;
 }
 
 void MpsseInterface::SetControlLine(int res)

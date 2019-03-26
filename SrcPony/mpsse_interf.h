@@ -109,7 +109,7 @@ class MpsseInterface : public BusInterface
 	MpsseInterface();
 	virtual ~MpsseInterface();
 
-	virtual int Open(int com_no);
+	virtual int Open(int port);
 	virtual void Close();
 
 	virtual void SetDataOut(int sda = 1);
@@ -147,8 +147,11 @@ class MpsseInterface : public BusInterface
 		return queue_mode;
 	}
 
+	virtual unsigned long SPI_xferWord(int &err, unsigned long word_out, int mode = 0, int bpw = 8, bool lsb_first = false);
+
   protected:
 	//int GetPresence() const;
+	uint8_t SPI_xferByte(int &err, uint8_t by, int mode, int bpw, bool lsb_first);
 
   private:
 	int InitPins();

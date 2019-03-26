@@ -33,6 +33,8 @@
 
 #include <QDebug>
 
+#define SPI_MODE_MASK	3
+
 class BusInterface
 {
   public:
@@ -155,11 +157,11 @@ class BusInterface
 		w.WaitUsec(shot_delay * n);
 	}
 
-	virtual int SPI_xferBit(int b, int mode = 0)
+	virtual int SPI_xferBit(int &err, int b, int mode = 0)
 	{
 		int ret = 0;
 
-		switch (mode)
+		switch (mode & SPI_MODE_MASK)
 		{
 		case 3:
 			SetClock(0);
@@ -195,15 +197,17 @@ class BusInterface
 			SetClock(0);
 			break;
 		}
+		err = OK;
 		return ret;
 	}
 
-	virtual unsigned long SPI_xferWord(unsigned long word_out, int mode = 0, int bpw = 8, bool lsb_first = false)
+	virtual unsigned long SPI_xferWord(int &err, unsigned long word_out, int mode = 0, int bpw = 8, bool lsb_first = false)
 	{
 		uint32_t word_in = 0;
 		uint32_t bitmask;
+		err = OK;
 
-		switch (mode)
+		switch (mode & SPI_MODE_MASK)
 		{
 		case 3:
 		case 2:
@@ -223,7 +227,7 @@ class BusInterface
 
 		for (int k = 0; k < bpw; k++)
 		{
-			if (SPI_xferBit(word_out & bitmask, mode))
+			if (SPI_xferBit(err, word_out & bitmask, mode))
 				word_in |= bitmask;
 
 			if (lsb_first)
