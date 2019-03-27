@@ -149,6 +149,22 @@ class MpsseInterface : public BusInterface
 
 	virtual unsigned long SPI_xferWord(int &err, unsigned long word_out, int mode = 0, int bpw = 8, bool lsb_first = false);
 
+	virtual void SetDelay(int delay);
+	virtual void ShotDelay(int n = 1);
+
+	virtual void WaitMsec(unsigned int msec)
+	{
+		Flush();
+		BusInterface::WaitMsec(msec);
+	}
+
+	virtual void WaitUsec(unsigned int usec)
+	{
+		Flush();
+		BusInterface::WaitUsec(usec);
+	}
+
+
   protected:
 	//int GetPresence() const;
 	uint8_t SPI_xferByte(int &err, uint8_t by, int mode, int bpw, bool lsb_first);

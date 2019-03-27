@@ -240,7 +240,7 @@ class BusInterface
 		return word_in;
 	}
 
-	void SetDelay(int delay)
+	virtual void SetDelay(int delay)
 	{
 		if (delay >= 0)
 			shot_delay = delay;
