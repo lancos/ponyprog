@@ -28,7 +28,6 @@
 #define _BUSIO_H
 
 #include "types.h"
-//#include "wait.h"
 #include "businter.h"
 #include "errcode.h"
 
@@ -37,7 +36,7 @@ class BusIO
 {
   public:
 	BusIO(BusInterface *p = 0);
-	//      virtual ~BusIO() { }
+	//virtual ~BusIO() { }
 
 	virtual int Open(int port)
 	{

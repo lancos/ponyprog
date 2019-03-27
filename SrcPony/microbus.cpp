@@ -27,7 +27,6 @@
 #include "types.h"
 #include "globals.h"
 
-
 #include "e2profil.h"
 #include "microbus.h"
 #include "errcode.h"
@@ -37,30 +36,15 @@
 #include <QDebug>
 #include <QtCore>
 
-#ifdef Q_OS_LINUX
-#  include <unistd.h>
-#else
-#  ifdef        __BORLANDC__
-#    define     __inline__
-#  else // _MICROSOFT_ VC++
-#    define     __inline__ __inline
-#    define _export
-#  endif
-#endif
-
-// Costruttore
 MicroWireBus::MicroWireBus(BusInterface *ptr)
 	: BusIO(ptr)
 {
-	qDebug() << "MicroWireBus::MicroWireBus()";
+	qDebug() << __PRETTY_FUNCTION__ << "C";
 }
 
-// Distruttore
 MicroWireBus::~MicroWireBus()
 {
-	qDebug() << "MicroWireBus::~MicroWireBus()";
-
-	//      Close();
+	qDebug() << __PRETTY_FUNCTION__ << "D";
 }
 
 void MicroWireBus::SetDelay()
@@ -95,173 +79,115 @@ void MicroWireBus::SetDelay()
 		break;
 	}
 
+	Q_CHECK_PTR(busI);
 	busI->SetDelay(n);
 
-	qDebug() << "MicroWire::SetDelay() = " << n;
+	qDebug() << __PRETTY_FUNCTION__ << "() = " << n;
 }
-
 
 int MicroWireBus::SendDataBit(int b)
 {
-	clearCLK();             //si assicura che SCK low
-	bitDI(b);
+	//clearCLK();             //si assicura che SCK low
+	//bitDI(b);
+	//ShotDelay();
+	//setCLK();               //device latch data bit now!
+	//ShotDelay();
+	//clearCLK();
 
-	ShotDelay();
+	int err = OK;
+	busI->SPI_xferBit(err, b, SPI_MODE_0 | SPIMODE_WRONLY);
 
-	setCLK();               //device latch data bit now!
-
-	ShotDelay();
-
-	clearCLK();
-
-	return OK;
+	return err;
 }
 
-// ritorna un numero negativo se c'e` un errore, altrimenti 0 o 1
 int MicroWireBus::RecDataBit()
 {
-	register uint8_t b;
+	//clearCLK();             //si assicura che SCK low
+	//ShotDelay();
+	//setCLK();
+	//ShotDelay();
+	//b = getDO();
+	//clearCLK();
 
-	clearCLK();             //si assicura che SCK low
-
-	ShotDelay();
-
-	setCLK();
-
-	ShotDelay();
-
-	b = getDO();
-	clearCLK();
-
-	return b;
+	int err = OK;
+	int rv = busI->SPI_xferBit(err, 1, SPI_MODE_1 | SPIMODE_RDONLY);
+	if (err == OK)
+		return rv;
+	else
+		return err;
 }
 
 int MicroWireBus::RecDataBitShort()
 {
-	clearCLK();             //si assicura che SCK low
+	clearCLK();             //be sure SCK low
 	ShotDelay();
 	return getDO();
 }
 
-// OK, ora ci alziamo di un livello: operiamo sul byte
-int MicroWireBus::SendDataWord(int wo, int wlen, int lsb)
+int MicroWireBus::SendDataWord(int wo, int wlen, bool lsb)
 {
-	int k;
-
+	int err = OK;
 	clearCLK();
-
-	if (lsb)
-	{
-		//Dal meno significativo al piu` significativo
-		for (k = 0; k < wlen; k++)
-		{
-			SendDataBit(wo & (1 << k));
-		}
-	}
-	else     //Dal piu` significativo al meno significativo
-	{
-		for (k = wlen - 1; k >= 0; k--)
-		{
-			SendDataBit(wo & (1 << k));
-		}
-	}
-
+	busI->SPI_xferWord(err, wo, SPI_MODE_0 | SPIMODE_WRONLY, wlen, lsb);
 	clearDI();
 
-	return OK;
+	return err;
 }
 
 //Standard Receive data word
-int MicroWireBus::RecDataWord(int wlen, int lsb)
+int MicroWireBus::RecDataWord(int wlen, bool lsb)
 {
-	int k, val = 0;
-
+	int err = OK;
 	clearCLK();
-
-	if (lsb)
-	{
-		for (k = 0; k < wlen; k++)
-			if (RecDataBit())
-			{
-				val |= (1 << k);
-			}
-	}
+	int rv = busI->SPI_xferWord(err, 0xffff, SPI_MODE_1 | SPIMODE_RDONLY, wlen, lsb);
+	if (err == OK)
+		return rv;
 	else
-	{
-		for (k = wlen - 1; k >= 0; k--)
-			if (RecDataBit())
-			{
-				val |= (1 << k);
-			}
-	}
-
-	return val;
+		return err;
 }
 
 //Receive Data word with the first clock pulse shortened.
 //  In case of the device doesn't leave a clock pulse to switch
 //  from DataOut to DataIn after the command
-int MicroWireBus::RecDataWordShort(int wlen, int lsb)
+int MicroWireBus::RecDataWordShort(int wlen, bool lsb)
 {
-	int k, val = 0;
+	int valb = 0, valw = 0;
+
+	Q_ASSERT(wlen > 1);
 
 	clearCLK();
+	valb = RecDataBitShort() ? 1 : 0;
+	valw = RecDataWord(wlen - 1, lsb);
 
-	if (wlen > 0)
-	{
-		if (lsb)
-		{
-			val = RecDataBitShort() ? 1 : 0;
-
-			for (k = 1; k < wlen; k++)
-				if (RecDataBit())
-				{
-					val |= (1 << k);
-				}
-		}
-		else
-		{
-			val = RecDataBitShort() ? 1 << (wlen - 1) : 0;
-
-			for (k = wlen - 2; k >= 0; k--)
-				if (RecDataBit())
-				{
-					val |= (1 << k);
-				}
-		}
-	}
-
-	return val;
+	if (lsb)
+		return (valw << 1) | valb;
+	else
+		return (valb << (wlen - 1)) | valw;
 }
 
 int MicroWireBus::WaitReadyAfterWrite(long timeout)
 {
 	clearCLK();
 	ClearReset();   //27/05/98
-
 	ShotDelay();
-
 	SetReset();             //27/05/98
-
 	ShotDelay();
-
 	clearCLK();
 
 	long k;
-
-	for (k = timeout; k > 0  &&  !getDO(); k--)
+	for (k = timeout; k > 0 && !getDO(); k--)
 	{
-		WaitUsec(1);        //07/08/99 ** try to fix temporization (so to need only one global calibration)
+		WaitUsec(1);
 	}
 
-	qDebug() << "MicroWireBus::WaitReadyAfterWrite() = " << k;
+	qDebug() << __PRETTY_FUNCTION__ << "() = " << k;
 
 	return k ? OK : E2P_TIMEOUT;
 }
 
 int MicroWireBus::Reset(void)
 {
-	qDebug() << "MicroWireBus::Reset()";
+	qDebug() << __PRETTY_FUNCTION__;
 
 	SetDelay();
 
@@ -277,7 +203,6 @@ int MicroWireBus::Reset(void)
 
 	return OK;
 }
-
 
 int MicroWireBus::CalcAddressSize(int mem_size) const
 {
@@ -296,4 +221,3 @@ int MicroWireBus::CalcAddressSize(int mem_size) const
 
 	return k + 1;
 }
-

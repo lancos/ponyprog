@@ -39,8 +39,8 @@ class MicroWireBus : public BusIO
 	MicroWireBus(BusInterface *ptr = nullptr);
 	virtual ~MicroWireBus();
 
-	//      long Read(int addr, uint8_t *data, long length);
-	//      long Write(int addr, uint8_t const *data, long length);
+	//long Read(int addr, uint8_t *data, long length);
+	//long Write(int addr, uint8_t const *data, long length);
 
 	int Reset();
 
@@ -50,9 +50,9 @@ class MicroWireBus : public BusIO
 
   protected:
 
-	int SendDataWord(int wo, int wlen, int lsb = 0);
-	int RecDataWord(int wlen, int lsb = 0);
-	int RecDataWordShort(int wlen, int lsb = 0);
+	int SendDataWord(int wo, int wlen, bool lsb = false);
+	int RecDataWord(int wlen, bool lsb = false);
+	int RecDataWordShort(int wlen, bool lsb = false);
 	int WaitReadyAfterWrite(long timeout = 50000);
 
 	int SendAddress(int addr, int alen)
