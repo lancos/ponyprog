@@ -41,11 +41,13 @@ class BusIO
 
 	virtual int Open(int port)
 	{
-		return (err_no = busI->Open(port));
+		Q_CHECK_PTR(busI);
+		err_no = busI->Open(port);
+		return err_no;
 	}
 	virtual void Close()
 	{
-		Q_ASSERT(busI != 0);
+		Q_CHECK_PTR(busI);
 		busI->Close();
 	}
 	virtual int Error();
@@ -152,14 +154,12 @@ class BusIO
 	void SetBusInterface(BusInterface *ptr)
 	{
 		if (ptr)
-		{
 			busI = ptr;
-		}
 	}
 
 	int GetDelay() const
 	{
-		Q_ASSERT(busI != 0);
+		Q_CHECK_PTR(busI);
 		return busI->GetDelay();
 	}
 
@@ -183,7 +183,7 @@ class BusIO
 
 	void WaitMsec(unsigned int msec)
 	{
-		Q_ASSERT(busI != 0);
+		Q_CHECK_PTR(busI);
 		busI->WaitMsec(msec);
 	}
 
@@ -196,13 +196,13 @@ class BusIO
 
 	void WaitUsec(unsigned int usec)
 	{
-		Q_ASSERT(busI != 0);
+		Q_CHECK_PTR(busI);
 		busI->WaitUsec(usec);
 	}
 
 	void ShotDelay(int n = 1)
 	{
-		Q_ASSERT(busI != 0);
+		Q_CHECK_PTR(busI);
 		busI->ShotDelay(n);
 	}
 

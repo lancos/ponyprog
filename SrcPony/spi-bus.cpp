@@ -79,9 +79,10 @@ void SPIBus::SetDelay()
 		break;
 	}
 
+	Q_CHECK_PTR(busI);
 	busI->SetDelay(n);
 
-	qDebug() << "SPIBus::SetDelay() = " << n;
+	qDebug() << __PRETTY_FUNCTION__ << "() = " << n;
 }
 
 
@@ -123,7 +124,7 @@ int SPIBus::RecDataByte()
 
 int SPIBus::Reset(void)
 {
-	qDebug() << "SPIBus::Reset() I";
+	qDebug() << __PRETTY_FUNCTION__ << "() I";
 
 	SetDelay();
 
@@ -137,7 +138,7 @@ int SPIBus::Reset(void)
 
 	WaitMsec(E2Profile::GetSPIDelayAfterReset());
 
-	qDebug() << "SPIBus::Reset() O";
+	qDebug() << __PRETTY_FUNCTION__ << "() O";
 
 	return OK;
 }
