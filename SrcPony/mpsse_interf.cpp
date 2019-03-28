@@ -50,8 +50,6 @@ MpsseInterface::MpsseInterface()
 	pin_clockin = 0;
 
 	cmdbuf.clear();
-
-	queue_mode = false;
 }
 
 MpsseInterface::~MpsseInterface()
@@ -141,17 +139,17 @@ int MpsseInterface::SetFrequency(uint32_t freq)
 	divisor = (6000000 / freq) - 1;
 	if (divisor < 0)
 	{
-		qDebug() << __PRETTY_FUNCTION__ << " Frequency high " << freq;
+		qDebug() << __PRETTY_FUNCTION__ << "Frequency high" << freq;
 		divisor = 0;
 	}
 
 	if (divisor > 65535)
 	{
-		qDebug() << __PRETTY_FUNCTION__ << "Frequency low " << freq;
+		qDebug() << __PRETTY_FUNCTION__ << "Frequency low" << freq;
 		divisor = 65535;
 	}
 
-	qDebug() << __PRETTY_FUNCTION__ << " Frequency " << (6000000/(divisor+1)) << ", Divisor " << divisor;
+	qDebug() << __PRETTY_FUNCTION__ << "Frequency" << (6000000/(divisor+1)) << ", Divisor" << divisor;
 
 	cmdbuf.append(TCK_DIVISOR);
 	cmdbuf.append(divisor & 0xff);
@@ -169,8 +167,6 @@ int MpsseInterface::Open(int port)
 
 	if (GetInstalled() != port)
 	{
-		queue_mode = false;
-
 		QString qs = E2Profile::GetMpsseInterfacePort();
 		ftdi_interface interf = INTERFACE_A;
 
@@ -198,8 +194,6 @@ int MpsseInterface::Open(int port)
 			ctx.set_bitmode(0, BITMODE_RESET);
 			result = InitPins();
 			Q_ASSERT(result == 0);
-			queue_mode = true;
-			//TestPins();
 			Install(port);
 		}
 		else
@@ -209,14 +203,14 @@ int MpsseInterface::Open(int port)
 		}
 	}
 
-	qDebug() << __PRETTY_FUNCTION__ << " = " << ret_val << " OUT";
+	qDebug() << __PRETTY_FUNCTION__ << "=" << ret_val << "OUT";
 
 	return ret_val;
 }
 
 void MpsseInterface::Close()
 {
-	qDebug() << __PRETTY_FUNCTION__ << "() IN";
+	qDebug() << __PRETTY_FUNCTION__ << "IN";
 
 	if (IsInstalled())
 	{
@@ -226,7 +220,7 @@ void MpsseInterface::Close()
 		DeInstall();
 	}
 
-	qDebug() << __PRETTY_FUNCTION__ << "() OUT";
+	qDebug() << __PRETTY_FUNCTION__ << "OUT";
 }
 
 int MpsseInterface::Flush()
@@ -243,7 +237,7 @@ int MpsseInterface::Flush()
 		}
 		else
 		{
-			qWarning() << __PRETTY_FUNCTION__ << " write failed " << ctx.error_string();
+			qWarning() << __PRETTY_FUNCTION__ << "write failed:" << ctx.error_string();
 			ret = -1;
 		}
 	}
@@ -311,7 +305,7 @@ int MpsseInterface::SendPins(int new_data, int new_directions)
 		cmdbuf.append((new_directions >> 8) & 0xff);
 	}
 
-	if (queue_mode || Flush() == OK)
+	//if (queue_mode || Flush() == OK)
 	{
 		last_data = new_data;
 		pin_directions = new_directions;
@@ -320,94 +314,39 @@ int MpsseInterface::SendPins(int new_data, int new_directions)
 	return OK;
 }
 
-void MpsseInterface::GetPinsCommit(int data_mask)
+int MpsseInterface::GetPins()
 {
-	if (data_mask < 0)
-		data_mask = pin_datain;
-
-	if (cmdbuf.almostFull(2))
+	if (cmdbuf.almostFull(3))
 		Flush();
 
-	if (data_mask & 0x00ff)
-		cmdbuf.append(GET_BITS_LOW);
-	if (data_mask & 0xff00)
-		cmdbuf.append(GET_BITS_HIGH);
-}
-
-int MpsseInterface::ReadQueuedPins()
-{
-	Q_ASSERT(!cmdbuf.almostFull(1));
-
+	cmdbuf.append(GET_BITS_LOW);
+	cmdbuf.append(GET_BITS_HIGH);
 	cmdbuf.append(SEND_IMMEDIATE);
-	in_datacount = cmdbuf.getDataInCount();		//store datacount before the flush
 
-	Q_ASSERT(in_datacount > 0 && in_datacount <= sizeof(in_buffer));
-
+	uint8_t buf[2];
 	int ret = Flush();
 	if (ret == OK)
 	{
-		int count, remain, timeout = 10000;
-		count = 0;
-		remain = in_datacount;
+		int timeout = 10000;
 		do {
-			ret = ctx.read(in_buffer + count, remain);
+			ret = ctx.read(buf, 2);
 			if (ret < 0)
 			{
-				qWarning() << __PRETTY_FUNCTION__ << " read failed " << ctx.error_string();
+				qWarning() << __PRETTY_FUNCTION__ << "read failed:" << ctx.error_string();
 				return -1;
 			}
-			else
-			{
-				remain -= ret;
-				count += ret;
-			}
-		} while (remain > 0 && --timeout > 0);
+		} while (ret == 0 && --timeout > 0);
 
-		if (remain == 0)
-			ret = OK;
+		if (timeout > 0)
+		{
+			ret = ((int)buf[1] << 8) | buf[0];
+		}
 		else
+		{
 			ret = E2P_TIMEOUT;
+		}
 	}
 	return ret;
-}
-
-QBitArray MpsseInterface::ParseQueuedPin(int data_mask)
-{
-	if (data_mask < 0)
-		data_mask = pin_datain;
-
-	Q_ASSERT(in_datacount > 0);
-
-	QBitArray ba(in_datacount);
-
-	for (unsigned int idx = 0; idx < in_datacount; idx++)
-	{
-		if (in_buffer[idx] & data_mask)
-			ba.setBit(idx, true);
-	}
-	return ba;
-}
-
-int MpsseInterface::TestPins()
-{
-	for (int k = 0; k < 8; k++)
-	{
-		SendPins(OutDataMask(pin_clock, 2));
-		SendPins(OutDataMask(pin_clock, 2));
-		GetPinsCommit();
-	}
-	if (ReadQueuedPins() != OK)
-	{
-		qWarning() << __PRETTY_FUNCTION__ << " read failed";
-		return -1;
-	}
-	else
-	{
-		QBitArray ba = ParseQueuedPin();
-		qDebug() << __PRETTY_FUNCTION__ << "Readpin: " << ba;
-	}
-
-	return OK;
 }
 
 uint8_t MpsseInterface::SPI_xferByte(int &err, uint8_t by, int mode, int bpw, bool lsb_first)
@@ -459,7 +398,7 @@ uint8_t MpsseInterface::SPI_xferByte(int &err, uint8_t by, int mode, int bpw, bo
 				ret = ctx.read(&ret_byte, 1);
 				if (ret < 0)
 				{
-					qWarning() << __PRETTY_FUNCTION__ << "read failed" << ctx.error_string();
+					qWarning() << __PRETTY_FUNCTION__ << "read failed:" << ctx.error_string();
 					err = -1;
 				}
 			} while (ret == 0 && --timeout > 0);
@@ -469,11 +408,6 @@ uint8_t MpsseInterface::SPI_xferByte(int &err, uint8_t by, int mode, int bpw, bo
 			else
 				err = E2P_TIMEOUT;
 		}
-	}
-	else
-	if (!queue_mode)
-	{
-		Flush();
 	}
 
 	return ret_byte;
@@ -519,7 +453,7 @@ unsigned long MpsseInterface::SPI_xferWord(int &err, unsigned long word_out, int
 
 void MpsseInterface::SetControlLine(int res)
 {
-	//qDebug() << "MpsseInterface::SetControlLine(" << res << ") *** Inst=" <<  IsInstalled();
+	//qDebug() << __PRETTY_FUNCTION__ << "(" << res << ") *** Inst=" << IsInstalled();
 
 	if (IsInstalled())
 	{
@@ -528,14 +462,14 @@ void MpsseInterface::SetControlLine(int res)
 
 		if (SendPins(OutDataMask(pin_ctrl, (res != 0))) != OK)
 		{
-			qWarning() << __PRETTY_FUNCTION__ << " write failed";
+			qWarning() << __PRETTY_FUNCTION__ << "write failed.";
 		}
 	}
 }
 
 void MpsseInterface::SetDataOut(int sda)
 {
-	//qDebug() << "MpsseInterface::SetDataOut(" << sda << ") *** Inst=" << IsInstalled();
+	//qDebug() << __PRETTY_FUNCTION__ << "(" << sda << ") *** Inst=" << IsInstalled();
 
 	if (IsInstalled())
 	{
@@ -544,14 +478,15 @@ void MpsseInterface::SetDataOut(int sda)
 
 		if (SendPins(OutDataMask(pin_dataout, (sda != 0))) != OK)
 		{
-			qWarning() << __PRETTY_FUNCTION__ << " write failed";
+			qWarning() << __PRETTY_FUNCTION__ << "write failed.";
 		}
 	}
 }
 
 void MpsseInterface::SetClock(int scl)
 {
-	//qDebug() << "MpsseInterface::SetClock(" << scl << ") *** Inst=" << IsInstalled();
+	//qDebug() << __PRETTY_FUNCTION__ << "(" << scl << ") *** Inst=" << IsInstalled();
+
 
 	if (IsInstalled())
 	{
@@ -560,14 +495,14 @@ void MpsseInterface::SetClock(int scl)
 
 		if (SendPins(OutDataMask(pin_clock, (scl != 0))) != OK)
 		{
-			qWarning() << __PRETTY_FUNCTION__ << " write failed";
+			qWarning() << __PRETTY_FUNCTION__ << "write failed.";
 		}
 	}
 }
 
 void MpsseInterface::SetClockData()
 {
-	//qDebug() << "MpsseInterface::SetClockData() *** Inst=" << IsInstalled();
+	//qDebug() << __PRETTY_FUNCTION__ << "*** Inst=" << IsInstalled();
 
 	if (IsInstalled())
 	{
@@ -582,7 +517,7 @@ void MpsseInterface::SetClockData()
 		int n_data = OutDataMask(pin_clock, scl);
 		if (SendPins(OutDataMask(n_data, pin_dataout, sda)) != OK)
 		{
-			qWarning() << __PRETTY_FUNCTION__ << " write failed";
+			qWarning() << __PRETTY_FUNCTION__ << "write failed.";
 		}
 	}
 }
@@ -590,7 +525,7 @@ void MpsseInterface::SetClockData()
 
 void MpsseInterface::ClearClockData()
 {
-	//qDebug() << "MpsseInterface::ClearClockData() *** Inst=" << IsInstalled();
+	//qDebug() << __PRETTY_FUNCTION__ << "*** Inst=" << IsInstalled();
 
 	if (IsInstalled())
 	{
@@ -605,7 +540,7 @@ void MpsseInterface::ClearClockData()
 		int n_data = OutDataMask(pin_clock, scl);
 		if (SendPins(OutDataMask(n_data, pin_dataout, sda)) != OK)
 		{
-			qWarning() << __PRETTY_FUNCTION__ << " write failed";
+			qWarning() << __PRETTY_FUNCTION__ << "write failed.";
 		}
 	}
 }
@@ -614,36 +549,25 @@ int MpsseInterface::GetDataIn()
 {
 	if (IsInstalled())
 	{
-		GetPinsCommit();
-		if (!queue_mode)
+		int val = GetPins();
+		if (val < 0)
 		{
-			if (ReadQueuedPins() != OK)
-			{
-				qWarning() << __PRETTY_FUNCTION__ << " read failed";
-				return -1;
-			}
-			else
-			{
-				QBitArray ba = ParseQueuedPin();
-				unsigned int val = 0;
-
-				if (!ba.isEmpty())
-					val = ba.testBit(0);
-				qDebug() << __PRETTY_FUNCTION__ << "= " << val;
-
-				if (cmdWin->GetPolarity() & DININV)
-				{
-					return !val;
-				}
-				else
-				{
-					return val;
-				}
-			}
+			qWarning() << __PRETTY_FUNCTION__ << "read failed.";
+			return val;
 		}
 		else
 		{
-			return NOT_READY;
+			qDebug() << __PRETTY_FUNCTION__ << "=" << val;
+			val = (val & pin_datain) ? 1 : 0;
+
+			if (cmdWin->GetPolarity() & DININV)
+			{
+				return !val;
+			}
+			else
+			{
+				return val;
+			}
 		}
 	}
 	else
@@ -659,14 +583,14 @@ int MpsseInterface::GetClock()
 
 int MpsseInterface::IsClockDataUP()
 {
-	qDebug() << __PRETTY_FUNCTION__ << " *** Inst=" << IsInstalled();
+	//qDebug() << __PRETTY_FUNCTION__ << "*** Inst=" << IsInstalled();
 
 	return GetDataIn();
 }
 
 int MpsseInterface::IsClockDataDOWN()
 {
-	qDebug() << __PRETTY_FUNCTION__ << " *** Inst=" << IsInstalled();
+	//qDebug() << __PRETTY_FUNCTION__ << "*** Inst=" << IsInstalled();
 
 	return !GetDataIn();
 }

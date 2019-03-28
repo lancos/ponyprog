@@ -30,8 +30,6 @@
 #include "businter.h"
 #include "ftdi.hpp"
 
-#include <QBitArray>
-
 class MpsseCommandQueue
 {
   public:
@@ -43,7 +41,6 @@ class MpsseCommandQueue
 	void clear()
 	{
 		cmdidx = 0;
-		datain_low_count = datain_high_count = 0;
 	}
 
 	int getSize()
@@ -55,12 +52,6 @@ class MpsseCommandQueue
 	{
 		if (cmdidx < sizeof(cmdbuf))
 		{
-			if (dat == GET_BITS_LOW)
-				datain_low_count++;
-			else
-			if (dat == GET_BITS_HIGH)
-				datain_high_count++;
-
 			cmdbuf[cmdidx++] = dat;
 			return true;
 		}
@@ -68,11 +59,6 @@ class MpsseCommandQueue
 		{
 			return false;
 		}
-	}
-
-	unsigned int getDataInCount()
-	{
-		return datain_low_count + datain_high_count;
 	}
 
 	uint8_t *getBuffer()
@@ -98,9 +84,6 @@ class MpsseCommandQueue
   private:
 	uint8_t cmdbuf[1024];
 	unsigned int cmdidx;
-
-	unsigned int datain_low_count;
-	unsigned int datain_high_count;
 };
 
 class MpsseInterface : public BusInterface
@@ -132,21 +115,6 @@ class MpsseInterface : public BusInterface
 	const int usb_vid = 0x0403;
 	const int usb_pid = 0xcff8;
 
-	void SetQueueMode(bool val)
-	{
-		if (val != queue_mode)
-		{
-			//Flush();
-			ctx.flush();
-			cmdbuf.clear();
-			queue_mode = val;
-		}
-	}
-	bool GetQueueMode()
-	{
-		return queue_mode;
-	}
-
 	virtual unsigned long SPI_xferWord(int &err, unsigned long word_out, int mode = 0, int bpw = 8, bool lsb_first = false);
 
 	virtual void SetDelay(int delay);
@@ -175,11 +143,7 @@ class MpsseInterface : public BusInterface
 
 	int SetFrequency(uint32_t freq);
 	int SendPins(int new_data, int new_directions = -1);
-	void GetPinsCommit(int data_mask = -1);
-	int ReadQueuedPins();
-	QBitArray ParseQueuedPin(int data_mask = -1);
-
-	int TestPins();
+	int GetPins();
 
 	//utility to set/reset/toggle a pin
 	unsigned int OutDataMask(int old_val, int mask, int val)
@@ -198,11 +162,7 @@ class MpsseInterface : public BusInterface
 
 	Ftdi::Context ctx;
 
-	bool queue_mode;
 	MpsseCommandQueue cmdbuf;
-
-	uint8_t in_buffer[1024];
-	unsigned int in_datacount;
 
 	int pin_directions;
 
