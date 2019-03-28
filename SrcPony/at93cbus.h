@@ -33,7 +33,7 @@ class At93cBus : public MicroWireBus
 {
   public:
 	At93cBus(BusInterface *ptr = 0);
-	//      virtual ~At93cBus();
+	//virtual ~At93cBus();
 
 	long Read(int addr, uint8_t *data, long length, int page_size = 0);
 	long Write(int addr, uint8_t const *data, long length, int page_size = 0);
@@ -57,7 +57,6 @@ class At93cBus : public MicroWireBus
 	//	return MicroWireBus::CalcAddressSize(mem_size);
 	//}
 
-
   protected:
 
 	int SendCmdOpcode(int opcode)
@@ -78,12 +77,12 @@ class At93cBus : public MicroWireBus
 
 	void setCS()
 	{
-		SetReset();        //27/05/98
+		SetReset();			//27/05/98
 	}
 
 	void clearCS()
 	{
-		ClearReset();        //27/05/98
+		ClearReset();		//27/05/98
 	}
 
 	int address_len;

@@ -31,18 +31,6 @@
 #include <QDebug>
 #include <QtCore>
 
-#ifdef Q_OS_LINUX
-#  include <unistd.h>
-#else
-#  ifdef        __BORLANDC__
-#    define     __inline__
-#  else // _MICROSOFT_ VC++
-#    define     __inline__ __inline
-#    define _export
-#  endif
-#endif
-
-// Costruttore
 At250Bus::At250Bus(BusInterface *ptr)
 	: SPIBus(ptr),
 	  WriteEnable(0x06),
@@ -127,29 +115,27 @@ int At250Bus::WaitEndOfWrite(int timeout)               // 07/08/99
 	int k;
 
 	for (k = timeout; k > 0 && (ReadEEPStatus() & NotReadyFlag); k--)
-		;
+		WaitUsec(50);
 
 	return (k != 0);
 }
 
 int At250Bus::Reset(void)
 {
-	qDebug() <<  "At250Bus::Reset()";
+	qDebug() << __PRETTY_FUNCTION__;
 
 	SPIBus::Reset();
-
 	ShotDelay();
 
-	//      SendDataByte(WriteEnable);
-	//      EndCycle();
+	//SendDataByte(WriteEnable);
+	//EndCycle();
 
 	return OK;
 }
 
-
 long At250Bus::Read(int addr, uint8_t *data, long length, int page_size)
 {
-	qDebug() <<  "At250Bus::Read(" << (hex) << addr << ", " << data << ", " << (dec) << length << ")";
+	qDebug() << __PRETTY_FUNCTION__ << "(" << (hex) << addr << ", " << data << ", " << (dec) << length << ")";
 
 	long len;
 
@@ -167,10 +153,11 @@ long At250Bus::Read(int addr, uint8_t *data, long length, int page_size)
 			}
 		}
 	}
+	WaitMsec(1);		//Flush
 
 	ReadEnd();
 
-	qDebug() << "At250Bus::Read() = " << len;
+	qDebug() << __PRETTY_FUNCTION__ << "=" << len;
 
 	return len;
 }
@@ -197,7 +184,7 @@ long At250Bus::Write(int addr, uint8_t const *data, long length, int page_size)
 
 		if (!WaitEndOfWrite())
 		{
-			return 0;        //Must return 0, because > 0 (and != length) means "Abort by user"
+			return 0;		//Must return 0, because > 0 (and != length) means "Abort by user"
 		}
 
 		if ((len & 1))
@@ -208,6 +195,7 @@ long At250Bus::Write(int addr, uint8_t const *data, long length, int page_size)
 			}
 		}
 	}
+	WaitMsec(1);		//Flush
 
 	WriteEnd();
 

@@ -33,32 +33,22 @@
 
 #include "e2cmdw.h"
 
-#ifdef Q_OS_WIN32
-#  ifdef        __BORLANDC__
-#    define     __inline__
-#  else // _MICROSOFT_ VC++
-#    define     __inline__ __inline
-#    define _export
-#  endif
-#endif
-
-// Costruttore
 At250BigBus::At250BigBus(BusInterface *ptr)
 	: At250Bus(ptr)
 {
-	qDebug() << "At250BigBus::At250BigBus(" << (hex) << ptr << (dec) <<  ")";
+	qDebug() << __PRETTY_FUNCTION__ << "(" << (hex) << ptr << (dec) <<  ")";
 }
 
 long At250BigBus::Read(int addr, uint8_t *data, long length, int page_size)
 {
-	qDebug() << "At250BigBus::Read(" << (hex) << addr << ", " << data << ", " << (dec) << length << ")";
+	qDebug() << __PRETTY_FUNCTION__ << "(" << (hex) << addr << ", " << data << ", " << (dec) << length << ")";
 	ReadStart();
 
 	long len;
 
 	SendDataByte(ReadData);
-	SendDataByte((addr >> 8) & 0xFF);       //MSB
-	SendDataByte(addr       & 0xFF);        //LSB
+	SendDataByte((addr >> 8) & 0xFF);		//MSB
+	SendDataByte(addr & 0xFF);				//LSB
 
 	ShotDelay();
 
@@ -74,15 +64,15 @@ long At250BigBus::Read(int addr, uint8_t *data, long length, int page_size)
 			}
 		}
 	}
+	WaitMsec(1);		//Flush
 
 	EndCycle();
 
 	ReadEnd();
-	qDebug() << "At250BigBus::Read() = " << len;
+	qDebug() << __PRETTY_FUNCTION__ << "=" << len;
 
 	return len;
 }
-
 
 long At250BigBus::Write(int addr, uint8_t const *data, long length, int page_size)
 {
@@ -91,7 +81,6 @@ long At250BigBus::Write(int addr, uint8_t const *data, long length, int page_siz
 	WriteStart();
 
 	int writepage_size = E2Profile::GetSPIPageWrite();
-//	E2Profile::SetSPIPageWrite(writepage_size);
 
 	WriteEEPStatus(0);
 
@@ -108,8 +97,8 @@ long At250BigBus::Write(int addr, uint8_t const *data, long length, int page_siz
 		EndCycle();
 
 		SendDataByte(WriteData);
-		SendDataByte((addr >> 8) & 0xFF);       //MSB
-		SendDataByte(addr       & 0xFF);        //LSB
+		SendDataByte((addr >> 8) & 0xFF);		//MSB
+		SendDataByte(addr & 0xFF);				//LSB
 
 		int j;
 
@@ -122,7 +111,7 @@ long At250BigBus::Write(int addr, uint8_t const *data, long length, int page_siz
 
 		if (!WaitEndOfWrite())
 		{
-			return 0;        //Must return 0, because > 0 (and != length) means "Abort by user"
+			return 0;			//Must return 0, because > 0 (and != length) means "Abort by user"
 		}
 
 		if ((++count & 1))
@@ -133,6 +122,7 @@ long At250BigBus::Write(int addr, uint8_t const *data, long length, int page_siz
 			}
 		}
 	}
+	WaitMsec(1);			//Flush
 
 	WriteEnd();
 

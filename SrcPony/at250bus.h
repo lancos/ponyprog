@@ -33,7 +33,7 @@ class At250Bus : public SPIBus
 {
   public:
 	At250Bus(BusInterface *ptr = 0);
-	//      virtual ~At250Bus();
+	//virtual ~At250Bus();
 
 	long Read(int addr, uint8_t *data, long length, int page_size = 0);
 	long Write(int addr, uint8_t const *data, long length, int page_size = 0);
@@ -41,14 +41,13 @@ class At250Bus : public SPIBus
 	int Reset();
 
   protected:
-
 	virtual int ReadEEPByte(int addr);
 	virtual void WriteEEPByte(int addr, int data);
 	int ReadEEPStatus();
 	int WriteEEPStatus(int data);
 	void EndCycle(void);
 
-	int WaitEndOfWrite(int timeout = 0);            // 07/08/99
+	int WaitEndOfWrite(int timeout = 0);		// 07/08/99
 
 	//Programming commands
 	const uint8_t WriteEnable;
@@ -66,15 +65,14 @@ class At250Bus : public SPIBus
 	const int loop_timeout;
 
   private:
-
 	void setNCS()
 	{
-		ClearReset();        //27/05/98
+		ClearReset();		//27/05/98
 	}
 
 	void clearNCS()
 	{
-		SetReset();        //27/05/98
+		SetReset();			//27/05/98
 	}
 };
 

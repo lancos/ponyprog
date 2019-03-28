@@ -62,7 +62,7 @@ At90sBus::At90sBus(BusInterface *ptr)
 	  p1_b(0x00), p2_b(0xFF), pflash_b(0xFF),
 	  old1200mode(false)
 {
-	qDebug() << "At90sBus::At90sBus()";
+	qDebug() << __PRETTY_FUNCTION__;
 
 	//With this values the AVR can be programmed even at low voltage (3.2V)
 	twd_erase = 30;
@@ -73,7 +73,7 @@ At90sBus::At90sBus(BusInterface *ptr)
 int At90sBus::ReadEEPByte(long addr)
 {
 	SendDataByte(ReadEEPMem0);
-	SendDataByte(ReadEEPMem1 | ((addr & 0xFFFF) >> 8));     //19/01/1999 -- the bug is due to an error in the original Atmel datasheet
+	SendDataByte(ReadEEPMem1 | ((addr & 0xFFFF) >> 8));			//19/01/1999 -- the bug is due to an error in the original Atmel datasheet
 	SendDataByte(addr);
 
 	return RecDataByte();
@@ -82,16 +82,15 @@ int At90sBus::ReadEEPByte(long addr)
 void At90sBus::WriteEEPByte(long addr, int data)
 {
 	SendDataByte(WriteEEPMem0);
-	SendDataByte(WriteEEPMem1 | ((addr & 0xFFFF) >> 8));            //19/01/1999
+	SendDataByte(WriteEEPMem1 | ((addr & 0xFFFF) >> 8));		//19/01/1999
 	SendDataByte(addr);
 	SendDataByte(data);
 }
 
-
 int At90sBus::ReadProgByte(long addr)
 {
 	int lsb = addr & 1;
-	addr >>= 1;             //convert to word address
+	addr >>= 1;				//convert to word address
 
 	//Se fosse little-endian sarebbe l'inverso
 #ifdef  _BIG_ENDIAN_
@@ -119,7 +118,7 @@ void At90sBus::WriteProgByte(long addr, int data)
 	SetLastProgrammedAddress(addr);
 
 	int lsb = addr & 1;
-	addr >>= 1;             //convert to word address
+	addr >>= 1;			//convert to word address
 
 	//Se fosse little-endian sarebbe l'inverso
 #ifdef  _BIG_ENDIAN_
@@ -145,7 +144,7 @@ int At90sBus::Reset()
 {
 	bool success_flag = false;
 
-	qDebug() << "At90sBus::Reset() I";
+	qDebug() << __PRETTY_FUNCTION__ << "I";
 
 	RefreshParameters();
 
@@ -157,9 +156,9 @@ int At90sBus::Reset()
 		{
 			SPIBus::Reset();
 
-			WaitMsec(E2Profile::GetAVRDelayAfterReset());      // At least 20msec (AVR datasheets)
+			WaitMsec(E2Profile::GetAVRDelayAfterReset());		// At least 20msec (AVR datasheets)
 
-			qDebug() << "Avr1200Bus::Reset() ** SendDataByte";
+			qDebug() << __PRETTY_FUNCTION__ << "() ** SendDataByte";
 
 			SendDataByte(EnableProg0);
 			SendDataByte(EnableProg1);
@@ -182,22 +181,22 @@ int At90sBus::Reset()
 
 			SPIBus::Reset();
 
-			WaitMsec(E2Profile::GetAVRDelayAfterReset());      // At least 20msec (AVR datasheets)
+			WaitMsec(E2Profile::GetAVRDelayAfterReset());		// At least 20msec (AVR datasheets)
 
 			int k;
 
 			for (k = 0; k < 32 && !success_flag; k++)
 			{
-				qDebug() << "At90sBus::Reset() ** SendEnableProg";
+				qDebug() << __PRETTY_FUNCTION__ << "() ** SendEnableProg";
 
 				SendDataByte(EnableProg0);
 				SendDataByte(EnableProg1);
 				val = RecDataByte();
 				SendDataByte(0);
 
-				if (val != EnableProg1)         //Echo expected
+				if (val != EnableProg1)			//Echo expected
 				{
-					RecDataBit();           //Give a pulse on SCK (as AVR datasheets suggest)
+					RecDataBit();				//Give a pulse on SCK (as AVR datasheets suggest)
 				}
 				else
 				{
@@ -756,11 +755,11 @@ long At90sBus::Read(int addr, uint8_t *data, long length, int page_size)
 
 	ReadStart();
 
-	//      int code[3];
+	//int code[3];
 
-	//      code[0] = ReadDeviceCode(0);
-	//      code[1] = ReadDeviceCode(1);
-	//      code[2] = ReadDeviceCode(2);
+	//code[0] = ReadDeviceCode(0);
+	//code[1] = ReadDeviceCode(1);
+	//code[2] = ReadDeviceCode(2);
 
 	if (addr)
 	{
@@ -791,8 +790,8 @@ long At90sBus::Read(int addr, uint8_t *data, long length, int page_size)
 				break;
 			}
 		}
-
 	}
+	WaitMsec(1);		//Flush()
 
 	ReadEnd();
 
@@ -896,7 +895,6 @@ int At90sBus::Erase(int type)
 
 	WaitMsec(twd_erase);
 	Reset();
-	/****/
 
 	EraseEnd();
 
@@ -981,6 +979,7 @@ long At90sBus::Write(int addr, uint8_t const *data, long length, int page_size)
 			}
 		}
 	}
+	WaitMsec(1);		//Flush()
 
 	WriteEnd();
 

@@ -30,25 +30,14 @@
 #include "errcode.h"
 #include "eeptypes.h"
 #include "e2profil.h"
-
 #include "e2cmdw.h"
 
 #include <QtCore>
 #include <QDebug>
 
-/*Attenzione!! il format Intel Hex e` Little Endian */
+// NB: Intel Hex format is Little Endian
 #undef  _BIG_ENDIAN_
 
-#ifdef Q_OS_WIN32
-#  ifdef        __BORLANDC__
-#    define     __inline__
-#  else // _MICROSOFT_ VC++
-#    define     __inline__ __inline
-#    define _export
-#  endif
-#endif
-
-// Costruttore
 At89sBus::At89sBus(BusInterface *ptr)
 	: SPIBus(ptr),
 	  EnableProg0(0xAC), EnableProg1(0x53),
@@ -106,9 +95,10 @@ void At89sBus::SetDelay()
 		break;
 	}
 
+	Q_CHECK_PTR(busI);
 	busI->SetDelay(n);
 
-	qDebug() << "At89sBus::SetDelay() = " << n;
+	qDebug() << __PRETTY_FUNCTION__ << "=" << n;
 }
 
 int At89sBus::ReadDataByte(long addr)
@@ -142,7 +132,6 @@ void At89sBus::WriteDataByte(long addr, int data)
 	SendDataByte(addr & 0xFF);
 	SendDataByte(data);
 }
-
 
 int At89sBus::ReadProgByte(long addr)
 {
@@ -189,7 +178,7 @@ int At89sBus::WriteProgPage(long addr, uint8_t const *data, long page_size, long
 	}
 
 	//align addr to page boundary
-	addr &= ~(page_size - 1);       //0xFFFFFF00
+	addr &= ~(page_size - 1);			//0xFFFFFF00
 
 	SendDataByte(WriteProgPageMem);
 	SendDataByte(addr >> 8);
@@ -204,7 +193,7 @@ int At89sBus::WriteProgPage(long addr, uint8_t const *data, long page_size, long
 
 	if (enable_progpage_polling)
 	{
-		long polling_loc = addr + page_size - 1;        //Read back last loaded byte
+		long polling_loc = addr + page_size - 1;		//Read back last loaded byte
 		uint8_t polling_data = data[page_size - 1];
 		WaitUsec(100);
 
@@ -234,7 +223,7 @@ int At89sBus::WriteDataPage(long addr, uint8_t const *data, long page_size, long
 	bool okflag;
 
 	//align addr to page boundary
-	addr &= ~(page_size - 1);       //0xFFFFFF00
+	addr &= ~(page_size - 1);			//0xFFFFFF00
 
 	SendDataByte(WriteDataPageMem);
 	SendDataByte(addr >> 8);
@@ -317,7 +306,7 @@ int At89sBus::Reset()
 	}
 
 	SPIBus::Reset();
-	WaitMsec(E2Profile::GetAT89DelayAfterReset());     // Almeno 20msec dai datasheet AVR atmel
+	WaitMsec(E2Profile::GetAT89DelayAfterReset());		//At least 20msec (from AVR atmel datasheet)
 
 	SendDataByte(EnableProg0);
 	SendDataByte(EnableProg1);
@@ -567,6 +556,7 @@ long At89sBus::Read(int addr, uint8_t *data, long length, int page_size)
 			}
 		}
 	}
+	WaitMsec(1);		//Flush
 
 	ReadEnd();
 
@@ -725,6 +715,7 @@ long At89sBus::Write(int addr, uint8_t const *data, long length, int page_size)
 			}
 		}
 	}
+	WaitMsec(1);		//Flush
 
 	WriteEnd();
 

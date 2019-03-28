@@ -33,7 +33,7 @@ class At90sBus : public SPIBus
 {
   public:
 	At90sBus(BusInterface *ptr = 0);
-	//      virtual ~At90sBus();
+	//virtual ~At90sBus();
 
 	long Read(int addr, uint8_t *data, long length, int page_size = 0);
 	long Write(int addr, uint8_t const *data, long length, int page_size = 0);

@@ -37,17 +37,6 @@
 //  e quindi anche le AT90S1200
 #define _BIG_ENDIAN_
 
-#ifdef Q_OS_LINUX
-#  include <unistd.h>
-#else
-#  ifdef        __BORLANDC__
-#    define     __inline__
-#  else // _MICROSOFT_ VC++
-#    define     __inline__ __inline
-#    define _export
-#  endif
-#endif
-
 // Costruttore
 At93cBus::At93cBus(BusInterface *ptr)
 	: MicroWireBus(ptr),
@@ -57,10 +46,10 @@ At93cBus::At93cBus(BusInterface *ptr)
 	  EraseAllCode(04),
 	  PrClearCode(07),
 	  loop_timeout(8000),
-	  address_len(6),         //9346
+	  address_len(6),			//9346
 	  organization(ORG16)
 {
-	qDebug() << "At93cBus::At93cBus()";
+	qDebug() << __PRETTY_FUNCTION__;
 }
 
 int At93cBus::Erase(int type)
@@ -185,10 +174,11 @@ long At93cBus::Read(int addr, uint8_t *data, long length, int page_size)
 			}
 		}
 	}
+	WaitMsec(1);		//Flush
 
 	ReadEnd();
 
-	qDebug() << "At93cBus::Read() = " << len;
+	qDebug() << __PRETTY_FUNCTION__ << "=" << len;
 
 	return len;
 }
@@ -264,6 +254,7 @@ long At93cBus::Write(int addr, uint8_t const *data, long length, int page_size)
 
 	SendCmdOpcode(WriteEnableCode);
 	SendDataWord(0, address_len);
+	WaitMsec(1);		//Flush
 
 	WriteEnd();
 
