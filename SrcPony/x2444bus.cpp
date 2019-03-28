@@ -34,7 +34,6 @@
 
 #define _BIG_ENDIAN_
 
-// Costruttore
 X2444Bus::X2444Bus(BusInterface *ptr)
 	: MicroWireBus(ptr),
 	  ReadCode(06),
@@ -46,7 +45,7 @@ X2444Bus::X2444Bus(BusInterface *ptr)
 	  loop_timeout(8000),
 	  organization(ORG16)
 {
-	qDebug() << "X2444Bus::X2444Bus()";
+	qDebug() << __PRETTY_FUNCTION__;
 }
 
 void X2444Bus::SendCmdAddr(int cmd, int addr)
@@ -63,7 +62,7 @@ void X2444Bus::SendCmdAddr(int cmd, int addr)
 
 long X2444Bus::Read(int addr, uint8_t *data, long length, int page_size)
 {
-	qDebug() << "X2444Bus::Read(" << (hex) << addr << ", " << data << ", " << (dec) << length << ")";
+	qDebug() << __PRETTY_FUNCTION__ << "(" << (hex) << addr << ", " << data << ", " << (dec) << length << ")";
 	ReadStart();
 
 	long len;
@@ -97,9 +96,9 @@ long X2444Bus::Read(int addr, uint8_t *data, long length, int page_size)
 		//Send command opcode and address
 		SendCmdAddr(ReadCode, addr++);
 
-		//Il primo bit dopo il comando di lettura e` piu` "corto"
-		// cosi` non possiamo utilizzare la normale routine di lettura word
-		uint16_t val = RecDataWordShort(organization, 1);
+		//The first bit after read command is "shorter"
+		// so we have to use a special function
+		uint16_t val = RecDataWordShort(organization, true);
 
 		if (organization == ORG16)
 		{
@@ -128,9 +127,10 @@ long X2444Bus::Read(int addr, uint8_t *data, long length, int page_size)
 	}
 
 	clearCS();
+	WaitMsec(1);		//Flush
 
 	ReadEnd();
-	qDebug() << "X2444Bus::Read() = " << len;
+	qDebug() << __PRETTY_FUNCTION__ << "=" << len;
 
 	return len;
 }
@@ -185,7 +185,7 @@ long X2444Bus::Write(int addr, uint8_t const *data, long length, int page_size)
 
 		//Send command opcode
 		SendCmdAddr(WriteCode, curaddr);
-		SendDataWord(val, organization, 1);
+		SendDataWord(val, organization, true);
 
 		ShotDelay();
 
@@ -204,7 +204,7 @@ long X2444Bus::Write(int addr, uint8_t const *data, long length, int page_size)
 
 	SendCmdAddr(StoreCode, 0xff);
 	clearCS();
-	WaitMsec(10);
+	WaitMsec(10);		//Flush
 
 	WriteEnd();
 

@@ -34,7 +34,7 @@ class PicBus : public BusIO
 {
   public:
 	PicBus(BusInterface *ptr = 0);
-	virtual ~PicBus();
+	//virtual ~PicBus();
 
 	long Read(int addr, uint8_t *data, long length, int page_size = 0);
 	long Write(int addr, uint8_t const *data, long length, int page_size = 0);
@@ -54,7 +54,6 @@ class PicBus : public BusIO
 	void SetDelay();
 
   protected:
-
 	int SendDataWord(long wo, int wlen = 16);
 	long RecDataWord(int wlen = 16);
 	int WaitReadyAfterWrite(long timeout = 5000);
@@ -90,7 +89,6 @@ class PicBus : public BusIO
 	const uint8_t BeginProgOnlyCode;
 
   private:
-
 	int SendDataBit(int b);
 	int RecDataBit();
 
@@ -123,7 +121,6 @@ class PicBus : public BusIO
 	{
 		return busI->GetDataIn();
 	}
-
 };
 
 #endif

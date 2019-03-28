@@ -34,10 +34,7 @@ class PicBusNew : public PicBus
   public:
 	PicBusNew(BusInterface *ptr = 0);
 
-	//      long Read(int addr, uint8_t *data, long length);
 	long Write(int addr, uint8_t const *data, long length, int page_size = 0);
-
-	int Reset();
 
   protected:
 

@@ -144,11 +144,13 @@ class BusInterface
 
 	virtual void WaitMsec(unsigned int msec)
 	{
+		Flush();
 		w.WaitMsec(msec);
 	}
 
 	virtual void WaitUsec(unsigned int usec)
 	{
+		Flush();
 		w.WaitUsec(usec);
 	}
 
@@ -255,13 +257,20 @@ class BusInterface
 	{
 		installed = val;
 	}
+
 	void DeInstall()
 	{
 		installed = -1;
 	}
+
 	int GetInstalled() const
 	{
 		return installed;
+	}
+
+	virtual int Flush()
+	{
+		return OK;
 	}
 
 	int old_portno;             // TestSave() save the status here

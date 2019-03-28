@@ -37,39 +37,21 @@
 
 class e2CmdWindow;
 
-#ifdef Q_OS_LINUX
-#  include <unistd.h>
-#else
-#  ifdef        __BORLANDC__
-#    define     __inline__
-#  else // _MICROSOFT_ VC++
-#    define     __inline__ __inline
-#    define _export
-#  endif
-#endif
-
-// Constructor
 PicBus::PicBus(BusInterface *ptr)
 	: BusIO(ptr),
 	  DataMask(0xff),
 	  ProgMask(0x3fff),
-	  ReadProgCode(0x04),                     //Read Data from Program Memory *
-	  LoadProgCode(0x02),                     //Load Data for Program Memory *
-	  ReadDataCode(0x05),                     //Read Data from Data Memory *
-	  LoadDataCode(0x03),                     //Load Data for Data Memory *
-	  LoadConfigCode(0x00),           //Load Configuration *
-	  IncAddressCode(0x06),           //Increment Address *
-	  EraseProgMem(0x09),                     //Bulk Erase Program Memory *
-	  EraseDataMem(0x0b),                     //Bulk Erase Data Memory *
-	  BeginEraseProgCode(0x08),       //Begin Erase Programming Cycle *
-	  BeginProgOnlyCode(0x18)         //Begin Programming Only Cycle
+	  ReadProgCode(0x04),			//Read Data from Program Memory
+	  LoadProgCode(0x02),			//Load Data for Program Memory
+	  ReadDataCode(0x05),			//Read Data from Data Memory
+	  LoadDataCode(0x03),			//Load Data for Data Memory
+	  LoadConfigCode(0x00),			//Load Configuration
+	  IncAddressCode(0x06),			//Increment Address
+	  EraseProgMem(0x09),			//Bulk Erase Program Memory
+	  EraseDataMem(0x0b),			//Bulk Erase Data Memory
+	  BeginEraseProgCode(0x08),		//Begin Erase Programming Cycle
+	  BeginProgOnlyCode(0x18)		//Begin Programming Only Cycle
 {
-}
-
-// Desctructor
-PicBus::~PicBus()
-{
-	//      Close();
 }
 
 void PicBus::SetDelay()
@@ -100,94 +82,80 @@ void PicBus::SetDelay()
 		break;
 
 	default:
-		n = 6;         //Default (< 100KHz)
+		n = 6;			//Default (< 100KHz)
 		break;
 	}
 
+	Q_CHECK_PTR(busI);
 	busI->SetDelay(n);
 
-	qDebug() << "PICBus::SetDelay() = " << n;
+	qDebug() << __PRETTY_FUNCTION__ << "=" << n;
 }
 
 int PicBus::SendDataBit(int b)
 {
-	setCLK();               //set SCK high
-	bitDI(b);
+	//setCLK();				//set SCK high
+	//bitDI(b);
+	//ShotDelay();
+	//clearCLK();				//device latch data bit now!
+	//ShotDelay();
 
-	ShotDelay();
+	int err = OK;
+	busI->SPI_xferBit(err, b, SPI_MODE_1 | SPIMODE_WRONLY);
 
-	clearCLK();             //device latch data bit now!
-
-	ShotDelay();
-
-	return OK;
+	return err;
 }
 
 // returns a negative number in case of error, 0 or 1 otherwise
 int PicBus::RecDataBit()
 {
-	register uint8_t b;
+	//setCLK();				//set SCK high (Pic output data now)
+	//ShotDelay();
+	//b = getDO();			// sampling data on falling edge
+	//clearCLK();
+	//ShotDelay();
 
-	setCLK();               //set SCK high (Pic output data now)
-
-	ShotDelay();
-
-	b = getDO();    // sampling data on falling edge
-	clearCLK();
-
-	ShotDelay();
-
-	return b;
+	int err = OK;
+	int rv = busI->SPI_xferBit(err, 1, SPI_MODE_1 | SPIMODE_RDONLY);
+	if (err == OK)
+		return rv;
+	else
+		return err;
 }
 
-#define CMD2CMD_DELAY   4000
-
-// OK, ora ci alziamo di un livello: operiamo sul byte
 int PicBus::SendDataWord(long wo, int wlen)
 {
-	int k;
+	int err = OK;
 
 	clearCLK();
 	clearDI();
-
 	WaitUsec(busI->GetCmd2CmdDelay());
-
-	//transmit lsb first
-	for (k = 0; k < wlen; k++)
-	{
-		SendDataBit(wo & (1 << k));
-	}
-
+	busI->SPI_xferWord(err, wo, SPI_MODE_1 | SPIMODE_WRONLY, wlen, true);
 	setDI();
 
 	//1 usec from a command to the next
-	//      WaitUsec(shot_delay/4+1);
+	//WaitUsec(shot_delay/4+1);
 
-	return OK;
+	return err;
 }
 
 long PicBus::RecDataWord(int wlen)
 {
-	int k;
-	long val = 0;
+	int err = OK;
 
 	clearCLK();
 	clearDI();
-
 	WaitUsec(busI->GetCmd2CmdDelay());
 	setDI();
-	WaitUsec(2);
+	ShotDelay();
+	int rv = busI->SPI_xferWord(err, 0xffff, SPI_MODE_1 | SPIMODE_RDONLY, wlen, true);
 
-	//receive lsb first
-	for (k = 0; k < wlen; k++)
-		if (RecDataBit())
-		{
-			val |= 1 << k;
-		}
+	//WaitUsec(shot_delay/4+1);
 
-	//      WaitUsec(shot_delay/4+1);
-
-	return val;
+	if (err == OK)
+		return rv;
+	else
+		return err;
 }
 
 int PicBus::SendCmdCode(int opcode)
@@ -232,18 +200,18 @@ int PicBus::Reset(void)
 {
 	SetDelay();
 
-	SetMCLR();              //First bogus entry to charge capacitors
+	SetMCLR();				//First bogus entry to charge capacitors
 	WaitMsec(150);
 
 	clearDI();
-	ClearMCLR();    //Now reset the micro
-	setCLK();               //keep Vdd on
+	ClearMCLR();			//Now reset the micro
+	setCLK();				//keep Vdd on
 	WaitUsec(1000);
 
-	clearCLK();             //Prepare for Program mode entry
+	clearCLK();				//Prepare for Program mode entry
 	WaitUsec(1000);
 
-	SetMCLR();              //Program mode entry
+	SetMCLR();				//Program mode entry
 	WaitMsec(10);
 
 	return OK;
@@ -277,6 +245,8 @@ void PicBus::DisableCodeProtect()
 
 long PicBus::ReadConfig(uint16_t *data)
 {
+	Q_CHECK_PTR(data);
+
 	if (data == 0)   //read only configuration word
 	{
 		return BADPARAM;
@@ -318,6 +288,8 @@ long PicBus::ReadConfig(uint16_t *data)
 
 long PicBus::WriteConfig(uint16_t *data)
 {
+	Q_CHECK_PTR(data);
+
 	if (data == 0)
 	{
 		return BADPARAM;
@@ -413,12 +385,11 @@ long PicBus::Read(int addr, uint8_t *data, long length, int page_size)
 	//Data is 8 bit, while Program is 14 bit (i.e. 16 bit)
 	if (addr == 0)
 	{
-		length >>= 1;        //contatore da byte a word
+		length >>= 1;
 	}
 
 	for (len = 0; len < length; len++)
 	{
-		//
 		//Send command opcode
 		if (addr)
 		{
@@ -455,11 +426,12 @@ long PicBus::Read(int addr, uint8_t *data, long length, int page_size)
 		}
 	}
 
+	WaitMsec(1);		//Flush
 	ReadEnd();
 
 	if (addr == 0)
 	{
-		len <<= 1;        //contatore da word a byte
+		len <<= 1;
 	}
 
 	return len;
@@ -473,7 +445,7 @@ long PicBus::Write(int addr, uint8_t const *data, long length, int page_size)
 
 	if (addr == 0)
 	{
-		length >>= 1;        //contatore da byte a word
+		length >>= 1;
 	}
 
 	for (len = 0; len < length; len++)
@@ -535,11 +507,12 @@ long PicBus::Write(int addr, uint8_t const *data, long length, int page_size)
 		}
 	}
 
+	WaitMsec(1);			//Flush
 	WriteEnd();
 
 	if (addr == 0)
 	{
-		len <<= 1;        //contatore da word a byte
+		len <<= 1;
 	}
 
 	return len;
@@ -583,7 +556,7 @@ int PicBus::CompareMultiWord(uint8_t *data1, uint8_t *data2, long length, int sp
 
 			if ((retval = CompareSingleWord(val1, val2, ProgMask)))
 			{
-				break;        //Stop if a difference
+				break;		//Stop if a difference is detected
 			}
 		}
 	}

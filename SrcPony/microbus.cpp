@@ -39,12 +39,12 @@
 MicroWireBus::MicroWireBus(BusInterface *ptr)
 	: BusIO(ptr)
 {
-	qDebug() << __PRETTY_FUNCTION__ << "C";
+	qDebug() << __PRETTY_FUNCTION__;
 }
 
 MicroWireBus::~MicroWireBus()
 {
-	qDebug() << __PRETTY_FUNCTION__ << "D";
+	qDebug() << __PRETTY_FUNCTION__;
 }
 
 void MicroWireBus::SetDelay()
@@ -55,7 +55,7 @@ void MicroWireBus::SetDelay()
 	switch (val)
 	{
 	case TURBO:
-		n = 0;         // as fast as your PC can
+		n = 0;		// as fast as your PC can
 		break;
 
 	case FAST:
@@ -75,22 +75,22 @@ void MicroWireBus::SetDelay()
 		break;
 
 	default:
-		n = 5;         //Default (< 100KHz)
+		n = 5;		//Default (< 100KHz)
 		break;
 	}
 
 	Q_CHECK_PTR(busI);
 	busI->SetDelay(n);
 
-	qDebug() << __PRETTY_FUNCTION__ << "() = " << n;
+	qDebug() << __PRETTY_FUNCTION__ << "=" << n;
 }
 
 int MicroWireBus::SendDataBit(int b)
 {
-	//clearCLK();             //si assicura che SCK low
+	//clearCLK();			//si assicura che SCK low
 	//bitDI(b);
 	//ShotDelay();
-	//setCLK();               //device latch data bit now!
+	//setCLK();				//device latch data bit now!
 	//ShotDelay();
 	//clearCLK();
 
@@ -102,7 +102,7 @@ int MicroWireBus::SendDataBit(int b)
 
 int MicroWireBus::RecDataBit()
 {
-	//clearCLK();             //si assicura che SCK low
+	//clearCLK();			//si assicura che SCK low
 	//ShotDelay();
 	//setCLK();
 	//ShotDelay();
@@ -119,7 +119,7 @@ int MicroWireBus::RecDataBit()
 
 int MicroWireBus::RecDataBitShort()
 {
-	clearCLK();             //be sure SCK low
+	clearCLK();				//be sure SCK low
 	ShotDelay();
 	return getDO();
 }
@@ -168,9 +168,9 @@ int MicroWireBus::RecDataWordShort(int wlen, bool lsb)
 int MicroWireBus::WaitReadyAfterWrite(long timeout)
 {
 	clearCLK();
-	ClearReset();   //27/05/98
+	ClearReset();		//27/05/98
 	ShotDelay();
-	SetReset();             //27/05/98
+	SetReset();			//27/05/98
 	ShotDelay();
 	clearCLK();
 
@@ -180,7 +180,7 @@ int MicroWireBus::WaitReadyAfterWrite(long timeout)
 		WaitUsec(1);
 	}
 
-	qDebug() << __PRETTY_FUNCTION__ << "() = " << k;
+	qDebug() << __PRETTY_FUNCTION__ << "=" << k;
 
 	return k ? OK : E2P_TIMEOUT;
 }
@@ -192,11 +192,11 @@ int MicroWireBus::Reset(void)
 	SetDelay();
 
 	clearCLK();
-	//clearDI();    //27/05/98
+	//clearDI();	//27/05/98
 	setDI();
 
-	ClearReset();   //Da un impulso sul reset
-	WaitMsec(1);    //27/05/98
+	ClearReset();	//Pulse the reset
+	WaitMsec(1);	//27/05/98
 	SetReset();
 
 	WaitMsec(50);
@@ -214,10 +214,10 @@ int MicroWireBus::CalcAddressSize(int mem_size) const
 	int k;
 
 	for (k = 15; k > 0; k--)
+	{
 		if (mem_size & (1 << k))
-		{
 			break;
-		}
+	}
 
 	return k + 1;
 }

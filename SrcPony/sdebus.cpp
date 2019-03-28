@@ -33,30 +33,15 @@
 
 #include "e2cmdw.h"
 
-#ifdef Q_OS_LINUX
-#  include <unistd.h>
-#else
-#  ifdef        __BORLANDC__
-#    define     __inline__
-#  else // _MICROSOFT_ VC++
-#    define     __inline__ __inline
-#    define _export
-#  endif
-#endif
-
-// Costruttore
 Sde2506Bus::Sde2506Bus(BusInterface *ptr)
 	: BusIO(ptr)
 {
-	qDebug() << "Sde2506Bus::Sde2506Bus()";
+	qDebug() << __PRETTY_FUNCTION__;
 }
 
-// Distruttore
 Sde2506Bus::~Sde2506Bus()
 {
-	qDebug() <<  "Sde2506Bus::~Sde2506Bus()";
-
-	//      Close();
+	qDebug() << __PRETTY_FUNCTION__;
 }
 
 void Sde2506Bus::SetDelay()
@@ -67,7 +52,7 @@ void Sde2506Bus::SetDelay()
 	switch (val)
 	{
 	case TURBO:
-		n = 1;         // as fast as your PC can
+		n = 1;
 		break;
 
 	case FAST:
@@ -91,71 +76,65 @@ void Sde2506Bus::SetDelay()
 		break;
 	}
 
+	Q_CHECK_PTR(busI);
 	busI->SetDelay(n);
 
-	qDebug() << "Sde2506Bus::SetDelay() = " << n;
+	qDebug() << __PRETTY_FUNCTION__ << "=" << n;
 }
 
 int Sde2506Bus::SendDataBit(int b)
 {
-	clearCLK();             //si assicura che SCK low
-	ShotDelay();
-	setCLK();
-	bitDI(b);
-	ShotDelay();
-	clearCLK();             //device latch data bit now!
+	//clearCLK();             //si assicura che SCK low
+	//ShotDelay();
+	//setCLK();
+	//bitDI(b);
+	//ShotDelay();
+	//clearCLK();             //device latch data bit now!
 
-	return OK;
+	int err = OK;
+	busI->SPI_xferBit(err, b, SPI_MODE_1 | SPIMODE_WRONLY);
+
+	return err;
 }
 
-// ritorna un numero negativo se c'e` un errore, altrimenti 0 o 1
 int Sde2506Bus::RecDataBit()
 {
-	register uint8_t b;
+	//clearCLK();             //the eeprom set data now
+	//ShotDelay();
+	//setCLK();
+	//b = getDO();
+	//ShotDelay();   //hold time
+	//clearCLK();
 
-	clearCLK();             //the eeprom set data now
-	ShotDelay();
-	setCLK();
-	b = getDO();
-	ShotDelay();   //hold time
-	clearCLK();
-
-	return b;
+	int err = OK;
+	int rv = busI->SPI_xferBit(err, 1, SPI_MODE_0 | SPIMODE_RDONLY);
+	if (err == OK)
+		return rv;
+	else
+		return err;
 }
 
-// OK, ora ci alziamo di un livello: operiamo sul byte
 int Sde2506Bus::SendDataWord(int wo, int wlen)
 {
-	int k;
+	int err = OK;
 
 	clearCLK();
-
-	//From LSB to MSB
-	for (k = 0; k < wlen; k++)
-	{
-		SendDataBit(wo & (1 << k));
-	}
-
 	ShotDelay();
+	busI->SPI_xferWord(err, wo, SPI_MODE_1 | SPIMODE_WRONLY, wlen, true);
 	setDI();
 
-	return OK;
+	return err;
 }
 
 int Sde2506Bus::RecDataWord(int wlen)
 {
-	int k, val = 0;
-
+	int err = OK;
 	clearCLK();
-	setDI();
-
-	for (k = 0; k < wlen; k++)
-		if (RecDataBit())
-		{
-			val |= 1 << k;
-		}
-
-	return val;
+	int rv = busI->SPI_xferWord(err, 0xffff, SPI_MODE_0 | SPIMODE_RDONLY, wlen, true);
+	if (err == OK)
+		return rv;
+	else
+		return err;
 }
 
 int Sde2506Bus::WaitReadyAfterWrite(long timeout)
@@ -167,20 +146,20 @@ int Sde2506Bus::WaitReadyAfterWrite(long timeout)
 
 int Sde2506Bus::Reset(void)
 {
-	qDebug() << "Sde2506Bus::Reset()";
+	qDebug() << __PRETTY_FUNCTION__;
 
 	SetDelay();
 
-	clearCLK();             //clock = 0
-	setDI();                //data = 1
-	setCE();                //CE = 1
+	clearCLK();			//clock = 0
+	setDI();			//data = 1
+	setCE();			//CE = 1
 
 	return OK;
 }
 
 long Sde2506Bus::Read(int addr, uint8_t *data, long length, int page_size)
 {
-	qDebug() << "Sde2506Bus::Read(" << (hex) << addr << ", " << data << ", " << (dec) << length << ")";
+	qDebug() << __PRETTY_FUNCTION__ << "(" << (hex) << addr << ", " << data << ", " << (dec) << length << ")";
 	ReadStart();
 
 	long len;
@@ -191,14 +170,15 @@ long Sde2506Bus::Read(int addr, uint8_t *data, long length, int page_size)
 
 		//Send command opcode
 		SendAddress(addr++);
-		SendControlBit(0);              //SB = 0 --> Read op
+		SendControlBit(0);			//SB = 0 --> Read op
 		WaitUsec(5);
 		clearCE();
+		ShotDelay();
 
 		SendDataBit(1);
 		*data++ = RecDataWord();
 
-		WaitUsec(GetDelay() + 1);
+		ShotDelay(2);
 		setCE();
 
 		if ((len % 4) == 0)
@@ -209,9 +189,10 @@ long Sde2506Bus::Read(int addr, uint8_t *data, long length, int page_size)
 			}
 		}
 	}
+	WaitMsec(1);		//Flush
 
 	ReadEnd();
-	qDebug() << "Sde2506Bus::Read() = " << len;
+	qDebug() << __PRETTY_FUNCTION__ << "=" << len;
 
 	return len;
 }
@@ -230,24 +211,24 @@ long Sde2506Bus::Write(int addr, uint8_t const *data, long length, int page_size
 		SendDataWord(*data++);
 		SendAddress(curaddr);
 
-		SendControlBit(1);                      //SB = 1 --> Write/Erase op
-		WaitUsec(5);
+		SendControlBit(1);			//SB = 1 --> Write/Erase op
+		ShotDelay(2);				//WaitUsec(5);
 		clearCE();
 
-		SendDataBit(1);                         //Start erase
+		SendDataBit(1);				//Start erase
 		setDI();
 		WaitReadyAfterWrite();
-		setCE();                                        //End erase
+		setCE();					//End erase
 
-		WaitUsec(GetDelay() / 2 + 1);   //perform write
+		ShotDelay();				//WaitUsec(GetDelay() / 2 + 1);   //perform write
 		clearDI();
 		ShotDelay();
 		clearCE();
 
-		SendDataBit(0);                 //Start write
+		SendDataBit(0);				//Start write
 		setDI();
 		WaitReadyAfterWrite();
-		setCE();                                //End write
+		setCE();					//End write
 
 		if ((curaddr & 1))
 		{
@@ -257,6 +238,7 @@ long Sde2506Bus::Write(int addr, uint8_t const *data, long length, int page_size
 			}
 		}
 	}
+	WaitMsec(1);		//Flush
 
 	WriteEnd();
 

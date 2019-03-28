@@ -32,18 +32,6 @@
 
 #include <QtCore>
 
-#ifdef Q_OS_LINUX
-#  include <unistd.h>
-#else
-#  ifdef        __BORLANDC__
-#    define     __inline__
-#  else // _MICROSOFT_ VC++
-#    define     __inline__ __inline
-#    define _export
-#  endif
-#endif
-
-// Costruttore
 PicBusNew::PicBusNew(BusInterface *ptr)
 	: PicBus(ptr)
 {
@@ -56,11 +44,6 @@ int PicBusNew::WaitReadyAfterWrite(long timeout)
 	return OK;
 }
 
-int PicBusNew::Reset(void)
-{
-	return PicBus::Reset();
-}
-
 long PicBusNew::Write(int addr, uint8_t const *data, long length, int page_size)
 {
 	long len;
@@ -69,7 +52,7 @@ long PicBusNew::Write(int addr, uint8_t const *data, long length, int page_size)
 
 	if (addr == 0)
 	{
-		length >>= 1;        //contatore da byte a word
+		length >>= 1;			//convert counter from byte to word
 	}
 
 	for (len = 0; len < length; len++)
@@ -137,12 +120,13 @@ long PicBusNew::Write(int addr, uint8_t const *data, long length, int page_size)
 			break;
 		}
 	}
+	WaitMsec(1);		//Flush
 
 	WriteEnd();
 
 	if (addr == 0)
 	{
-		len <<= 1;        //contatore da word a byte
+		len <<= 1;		//convert counter from word to byte
 	}
 
 	return len;

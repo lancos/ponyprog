@@ -110,7 +110,7 @@ class MpsseInterface : public BusInterface
 	void SetControlLine(int res = 1);
 
 	void List();
-	int Flush();
+	virtual int Flush();
 
 	const int usb_vid = 0x0403;
 	const int usb_pid = 0xcff8;
@@ -119,19 +119,6 @@ class MpsseInterface : public BusInterface
 
 	virtual void SetDelay(int delay);
 	virtual void ShotDelay(int n = 1);
-
-	virtual void WaitMsec(unsigned int msec)
-	{
-		Flush();
-		BusInterface::WaitMsec(msec);
-	}
-
-	virtual void WaitUsec(unsigned int usec)
-	{
-		Flush();
-		BusInterface::WaitUsec(usec);
-	}
-
 
   protected:
 	//int GetPresence() const;
