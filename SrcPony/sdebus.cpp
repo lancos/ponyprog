@@ -92,7 +92,7 @@ int Sde2506Bus::SendDataBit(int b)
 	//clearCLK();             //device latch data bit now!
 
 	int err = OK;
-	busI->SPI_xferBit(err, b, SPI_MODE_1 | SPIMODE_WRONLY);
+	busI->xferBit(err, b, SPI_MODE_1 | xMODE_WRONLY);
 
 	return err;
 }
@@ -107,7 +107,7 @@ int Sde2506Bus::RecDataBit()
 	//clearCLK();
 
 	int err = OK;
-	int rv = busI->SPI_xferBit(err, 1, SPI_MODE_0 | SPIMODE_RDONLY);
+	int rv = busI->xferBit(err, 1, SPI_MODE_0 | xMODE_RDONLY);
 	if (err == OK)
 		return rv;
 	else
@@ -120,7 +120,7 @@ int Sde2506Bus::SendDataWord(int wo, int wlen)
 
 	clearCLK();
 	ShotDelay();
-	busI->SPI_xferWord(err, wo, SPI_MODE_1 | SPIMODE_WRONLY, wlen, true);
+	busI->xferWord(err, wo, SPI_MODE_1 | xMODE_WRONLY, wlen, true);
 	setDI();
 
 	return err;
@@ -130,7 +130,7 @@ int Sde2506Bus::RecDataWord(int wlen)
 {
 	int err = OK;
 	clearCLK();
-	int rv = busI->SPI_xferWord(err, 0xffff, SPI_MODE_0 | SPIMODE_RDONLY, wlen, true);
+	int rv = busI->xferWord(err, 0xffff, SPI_MODE_0 | xMODE_RDONLY, wlen, true);
 	if (err == OK)
 		return rv;
 	else

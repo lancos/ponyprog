@@ -39,33 +39,39 @@ class I2CBus : public BusIO
 	long Write(int slave, uint8_t const *data, long length, int page_size = 0);
 
 	int Start(uint8_t slave);
-	int ReadByte(int ack, int lsb = 0);
-	int WriteByte(int by, int lsb = 0);
+	int ReadByte(int ack, bool lsb = false);
+	int WriteByte(int by, bool lsb = false);
 	long StartRead(uint8_t slave, uint8_t *data, long length);
 	long StartWrite(uint8_t slave, uint8_t const *data, long length);
 	int Stop();
 	int Reset();
 
+	virtual int Open(int port)
+	{
+		Q_CHECK_PTR(busI);
+		busI->SetI2CMode(true);
+		return BusIO::Open(port);
+	}
+
 	void Close();
 	int TestPort(int port);
-	//      int Calibration(int slave = 0xA0);
+	//int Calibration(int slave = 0xA0);
 
 	void SetDelay();
 
   protected:
 
+	void RecoverSlave();
 	int CheckBusy();
 	int SendStart();
 	int SendStop();
 	int SendBitMast(int b);
-	int RecBitMast();
-	int SendByteMast(int by);
-	int SendByteMastLSB(int by);
-	int RecByteMast(int ack);
-	int RecByteMastLSB(int ack);
+	int RecBitMast()
+	{
+		return SendBitMast(1);
+	}
 
   private:
-
 
 	void setSCLSDA()
 	{

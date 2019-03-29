@@ -95,7 +95,7 @@ int MicroWireBus::SendDataBit(int b)
 	//clearCLK();
 
 	int err = OK;
-	busI->SPI_xferBit(err, b, SPI_MODE_0 | SPIMODE_WRONLY);
+	busI->xferBit(err, b, SPI_MODE_0 | xMODE_WRONLY);
 
 	return err;
 }
@@ -110,7 +110,7 @@ int MicroWireBus::RecDataBit()
 	//clearCLK();
 
 	int err = OK;
-	int rv = busI->SPI_xferBit(err, 1, SPI_MODE_1 | SPIMODE_RDONLY);
+	int rv = busI->xferBit(err, 1, SPI_MODE_1 | xMODE_RDONLY);
 	if (err == OK)
 		return rv;
 	else
@@ -128,7 +128,7 @@ int MicroWireBus::SendDataWord(int wo, int wlen, bool lsb)
 {
 	int err = OK;
 	clearCLK();
-	busI->SPI_xferWord(err, wo, SPI_MODE_0 | SPIMODE_WRONLY, wlen, lsb);
+	busI->xferWord(err, wo, SPI_MODE_0 | xMODE_WRONLY, wlen, lsb);
 	clearDI();
 
 	return err;
@@ -139,7 +139,7 @@ int MicroWireBus::RecDataWord(int wlen, bool lsb)
 {
 	int err = OK;
 	clearCLK();
-	int rv = busI->SPI_xferWord(err, 0xffff, SPI_MODE_1 | SPIMODE_RDONLY, wlen, lsb);
+	int rv = busI->xferWord(err, 0xffff, SPI_MODE_1 | xMODE_RDONLY, wlen, lsb);
 	if (err == OK)
 		return rv;
 	else

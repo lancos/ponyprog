@@ -30,38 +30,15 @@
 #include "busio.h"
 #include "pgminter.h"
 
-//Some useful flags
-#define SPIMODE_CPHA		0x01		// clock phase/edge
-#define SPIMODE_CPOL		0x02		// clock polarity
-#define SPIMODE_RDONLY		0x04
-#define SPIMODE_WRONLY		0x08
-
-enum {
-	SPI_MODE_0 = (0 | 0),
-	SPI_MODE_1 = (0 | SPIMODE_CPHA),
-	SPI_MODE_2 = (SPIMODE_CPOL | 0),
-	SPI_MODE_3 = (SPIMODE_CPOL | SPIMODE_CPHA)
-};
-
 class SPIBus : public BusIO
 {
   public:
-	SPIBus(BusInterface *ptr = 0, int bpw = 8, bool cpha = false, bool cpol = false);
+	SPIBus(BusInterface *ptr = 0, bool cpha = false, bool cpol = false);
 	virtual ~SPIBus();
 
 	virtual int Reset();
 
 	void SetDelay();
-
-	void SetBitsPerWord(int val)
-	{
-		if (val > 0 && val <= 32)
-			m_bits_per_word = val;
-	}
-	int GetBitsPerWord()
-	{
-		return m_bits_per_word;
-	}
 
 	void SetFallingPhase(bool cpha)
 	{
@@ -150,7 +127,6 @@ class SPIBus : public BusIO
 		return busI->GetDataIn();
 	}
 
-	int m_bits_per_word;	//max 32bit word
 	bool m_cpol;	//clock polarity
 	bool m_cpha;	//rising edge vs fall edge sample
 };

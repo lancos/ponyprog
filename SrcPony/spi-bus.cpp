@@ -35,9 +35,8 @@
 #include <QDebug>
 #include <QtCore>
 
-SPIBus::SPIBus(BusInterface *ptr, int bpw, bool cpha, bool cpol)
+SPIBus::SPIBus(BusInterface *ptr, bool cpha, bool cpol)
 	: BusIO(ptr),
-	  m_bits_per_word(bpw),
 	  m_cpol(cpol),
 	  m_cpha(cpha)
 {
@@ -89,7 +88,7 @@ void SPIBus::SetDelay()
 int SPIBus::SendDataBit(int b)
 {
 	int err = OK;
-	busI->SPI_xferBit(err, b, GetMode() | SPIMODE_WRONLY);
+	busI->xferBit(err, b, GetMode() | xMODE_WRONLY);
 
 	return err;
 }
@@ -97,7 +96,7 @@ int SPIBus::SendDataBit(int b)
 int SPIBus::RecDataBit()
 {
 	int err = OK;
-	int rv = busI->SPI_xferBit(err, 1, GetMode() | SPIMODE_RDONLY);
+	int rv = busI->xferBit(err, 1, GetMode() | xMODE_RDONLY);
 	if (err == OK)
 		return rv;
 	else
@@ -107,7 +106,7 @@ int SPIBus::RecDataBit()
 int SPIBus::SendDataByte(int by)
 {
 	int err = OK;
-	busI->SPI_xferWord(err, by, GetMode() | SPIMODE_WRONLY);
+	busI->xferByte(err, by, GetMode() | xMODE_WRONLY);
 
 	return err;
 }
@@ -115,7 +114,7 @@ int SPIBus::SendDataByte(int by)
 int SPIBus::RecDataByte()
 {
 	int err = OK;
-	int rv = busI->SPI_xferWord(err, 0xff, GetMode() | SPIMODE_RDONLY);
+	int rv = busI->xferByte(err, 0xff, GetMode() | xMODE_RDONLY);
 	if (err == OK)
 		return rv;
 	else
@@ -124,21 +123,21 @@ int SPIBus::RecDataByte()
 
 int SPIBus::Reset(void)
 {
-	qDebug() << __PRETTY_FUNCTION__ << "() I";
+	qDebug() << __PRETTY_FUNCTION__ << "IN";
 
 	SetDelay();
 
-	clearSCK();             // Dal datasheet AVR
-	setMOSI();              // the datasheet don't specify, but we need to provide power from at least one line (MOSI while SCK and RESET are low)
+	clearSCK();			// AVR datasheet
+	setMOSI();			// the datasheet doesn't specify, but with SIProg we need to provide power from at least one line (MOSI while SCK and RESET are low)
 
 	WaitMsec(20);
-	ClearReset();   //One pulse on the reset (datasheet AVR)
-	WaitMsec(E2Profile::GetSPIResetPulse());   //AppNote AVR910 suggest >100 msec
+	ClearReset();		//One pulse on the reset (datasheet AVR)
+	WaitMsec(E2Profile::GetSPIResetPulse());	//AppNote AVR910 suggest >100 msec
 	SetReset();
 
 	WaitMsec(E2Profile::GetSPIDelayAfterReset());
 
-	qDebug() << __PRETTY_FUNCTION__ << "() O";
+	qDebug() << __PRETTY_FUNCTION__ << "OUT";
 
 	return OK;
 }

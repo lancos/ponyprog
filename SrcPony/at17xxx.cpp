@@ -54,7 +54,7 @@ int At17xxx::WritePage(long addr, int addr_bytes, uint8_t *buf, int len)
 
 	for (j = addr_bytes - 1; j >= 0; j--)
 	{
-		rval = GetBus()->WriteByte((addr >> (j * 8)) & 0xFF, 0);
+		rval = GetBus()->WriteByte((addr >> (j * 8)) & 0xFF, false);
 
 		if (rval < 0)
 		{
@@ -64,7 +64,7 @@ int At17xxx::WritePage(long addr, int addr_bytes, uint8_t *buf, int len)
 
 	for (j = 0; j < len; j++)
 	{
-		rval = GetBus()->WriteByte(buf[j], 1);
+		rval = GetBus()->WriteByte(buf[j], true);
 
 		if (rval < 0)
 		{
@@ -169,7 +169,7 @@ int At17xxx::ReadPage(long addr, int addr_bytes, uint8_t *buf, int len)
 
 	for (j = addr_bytes - 1; j >= 0; j--)
 	{
-		rval = GetBus()->WriteByte((addr >> (j * 8)) & 0xFF, 0);
+		rval = GetBus()->WriteByte((addr >> (j * 8)) & 0xFF, false);
 
 		if (rval < 0)
 		{
@@ -187,7 +187,7 @@ int At17xxx::ReadPage(long addr, int addr_bytes, uint8_t *buf, int len)
 
 	for (j = 0; j < len - 1; j++)
 	{
-		rval = GetBus()->ReadByte(0, 1);
+		rval = GetBus()->ReadByte(0, true);
 
 		if (rval < 0)
 		{
@@ -198,7 +198,7 @@ int At17xxx::ReadPage(long addr, int addr_bytes, uint8_t *buf, int len)
 	}
 
 	//ultimo byte senza ACK
-	rval = GetBus()->ReadByte(1, 1);
+	rval = GetBus()->ReadByte(1, true);
 
 	if (rval < 0)
 	{

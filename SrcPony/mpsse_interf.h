@@ -104,7 +104,7 @@ class MpsseInterface : public BusInterface
 	virtual int IsClockDataUP();
 	virtual int IsClockDataDOWN();
 
-	//      virtual int TestPort(int port);
+	//virtual int TestPort(int port);
 
 	int SetPower(bool onoff);
 	void SetControlLine(int res = 1);
@@ -115,14 +115,14 @@ class MpsseInterface : public BusInterface
 	const int usb_vid = 0x0403;
 	const int usb_pid = 0xcff8;
 
-	virtual unsigned long SPI_xferWord(int &err, unsigned long word_out, int mode = 0, int bpw = 8, bool lsb_first = false);
+	virtual uint8_t xferByte(int &err, uint8_t by, int mode = 0, int bpw = 8, bool lsb_first = false);
+	virtual unsigned long xferWord(int &err, unsigned long word_out, int mode = 0, int bpw = 8, bool lsb_first = false);
 
 	virtual void SetDelay(int delay);
 	virtual void ShotDelay(int n = 1);
 
   protected:
 	//int GetPresence() const;
-	uint8_t SPI_xferByte(int &err, uint8_t by, int mode, int bpw, bool lsb_first);
 
   private:
 	int InitPins();

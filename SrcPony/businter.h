@@ -33,7 +33,22 @@
 
 #include <QDebug>
 
-#define SPI_MODE_MASK	3
+//Some useful flags
+#define SPIMODE_CPHA		0x01		// clock phase/edge
+#define SPIMODE_CPOL		0x02		// clock polarity
+#define SPIMODE_MASK		0x03
+
+#define xMODE_RDONLY		0x04
+#define xMODE_WRONLY		0x08
+
+//#define I2CMODE_MASK		0x10
+
+enum {
+	SPI_MODE_0 = (0 | 0),
+	SPI_MODE_1 = (0 | SPIMODE_CPHA),
+	SPI_MODE_2 = (SPIMODE_CPOL | 0),
+	SPI_MODE_3 = (SPIMODE_CPOL | SPIMODE_CPHA)
+};
 
 class BusInterface
 {
@@ -42,7 +57,8 @@ class BusInterface
 		: old_portno(-1),
 		  installed(-1),
 		  cmd2cmd_delay(0),
-		  shot_delay(5)
+		  shot_delay(5),
+		  i2c_mode(false)
 	{
 	}
 
@@ -51,19 +67,19 @@ class BusInterface
 
 	virtual int TestOpen(int port)
 	{
-		qDebug() << "BusInterface::TestOpen(" << port << ") IN";
+		qDebug() << __PRETTY_FUNCTION__ << "(" << port << ") IN";
 
 		int ret_val = TestSave(port);
 
 		TestRestore();
 
-		qDebug() << "BusInterface::TestOpen() = " << ret_val << " OUT";
+		qDebug() << __PRETTY_FUNCTION__ << "=" << ret_val << " OUT";
 
 		return ret_val;
 	}
 	virtual int TestPort(int port)
 	{
-		qDebug() << "BusInterface::TestPort(" << port << ") IN";
+		qDebug() << __PRETTY_FUNCTION__ << "(" << port << ") IN";
 
 		return TestOpen(port);
 	}
@@ -71,7 +87,7 @@ class BusInterface
 	{
 		int ret_val;
 
-		qDebug() << "BusInterface::TestSave(" << port << ") IN";
+		qDebug() << __PRETTY_FUNCTION__ << "(" << port << ") IN";
 
 		old_portno = installed;
 
@@ -81,13 +97,13 @@ class BusInterface
 		{
 		}
 
-		qDebug() << "BusInterface::TestSave() = " << ret_val << " OUT";
+		qDebug() << __PRETTY_FUNCTION__ << "=" << ret_val << " OUT";
 
 		return ret_val;
 	}
 	virtual void TestRestore()
 	{
-		qDebug() << "BusInterface::TestRestore() IN *** Inst=" << installed;
+		qDebug() << __PRETTY_FUNCTION__ << "IN *** Inst=" << installed;
 
 		if (IsInstalled())
 		{
@@ -100,7 +116,7 @@ class BusInterface
 			old_portno = -1;
 		}
 
-		qDebug() << "BusInterface::TestRestore() OUT";
+		qDebug() << __PRETTY_FUNCTION__ << "OUT";
 	}
 
 	virtual int SetPower(bool onoff)
@@ -159,85 +175,108 @@ class BusInterface
 		w.WaitUsec(shot_delay * n);
 	}
 
-	virtual int SPI_xferBit(int &err, int b, int mode = 0)
+	virtual int xferBit(int &err, int b, int mode = 0)
 	{
 		int ret = 0;
 
-		switch (mode & SPI_MODE_MASK)
+		if (!i2c_mode)	//(mode & I2CMODE_MASK) == 0)
 		{
-		case 3:
-			SetClock(0);
-			SetDataOut(b);
-			ShotDelay();
-			SetClock(1);
-			ret = GetDataIn();
-			ShotDelay();
-			break;
-		case 2:
-			SetDataOut(b);
-			ShotDelay();
-			SetClock(0);
-			ret = GetDataIn();
-			ShotDelay();
-			SetClock(1);
-			break;
-		case 1:
-			SetClock(1);
-			SetDataOut(b);
-			ShotDelay();
-			SetClock(0);
-			ret = GetDataIn();
-			ShotDelay();
-			break;
-		case 0:
-		default:
-			SetDataOut(b);
-			ShotDelay();
-			SetClock(1);
-			ret = GetDataIn();
-			ShotDelay();
-			SetClock(0);
-			break;
+			switch (mode & SPIMODE_MASK)
+			{
+			case 3:
+				SetClock(0);
+				SetDataOut(b);
+				ShotDelay();
+				SetClock(1);
+				if ((mode & xMODE_WRONLY) == 0)
+					ret = GetDataIn();
+				ShotDelay();
+				break;
+			case 2:
+				SetDataOut(b);
+				ShotDelay();
+				SetClock(0);
+				if ((mode & xMODE_WRONLY) == 0)
+					ret = GetDataIn();
+				ShotDelay();
+				SetClock(1);
+				break;
+			case 1:
+				SetClock(1);
+				SetDataOut(b);
+				ShotDelay();
+				SetClock(0);
+				if ((mode & xMODE_WRONLY) == 0)
+					ret = GetDataIn();
+				ShotDelay();
+				break;
+			case 0:
+			default:
+				SetDataOut(b);
+				ShotDelay();
+				SetClock(1);
+				if ((mode & xMODE_WRONLY) == 0)
+					ret = GetDataIn();
+				ShotDelay();
+				SetClock(0);
+				break;
+			}
+		}
+		else
+		{
+			//TODO: I2CBus xferWord
 		}
 		err = OK;
 		return ret;
 	}
 
-	virtual unsigned long SPI_xferWord(int &err, unsigned long word_out, int mode = 0, int bpw = 8, bool lsb_first = false)
+	virtual uint8_t xferByte(int &err, uint8_t by, int mode = 0, int bpw = 8, bool lsb_first = false)
+	{
+		return (uint8_t)xferWord(err, by, mode, bpw, lsb_first);
+	}
+
+	virtual unsigned long xferWord(int &err, unsigned long word_out, int mode = 0, int bpw = 8, bool lsb_first = false)
 	{
 		uint32_t word_in = 0;
 		uint32_t bitmask;
 		err = OK;
 
-		switch (mode & SPI_MODE_MASK)
+		if (!i2c_mode)	//if ((mode & I2CMODE_MASK) == 0)
 		{
-		case 3:
-		case 2:
-			SetClock(1);
-			break;
-		case 1:
-		case 0:
-		default:
-			SetClock(0);
-			break;
-		}
-
-		if (lsb_first)
-			bitmask = 1;
-		else
-			bitmask = 1 << (bpw - 1);
-
-		for (int k = 0; k < bpw; k++)
-		{
-			if (SPI_xferBit(err, word_out & bitmask, mode))
-				word_in |= bitmask;
+			switch (mode & SPIMODE_MASK)
+			{
+			case 3:
+			case 2:
+				SetClock(1);
+				break;
+			case 1:
+			case 0:
+			default:
+				SetClock(0);
+				break;
+			}
 
 			if (lsb_first)
-				bitmask <<= 1;
+				bitmask = 1;
 			else
-				bitmask >>= 1;
+				bitmask = 1 << (bpw - 1);
+
+			for (int k = 0; k < bpw; k++)
+			{
+				if (xferBit(err, word_out & bitmask, mode))
+					word_in |= bitmask;
+
+				if (lsb_first)
+					bitmask <<= 1;
+				else
+					bitmask >>= 1;
+			}
+			SetDataOut(1);
 		}
-		SetDataOut(1);
+		else
+		{
+			//TODO: I2CBus xferWord
+		}
 
 		return word_in;
 	}
@@ -250,6 +289,15 @@ class BusInterface
 	int GetDelay() const
 	{
 		return shot_delay;
+	}
+
+	void SetI2CMode(bool mode)
+	{
+		i2c_mode = mode;
+	}
+	int GetI2CMode() const
+	{
+		return i2c_mode;
 	}
 
   protected:
@@ -279,6 +327,7 @@ class BusInterface
 	int installed;              // -1 --> not installed, >= 0 number if the installed port
 	int cmd2cmd_delay;			// <> 0 if a delay between commands is needed
 	unsigned int shot_delay;	//delay unit to perform bus timing
+	bool i2c_mode;
 
 	Wait w;
 };

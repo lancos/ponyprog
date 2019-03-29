@@ -101,7 +101,7 @@ int PicBus::SendDataBit(int b)
 	//ShotDelay();
 
 	int err = OK;
-	busI->SPI_xferBit(err, b, SPI_MODE_1 | SPIMODE_WRONLY);
+	busI->xferBit(err, b, SPI_MODE_1 | xMODE_WRONLY);
 
 	return err;
 }
@@ -116,7 +116,7 @@ int PicBus::RecDataBit()
 	//ShotDelay();
 
 	int err = OK;
-	int rv = busI->SPI_xferBit(err, 1, SPI_MODE_1 | SPIMODE_RDONLY);
+	int rv = busI->xferBit(err, 1, SPI_MODE_1 | xMODE_RDONLY);
 	if (err == OK)
 		return rv;
 	else
@@ -130,7 +130,7 @@ int PicBus::SendDataWord(long wo, int wlen)
 	clearCLK();
 	clearDI();
 	WaitUsec(busI->GetCmd2CmdDelay());
-	busI->SPI_xferWord(err, wo, SPI_MODE_1 | SPIMODE_WRONLY, wlen, true);
+	busI->xferWord(err, wo, SPI_MODE_1 | xMODE_WRONLY, wlen, true);
 	setDI();
 
 	//1 usec from a command to the next
@@ -148,7 +148,7 @@ long PicBus::RecDataWord(int wlen)
 	WaitUsec(busI->GetCmd2CmdDelay());
 	setDI();
 	ShotDelay();
-	int rv = busI->SPI_xferWord(err, 0xffff, SPI_MODE_1 | SPIMODE_RDONLY, wlen, true);
+	int rv = busI->xferWord(err, 0xffff, SPI_MODE_1 | xMODE_RDONLY, wlen, true);
 
 	//WaitUsec(shot_delay/4+1);
 
