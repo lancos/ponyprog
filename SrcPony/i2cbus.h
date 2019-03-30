@@ -66,10 +66,7 @@ class I2CBus : public BusIO
 	int SendStart();
 	int SendStop();
 	int SendBitMast(int b);
-	int RecBitMast()
-	{
-		return SendBitMast(1);
-	}
+	int RecBitMast();
 
   private:
 

@@ -37,8 +37,6 @@
 #include <QDebug>
 #include <QtCore>
 
-#define SCLTIMEOUT      900     // enable SCL check and timing (for slaves that hold down the SCL line to slow the transfer)
-
 #define BUSYDELAY       100
 #define SDATIMEOUT      200
 
@@ -179,33 +177,20 @@ int I2CBus::SendStop()
 
 int I2CBus::SendBitMast(int inbit)
 {
-	bitSDA(inbit);		// SDA must be high to receive data (low dominant)
-	ShotDelay();		// tSU;DAT = 250 nsec (tLOW / 2 = 2 usec)
-	setSCL();
+	int err = OK;
+	busI->xferBit(err, inbit, xMODE_WRONLY);
 
-#ifdef  SCLTIMEOUT
-	if (getSCL() == 0)
-	{
-		int k;
+	return err;
+}
 
-		for (k = SCLTIMEOUT; getSCL() == 0 && k > 0; k--)
-		{
-			WaitUsec(1);
-		}
-
-		if (k == 0)
-		{
-			return IICERR_SCLCONFLICT;
-		}
-	}
-#endif
-	ShotDelay();		// tHIGH / 2 = 2 usec
-	int outbit = getSDA();
-	ShotDelay();		// tHIGH / 2 = 2 usec
-	clearSCL();
-	ShotDelay();		// tHD;DATA = 300 nsec (tLOW / 2 = 2 usec)
-
-	return outbit;
+int I2CBus::RecBitMast()
+{
+	int err = OK;
+	int rv = busI->xferBit(err, 1, xMODE_RDONLY);
+	if (err == OK)
+		return rv;
+	else
+		return err;
 }
 
 void I2CBus::RecoverSlave()
@@ -224,77 +209,35 @@ void I2CBus::RecoverSlave()
 
 int I2CBus::WriteByte(int by, bool lsb)
 {
-	int lrb, k;
+	int err = OK;
 
-	if (lsb)
-	{
-		for (k = 0; k < 8; k++)
+	busI->xferByte(err, by, xMODE_WRONLY, 8, lsb);
+
+	if (err == OK)
+	{	//Receive Ack
+		int lrb = busI->xferBit(err, 1, xMODE_RDONLY);
+
+		if (err == OK)
 		{
-			lrb = SendBitMast(by & (1 << k));
-			if (lrb < 0)
-				return lrb;
+			if (lrb)
+				err = IICERR_NOTACK;
 		}
 	}
-	else
-	{
-		for (k = 7; k >= 0; k--)
-		{
-			lrb = SendBitMast(by & (1 << k));
-			if (lrb < 0)
-				return lrb;
-		}
-	}
-
-	lrb = RecBitMast();		// acknowledge bit
-	if (lrb != OK)
-		return lrb;
-
-	if (lrb)
-		return IICERR_NOTACK;
-
-	return OK;
+	return err;
 }
 
 int I2CBus::ReadByte(int ack, bool lsb)
 {
-	int k, bit, val = 0;
-
-	if (lsb)
-	{
-		for (k = 0; k < 8; k++)
-		{
-			bit = RecBitMast();
-			if (bit < 0)
-				return bit;
-
-			if (bit)
-			{
-				val |= 1 << k;
-			}
-		}
+	int err = OK;
+	int rv = busI->xferByte(err, 0xff, xMODE_RDONLY, 8, lsb);
+	if (err == OK)
+	{	//Send Ack
+		busI->xferBit(err, ack, xMODE_WRONLY);
 	}
+	if (err == OK)
+		return rv;
 	else
-	{
-		for (k = 7; k >= 0; k--)
-		{
-			bit = RecBitMast();
-			if (bit < 0)
-				return bit;
-
-			if (bit)
-			{
-				val |= 1 << k;
-			}
-		}
-	}
-
-	bit = SendBitMast(ack);
-	if (bit < 0)		// send the ack
-		return bit;
-
-	setSDA();			// release SDA line to the slave trasmitter
-
-	return val;
+		return err;
 }
 
 void I2CBus::SetDelay()

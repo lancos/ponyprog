@@ -50,6 +50,8 @@ enum {
 	SPI_MODE_3 = (SPIMODE_CPOL | SPIMODE_CPHA)
 };
 
+#define SCLTIMEOUT      900     // enable SCL check and timing (for slaves that hold down the SCL line to slow the transfer)
+
 class BusInterface
 {
   public:
@@ -223,8 +225,26 @@ class BusInterface
 			}
 		}
 		else
-		{
-			//TODO: I2CBus xferWord
+		{	//I2CBus
+			SetDataOut(b);		// SDA must be high to receive data (low dominant)
+			ShotDelay();		// tSU;DAT = 250 nsec (tLOW / 2 = 2 usec)
+			SetClock(1);
+			#ifdef SCLTIMEOUT
+				for (int k = SCLTIMEOUT; GetClock() == 0 && k > 0; k--)
+				{
+					WaitUsec(1);
+				}
+				if (GetClock() == 0)
+				{
+					return IICERR_SCLCONFLICT;
+				}
+			#endif
+			ShotDelay();		// tHIGH / 2 = 2 usec
+			if ((mode & xMODE_WRONLY) == 0)
+				ret = GetDataIn();
+			ShotDelay();		// tHIGH / 2 = 2 usec
+			SetClock(0);
+			ShotDelay();		// tHD;DATA = 300 nsec (tLOW / 2 = 2 usec)
 		}
 		err = OK;
 		return ret;
@@ -255,28 +275,24 @@ class BusInterface
 				SetClock(0);
 				break;
 			}
+		}
+
+		if (lsb_first)
+			bitmask = 1;
+		else
+			bitmask = 1 << (bpw - 1);
+
+		for (int k = 0; k < bpw; k++)
+		{
+			if (xferBit(err, word_out & bitmask, mode))
+				word_in |= bitmask;
 
 			if (lsb_first)
-				bitmask = 1;
+				bitmask <<= 1;
 			else
-				bitmask = 1 << (bpw - 1);
-
-			for (int k = 0; k < bpw; k++)
-			{
-				if (xferBit(err, word_out & bitmask, mode))
-					word_in |= bitmask;
-
-				if (lsb_first)
-					bitmask <<= 1;
-				else
-					bitmask >>= 1;
-			}
-			SetDataOut(1);
+				bitmask >>= 1;
 		}
-		else
-		{
-			//TODO: I2CBus xferWord
-		}
+		SetDataOut(1);
 
 		return word_in;
 	}
