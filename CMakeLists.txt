@@ -169,6 +169,10 @@ ELSE()
     ENDIF(NOT Qt5Multimedia_FOUND)
 ENDIF()
 
+#set ( FTDIPP ON )
+find_package ( LibFTDI1 NO_MODULE REQUIRED )
+include ( ${LIBFTDI_USE_FILE} )
+
 # for this feature install debhelper or 
 SET(PONYPROG_CPACK_PACKAGE_SHLIBDEPS ON)
 
@@ -261,6 +265,9 @@ ELSE()
   TARGET_LINK_LIBRARIES(${CMAKE_PROJECT_NAME} ${QT_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Multimedia_LIBRARIES} ${Qt5PrintSupport_LIBRARIES} )
   MESSAGE(STATUS "QT LIBRARIES: ${QT_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Multimedia_LIBRARIES} ${Qt5PrintSupport_LIBRARIES} ${Qt5Core_LIBRARIES}")
 ENDIF()
+
+#target_link_libraries(${CMAKE_PROJECT_NAME} ${LIBFTDI_LIBRARIES} )
+target_link_libraries(${CMAKE_PROJECT_NAME} ftdipp1 )
 
 ADD_CUSTOM_TARGET (tags
     COMMAND  ctags -R -f tags ${CMAKE_SOURCE_DIR}/SrcPony

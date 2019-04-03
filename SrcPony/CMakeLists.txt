@@ -57,6 +57,7 @@ SET(PONY_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/aboutmdlg.cpp
                  ${CMAKE_CURRENT_SOURCE_DIR}/filebuf.cpp
                  ${CMAKE_CURRENT_SOURCE_DIR}/infomdlg.cpp
                  ${CMAKE_CURRENT_SOURCE_DIR}/lpt_ext_interf.cpp
+                 ${CMAKE_CURRENT_SOURCE_DIR}/mpsse_interf.cpp
                  ${CMAKE_CURRENT_SOURCE_DIR}/motsfbuf.cpp
                  ${CMAKE_CURRENT_SOURCE_DIR}/pic168xx.cpp
                  ${CMAKE_CURRENT_SOURCE_DIR}/portint.cpp
@@ -93,6 +94,7 @@ SET(PONY_NOMOC_HEADERS
                  ${CMAKE_CURRENT_SOURCE_DIR}/eeptypes.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/ispinterf.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/lpt_io_interf.h
+                 ${CMAKE_CURRENT_SOURCE_DIR}/mpsse_interf.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/pgminter.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/picbus.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/sde2506.h

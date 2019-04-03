@@ -25,5 +25,5 @@ if [ -d "$DIRECTORY" ]; then
     cmake -DUSE_DEBUGGER=OFF -DUSE_QT5=ON ..
     make -j$CPU_NUM
     cd ..
-    mv ./$DIRECTORY/ponyprog .
+    #mv ./$DIRECTORY/ponyprog .
 fi
