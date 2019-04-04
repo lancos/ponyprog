@@ -291,6 +291,11 @@ unix:!macx: LIBS += -L/usr/local/lib
 unix:!macx: QMAKE_CXXFLAGS += $$system(pkg-config libftdipp1 --cflags)
 unix:!macx: LIBS += $$system(pkg-config libftdipp1 --libs)
 
+#win32: FTDIPATH = c:/libftdi1-1.4_devkit_mingw32_24June2018
+win32: FTDIPATH = c:/libftdi1-1.4git_devkit_x86_x64_14June2018
+win32: QMAKE_CXXFLAGS += -I $$FTDIPATH/include/libftdi -I $$FTDIPATH/include/libusb-1.0 -I $$FTDIPATH/include
+win32: LIBS += -L $$FTDIPATH/lib32 -lftdipp1 -lftdi1 -lusb-1.0
+
 # # Make sure QM translations are generated.
 # lrelease.input = TRANSLATIONS
 # lrelease.output = $$OUT_PWD/translations/${QMAKE_FILE_BASE}.qm
