@@ -875,7 +875,7 @@ int32_t ch341::SetBreakControl(int32_t state)
 
 /**
  * @brief functions sets the baudrate 'speed'
- *        see Linux Kernel: drivers/usb/serial/ch341.c Source File
+ *        see BSD Kernel: uchcom.c Source File
  *        supports common baud rates:
  *        50, 75, 100, 110, 134.5, 150, 300, 600, 900, 1200, 1800, 2400, 3600, 4800, 9600, 14400, 19200,
  *        33600, 38400, 56000, 57600, 76800, 115200, 128000, 153600, 230400, 460800, 921600,
@@ -883,91 +883,82 @@ int32_t ch341::SetBreakControl(int32_t state)
  */
 int32_t ch341::SetBaudRate(int32_t speed)
 {
-#if 0
-	int32_t baud_rate = speed;
-	uint16_t a, b;
 	int32_t ret;
-	uint32_t factor;
-	short divisor;
+	int dv_prescale;
+	int dv_div;
+	int dv_mod;
+
+	static QVector<uart_div> speed_divider = {{307200, 307200, 0, {7, 0xD9, 0}},
+		{921600, 921600, 0, {7, 0xF3, 0}},
+		{2999999, 23530, 6000000, {3, 0, 0}},
+		{23529, 2942, 750000, {2, 0, 0}},
+		{2941, 368, 93750, {1, 0, 0}},
+		{367, 1, 11719, {0, 0, 0}}
+	};
 
 	if (!speed)
 	{
 		return -1;
 	}
 
-	factor = (CH341_BAUDBASE_FACTOR / baud_rate);
-	divisor = CH341_BAUDBASE_DIVMAX;
-
-	while ((factor > 0xfff0) && divisor)
+	foreach (uart_div d, speed_divider)
 	{
-		factor >>= 3;
-		divisor--;
-	}
-
-	if (factor > 0xfff0)
-	{
-		return -1;
-	}
-
-	factor = 0x10000 - factor;
-	a = (factor & 0xff00) | divisor | 0x80;
-	b = ((CH341_BAUDBASE_DIVMAX - divisor) << 4) | ((factor ^ divisor) & 0x0f);
-
-	qDebug() << "set baudrate" << speed << (hex) << a << b << (dec) << "divisor " << divisor;
-
-	ret = libusb_control_transfer(devHandle, CTRL_OUT, CH341_REQ_WRITE_REG, CH341_REG_BAUD1, a, NULL, 0, timeout);
-	if (ret < 0)
-	{
-		qCritical("failed control transfer CH341_REQ_WRITE_REG, CH341_REG_BAUD1\n");
-		return ret;
-	}
-
-	ret = libusb_control_transfer(devHandle, CTRL_OUT, CH341_REQ_WRITE_REG, CH341_REG_BAUD2, b, NULL, 0, timeout);
-	if (ret < 0)
-	{
-		qCritical("failed control transfer CH341_REQ_WRITE_REG, CH341_REG_BAUD2\n");
-		return ret;
-	}
-#else
-	static int baud[] =
-	{
-		2400, 0xd901, 0x0038,
-		4800, 0x6402, 0x001f,
-		9600, 0xb202, 0x0013,
-		19200, 0xd902, 0x000d,
-		38400, 0x6403, 0x000a,
-		115200, 0xcc03, 0x0008
-	};
-
-	int ret = 0;
-	for (int i = 0; i < sizeof(baud) / sizeof(int) / 3; i++)
-	{
-		if (baud[i * 3] == baudRate)
+		if (d.dvr_high >= speed && d.dvr_low <= speed)
 		{
-			ret = libusb_control_transfer(devHandle, CTRL_OUT, CH341_REQ_WRITE_REG, CH341_REG_BAUD1, baud[i * 3 + 1], NULL, 0, 1000);
-			if (ret < 0)
+			dv_prescale = d.dvr_divider.dv_prescaler;
+			if (d.dvr_base_clock == 0)
 			{
-				qCritical("failed control transfer CH341_REQ_WRITE_REG,CH341_REG_BAUD1\n");
-				return ret;
+				dv_div = d.dvr_divider.dv_div;
 			}
-			ret = libusb_control_transfer(devHandle, CTRL_OUT, CH341_REQ_WRITE_REG, CH341_REG_BAUD2, baud[i * 3 + 2], NULL, 0, 1000);
+			else
+			{
+				uint32_t div = d.dvr_base_clock / speed;
+				uint32_t rem = d.dvr_base_clock % speed;
+				if (div == 0 || div >= 0xFF)
+				{
+					return -1;
+				}
+
+				if ((rem << 1) >= speed)
+				{
+					div += 1;
+				}
+				dv_div = (uint8_t) - div;
+			}
+
+			uint32_t mod = (CH341_BPS_MOD_BASE / speed) + CH341_BPS_MOD_BASE_OFS;
+			mod = mod + (mod / 2);
+
+			dv_mod = (mod + 0xFF) / 0x100;
+
+			// calculated, now send to device
+			qDebug() << "set baudrate" << speed << (hex) << (dv_div << 8) + (dv_prescale) << (uint16_t)(dv_mod) << (dec) ;
+
+			ret = libusb_control_transfer(devHandle, CTRL_OUT, CH341_REQ_WRITE_REG, CH341_REG_BAUD1, (dv_div << 8) + (dv_prescale), NULL, 0, timeout);
 			if (ret < 0)
 			{
-				qCritical("failed control transfer CH341_REQ_WRITE_REG,CH341_REG_BAUD2\n");
+				qCritical("failed control transfer CH341_REQ_WRITE_REG, CH341_REG_BAUD1\n");
 				return ret;
 			}
 
-			return 0;
+			ret = libusb_control_transfer(devHandle, CTRL_OUT, CH341_REQ_WRITE_REG, CH341_REG_BAUD2, (uint16_t)(dv_mod), NULL, 0, timeout);
+			if (ret < 0)
+			{
+				qCritical("failed control transfer CH341_REQ_WRITE_REG, CH341_REG_BAUD2\n");
+				return ret;
+			}
+
+			ret = libusb_control_transfer(devHandle, CTRL_OUT, CH341_REQ_WRITE_REG, CH341_REG_FLOW_CTRL, 0, NULL, 0, timeout);
+			if (ret < 0)
+			{
+				qCritical("failed control transfer CH341_REQ_WRITE_REG, CH341_REG_FLOW_CTRL\n");
+			}
+
+			return ret;
 		}
 	}
-#endif
-	ret = libusb_control_transfer(devHandle, CTRL_OUT, CH341_REQ_WRITE_REG, CH341_REG_FLOW_CTRL, 0, NULL, 0, timeout);
-	if (ret < 0)
-	{
-		qCritical("failed control transfer CH341_REQ_WRITE_REG, CH341_REG_FLOW_CTRL\n");
-	}
-
-	return 0;
+	// not found
+	return -1;
 }
 
 /**

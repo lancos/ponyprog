@@ -118,8 +118,8 @@
 /*******************************/
 /* baudrate calculation factor */
 /*******************************/
-#define    CH341_BAUDBASE_FACTOR        1532620800
-#define    CH341_BAUDBASE_DIVMAX        3
+#define    CH341_BPS_MOD_BASE           20000000
+#define    CH341_BPS_MOD_BASE_OFS       1100
 
 //Vendor define
 #define    CH341_REQ_WRITE_TYPE         0x40
@@ -342,6 +342,21 @@ class ch341 : public QObject
 #endif
 
   private:
+	struct dv
+	{
+		uint8_t	dv_prescaler;
+		uint8_t	dv_div;
+		uint8_t	dv_mod;
+	};
+
+	struct uart_div
+	{
+		uint32_t dvr_high;
+		uint32_t dvr_low;
+		uint32_t dvr_base_clock;
+		struct dv dvr_divider;
+	};
+
 	// MODEM output lines
 	uint8_t dtr; // modem line
 	uint8_t rts; // modem line
