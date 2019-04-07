@@ -213,31 +213,47 @@ void cbBulkIn(struct libusb_transfer *transfer)
 }
 #endif
 
-
-ch341::ch341(QObject *parent)
+ch341::ch341()
+	: USB_Interface()
 {
-	verbose = false;
-	dtr = 0;
-	rts = 0;
-
-	baudRate = DEFAULT_BAUD_RATE;
-
-	parity = 'N';
-	bits = 8;
-	stops = 1;
-
-	timeout = DEFAULT_TIMEOUT;
-
-	devHandle = NULL;
-
-	rtsCtsEnabled = 0;
-	dtrDsrEnabled = 0;
 };
 
+// ch341::ch341(usb_dev *p)
+// {
+// 	dtr = 0;
+// 	rts = 0;
+//
+// 	baudRate = DEFAULT_BAUD_RATE;
+//
+// 	parity = 'N';
+// 	bits = 8;
+// 	stops = 1;
+//
+//     flow_control = 0;
+//
+// 	timeout = DEFAULT_TIMEOUT;
+//
+// 	devHandle = NULL;
+//
+// 	rtsCtsEnabled = 0;
+// 	dtrDsrEnabled = 0;
+// };
+//
+//
+// ch341::~ch341()
+// {
+// 	Release();
+// }
 
-ch341::~ch341()
+
+int32_t ch341::getState()
 {
-	Release();
+	return getModemState();
+}
+
+int32_t ch341::setControl()
+{
+	return setHandshakeByte();
 }
 
 void ch341::Close()
@@ -309,6 +325,7 @@ void ch341::allocTransfer()
 /**
  * when 'verbose' enabled, print debug information
  */
+#if 0
 void ch341::v_print(int mode, int len)   // mode: begin=0, progress = 1
 {
 	static int size = 0;
@@ -363,7 +380,7 @@ void ch341::v_print(int mode, int len)   // mode: begin=0, progress = 1
 		break;
 	}
 }
-
+#endif
 
 int32_t ch341::GetStatusRx()
 {
@@ -501,11 +518,6 @@ void ch341::SetFlowControl(uint8_t f)
 
 		break;
 	}
-}
-
-void ch341::SetVerbose()
-{
-	verbose = true;
 }
 
 /**

@@ -43,10 +43,13 @@
 #ifndef __CH341_H__
 #define __CH341_H__
 
+#include "usb_interf.h"
+
 #include <libusb-1.0/libusb.h>
 
 #include <QObject>
 #include <QTimer>
+
 
 // #define    CONTROL_WRITE_ENDPOINT          0x02
 // #define    CONTROL_READ_ENDPOINT           0x82
@@ -248,20 +251,18 @@
 #define MIN(a,b) (((a)<(b))?(a):(b))
 #define MAX(a,b) (((a)>(b))?(a):(b))
 
-class ch341;
+class USB_Interface;
 
-
-class ch341 : public QObject
+class ch341 : public QObject, public USB_Interface
 {
 	Q_OBJECT
 
   public:
-	ch341(QObject *parent = 0);
-	~ch341();
+	ch341();
+// 	virtual ~ch341();
 
-	int32_t Open(uint16_t vid, uint16_t pid);
-	void    SetVerbose(void);
-	void    Close();
+	virtual int32_t Open(uint16_t vid, uint16_t pid);
+	virtual void    Close();
 #if 0
 	int32_t SetStream(uint32_t speed);
 	int32_t SpiCapacity(void);
@@ -272,36 +273,36 @@ class ch341 : public QObject
 	int32_t SpiWrite(uint8_t *buf, uint32_t add, uint32_t len);
 #endif
 
-	int32_t Release(void);
+	virtual int32_t Release(void);
 #if 0
 	int32_t readEEPROM(uint8_t *buffer, uint32_t bytestoread);
 	int32_t writeEEPROM(uint8_t *buffer, uint32_t bytesum);
 #endif
-	int32_t SetBaudRate(int32_t baudRate);
-	int32_t SetTimeouts(int16_t t);
-	int32_t SetBreakControl(int32_t state);
-	void    SetParity(uint8_t p);
-	void    SetBits(uint8_t b);
-	void    SetStops(uint8_t s);
-	void    SetFlowControl(uint8_t f);
-	int32_t SetDTR(int32_t dtr);
-	int32_t SetRTS(int32_t dtr);
-	int32_t GetDSR();
-	int32_t GetCTS();
-	int32_t SetRTSDTR(int state);
-	int32_t SetConfigLCR();
-	int32_t Probe();
-	int32_t ClearChip();
-	int32_t ResetChip();
+	virtual int32_t SetBaudRate(int32_t baudRate);
+	virtual int32_t SetTimeouts(int16_t t);
+	virtual int32_t SetBreakControl(int32_t state);
+	virtual void    SetParity(uint8_t p);
+	virtual void    SetBits(uint8_t b);
+	virtual void    SetStops(uint8_t s);
+	virtual void    SetFlowControl(uint8_t f);
+	virtual int32_t SetDTR(int32_t dtr);
+	virtual int32_t SetRTS(int32_t dtr);
+	virtual int32_t GetDSR();
+	virtual int32_t GetCTS();
+	virtual int32_t SetRTSDTR(int state);
+	virtual int32_t SetConfigLCR();
+	virtual int32_t Probe();
+	virtual int32_t ClearChip();
+	virtual int32_t ResetChip();
 
-// 	int32_t GetStatus();
-	int32_t GetStatusRx();
-	int32_t GetStatusTx();
-// 	int32_t Read(uint8_t *buf, size_t len);
-// 	int32_t Write(uint8_t *buf, size_t len);
+// 	virtual int32_t GetStatus();
+	virtual int32_t GetStatusRx();
+	virtual int32_t GetStatusTx();
+// 	virtual int32_t Read(uint8_t *buf, size_t len);
+// 	ivirtual nt32_t Write(uint8_t *buf, size_t len);
 
-	void    ReleaseInterface(void);
-	void    CloseHandle();
+	virtual void    ReleaseInterface(void);
+	virtual void    CloseHandle();
 
   signals:
 // 	void receivedData(uint8_t *data, size_t len);
@@ -320,15 +321,18 @@ class ch341 : public QObject
 	static int16_t read_completed;
 	static int16_t write_completed;
 
-	struct libusb_device_handle *devHandle;
+// 	struct libusb_device_handle *devHandle;
 //     struct libusb_transfer *ctrl_transfer;
 
   private:
 	int32_t getModemState(void);
 	int32_t setHandshakeByte(void);
-	int32_t init();
+
+	virtual int32_t getState();
+	virtual int32_t setControl();
+	virtual int32_t init();
 // 	void    updateStatus();
-	void    v_print(int mode, int len);
+// 	void    v_print(int mode, int len);
 //     void    allocTransfer();
 
 
@@ -356,7 +360,7 @@ class ch341 : public QObject
 		uint32_t dvr_base_clock;
 		struct dv dvr_divider;
 	};
-
+#if 0
 	// MODEM output lines
 	uint8_t dtr; // modem line
 	uint8_t rts; // modem line
@@ -386,10 +390,8 @@ class ch341 : public QObject
 	uint8_t lsr; // line status register
 	uint8_t msr; // modem status register
 	uint8_t mcr; // modem control register
-
+#endif
 	uint8_t dev_vers;
-
-	bool verbose;
 
 	QTimer *breakTimer;
 	int force_stop = 0;

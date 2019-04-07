@@ -91,6 +91,7 @@ SET(PONY_NOMOC_HEADERS
                  ${CMAKE_CURRENT_SOURCE_DIR}/at25xxx.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/at93cbus.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/busio.h
+                 ${CMAKE_CURRENT_SOURCE_DIR}/usb_interf.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/dt006interf.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/e24xx.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/eeptypes.h
@@ -152,7 +153,7 @@ SET(PONY_NOMOC_HEADERS
                  
                  
 SET(PONY_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/fusemdlg.h
-                 ${CMAKE_CURRENT_SOURCE_DIR}/usbwatcher.h 
+                 ${CMAKE_CURRENT_SOURCE_DIR}/usbwatcher.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/bitfield.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/filldlg.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/blockmdlg.h
@@ -179,20 +180,20 @@ SET(PONY_FORMS  ${CMAKE_CURRENT_SOURCE_DIR}/forms/aboutdlg.ui
 
                 
 SET(PONY_SOURCES ${PONY_SOURCES}
-		PARENT_SCOPE)
-		
+        PARENT_SCOPE)
+        
 SET(PONY_NOMOC_HEADERS ${PONY_NOMOC_HEADERS}
-		PARENT_SCOPE)
+        PARENT_SCOPE)
 
 SET(PONY_HEADERS ${PONY_HEADERS}
-		PARENT_SCOPE)
-		
+        PARENT_SCOPE)
+        
 # SET(FILES_TO_TRANSLATE ${FILES_TO_TRANSLATE} ${MAIN_SOURCES} ${MAIN_FORMS} ${MAIN_HEADERS} 
 #                  PARENT_SCOPE)
 
-		 
+         
 SET(APP_RESOURCES  ${CMAKE_CURRENT_SOURCE_DIR}/ponyprog.qrc
-		 PARENT_SCOPE)
+         PARENT_SCOPE)
 
 
 # cleanup $build/*.cpp~ on "make clean"
