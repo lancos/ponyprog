@@ -112,14 +112,13 @@ class MpsseInterface : public BusInterface
 	void List();
 	virtual int Flush();
 
-	const int usb_vid = 0x0403;
-	const int usb_pid = 0xcff8;
-
 	virtual uint8_t xferByte(int &err, uint8_t by, int mode = 0, int bpw = 8, bool lsb_first = false);
 	virtual unsigned long xferWord(int &err, unsigned long word_out, int mode = 0, int bpw = 8, bool lsb_first = false);
 
 	virtual void SetDelay(int delay);
 	virtual void ShotDelay(int n = 1);
+
+	void ConfigPins(int pinum_ctrl = -1, int pinum_datain = -1, int pinum_dataout = -1, int pinum_clock = -1, int pinum_clockin = -1, int pinum_poweron = -1);
 
   protected:
 	//int GetPresence() const;
@@ -161,6 +160,7 @@ class MpsseInterface : public BusInterface
 	int pin_dataout;
 	int pin_clock;
 	int pin_clockin;	//0 if unused
+	int pin_poweron;	//0 if unused
 };
 
 #endif

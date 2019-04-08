@@ -57,6 +57,8 @@ class BusInterface
   public:
 	BusInterface()
 		: old_portno(-1),
+		  usb_vid(0),
+		  usb_pid(0),
 		  installed(-1),
 		  cmd2cmd_delay(0),
 		  shot_delay(5),
@@ -158,6 +160,25 @@ class BusInterface
 	bool IsInstalled() const
 	{
 		return (installed >= 0) ? true : false;
+	}
+
+	void SetUSBVid(int vid)
+	{
+		if (vid > 0)
+			usb_vid = vid;
+	}
+	void SetUSBPid(int pid)
+	{
+		if (pid > 0)
+			usb_pid = pid;
+	}
+	int GetUSBVid()
+	{
+		return usb_vid;
+	}
+	int GetUSBPid()
+	{
+		return usb_pid;
 	}
 
 	virtual void WaitMsec(unsigned int msec)
@@ -338,6 +359,8 @@ class BusInterface
 	}
 
 	int old_portno;             // TestSave() save the status here
+	int usb_vid;
+	int usb_pid;
 
   private:
 	int installed;              // -1 --> not installed, >= 0 number if the installed port

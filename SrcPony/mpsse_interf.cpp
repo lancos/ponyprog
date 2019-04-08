@@ -35,19 +35,21 @@
 #include <QString>
 
 MpsseInterface::MpsseInterface()
+	: pin_directions(0),
+	  last_data(0),
+	  read_data(0),
+	  pin_ctrl(0),
+	  pin_datain(0),
+	  pin_dataout(0),
+	  pin_clock(0),
+	  pin_clockin(0),
+	  pin_poweron(0)
 {
 	qDebug() << __PRETTY_FUNCTION__;
 
-	MpsseInterface::List();
+	//MpsseInterface::List();
 	//DeInstall();
 	//old_portno = GetInstalled();
-	last_data = read_data = 0;
-
-	pin_ctrl = (1 << 9);
-	pin_datain = 4;
-	pin_dataout = 2;
-	pin_clock = 1;
-	pin_clockin = 0;
 
 	cmdbuf.clear();
 }
@@ -60,6 +62,8 @@ MpsseInterface::~MpsseInterface()
 void MpsseInterface::List()
 {
 	//using namespace Ftdi;
+
+	qDebug() << __PRETTY_FUNCTION__;
 
 	// Parse args
 	//int vid = 0x0403, pid = 0xcff8;	//0x6010;
@@ -84,10 +88,37 @@ void MpsseInterface::List()
 	delete list;
 }
 
-int MpsseInterface::SetPower(bool onoff)
+void MpsseInterface::ConfigPins(int pinum_ctrl, int pinum_datain, int pinum_dataout, int pinum_clock, int pinum_clockin, int pinum_poweron)
 {
-	qDebug() << __PRETTY_FUNCTION__ << "(" << onoff << ")";
-	return OK;
+	if (pinum_ctrl < 0)
+		pin_ctrl = 0;
+	else
+		pin_ctrl = 1 << pinum_ctrl;
+
+	if (pinum_datain < 0)
+		pin_datain = 0;
+	else
+		pin_datain = 1 << pinum_datain;
+
+	if (pinum_dataout < 0)
+		pin_dataout = 0;
+	else
+		pin_dataout = 1 << pinum_dataout;
+
+	if (pinum_clock < 0)
+		pin_clock = 0;
+	else
+		pin_clock = 1 << pinum_clock;
+
+	if (pinum_clockin < 0)
+		pin_clockin = 0;
+	else
+		pin_clockin = 1 << pinum_clockin;
+
+	if (pinum_poweron < 0)
+		pin_poweron = 0;
+	else
+		pin_poweron = 1 << pinum_poweron;
 }
 
 int MpsseInterface::InitPins()
@@ -100,15 +131,14 @@ int MpsseInterface::InitPins()
 		last_data = 0;
 		pin_directions = 0;
 
-		pin_ctrl = 1 << E2Profile::GetMpssePinCtrl();
-		pin_datain = 1 << E2Profile::GetMpssePinDataIn();
-		pin_dataout = 1 << E2Profile::GetMpssePinDataOut();
-		pin_clock = 1 << E2Profile::GetMpssePinClock();
+		if (pin_ctrl == 0 && pin_clock == 0 && pin_datain == 0 && pin_dataout == 0)
+			ConfigPins(E2Profile::GetMpssePinCtrl(), E2Profile::GetMpssePinDataIn(), E2Profile::GetMpssePinDataOut(), E2Profile::GetMpssePinClock());
 
 		qDebug() << __PRETTY_FUNCTION__ << (hex)
 				<< " Ctrl=" << pin_ctrl
-				<< ", Clock=" << pin_clock
-				<< ", DataIn=" << pin_datain << ", DataOut=" << pin_dataout;
+				<< ", Clock=" << pin_clock << ", ClockIn=" << pin_clockin
+				<< ", DataIn=" << pin_datain << ", DataOut=" << pin_dataout
+				<< ", Poweron=" << pin_poweron;
 
 		result = ctx.set_bitmode(0, BITMODE_MPSSE);
 		if (result == 0)
@@ -129,7 +159,7 @@ int MpsseInterface::InitPins()
 
 			//00011011 --> 0x1B
 			int new_data = 0;
-			int new_directions = pin_ctrl | pin_dataout | pin_clock;
+			int new_directions = pin_ctrl | pin_dataout | pin_clock | pin_poweron;
 			new_directions |= (1 << 4) | (1 << 11);
 
 			//Force update
@@ -189,7 +219,7 @@ int MpsseInterface::SetFrequency(uint32_t freq)
 
 int MpsseInterface::Open(int port)
 {
-	qDebug() << __PRETTY_FUNCTION__ << "(" << port << ") IN";
+	qDebug() << __PRETTY_FUNCTION__ << "(" << port << (hex) << usb_vid << usb_pid << ") IN";
 
 	int ret_val = OK;
 
@@ -478,6 +508,23 @@ unsigned long MpsseInterface::xferWord(int &err, unsigned long word_out, int mod
 	return word_in;
 }
 
+int MpsseInterface::SetPower(bool onoff)
+{
+	qDebug() << __PRETTY_FUNCTION__ << "(" << onoff << ")";
+
+	if (IsInstalled() && pin_poweron > 0)
+	{
+		if ((cmdWin->GetPolarity() & POWERINV))
+			onoff = !onoff;
+
+		int val = onoff ? 1 : 0;
+
+		SendPins(OutDataMask(pin_poweron, val));
+	}
+
+	return OK;
+}
+
 void MpsseInterface::SetControlLine(int res)
 {
 	//qDebug() << __PRETTY_FUNCTION__ << "(" << res << ") *** Inst=" << IsInstalled();
@@ -514,7 +561,6 @@ void MpsseInterface::SetClock(int scl)
 {
 	//qDebug() << __PRETTY_FUNCTION__ << "(" << scl << ") *** Inst=" << IsInstalled();
 
-
 	if (IsInstalled())
 	{
 		if ((cmdWin->GetPolarity() & CLOCKINV))
@@ -548,7 +594,6 @@ void MpsseInterface::SetClockData()
 		}
 	}
 }
-
 
 void MpsseInterface::ClearClockData()
 {
