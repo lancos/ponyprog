@@ -67,7 +67,7 @@ enum HInterfaceType
 	DT006_API,
 	DT006_IO,
 	LINUXSYSFS_IO,
-	FTDI_MPSSE,
+	FTDI_JTAGKEY,
 	LAST_HT
 };
 

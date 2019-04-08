@@ -441,9 +441,12 @@ void e2App::SetInterfaceType(HInterfaceType type)
 		busIntp = &linuxsysfs_ioI;
 		break;
 
-	case FTDI_MPSSE:
-		iType = FTDI_MPSSE;
-		busIntp = &mpsseI;
+	case FTDI_JTAGKEY:
+		iType = FTDI_JTAGKEY;
+		busIntp = &jtagkeyI;
+		jtagkeyI.ConfigPins(E2Profile::GetMpssePinCtrl(), E2Profile::GetMpssePinDataIn(), E2Profile::GetMpssePinDataOut(), E2Profile::GetMpssePinClock());
+		jtagkeyI.SetUSBVid(0x0403);
+		jtagkeyI.SetUSBPid(0xcff8);
 		break;
 
 	case SIPROG_API:
