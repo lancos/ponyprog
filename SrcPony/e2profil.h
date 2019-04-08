@@ -38,6 +38,7 @@
 #define RESETINV (1<<1)
 #define DININV   (1<<2)
 #define DOUTINV  (1<<3)
+#define POWERINV (1<<4)
 
 #define RELOAD_idx              0
 #define READFLASH_idx           1

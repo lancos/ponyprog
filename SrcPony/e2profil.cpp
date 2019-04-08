@@ -354,6 +354,14 @@ uint8_t E2Profile::GetPolarityControl()
 			res |= DININV;
 		}
 
+	rval = s->value("PowerOnPolarity", "").toString();
+
+	if (rval.length())
+		if (rval == "INV")
+		{
+			res |= POWERINV;
+		}
+
 	return res;
 }
 
@@ -371,6 +379,9 @@ void E2Profile::SetPolarityControl(uint8_t polarity_control)
 
 	s->setValue("DInPolarity",
 				(polarity_control & DININV) ? "INV" : "TRUE");
+
+	s->setValue("PowerOnPolarity",
+				(polarity_control & POWERINV) ? "INV" : "TRUE");
 }
 
 
