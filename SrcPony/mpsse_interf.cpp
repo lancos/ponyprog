@@ -415,6 +415,9 @@ uint8_t MpsseInterface::xferByte(int &err, uint8_t by, int mode, int bpw, bool l
 	if (lsb_first)
 		cmd |= MPSSE_LSB;
 
+	if ((mode & SPIMODE_MASK) == 0 || (mode & SPIMODE_MASK) == 3)
+		cmd |= MPSSE_WRITE_NEG;
+
 	//We accept 0 --> default R+W, SPIMODE_WRONLY --> W, SPIMODE_RDONLY --> R, (SPIMODE_WRONLY|SPIMODE_RDONLY) --> Invalid
 	Q_ASSERT((mode & (xMODE_WRONLY|xMODE_RDONLY)) != (xMODE_WRONLY|xMODE_RDONLY));
 	Q_ASSERT(bpw <= 8);
