@@ -43,7 +43,8 @@
 
 //#define I2CMODE_MASK		0x10
 
-enum {
+enum
+{
 	SPI_MODE_0 = (0 | 0),
 	SPI_MODE_1 = (0 | SPIMODE_CPHA),
 	SPI_MODE_2 = (SPIMODE_CPOL | 0),
@@ -165,12 +166,16 @@ class BusInterface
 	void SetUSBVid(int vid)
 	{
 		if (vid > 0)
+		{
 			usb_vid = vid;
+		}
 	}
 	void SetUSBPid(int pid)
 	{
 		if (pid > 0)
+		{
 			usb_pid = pid;
+		}
 	}
 	int GetUSBVid()
 	{
@@ -212,7 +217,9 @@ class BusInterface
 				ShotDelay();
 				SetClock(1);
 				if ((mode & xMODE_WRONLY) == 0)
+				{
 					ret = GetDataIn();
+				}
 				ShotDelay();
 				break;
 			case 2:
@@ -220,7 +227,9 @@ class BusInterface
 				ShotDelay();
 				SetClock(0);
 				if ((mode & xMODE_WRONLY) == 0)
+				{
 					ret = GetDataIn();
+				}
 				ShotDelay();
 				SetClock(1);
 				break;
@@ -230,7 +239,9 @@ class BusInterface
 				ShotDelay();
 				SetClock(0);
 				if ((mode & xMODE_WRONLY) == 0)
+				{
 					ret = GetDataIn();
+				}
 				ShotDelay();
 				break;
 			case 0:
@@ -239,30 +250,35 @@ class BusInterface
 				ShotDelay();
 				SetClock(1);
 				if ((mode & xMODE_WRONLY) == 0)
+				{
 					ret = GetDataIn();
+				}
 				ShotDelay();
 				SetClock(0);
 				break;
 			}
 		}
 		else
-		{	//I2CBus
+		{
+			//I2CBus
 			SetDataOut(b);		// SDA must be high to receive data (low dominant)
 			ShotDelay();		// tSU;DAT = 250 nsec (tLOW / 2 = 2 usec)
 			SetClock(1);
-			#ifdef SCLTIMEOUT
-				for (int k = SCLTIMEOUT; GetClock() == 0 && k > 0; k--)
-				{
-					WaitUsec(1);
-				}
-				if (GetClock() == 0)
-				{
-					return IICERR_SCLCONFLICT;
-				}
-			#endif
+#ifdef SCLTIMEOUT
+			for (int k = SCLTIMEOUT; GetClock() == 0 && k > 0; k--)
+			{
+				WaitUsec(1);
+			}
+			if (GetClock() == 0)
+			{
+				return IICERR_SCLCONFLICT;
+			}
+#endif
 			ShotDelay();		// tHIGH / 2 = 2 usec
 			if ((mode & xMODE_WRONLY) == 0)
+			{
 				ret = GetDataIn();
+			}
 			ShotDelay();		// tHIGH / 2 = 2 usec
 			SetClock(0);
 			ShotDelay();		// tHD;DATA = 300 nsec (tLOW / 2 = 2 usec)
@@ -299,19 +315,29 @@ class BusInterface
 		}
 
 		if (lsb_first)
+		{
 			bitmask = 1;
+		}
 		else
+		{
 			bitmask = 1 << (bpw - 1);
+		}
 
 		for (int k = 0; k < bpw; k++)
 		{
 			if (xferBit(err, word_out & bitmask, mode))
+			{
 				word_in |= bitmask;
+			}
 
 			if (lsb_first)
+			{
 				bitmask <<= 1;
+			}
 			else
+			{
 				bitmask >>= 1;
+			}
 		}
 		SetDataOut(1);
 
@@ -321,7 +347,9 @@ class BusInterface
 	virtual void SetDelay(int delay)
 	{
 		if (delay >= 0)
+		{
 			shot_delay = delay;
+		}
 	}
 	int GetDelay() const
 	{

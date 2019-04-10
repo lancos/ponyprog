@@ -161,7 +161,9 @@ void Wait::WaitMsec(unsigned int msec)
 void Wait::WaitUsec(unsigned int usec)
 {
 	if (usec == 0)
+	{
 		return;
+	}
 
 	if (htimer)
 	{

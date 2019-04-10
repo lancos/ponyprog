@@ -153,7 +153,9 @@ class BusIO
 	void SetBusInterface(BusInterface *ptr)
 	{
 		if (ptr)
+		{
 			busI = ptr;
+		}
 	}
 
 	int GetDelay() const

@@ -109,9 +109,13 @@ int Sde2506Bus::RecDataBit()
 	int err = OK;
 	int rv = busI->xferBit(err, 1, SPI_MODE_0 | xMODE_RDONLY);
 	if (err == OK)
+	{
 		return rv;
+	}
 	else
+	{
 		return err;
+	}
 }
 
 int Sde2506Bus::SendDataWord(int wo, int wlen)
@@ -132,9 +136,13 @@ int Sde2506Bus::RecDataWord(int wlen)
 	clearCLK();
 	int rv = busI->xferWord(err, 0xffff, SPI_MODE_0 | xMODE_RDONLY, wlen, true);
 	if (err == OK)
+	{
 		return rv;
+	}
 	else
+	{
 		return err;
+	}
 }
 
 int Sde2506Bus::WaitReadyAfterWrite(long timeout)

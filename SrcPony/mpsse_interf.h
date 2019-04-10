@@ -135,11 +135,17 @@ class MpsseInterface : public BusInterface
 	unsigned int OutDataMask(int old_val, int mask, int val)
 	{
 		if (val == 0)
+		{
 			return old_val & ~mask;
+		}
 		else if (val == 1)
+		{
 			return old_val | mask;
+		}
 		else
+		{
 			return old_val ^ mask;
+		}
 	}
 	unsigned int OutDataMask(int mask, int val)
 	{

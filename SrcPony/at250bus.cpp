@@ -115,7 +115,9 @@ int At250Bus::WaitEndOfWrite(int timeout)               // 07/08/99
 	int k;
 
 	for (k = timeout; k > 0 && (ReadEEPStatus() & NotReadyFlag); k--)
+	{
 		WaitUsec(50);
+	}
 
 	return (k != 0);
 }

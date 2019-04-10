@@ -71,9 +71,13 @@ class SPIBus : public BusIO
 	{
 		int mode = 0;
 		if (m_cpol)
+		{
 			mode |= SPIMODE_CPOL;
+		}
 		if (m_cpha)
+		{
 			mode |= SPIMODE_CPHA;
+		}
 
 		return mode;
 	}

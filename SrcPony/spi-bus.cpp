@@ -98,9 +98,13 @@ int SPIBus::RecDataBit()
 	int err = OK;
 	int rv = busI->xferBit(err, 1, GetMode() | xMODE_RDONLY);
 	if (err == OK)
+	{
 		return rv;
+	}
 	else
+	{
 		return err;
+	}
 }
 
 int SPIBus::SendDataByte(int by)
@@ -116,9 +120,13 @@ int SPIBus::RecDataByte()
 	int err = OK;
 	int rv = busI->xferByte(err, 0xff, GetMode() | xMODE_RDONLY);
 	if (err == OK)
+	{
 		return rv;
+	}
 	else
+	{
 		return err;
+	}
 }
 
 int SPIBus::Reset(void)
