@@ -118,9 +118,13 @@ int PicBus::RecDataBit()
 	int err = OK;
 	int rv = busI->xferBit(err, 1, SPI_MODE_1 | xMODE_RDONLY);
 	if (err == OK)
+	{
 		return rv;
+	}
 	else
+	{
 		return err;
+	}
 }
 
 int PicBus::SendDataWord(long wo, int wlen)
@@ -153,9 +157,13 @@ long PicBus::RecDataWord(int wlen)
 	//WaitUsec(shot_delay/4+1);
 
 	if (err == OK)
+	{
 		return rv;
+	}
 	else
+	{
 		return err;
+	}
 }
 
 int PicBus::SendCmdCode(int opcode)

@@ -112,9 +112,13 @@ int MicroWireBus::RecDataBit()
 	int err = OK;
 	int rv = busI->xferBit(err, 1, SPI_MODE_1 | xMODE_RDONLY);
 	if (err == OK)
+	{
 		return rv;
+	}
 	else
+	{
 		return err;
+	}
 }
 
 int MicroWireBus::RecDataBitShort()
@@ -141,9 +145,13 @@ int MicroWireBus::RecDataWord(int wlen, bool lsb)
 	clearCLK();
 	int rv = busI->xferWord(err, 0xffff, SPI_MODE_1 | xMODE_RDONLY, wlen, lsb);
 	if (err == OK)
+	{
 		return rv;
+	}
 	else
+	{
 		return err;
+	}
 }
 
 //Receive Data word with the first clock pulse shortened.
@@ -160,9 +168,13 @@ int MicroWireBus::RecDataWordShort(int wlen, bool lsb)
 	valw = RecDataWord(wlen - 1, lsb);
 
 	if (lsb)
+	{
 		return (valw << 1) | valb;
+	}
 	else
+	{
 		return (valb << (wlen - 1)) | valw;
+	}
 }
 
 int MicroWireBus::WaitReadyAfterWrite(long timeout)
@@ -216,7 +228,9 @@ int MicroWireBus::CalcAddressSize(int mem_size) const
 	for (k = 15; k > 0; k--)
 	{
 		if (mem_size & (1 << k))
+		{
 			break;
+		}
 	}
 
 	return k + 1;

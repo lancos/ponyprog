@@ -2420,5 +2420,7 @@ QString E2Profile::GetMpsseInterfacePort()
 void E2Profile::SetMpsseInterfacePort(const QString &intname)
 {
 	if (intname.length())
+	{
 		s->setValue("MpsseInterfacePort", intname);
+	}
 }

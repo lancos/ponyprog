@@ -188,9 +188,13 @@ int I2CBus::RecBitMast()
 	int err = OK;
 	int rv = busI->xferBit(err, 1, xMODE_RDONLY);
 	if (err == OK)
+	{
 		return rv;
+	}
 	else
+	{
 		return err;
+	}
 }
 
 void I2CBus::RecoverSlave()
@@ -201,7 +205,9 @@ void I2CBus::RecoverSlave()
 	{
 		SendBitMast(1);
 		if (getSDA() != 0)
+		{
 			break;
+		}
 	}
 	setSCL();
 	ShotDelay();
@@ -214,13 +220,16 @@ int I2CBus::WriteByte(int by, bool lsb)
 	busI->xferByte(err, by, xMODE_WRONLY, 8, lsb);
 
 	if (err == OK)
-	{	//Receive Ack
+	{
+		//Receive Ack
 		int lrb = busI->xferBit(err, 1, xMODE_RDONLY);
 
 		if (err == OK)
 		{
 			if (lrb)
+			{
 				err = IICERR_NOTACK;
+			}
 		}
 	}
 	return err;
@@ -231,13 +240,18 @@ int I2CBus::ReadByte(int ack, bool lsb)
 	int err = OK;
 	int rv = busI->xferByte(err, 0xff, xMODE_RDONLY, 8, lsb);
 	if (err == OK)
-	{	//Send Ack
+	{
+		//Send Ack
 		busI->xferBit(err, ack, xMODE_WRONLY);
 	}
 	if (err == OK)
+	{
 		return rv;
+	}
 	else
+	{
 		return err;
+	}
 }
 
 void I2CBus::SetDelay()

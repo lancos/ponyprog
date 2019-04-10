@@ -73,15 +73,19 @@ void MpsseInterface::List()
 	for (Ftdi::List::iterator it = list->begin(); it != list->end(); it++)
 	{
 		qDebug() << "FTDI (" << &*it << "): "
-			<< QString::fromStdString(it->vendor()) << ", "
-			<< QString::fromStdString(it->description()) << ", "
-			<< QString::fromStdString(it->serial());
+				 << QString::fromStdString(it->vendor()) << ", "
+				 << QString::fromStdString(it->description()) << ", "
+				 << QString::fromStdString(it->serial());
 
 		// Open test
-		if(it->open() == 0)
+		if (it->open() == 0)
+		{
 			qDebug() << " (Open OK)";
+		}
 		else
+		{
 			qDebug() << " (Open FAILED)";
+		}
 
 		it->close();
 	}
@@ -91,34 +95,58 @@ void MpsseInterface::List()
 void MpsseInterface::ConfigPins(int pinum_ctrl, int pinum_datain, int pinum_dataout, int pinum_clock, int pinum_clockin, int pinum_poweron)
 {
 	if (pinum_ctrl < 0)
+	{
 		pin_ctrl = 0;
+	}
 	else
+	{
 		pin_ctrl = 1 << pinum_ctrl;
+	}
 
 	if (pinum_datain < 0)
+	{
 		pin_datain = 0;
+	}
 	else
+	{
 		pin_datain = 1 << pinum_datain;
+	}
 
 	if (pinum_dataout < 0)
+	{
 		pin_dataout = 0;
+	}
 	else
+	{
 		pin_dataout = 1 << pinum_dataout;
+	}
 
 	if (pinum_clock < 0)
+	{
 		pin_clock = 0;
+	}
 	else
+	{
 		pin_clock = 1 << pinum_clock;
+	}
 
 	if (pinum_clockin < 0)
+	{
 		pin_clockin = 0;
+	}
 	else
+	{
 		pin_clockin = 1 << pinum_clockin;
+	}
 
 	if (pinum_poweron < 0)
+	{
 		pin_poweron = 0;
+	}
 	else
+	{
 		pin_poweron = 1 << pinum_poweron;
+	}
 }
 
 int MpsseInterface::InitPins()
@@ -132,13 +160,15 @@ int MpsseInterface::InitPins()
 		pin_directions = 0;
 
 		if (pin_ctrl == 0 && pin_clock == 0 && pin_datain == 0 && pin_dataout == 0)
+		{
 			ConfigPins(E2Profile::GetMpssePinCtrl(), E2Profile::GetMpssePinDataIn(), E2Profile::GetMpssePinDataOut(), E2Profile::GetMpssePinClock());
+		}
 
 		qDebug() << __PRETTY_FUNCTION__ << (hex)
-				<< " Ctrl=" << pin_ctrl
-				<< ", Clock=" << pin_clock << ", ClockIn=" << pin_clockin
-				<< ", DataIn=" << pin_datain << ", DataOut=" << pin_dataout
-				<< ", Poweron=" << pin_poweron;
+				 << " Ctrl=" << pin_ctrl
+				 << ", Clock=" << pin_clock << ", ClockIn=" << pin_clockin
+				 << ", DataIn=" << pin_datain << ", DataOut=" << pin_dataout
+				 << ", Poweron=" << pin_poweron;
 
 		result = ctx.set_bitmode(0, BITMODE_MPSSE);
 		if (result == 0)
@@ -208,7 +238,7 @@ int MpsseInterface::SetFrequency(uint32_t freq)
 		divisor = 65535;
 	}
 
-	qDebug() << __PRETTY_FUNCTION__ << "Frequency" << (sysclock/(2*(divisor+1))) << ", Divisor" << divisor << ", SysClock" << sysclock;
+	qDebug() << __PRETTY_FUNCTION__ << "Frequency" << (sysclock / (2 * (divisor + 1))) << ", Divisor" << divisor << ", SysClock" << sysclock;
 
 	cmdbuf.append(TCK_DIVISOR);
 	cmdbuf.append(divisor & 0xff);
@@ -229,15 +259,23 @@ int MpsseInterface::Open(int port)
 		ftdi_interface interf = INTERFACE_A;
 
 		if (qs.compare("B", Qt::CaseInsensitive) == 0)
+		{
 			interf = INTERFACE_B;
+		}
 		else if (qs.compare("C", Qt::CaseInsensitive) == 0)
+		{
 			interf = INTERFACE_C;
+		}
 		else if (qs.compare("D", Qt::CaseInsensitive) == 0)
+		{
 			interf = INTERFACE_D;
+		}
 
 		int result = ctx.set_interface(interf);
 		if (result == 0)
+		{
 			result = ctx.open(usb_vid, usb_pid);
+		}
 		if (result == 0)
 		{
 			ctx.reset();
@@ -308,7 +346,9 @@ void MpsseInterface::SetDelay(int delay)
 		uint32_t freq = 0xffffffff;	//maximum frequency
 
 		if (delay > 0)
+		{
 			freq = 1000000 / (delay * 2);
+		}
 		SetFrequency(freq);
 	}
 	BusInterface::SetDelay(delay);
@@ -332,7 +372,9 @@ int MpsseInterface::SendPins(int new_data, int new_directions)
 	int ch_data, ch_dir;
 
 	if (cmdbuf.almostFull())
+	{
 		Flush();
+	}
 
 	if (new_directions >= 0)	//-1 don't change directions
 	{
@@ -374,7 +416,9 @@ int MpsseInterface::SendPins(int new_data, int new_directions)
 int MpsseInterface::GetPins()
 {
 	if (cmdbuf.almostFull(3))
+	{
 		Flush();
+	}
 
 	cmdbuf.append(GET_BITS_LOW);
 	cmdbuf.append(GET_BITS_HIGH);
@@ -385,14 +429,16 @@ int MpsseInterface::GetPins()
 	if (ret == OK)
 	{
 		int timeout = 10000;
-		do {
+		do
+		{
 			ret = ctx.read(buf, 2);
 			if (ret < 0)
 			{
 				qWarning() << __PRETTY_FUNCTION__ << "read failed:" << ctx.error_string();
 				return -1;
 			}
-		} while (ret == 0 && --timeout > 0);
+		}
+		while (ret == 0 && --timeout > 0);
 
 		if (timeout > 0)
 		{
@@ -413,21 +459,24 @@ uint8_t MpsseInterface::xferByte(int &err, uint8_t by, int mode, int bpw, bool l
 	uint8_t ret_byte = 0;
 
 	if (lsb_first)
+	{
 		cmd |= MPSSE_LSB;
+	}
 
 	if ((mode & SPIMODE_MASK) == 0 || (mode & SPIMODE_MASK) == 3)
+	{
 		cmd |= MPSSE_WRITE_NEG;
+	}
 
 	//We accept 0 --> default R+W, SPIMODE_WRONLY --> W, SPIMODE_RDONLY --> R, (SPIMODE_WRONLY|SPIMODE_RDONLY) --> Invalid
-	Q_ASSERT((mode & (xMODE_WRONLY|xMODE_RDONLY)) != (xMODE_WRONLY|xMODE_RDONLY));
+	Q_ASSERT((mode & (xMODE_WRONLY | xMODE_RDONLY)) != (xMODE_WRONLY | xMODE_RDONLY));
 	Q_ASSERT(bpw <= 8);
 
 	if ((mode & xMODE_WRONLY) != 0)
 	{
 		cmd |= MPSSE_DO_WRITE;
 	}
-	else
-	if ((mode & xMODE_RDONLY) != 0)
+	else if ((mode & xMODE_RDONLY) != 0)
 	{
 		cmd |= MPSSE_DO_READ;
 	}
@@ -439,12 +488,16 @@ uint8_t MpsseInterface::xferByte(int &err, uint8_t by, int mode, int bpw, bool l
 	err = OK;
 
 	if (cmdbuf.almostFull())
+	{
 		Flush();
+	}
 
 	cmdbuf.append(cmd);
 	cmdbuf.append(len);
 	if ((cmd & MPSSE_DO_WRITE) != 0)
+	{
 		cmdbuf.append(by);
+	}
 
 	if ((cmd & MPSSE_DO_READ) != 0)
 	{
@@ -454,19 +507,25 @@ uint8_t MpsseInterface::xferByte(int &err, uint8_t by, int mode, int bpw, bool l
 		if (ret == OK)
 		{
 			int timeout = 1000;
-			do {
+			do
+			{
 				ret = ctx.read(&ret_byte, 1);
 				if (ret < 0)
 				{
 					qWarning() << __PRETTY_FUNCTION__ << "read failed:" << ctx.error_string();
 					err = -1;
 				}
-			} while (ret == 0 && --timeout > 0);
+			}
+			while (ret == 0 && --timeout > 0);
 
 			if (ret == 1)
+			{
 				err = OK;
+			}
 			else
+			{
 				err = E2P_TIMEOUT;
+			}
 		}
 	}
 
@@ -481,13 +540,15 @@ unsigned long MpsseInterface::xferWord(int &err, unsigned long word_out, int mod
 	if (lsb_first)
 	{
 		nshift = 0;
-		do {
+		do
+		{
 			nbit = (bpw > 8) ? 8 : bpw;
 			word_in |= (xferByte(err, word_out & 0xff, mode, nbit, true) << nshift);
 			word_out >>= 8;
 			bpw -= nbit;
 			nshift += nbit;
-		} while (bpw > 0);
+		}
+		while (bpw > 0);
 	}
 	else
 	{
@@ -518,7 +579,9 @@ int MpsseInterface::SetPower(bool onoff)
 	if (IsInstalled() && pin_poweron > 0)
 	{
 		if ((cmdWin->GetPolarity() & POWERINV))
+		{
 			onoff = !onoff;
+		}
 
 		int val = onoff ? 1 : 0;
 
@@ -535,7 +598,9 @@ void MpsseInterface::SetControlLine(int res)
 	if (IsInstalled())
 	{
 		if (cmdWin->GetPolarity() & RESETINV)
+		{
 			res = !res;
+		}
 
 		if (SendPins(OutDataMask(pin_ctrl, (res != 0))) != OK)
 		{
@@ -551,7 +616,9 @@ void MpsseInterface::SetDataOut(int sda)
 	if (IsInstalled())
 	{
 		if ((cmdWin->GetPolarity() & DOUTINV))
+		{
 			sda = !sda;
+		}
 
 		if (SendPins(OutDataMask(pin_dataout, (sda != 0))) != OK)
 		{
@@ -567,7 +634,9 @@ void MpsseInterface::SetClock(int scl)
 	if (IsInstalled())
 	{
 		if ((cmdWin->GetPolarity() & CLOCKINV))
+		{
 			scl = !scl;
+		}
 
 		if (SendPins(OutDataMask(pin_clock, (scl != 0))) != OK)
 		{
@@ -585,10 +654,14 @@ void MpsseInterface::SetClockData()
 		int scl = 1, sda = 1;
 
 		if ((cmdWin->GetPolarity() & CLOCKINV))
+		{
 			scl = !scl;
+		}
 
 		if ((cmdWin->GetPolarity() & DOUTINV))
+		{
 			sda = !sda;
+		}
 
 		int n_data = OutDataMask(pin_clock, scl);
 		if (SendPins(OutDataMask(n_data, pin_dataout, sda)) != OK)
@@ -607,10 +680,14 @@ void MpsseInterface::ClearClockData()
 		int scl = 0, sda = 0;
 
 		if ((cmdWin->GetPolarity() & CLOCKINV))
+		{
 			scl = !scl;
+		}
 
 		if ((cmdWin->GetPolarity() & DOUTINV))
+		{
 			sda = !sda;
+		}
 
 		int n_data = OutDataMask(pin_clock, scl);
 		if (SendPins(OutDataMask(n_data, pin_dataout, sda)) != OK)
