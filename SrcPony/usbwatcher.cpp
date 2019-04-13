@@ -63,6 +63,12 @@ USBWatcher::USBWatcher(QObject *p) : QThread(p)
 {
 	vUSB << (usb_data)
 	{
+		// this for SPI, I2C
+		CH34x_VENDOR_ID2, CH341_PRODUCT
+	};
+	// UART mode
+	vUSB << (usb_data)
+	{
 		CH34x_VENDOR_ID2, CH340_UART_PRODUCT
 	};
 	vUSB << (usb_data)

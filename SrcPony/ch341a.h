@@ -51,10 +51,6 @@
 #include <QTimer>
 
 
-// #define    CONTROL_WRITE_ENDPOINT          0x02
-// #define    CONTROL_READ_ENDPOINT           0x82
-
-
 #define    MAX_EEPROM_SIZE              131072 /* For 24c1024*/
 
 #define    DEFAULT_CONFIGURATION        0x01
@@ -74,48 +70,44 @@
 #define    CH34x_VENDOR_ID1             0x4348
 #define    CH34x_VENDOR_ID2             0x1A86
 
-#define    CH341A_PRODUCT               0x5512 // for SPI, I2C 
+#define    CH341_PRODUCT                0x5512 // for SPI, I2C 
 
 #define    CH341_UART_PRODUCT           0x5523
 #define    CH340_UART_PRODUCT           0x7523
 
 
+#define    CH341_CMD_SET_OUTPUT        0xA1
+#define    CH341_CMD_IO_ADDR           0xA2
+#define    CH341_CMD_PRINT_OUT         0xA3
+#define    CH341_CMD_SPI_STREAM        0xA8
+#define    CH341_CMD_SIO_STREAM        0xA9
+#define    CH341_CMD_I2C_STREAM        0xAA
+#define    CH341_CMD_UIO_STREAM        0xAB
 
-#if 0
-
-#define    CH341A_CMD_SET_OUTPUT        0xA1
-#define    CH341A_CMD_IO_ADDR           0xA2
-#define    CH341A_CMD_PRINT_OUT         0xA3
-#define    CH341A_CMD_SPI_STREAM        0xA8
-#define    CH341A_CMD_SIO_STREAM        0xA9
-#define    CH341A_CMD_I2C_STREAM        0xAA
-#define    CH341A_CMD_UIO_STREAM        0xAB
-
-#define    CH341A_CMD_I2C_STM_STA       0x74
-#define    CH341A_CMD_I2C_STM_STO       0x75
-#define    CH341A_CMD_I2C_STM_OUT       0x80
-#define    CH341A_CMD_I2C_STM_IN        0xC0
-#define    CH341A_CMD_I2C_STM_MAX       ( min( 0x3F, CH341_PACKET_LENGTH ) )
-#define    CH341A_CMD_I2C_STM_SET       0x60
-#define    CH341A_CMD_I2C_STM_US        0x40
-#define    CH341A_CMD_I2C_STM_MS        0x50
-#define    CH341A_CMD_I2C_STM_DLY       0x0F
-#define    CH341A_CMD_I2C_STM_END       0x00
+#define    CH341_CMD_I2C_STM_STA       0x74
+#define    CH341_CMD_I2C_STM_STO       0x75
+#define    CH341_CMD_I2C_STM_OUT       0x80
+#define    CH341_CMD_I2C_STM_IN        0xC0
+#define    CH341_CMD_I2C_STM_MAX       ( min( 0x3F, CH341_PACKET_LENGTH ) )
+#define    CH341_CMD_I2C_STM_SET       0x60
+#define    CH341_CMD_I2C_STM_US        0x40
+#define    CH341_CMD_I2C_STM_MS        0x50
+#define    CH341_CMD_I2C_STM_DLY       0x0F
+#define    CH341_CMD_I2C_STM_END       0x00
 
 // GPIO part
-#define    CH341A_CMD_UIO_STM_IN        0x00
-#define    CH341A_CMD_UIO_STM_DIR       0x40
-#define    CH341A_CMD_UIO_STM_OUT       0x80
-#define    CH341A_CMD_UIO_STM_US        0xC0
-#define    CH341A_CMD_UIO_STM_END       0x20
+#define    CH341_CMD_UIO_STM_IN        0x00
+#define    CH341_CMD_UIO_STM_DIR       0x40
+#define    CH341_CMD_UIO_STM_OUT       0x80
+#define    CH341_CMD_UIO_STM_US        0xC0
+#define    CH341_CMD_UIO_STM_END       0x20
 
-#define    CH341A_STM_I2C_20K           0x00
-#define    CH341A_STM_I2C_100K          0x01
-#define    CH341A_STM_I2C_400K          0x02
-#define    CH341A_STM_I2C_750K          0x03
-#define    CH341A_STM_SPI_DBL           0x04
+#define    CH341_STM_I2C_20K           0x00
+#define    CH341_STM_I2C_100K          0x01
+#define    CH341_STM_I2C_400K          0x02
+#define    CH341_STM_I2C_750K          0x03
+#define    CH341_STM_SPI_DBL           0x04
 
-#endif
 
 
 /*******************************/
@@ -196,57 +188,42 @@
 
 //Port state
 #if 0
-#define    CH341A_PORTA_STATE            0x01
-#define    CH341A_PORTB_STATE            0x02
-#define    CH341A_PORTC_STATE            0x03
+#define    CH341_PORTA_STATE            0x01
+#define    CH341_PORTB_STATE            0x02
+#define    CH341_PORTC_STATE            0x03
 #endif
 
 //CH34x Baud Rate
 #define    CH341_BAUDRATE_FACTOR        1532620800
 #define    CH341_BAUDRATE_DIVMAX        3
 
-#define    CH341_DATA_IN                (0x2|LIBUSB_ENDPOINT_IN)
-#define    CH341_DATA_OUT               (0x2|LIBUSB_ENDPOINT_OUT)
-#define    CTRL_IN                      (LIBUSB_REQUEST_TYPE_VENDOR | LIBUSB_ENDPOINT_IN )
-#define    CTRL_OUT                     (LIBUSB_REQUEST_TYPE_VENDOR | LIBUSB_ENDPOINT_OUT )
-//#define    CTRL_IN                      (LIBUSB_REQUEST_TYPE_VENDOR | LIBUSB_ENDPOINT_IN | LIBUSB_RECIPIENT_INTERFACE)
-//#define    CTRL_OUT                     (LIBUSB_REQUEST_TYPE_VENDOR | LIBUSB_ENDPOINT_OUT | LIBUSB_RECIPIENT_INTERFACE)
+/**
+ * @brief
+ *
+ * LIBUSB_ENDPOINT_IN         0x80     device to host
+ * LIBUSB_ENDPOINT_OUT        0x00     host to device
+ * LIBUSB_REQUEST_TYPE_CLASS  0x40
+ * LIBUSB_REQUEST_TYPE_VENDOR 0x80
+ * LIBUSB_RECIPIENT_ENDPOINT  0x02
+ * LIBUSB_RECIPIENT_INTERFACE 0x01
+ */
+
+#define    CH341_DATA_IN                (0x2 | LIBUSB_ENDPOINT_IN)
+#define    CH341_DATA_OUT               (0x2 | LIBUSB_ENDPOINT_OUT)
+#define    CH341_CTRL_IN                (LIBUSB_REQUEST_TYPE_VENDOR | LIBUSB_ENDPOINT_IN )
+#define    CH341_CTRL_OUT               (LIBUSB_REQUEST_TYPE_VENDOR | LIBUSB_ENDPOINT_OUT )
+#define    CH341_CTRL_IN_ENDPOINT       (LIBUSB_ENDPOINT_IN | LIBUSB_RECIPIENT_ENDPOINT)
+#define    CH341_CTRL_OUT_ENDPOINT      (LIBUSB_ENDPOINT_OUT | LIBUSB_RECIPIENT_ENDPOINT)
 #define    DEFAULT_BAUD_RATE            9600
 
 
 // das hier ausprobieren
-#define    CONTROL_REQUEST_TYPE_IN     ( LIBUSB_ENDPOINT_IN | LIBUSB_REQUEST_TYPE_CLASS | LIBUSB_RECIPIENT_INTERFACE )
-#define    CONTROL_REQUEST_TYPE_OUT    ( LIBUSB_ENDPOINT_OUT | LIBUSB_REQUEST_TYPE_CLASS | LIBUSB_RECIPIENT_INTERFACE )
+// #define    CONTROL_REQUEST_TYPE_IN     ( LIBUSB_ENDPOINT_IN | LIBUSB_REQUEST_TYPE_CLASS | LIBUSB_RECIPIENT_INTERFACE )
+// #define    CONTROL_REQUEST_TYPE_OUT    ( LIBUSB_ENDPOINT_OUT | LIBUSB_REQUEST_TYPE_CLASS | LIBUSB_RECIPIENT_INTERFACE )
 
 #define    MAX_CONTROL_IN_TRANSFER_SIZE 2
 #define    MAX_CONTROL_OUT_TRANSFER_SIZE 2
 
-#if 0
-// CH341a READ EEPROM setup packet for the 24c64
-//   this needs putting into a struct to allow convenient access to individual elements
-
-#define CH341_EEPROM_READ_SETUP_CMD \
-	"\xaa\x74\x83\xa0\x00\x00\x74\x81\xa1\xe0\x00\x00\x06\x04\x00\x00" \
-	"\x00\x00\x00\x00\x40\x00\x00\x00\x11\x4d\x40\x77\xcd\xab\xba\xdc" \
-	"\xaa\xe0\x00\x00\xc4\xf1\x12\x00\x11\x4d\x40\x77\xf0\xf1\x12\x00" \
-	"\xd9\x8b\x41\x7e\x00\xf0\xfd\x7f\xf0\xf1\x12\x00\x5a\x88\x41\x7e" \
-	"\xaa\xe0\x00\x00\x2a\x88\x41\x7e\x06\x04\x00\x00\x11\x4d\x40\x77" \
-	"\xe8\xf3\x12\x00\x14\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00" \
-	"\xaa\xdf\xc0\x75\x00"
-
-// for 24c64
-#define CH341_EEPROM_READ_NEXT_CMD  \
-	"\xaa\x74\x83\xa0\x00\x00\x74\x81\xa1\xe0\x00\x00\x10\x00\x00\x00" \
-	"\x00\x00\x00\x00\x8c\xf1\x12\x00\x01\x00\x00\x00\x00\x00\x00\x00" \
-	"\xaa\xe0\x00\x00\x4c\xf1\x12\x00\x5d\x22\xd7\x5a\xdc\xf1\x12\x00" \
-	"\x8f\x04\x44\x7e\x30\x88\x41\x7e\xff\xff\xff\xff\x2a\x88\x41\x7e" \
-	"\xaa\xe0\x00\x7e\x00\x00\x00\x00\x69\x0e\x3c\x00\x12\x01\x19\x00" \
-	"\x0f\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x9c\x2e\x68\x00" \
-	"\xaa\xdf\xc0\x75\x00"
-
-#define CH341_EEPROM_READ_CMD_SZ 0x65
-
-#endif
 
 #define MIN(a,b) (((a)<(b))?(a):(b))
 #define MAX(a,b) (((a)>(b))?(a):(b))
@@ -263,7 +240,8 @@ class ch341 : public QObject, public USB_Interface
 
 	virtual int32_t Open(uint16_t vid, uint16_t pid);
 	virtual void    Close();
-#if 0
+	virtual int32_t SetMode(uint16_t mode = USB_MODE_NONE);
+
 	int32_t SetStream(uint32_t speed);
 	int32_t SpiCapacity(void);
 	int32_t SpiRead(uint8_t *buf, uint32_t add, uint32_t len);
@@ -271,7 +249,6 @@ class ch341 : public QObject, public USB_Interface
 	int32_t WriteStatus(uint8_t status);
 	int32_t EraseChip(void);
 	int32_t SpiWrite(uint8_t *buf, uint32_t add, uint32_t len);
-#endif
 
 	virtual int32_t Release(void);
 #if 0
@@ -298,8 +275,9 @@ class ch341 : public QObject, public USB_Interface
 // 	virtual int32_t GetStatus();
 	virtual int32_t GetStatusRx();
 	virtual int32_t GetStatusTx();
-// 	virtual int32_t Read(uint8_t *buf, size_t len);
-// 	ivirtual nt32_t Write(uint8_t *buf, size_t len);
+
+	virtual int32_t Read(uint8_t *buf, size_t len);
+	virtual int32_t Write(uint8_t *buf, size_t len);
 
 	virtual void    ReleaseInterface(void);
 	virtual void    CloseHandle();
@@ -337,13 +315,14 @@ class ch341 : public QObject, public USB_Interface
 
 
 // 	int setAsync(unsigned char data);
-#if 0
+
 	void    updateStatus(uint8_t *data, size_t l);
 
 	void    SpiChipSelect(uint8_t *ptr, bool selected);
 	int32_t SpiStream(uint8_t *out, uint8_t *in, uint32_t len);
+
 	int32_t usbTransfer(const char *func, uint8_t type, uint8_t *buf, int len);
-#endif
+
 
   private:
 	struct dv

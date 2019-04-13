@@ -53,7 +53,7 @@
 #include <unistd.h>
 #include "ch341a.h"
 
-// int32_t bulkin_count; // set by the callback function
+int32_t bulkin_count; // set by the callback function
 
 #define DEBUG_CH341 0
 
@@ -169,7 +169,6 @@ static void cb_ctrl_changed(struct libusb_transfer *transfer)
 #endif
 
 
-#if 0
 /**
  * callback for bulk out async transfer
  */
@@ -211,12 +210,12 @@ void cbBulkIn(struct libusb_transfer *transfer)
 
 	return;
 }
-#endif
+
 
 ch341::ch341()
 	: USB_Interface()
 {
-};
+}
 
 // ch341::ch341(usb_dev *p)
 // {
@@ -256,11 +255,21 @@ int32_t ch341::setControl()
 	return setHandshakeByte();
 }
 
+/**
+ * @brief
+ */
+int32_t ch341::SetMode(uint16_t mode)
+{
+	return 0;
+}
+
+
 void ch341::Close()
 {
 	libusb_close(devHandle);
 	devHandle = 0;
 }
+
 #if 0
 void ch341::sendData(const uint8_t &data, size_t len)
 {
@@ -399,7 +408,7 @@ int32_t ch341::Probe()
 	int32_t ret;
 	uint8_t lcr = CH341_LCR_ENABLE_RX | CH341_LCR_ENABLE_TX | CH341_LCR_CS8;
 
-	ret = libusb_control_transfer(devHandle, CTRL_OUT, CH341_REQ_WRITE_REG, CH341_REG_LCR, lcr, NULL, 0, timeout);
+	ret = libusb_control_transfer(devHandle, CH341_CTRL_OUT, CH341_REQ_WRITE_REG, CH341_REG_LCR, lcr, NULL, 0, timeout);
 	if (ret < 0)
 	{
 		qCritical("failed control transfer CH341_REQ_WRITE_REG, CH341_REG_LCR\n");
@@ -415,7 +424,6 @@ int32_t ch341::Probe()
 	return 0;
 }
 
-#if 0
 
 /* Helper function for libusb_bulk_transfer, display error message with the caller name */
 int32_t ch341::Read(uint8_t *buf, size_t len)
@@ -429,7 +437,7 @@ int32_t ch341::Read(uint8_t *buf, size_t len)
 
 	read_completed = 0;
 
-	ret = libusb_bulk_transfer(devHandle, CONTROL_READ_ENDPOINT, buf, len, &transfered, timeout);
+	ret = libusb_bulk_transfer(devHandle, CH341_CTRL_IN_ENDPOINT, buf, len, &transfered, timeout);
 	if (ret < 0)
 	{
 		qCritical("libusb_bulk_transfer read error %d\n", ret);
@@ -450,7 +458,7 @@ int32_t ch341::Write(uint8_t *buf, size_t len)
 
 	write_completed = 0;
 
-	ret = libusb_bulk_transfer(devHandle, CONTROL_WRITE_ENDPOINT, buf, len, &transfered, timeout);
+	ret = libusb_bulk_transfer(devHandle, CH341_CTRL_OUT_ENDPOINT, buf, len, &transfered, timeout);
 	if (ret < 0)
 	{
 		qCritical("libusb_bulk_transfer write error %d\n", ret);
@@ -458,7 +466,7 @@ int32_t ch341::Write(uint8_t *buf, size_t len)
 	}
 	return transfered;
 }
-#endif
+
 /**
  * @breif timeouts in milliseconds
  */
@@ -497,24 +505,24 @@ void ch341::SetFlowControl(uint8_t f)
 	// check state
 	uint8_t r[LIBUSB_CONTROL_SETUP_SIZE];
 
-	int ret = libusb_control_transfer(devHandle, CTRL_IN, CH341_REQ_READ_REG, CH341_REG_STAT, 0, &r[0], 0, timeout);
+	int ret = libusb_control_transfer(devHandle, CH341_CTRL_IN, CH341_REQ_READ_REG, CH341_REG_STAT, 0, &r[0], 0, timeout);
 // to check buffer 0x9f, 0xee
 
 	// TODO check this
 	switch (flow_control)
 	{
 	case 0: // NONE
-		libusb_control_transfer(devHandle, CTRL_OUT, CH341_REQ_WRITE_REG, CH341_REG_FLOW_CTRL, CH34X_FLOW_CONTROL_NONE, NULL, 0, timeout);
+		libusb_control_transfer(devHandle, CH341_CTRL_OUT, CH341_REQ_WRITE_REG, CH341_REG_FLOW_CTRL, CH34X_FLOW_CONTROL_NONE, NULL, 0, timeout);
 
 		break;
 
 	case 1: // RTS_CTS
-		libusb_control_transfer(devHandle, CTRL_OUT, CH341_REQ_WRITE_REG, CH341_REG_FLOW_CTRL, CH34X_FLOW_CONTROL_RTS_CTS, NULL, 0, timeout);
+		libusb_control_transfer(devHandle, CH341_CTRL_OUT, CH341_REQ_WRITE_REG, CH341_REG_FLOW_CTRL, CH34X_FLOW_CONTROL_RTS_CTS, NULL, 0, timeout);
 
 		break;
 
 	case 2: // DSR_DTR
-		libusb_control_transfer(devHandle, CTRL_OUT, CH341_REQ_WRITE_REG, CH341_REG_FLOW_CTRL, CH34X_FLOW_CONTROL_DSR_DTR, NULL, 0, timeout);
+		libusb_control_transfer(devHandle, CH341_CTRL_OUT, CH341_REQ_WRITE_REG, CH341_REG_FLOW_CTRL, CH34X_FLOW_CONTROL_DSR_DTR, NULL, 0, timeout);
 
 		break;
 	}
@@ -542,7 +550,7 @@ void ch341::SetFlowControl(uint8_t f)
 int32_t ch341::setHandshakeByte(void)
 {
 // 		uint8_t r[CH341_INPUT_BUF_SIZE];
-// 		int ret = libusb_control_transfer(devHandle, CTRL_IN, CH341_REQ_MODEM_CTRL, NULL, 0, &r[0], CH341_INPUT_BUF_SIZE, timeout);
+// 		int ret = libusb_control_transfer(devHandle, CH341_CTRL_IN, CH341_REQ_MODEM_CTRL, NULL, 0, &r[0], CH341_INPUT_BUF_SIZE, timeout);
 // 		if (ret < 0)
 // 		{
 // 			qCritical("Faild to get handshake byte %d\n", ret);
@@ -563,7 +571,7 @@ int32_t ch341::setHandshakeByte(void)
 #if DEBUG_CH341
 	qDebug() << "set dtr " << ((control & CH341_CONTROL_DTR) ? 1 : 0) << "rts" << ((control & CH341_CONTROL_RTS) ? 1 : 0);
 #endif
-	if (libusb_control_transfer(devHandle, CTRL_OUT, CH341_REQ_MODEM_CTRL, ~control, 0, NULL, 0, timeout) < 0)
+	if (libusb_control_transfer(devHandle, CH341_CTRL_OUT, CH341_REQ_MODEM_CTRL, ~control, 0, NULL, 0, timeout) < 0)
 	{
 		qCritical("Faild to set handshake byte");
 		return -1;
@@ -576,7 +584,7 @@ int32_t ch341::getModemState(void)
 {
 	uint8_t r[2];
 
-	int ret = libusb_control_transfer(devHandle, CTRL_IN, CH341_REQ_READ_REG, CH341_REG_STAT, 0, &r[0], 2, timeout);
+	int ret = libusb_control_transfer(devHandle, CH341_CTRL_IN, CH341_REQ_READ_REG, CH341_REG_STAT, 0, &r[0], 2, timeout);
 	if (ret < 0)
 	{
 		qCritical("Faild to get handshake byte %d", ret);
@@ -610,7 +618,7 @@ int ch341::setAsync(uint8_t data)
 
 //     qCritical("async set mode %02x\n", data);
 
-	libusb_fill_control_setup(buf, CTRL_IN, CH341_REQ_READ_REG, CH341_REG_STAT, 0, 1);
+	libusb_fill_control_setup(buf, CH341_CTRL_IN, CH341_REQ_READ_REG, CH341_REG_STAT, 0, 1);
 	buf[LIBUSB_CONTROL_SETUP_SIZE] = data;
 
 	libusb_fill_control_transfer(transfer, devHandle, buf, cb_ctrl_changed, NULL, timeout);
@@ -629,7 +637,7 @@ void ch341::updateStatus()
 	uint8_t delta;
 
 	int ret; //libusb_control_transfer(devHandle, CONTROL_REQUEST_TYPE_IN, CH341_REQ_READ_REG, CH341_REG_STAT, 0, &stat[0], CH341_INPUT_BUF_SIZE, timeout);
-	ret = libusb_control_transfer(devHandle, CTRL_IN, CH341_REQ_MODEM_CTRL, NULL, 0, &stat[0], CH341_INPUT_BUF_SIZE, timeout);
+	ret = libusb_control_transfer(devHandle, CH341_CTRL_IN, CH341_REQ_MODEM_CTRL, NULL, 0, &stat[0], CH341_INPUT_BUF_SIZE, timeout);
 	if (ret < 0)
 	{
 		qCritical("Faild to update status %d\n", ret);
@@ -750,7 +758,7 @@ int32_t ch341::SetRTSDTR(int st)
 	if (dev_vers < 0x20)
 	{
 		// TODO for old chips is not tested!
-		if (libusb_control_transfer(devHandle, CTRL_OUT, CH341_REQ_WRITE_REG, 0x0606, ~control, NULL, 0, timeout) < 0)
+		if (libusb_control_transfer(devHandle, CH341_CTRL_OUT, CH341_REQ_WRITE_REG, 0x0606, ~control, NULL, 0, timeout) < 0)
 		{
 			qCritical("Faild to set handshake byte\n");
 			return -1;
@@ -758,7 +766,7 @@ int32_t ch341::SetRTSDTR(int st)
 	}
 	else
 	{
-		if (libusb_control_transfer(devHandle, CTRL_OUT, CH341_REQ_MODEM_CTRL, ~control, 0, NULL, 0, timeout) < 0)
+		if (libusb_control_transfer(devHandle, CH341_CTRL_OUT, CH341_REQ_MODEM_CTRL, ~control, 0, NULL, 0, timeout) < 0)
 		{
 			qCritical("Faild to set handshake byte\n");
 			return -1;
@@ -830,13 +838,13 @@ int32_t ch341::SetConfigLCR()
 #if DEBUG_CH341
 	qDebug() << "ch341::SetConfigLCR(" << lcr << ") ";
 #endif
-	int32_t ret = libusb_control_transfer(devHandle, CTRL_OUT, CH341_REQ_WRITE_REG, CH341_REG_LCR, lcr, NULL, 0, timeout);
+	int32_t ret = libusb_control_transfer(devHandle, CH341_CTRL_OUT, CH341_REQ_WRITE_REG, CH341_REG_LCR, lcr, NULL, 0, timeout);
 	if (ret < 0)
 	{
 		qCritical("failed control transfer CH341_REQ_WRITE_REG, CH341_REG_LCR\n");
 	}
 
-	ret = libusb_control_transfer(devHandle, CTRL_OUT, CH341_REQ_WRITE_REG, CH341_REG_FLOW_CTRL, 0, NULL, 0, timeout);
+	ret = libusb_control_transfer(devHandle, CH341_CTRL_OUT, CH341_REQ_WRITE_REG, CH341_REG_FLOW_CTRL, 0, NULL, 0, timeout);
 	if (ret < 0)
 	{
 		qCritical("failed control transfer CH341_REQ_WRITE_REG, CH341_REG_FLOW_CTRL\n");
@@ -855,7 +863,7 @@ int32_t ch341::SetBreakControl(int32_t state)
 	uint16_t reg_contents;
 	uint8_t break_reg[2] = {0, 0};
 
-	int32_t ret = libusb_control_transfer(devHandle, CTRL_IN, CH341_REQ_READ_REG, CH341_REG_BREAK, 0, (uint8_t *)&reg_contents, 2, timeout);
+	int32_t ret = libusb_control_transfer(devHandle, CH341_CTRL_IN, CH341_REQ_READ_REG, CH341_REG_BREAK, 0, (uint8_t *)&reg_contents, 2, timeout);
 	if (ret < 0)
 	{
 		qCritical("failed control transfer CH341_REQ_READ_REG, CH341_REG_BREAK\n");
@@ -875,7 +883,7 @@ int32_t ch341::SetBreakControl(int32_t state)
 	//reg_contents = ReverseWord((uint16_t)(break_reg[0] << 8) + break_reg[1]);
 	reg_contents = ((uint16_t)(break_reg[0] << 8) + break_reg[1]);
 
-	ret = libusb_control_transfer(devHandle, CTRL_OUT, CH341_REQ_WRITE_REG, CH341_REG_BREAK, reg_contents, NULL, 0, timeout);
+	ret = libusb_control_transfer(devHandle, CH341_CTRL_OUT, CH341_REQ_WRITE_REG, CH341_REG_BREAK, reg_contents, NULL, 0, timeout);
 	if (ret < 0)
 	{
 		qCritical("failed control transfer CH341_REQ_WRITE_REG, CH341_REG_BREAK\n");
@@ -946,21 +954,21 @@ int32_t ch341::SetBaudRate(int32_t speed)
 			// calculated, now send to device
 			qDebug() << "set baudrate" << speed << (hex) << (dv_div << 8) + (dv_prescale) << (uint16_t)(dv_mod) << (dec) ;
 
-			ret = libusb_control_transfer(devHandle, CTRL_OUT, CH341_REQ_WRITE_REG, CH341_REG_BAUD1, (dv_div << 8) + (dv_prescale), NULL, 0, timeout);
+			ret = libusb_control_transfer(devHandle, CH341_CTRL_OUT, CH341_REQ_WRITE_REG, CH341_REG_BAUD1, (dv_div << 8) + (dv_prescale), NULL, 0, timeout);
 			if (ret < 0)
 			{
 				qCritical("failed control transfer CH341_REQ_WRITE_REG, CH341_REG_BAUD1\n");
 				return ret;
 			}
 
-			ret = libusb_control_transfer(devHandle, CTRL_OUT, CH341_REQ_WRITE_REG, CH341_REG_BAUD2, (uint16_t)(dv_mod), NULL, 0, timeout);
+			ret = libusb_control_transfer(devHandle, CH341_CTRL_OUT, CH341_REQ_WRITE_REG, CH341_REG_BAUD2, (uint16_t)(dv_mod), NULL, 0, timeout);
 			if (ret < 0)
 			{
 				qCritical("failed control transfer CH341_REQ_WRITE_REG, CH341_REG_BAUD2\n");
 				return ret;
 			}
 
-			ret = libusb_control_transfer(devHandle, CTRL_OUT, CH341_REQ_WRITE_REG, CH341_REG_FLOW_CTRL, 0, NULL, 0, timeout);
+			ret = libusb_control_transfer(devHandle, CH341_CTRL_OUT, CH341_REQ_WRITE_REG, CH341_REG_FLOW_CTRL, 0, NULL, 0, timeout);
 			if (ret < 0)
 			{
 				qCritical("failed control transfer CH341_REQ_WRITE_REG, CH341_REG_FLOW_CTRL\n");
@@ -978,14 +986,14 @@ int32_t ch341::SetBaudRate(int32_t speed)
  */
 int32_t ch341::ResetChip()
 {
-	return libusb_control_transfer(devHandle, CTRL_OUT, CH341_REQ_SERIAL_INIT, CH341_RESET_VALUE, CH341_RESET_INDEX, NULL, 0, timeout);
+	return libusb_control_transfer(devHandle, CH341_CTRL_OUT, CH341_REQ_SERIAL_INIT, CH341_RESET_VALUE, CH341_RESET_INDEX, NULL, 0, timeout);
 }
 
 
 int32_t ch341::ClearChip()
 {
-//     return libusb_control_transfer(devHandle, CTRL_OUT, CH341_REQ_SERIAL_INIT, 0, 0, NULL, 0, timeout);
-	return libusb_control_transfer(devHandle, CTRL_OUT, CH341_REQ_SERIAL_INIT, 0xc29c, 0xb2b9, NULL, 0, timeout);
+//     return libusb_control_transfer(devHandle, CH341_CTRL_OUT, CH341_REQ_SERIAL_INIT, 0, 0, NULL, 0, timeout);
+	return libusb_control_transfer(devHandle, CH341_CTRL_OUT, CH341_REQ_SERIAL_INIT, 0xc29c, 0xb2b9, NULL, 0, timeout);
 }
 
 
@@ -1107,7 +1115,7 @@ int32_t ch341::init(void)
 	uint8_t buf[2];
 
 	/* expect two bytes 0x27 0x00 */
-	ret = libusb_control_transfer(devHandle, CTRL_IN, CH341_REQ_READ_VERSION, 0, 0, buf, 2, timeout);
+	ret = libusb_control_transfer(devHandle, CH341_CTRL_IN, CH341_REQ_READ_VERSION, 0, 0, buf, 2, timeout);
 	if (ret < 0)
 	{
 		qCritical("can not read version\n");
@@ -1146,7 +1154,7 @@ int32_t ch341::init(void)
 	// check state not implemented
 
 
-	ret = libusb_control_transfer(devHandle, CTRL_OUT, CH341_REQ_WRITE_REG, CH341_REG_FLOW_CTRL, 0x0000, NULL, 0, 1000);
+	ret = libusb_control_transfer(devHandle, CH341_CTRL_OUT, CH341_REQ_WRITE_REG, CH341_REG_FLOW_CTRL, 0x0000, NULL, 0, 1000);
 	if (ret < 0)
 	{
 		qCritical("failed control transfer CH341_REQ_WRITE_REG, CH341_REG_FLOW_CTRL\n");
@@ -1159,7 +1167,7 @@ int32_t ch341::init(void)
 		return ret;
 	}
 
-	ret = libusb_control_transfer(devHandle, CTRL_OUT, CH341_REQ_WRITE_REG, CH341_REG_LCR, 0x00c3, NULL, 0, 1000);
+	ret = libusb_control_transfer(devHandle, CH341_CTRL_OUT, CH341_REQ_WRITE_REG, CH341_REG_LCR, 0x00c3, NULL, 0, 1000);
 	if (ret < 0)
 	{
 		qCritical("failed control transfer CH341_REQ_WRITE_REG, CH341_REG_LCR\n");
@@ -1168,7 +1176,7 @@ int32_t ch341::init(void)
 
 	// check state not implemented
 
-	ret = libusb_control_transfer(devHandle, CTRL_OUT, CH341_REQ_WRITE_REG, CH341_REG_FLOW_CTRL, 0x0000, NULL, 0, 1000);
+	ret = libusb_control_transfer(devHandle, CH341_CTRL_OUT, CH341_REQ_WRITE_REG, CH341_REG_FLOW_CTRL, 0x0000, NULL, 0, 1000);
 	if (ret < 0)
 	{
 		qCritical("failed control transfer CH341_REQ_WRITE_REG, CH341_REG_FLOW_CTRL\n");
@@ -1222,7 +1230,7 @@ int32_t ch341::Release(void)
 	return 0;
 }
 
-#if 0
+
 /**
  * Helper function for libusb_bulk_transfer, display error message with the caller name
  */
@@ -1243,13 +1251,13 @@ int32_t ch341::usbTransfer(const char *func, uint8_t type, uint8_t *buf, int len
 	if (ret < 0)
 	{
 		qCritical("%s: Failed to %s %d bytes '%s'", func,
-				  (type == BULK_WRITE_ENDPOINT) ? "write" : "read", len, strerror(-ret));
+				  (type == CH341_DATA_OUT) ? "write" : "read", len, strerror(-ret));
 		return -1;
 	}
 
 	return transfered;
 }
-
+#if 0
 // --------------------------------------------------------------------------
 // ch341writeEEPROM()
 //      write n bytes to 24c32/24c64 device (in packets of 32 bytes)
@@ -1308,7 +1316,7 @@ int32_t ch341::writeEEPROM(uint8_t *buffer, uint32_t bytesum)
 		}
 		qDebug("\n");
 
-		ret = libusb_bulk_transfer(devHandle, BULK_WRITE_ENDPOINT,
+		ret = libusb_bulk_transfer(devHandle, CH341_DATA_OUT,
 								   ch341outBuffer, EEPROM_WRITE_BUF_SZ, &actuallen, timeout);
 
 		if (ret < 0)
@@ -1324,7 +1332,7 @@ int32_t ch341::writeEEPROM(uint8_t *buffer, uint32_t bytesum)
 		*outptr++ = 0x5a;                           // what is this 0x5a??
 		*outptr++ = CH341_CMD_I2C_STM_END;
 
-		ret = libusb_bulk_transfer(devHandle, BULK_WRITE_ENDPOINT, ch341outBuffer, 3, &actuallen, timeout);
+		ret = libusb_bulk_transfer(devHandle, CH341_DATA_OUT, ch341outBuffer, 3, &actuallen, timeout);
 
 		if (ret < 0)
 		{
@@ -1364,10 +1372,10 @@ int32_t ch341::readEEPROM(uint8_t *buffer, uint32_t bytestoread)
 	memset(ch341inBuffer, 0, EEPROM_READ_BULKIN_BUF_SZ);
 	memcpy(ch341outBuffer, CH341_EEPROM_READ_SETUP_CMD, EEPROM_READ_BULKOUT_BUF_SZ);
 
-	libusb_fill_bulk_transfer(xferBulkIn,  devHandle, BULK_READ_ENDPOINT, ch341inBuffer,
+	libusb_fill_bulk_transfer(xferBulkIn,  devHandle, CH341_DATA_IN, ch341inBuffer,
 							  EEPROM_READ_BULKIN_BUF_SZ, cbBulkIn, NULL, timeout);
 
-	libusb_fill_bulk_transfer(xferBulkOut, devHandle, BULK_WRITE_ENDPOINT,
+	libusb_fill_bulk_transfer(xferBulkOut, devHandle, CH341_DATA_OUT,
 							  ch341outBuffer, EEPROM_READ_BULKOUT_BUF_SZ, cbBulkOut, NULL, timeout);
 
 	qDebug("Filled USB transfer structures\n");
@@ -1426,7 +1434,7 @@ int32_t ch341::readEEPROM(uint8_t *buffer, uint32_t bytestoread)
 				ch341outBuffer[4] = (uint8_t)(byteoffset >> 8 & 0xff);      // MSB (big-endian) byte address
 				ch341outBuffer[5] = (uint8_t)(byteoffset & 0xff);           // LSB of 16-bit    byte address
 
-				libusb_fill_bulk_transfer(xferBulkOut, devHandle, BULK_WRITE_ENDPOINT, ch341outBuffer,
+				libusb_fill_bulk_transfer(xferBulkOut, devHandle, CH341_DATA_OUT, ch341outBuffer,
 										  EEPROM_READ_BULKOUT_BUF_SZ, cbBulkOut, NULL, timeout);
 
 				libusb_submit_transfer(xferBulkOut);// update transfer struct (with new EEPROM page offset)
@@ -1440,7 +1448,7 @@ int32_t ch341::readEEPROM(uint8_t *buffer, uint32_t bytestoread)
 	libusb_free_transfer(xferBulkOut);
 	return 0;
 }
-
+#endif
 
 /**
  *   set the i2c bus speed speed(b1b0):
@@ -1467,7 +1475,7 @@ int32_t ch341::SetStream(uint32_t speed)
 	buf[1] = CH341_CMD_I2C_STM_SET | (speed & 0x7);
 	buf[2] = CH341_CMD_I2C_STM_END;
 
-	return usbTransfer(__func__, BULK_WRITE_ENDPOINT, buf, 3);
+	return usbTransfer(__func__, CH341_DATA_OUT, buf, 3);
 }
 
 
@@ -1509,7 +1517,7 @@ int32_t ch341::SpiStream(uint8_t *out, uint8_t *in, uint32_t len)
 	outBuf = new uint8_t[CH341_PACKET_LENGTH];
 
 	SpiChipSelect(outBuf, true);
-	ret = usbTransfer(__func__, BULK_WRITE_ENDPOINT, outBuf, 4);
+	ret = usbTransfer(__func__, CH341_DATA_OUT, outBuf, 4);
 
 	if (ret < 0)
 	{
@@ -1540,7 +1548,7 @@ int32_t ch341::SpiStream(uint8_t *out, uint8_t *in, uint32_t len)
 			*outPtr++ = ReverseByte(*out++);
 		}
 
-		ret = usbTransfer(__func__, BULK_WRITE_ENDPOINT, outBuf, packetLen);
+		ret = usbTransfer(__func__, CH341_DATA_OUT, outBuf, packetLen);
 
 		if (ret < 0)
 		{
@@ -1548,7 +1556,7 @@ int32_t ch341::SpiStream(uint8_t *out, uint8_t *in, uint32_t len)
 			break;
 		}
 
-		ret = usbTransfer(__func__, BULK_READ_ENDPOINT, inBuf, packetLen - 1);
+		ret = usbTransfer(__func__, CH341_DATA_IN, inBuf, packetLen - 1);
 
 		if (ret < 0)
 		{
@@ -1568,7 +1576,7 @@ int32_t ch341::SpiStream(uint8_t *out, uint8_t *in, uint32_t len)
 	if (!err)
 	{
 		SpiChipSelect(outBuf, false);
-		ret = usbTransfer(__func__, BULK_WRITE_ENDPOINT, outBuf, 3);
+		ret = usbTransfer(__func__, CH341_DATA_OUT, outBuf, 3);
 	}
 	else
 	{
@@ -1795,7 +1803,7 @@ int32_t ch341::SpiRead(uint8_t *buf, uint32_t add, uint32_t len)
 	int32_t ret;
 	int32_t old_counter;
 	struct timeval tv = {0, 100};
-	v_print(0, len);  // verbose
+// 	v_print(0, len);  // verbose
 
 	outBuf = new uint8_t[CH341_MAX_PACKET_LEN];
 
@@ -1816,7 +1824,7 @@ int32_t ch341::SpiRead(uint8_t *buf, uint32_t add, uint32_t len)
 
 	while (len > 0)
 	{
-		v_print(1, len);  // verbose
+// 		v_print(1, len);  // verbose
 		fflush(stdout);
 		SpiChipSelect(outBuf, true);
 		idx = CH341_PACKET_LENGTH + 1;
@@ -1850,11 +1858,11 @@ int32_t ch341::SpiRead(uint8_t *buf, uint32_t add, uint32_t len)
 		}
 
 		bulkin_count = 0;
-		libusb_fill_bulk_transfer(xferBulkIn, devHandle, BULK_READ_ENDPOINT, inBuf,
+		libusb_fill_bulk_transfer(xferBulkIn, devHandle, CH341_DATA_IN, inBuf,
 								  CH341_PACKET_LENGTH, cbBulkIn, buf, timeout);
 		buf += max_payload; // advance user's pointer
 		libusb_submit_transfer(xferBulkIn);
-		libusb_fill_bulk_transfer(xferBulkOut, devHandle, BULK_WRITE_ENDPOINT, outBuf,
+		libusb_fill_bulk_transfer(xferBulkOut, devHandle, CH341_DATA_OUT, outBuf,
 								  pkg_len, cbBulkOut, NULL, timeout);
 		libusb_submit_transfer(xferBulkOut);
 		old_counter = bulkin_count;
@@ -1882,7 +1890,7 @@ int32_t ch341::SpiRead(uint8_t *buf, uint32_t add, uint32_t len)
 		}
 
 		SpiChipSelect(outBuf, false);
-		ret = usbTransfer(__func__, BULK_WRITE_ENDPOINT, outBuf, 3);
+		ret = usbTransfer(__func__, CH341_DATA_OUT, outBuf, 3);
 
 		if (ret < 0)
 		{
@@ -1907,7 +1915,7 @@ int32_t ch341::SpiRead(uint8_t *buf, uint32_t add, uint32_t len)
 
 	libusb_free_transfer(xferBulkIn);
 	libusb_free_transfer(xferBulkOut);
-	v_print(2, 0);
+// 	v_print(2, 0);
 	return ret;
 }
 
@@ -1927,7 +1935,7 @@ int32_t ch341::SpiWrite(uint8_t *buf, uint32_t add, uint32_t len)
 	int32_t old_counter;
 	struct timeval tv = {0, 100};
 
-	v_print(0, len); // verbose
+// 	v_print(0, len); // verbose
 
 	if (devHandle == NULL)
 	{
@@ -1948,7 +1956,7 @@ int32_t ch341::SpiWrite(uint8_t *buf, uint32_t add, uint32_t len)
 
 	while (len > 0)
 	{
-		v_print(1, len);
+// 		v_print(1, len);
 
 		outBuf[0] = 0x06; // Write enable
 		ret = SpiStream(outBuf, inBuf, 1);
@@ -1989,10 +1997,10 @@ int32_t ch341::SpiWrite(uint8_t *buf, uint32_t add, uint32_t len)
 		len -= tmp;
 		add += tmp;
 		bulkin_count = 0;
-		libusb_fill_bulk_transfer(xferBulkIn, devHandle, BULK_READ_ENDPOINT, inBuf,
+		libusb_fill_bulk_transfer(xferBulkIn, devHandle, CH341_DATA_IN, inBuf,
 								  CH341_PACKET_LENGTH, cbBulkIn, NULL, timeout);
 		libusb_submit_transfer(xferBulkIn);
-		libusb_fill_bulk_transfer(xferBulkOut, devHandle, BULK_WRITE_ENDPOINT, outBuf,
+		libusb_fill_bulk_transfer(xferBulkOut, devHandle, CH341_DATA_OUT, outBuf,
 								  idx, cbBulkOut, NULL, timeout);
 		libusb_submit_transfer(xferBulkOut);
 		old_counter = bulkin_count;
@@ -2025,7 +2033,7 @@ int32_t ch341::SpiWrite(uint8_t *buf, uint32_t add, uint32_t len)
 		}
 
 		SpiChipSelect(outBuf, false);
-		ret = usbTransfer(__func__, BULK_WRITE_ENDPOINT, outBuf, 3);
+		ret = usbTransfer(__func__, CH341_DATA_OUT, outBuf, 3);
 
 		if (ret < 0)
 		{
@@ -2065,7 +2073,7 @@ int32_t ch341::SpiWrite(uint8_t *buf, uint32_t add, uint32_t len)
 	delete outBuf;
 	delete inBuf;
 
-	v_print(2, 0);
+// 	v_print(2, 0);
 	return ret;
 }
-#endif
+

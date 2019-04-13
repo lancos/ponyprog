@@ -74,6 +74,7 @@ class USB_Interface
 	virtual int32_t Open(uint16_t vid, uint16_t pid) = 0;
 	virtual void    Close() = 0;
 	virtual int32_t Release(void) = 0;
+	virtual int32_t SetMode(uint16_t mode = USB_MODE_NONE) = 0;
 #if 0
 	virtual int32_t readEEPROM(uint8_t *buffer, uint32_t bytestoread);
 	virtual int32_t writeEEPROM(uint8_t *buffer, uint32_t bytesum);
@@ -96,8 +97,8 @@ class USB_Interface
 // 	virtual int32_t GetStatus();
 	virtual int32_t GetStatusRx() = 0;
 	virtual int32_t GetStatusTx() = 0;
-// 	virtual int32_t Read(uint8_t *buf, size_t len) = 0;
-// 	virtual int32_t Write(uint8_t *buf, size_t len) = 0;
+	virtual int32_t Read(uint8_t *buf, size_t len) = 0;
+	virtual int32_t Write(uint8_t *buf, size_t len) = 0;
 
 	virtual void    ReleaseInterface(void) = 0;
 	virtual void    CloseHandle() = 0;
