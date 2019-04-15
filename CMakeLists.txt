@@ -179,8 +179,14 @@ ELSE()
 ENDIF()
 
 #set ( FTDIPP ON )
-find_package ( LibFTDI1 NO_MODULE REQUIRED )
-include ( ${LIBFTDI_USE_FILE} )
+FIND_PACKAGE ( LibFTDI1 NO_MODULE REQUIRED )
+
+IF(NOT LibFTDI1_FOUND)
+    MESSAGE(FATAL_ERROR "LibFTDI1 files are not found. "
+    "LibFTDI1 and LibFTDIPP1 development packages are to install.")
+ENDIF(NOT LibFTDI1_FOUND)
+
+INCLUDE ( ${LIBFTDI_USE_FILE} )
 
 # for this feature install debhelper or 
 SET(PONYPROG_CPACK_PACKAGE_SHLIBDEPS ON)
