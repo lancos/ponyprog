@@ -90,13 +90,6 @@ class LptExtInterface : public BusInterface
 	}
 
   private:
-	int OpenUSB(int vid, int pid)
-	{
-		(void) vid;
-		(void) pid;
-
-		return OK;
-	}
 	static LPTInterface lpt;
 	static LPTIOInterface lptio;
 

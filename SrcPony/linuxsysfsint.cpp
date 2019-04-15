@@ -241,6 +241,11 @@ int LinuxSysFsInterface::Open(int com_no)
 {
 	qDebug() << "LinuxSysFsInterface::Open(" << com_no << ") IN";
 
+	if (com_no < 0)
+	{
+		return -1;
+	}
+
 	int ret_val = OK;
 
 	if (GetInstalled() != com_no)

@@ -37,7 +37,6 @@ class SIProgInterface : public BusInterface, public SerialInterface
 	//      virtual ~SIProgInterface();
 
 	virtual int Open(int com_no);
-	virtual int OpenUSB(int vid, int pid);
 	virtual void Close();
 
 	virtual void SetDataOut(int sda = 1);

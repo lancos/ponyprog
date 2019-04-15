@@ -167,8 +167,6 @@ class e2CmdWindow : public QMainWindow, public e2App, public Ui::MainWindow
 	void usb_hotplug(const quint16 &vid, const quint16 &pid);
 	void usb_detach();
 
-	void onUSBDisconn();
-	void onUSBConn();
 // 	void onNew();
 	void onOpen(); //
 	void onSave(); //

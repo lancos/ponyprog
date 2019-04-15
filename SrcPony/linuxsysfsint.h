@@ -57,13 +57,6 @@ class LinuxSysFsInterface : public BusInterface
 	//      int GetPresence() const;
 
   private:
-	int OpenUSB(int vid, int pid)
-	{
-		(void) vid;
-		(void) pid;
-
-		return OK;
-	}
 	int InitPins();
 	void DeInitPins();
 

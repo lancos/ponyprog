@@ -1645,26 +1645,6 @@ void e2CmdWindow::onDtaChanged()
 }
 
 
-void e2CmdWindow::onUSBDisconn()
-{
-	qDebug() << "e2CmdWindow::onUSBDisconn()";
-
-	usb_vendor = 0;
-	usb_product = 0;
-}
-
-
-void e2CmdWindow::onUSBConn()
-{
-	qDebug() << "e2CmdWindow::onUSBConn()";
-
-	if (usb_vendor > 0 && usb_product > 0)
-	{
-		qDebug() << "Configure " << (hex) << usb_vendor << usb_product << (dec);
-	}
-}
-
-
 /**
  * @brief create all SIGNAL -> SLOT connections
  * EK 2017

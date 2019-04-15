@@ -44,9 +44,19 @@ class BusIO
 		err_no = busI->Open(port);
 		return err_no;
 	}
+	virtual int OpenUSB(int vid, int pid)
+	{
+		Q_CHECK_PTR(busI);
+		busI->SetUSBVid(vid);
+		busI->SetUSBPid(pid);
+		err_no = busI->Open(-1);
+		return err_no;
+	}
 	virtual void Close()
 	{
 		Q_CHECK_PTR(busI);
+		busI->SetUSBVid(0);
+		busI->SetUSBPid(0);
 		busI->Close();
 	}
 	virtual int Error();

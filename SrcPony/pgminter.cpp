@@ -84,6 +84,20 @@ int SIProgInterface::Open(int com_no)
 	qDebug() << "SIProgInterface::Open(" << com_no << ") IN *** Inst=" << IsInstalled();
 
 	int ret_val = OK;
+	if (com_no < 0)
+	{
+		int vid, pid;
+		vid = GetUSBVid();
+		pid = GetUSBPid();
+		if ((ret_val = SerialInterface::OpenUSB(vid, pid)) == OK)
+		{
+			//      SetSerialEventMask(0);
+			//SetPower(true);  //08/02/1998 -- ora diamo alimentazione prima di ogni operazione e la togliamo subito dopo
+
+// 		USBSetVidPid(vid, pid);
+		}
+		return ret_val;
+	}
 
 	if (GetInstalled() != com_no)
 	{
@@ -115,29 +129,6 @@ void SIProgInterface::Close()
 
 	qDebug() << "SIProgInterface::Close() OUT";
 }
-
-
-int SIProgInterface::OpenUSB(int vid, int pid)
-{
-	qDebug() << "SIProgInterface::OpenUSB(" << vid << pid << ") IN *** Inst=" << IsInstalled();
-
-	int ret_val = OK;
-	int vid_intern;
-	int pid_intern;
-
-	if ((ret_val = SerialInterface::OpenUSB(vid, pid)) == OK)
-	{
-		//      SetSerialEventMask(0);
-		//SetPower(true);  //08/02/1998 -- ora diamo alimentazione prima di ogni operazione e la togliamo subito dopo
-
-// 		USBSetVidPid(vid, pid);
-	}
-
-	qDebug() << "SIProgInterface::OpenUSB() = " << ret_val << " OUT";
-
-	return ret_val;
-}
-
 
 void SIProgInterface::SetDataOut(int sda)
 {

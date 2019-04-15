@@ -251,6 +251,12 @@ int MpsseInterface::Open(int port)
 {
 	qDebug() << __PRETTY_FUNCTION__ << "(" << port << (hex) << usb_vid << usb_pid << ") IN";
 
+	if (port < 0)
+	{
+		// TODO check the USB
+		return -1;
+	}
+
 	int ret_val = OK;
 
 	if (GetInstalled() != port)

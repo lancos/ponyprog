@@ -207,10 +207,9 @@ int e2App::OpenPort(int port)
 {
 	if (usb_vendor > 0 && usb_product > 0)
 	{
+		qDebug() << "e2App::OpenPort(" << (hex) << usb_vendor << usb_product << (dec) << ")";
 		ClosePort();
-		busIntp->SetUSBVid(usb_vendor);
-		busIntp->SetUSBPid(usb_product);
-// 		return iniBus->OpenUSB(usb_vendor, usb_product);
+		return iniBus->OpenUSB(usb_vendor, usb_product);
 	}
 
 	qDebug() << "e2App::OpenPort(" << port << ")";
@@ -223,6 +222,7 @@ int e2App::OpenPort(int port)
 	ClosePort();
 	return iniBus->Open(GetPort());
 }
+
 
 void e2App::ClosePort()
 {
@@ -261,32 +261,31 @@ int e2App::OpenBus(BusIO *p)
 	iniBus->Close();
 
 	qDebug() << "e2App::OpenBus() ** Close";
+	qDebug() << "USB " << usb_vendor << usb_product;
 
 	if (usb_vendor > 0 && usb_product > 0)
 	{
-// 		iniBus = p;
-// 		int rv;
-		busIntp->SetUSBVid(usb_vendor);
-		busIntp->SetUSBPid(usb_product);
-//         rv = iniBus->Open(usb_vendor, usb_product);
-//
-// 		qDebug() << "e2App::OpenBus() ** OpenUSB = " << rv;
-//
-// 		if (rv == OK)
-// 		{
-// 			rv = busIntp->SetPower(true);
-//
-// 			qDebug() << "e2App::OpenBus() ** SetPower";
-//
-// 			//Power up delay
-// 			iniBus->WaitMsec(E2Profile::GetPowerUpDelay());
-//
-// 			qDebug() << "e2App::OpenBus() ** Reset";
-//
-// 			iniBus->Reset();        //28/10/98
-// 		}
-//
-// 		return rv;
+		iniBus = p;
+		int rv;
+		rv = iniBus->OpenUSB(usb_vendor, usb_product);
+
+		qDebug() << "e2App::OpenBus() ** OpenUSB = " << rv;
+
+		if (rv == OK)
+		{
+			rv = busIntp->SetPower(true);
+
+			qDebug() << "e2App::OpenBus() ** SetPower";
+
+			//Power up delay
+			iniBus->WaitMsec(E2Profile::GetPowerUpDelay());
+
+			qDebug() << "e2App::OpenBus() ** Reset";
+
+			iniBus->Reset();        //28/10/98
+		}
+
+		return rv;
 	}
 
 	iniBus = p;

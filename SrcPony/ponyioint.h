@@ -57,13 +57,7 @@ class PonyIOInterface : public BusInterface, public PortInterface
 	int GetPresence() const;
 
   private:
-	int OpenUSB(int vid, int pid)
-	{
-		(void) vid;
-		(void) pid;
 
-		return OK;
-	}
 };
 
 #endif
