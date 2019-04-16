@@ -860,10 +860,10 @@ int32_t ch341::SetBreakControl(int32_t state)
 #if DEBUG_CH341
 	qDebug() << "ch341::SetBreakControl(" << state << ") ";
 #endif
-	uint16_t reg_contents;
+// 	uint16_t reg_contents;
 	uint8_t break_reg[2] = {0, 0};
 
-	int32_t ret = libusb_control_transfer(devHandle, CH341_CTRL_IN, CH341_REQ_READ_REG, CH341_REG_BREAK, 0, (uint8_t *)&reg_contents, 2, timeout);
+	int32_t ret = libusb_control_transfer(devHandle, CH341_CTRL_IN, CH341_REQ_READ_REG, CH341_REG_BREAK, 0, break_reg, 2, timeout);
 	if (ret < 0)
 	{
 		qCritical("failed control transfer CH341_REQ_READ_REG, CH341_REG_BREAK\n");
@@ -871,19 +871,19 @@ int32_t ch341::SetBreakControl(int32_t state)
 	}
 	if (state)
 	{
-		break_reg[0] &= ~CH341_NBREAK_BITS_REG1;
-		break_reg[1] &= ~CH341_NBREAK_BITS_REG2;
+		break_reg[0] &= ~CH341_NBREAK_BITS_REG1; // NBREAK BIT
+		break_reg[1] &= ~CH341_NBREAK_BITS_REG2; // TX BIT
 	}
 	else
 	{
-		break_reg[0] |= CH341_NBREAK_BITS_REG1;
-		break_reg[1] |= CH341_NBREAK_BITS_REG2;
+		break_reg[0] |= CH341_NBREAK_BITS_REG1; // NBREAK BIT
+		break_reg[1] |= CH341_NBREAK_BITS_REG2; // TX BIT
 	}
 	// TODO is it right???
 	//reg_contents = ReverseWord((uint16_t)(break_reg[0] << 8) + break_reg[1]);
-	reg_contents = ((uint16_t)(break_reg[0] << 8) + break_reg[1]);
+// 	reg_contents = ((uint16_t)(break_reg[0] << 8) + break_reg[1]);
 
-	ret = libusb_control_transfer(devHandle, CH341_CTRL_OUT, CH341_REQ_WRITE_REG, CH341_REG_BREAK, reg_contents, NULL, 0, timeout);
+	ret = libusb_control_transfer(devHandle, CH341_CTRL_OUT, CH341_REQ_WRITE_REG, CH341_REG_BREAK, *(uint16_t *)break_reg, NULL, 0, timeout);
 	if (ret < 0)
 	{
 		qCritical("failed control transfer CH341_REQ_WRITE_REG, CH341_REG_BREAK\n");
@@ -1000,7 +1000,7 @@ int32_t ch341::ClearChip()
 /**
  * Open CH341A, find the device and set the default interface.
  */
-int32_t ch341::Open(uint16_t vid, uint16_t pid)
+int32_t ch341::Open(uint16_t vid, uint16_t pid, uint8_t mode)
 {
 	struct libusb_device *dev;
 	int32_t ret;
@@ -1097,7 +1097,7 @@ int32_t ch341::Open(uint16_t vid, uint16_t pid)
 		perror("Error: cannot handle SIGINT"); // Should not happen
 	}
 
-	ret = init();
+	ret = init(mode);
 	if (ret < 0)
 	{
 		qCritical("Failed to init device %d", strerror(-ret));
@@ -1108,7 +1108,36 @@ int32_t ch341::Open(uint16_t vid, uint16_t pid)
 	return 0;
 }
 
-int32_t ch341::init(void)
+int32_t ch341::init(uint8_t mode)
+{
+	switch (mode)
+	{
+	case USB_MODE_UART:
+		initUART();
+		break;
+	case USB_MODE_I2C:
+		initI2C();
+		break;
+	case USB_MODE_SPI:
+		initSPI();
+		break;
+	default:
+		break;
+	}
+}
+
+// TODO get from ch341a_spi.c
+int32_t ch341::initSPI()
+{
+	return 0;
+}
+
+int32_t ch341::initI2C()
+{
+	return 0;
+}
+
+int32_t ch341::initUART()
 {
 	int32_t ret;
 

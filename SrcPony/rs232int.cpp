@@ -130,7 +130,7 @@ int SerialInterface::OpenUSB(uint16_t vid, uint16_t pid)
 		}
 
 		uartProg = new ch341();
-		uartProg->Open(vid, pid);
+		uartProg->Open(vid, pid, USB_MODE_UART); // or depended from selected
 
 		if (SetSerialTimeouts() != OK)
 		{

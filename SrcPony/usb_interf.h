@@ -71,7 +71,7 @@ class USB_Interface
 	};
 // 	virtual ~USB_Interface();
 
-	virtual int32_t Open(uint16_t vid, uint16_t pid) = 0;
+	virtual int32_t Open(uint16_t vid, uint16_t pid, uint8_t mode) = 0;
 	virtual void    Close() = 0;
 	virtual int32_t Release(void) = 0;
 	virtual int32_t SetMode(uint16_t mode = USB_MODE_NONE) = 0;
@@ -105,7 +105,7 @@ class USB_Interface
 
 	virtual int32_t getState(void) = 0;
 	virtual int32_t setControl(void) = 0;
-	virtual int32_t init() = 0;
+	virtual int32_t init(uint8_t mode) = 0;
 
   public:
 	struct libusb_device_handle *devHandle;
