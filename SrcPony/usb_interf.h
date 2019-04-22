@@ -37,6 +37,11 @@
 #define USB_MODE_SPI  2
 #define USB_MODE_I2C  3
 
+
+#define MIN(a,b) (((a)<(b))?(a):(b))
+#define MAX(a,b) (((a)>(b))?(a):(b))
+
+
 class USB_Interface
 {
   public:

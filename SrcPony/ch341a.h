@@ -51,7 +51,27 @@
 #include <QTimer>
 
 
+typedef	enum _EEPROM_TYPE
+{
+	ID_24C01,
+	ID_24C02,
+	ID_24C04,
+	ID_24C08,
+	ID_24C16,
+	ID_24C32,
+	ID_24C64,
+	ID_24C128,
+	ID_24C256,
+	ID_24C512,
+	ID_24C1024,
+	ID_24C2048,
+	ID_24C4096
+} EEPROM_TYPE;
+
 #define    MAX_EEPROM_SIZE              131072 /* For 24c1024*/
+
+#define    MAX_BUFFER_LENGTH            0x1000
+#define    DEFAULT_BUFFER_LEN           0x0400
 
 #define    DEFAULT_CONFIGURATION        0x01
 #define    DEFAULT_TIMEOUT              300    // 300mS for USB timeouts
@@ -75,38 +95,38 @@
 #define    CH341_UART_PRODUCT           0x5523
 #define    CH340_UART_PRODUCT           0x7523
 
+#define    CH341_CMD_GET_INPUT          0xA0
+#define    CH341_CMD_SET_OUTPUT         0xA1
+#define    CH341_CMD_IO_ADDR            0xA2
+#define    CH341_CMD_PRINT_OUT          0xA3
+#define    CH341_CMD_SPI_STREAM         0xA8
+#define    CH341_CMD_SIO_STREAM         0xA9
+#define    CH341_CMD_I2C_STREAM         0xAA
+#define    CH341_CMD_UIO_STREAM         0xAB
 
-#define    CH341_CMD_SET_OUTPUT        0xA1
-#define    CH341_CMD_IO_ADDR           0xA2
-#define    CH341_CMD_PRINT_OUT         0xA3
-#define    CH341_CMD_SPI_STREAM        0xA8
-#define    CH341_CMD_SIO_STREAM        0xA9
-#define    CH341_CMD_I2C_STREAM        0xAA
-#define    CH341_CMD_UIO_STREAM        0xAB
-
-#define    CH341_CMD_I2C_STM_STA       0x74
-#define    CH341_CMD_I2C_STM_STO       0x75
-#define    CH341_CMD_I2C_STM_OUT       0x80
-#define    CH341_CMD_I2C_STM_IN        0xC0
-#define    CH341_CMD_I2C_STM_MAX       ( min( 0x3F, CH341_PACKET_LENGTH ) )
-#define    CH341_CMD_I2C_STM_SET       0x60
-#define    CH341_CMD_I2C_STM_US        0x40
-#define    CH341_CMD_I2C_STM_MS        0x50
-#define    CH341_CMD_I2C_STM_DLY       0x0F
-#define    CH341_CMD_I2C_STM_END       0x00
+#define    CH341_CMD_I2C_STM_STA        0x74
+#define    CH341_CMD_I2C_STM_STO        0x75
+#define    CH341_CMD_I2C_STM_OUT        0x80
+#define    CH341_CMD_I2C_STM_IN         0xC0
+#define    CH341_CMD_I2C_STM_MAX        ( min( 0x3F, CH341_PACKET_LENGTH ) )
+#define    CH341_CMD_I2C_STM_SET        0x60
+#define    CH341_CMD_I2C_STM_US         0x40
+#define    CH341_CMD_I2C_STM_MS         0x50
+#define    CH341_CMD_I2C_STM_DLY        0x0F
+#define    CH341_CMD_I2C_STM_END        0x00
 
 // GPIO part
-#define    CH341_CMD_UIO_STM_IN        0x00
-#define    CH341_CMD_UIO_STM_DIR       0x40
-#define    CH341_CMD_UIO_STM_OUT       0x80
-#define    CH341_CMD_UIO_STM_US        0xC0
-#define    CH341_CMD_UIO_STM_END       0x20
+#define    CH341_CMD_UIO_STM_IN         0x00
+#define    CH341_CMD_UIO_STM_DIR        0x40
+#define    CH341_CMD_UIO_STM_OUT        0x80
+#define    CH341_CMD_UIO_STM_US         0xC0
+#define    CH341_CMD_UIO_STM_END        0x20
 
-#define    CH341_STM_I2C_20K           0x00
-#define    CH341_STM_I2C_100K          0x01
-#define    CH341_STM_I2C_400K          0x02
-#define    CH341_STM_I2C_750K          0x03
-#define    CH341_STM_SPI_DBL           0x04
+#define    CH341_STM_I2C_20K            0x00
+#define    CH341_STM_I2C_100K           0x01
+#define    CH341_STM_I2C_400K           0x02
+#define    CH341_STM_I2C_750K           0x03
+#define    CH341_STM_SPI_DBL            0x04
 
 
 
@@ -123,7 +143,8 @@
 
 #define    CH341_REG_STAT               0x0706
 #define    CH341_REG_BREAK              0x1805
-#define    CH341_REG_LCR                0x2518
+#define    CH341_REG_LCR_SET            0x1825
+#define    CH341_REG_LCR_GET            0x1824
 #define    CH341_REG_FLOW_CTRL          0x2727
 #define    CH341_REG_BAUD1              0x1312
 #define    CH341_REG_BAUD2              0x0f2c  /*is it right, or 0x0f14 ?? */
@@ -225,9 +246,6 @@
 #define    MAX_CONTROL_OUT_TRANSFER_SIZE 2
 
 
-#define MIN(a,b) (((a)<(b))?(a):(b))
-#define MAX(a,b) (((a)>(b))?(a):(b))
-
 class USB_Interface;
 
 class ch341 : public QObject, public USB_Interface
@@ -244,11 +262,15 @@ class ch341 : public QObject, public USB_Interface
 
 	int32_t SetStream(uint32_t speed);
 	int32_t SpiCapacity(void);
-	int32_t SpiRead(uint8_t *buf, uint32_t add, uint32_t len);
+	int32_t SpiRead(uint *buf, uint32_t add, uint32_t len);
 	int32_t ReadStatus(void);
 	int32_t WriteStatus(uint8_t status);
 	int32_t EraseChip(void);
-	int32_t SpiWrite(uint8_t *buf, uint32_t add, uint32_t len);
+	int32_t SpiWrite(uint *buf, uint32_t add, uint32_t len);
+
+	int32_t GetInput(uint *iStatus);
+	int32_t SetDelaymS(uint iDelay);
+	int32_t GetStatus(uint *iStatus);
 
 	virtual int32_t Release(void);
 #if 0
@@ -276,8 +298,8 @@ class ch341 : public QObject, public USB_Interface
 	virtual int32_t GetStatusRx();
 	virtual int32_t GetStatusTx();
 
-	virtual int32_t Read(uint8_t *buf, size_t len);
-	virtual int32_t Write(uint8_t *buf, size_t len);
+	virtual int32_t Read(uchar *buf, size_t len);
+	virtual int32_t Write(uchar *buf, size_t len);
 
 	virtual void    ReleaseInterface(void);
 	virtual void    CloseHandle();
@@ -305,6 +327,7 @@ class ch341 : public QObject, public USB_Interface
   private:
 	int32_t getModemState(void);
 	int32_t setHandshakeByte(void);
+	int32_t SetupSerial(uint32_t mode, uint32_t baud);
 
 	virtual int32_t getState();
 	virtual int32_t setControl();
@@ -313,19 +336,38 @@ class ch341 : public QObject, public USB_Interface
 	int32_t initUART();
 	int32_t initSPI();
 	int32_t initI2C();
+
 // 	void    updateStatus();
 // 	void    v_print(int mode, int len);
 //     void    allocTransfer();
+	int32_t WriteRead(uint iWriteLength, uint *iWriteBuffer, uint *oReadLength, uint *oReadBuffer, int iReadStep = 64);
+	int32_t SetTimeout(uint iWriteTimeout, uint iReadTimeout);
+	int32_t SetExclusive(uint iExclusive);
+	int32_t ResetDevice();
+	int32_t ResetWrite();
+	int32_t ResetRead();
+	int32_t AbortRead();
+	int32_t AbortWrite();
+	int32_t SetOutput(uint iEnable, uint iSetDirOut, uint iSetDataOut);
+	int32_t WriteI2C(char iDevice, uchar iAddr, uchar iByte);
+	int32_t ReadI2C(uint iDevice, uchar iAddr, uint *oByte);
+	int32_t Set_D5_D0(uchar iSetDirOut, uchar iSetDataOut);
+	int32_t FlushBuffer();
+	int32_t ReadData(uint *oBuffer, uint *ioLength);
+	int32_t WriteData(uint *iBuffer, uint *ioLength);
 
+	int32_t StreamI2C(uint iWriteLength, uint *iWriteBuffer, uint iReadLength, uint *oReadBuffer);
+	int32_t WriteEEPROM(EEPROM_TYPE iEepromID, uint32_t iAddr, uint32_t iLength, uint *iBuffer);
+	int32_t ReadEEPROM(EEPROM_TYPE iEepromID, uint32_t iAddr, uint32_t iLength, uint *oBuffer);
 
 // 	int setAsync(unsigned char data);
 
 	void    updateStatus(uint8_t *data, size_t l);
 
 	void    SpiChipSelect(uint8_t *ptr, bool selected);
-	int32_t SpiStream(uint8_t *out, uint8_t *in, uint32_t len);
+	int32_t SpiStream(uint *out, uint *in, uint32_t len);
 
-	int32_t usbTransfer(const char *func, uint8_t type, uint8_t *buf, int len);
+	int32_t usbTransfer(const char *func, uint8_t type, uint *buf, int len);
 
 
   private:
@@ -375,6 +417,7 @@ class ch341 : public QObject, public USB_Interface
 	uint8_t mcr; // modem control register
 #endif
 	uint8_t dev_vers;
+	uint8_t StreamMode;
 
 	QTimer *breakTimer;
 	int force_stop = 0;
