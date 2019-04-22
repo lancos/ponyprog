@@ -76,34 +76,7 @@ void sig_int(int signo)
  * ch341 requres LSB first, reverse the bit order before send and after receive
  * for more tricks, see https://graphics.stanford.edu/~seander/bithacks.html
  */
-inline uint8_t ReverseByte(uint8_t c)
-{
-	uint8_t result = 0;
 
-	for (int i = 0; i < 8; ++i)
-	{
-		result = result << 1;
-		result |= (c & 1);
-		c = c >> 1;
-	}
-
-	return result;
-}
-
-
-inline uint16_t ReverseWord(uint16_t c)
-{
-	uint16_t result = 0;
-
-	for (int i = 0; i < 16; ++i)
-	{
-		result = result << 1;
-		result |= (c & 1);
-		c = c >> 1;
-	}
-
-	return result;
-}
 
 #if 0
 static void read_cb(libusb_transfer *transfer) noexcept
@@ -142,7 +115,7 @@ static void write_cb(libusb_transfer *transfer) noexcept
 
 void ch34x_callback(libusb_transfer *transfer)
 {
-	delete (unsigned char *)transfer->user_data;
+	delete (uchar *)transfer->user_data;
 	libusb_free_transfer(transfer);
 }
 #endif
@@ -195,7 +168,7 @@ void cbBulkIn(struct libusb_transfer *transfer)
 		{
 			for (int i = (bulkin_count == 0) ? 4 : 0; i < transfer->actual_length; ++i)
 			{
-				*((uint8_t *)transfer->user_data++) = ReverseByte(transfer->buffer[i]);
+				*((uint8_t *)transfer->user_data++) = USB_Interface::ReverseByte(transfer->buffer[i]);
 			}
 		}
 
@@ -211,6 +184,20 @@ void cbBulkIn(struct libusb_transfer *transfer)
 	return;
 }
 
+/**
+ * ch341a modem connections:
+ *
+ * rs232 -> ch341  description
+ *     1 -> 18     data carrier detect
+ *     2 -> 6      Rx
+ *     3 -> 5      Tx
+ *     4 -> 20     Data Terminal Ready
+ *     5           Signal Ground
+ *     6 -> 16     Data Set Ready
+ *     7 -> 21     Request To Send
+ *     8 -> 15     Clear To Send
+ *     9 -> 17     Ring Indicator
+ */
 
 ch341::ch341()
 	: USB_Interface()
@@ -274,7 +261,7 @@ void ch341::Close()
 void ch341::sendData(const uint8_t &data, size_t len)
 {
 	struct libusb_transfer *transfer = libusb_alloc_transfer(0);
-	unsigned char *buffer = new unsigned char[len];
+	uchar *buffer = new uchar[len];
 	memcpy(buffer, (const void *)data, len);
 
 	libusb_fill_bulk_transfer(transfer, devHandle, CH341_DATA_OUT, buffer,
@@ -487,24 +474,11 @@ void ch341::SetFlowControl(uint8_t f)
 	}
 }
 
-/**
- * ch341a modem connections:
- *
- * rs232 -> ch341  description
- *     1 -> 18     data carrier detect
- *     2 -> 6      Rx
- *     3 -> 5      Tx
- *     4 -> 20     Data Terminal Ready
- *     5           Signal Ground
- *     6 -> 16     Data Set Ready
- *     7 -> 21     Request To Send
- *     8 -> 15     Clear To Send
- *     9 -> 17     Ring Indicator
- */
 
 /**
- * @brief configure DTR, RTS for device
+ * @brief  configure DTR, RTS for device, depended from dtr and rts class variables
  *
+ * @return if successful = 0
  */
 int32_t ch341::setHandshakeByte(void)
 {
@@ -539,6 +513,11 @@ int32_t ch341::setHandshakeByte(void)
 	return 0;
 }
 
+/**
+ * @brief get the current modem state
+ *
+ * @return state of modem, bits 0..4 only
+ */
 int32_t ch341::getModemState(void)
 {
 	uint8_t r[2];
@@ -629,7 +608,12 @@ void ch341::updateStatus()
 }
 #endif
 
-
+/**
+ * @brief set or reset of DTR and send changes to chip
+ *
+ * @param[in] state 0 for reset DTR, not 0 for set DTR
+ * @return if successful 0
+ */
 int32_t ch341::SetDTR(int32_t state)
 {
 #if DEBUG_CH341
@@ -648,6 +632,12 @@ int32_t ch341::SetDTR(int32_t state)
 	return r;
 }
 
+/**
+ * @brief set or reset of RTS and send changes to chip
+ *
+ * @param[in] state 0 for reset RTS, not 0 for set RTS
+ * @return if successful 0
+ */
 int32_t ch341::SetRTS(int32_t state)
 {
 #if DEBUG_CH341
@@ -666,6 +656,11 @@ int32_t ch341::SetRTS(int32_t state)
 	return r;
 }
 
+/**
+ * @brief get the current state of DSR
+ *
+ * @return 1 if DSR set, in other case 0
+ */
 int32_t ch341::GetDSR()
 {
 	int32_t r = getModemState();
@@ -676,6 +671,12 @@ int32_t ch341::GetDSR()
 	return (r & CH341_UART_DSR) ? 1 : 0;
 }
 
+
+/**
+ * @brief get the current state of CTS
+ *
+ * @return 1 if CTS set, in other case 0
+ */
 int32_t ch341::GetCTS()
 {
 	int32_t r  = getModemState();
@@ -686,6 +687,13 @@ int32_t ch341::GetCTS()
 	return (r & CH341_UART_CTS) ? 1 : 0;
 }
 
+
+/**
+ * @brief set or reset of RTS, DTR and send changes to chip
+ *
+ * @param[in] state 0 for reset RTS, DTR, not 0 for set RTS, DTR
+ * @return if successful 0
+ */
 int32_t ch341::SetRTSDTR(int st)
 {
 	quint8 control = 0;
@@ -738,11 +746,18 @@ int32_t ch341::SetRTSDTR(int st)
 }
 
 
-/* Helper function for libusb_bulk_transfer, display error message with the caller name */
+/**
+ * @brief Helper function for libusb_bulk_transfer, display error message with the caller name
+ *
+ * @param[out] buf pointer to data array for reading
+ * @param[in] len number of bytes to read
+ *
+ * @return number of received bytes
+ */
 int32_t ch341::Read(uchar *buf, size_t len)
 {
 	int32_t res;
-	int transfered;
+	int received;
 	if (devHandle == NULL)
 	{
 		return -1;
@@ -750,16 +765,23 @@ int32_t ch341::Read(uchar *buf, size_t len)
 
 	read_completed = 0;
 
-	res = libusb_bulk_transfer(devHandle, CH341_DATA_IN, (uchar *)&buf, len, &transfered, timeout);
+	res = libusb_bulk_transfer(devHandle, CH341_DATA_IN, (uchar *)&buf, len, &received, timeout);
 	if (res < 0)
 	{
 		qCritical("libusb_bulk_transfer read error %d\n", res);
 		return -1;
 	}
-	return transfered;
+	return received;
 }
 
-/* Helper function for libusb_bulk_transfer, display error message with the caller name */
+/**
+ * @brief Helper function for libusb_bulk_transfer, display error message with the caller name
+ *
+ * @param[in] buf pointer to data array for writing
+ * @param[in] len number of bytes to write
+ *
+ * @return number of transferred bytes
+ */
 int32_t ch341::Write(uchar *buf, size_t len)
 {
 	int32_t res;
@@ -782,10 +804,58 @@ int32_t ch341::Write(uchar *buf, size_t len)
 
 
 /**
+ *
+ */
+int32_t ch341::WriteRead(uint wLength, uchar *wBuffer, uint readStep, uint readTimes, uint *rLength, uchar *rBuffer)
+{
+	uchar local_buf[CH341_PACKET_LENGTH];
+	uint k = 0;
+	uint res;
+	uint 	m_length, m_rdlen;
+
+	m_rdlen = readStep * readTimes;
+
+	if (m_rdlen == 0)
+	{
+		return (-1);
+	}
+
+	m_length = MAX(wLength, m_rdlen);
+
+	res = WriteData((uint *)&wBuffer, &m_length);
+	if (res < 0)
+	{
+		// TODO
+		return res;
+	}
+
+	do
+	{
+		int len = readStep;
+		res = res = libusb_bulk_transfer(devHandle, CH341_DATA_IN, (uchar *)local_buf, len, &len, timeout);  //64: Max Packet Length usb_bulk_read( usb_dev[ index ], sUSBIO[ index ].in_ep, local_buf, readStep, timeout );
+		if (res < 0)
+		{
+			// TODO
+			return res;
+		}
+		memcpy(rBuffer, local_buf, len);
+		rBuffer += len;
+		k += len;
+	}
+	while (--readTimes);
+
+	*rLength = k;
+
+	return k;
+}
+
+/**
+ * @brief write to usb device and followerd read from this
  * TODO to test
  * we dont need read step and read times params after iWriteBuffer param
  * TODO iReadStep
  */
+#if 0
 int32_t ch341::WriteRead(uint iWriteLength, uint *iWriteBuffer, uint *oReadLength, uint *oReadBuffer, int iReadStep)
 {
 //     char *my_string, *my_string1;
@@ -793,6 +863,8 @@ int32_t ch341::WriteRead(uint iWriteLength, uint *iWriteBuffer, uint *oReadLengt
 	int transferred = 0;
 	int received = 0;
 	int length = 0;
+	uint local_buf [260];
+
 	if (iWriteBuffer == 0 || oReadBuffer == 0)
 	{
 		return -1;
@@ -809,7 +881,7 @@ int32_t ch341::WriteRead(uint iWriteLength, uint *iWriteBuffer, uint *oReadLengt
 
 //     printf("\nTo be sent: %s", my_string);
 
-	// enpfang
+	// senden
 	res = libusb_bulk_transfer(devHandle, CH341_DATA_OUT, (uchar *)iWriteBuffer, iWriteLength, &transferred, timeout);
 	if (res == 0 && transferred == length)
 	{
@@ -841,7 +913,7 @@ int32_t ch341::WriteRead(uint iWriteLength, uint *iWriteBuffer, uint *oReadLengt
 
 	return res;
 }
-
+#endif
 
 /**
  * @breif get input information
@@ -859,7 +931,7 @@ int32_t ch341::GetInput(uint *iStatus)
 	{
 		int len = 0x0;
 		buf[0] = CH341_CMD_GET_INPUT;
-		res = WriteRead(1, (uint *)&buf, (uint *)&len, (uint *)&buf);
+		res = WriteRead(1, buf, 0x20, 1, (uint *)&len, buf);
 		// TODO chek the len!!!
 //         ret = WriteRead(1, (uint *)&buf, 0x20, 1, (uint *)&len, (uint *)&buf);
 		if (res < 0)
@@ -885,15 +957,15 @@ int32_t ch341::GetStatus(uint *iStatus)
 	uchar buf[0x28] = {0};
 	uint len;
 
-	buf[0] = 4; // command
-	buf[4] = 8; // data len
+	buf[0] = CH341_GET_STATUS; // command
+	buf[4] = 8; // data len write
 	buf[8] = 0xc0;
 	buf[9] = 0x52;
-	buf[14] = 8;
+	buf[14] = 8; // data len read
 
 	len = 0x28;
 
-	int res = WriteRead(0x28, (uint *)&buf, (uint *)&len, (uint *)&buf);
+	int res = WriteRead(0x28, buf, 0x20, 1, (uint *)&len, buf);
 	if (res < 0)
 	{
 		// TODO debug
@@ -1084,7 +1156,7 @@ int32_t ch341::StreamI2C(uint iWriteLength, uint *iWriteBuffer, uint iReadLength
 
 	if (iReadLength)
 	{
-		j = WriteRead(i, (uint *)&mWrBuf, &mLength, (uint *)&oReadBuffer);
+		j = WriteRead(i, mWrBuf, 0x20, (iReadLength + 0x1f) >> 5, &mLength, (uchar *)&oReadBuffer);
 		if (mLength != iReadLength)
 		{
 			printf("Return length is not equal to input length\n");
@@ -1150,7 +1222,8 @@ int32_t ch341::ReadData(uint *oBuffer, uint *ioLength)
 // 	{
 // 		iIndex = (HANDLE)(&DAT_00405000)[(int)iIndex];
 // 	}
-	res = WriteRead(8, lpInBuffer, ioLength, lpInBuffer);
+	res = libusb_bulk_transfer(devHandle, CH341_DATA_IN, (uchar *)lpInBuffer, (int) * ioLength, (int *)ioLength, timeout);
+// 	res = WriteRead(8, (uchar*)&lpInBuffer, &ioLength, (uchar*)&lpInBuffer);
 
 // 	BVar3 = DeviceIoControl(0x223cd0, lpInBuffer, 8, lpInBuffer, (uint)ioLength, (LPuint)&ioLength,
 // 							(LPOVERLAPPED)0x0);
@@ -1159,7 +1232,7 @@ int32_t ch341::ReadData(uint *oBuffer, uint *ioLength)
 		*pLen = 0;
 		if (lpInBuffer != (uint *)int_buf)
 		{
-			delete[] lpInBuffer;
+			delete lpInBuffer;
 		}
 	}
 	else
@@ -1193,7 +1266,7 @@ int32_t ch341::ReadData(uint *oBuffer, uint *ioLength)
 #endif
 		if (lpInBuffer != int_buf)
 		{
-			delete[] lpInBuffer;
+			delete lpInBuffer;
 		}
 	}
 
@@ -1209,24 +1282,25 @@ int32_t ch341::WriteData(uint *iBuffer, uint *ioLength)
 	int32_t ret;
 	uint curr_len;
 	uint *lpInBuffer;
-	uint *puVar5;
-	uint local_410 [258];
+// 	uint *puVar5;
+	uint local_buf [258]; // 1024 + 8 bytes
 	uint len;
+	int transfered;
 
 	if (*ioLength < 0x401)
 	{
-		lpInBuffer = local_410;
+		lpInBuffer = local_buf;
 	}
 	else
 	{
-		if (0x1000 < *ioLength)
+		if (4096 < *ioLength)
 		{
-			*ioLength = 0x1000;
+			*ioLength = 4096;
 		}
-		lpInBuffer = new uint [0x1008];
+		lpInBuffer = new uint [0x1008]; // 4096 + 32 bytes
 		if (lpInBuffer == NULL)
 		{
-			lpInBuffer = local_410;
+			lpInBuffer = local_buf;
 			*ioLength = 0x400;
 		}
 	}
@@ -1257,26 +1331,26 @@ int32_t ch341::WriteData(uint *iBuffer, uint *ioLength)
 // 	{
 // 		iIndex = (HANDLE)(&DAT_00405000)[(int)iIndex];
 // 	}
-	ret = WriteRead(len, lpInBuffer, &len, lpInBuffer);
+// 	ret = WriteRead(len, lpInBuffer, &len, lpInBuffer);
+
+	ret = libusb_bulk_transfer(devHandle, CH341_DATA_OUT, (uchar *)&iBuffer, len, &transfered, timeout);
 
 // 	ret = DeviceIoControl(0x223cd0, lpInBuffer, len, lpInBuffer, 8, &len,
 // 							(LPOVERLAPPED)0x0);
 	if (ret < 0)
 	{
 		*ioLength = 0;
-		if (lpInBuffer != local_410)
-		{
-			delete[] lpInBuffer;
-		}
 	}
 	else
 	{
 		*ioLength = lpInBuffer[1];
-		if (lpInBuffer != local_410)
-		{
-			delete[] lpInBuffer;
-		}
 	}
+
+	if (lpInBuffer != local_buf)
+	{
+		delete lpInBuffer;
+	}
+
 	return ret;
 }
 
@@ -1303,9 +1377,11 @@ int32_t ch341::FlushBuffer()
 		buf[4] = 8;
 		buf[8] = 0x40;
 		buf[9] = 0xb2;
+		uint len = 0x28;
 
 //         int ret = WriteRead(0x28, buf, len, buf);
-		ret = usbTransfer(__func__, CH341_DATA_OUT, (uint *)&buf, 0x28);
+// 		ret = usbTransfer(__func__, CH341_DATA_OUT, (uint *)&buf, 0x28);
+		ret = WriteData((uint *)&buf, &len);
 
 		if (ret < 0)
 		{
@@ -1334,6 +1410,11 @@ int32_t ch341::ReadEEPROM(EEPROM_TYPE iEepromID, uint32_t iAddr, uint32_t iLengt
 {
 	uint32_t mLen;
 	uchar mWrBuf[4];
+
+	if (oBuffer == NULL)
+	{
+		return -1;
+	}
 
 	if (iEepromID >= ID_24C01 && iEepromID <= ID_24C16)
 	{
@@ -1388,6 +1469,12 @@ int32_t ch341::WriteEEPROM(EEPROM_TYPE iEepromID, uint32_t iAddr, uint32_t iLeng
 {
 	uint32_t mLen;
 	uchar mWrBuf[256];
+
+	if (iBuffer == NULL)
+	{
+		return -1;
+	}
+
 	if (iEepromID >= ID_24C01 && iEepromID <= ID_24C16)
 	{
 		while (iLength)
@@ -1556,15 +1643,16 @@ int32_t ch341::Set_D5_D0(uchar iSetDirOut, uchar iSetDataOut)
 	}
 	else
 	{
-		uchar buf[4];
+		uchar buf[0x28];
 		buf[0] = 0xab;
 		buf[1] = (uchar)iSetDataOut & 0x3f | 0x80;
 		buf[2] = iSetDirOut & 0x3f | 0x40;
 		buf[3] = 0x20;
+		uint len = 4;
 // 		iSetDataOut = 4;
 
-		res = usbTransfer(__func__, CH341_DATA_OUT, (uint *)&buf, 4);
-// 		ret = WriteData(iIndex, (uint *)&local_24, &iSetDataOut);
+// 		res = usbTransfer(__func__, CH341_DATA_OUT, (uint *)&buf, 4);
+		res = WriteData((uint *)&buf, &len);
 		if (res < 0)
 		{
 			// TODO debug
@@ -1578,16 +1666,15 @@ int32_t ch341::ResetRead()
 {
 	uchar buf[0x28] = {0};
 	int32_t res;
-// 	uint len;
 
-	buf[0] = 0xd;
-	buf[4] = 4;
+	buf[0] = CH341_REQ_RESET;  // command
+	buf[4] = 4;    // length of write data
 	buf[8] = 6;
-// 	len = 0x28;
+	uint len = 0x28;
 
 	// WriteRead or usbTransfer ???
-	res = usbTransfer(__func__, CH341_DATA_OUT, (uint *)&buf, 0x28);
-//     int ret = WriteRead(0x28, buf, len, buf);
+// 	res = usbTransfer(__func__, CH341_DATA_OUT, (uint *)&buf, 0x28);
+	res = WriteData((uint *)&buf, &len);
 	if (res < 0)
 	{
 		// TODO debug
@@ -1605,17 +1692,16 @@ int32_t ch341::ResetRead()
 int32_t ch341::ResetWrite()
 {
 	uchar buf[0x28] = {0};
-// 	uint len;
 	int res;
 
-	buf[0] = 0xd;
-	buf[4] = 4;
+	buf[0] = CH341_REQ_RESET;  // command
+	buf[4] = 4;    // length of write data
 	buf[8] = 7;
-// 	len = 0x28;
+	uint len = 0x28;
 
 	// WriteRead or usbTransfer ???
-	res = usbTransfer(__func__, CH341_DATA_OUT, (uint *)&buf, 0x28);
-//     int ret = WriteRead(0x28, buf, len, buf);
+// 	res = usbTransfer(__func__, CH341_DATA_OUT, (uint *)&buf, 0x28);
+	res = WriteData((uint *)&buf, &len);
 	if (res < 0)
 	{
 		// TODO debug
@@ -1628,36 +1714,38 @@ int32_t ch341::ResetWrite()
 
 /**
  * @brief  * FUNCTION : Set Delay
- * arg:
- * iDelay : set delay time(ms)
+ *
+ * @param[in] iDelay : set delay time(mSec)
+ * @return if successful 0
  */
 int32_t ch341::SetDelaymS(uint iDelay)
 {
-	uchar buf[4] = {0};
+	uchar buf[0x28] = {0};
 	if (dev_vers < 0x20)
 	{
 		return -1;
 	}
 
-	int ret;
+	int res = 0;
 
 	while (iDelay)
 	{
 		uint mLength = iDelay >= CH341_CMD_I2C_STM_DLY ? CH341_CMD_I2C_STM_DLY : iDelay;
 		iDelay -= mLength;
-		buf[0] = CH341_CMD_I2C_STREAM;
+		buf[0] = CH341_CMD_I2C_STREAM; // command code
 		buf[1] = (uchar)(CH341_CMD_I2C_STM_MS | mLength);
 		buf[2] = CH341_CMD_I2C_STM_END;
 
-		ret = usbTransfer(__func__, CH341_DATA_OUT, (uint *)&buf, 3);
-		if (ret < 0)
+		uint len = 3;
+		//res = usbTransfer(__func__, CH341_DATA_OUT, (uint *)&buf, 3);
+		res = WriteData((uint *)&buf, &len);
+		if (res < 0)
 		{
 			// TODO debug
-			return ret;
 		}
 	}
 
-	return 0;
+	return res;
 }
 
 
@@ -1674,7 +1762,7 @@ int32_t ch341::ReadI2C(uint iDevice, uchar readBytes, uint *oByte)
 
 	if (dev_vers < 0x20)
 	{
-		buf[0] = 4;
+		buf[0] = 4; // command code
 		buf[4] = 8;
 		buf[8] = 0x40;
 		buf[9] = 0x53;
@@ -1682,7 +1770,8 @@ int32_t ch341::ReadI2C(uint iDevice, uchar readBytes, uint *oByte)
 		buf[12] = (((ushort)((uchar)iDevice << 1) << 8) + (uchar)readBytes) | 0x100;
 		buf[14] = 0;
 		len = 0x28;
-		res = WriteRead(0x28, (uint *)&buf, &len, (uint *)&buf);
+
+		res = WriteData((uint *)&buf, &len);
 
 // 		res = DeviceIoControl(0x223cd0, &buf[0], 0x28, &buf[0], 0x28,
 // 								(LPuint)&iAddr, (LPOVERLAPPED)0x0);
@@ -1698,7 +1787,7 @@ int32_t ch341::ReadI2C(uint iDevice, uchar readBytes, uint *oByte)
 				buf[10] = 0;
 				buf[12] = 0;
 				len = 0x28;
-				res = WriteRead(0x28, (uint *)&buf, &len, (uint *)&buf);
+				res = WriteRead(0x28, buf, 0x20, 1, &len, buf);
 
 // 				res = DeviceIoControl(0x223cd0, &buf[0], 0x28, &buf[0],
 // 										0x28, (LPuint)&iAddr, (LPOVERLAPPED)0x0);
@@ -1717,7 +1806,7 @@ int32_t ch341::ReadI2C(uint iDevice, uchar readBytes, uint *oByte)
 	}
 	else
 	{
-		buf[0] = 4;
+		buf[0] = 4; // command code
 		buf[4] = 8;
 		buf[8] = 0xc0;
 		buf[9] = 0x54;
@@ -1725,7 +1814,7 @@ int32_t ch341::ReadI2C(uint iDevice, uchar readBytes, uint *oByte)
 		buf[12] = (((ushort)((uchar)iDevice << 1) << 8) + (uchar)1);
 		buf[14] = 1;
 		len = 0x28;
-		res = WriteRead(0x28, (uint *)&buf, &len, (uint *)&buf);
+		res = WriteRead(0x28, buf, 0x20, 1, &len, buf);
 // 		res = DeviceIoControl(0x223cd0, &buf[0], 0x28, &buf[0], 0x28,
 // 								(LPuint)&iAddr, (LPOVERLAPPED)0x0);
 // 		if ((ret == 0) && (buf[12]._0_1_ = buf[8], len != 0))
@@ -1748,7 +1837,7 @@ int32_t ch341::WriteI2C(char iDevice, uchar iAddr, uchar iByte)
 	int ret;
 	uchar buf[0x28] = {0};
 
-	buf[0] = 4;
+	buf[0] = 4; // command code
 	buf[4] = 8;
 	buf[8] = 0x40;
 	buf[9] = 0x53;
@@ -1757,7 +1846,7 @@ int32_t ch341::WriteI2C(char iDevice, uchar iAddr, uchar iByte)
 	buf[14] = 0;
 
 	uint len = 0x28;
-	ret = WriteRead(0x28, (uint *)&buf, &len, (uint *)&buf);
+	ret = WriteData((uint *)&buf, &len);
 // 	BVar1 = DeviceIoControl(0x223cd0, &buf[0], 0x28, &buf[0], 0x28,
 // 							(LPuint)&iByte, (LPOVERLAPPED)0x0);
 	if (ret == 0)
@@ -1773,7 +1862,7 @@ int32_t ch341::WriteI2C(char iDevice, uchar iAddr, uchar iByte)
 			buf[14] = 8;
 
 			len = 0x28;
-			ret = WriteRead(0x28, (uint *)&buf, &len, (uint *)&buf);
+			ret = WriteRead(0x28, buf, 0x20, 1, &len, buf);
 // 			BVar1 = DeviceIoControl(0x223cd0, &buf[0], 0x28, &buf[0],
 // 									0x28, (LPuint)&iByte, (LPOVERLAPPED)0x0);
 			if (ret < 0)
@@ -1797,12 +1886,13 @@ int32_t ch341::SetTimeout(uint iWriteTimeout, uint iReadTimeout)
 	uchar buf[0x28] = {0};
 	uint len = 0x28;
 
-	buf[0] = 9; // code
+	buf[0] = 9; // command code
 	buf[4] = 8; // length of followed data
 	buf[8] = iWriteTimeout;
 	buf[12] = iReadTimeout;
 
-	return usbTransfer(__func__, CH341_DATA_OUT, (uint *)&buf, 0x28);
+// 	return usbTransfer(__func__, CH341_DATA_OUT, (uint *)&buf, 0x28);
+	return WriteData((uint *)&buf, &len);
 
 // 	BVar1 = DeviceIoControl(0x223cd0, &buf[0], 0x28, &buf[0], 0x28, &len, (LPOVERLAPPED)0x0);
 // 	return (uint)(BVar1 != 0);
@@ -1816,11 +1906,13 @@ int32_t ch341::SetExclusive(uint iExclusive)
 {
 	uchar buf[0x28] = {0};
 
-	buf[0] = 0xb; // code
-	buf[4] = 1;   // length of followed data
+	buf[0] = 0xb; // command code
+	buf[4] = 1;   // length of written data
 	buf[8] = (iExclusive != 0) ? 1 : 0;
+	uint len = 0x28;
 
-	return usbTransfer(__func__, CH341_DATA_OUT, (uint *)&buf, 0x28);
+	//return usbTransfer(__func__, CH341_DATA_OUT, (uint *)&buf, 0x28);
+	return WriteData((uint *)&buf, &len);
 
 // 	BVar1 = DeviceIoControl(0x223cd0, &buf[0], 0x28, &buf[0], 0x28, &iExclusive, (LPOVERLAPPED)0x0);
 // 	return (uint)(BVar1 != 0);
@@ -1833,10 +1925,12 @@ int32_t ch341::ResetDevice()
 {
 	uchar buf[0x28] = {0};
 
-	buf[0] = 0xc;
-	buf[4] = 0;
+	buf[0] = 0xc;  // command code
+	buf[4] = 0;    // length of written data
+	uint len = 0x28;
 
-	return usbTransfer(__func__, CH341_DATA_OUT, (uint *)&buf, 0x28);
+	//return usbTransfer(__func__, CH341_DATA_OUT, (uint *)&buf, 0x28);
+	return WriteData((uint *)&buf, &len);
 
 // 	BVar1 = DeviceIoControl(0x223cd0, &buf, 0x28, &buf, 0x28, &len, (LPOVERLAPPED)0x0);
 // 	return (uint)(BVar1 != 0);
@@ -1850,11 +1944,13 @@ int32_t ch341::AbortRead()
 {
 	uchar buf[0x28] = {0};
 
-	buf[0] = 0xe;
-	buf[4] = 4;
+	buf[0] = CH341_REQ_ABORT;  // command code
+	buf[4] = 4;    // length of written data
 	buf[8] = 6;
+	uint len = 0x28;
 
-	return usbTransfer(__func__, CH341_DATA_OUT, (uint *)&buf, 0x28);
+// 	return usbTransfer(__func__, CH341_DATA_OUT, (uint *)&buf, 0x28);
+	WriteData((uint *)&buf, &len);
 //     BVar1 = DeviceIoControl(0x223cd0, &buf[0], 0x28, &buf[0], 0x28, &len, (LPOVERLAPPED)0x0);
 // 	return (uint)(BVar1 != 0);
 }
@@ -1867,13 +1963,256 @@ int32_t ch341::AbortWrite()
 {
 	uchar buf[0x28] = {0};
 
-	buf[0] = 0xe;
-	buf[4] = 4;
+	buf[0] = CH341_REQ_ABORT;  // command code
+	buf[4] = 4;    // length of written data
 	buf[8] = 7;
+	uint len = 0x28;
 
-	return usbTransfer(__func__, CH341_DATA_OUT, (uint *)&buf, 0x28);
+// 	return usbTransfer(__func__, CH341_DATA_OUT, (uint *)&buf, 0x28);
+	return WriteData((uint *)&buf, &len);
 // 	BVar1 = DeviceIoControl(0x223cd0, &buf[0], 0x28, &buf[0], 0x28, &len, (LPOVERLAPPED)0x0);
 // 	return (uint)(BVar1 != 0);
+}
+
+
+// Processing SPI data stream, support quasi-bidirectional single-input single-out / 3-wire interface, single-input single-out / 4-wire interface, dual-input and double-out/5-line interface
+// chip_select: Chip select control, bit 7 is 0 to ignore chip select control, bit 7 is 1 to enable parameter: Bit 1 bit 0 is 00/01/10 select D0/D1/D2 pin as active low Chip Select
+// length: the number of data bytes to be transferred
+// buffer: points to a buffer, puts the data to be written from SDO, and returns the data read from SDI.
+// buffer2: points to the second buffer of the dual-input and double-out 5-wire interface. 1 is a single-input single-out 4-wire interface mode, and 0 is a SIO quasi-bidirectional 3-wire interface mode.
+int32_t ch341::StreamSPI(unsigned long chip_select, unsigned long length, uchar *buffer, uchar *buffer2)
+{
+	uchar m_buffer[DEFAULT_BUFFER_LEN];
+	uint i, j, m_length, m_select, m_count;
+	uchar	*m_write_buffer;
+	uchar c1, c2;
+
+	if (length > MAX_BUFFER_LENGTH)
+	{
+		return -1;
+	}
+	if (length <= DEFAULT_BUFFER_LEN / 2)
+	{
+		m_write_buffer = m_buffer;
+	}
+	else
+	{
+		m_write_buffer = (uchar *)malloc(MAX_BUFFER_LENGTH);
+		if (m_write_buffer == NULL)
+		{
+			return -1;
+		}
+	}
+	i = 0;
+	if (chip_select & 0x80) //Chip selection control
+	{
+		m_write_buffer[i++] = CH341_CMD_UIO_STREAM;
+		switch (chip_select & 0x03)
+		{
+		case 0x00:
+			m_select = 0x36;
+			break;
+		case 0x01:
+			m_select = 0x35;
+			break;
+		case 0x02:
+			m_select = 0x33;
+			break;
+		default:
+			m_select = 0x27;
+			break;
+		}
+		m_write_buffer[i++] = (uchar)CH341_CMD_UIO_STM_OUT | m_select;
+		m_write_buffer[i++] = (uchar)CH341_CMD_UIO_STM_DIR | 0x3F;
+		m_write_buffer[i++] = CH341_CMD_UIO_STM_END;
+		i = CH341_PACKET_LENGTH;
+	}
+	if (length)
+	{
+		if ((unsigned long)buffer2 < 4) //Single entry
+		{
+			for (j = 0; j < length;)	//The number of bytes the user requested to write
+			{
+				m_write_buffer[i++] = buffer2 ? CH341_CMD_SPI_STREAM : CH341_CMD_SIO_STREAM;
+				m_length = CH341_PACKET_LENGTH - 1;
+				if (m_length > length - j)
+				{
+					m_length = length - j;
+				}
+				if (StreamMode & 0x80) //High position
+				{
+					while (m_length--)
+					{
+						m_write_buffer[i++] = ReverseByte(*((uchar *)buffer + j++));
+					}
+				}
+				else while (m_length--)
+					{
+						m_write_buffer[i++] = *((uchar *)buffer + j++);    //Low position
+					}
+
+				if (i % CH341_PACKET_LENGTH == 0)
+				{
+					m_write_buffer[i] = m_write_buffer[i + 1] = 0;
+					i += CH341_PACKET_LENGTH;
+				}
+			}
+		}
+		else//Double entry and double exit
+		{
+			for (j = 0; j < length;)
+			{
+				m_write_buffer[i++] = CH341_CMD_SPI_STREAM;
+				m_length = CH341_PACKET_LENGTH - 1;
+				if (m_length > length - j)
+				{
+					m_length = length - j;
+				}
+				if (StreamMode & 0x80)
+				{
+					while (m_length--) //Copy data
+					{
+						c1 = ReverseByte(*((uchar *)buffer + (j >> 1)));
+						c2 = ReverseByte(*((uchar *)buffer2 + (j >> 1)));
+						m_write_buffer[i++] = (uchar)((j & 0x01) ? (c1 & 0xF0 | c2 >> 4 & 0xF0) : (c1 << 4 & 0xF0 | c2 & 0xF0));
+						j++;
+					}
+				}
+				else//Low position
+				{
+					while (m_length--) //Copy data
+					{
+						c1 = *((uchar *)buffer + (j >> 1));
+						c2 = *((uchar *)buffer2 + (j >> 1));
+						m_write_buffer[i++] = (uchar)((j & 0x01) ? (c1 & 0xF0 | c2 >> 4 & 0xF0) : (c1 << 4 & 0xF0 | c2 & 0xF0));
+						j++;
+					}
+				}
+				if (i % CH341_PACKET_LENGTH == 0)
+				{
+					m_write_buffer[i] = m_write_buffer[i + 1] = 0;
+					i += CH341_PACKET_LENGTH;
+				}
+			}
+		}
+	}
+
+	m_length = 0;
+
+	uchar *p_read_buf = *buffer2 < 4 ? buffer : m_write_buffer;
+
+	//j = WriteRead(i, (uint*)&m_write_buffer, CH341_PACKET_LENGTH - 1, (length + CH341_PACKET_LENGTH - 1 - 1) / (CH341_PACKET_LENGTH - 1),	&m_length, (uint*)&p_read_buf);
+	j = WriteRead(i, m_write_buffer, CH341_PACKET_LENGTH - 1, (length + CH341_PACKET_LENGTH - 1 - 1) / (CH341_PACKET_LENGTH - 1), &m_length, p_read_buf);
+	if (j && m_length != length)
+	{
+		j = -1;
+	}
+
+	if (m_write_buffer != m_buffer)
+	{
+		free(m_write_buffer);
+	}
+
+	if (chip_select & 0x80)
+	{
+		m_buffer[0] = CH341_CMD_UIO_STREAM;
+		m_buffer[1] = (uchar)(CH341_CMD_UIO_STM_OUT | 0x37);
+		m_buffer[2] = CH341_CMD_UIO_STM_END;
+		m_length = 3;
+		if (WriteData((uint *)&m_buffer, &m_length))
+		{
+			if (m_length < 2)
+			{
+				return -1;
+			}
+		}
+		else
+		{
+			return -1;
+		}
+	}
+
+	if (j)
+	{
+		if ((unsigned long)buffer2 < 4)
+		{
+			if (StreamMode & 0x80)
+			{
+				for (i = 0; i < length; i++)
+				{
+					m_write_buffer[i++] = ReverseByte(*((uchar *)buffer + j++));      //Copy data
+				}
+			}
+		}
+		else
+		{
+			for (i = 0; i < length; i += 2)
+			{
+				c1 = m_write_buffer[i];
+				c2 = m_write_buffer[i + 1];
+				if (StreamMode & 0x80)
+				{
+					*((uchar *) buffer + (i >> 1)) = ReverseByte(c1 >> 4 & 0x0F | c2 & 0xF0);
+					*((uchar *) buffer2 + (i >> 1)) = ReverseByte(c1 & 0x0F | c2 << 4 & 0xF0);
+				}
+				else
+				{
+					*((uchar *) buffer + (i >> 1)) = (uchar)c1 >> 4 & 0x0F | c2 & 0xF0;
+					*((uchar *) buffer2 + (i >> 1)) = (uchar)c1 & 0x0F | c2 << 4 & 0xF0;
+				}
+			}
+		}
+	}
+
+	return (j);
+}
+
+// Process SPI data stream, 4-wire interface:
+// The clock line is the DCK/D3 pin;
+// The output data line is the DOUT/D5 pin;
+// The input data line is DIN/D7 pin;
+// The chip select line is D0/D1/D2 and the speed is about 110K bytes.
+// SPI timing: DCK/D3 pin is the clock output, the default is low level;
+// The DOUT/D5 pin is output during the low period before the rising edge of the clock;
+// The DIN/D7 pin is input during the high period before the falling edge of the clock.
+//Operation succeeded. Failed to return 0.
+// chip_select: Chip select control, bit 7 is 0 to ignore chip select control, bit 7 is 1 to enable parameter: Bit 1 bit 0 is 00/01/10 select D0/D1/D2 pin as active low Chip Select
+// length: the number of data bytes to be transferred
+// buffer: points to a buffer, puts the data to be written from DOUT, and returns the data read from DIN.
+int32_t ch341::StreamSPI4(uint chip_select, uint length, uchar *buffer)
+{
+	if (StreamMode & 0x40)
+	{
+		if (SetStream(StreamMode & 0xFB) < 0)
+		{
+			return -1;
+		}
+	}
+	return (StreamSPI(chip_select, length, buffer, (uchar *)1));
+}
+
+// Process SPI data stream, 4-wire interface:
+// The clock line is the DCK/D3 pin;
+// The output data line is the DOUT/D5 pin;
+// The input data line is DIN/D7 pin;
+// The chip select line is D0/D1/D2 and the speed is about 110K bytes.
+// SPI timing: DCK/D3 pin is the clock output, the default is low level;
+// The DOUT/D5 pin is output during the low period before the rising edge of the clock;
+// The DIN/D7 pin is input during the high period before the falling edge of the clock.
+//Operation succeeded. Failed to return 0.
+// chip_select: Chip select control, bit 7 is 0 to ignore chip select control, bit 7 is 1 to enable parameter: Bit 1 bit 0 is 00/01/10 select D0/D1/D2 pin as active low Chip Select
+// length: the number of data bytes to be transferred
+// buffer: points to a buffer, puts the data to be written from DOUT, and returns the data read from DIN.
+int32_t ch341::StreamSPI5(uint chip_select, uint length, uchar *buffer, uchar *buffer2)
+{
+	if (StreamMode & 0x40)
+	{
+		if (SetStream(StreamMode | 4) < 0)
+		{
+			return -1;
+		}
+	}
+	return (StreamSPI(chip_select, length * 2, buffer, buffer2));
 }
 
 
@@ -1910,7 +2249,7 @@ int32_t ch341::SetOutput(uint iEnable, uint iSetDirOut, uint iSetDataOut)
 	ushort uVar4;
 	int res;
 	ushort reg_nr;
-	uchar buf[16] = {0};
+	uchar buf[0x28] = {0};
 
 	uVar2 = iSetDirOut;
 
@@ -1931,9 +2270,10 @@ int32_t ch341::SetOutput(uint iEnable, uint iSetDirOut, uint iSetDataOut)
 		buf[9] = 0;
 		buf[10] = 0;
 
-//         iSetDirOut = 0xb;
+		iSetDirOut = 0xb;
 
-		res = usbTransfer(__func__, CH341_DATA_OUT, (uint *)&buf, 0xb);
+		//res = usbTransfer(__func__, CH341_DATA_OUT, (uint *)&buf, 0xb);
+		res = WriteData((uint *)&buf, &iSetDirOut);
 // 		iVar5 = WriteData(iIndex, (uint *)&local_24, &iSetDirOut);
 		if (res < 0)
 		{
@@ -2661,6 +3001,7 @@ int32_t ch341::Release(void)
 /**
  * Helper function for libusb_bulk_transfer, display error message with the caller name
  */
+#if 0
 int32_t ch341::usbTransfer(const char *func, uint8_t type, uint *buf, int len)
 {
 	int32_t ret;
@@ -2684,7 +3025,7 @@ int32_t ch341::usbTransfer(const char *func, uint8_t type, uint *buf, int len)
 
 	return transfered;
 }
-
+#endif
 #if 0
 /*
  * ********************************************************************
@@ -2710,7 +3051,7 @@ int32_t ch341::WriteData(PVOID iBuffer, PULONG ioLength)
 	}
 	mLen = *ioLength;
 	Write.length = ioLength;
-	Write.ByteBuffer = (PUCHAR)malloc(sizeof(unsigned char) * mLen);
+	Write.ByteBuffer = (PUCHAR)malloc(sizeof(uchar) * mLen);
 	memcpy(Write.ByteBuffer, (PUCHAR)iBuffer, mLen);
 	printf("ByteBuffer:");
 	for (i = 0; i < mLen; i++)
@@ -2818,8 +3159,10 @@ int32_t ch341::SetStream(uint32_t mode)
 	buf[0] = CH341_CMD_I2C_STREAM;
 	buf[1] = CH341_CMD_I2C_STM_SET | (StreamMode & 0x0f);
 	buf[2] = CH341_CMD_I2C_STM_END;
+	uint len = 3;
 
-	return usbTransfer(__func__, CH341_DATA_OUT, (uint *)&buf, 3);
+	//return usbTransfer(__func__, CH341_DATA_OUT, (uint *)&buf, 3);
+	return WriteData((uint *)&buf, &len);
 }
 
 
@@ -2848,7 +3191,8 @@ int32_t ch341::SpiStream(uint *out, uint *in, uint32_t len)
 {
 	uint8_t *inBuf, *outBuf;
 	uint *inPtr, *outPtr;
-	int32_t ret, packetLen;
+	int32_t ret;
+	uint packetLen;
 	bool done;
 	bool err = false;
 
@@ -2862,7 +3206,10 @@ int32_t ch341::SpiStream(uint *out, uint *in, uint32_t len)
 	outBuf = new uint8_t[CH341_PACKET_LENGTH];
 
 	SpiChipSelect(outBuf, true);
-	ret = usbTransfer(__func__, CH341_DATA_OUT, (uint *)&outBuf, 4);
+	int ret_len = 4;
+
+	ret = libusb_bulk_transfer(devHandle, CH341_DATA_OUT, (uchar *)&outBuf, 4, &ret_len, timeout);
+	//ret = usbTransfer(__func__, CH341_DATA_OUT, (uint *)&outBuf, 4);
 
 	if (ret < 0)
 	{
@@ -2893,15 +3240,17 @@ int32_t ch341::SpiStream(uint *out, uint *in, uint32_t len)
 			*outPtr++ = ReverseByte(*out++);
 		}
 
-		ret = usbTransfer(__func__, CH341_DATA_OUT, (uint *)&outBuf, packetLen);
+		ret = libusb_bulk_transfer(devHandle, CH341_DATA_OUT, (uchar *)&outBuf, (int)packetLen, &ret_len, timeout);
+// 		ret = usbTransfer(__func__, CH341_DATA_OUT, (uint *)&outBuf, packetLen);
 
 		if (ret < 0)
 		{
 			err = true;
 			break;
 		}
+		ret = libusb_bulk_transfer(devHandle, CH341_DATA_IN, (uchar *)&inBuf, packetLen - 1, &ret_len, timeout);
+// 		ret = usbTransfer(__func__, CH341_DATA_IN, (uint *)&inBuf, packetLen - 1);
 
-		ret = usbTransfer(__func__, CH341_DATA_IN, (uint *)&inBuf, packetLen - 1);
 
 		if (ret < 0)
 		{
@@ -2921,7 +3270,9 @@ int32_t ch341::SpiStream(uint *out, uint *in, uint32_t len)
 	if (!err)
 	{
 		SpiChipSelect(outBuf, false);
-		ret = usbTransfer(__func__, CH341_DATA_OUT, (uint *)&outBuf, 3);
+// 		ret = usbTransfer(__func__, CH341_DATA_OUT, (uint *)&outBuf, 3);
+		len = 3;
+		ret = libusb_bulk_transfer(devHandle, CH341_DATA_OUT, (uchar *)&outBuf, 3, &ret_len, timeout);
 	}
 	else
 	{
@@ -3129,59 +3480,47 @@ int32_t ch341::EraseChip(void)
  */
 int32_t ch341::SpiRead(uint *buf, uint32_t add, uint32_t len)
 {
-	uint8_t *outBuf;
-	uint8_t *inBuf;
+	uint8_t out[CH341_MAX_PACKET_LEN];
+	uint8_t in[CH341_PACKET_LENGTH];
 
 	if (devHandle == NULL)
 	{
 		return -1;
 	}
-
-	qDebug() << "ch341::SpiRead()";
-
 	/* what subtracted is: 1. first cs package, 2. leading command for every other packages,
 	 * 3. second package contains read flash command and 3 bytes address */
 	const uint32_t max_payload = CH341_MAX_PACKET_LEN - CH341_PACKET_LENGTH - CH341_MAX_PACKETS + 1 - 4;
 	uint32_t tmp, pkg_len, pkg_count;
 	struct libusb_transfer *xferBulkIn, *xferBulkOut;
 	uint32_t idx = 0;
-	int32_t ret;
+	uint32_t ret;
 	int32_t old_counter;
 	struct timeval tv = {0, 100};
-// 	v_print(0, len);  // verbose
+//     v_print( 0, len); // verbose
 
-	outBuf = new uint8_t[CH341_MAX_PACKET_LEN];
-
-	memset(outBuf, 0xff, CH341_MAX_PACKET_LEN);
-
-	for (int i = 1; i < CH341_MAX_PACKETS; ++i)   // fill CH341_CMD_SPI_STREAM for every packet
+	memset(out, 0xff, CH341_MAX_PACKET_LEN);
+	for (int i = 1; i < CH341_MAX_PACKETS; ++i) // fill CH341A_CMD_SPI_STREAM for every packet
 	{
-		outBuf[i * CH341_PACKET_LENGTH] = CH341_CMD_SPI_STREAM;
+		out[i * CH341_PACKET_LENGTH] = CH341_CMD_SPI_STREAM;
 	}
-
-	inBuf = new uint8_t[CH341_PACKET_LENGTH];
-
-	memset(inBuf, 0x00, CH341_PACKET_LENGTH);
+	memset(in, 0x00, CH341_PACKET_LENGTH);
 	xferBulkIn  = libusb_alloc_transfer(0);
 	xferBulkOut = libusb_alloc_transfer(0);
 
-	qDebug("Read started!");
-
+	printf("Read started!\n");
 	while (len > 0)
 	{
-// 		v_print(1, len);  // verbose
+//         v_print( 1, len); // verbose
 		fflush(stdout);
-		SpiChipSelect(outBuf, true);
+		SpiChipSelect(out, true);
 		idx = CH341_PACKET_LENGTH + 1;
-		outBuf[idx++] = 0xC0; // byte swapped command for Flash Read
+		out[idx++] = 0xC0; // byte swapped command for Flash Read
 		tmp = add;
-
 		for (int i = 0; i < 3; ++i)   // starting address of next read
 		{
-			outBuf[idx++] = ReverseByte((tmp >> 16) & 0xFF);
+			out[idx++] = ReverseByte((tmp >> 16) & 0xFF);
 			tmp <<= 8;
 		}
-
 		if (len > max_payload)
 		{
 			pkg_len = CH341_MAX_PACKET_LEN;
@@ -3192,75 +3531,63 @@ int32_t ch341::SpiRead(uint *buf, uint32_t add, uint32_t len)
 		else
 		{
 			pkg_count = (len + 4) / (CH341_PACKET_LENGTH - 1);
-
 			if ((len + 4) % (CH341_PACKET_LENGTH - 1))
 			{
 				pkg_count ++;
 			}
-
 			pkg_len = (pkg_count) * CH341_PACKET_LENGTH + ((len + 4) % (CH341_PACKET_LENGTH - 1)) + 1;
 			len = 0;
 		}
-
 		bulkin_count = 0;
-		libusb_fill_bulk_transfer(xferBulkIn, devHandle, CH341_DATA_IN, inBuf,
+		libusb_fill_bulk_transfer(xferBulkIn, devHandle, CH341_DATA_IN, in,
 								  CH341_PACKET_LENGTH, cbBulkIn, buf, timeout);
+
 		buf += max_payload; // advance user's pointer
 		libusb_submit_transfer(xferBulkIn);
-		libusb_fill_bulk_transfer(xferBulkOut, devHandle, CH341_DATA_OUT, outBuf,
+		libusb_fill_bulk_transfer(xferBulkOut, devHandle, CH341_DATA_OUT, out,
 								  pkg_len, cbBulkOut, NULL, timeout);
+
 		libusb_submit_transfer(xferBulkOut);
 		old_counter = bulkin_count;
-
 		while (bulkin_count < pkg_count)
 		{
 			libusb_handle_events_timeout(NULL, &tv);
-
 			if (bulkin_count == -1)   // encountered error
 			{
 				len = 0;
 				ret = -1;
 				break;
 			}
-
 			if (old_counter != bulkin_count)   // new package came
 			{
 				if (bulkin_count != pkg_count)
 				{
 					libusb_submit_transfer(xferBulkIn);    // resubmit bulk in request
 				}
-
 				old_counter = bulkin_count;
 			}
 		}
-
-		SpiChipSelect(outBuf, false);
-		ret = usbTransfer(__func__, CH341_DATA_OUT, (uint *)&outBuf, 3);
-
+		SpiChipSelect(out, false);
+		uint curr_len = 3;
+		ret = WriteData((uint *)&out, &curr_len);
+// 		ret = usbTransfer(__func__, CH341_DATA_OUT, out, 3);
 		if (ret < 0)
 		{
 			break;
 		}
-
 		if (force_stop == 1)   // user hit ctrl+C
 		{
 			force_stop = 0;
-
 			if (len > 0)
 			{
-				qCritical() << "User hit Ctrl+C, reading unfinished.";
+				fprintf(stderr, "User hit Ctrl+C, reading unfinished.\n");
 			}
-
 			break;
 		}
 	}
-
-	delete outBuf;
-	delete inBuf;
-
 	libusb_free_transfer(xferBulkIn);
 	libusb_free_transfer(xferBulkOut);
-// 	v_print(2, 0);
+//     v_print(2, 0);
 	return ret;
 }
 
@@ -3271,8 +3598,8 @@ int32_t ch341::SpiRead(uint *buf, uint32_t add, uint32_t len)
  */
 int32_t ch341::SpiWrite(uint *buf, uint32_t add, uint32_t len)
 {
-	uint8_t *outBuf;
-	uint8_t *inBuf;
+	uint8_t out[WRITE_PAYLOAD_LENGTH];
+	uint8_t in[CH341_PACKET_LENGTH];
 	uint32_t tmp, pkg_count;
 	struct libusb_transfer *xferBulkIn, *xferBulkOut;
 	uint32_t idx = 0;
@@ -3280,43 +3607,33 @@ int32_t ch341::SpiWrite(uint *buf, uint32_t add, uint32_t len)
 	int32_t old_counter;
 	struct timeval tv = {0, 100};
 
-// 	v_print(0, len); // verbose
+//     v_print(0, len); // verbose
 
 	if (devHandle == NULL)
 	{
 		return -1;
 	}
-
-	qDebug() << "ch341::SpiWrite()";
-
-	outBuf = new uint8_t[WRITE_PAYLOAD_LENGTH];
-
-	memset(outBuf, 0xff, WRITE_PAYLOAD_LENGTH);
+	memset(out, 0xff, WRITE_PAYLOAD_LENGTH);
 	xferBulkIn  = libusb_alloc_transfer(0);
 	xferBulkOut = libusb_alloc_transfer(0);
 
-	inBuf = new uint8_t[CH341_PACKET_LENGTH];
-
-	qDebug("Write started!");
-
+	printf("Write started!\n");
 	while (len > 0)
 	{
-// 		v_print(1, len);
+//         v_print(1, len);
 
-		outBuf[0] = 0x06; // Write enable
-		ret = SpiStream((uint *)&outBuf, (uint *)&inBuf, 1);
-		SpiChipSelect(outBuf, true);
+		out[0] = 0x06; // Write enable
+		ret = SpiStream((uint *)&out, (uint *)&in, 1);
+		SpiChipSelect(out, true);
 		idx = CH341_PACKET_LENGTH;
-		outBuf[idx++] = CH341_CMD_SPI_STREAM;
-		outBuf[idx++] = 0x40; // byte swapped command for Flash Page Write
+		out[idx++] = CH341_CMD_SPI_STREAM;
+		out[idx++] = 0x40; // byte swapped command for Flash Page Write
 		tmp = add;
-
 		for (int i = 0; i < 3; ++i)   // starting address of next write
 		{
-			outBuf[idx++] = ReverseByte((tmp >> 16) & 0xFF);
+			out[idx++] = ReverseByte((tmp >> 16) & 0xFF);
 			tmp <<= 8;
 		}
-
 		tmp = 0;
 		pkg_count = 1;
 
@@ -3324,101 +3641,84 @@ int32_t ch341::SpiWrite(uint *buf, uint32_t add, uint32_t len)
 		{
 			if (idx % CH341_PACKET_LENGTH == 0)
 			{
-				outBuf[idx++] = CH341_CMD_SPI_STREAM;
+				out[idx++] = CH341_CMD_SPI_STREAM;
 				pkg_count ++;
 			}
 			else
 			{
-				outBuf[idx++] = ReverseByte(*buf++);
+				out[idx++] = ReverseByte(*buf++);
 				tmp++;
-
-				if (((add + tmp) & 0xFF) == 0)   // cross page boundary
+				if (((add + tmp) & 0xFF) == 0) // cross page boundary
 				{
 					break;
 				}
 			}
 		}
-
 		len -= tmp;
 		add += tmp;
 		bulkin_count = 0;
-		libusb_fill_bulk_transfer(xferBulkIn, devHandle, CH341_DATA_IN, inBuf,
+		libusb_fill_bulk_transfer(xferBulkIn, devHandle, CH341_DATA_IN, in,
 								  CH341_PACKET_LENGTH, cbBulkIn, NULL, timeout);
 		libusb_submit_transfer(xferBulkIn);
-		libusb_fill_bulk_transfer(xferBulkOut, devHandle, CH341_DATA_OUT, outBuf,
+		libusb_fill_bulk_transfer(xferBulkOut, devHandle, CH341_DATA_OUT, out,
 								  idx, cbBulkOut, NULL, timeout);
 		libusb_submit_transfer(xferBulkOut);
 		old_counter = bulkin_count;
 		ret = 0;
-
 		while (bulkin_count < pkg_count)
 		{
 			libusb_handle_events_timeout(NULL, &tv);
-
 			if (bulkin_count == -1)   // encountered error
 			{
 				ret = -1;
 				break;
 			}
-
 			if (old_counter != bulkin_count)   // new package came
 			{
 				if (bulkin_count != pkg_count)
 				{
 					libusb_submit_transfer(xferBulkIn);    // resubmit bulk in request
 				}
-
 				old_counter = bulkin_count;
 			}
 		}
-
 		if (ret < 0)
 		{
 			break;
 		}
-
-		SpiChipSelect(outBuf, false);
-		ret = usbTransfer(__func__, CH341_DATA_OUT, (uint *)&outBuf, 3);
-
+		SpiChipSelect(out, false);
+// 		ret = usbTransfer(__func__, CH341_DATA_OUT, out, 3);
+		uint curr_len = 3;
+		ret = WriteData((uint *)&out, &curr_len);
 		if (ret < 0)
 		{
 			break;
 		}
-
-		outBuf[0] = 0x04; // Write disable
-		ret = SpiStream((uint *)&outBuf, (uint *)&inBuf, 1);
-
+		out[0] = 0x04; // Write disable
+		ret = SpiStream((uint *)&out, (uint *)&in, 1);
 		do
 		{
 			ret = ReadStatus();
-
 			if (ret != 0)
 			{
 				libusb_handle_events_timeout(NULL, &tv);
 			}
 		}
 		while (ret != 0);
-
 		if (force_stop == 1)   // user hit ctrl+C
 		{
 			force_stop = 0;
-
 			if (len > 0)
 			{
-				qCritical() << "User hit Ctrl+C, writing unfinished.";
+				fprintf(stderr, "User hit Ctrl+C, writing unfinished.\n");
 			}
-
 			break;
 		}
 	}
-
 	libusb_free_transfer(xferBulkIn);
 	libusb_free_transfer(xferBulkOut);
 
-	delete outBuf;
-	delete inBuf;
-
-// 	v_print(2, 0);
+//     v_print(2, 0);
 	return ret;
 }
 

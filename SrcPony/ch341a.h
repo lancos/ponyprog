@@ -76,6 +76,31 @@ typedef	enum _EEPROM_TYPE
 #define    DEFAULT_CONFIGURATION        0x01
 #define    DEFAULT_TIMEOUT              300    // 300mS for USB timeouts
 
+// USB device standard request code
+#define    CH341_CLR_FEATURE            0x01
+#define    CH341_SET_FEATURE            0x03
+#define    CH341_GET_STATUS             0x04
+#define    CH341_SET_ADDRESS            0x05
+#define    CH341_GET_DESCR              0x06
+#define    CH341_SET_DESCR              0x07
+#define    CH341_GET_CONFIG             0x08
+#define    CH341_SET_CONFIG             0x09
+#define    CH341_GET_INTERF             0x0a
+#define    CH341_SET_INTERF             0x0b
+#define    CH341_SYNC_FRAME             0x0c
+#define    CH341_REQ_RESET              0x0d
+#define    CH341_REQ_ABORT              0x0e
+
+
+#define    CH341_BUF_CLEAR              0xB2		// Clear unfinished data
+
+#define    CH341_I2C_STATUS             0x52		// Get the status of the I2C interface
+#define    CH341_I2C_COMMAND            0x53		// Command to issue an I2C interface
+#define    CH341_I2C_CMD_X              0x54		// Issue the I2C interface command and execute it immediately
+#define    CH341_DELAY_MS               0x5E		// Delay the specified time in units of leap seconds
+#define    CH341_GET_VER                0x5F		// Get the chip version
+
+
 #if 0
 #define    IN_BUF_SZ                    0x100
 #define    EEPROM_WRITE_BUF_SZ          0x2b   // only for 24c64 / 24c32 ??
@@ -340,7 +365,9 @@ class ch341 : public QObject, public USB_Interface
 // 	void    updateStatus();
 // 	void    v_print(int mode, int len);
 //     void    allocTransfer();
-	int32_t WriteRead(uint iWriteLength, uint *iWriteBuffer, uint *oReadLength, uint *oReadBuffer, int iReadStep = 64);
+	//int32_t WriteRead(uint iWriteLength, uint *iWriteBuffer, uint *oReadLength, uint *oReadBuffer, int iReadStep = 64);
+	// read_buffer: points to a buffer large enough to hold the read data
+	int32_t WriteRead(uint wlength, uchar *wBuffer, uint readStep, uint readTimes, uint *rLength, uchar *rBuffer);
 	int32_t SetTimeout(uint iWriteTimeout, uint iReadTimeout);
 	int32_t SetExclusive(uint iExclusive);
 	int32_t ResetDevice();
@@ -356,6 +383,10 @@ class ch341 : public QObject, public USB_Interface
 	int32_t ReadData(uint *oBuffer, uint *ioLength);
 	int32_t WriteData(uint *iBuffer, uint *ioLength);
 
+	int32_t StreamSPI4(uint chip_select, uint length, uchar *buffer);
+	int32_t StreamSPI5(uint chip_select, uint length, uchar *buffer, uchar *buffer2);
+	int32_t StreamSPI(unsigned long chip_select, unsigned long length, uchar *buffer, uchar *buffer2);
+
 	int32_t StreamI2C(uint iWriteLength, uint *iWriteBuffer, uint iReadLength, uint *oReadBuffer);
 	int32_t WriteEEPROM(EEPROM_TYPE iEepromID, uint32_t iAddr, uint32_t iLength, uint *iBuffer);
 	int32_t ReadEEPROM(EEPROM_TYPE iEepromID, uint32_t iAddr, uint32_t iLength, uint *oBuffer);
@@ -367,7 +398,7 @@ class ch341 : public QObject, public USB_Interface
 	void    SpiChipSelect(uint8_t *ptr, bool selected);
 	int32_t SpiStream(uint *out, uint *in, uint32_t len);
 
-	int32_t usbTransfer(const char *func, uint8_t type, uint *buf, int len);
+// 	int32_t usbTransfer(const char *func, uint8_t type, uint *buf, int len);
 
 
   private:

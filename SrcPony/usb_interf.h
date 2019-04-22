@@ -112,6 +112,34 @@ class USB_Interface
 	virtual int32_t setControl(void) = 0;
 	virtual int32_t init(uint8_t mode) = 0;
 
+	static uint8_t ReverseByte(uint8_t c)
+	{
+		uint8_t result = 0;
+
+		for (int i = 0; i < 8; ++i)
+		{
+			result = result << 1;
+			result |= (c & 1);
+			c = c >> 1;
+		}
+
+		return result;
+	};
+
+	static uint16_t ReverseWord(uint16_t c)
+	{
+		uint16_t result = 0;
+
+		for (int i = 0; i < 16; ++i)
+		{
+			result = result << 1;
+			result |= (c & 1);
+			c = c >> 1;
+		}
+
+		return result;
+	};
+
   public:
 	struct libusb_device_handle *devHandle;
 
