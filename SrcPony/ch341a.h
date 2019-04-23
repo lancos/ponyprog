@@ -298,10 +298,6 @@ class ch341 : public QObject, public USB_Interface
 	int32_t GetStatus(uint *iStatus);
 
 	virtual int32_t Release(void);
-#if 0
-	int32_t readEEPROM(uint8_t *buffer, uint32_t bytestoread);
-	int32_t writeEEPROM(uint8_t *buffer, uint32_t bytesum);
-#endif
 	virtual int32_t SetBaudRate(int32_t baudRate);
 	virtual int32_t SetTimeouts(int16_t t);
 	virtual int32_t SetBreakControl(int32_t state);
@@ -330,12 +326,9 @@ class ch341 : public QObject, public USB_Interface
 	virtual void    CloseHandle();
 
   signals:
-// 	void receivedData(uint8_t *data, size_t len);
 	void breakChanged(bool set);
 
   public slots:
-// 	void onRecieiveData(quint8 *data, qint16 len);
-// 	void sendData(const uint8_t &data, size_t len);
 	void triggerBreak(uint msecs);
 
   private slots:
@@ -345,9 +338,6 @@ class ch341 : public QObject, public USB_Interface
 	// for callback
 	static int16_t read_completed;
 	static int16_t write_completed;
-
-// 	struct libusb_device_handle *devHandle;
-//     struct libusb_transfer *ctrl_transfer;
 
   private:
 	int32_t getModemState(void);
@@ -362,11 +352,6 @@ class ch341 : public QObject, public USB_Interface
 	int32_t initSPI();
 	int32_t initI2C();
 
-// 	void    updateStatus();
-// 	void    v_print(int mode, int len);
-//     void    allocTransfer();
-	//int32_t WriteRead(uint iWriteLength, uint *iWriteBuffer, uint *oReadLength, uint *oReadBuffer, int iReadStep = 64);
-	// read_buffer: points to a buffer large enough to hold the read data
 	int32_t WriteRead(uint wlength, uchar *wBuffer, uint readStep, uint readTimes, uint *rLength, uchar *rBuffer);
 	int32_t SetTimeout(uint iWriteTimeout, uint iReadTimeout);
 	int32_t SetExclusive(uint iExclusive);
@@ -397,9 +382,6 @@ class ch341 : public QObject, public USB_Interface
 
 	void    SpiChipSelect(uint8_t *ptr, bool selected);
 	int32_t SpiStream(uint *out, uint *in, uint32_t len);
-
-// 	int32_t usbTransfer(const char *func, uint8_t type, uint *buf, int len);
-
 
   private:
 	struct dv

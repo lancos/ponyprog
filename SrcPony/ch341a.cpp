@@ -19,6 +19,9 @@
 //  https://github.com/gschorcht/spi-ch341-usb                             //
 //  https://github.com/gschorcht/i2c-ch341-usb                             //
 //                                                                         //
+//  Copyright (c) USBIO source code, examples:                             //
+//  http://usb-i2c-spi.com/down.htm                                        //
+//                                                                         //
 //  Copyright (c) 2018 Sarim Khan  (sarim2005@gmail.com)                   //
 //  https://github.com/sarim/ch341a-bitbang-userland                       //
 //                                                                         //
@@ -77,69 +80,6 @@ void sig_int(int signo)
  * for more tricks, see https://graphics.stanford.edu/~seander/bithacks.html
  */
 
-
-#if 0
-static void read_cb(libusb_transfer *transfer) noexcept
-{
-	switch (transfer->status)
-	{
-	case LIBUSB_TRANSFER_COMPLETED:
-		if (transfer->user_data != NULL)
-		{
-			// TODO ReverseByte ???
-		}
-		ch341::read_completed = 1;
-// 		bulkin_count++;
-		break;
-	default:
-		qCritical("broken callback in transfer %p", transfer);
-		ch341::read_completed = -1;
-// 		bulkin_count = -1;
-		break;
-	}
-}
-
-static void write_cb(libusb_transfer *transfer) noexcept
-{
-//     file_channel *chnl = (file_channel *) transfer->user_data;
-	if (transfer->status != LIBUSB_TRANSFER_COMPLETED)
-	{
-		qCritical("broken callback in transfer %p", transfer);
-		ch341::write_completed = -1;
-	}
-	else
-	{
-		ch341::write_completed = 1;
-	}
-}
-
-void ch34x_callback(libusb_transfer *transfer)
-{
-	delete (uchar *)transfer->user_data;
-	libusb_free_transfer(transfer);
-}
-#endif
-
-/**
- * @brief callback function from control transport change event
- */
-
-#if 0
-static void cb_ctrl_changed(struct libusb_transfer *transfer)
-{
-	if (transfer->status != LIBUSB_TRANSFER_COMPLETED)
-	{
-		qCritical("broken callback in transfer %p stat %d", transfer, transfer->status);
-	}
-
-	qCritical("async cb_ctrl_changed length=%d actual_length=%d state %d\n", transfer->length, transfer->actual_length, transfer->status);
-
-	//libusb_free_transfer(transfer);
-
-// 	if (next_state() < 0)
-// 		request_exit(2);
-}
-#endif
 
 
 /**
@@ -293,90 +233,6 @@ void ch341::breakTimeout()
 	SetBreakControl(0);
 }
 
-#if 0
-void ch341::allocTransfer()
-{
-	ctrl_transfer = libusb_alloc_transfer(0);
-	// TODO is it right???
-	libusb_fill_control_setup(ctrl_buf, LIBUSB_ENDPOINT_IN | LIBUSB_REQUEST_TYPE_CLASS |
-							  LIBUSB_RECIPIENT_INTERFACE, CH341_REQ_WRITE_REG, CH341_REG_STAT, 0, 0);
-
-	printf("go2: ctrlbuf0-7]=0x%X-%X-%X-%X-%X-%X-%X-%X\n",
-		   ctrl_buf[0],
-		   ctrl_buf[1],
-		   ctrl_buf[2],
-		   ctrl_buf[3],
-		   ctrl_buf[4],
-		   ctrl_buf[5],
-		   ctrl_buf[6],
-		   ctrl_buf[7]);
-
-	libusb_fill_control_transfer(ctrl_transfer, devHandle, ctrl_buf,
-								 cb_ctrl_changed, NULL, 0);
-
-	ctrl_transfer->flags = LIBUSB_TRANSFER_FREE_BUFFER | LIBUSB_TRANSFER_FREE_TRANSFER;
-}
-#endif
-
-/**
- * when 'verbose' enabled, print debug information
- */
-#if 0
-void ch341::v_print(int mode, int len)   // mode: begin=0, progress = 1
-{
-	static int size = 0;
-	static time_t started, reported;
-	int dur, done;
-
-	if (!verbose)
-	{
-		return;
-	}
-
-	time_t now;
-	time(&now);
-
-	switch (mode)
-	{
-	case 0: // setup
-		size = len;
-		started = reported = now;
-		break;
-
-	case 1: // progress
-		if (now == started)
-		{
-			return;
-		}
-
-		dur = now - started;
-		done = size - len;
-
-		if (done > 0 && reported != now)
-		{
-			qDebug("Bytes: %d (%d%c),  Time: %d, ETA: %d   ", done,
-				   (done * 100) / size, '%', dur, (int)((1.0 * dur * size) / done - dur));
-			fflush(stdout);
-			reported = now;
-		}
-
-		break;
-
-	case 2: // done
-		dur = now - started;
-
-		if (dur < 1)
-		{
-			dur = 1;
-		}
-
-		qDebug("Total:  %d sec,  average speed  %d  bytes per second.", dur, size / dur);
-		break;
-
-		break;
-	}
-}
-#endif
 
 int32_t ch341::GetStatusRx()
 {
@@ -849,71 +705,6 @@ int32_t ch341::WriteRead(uint wLength, uchar *wBuffer, uint readStep, uint readT
 	return k;
 }
 
-/**
- * @brief write to usb device and followerd read from this
- * TODO to test
- * we dont need read step and read times params after iWriteBuffer param
- * TODO iReadStep
- */
-#if 0
-int32_t ch341::WriteRead(uint iWriteLength, uint *iWriteBuffer, uint *oReadLength, uint *oReadBuffer, int iReadStep)
-{
-//     char *my_string, *my_string1;
-	int res;
-	int transferred = 0;
-	int received = 0;
-	int length = 0;
-	uint local_buf [260];
-
-	if (iWriteBuffer == 0 || oReadBuffer == 0)
-	{
-		return -1;
-	}
-
-//     my_string = (char *)malloc(nbytes + 1);
-//     my_string1 = (char *)malloc(nbytes + 1);
-
-//     memset(my_string, '\0', 64);
-//     memset(my_string1, '\0', 64);
-
-//     strcpy(my_string, "Prasad Divesd");
-//     length = strlen(my_string);
-
-//     printf("\nTo be sent: %s", my_string);
-
-	// senden
-	res = libusb_bulk_transfer(devHandle, CH341_DATA_OUT, (uchar *)iWriteBuffer, iWriteLength, &transferred, timeout);
-	if (res == 0 && transferred == length)
-	{
-		printf("\nWrite successful!");
-//         printf("\nSent %d bytes with string: %s\n", transferred, my_string);
-	}
-	else
-	{
-		printf("\nError in write! e = %d and transferred = %d\n", res, transferred);
-	}
-
-//     sleep(3);
-//     i = 0;
-
-// TODO iReadStep!
-//     for(i = 0; i < length; i++)
-//     {
-	res = libusb_bulk_transfer(devHandle, CH341_DATA_IN, (uchar *)oReadBuffer, *oReadLength, &received, timeout);  //64: Max Packet Length
-	if (res == 0)
-	{
-		printf("\nReceived: ");
-//             printf("%c", my_string1[i]); //Will read a string from LPC2148
-//             sleep(1);
-	}
-	else
-	{
-		printf("\nError in read! e = %d and received = %d\n", res, received);
-	}
-
-	return res;
-}
-#endif
 
 /**
  * @breif get input information
@@ -933,7 +724,6 @@ int32_t ch341::GetInput(uint *iStatus)
 		buf[0] = CH341_CMD_GET_INPUT;
 		res = WriteRead(1, buf, 0x20, 1, (uint *)&len, buf);
 		// TODO chek the len!!!
-//         ret = WriteRead(1, (uint *)&buf, 0x20, 1, (uint *)&len, (uint *)&buf);
 		if (res < 0)
 		{
 			// TODO debug
@@ -976,12 +766,6 @@ int32_t ch341::GetStatus(uint *iStatus)
 	}
 
 	return res;
-// 	BVar1 = DeviceIoControl(0x223cd0, &buf[0], 0x28, &buf[0], 0x28, &len, (LPOVERLAPPED)0x0);
-// 	if (BVar1 != 0)
-// 	{
-// 		*iStatus = ((uint)buf[10] & 0xef | ((uint)(uchar)buf[11] & 0x80) << 8) << 8 | (uint)buf[8];
-// 	}
-// 	return (uint)(BVar1 != 0);
 }
 
 
@@ -1218,15 +1002,9 @@ int32_t ch341::ReadData(uint *oBuffer, uint *ioLength)
 	}
 	lpInBuffer[1] = curr_len; // len, 4 bytes
 	ioLength = (uint *)(curr_len + 8);
-// 	if (iIndex < (HANDLE)0x10)
-// 	{
-// 		iIndex = (HANDLE)(&DAT_00405000)[(int)iIndex];
-// 	}
-	res = libusb_bulk_transfer(devHandle, CH341_DATA_IN, (uchar *)lpInBuffer, (int) * ioLength, (int *)ioLength, timeout);
-// 	res = WriteRead(8, (uchar*)&lpInBuffer, &ioLength, (uchar*)&lpInBuffer);
 
-// 	BVar3 = DeviceIoControl(0x223cd0, lpInBuffer, 8, lpInBuffer, (uint)ioLength, (LPuint)&ioLength,
-// 							(LPOVERLAPPED)0x0);
+	res = libusb_bulk_transfer(devHandle, CH341_DATA_IN, (uchar *)lpInBuffer, (int) * ioLength, (int *)ioLength, timeout);
+
 	if (res < 0)
 	{
 		*pLen = 0;
@@ -1244,26 +1022,7 @@ int32_t ch341::ReadData(uint *oBuffer, uint *ioLength)
 		}
 
 		memcpy(oBuffer, &lpInBuffer[2], curr_len);
-#if 0
-		*pLen = curr_len;
-		uVar5 = curr_len >> 2; // copy 4 bytes in one time
-		p_run = lpInBuffer + 2;
-		while (uVar5 != 0)
-		{
-			uVar5--;
-			*oBuffer = *p_run;
-			p_run++;
-			oBuffer = oBuffer + 1;
-		}
-		curr_len = curr_len & 3;
-		while (curr_len != 0)
-		{
-			curr_len--;
-			*(uint *)oBuffer = *(uchar *)p_run;
-			p_run = (uint *)((int)p_run + 1);
-			oBuffer = (uint *)((int)oBuffer + 1);
-		}
-#endif
+
 		if (lpInBuffer != int_buf)
 		{
 			delete lpInBuffer;
@@ -1282,7 +1041,6 @@ int32_t ch341::WriteData(uint *iBuffer, uint *ioLength)
 	int32_t ret;
 	uint curr_len;
 	uint *lpInBuffer;
-// 	uint *puVar5;
 	uint local_buf [258]; // 1024 + 8 bytes
 	uint len;
 	int transfered;
@@ -1310,33 +1068,11 @@ int32_t ch341::WriteData(uint *iBuffer, uint *ioLength)
 	curr_len = *ioLength;
 
 	memcpy(&lpInBuffer[2], iBuffer, curr_len);
-#if 0
-	puVar5 = lpInBuffer + 2;
-	for (uint v = uVar4 >> 2; v != 0; v--)
-	{
-		*puVar5 = *iBuffer;
-		iBuffer = iBuffer + 1;
-		puVar5++;
-	}
 
-	for (uVar4 = uVar4 & 3; uVar4 != 0; uVar4--)
-	{
-		*(uchar *)puVar5 = *(uchar *)iBuffer;
-		iBuffer = (uint *)((int)iBuffer + 1);
-		puVar5 = (uint *)((int)puVar5 + 1);
-	}
-#endif
 	len = *ioLength + 8;
-// 	if (iIndex < (HANDLE)0x10)
-// 	{
-// 		iIndex = (HANDLE)(&DAT_00405000)[(int)iIndex];
-// 	}
-// 	ret = WriteRead(len, lpInBuffer, &len, lpInBuffer);
 
 	ret = libusb_bulk_transfer(devHandle, CH341_DATA_OUT, (uchar *)&iBuffer, len, &transfered, timeout);
 
-// 	ret = DeviceIoControl(0x223cd0, lpInBuffer, len, lpInBuffer, 8, &len,
-// 							(LPOVERLAPPED)0x0);
 	if (ret < 0)
 	{
 		*ioLength = 0;
@@ -1379,8 +1115,6 @@ int32_t ch341::FlushBuffer()
 		buf[9] = 0xb2;
 		uint len = 0x28;
 
-//         int ret = WriteRead(0x28, buf, len, buf);
-// 		ret = usbTransfer(__func__, CH341_DATA_OUT, (uint *)&buf, 0x28);
 		ret = WriteData((uint *)&buf, &len);
 
 		if (ret < 0)
@@ -1389,10 +1123,6 @@ int32_t ch341::FlushBuffer()
 		}
 
 		return ret;
-// 		BVar2 = DeviceIoControl((HANDLE)(&DAT_00405000)[(int)pvVar1], 0x223cd0, &buf, 0x28, &buf,
-// 								0x28, (LPuint)&len, (LPOVERLAPPED)0x0);
-// 		uVar3 = (uint)(BVar2 != 0);
-// 		return ret;
 	}
 }
 
@@ -1649,9 +1379,7 @@ int32_t ch341::Set_D5_D0(uchar iSetDirOut, uchar iSetDataOut)
 		buf[2] = iSetDirOut & 0x3f | 0x40;
 		buf[3] = 0x20;
 		uint len = 4;
-// 		iSetDataOut = 4;
 
-// 		res = usbTransfer(__func__, CH341_DATA_OUT, (uint *)&buf, 4);
 		res = WriteData((uint *)&buf, &len);
 		if (res < 0)
 		{
@@ -1672,8 +1400,6 @@ int32_t ch341::ResetRead()
 	buf[8] = 6;
 	uint len = 0x28;
 
-	// WriteRead or usbTransfer ???
-// 	res = usbTransfer(__func__, CH341_DATA_OUT, (uint *)&buf, 0x28);
 	res = WriteData((uint *)&buf, &len);
 	if (res < 0)
 	{
@@ -1681,8 +1407,6 @@ int32_t ch341::ResetRead()
 	}
 
 	return res;
-// 	BVar1 = DeviceIoControl(0x223cd0, &buf, 0x28, &buf, 0x28, &len, (LPOVERLAPPED)0x0);
-// 	return (uint)(BVar1 != 0);
 }
 
 
@@ -1699,8 +1423,6 @@ int32_t ch341::ResetWrite()
 	buf[8] = 7;
 	uint len = 0x28;
 
-	// WriteRead or usbTransfer ???
-// 	res = usbTransfer(__func__, CH341_DATA_OUT, (uint *)&buf, 0x28);
 	res = WriteData((uint *)&buf, &len);
 	if (res < 0)
 	{
@@ -1708,8 +1430,6 @@ int32_t ch341::ResetWrite()
 	}
 
 	return res;
-// 	BVar1 = DeviceIoControl(0x223cd0, &buf, 0x28, &buf, 0x28, &len, (LPOVERLAPPED)0x0);
-// 	return (uint)(BVar1 != 0);
 }
 
 /**
@@ -1737,7 +1457,7 @@ int32_t ch341::SetDelaymS(uint iDelay)
 		buf[2] = CH341_CMD_I2C_STM_END;
 
 		uint len = 3;
-		//res = usbTransfer(__func__, CH341_DATA_OUT, (uint *)&buf, 3);
+
 		res = WriteData((uint *)&buf, &len);
 		if (res < 0)
 		{
@@ -1773,8 +1493,6 @@ int32_t ch341::ReadI2C(uint iDevice, uchar readBytes, uint *oByte)
 
 		res = WriteData((uint *)&buf, &len);
 
-// 		res = DeviceIoControl(0x223cd0, &buf[0], 0x28, &buf[0], 0x28,
-// 								(LPuint)&iAddr, (LPOVERLAPPED)0x0);
 		if (res == 0)
 		{
 			for (int i = 0; i < 100; i++) // try max 100 times
@@ -1789,8 +1507,6 @@ int32_t ch341::ReadI2C(uint iDevice, uchar readBytes, uint *oByte)
 				len = 0x28;
 				res = WriteRead(0x28, buf, 0x20, 1, &len, buf);
 
-// 				res = DeviceIoControl(0x223cd0, &buf[0], 0x28, &buf[0],
-// 										0x28, (LPuint)&iAddr, (LPOVERLAPPED)0x0);
 				if (res < 0)
 				{
 					return res;
@@ -1815,8 +1531,7 @@ int32_t ch341::ReadI2C(uint iDevice, uchar readBytes, uint *oByte)
 		buf[14] = 1;
 		len = 0x28;
 		res = WriteRead(0x28, buf, 0x20, 1, &len, buf);
-// 		res = DeviceIoControl(0x223cd0, &buf[0], 0x28, &buf[0], 0x28,
-// 								(LPuint)&iAddr, (LPOVERLAPPED)0x0);
+
 // 		if ((ret == 0) && (buf[12]._0_1_ = buf[8], len != 0))
 		// TODO wat is buf[12]._0_1_ = buf[8]???
 		if ((res == 0) && (len != 0))
@@ -1847,8 +1562,7 @@ int32_t ch341::WriteI2C(char iDevice, uchar iAddr, uchar iByte)
 
 	uint len = 0x28;
 	ret = WriteData((uint *)&buf, &len);
-// 	BVar1 = DeviceIoControl(0x223cd0, &buf[0], 0x28, &buf[0], 0x28,
-// 							(LPuint)&iByte, (LPOVERLAPPED)0x0);
+
 	if (ret == 0)
 	{
 		for (int i = 0; i < 100; i++) // try max 100 times
@@ -1863,8 +1577,7 @@ int32_t ch341::WriteI2C(char iDevice, uchar iAddr, uchar iByte)
 
 			len = 0x28;
 			ret = WriteRead(0x28, buf, 0x20, 1, &len, buf);
-// 			BVar1 = DeviceIoControl(0x223cd0, &buf[0], 0x28, &buf[0],
-// 									0x28, (LPuint)&iByte, (LPOVERLAPPED)0x0);
+
 			if (ret < 0)
 			{
 				return -1;
@@ -1891,11 +1604,7 @@ int32_t ch341::SetTimeout(uint iWriteTimeout, uint iReadTimeout)
 	buf[8] = iWriteTimeout;
 	buf[12] = iReadTimeout;
 
-// 	return usbTransfer(__func__, CH341_DATA_OUT, (uint *)&buf, 0x28);
 	return WriteData((uint *)&buf, &len);
-
-// 	BVar1 = DeviceIoControl(0x223cd0, &buf[0], 0x28, &buf[0], 0x28, &len, (LPOVERLAPPED)0x0);
-// 	return (uint)(BVar1 != 0);
 }
 
 
@@ -1911,11 +1620,7 @@ int32_t ch341::SetExclusive(uint iExclusive)
 	buf[8] = (iExclusive != 0) ? 1 : 0;
 	uint len = 0x28;
 
-	//return usbTransfer(__func__, CH341_DATA_OUT, (uint *)&buf, 0x28);
 	return WriteData((uint *)&buf, &len);
-
-// 	BVar1 = DeviceIoControl(0x223cd0, &buf[0], 0x28, &buf[0], 0x28, &iExclusive, (LPOVERLAPPED)0x0);
-// 	return (uint)(BVar1 != 0);
 }
 
 /**
@@ -1929,11 +1634,7 @@ int32_t ch341::ResetDevice()
 	buf[4] = 0;    // length of written data
 	uint len = 0x28;
 
-	//return usbTransfer(__func__, CH341_DATA_OUT, (uint *)&buf, 0x28);
 	return WriteData((uint *)&buf, &len);
-
-// 	BVar1 = DeviceIoControl(0x223cd0, &buf, 0x28, &buf, 0x28, &len, (LPOVERLAPPED)0x0);
-// 	return (uint)(BVar1 != 0);
 }
 
 
@@ -1949,10 +1650,7 @@ int32_t ch341::AbortRead()
 	buf[8] = 6;
 	uint len = 0x28;
 
-// 	return usbTransfer(__func__, CH341_DATA_OUT, (uint *)&buf, 0x28);
-	WriteData((uint *)&buf, &len);
-//     BVar1 = DeviceIoControl(0x223cd0, &buf[0], 0x28, &buf[0], 0x28, &len, (LPOVERLAPPED)0x0);
-// 	return (uint)(BVar1 != 0);
+	return WriteData((uint *)&buf, &len);
 }
 
 
@@ -1968,10 +1666,7 @@ int32_t ch341::AbortWrite()
 	buf[8] = 7;
 	uint len = 0x28;
 
-// 	return usbTransfer(__func__, CH341_DATA_OUT, (uint *)&buf, 0x28);
 	return WriteData((uint *)&buf, &len);
-// 	BVar1 = DeviceIoControl(0x223cd0, &buf[0], 0x28, &buf[0], 0x28, &len, (LPOVERLAPPED)0x0);
-// 	return (uint)(BVar1 != 0);
 }
 
 
@@ -2101,7 +1796,6 @@ int32_t ch341::StreamSPI(unsigned long chip_select, unsigned long length, uchar 
 
 	uchar *p_read_buf = *buffer2 < 4 ? buffer : m_write_buffer;
 
-	//j = WriteRead(i, (uint*)&m_write_buffer, CH341_PACKET_LENGTH - 1, (length + CH341_PACKET_LENGTH - 1 - 1) / (CH341_PACKET_LENGTH - 1),	&m_length, (uint*)&p_read_buf);
 	j = WriteRead(i, m_write_buffer, CH341_PACKET_LENGTH - 1, (length + CH341_PACKET_LENGTH - 1 - 1) / (CH341_PACKET_LENGTH - 1), &m_length, p_read_buf);
 	if (j && m_length != length)
 	{
@@ -2272,9 +1966,8 @@ int32_t ch341::SetOutput(uint iEnable, uint iSetDirOut, uint iSetDataOut)
 
 		iSetDirOut = 0xb;
 
-		//res = usbTransfer(__func__, CH341_DATA_OUT, (uint *)&buf, 0xb);
 		res = WriteData((uint *)&buf, &iSetDirOut);
-// 		iVar5 = WriteData(iIndex, (uint *)&local_24, &iSetDirOut);
+
 		if (res < 0)
 		{
 			return -1;
@@ -2309,11 +2002,6 @@ int32_t ch341::SetOutput(uint iEnable, uint iSetDirOut, uint iSetDataOut)
 			// TODO debug
 			return res;
 		}
-		// 	iVar5 = configureReg(0x40, 0x9a, reg_nr, uVar3, null_ptr, null_ptr);
-		// 	if (iVar5 < 0)
-		// 	{
-		// 		return -1;
-		// 	}
 	}
 
 	uVar1 = (ushort)((uint)iSetDataOut >> 8);
@@ -2343,12 +2031,6 @@ int32_t ch341::SetOutput(uint iEnable, uint iSetDirOut, uint iSetDataOut)
 			// TDO debug
 			return res;
 		}
-
-// 		iVar5 = configureReg(0x40, 0x9a, reg_nr, uVar4, null_ptr, null_ptr);
-// 		if (iVar5 < 0)
-// 		{
-// 			return -1;
-// 		}
 	}
 
 	if ((iEnable & 0x10) != 0)
@@ -2357,13 +2039,7 @@ int32_t ch341::SetOutput(uint iEnable, uint iSetDirOut, uint iSetDataOut)
 		if (res < 0)
 		{
 			// TODO debug
-// 				return res;
 		}
-// 			(iVar5 = configureReg(0x40, 0x9a, 0x707,
-// 								  (ushort)((uint)iSetDataOut >> 0x10) & 0xf | uVar1 & 0xf00, null_ptr,
-// 								  null_ptr), iVar5 < 0))
-// 	{
-// 		return -1;
 	}
 	return res;
 }
@@ -2973,9 +2649,6 @@ void ch341::CloseHandle(void)
 	}
 }
 
-// void ch341::updateStatus(uint8_t *data, size_t l)
-// {
-// }
 
 /**
  * release libusb structure and ready to exit
@@ -3026,101 +2699,6 @@ int32_t ch341::usbTransfer(const char *func, uint8_t type, uint *buf, int len)
 	return transfered;
 }
 #endif
-#if 0
-/*
- * ********************************************************************
- * FUNCTION : Write Data ( for i2c/flash )
- * arg:
- * iBuffer : should Input  data buffer
- * ioLength : write length of data
- * ********************************************************************
- */
-int32_t ch341::WriteData(PVOID iBuffer, PULONG ioLength)
-{
-	int retval = 0;
-	int i = 0;
-	unsigned long mLen;
-	struct
-	{
-		ULONG length;
-		PUCHAR ByteBuffer;
-	} Write;
-	if (*ioLength > MAX_BUFFER_LENGTH)
-	{
-		*ioLength = MAX_BUFFER_LENGTH;
-	}
-	mLen = *ioLength;
-	Write.length = ioLength;
-	Write.ByteBuffer = (PUCHAR)malloc(sizeof(uchar) * mLen);
-	memcpy(Write.ByteBuffer, (PUCHAR)iBuffer, mLen);
-	printf("ByteBuffer:");
-	for (i = 0; i < mLen; i++)
-	{
-		printf("%.2x ", Write.ByteBuffer[i]);
-	}
-	printf("Write.Lenth:%d \n", *((ULONG *)Write.length));
-	retval = ioctl(dev_fd, CH34x_PIPE_DATA_DOWN, (unsigned long)&Write);
-	if (retval == -1)
-	{
-		printf("error in pipe down\n");
-		return false;
-	}
-
-	free(Write.ByteBuffer);
-	return true;
-}
-
-/*
- * ********************************************************************
- * FUNCTION : Write/Read Data ( for i2c/flash )
- * arg:
- * iWriteLength : should write the length of data
- * iWriteBuffer : input buffer
- * oReadLength  : should read the length of data
- * oReadBuffer  : output buffer
- * ********************************************************************
- */
-int32_t ch341::WriteRead(ULONG iWriteLength, PVOID iWriteBuffer,
-						 /*	ULONG iReadStep, ULONG iReadTimes,*/
-						 PULONG oReadLength, PVOID oReadBuffer)
-{
-	int retval = 0;
-	ULONG mLength, mReadlen;
-	ULONG iReadStep, iReadTimes;
-	struct
-	{
-		ULONG oReadlen;
-		PUCHAR iBuf;
-		PUCHAR oBuffer;
-		ULONG oReturnlen;
-	} Read;
-	iReadStep = *(PUCHAR)(iWriteBuffer + iWriteLength - 8);
-	iReadTimes = *(PUCHAR)(iWriteBuffer + iWriteLength - 4);
-	mReadlen = iReadStep * iReadTimes;
-	if (mReadlen == 0)
-	{
-		return false;
-	}
-	mLength = max(iWriteLength, mReadlen);
-#if 0
-	printf("iWriteLength : %d\n", iWriteLength);
-	printf("iReadTimes : %d\n", iReadTimes);
-	printf("iReadStep : %d\n", iReadStep);
-#endif
-	Read.iBuf = (PUCHAR)iWriteBuffer;
-	Read.oBuffer = (PUCHAR)oReadBuffer;
-	Read.oReturnlen = oReadLength;
-//	printf("iBuffer Addr is ------>:%p\n",Read.iBuf);
-	Read.oReadlen = iWriteLength;
-	retval = ioctl(dev_fd, CH34x_PIPE_WRITE_READ, (unsigned long)&Read);
-	if (retval == -1)
-	{
-		printf("Error in pipe write/read\n");
-
-	}
-	return true;
-}
-#endif
 
 /**
  * FUNCTION : Set Stream Mode
@@ -3161,7 +2739,6 @@ int32_t ch341::SetStream(uint32_t mode)
 	buf[2] = CH341_CMD_I2C_STM_END;
 	uint len = 3;
 
-	//return usbTransfer(__func__, CH341_DATA_OUT, (uint *)&buf, 3);
 	return WriteData((uint *)&buf, &len);
 }
 
@@ -3209,7 +2786,6 @@ int32_t ch341::SpiStream(uint *out, uint *in, uint32_t len)
 	int ret_len = 4;
 
 	ret = libusb_bulk_transfer(devHandle, CH341_DATA_OUT, (uchar *)&outBuf, 4, &ret_len, timeout);
-	//ret = usbTransfer(__func__, CH341_DATA_OUT, (uint *)&outBuf, 4);
 
 	if (ret < 0)
 	{
@@ -3241,7 +2817,6 @@ int32_t ch341::SpiStream(uint *out, uint *in, uint32_t len)
 		}
 
 		ret = libusb_bulk_transfer(devHandle, CH341_DATA_OUT, (uchar *)&outBuf, (int)packetLen, &ret_len, timeout);
-// 		ret = usbTransfer(__func__, CH341_DATA_OUT, (uint *)&outBuf, packetLen);
 
 		if (ret < 0)
 		{
@@ -3249,8 +2824,6 @@ int32_t ch341::SpiStream(uint *out, uint *in, uint32_t len)
 			break;
 		}
 		ret = libusb_bulk_transfer(devHandle, CH341_DATA_IN, (uchar *)&inBuf, packetLen - 1, &ret_len, timeout);
-// 		ret = usbTransfer(__func__, CH341_DATA_IN, (uint *)&inBuf, packetLen - 1);
-
 
 		if (ret < 0)
 		{
@@ -3270,7 +2843,6 @@ int32_t ch341::SpiStream(uint *out, uint *in, uint32_t len)
 	if (!err)
 	{
 		SpiChipSelect(outBuf, false);
-// 		ret = usbTransfer(__func__, CH341_DATA_OUT, (uint *)&outBuf, 3);
 		len = 3;
 		ret = libusb_bulk_transfer(devHandle, CH341_DATA_OUT, (uchar *)&outBuf, 3, &ret_len, timeout);
 	}
@@ -3496,7 +3068,6 @@ int32_t ch341::SpiRead(uint *buf, uint32_t add, uint32_t len)
 	uint32_t ret;
 	int32_t old_counter;
 	struct timeval tv = {0, 100};
-//     v_print( 0, len); // verbose
 
 	memset(out, 0xff, CH341_MAX_PACKET_LEN);
 	for (int i = 1; i < CH341_MAX_PACKETS; ++i) // fill CH341A_CMD_SPI_STREAM for every packet
@@ -3510,7 +3081,6 @@ int32_t ch341::SpiRead(uint *buf, uint32_t add, uint32_t len)
 	printf("Read started!\n");
 	while (len > 0)
 	{
-//         v_print( 1, len); // verbose
 		fflush(stdout);
 		SpiChipSelect(out, true);
 		idx = CH341_PACKET_LENGTH + 1;
@@ -3570,7 +3140,7 @@ int32_t ch341::SpiRead(uint *buf, uint32_t add, uint32_t len)
 		SpiChipSelect(out, false);
 		uint curr_len = 3;
 		ret = WriteData((uint *)&out, &curr_len);
-// 		ret = usbTransfer(__func__, CH341_DATA_OUT, out, 3);
+
 		if (ret < 0)
 		{
 			break;
@@ -3587,7 +3157,7 @@ int32_t ch341::SpiRead(uint *buf, uint32_t add, uint32_t len)
 	}
 	libusb_free_transfer(xferBulkIn);
 	libusb_free_transfer(xferBulkOut);
-//     v_print(2, 0);
+
 	return ret;
 }
 
@@ -3607,8 +3177,6 @@ int32_t ch341::SpiWrite(uint *buf, uint32_t add, uint32_t len)
 	int32_t old_counter;
 	struct timeval tv = {0, 100};
 
-//     v_print(0, len); // verbose
-
 	if (devHandle == NULL)
 	{
 		return -1;
@@ -3620,8 +3188,6 @@ int32_t ch341::SpiWrite(uint *buf, uint32_t add, uint32_t len)
 	printf("Write started!\n");
 	while (len > 0)
 	{
-//         v_print(1, len);
-
 		out[0] = 0x06; // Write enable
 		ret = SpiStream((uint *)&out, (uint *)&in, 1);
 		SpiChipSelect(out, true);
@@ -3687,9 +3253,10 @@ int32_t ch341::SpiWrite(uint *buf, uint32_t add, uint32_t len)
 			break;
 		}
 		SpiChipSelect(out, false);
-// 		ret = usbTransfer(__func__, CH341_DATA_OUT, out, 3);
+
 		uint curr_len = 3;
 		ret = WriteData((uint *)&out, &curr_len);
+
 		if (ret < 0)
 		{
 			break;
@@ -3718,7 +3285,6 @@ int32_t ch341::SpiWrite(uint *buf, uint32_t add, uint32_t len)
 	libusb_free_transfer(xferBulkIn);
 	libusb_free_transfer(xferBulkOut);
 
-//     v_print(2, 0);
 	return ret;
 }
 
