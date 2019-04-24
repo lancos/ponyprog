@@ -298,7 +298,7 @@ class ch341 : public QObject, public USB_Interface
 	int32_t GetStatus(uint *iStatus);
 
 	virtual int32_t Release(void);
-	virtual int32_t SetBaudRate(int32_t baudRate);
+	virtual int32_t SetBaudRate(uint32_t baudRate);
 	virtual int32_t SetTimeouts(int16_t t);
 	virtual int32_t SetBreakControl(int32_t state);
 	virtual void    SetParity(uint8_t p);
@@ -358,12 +358,13 @@ class ch341 : public QObject, public USB_Interface
 	int32_t ResetDevice();
 	int32_t ResetWrite();
 	int32_t ResetRead();
+	int32_t ResetInter();
 	int32_t AbortRead();
 	int32_t AbortWrite();
 	int32_t SetOutput(uint iEnable, uint iSetDirOut, uint iSetDataOut);
-	int32_t WriteI2C(char iDevice, uchar iAddr, uchar iByte);
-	int32_t ReadI2C(uint iDevice, uchar iAddr, uint *oByte);
-	int32_t Set_D5_D0(uchar iSetDirOut, uchar iSetDataOut);
+	int32_t WriteI2C(uchar iDevice, uchar iAddr, uchar iByte);
+	int32_t ReadI2C(uchar iDevice, uchar iAddr, uchar *oByte);
+	int32_t Set_D5_D0(uchar iSetDirOut, uint iSetDataOut);
 	int32_t FlushBuffer();
 	int32_t ReadData(uint *oBuffer, uint *ioLength);
 	int32_t WriteData(uint *iBuffer, uint *ioLength);
@@ -371,6 +372,11 @@ class ch341 : public QObject, public USB_Interface
 	int32_t StreamSPI4(uint chip_select, uint length, uchar *buffer);
 	int32_t StreamSPI5(uint chip_select, uint length, uchar *buffer, uchar *buffer2);
 	int32_t StreamSPI(unsigned long chip_select, unsigned long length, uchar *buffer, uchar *buffer2);
+	int32_t BitStreamSPI(uint param_2, uint *param_3);
+	int32_t SetBufUpload(uint param_2);
+	int32_t QueryBufUpload();
+	int32_t SetBufDownload(uint param_2);
+	int32_t QueryBufDownload();
 
 	int32_t StreamI2C(uint iWriteLength, uint *iWriteBuffer, uint iReadLength, uint *oReadBuffer);
 	int32_t WriteEEPROM(EEPROM_TYPE iEepromID, uint32_t iAddr, uint32_t iLength, uint *iBuffer);

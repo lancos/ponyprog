@@ -688,7 +688,7 @@ int32_t ch341::WriteRead(uint wLength, uchar *wBuffer, uint readStep, uint readT
 	do
 	{
 		int len = readStep;
-		res = res = libusb_bulk_transfer(devHandle, CH341_DATA_IN, (uchar *)local_buf, len, &len, timeout);  //64: Max Packet Length usb_bulk_read( usb_dev[ index ], sUSBIO[ index ].in_ep, local_buf, readStep, timeout );
+		res = libusb_bulk_transfer(devHandle, CH341_DATA_IN, (uchar *)local_buf, len, &len, timeout);  //64: Max Packet Length usb_bulk_read( usb_dev[ index ], sUSBIO[ index ].in_ep, local_buf, readStep, timeout );
 		if (res < 0)
 		{
 			// TODO
@@ -707,7 +707,17 @@ int32_t ch341::WriteRead(uint wLength, uchar *wBuffer, uint readStep, uint readT
 
 
 /**
- * @breif get input information
+ * @breif Direct input of data and status via CH341, higher efficiency than CH341GetStatus
+ *
+ * Bit 7-bit 0 corresponds to the D7-D0 pin of CH341
+ * Bit 8 corresponds to the ERR#pin of CH341
+ * bit 9 corresponds to the pemp pin of CH341
+ * bit 10 corresponds to the INT#pin of CH341
+ * bit 11 corresponds to the SLCT pin of CH341
+ * bit 12 corresponds to the SDA pin of CH341
+ * Bit 13 corresponds to the BUSY / WAIT#pin of CH341
+ * bit 14 corresponds to the AUTOFD# / DATAS # pin of CH341
+ * bit 15 corresponds to the SLCTIN#/ADDRS # pin of CH341
  */
 int32_t ch341::GetInput(uint *iStatus)
 {
@@ -730,7 +740,7 @@ int32_t ch341::GetInput(uint *iStatus)
 		}
 		else
 		{
-			*iStatus = (((uint)buf[2] & 0x80) << 8 | (uint)buf[1] & 0xef) << 8 | (uint)buf[0];
+			*iStatus = (((uint)buf[2] & 0x80) << 8 | ((uint)buf[1] & 0xef)) << 8 | (uint)buf[0];
 		}
 	}
 
@@ -740,7 +750,15 @@ int32_t ch341::GetInput(uint *iStatus)
 
 // WARNING: Could not reconcile some variable overlaps
 /**
- *
+ * Bit 7-bit 0 corresponds to the D7-D0 pin of CH341
+ * Bit 8 corresponds to the ERR#pin of CH341,
+ * bit 9 corresponds to the pemp pin of CH341,
+ * bit 10 corresponds to the INT#pin of CH341,
+ * bit 11 corresponds to the SLCT pin of CH341,
+ * bit 12 corresponds to the SDA pin of CH341
+ * Bit 13 corresponds to the BUSY / WAIT#pin of CH341
+ * bit 14 corresponds to the AUTOFD# / DATAS # pin of CH341
+ * bit 15 corresponds to the SLCTIN#/ADDRS # pin of CH341
  */
 int32_t ch341::GetStatus(uint *iStatus)
 {
@@ -762,7 +780,7 @@ int32_t ch341::GetStatus(uint *iStatus)
 	}
 	else
 	{
-		*iStatus = ((uint)buf[9] & 0xef | ((uint)(uchar)buf[10] & 0x80) << 8) << 8 | (uint)buf[8];
+		*iStatus = (((uint)(buf[9] & 0xef) | ((uint)(uchar)buf[10] & 0x80) << 8) << 8) | (uint)buf[8];
 	}
 
 	return res;
@@ -970,10 +988,8 @@ int32_t ch341::ReadData(uint *oBuffer, uint *ioLength)
 	uint *pLen;
 	uint curr_len;
 	uint32_t res;
-	uint uVar5;
 	uint *lpInBuffer;
-	uint *p_run;
-	uint int_buf [258]; // 4 bytes values
+	uint int_buf [258]; // 4 bytes values, 1024 + 16 bytes
 
 	pLen = ioLength;
 	if (*ioLength <= 1024)
@@ -986,7 +1002,7 @@ int32_t ch341::ReadData(uint *oBuffer, uint *ioLength)
 		{
 			*ioLength = 4096;
 		}
-		lpInBuffer = new uint [0x1008]; // 4096 + 8
+		lpInBuffer = new uint [0x1008]; // 4096 + 8 int values
 		if (lpInBuffer == NULL)
 		{
 			lpInBuffer = int_buf;
@@ -994,7 +1010,7 @@ int32_t ch341::ReadData(uint *oBuffer, uint *ioLength)
 		}
 	}
 
-	lpInBuffer[0] = 6; // code, 4 bytes
+	lpInBuffer[0] = 6; // command code, 4 bytes
 	curr_len = *pLen;
 	if (curr_len < 33) // min size for read
 	{
@@ -1008,10 +1024,6 @@ int32_t ch341::ReadData(uint *oBuffer, uint *ioLength)
 	if (res < 0)
 	{
 		*pLen = 0;
-		if (lpInBuffer != (uint *)int_buf)
-		{
-			delete lpInBuffer;
-		}
 	}
 	else
 	{
@@ -1022,11 +1034,11 @@ int32_t ch341::ReadData(uint *oBuffer, uint *ioLength)
 		}
 
 		memcpy(oBuffer, &lpInBuffer[2], curr_len);
+	}
 
-		if (lpInBuffer != int_buf)
-		{
-			delete lpInBuffer;
-		}
+	if (lpInBuffer != int_buf)
+	{
+		delete lpInBuffer;
 	}
 
 	return res;
@@ -1034,20 +1046,20 @@ int32_t ch341::ReadData(uint *oBuffer, uint *ioLength)
 
 
 /**
- *
+ * @brief Write out the data block
  */
 int32_t ch341::WriteData(uint *iBuffer, uint *ioLength)
 {
 	int32_t ret;
 	uint curr_len;
-	uint *lpInBuffer;
+	uint *lpOutBuffer;
 	uint local_buf [258]; // 1024 + 8 bytes
 	uint len;
 	int transfered;
 
 	if (*ioLength < 0x401)
 	{
-		lpInBuffer = local_buf;
+		lpOutBuffer = local_buf;
 	}
 	else
 	{
@@ -1055,23 +1067,23 @@ int32_t ch341::WriteData(uint *iBuffer, uint *ioLength)
 		{
 			*ioLength = 4096;
 		}
-		lpInBuffer = new uint [0x1008]; // 4096 + 32 bytes
-		if (lpInBuffer == NULL)
+		lpOutBuffer = new uint [0x1008]; // 4096 + 32 bytes
+		if (lpOutBuffer == NULL)
 		{
-			lpInBuffer = local_buf;
+			lpOutBuffer = local_buf;
 			*ioLength = 0x400;
 		}
 	}
 
-	*lpInBuffer = 7;
-	lpInBuffer[1] = *ioLength;
+	*lpOutBuffer = 7;           // command
+	lpOutBuffer[1] = *ioLength; // data length
 	curr_len = *ioLength;
 
-	memcpy(&lpInBuffer[2], iBuffer, curr_len);
+	memcpy(&lpOutBuffer[2], iBuffer, curr_len);
 
 	len = *ioLength + 8;
 
-	ret = libusb_bulk_transfer(devHandle, CH341_DATA_OUT, (uchar *)&iBuffer, len, &transfered, timeout);
+	ret = libusb_bulk_transfer(devHandle, CH341_DATA_OUT, (uchar *)lpOutBuffer, len, &transfered, timeout);
 
 	if (ret < 0)
 	{
@@ -1079,12 +1091,12 @@ int32_t ch341::WriteData(uint *iBuffer, uint *ioLength)
 	}
 	else
 	{
-		*ioLength = lpInBuffer[1];
+		*ioLength = lpOutBuffer[1];
 	}
 
-	if (lpInBuffer != local_buf)
+	if (lpOutBuffer != local_buf)
 	{
-		delete lpInBuffer;
+		delete lpOutBuffer;
 	}
 
 	return ret;
@@ -1092,7 +1104,7 @@ int32_t ch341::WriteData(uint *iBuffer, uint *ioLength)
 
 
 /**
- *
+ * @brief Clear CH341 buffer
  */
 int32_t ch341::FlushBuffer()
 {
@@ -1105,12 +1117,12 @@ int32_t ch341::FlushBuffer()
 	}
 	else
 	{
-		//ResetInter();
+		ResetInter();
 		ResetRead();
 		ResetWrite();
 
-		buf[0] = 4;
-		buf[4] = 8;
+		buf[0] = 4; // command
+		buf[4] = 8; // data length
 		buf[8] = 0x40;
 		buf[9] = 0xb2;
 		uint len = 0x28;
@@ -1128,7 +1140,7 @@ int32_t ch341::FlushBuffer()
 
 
 /**
- * @brief FUNCTION : Read EEPROM Data (For I2C)
+ * @brief Read data blocks from EEPROM at a speed of approximately 56K bytes (For I2C)
  * arg:
  * iEepromID 	: EEPROM TYPE
  * iAddr 		: the start addr for read
@@ -1150,7 +1162,7 @@ int32_t ch341::ReadEEPROM(EEPROM_TYPE iEepromID, uint32_t iAddr, uint32_t iLengt
 	{
 		while (iLength)
 		{
-			mWrBuf[0] = (uchar)(0xA0 | (iAddr >> 7) & 0x0E);
+			mWrBuf[0] = (uchar)(0xA0 | ((iAddr >> 7) & 0x0E));
 			mWrBuf[1] = (uchar)iAddr;
 			mLen = MIN(iLength, DEFAULT_BUFFER_LEN);
 			if (StreamI2C(2, (uint *)&mWrBuf, mLen, oBuffer))
@@ -1168,7 +1180,7 @@ int32_t ch341::ReadEEPROM(EEPROM_TYPE iEepromID, uint32_t iAddr, uint32_t iLengt
 	{
 		while (iLength)
 		{
-			mWrBuf[0] = (uchar)(0xA0 | (iAddr >> 15) & 0x0E);
+			mWrBuf[0] = (uchar)(0xA0 | ((iAddr >> 15) & 0x0E));
 			mWrBuf[1] = (uchar)(iAddr >> 8);
 			mWrBuf[2] = (uchar)iAddr;
 			mLen = MIN(iLength, DEFAULT_BUFFER_LEN);
@@ -1188,7 +1200,7 @@ int32_t ch341::ReadEEPROM(EEPROM_TYPE iEepromID, uint32_t iAddr, uint32_t iLengt
 
 
 /**
- * @brief  * FUNCTION : Write EEPROM Data (For I2C)
+ * @brief  * Write data blocks to EEPROM (For I2C)
  * arg:
  * iEepromID 	: EEPROM TYPE
  * iAddr 		: the start addr for read
@@ -1209,7 +1221,7 @@ int32_t ch341::WriteEEPROM(EEPROM_TYPE iEepromID, uint32_t iAddr, uint32_t iLeng
 	{
 		while (iLength)
 		{
-			mWrBuf[0] = (uchar)(0xA0 | (iAddr >> 7) & 0x0E);
+			mWrBuf[0] = (uchar)((0xA0 | (iAddr >> 7)) & 0x0E);
 			mWrBuf[1] = (uchar)iAddr;
 			mLen = iEepromID >= ID_24C04 ? 16 - (iAddr & 15) : 8 - (iAddr & 7);
 			if (mLen > iLength)
@@ -1231,21 +1243,19 @@ int32_t ch341::WriteEEPROM(EEPROM_TYPE iEepromID, uint32_t iAddr, uint32_t iLeng
 
 	if (iEepromID >= ID_24C32 && iEepromID <= ID_24C4096)
 	{
-// 		printf("Addr is %d\n", iAddr);
-// 		printf("iLength is %d\n", iLength);
-// 		printf("iBuffer is %x\n", *iBuffer);
 		while (iLength)
 		{
-			mWrBuf[0] = (uchar)(0xA0 | (iAddr >> 15) & 0x0E);
+			mWrBuf[0] = (uchar)((0xA0 | (iAddr >> 15)) & 0x0E);
 			mWrBuf[1] = (uchar)(iAddr >> 8);
 			mWrBuf[2] = (uchar)iAddr;
 			mLen = iEepromID >= ID_24C512 ? 128 - (iAddr & 127) : (iEepromID >= ID_24C128 ? 64 - (iAddr & 63) : 32 - (iAddr & 31));
+
 			if (mLen > iLength)
 			{
 				mLen = iLength;
 			}
 			memcpy(&mWrBuf[3], iBuffer, mLen);
-// 			printf("mWrBuf[3] is %x\n",mWrBuf[3]);
+
 			if (StreamI2C(3 + mLen, (uint *)&mWrBuf, 0, NULL))
 			{
 				return -1;
@@ -1359,13 +1369,13 @@ int32_t configureReg(uchar param_2, uchar param_3, ushort param_4,
  *			  -- > Bit High : High level
  *			  -- > Bit Low : Low level
  */
-int32_t ch341::Set_D5_D0(uchar iSetDirOut, uchar iSetDataOut)
+int32_t ch341::Set_D5_D0(uchar iSetDirOut, uint iSetDataOut)
 {
 	int res;
 
 	if (dev_vers < 0x20)
 	{
-		res = libusb_control_transfer(devHandle, CH341_CTRL_OUT, CH341_REQ_WRITE_REG, 0x1606, (((ushort)iSetDirOut & 0x3f) << 8 | (ushort)(uchar)iSetDataOut & 0x3f), NULL, 0, timeout);
+		res = libusb_control_transfer(devHandle, CH341_CTRL_OUT, CH341_REQ_WRITE_REG, 0x1606, (((ushort)iSetDirOut & 0x3f) << 8 | (ushort)(uchar)(iSetDataOut & 0x3f)), NULL, 0, timeout);
 		if (res < 0)
 		{
 			// TODO debug
@@ -1375,13 +1385,13 @@ int32_t ch341::Set_D5_D0(uchar iSetDirOut, uchar iSetDataOut)
 	{
 		uchar buf[0x28];
 		buf[0] = 0xab;
-		buf[1] = (uchar)iSetDataOut & 0x3f | 0x80;
-		buf[2] = iSetDirOut & 0x3f | 0x40;
+		buf[1] = (uchar)(iSetDataOut & 0x3f) | 0x80;
+		buf[2] = (iSetDirOut & 0x3f) | 0x40;
 		buf[3] = 0x20;
 		uint len = 4;
 
 		res = WriteData((uint *)&buf, &len);
-		if (res < 0)
+		if (res < 0 || len < 3)
 		{
 			// TODO debug
 		}
@@ -1389,7 +1399,31 @@ int32_t ch341::Set_D5_D0(uchar iSetDirOut, uchar iSetDataOut)
 	return res;
 }
 
+/**
+ * @brief Reset interrupt data read operation
+ */
+int32_t ch341::ResetInter()
+{
+	uchar buf[0x28] = {0};
+	int32_t res;
 
+	buf[0] = CH341_REQ_RESET;  // command
+	buf[4] = 4;    // length of write data
+	buf[8] = 5;
+	uint len = 0x28;
+
+	res = WriteData((uint *)&buf, &len);
+	if (res < 0)
+	{
+		// TODO debug
+	}
+
+	return res;
+}
+
+/**
+ * @brief reset data read operation
+ */
 int32_t ch341::ResetRead()
 {
 	uchar buf[0x28] = {0};
@@ -1411,7 +1445,7 @@ int32_t ch341::ResetRead()
 
 
 /**
- *
+ * @brief reset data write operation
  */
 int32_t ch341::ResetWrite()
 {
@@ -1433,7 +1467,7 @@ int32_t ch341::ResetWrite()
 }
 
 /**
- * @brief  * FUNCTION : Set Delay
+ * @brief  Set the hardware asynchronous delay, returning quickly after the call, and delay the specified number of milliseconds before the next stream operation
  *
  * @param[in] iDelay : set delay time(mSec)
  * @return if successful 0
@@ -1469,12 +1503,10 @@ int32_t ch341::SetDelaymS(uint iDelay)
 }
 
 
-
-// WARNING: Could not reconcile some variable overlaps
 /**
- *
+ * @brief Read one byte of data from the I2C interface
  */
-int32_t ch341::ReadI2C(uint iDevice, uchar readBytes, uint *oByte)
+int32_t ch341::ReadI2C(uchar iDevice, uchar iAddr, uchar *oByte)
 {
 	int res;
 	uint len;
@@ -1487,7 +1519,7 @@ int32_t ch341::ReadI2C(uint iDevice, uchar readBytes, uint *oByte)
 		buf[8] = 0x40;
 		buf[9] = 0x53;
 		buf[10] = 0;
-		buf[12] = (((ushort)((uchar)iDevice << 1) << 8) + (uchar)readBytes) | 0x100;
+		(*(ushort *)&buf[12]) = (((ushort)(iDevice << 1) << 8) + iAddr) | 0x100;
 		buf[14] = 0;
 		len = 0x28;
 
@@ -1497,13 +1529,14 @@ int32_t ch341::ReadI2C(uint iDevice, uchar readBytes, uint *oByte)
 		{
 			for (int i = 0; i < 100; i++) // try max 100 times
 			{
-				buf[0] = 4;
+				buf[0] = 4; // command code
+				buf[4] = 8; // len of write data
 				buf[8] = 0xc0;
-				buf[4] = 8;
-				buf[14] = 8;
 				buf[9] = 0x52;
-				buf[10] = 0;
-				buf[12] = 0;
+				(*(ushort *)&buf[10]) = 0;
+				(*(ushort *)&buf[12]) = 0;
+				buf[14] = 8; // len of read data
+
 				len = 0x28;
 				res = WriteRead(0x28, buf, 0x20, 1, &len, buf);
 
@@ -1512,9 +1545,9 @@ int32_t ch341::ReadI2C(uint iDevice, uchar readBytes, uint *oByte)
 					return res;
 				}
 
-				if ((buf[12] & 0x100) == 0)
+				if (((*(ushort *)&buf[12]) & 0x100) == 0) // 1 byte
 				{
-					*oByte = (uchar)buf[12];
+					*oByte = buf[12];
 					return 0;
 				}
 			}
@@ -1523,20 +1556,21 @@ int32_t ch341::ReadI2C(uint iDevice, uchar readBytes, uint *oByte)
 	else
 	{
 		buf[0] = 4; // command code
-		buf[4] = 8;
+		buf[4] = 8; // len of write data
 		buf[8] = 0xc0;
 		buf[9] = 0x54;
-		buf[10] = (ushort)readBytes << 8;
-		buf[12] = (((ushort)((uchar)iDevice << 1) << 8) + (uchar)1);
+		(*(ushort *)&buf[10]) = (ushort)iAddr << 8; // convert to short!!!
+		(*(ushort *)&buf[12]) = (((ushort)(iDevice << 1) << 8) + 1); // short!!!
 		buf[14] = 1;
 		len = 0x28;
 		res = WriteRead(0x28, buf, 0x20, 1, &len, buf);
 
-// 		if ((ret == 0) && (buf[12]._0_1_ = buf[8], len != 0))
-		// TODO wat is buf[12]._0_1_ = buf[8]???
+// 		if ((ret == 0) && (buf[12] = buf[8], len != 0))
+		// TODO wat is buf[12] = buf[8]???
 		if ((res == 0) && (len != 0))
 		{
-			*oByte = (uchar)buf[12];
+			//buf[12] = buf[8]; // is it right???
+			*oByte = buf[12];
 			return 0;
 		}
 	}
@@ -1545,20 +1579,20 @@ int32_t ch341::ReadI2C(uint iDevice, uchar readBytes, uint *oByte)
 
 
 /**
- *
+ * @brief Write a byte of data to the I2C interface
  */
-int32_t ch341::WriteI2C(char iDevice, uchar iAddr, uchar iByte)
+int32_t ch341::WriteI2C(uchar iDevice, uchar iAddr, uchar iByte)
 {
 	int ret;
 	uchar buf[0x28] = {0};
 
 	buf[0] = 4; // command code
-	buf[4] = 8;
+	buf[4] = 8; // len of write data
 	buf[8] = 0x40;
 	buf[9] = 0x53;
-	buf[10] = (ushort)iByte;
-	buf[12] = (((ushort)((uchar)iDevice << 1) << 8) + (uchar)iAddr); // CONCAT11(iDevice << 1, iAddr);
-	buf[14] = 0;
+	buf[10] = iByte;
+	(*(ushort *)&buf[12]) = (((ushort)(iDevice << 1) << 8) + iAddr); // CONCAT11(iDevice << 1, iAddr);
+	buf[14] = 0; // len of read data
 
 	uint len = 0x28;
 	ret = WriteData((uint *)&buf, &len);
@@ -1567,13 +1601,13 @@ int32_t ch341::WriteI2C(char iDevice, uchar iAddr, uchar iByte)
 	{
 		for (int i = 0; i < 100; i++) // try max 100 times
 		{
-			buf[0] = 4;
-			buf[4] = 8;
+			buf[0] = 4; // command code
+			buf[4] = 8; // len of write data
 			buf[8] = 0xc0;
 			buf[9] = 0x52;
-			buf[10] = 0;
-			buf[12] = 0;
-			buf[14] = 8;
+			(*(ushort *)&buf[10]) = 0;
+			(*(ushort *)&buf[12]) = 0;
+			buf[14] = 8; // len of read data
 
 			len = 0x28;
 			ret = WriteRead(0x28, buf, 0x20, 1, &len, buf);
@@ -1582,7 +1616,7 @@ int32_t ch341::WriteI2C(char iDevice, uchar iAddr, uchar iByte)
 			{
 				return -1;
 			}
-			if ((buf[12] & 0x100) == 0)
+			if (((*(ushort *)&buf[12]) & 0x0100) == 0)
 			{
 				return 0;
 			}
@@ -1592,7 +1626,7 @@ int32_t ch341::WriteI2C(char iDevice, uchar iAddr, uchar iByte)
 }
 
 /**
- *
+ * @brief Set a timeout for USB data read and write
  */
 int32_t ch341::SetTimeout(uint iWriteTimeout, uint iReadTimeout)
 {
@@ -1600,16 +1634,16 @@ int32_t ch341::SetTimeout(uint iWriteTimeout, uint iReadTimeout)
 	uint len = 0x28;
 
 	buf[0] = 9; // command code
-	buf[4] = 8; // length of followed data
-	buf[8] = iWriteTimeout;
-	buf[12] = iReadTimeout;
+	buf[4] = 8; // length of data to write
+	(*(uint *)&buf[8]) = iWriteTimeout;
+	(*(uint *)&buf[12]) = iReadTimeout;
 
 	return WriteData((uint *)&buf, &len);
 }
 
 
 /**
- *
+ * @brief Set exclusive use of current CH341 device
  */
 int32_t ch341::SetExclusive(uint iExclusive)
 {
@@ -1769,7 +1803,7 @@ int32_t ch341::StreamSPI(unsigned long chip_select, unsigned long length, uchar 
 					{
 						c1 = ReverseByte(*((uchar *)buffer + (j >> 1)));
 						c2 = ReverseByte(*((uchar *)buffer2 + (j >> 1)));
-						m_write_buffer[i++] = (uchar)((j & 0x01) ? (c1 & 0xF0 | c2 >> 4 & 0xF0) : (c1 << 4 & 0xF0 | c2 & 0xF0));
+						m_write_buffer[i++] = (uchar)((j & 0x01) ? ((c1 & 0xF0) | ((c2 >> 4) & 0xF0)) : (((c1 << 4) & 0xF0) | (c2 & 0xF0)));
 						j++;
 					}
 				}
@@ -1779,7 +1813,7 @@ int32_t ch341::StreamSPI(unsigned long chip_select, unsigned long length, uchar 
 					{
 						c1 = *((uchar *)buffer + (j >> 1));
 						c2 = *((uchar *)buffer2 + (j >> 1));
-						m_write_buffer[i++] = (uchar)((j & 0x01) ? (c1 & 0xF0 | c2 >> 4 & 0xF0) : (c1 << 4 & 0xF0 | c2 & 0xF0));
+						m_write_buffer[i++] = (uchar)((j & 0x01) ? ((c1 & 0xF0) | ((c2 >> 4) & 0xF0)) : (((c1 << 4) & 0xF0) | (c2 & 0xF0)));
 						j++;
 					}
 				}
@@ -1846,13 +1880,13 @@ int32_t ch341::StreamSPI(unsigned long chip_select, unsigned long length, uchar 
 				c2 = m_write_buffer[i + 1];
 				if (StreamMode & 0x80)
 				{
-					*((uchar *) buffer + (i >> 1)) = ReverseByte(c1 >> 4 & 0x0F | c2 & 0xF0);
-					*((uchar *) buffer2 + (i >> 1)) = ReverseByte(c1 & 0x0F | c2 << 4 & 0xF0);
+					*((uchar *) buffer + (i >> 1)) = ReverseByte(((c1 >> 4) & 0x0F) | (c2 & 0xF0));
+					*((uchar *) buffer2 + (i >> 1)) = ReverseByte((c1 & 0x0F) | ((c2 << 4) & 0xF0));
 				}
 				else
 				{
-					*((uchar *) buffer + (i >> 1)) = (uchar)c1 >> 4 & 0x0F | c2 & 0xF0;
-					*((uchar *) buffer2 + (i >> 1)) = (uchar)c1 & 0x0F | c2 << 4 & 0xF0;
+					*((uchar *) buffer + (i >> 1)) = (uchar)((c1 >> 4) & 0x0F) | (c2 & 0xF0);
+					*((uchar *) buffer2 + (i >> 1)) = (uchar)(c1 & 0x0F) | ((c2 << 4) & 0xF0);
 				}
 			}
 		}
@@ -1861,18 +1895,212 @@ int32_t ch341::StreamSPI(unsigned long chip_select, unsigned long length, uchar 
 	return (j);
 }
 
-// Process SPI data stream, 4-wire interface:
-// The clock line is the DCK/D3 pin;
-// The output data line is the DOUT/D5 pin;
-// The input data line is DIN/D7 pin;
-// The chip select line is D0/D1/D2 and the speed is about 110K bytes.
-// SPI timing: DCK/D3 pin is the clock output, the default is low level;
-// The DOUT/D5 pin is output during the low period before the rising edge of the clock;
-// The DIN/D7 pin is input during the high period before the falling edge of the clock.
-//Operation succeeded. Failed to return 0.
-// chip_select: Chip select control, bit 7 is 0 to ignore chip select control, bit 7 is 1 to enable parameter: Bit 1 bit 0 is 00/01/10 select D0/D1/D2 pin as active low Chip Select
-// length: the number of data bytes to be transferred
-// buffer: points to a buffer, puts the data to be written from DOUT, and returns the data read from DIN.
+
+/**
+ * Processing SPI bit data stream, 4-wire/5-wire interface
+ * clock line is DCK / D3 pin
+ * output data line is DOUT/DOUT2 pin
+ * input data line is DIN / DIN2 pin
+ * chip Select line is D0/D1/D2, speed about 8K bits*2
+ *
+ * iLength
+ *
+ * ioBuffer
+ *
+ * SPI timing: the DCK / D3 pin is the clock output, which defaults to low,
+ * the DOUT/D5 and DOUT2/D4 pins are output low before the clock rising edge,
+ * and the DIN/D7 and DIN2/D6 pins are input high before the clock falling edge.
+ * a byte in ioBuffer corresponds to a total of 8 bits of the D7-D0 pin,
+ * bit 5 is output to DOUT,
+ * bit 4 is output to DOUT2,
+ * bit 2-bit 0 is output to D2-D0,
+ * bit 7 is input from DIN,
+ * bit 6 is input from DIN2,
+ * bit 3 data is ignored
+ * Before calling the API, you should call CH341Set_D5_D0 to set the I/O direction of the Ch341 D5-D0 pin and set the default level of the pin
+ */
+int32_t ch341::BitStreamSPI(uint iLength, uint *ioBuffer)
+{
+	uint uVar1;
+	uchar bVar2;
+	uint uVar3;
+	int iVar4;
+	uint uVar5;
+	uchar bVar6;
+	uint *hMem;
+	uint uVar7;
+	uint local_buf [323]; // 1292 bytes
+
+	uVar1 = iLength;
+
+	if (((dev_vers < 0x20) || (uVar7 = 0, iLength == 0)) || (0x400 < iLength))
+	{
+		return -1;
+	}
+	else
+	{
+		if (iLength < 0x101)
+		{
+			hMem = local_buf;
+		}
+		else
+		{
+			hMem = new uint[0x140a];
+			if (hMem == NULL)
+			{
+				return -1;
+			}
+		}
+		uVar5 = 0;
+		if (uVar1 != 0)
+		{
+			do
+			{
+				*(uchar *)(hMem + uVar5) = 0xab;
+				uVar3 = 7;
+				if (uVar1 - uVar7 < 7)
+				{
+					uVar3 = uVar1 - uVar7;
+				}
+				while (true)
+				{
+					iLength = uVar3 - 1;
+					if (uVar3 == 0)
+					{
+						break;
+					}
+					bVar2 = *(uchar *)(ioBuffer + uVar7) & 0x37;
+					uVar7++;
+					bVar6 = bVar2 | 0x80;
+					*(uchar *)(hMem + uVar5 + 1) = bVar6;
+					*(uchar *)(hMem + uVar5 + 2) = bVar2 | 0x88;
+					*(uchar *)(hMem + uVar5 + 3) = 0;
+					uVar5 = uVar5 + 4;
+					*(uchar *)(hMem + uVar5) = bVar6;
+					uVar3 = iLength;
+				}
+				*(uchar *)(hMem + uVar5 + 1) = 0x20;
+				uVar5 = uVar5 + 4;
+			}
+			while (uVar7 < uVar1);
+		}
+		uint len = 0;
+		iVar4 = WriteRead(uVar5, (uchar *)hMem, 7, (uVar1 + 6) / 7, &len, (uchar *)ioBuffer);
+		if ((iVar4 != 0) && (len != uVar1))
+		{
+			iVar4 = 0;
+		}
+		if (hMem != local_buf)
+		{
+			delete hMem;
+		}
+	}
+	return iVar4;
+
+	return 0;
+}
+
+
+// Set the internal buffer upload mode
+// iEnableOrClear 0 is prohibited internal buffer upload mode, use direct upload, non-0 is enabled internal buffer upload mode and clear the existing data in the buffer
+
+// If the internal buffer upload mode is enabled,then the CH341 driver creates a thread that automatically receives the USB upload data to the internal buffer, and clears the existing data in the buffer, and immediately returns the existing data in the buffer when the application calls CH341ReadData
+//
+// iEnableOrClear 0 is prohibited internal buffer upload mode, use direct upload, non-0 is enabled internal buffer upload mode and clear the existing data in the buffer
+int32_t ch341::SetBufUpload(uint iEnableOrClear)
+{
+	uchar buf[0x28] = {0};
+
+	buf[0] = 0x20;
+	buf[4] = 1;
+	(*(uint *)&buf[8]) = -(iEnableOrClear != 0) & 2;
+
+	uint len = 0x28;
+
+	int ret = WriteData((uint *)buf, &len);
+
+	return ret;
+}
+
+
+
+// WARNING: Could not reconcile some variable overlaps
+// Query the internal upload buffer the number of existing data packets, the number of packets returned successfully, an error returns -1
+int32_t ch341::QueryBufUpload()
+{
+	uchar buf[0x28] = {0};
+	buf[0] = 0x20;
+	buf[4] = 1;
+	buf[8] = 0; //??? CONCAT31(local_28._1_3_, 1);
+
+	uint len = 0x28;
+
+	int res = WriteRead(0x28, buf, 0x20, 1, (uint *)&len, buf);
+	if (res < 0)
+	{
+		return -1;
+	}
+	return (*(int *)&buf[8]); // convert to int
+}
+
+
+// Set the internal buffer downstream mode
+//
+// If you enable the internal buffer downstream mode, then when the application calls CH341WriteData will simply be the USB downstream data into the internal buffer and returned immediately, and the thread created by the ch341 driver is sent automatically until finished
+// iEnableOrClear 0 is prohibited internal buffer downstream mode, use the direct downstream, non-0 is enabled internal buffer downstream mode and clear the existing data in the buffer
+int32_t ch341::SetBufDownload(uint iEnableOrClear)
+{
+	uchar buf[0x28] = {0};
+
+	buf[0] = 0x21;
+	buf[4] = 1;
+	(*(uint *)&buf[8]) = -(iEnableOrClear != 0) & 2;
+
+	uint len = 0x28;
+
+	int ret = WriteData((uint *)buf, &len);
+
+	return ret;
+}
+
+
+
+// WARNING: Could not reconcile some variable overlaps
+// Query the internal upload buffer the number of existing data packets, the number of packets returned successfully, an error returns -1
+int32_t ch341::QueryBufDownload()
+{
+	uchar buf[0x28] = {0};
+
+	buf[0] = 0x21;
+	buf[4] = 1;
+	buf[4] = 0; // ???CONCAT31(local_28._1_3_, 1);
+	int len = 0x28;
+
+	int res = WriteRead(0x28, buf, 0x20, 1, (uint *)&len, buf);
+	if (res < 0) // wenn error
+	{
+		return -1;
+	}
+
+	return (*(int *)&buf[8]); // convert to int
+}
+
+
+/** Process SPI data stream, 4-wire interface:
+ * The clock line is the DCK/D3 pin;
+ * The output data line is the DOUT/D5 pin;
+ * The input data line is DIN/D7 pin;
+ * The chip select line is D0/D1/D2 and the speed is about 110K bytes.
+ * SPI timing: DCK/D3 pin is the clock output, the default is low level;
+ * The DOUT/D5 pin is output during the low period before the rising edge of the clock;
+ * The DIN/D7 pin is input during the high period before the falling edge of the clock.
+ * Operation succeeded. Failed to return 0.
+ * chip_select: Chip select control
+ * bit 7 is 0 to ignore chip select control
+ * bit 7 is 1 to enable parameter: Bit 1 bit 0 is 00/01/10 select D0/D1/D2 pin as active low Chip Select
+ * length: the number of data bytes to be transferred
+ * buffer: points to a buffer, puts the data to be written from DOUT, and returns the data read from DIN.
+ */
 int32_t ch341::StreamSPI4(uint chip_select, uint length, uchar *buffer)
 {
 	if (StreamMode & 0x40)
@@ -1885,18 +2113,16 @@ int32_t ch341::StreamSPI4(uint chip_select, uint length, uchar *buffer)
 	return (StreamSPI(chip_select, length, buffer, (uchar *)1));
 }
 
-// Process SPI data stream, 4-wire interface:
-// The clock line is the DCK/D3 pin;
-// The output data line is the DOUT/D5 pin;
-// The input data line is DIN/D7 pin;
-// The chip select line is D0/D1/D2 and the speed is about 110K bytes.
-// SPI timing: DCK/D3 pin is the clock output, the default is low level;
-// The DOUT/D5 pin is output during the low period before the rising edge of the clock;
-// The DIN/D7 pin is input during the high period before the falling edge of the clock.
-//Operation succeeded. Failed to return 0.
-// chip_select: Chip select control, bit 7 is 0 to ignore chip select control, bit 7 is 1 to enable parameter: Bit 1 bit 0 is 00/01/10 select D0/D1/D2 pin as active low Chip Select
-// length: the number of data bytes to be transferred
-// buffer: points to a buffer, puts the data to be written from DOUT, and returns the data read from DIN.
+/** Processing SPI data stream, 5-wire interface
+ * clock line is DCK/D3 pin
+ * output data line is DOUT/D5 and DOUT2/D4 pin
+ * input data line is DIN/D7 and DIN2/D6 pin
+ * chip select line is D0/D1/D2
+ * speed about 30K bytes*2
+ * SPI Timing: The DCK/D3 pin is the clock output. The default is low.
+ * The DOUT/D5 and DOUT2/D4 pins are output during the low period before the rising edge of the clock. DIN/D7 and DIN2/D6 pins.
+ * Enter during the high level before the falling edge of the clock
+ */
 int32_t ch341::StreamSPI5(uint chip_select, uint length, uchar *buffer, uchar *buffer2)
 {
 	if (StreamMode & 0x40)
@@ -1941,7 +2167,7 @@ int32_t ch341::SetOutput(uint iEnable, uint iSetDirOut, uint iSetDataOut)
 	uint uVar2;
 	ushort uVar3;
 	ushort uVar4;
-	int res;
+	int res = -1;
 	ushort reg_nr;
 	uchar buf[0x28] = {0};
 
@@ -2010,19 +2236,19 @@ int32_t ch341::SetOutput(uint iEnable, uint iSetDirOut, uint iSetDataOut)
 		if ((iEnable & 0xc) == 0xc)
 		{
 			reg_nr = 0x1505;
-			uVar4 = ((ushort)(buf[4] << 8) + (uchar)buf[3]) & 0xffef | 0x1000;
+			uVar4 = ((ushort)((buf[4] << 8) + (uchar)buf[3]) & 0xffef) | 0x1000;
 		}
 		else
 		{
 			if ((iEnable & 8) == 0)
 			{
 				reg_nr = 0x0505;
-				uVar4 = (ushort)iSetDataOut & 0xef00 | uVar1 & 0xef;
+				uVar4 = (ushort)(iSetDataOut & 0xef00) | (uVar1 & 0xef);
 			}
 			else
 			{
 				reg_nr = 0x1515;
-				uVar4 = (ushort)uVar2 & 0xff10 | (ushort)(uVar2 >> 8) & 0xef | 0x1010;
+				uVar4 = (ushort)(uVar2 & 0xff10) | (ushort)((uVar2 >> 8) & 0xef) | 0x1010;
 			}
 		}
 		res = libusb_control_transfer(devHandle, CH341_CTRL_OUT, CH341_REQ_WRITE_REG, reg_nr, uVar4, NULL, 0, timeout);
@@ -2035,7 +2261,7 @@ int32_t ch341::SetOutput(uint iEnable, uint iSetDirOut, uint iSetDataOut)
 
 	if ((iEnable & 0x10) != 0)
 	{
-		res = libusb_control_transfer(devHandle, CH341_CTRL_OUT, CH341_REQ_WRITE_REG, 0x707, (ushort)((uint)iSetDataOut >> 0x10) & 0xf | uVar1 & 0xf00, NULL, 0, timeout);
+		res = libusb_control_transfer(devHandle, CH341_CTRL_OUT, CH341_REQ_WRITE_REG, 0x707, (ushort)(((uint)iSetDataOut >> 0x10) & 0xf) | (uVar1 & 0xf00), NULL, 0, timeout);
 		if (res < 0)
 		{
 			// TODO debug
@@ -2315,7 +2541,7 @@ int32_t ch341::SetBreakControl(int32_t state)
  *        33600, 38400, 56000, 57600, 76800, 115200, 128000, 153600, 230400, 460800, 921600,
  *        1500000, 2000000 etc.
  */
-int32_t ch341::SetBaudRate(int32_t speed)
+int32_t ch341::SetBaudRate(uint32_t speed)
 {
 	int32_t ret;
 	int dv_prescale;
@@ -2811,7 +3037,7 @@ int32_t ch341::SpiStream(uint *out, uint *in, uint32_t len)
 		outPtr = (uint *)&outBuf;
 		*outPtr++ = CH341_CMD_SPI_STREAM;
 
-		for (int i = 0; i < packetLen - 1; ++i)
+		for (uint i = 0; i < packetLen - 1; ++i)
 		{
 			*outPtr++ = ReverseByte(*out++);
 		}
@@ -3065,7 +3291,7 @@ int32_t ch341::SpiRead(uint *buf, uint32_t add, uint32_t len)
 	uint32_t tmp, pkg_len, pkg_count;
 	struct libusb_transfer *xferBulkIn, *xferBulkOut;
 	uint32_t idx = 0;
-	uint32_t ret;
+	uint32_t res = -1;
 	int32_t old_counter;
 	struct timeval tv = {0, 100};
 
@@ -3119,18 +3345,18 @@ int32_t ch341::SpiRead(uint *buf, uint32_t add, uint32_t len)
 
 		libusb_submit_transfer(xferBulkOut);
 		old_counter = bulkin_count;
-		while (bulkin_count < pkg_count)
+		while (bulkin_count < (int)pkg_count)
 		{
 			libusb_handle_events_timeout(NULL, &tv);
 			if (bulkin_count == -1)   // encountered error
 			{
 				len = 0;
-				ret = -1;
+				res = -1;
 				break;
 			}
 			if (old_counter != bulkin_count)   // new package came
 			{
-				if (bulkin_count != pkg_count)
+				if (bulkin_count != (int)pkg_count)
 				{
 					libusb_submit_transfer(xferBulkIn);    // resubmit bulk in request
 				}
@@ -3139,9 +3365,9 @@ int32_t ch341::SpiRead(uint *buf, uint32_t add, uint32_t len)
 		}
 		SpiChipSelect(out, false);
 		uint curr_len = 3;
-		ret = WriteData((uint *)&out, &curr_len);
+		res = WriteData((uint *)&out, &curr_len);
 
-		if (ret < 0)
+		if (res < 0)
 		{
 			break;
 		}
@@ -3158,7 +3384,7 @@ int32_t ch341::SpiRead(uint *buf, uint32_t add, uint32_t len)
 	libusb_free_transfer(xferBulkIn);
 	libusb_free_transfer(xferBulkOut);
 
-	return ret;
+	return res;
 }
 
 #define WRITE_PAYLOAD_LENGTH 301 // 301 is the length of a page(256)'s data with protocol overhead
@@ -3231,7 +3457,7 @@ int32_t ch341::SpiWrite(uint *buf, uint32_t add, uint32_t len)
 		libusb_submit_transfer(xferBulkOut);
 		old_counter = bulkin_count;
 		ret = 0;
-		while (bulkin_count < pkg_count)
+		while (bulkin_count < (int)pkg_count)
 		{
 			libusb_handle_events_timeout(NULL, &tv);
 			if (bulkin_count == -1)   // encountered error
@@ -3241,7 +3467,7 @@ int32_t ch341::SpiWrite(uint *buf, uint32_t add, uint32_t len)
 			}
 			if (old_counter != bulkin_count)   // new package came
 			{
-				if (bulkin_count != pkg_count)
+				if (bulkin_count != (int)pkg_count)
 				{
 					libusb_submit_transfer(xferBulkIn);    // resubmit bulk in request
 				}

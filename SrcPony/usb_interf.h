@@ -84,7 +84,7 @@ class USB_Interface
 	virtual int32_t readEEPROM(uint8_t *buffer, uint32_t bytestoread);
 	virtual int32_t writeEEPROM(uint8_t *buffer, uint32_t bytesum);
 #endif
-	virtual int32_t SetBaudRate(int32_t baudRate) = 0;
+	virtual int32_t SetBaudRate(uint32_t baudRate) = 0;
 	virtual int32_t SetTimeouts(int16_t t) = 0;
 	virtual int32_t SetBreakControl(int32_t state) = 0;
 	virtual void    SetParity(uint8_t p) = 0;
