@@ -90,7 +90,7 @@ class USB_Interface
 	virtual void    SetParity(uint8_t p) = 0;
 	virtual void    SetBits(uint8_t b) = 0;
 	virtual void    SetStops(uint8_t s) = 0;
-	virtual void    SetFlowControl(uint8_t f) = 0;
+	virtual int32_t SetFlowControl(uint8_t f) = 0;
 	virtual int32_t SetDTR(int32_t dtr) = 0;
 	virtual int32_t SetRTS(int32_t dtr) = 0;
 	virtual int32_t GetDSR() = 0;

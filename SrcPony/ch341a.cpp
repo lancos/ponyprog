@@ -89,7 +89,7 @@ void cbBulkOut(struct libusb_transfer *transfer)
 {
 	if (transfer->status != LIBUSB_TRANSFER_COMPLETED)
 	{
-		qCritical("cbBulkOut() error : %d", transfer->status);
+		qCritical("cbBulkOut() error : %d\n", transfer->status);
 	}
 	syncackpkt = 1;
 }
@@ -116,7 +116,7 @@ void cbBulkIn(struct libusb_transfer *transfer)
 		break;
 
 	default:
-		qCritical("cbBulkIn() error : %d", transfer->status);
+		qCritical("cbBulkIn() error : %d\n", transfer->status);
 		libusb_free_transfer(transfer);
 		bulkin_count = -1;
 	}
@@ -249,6 +249,11 @@ int32_t ch341::GetStatusTx()
 
 int32_t ch341::Probe()
 {
+	if (devHandle == 0)
+	{
+		return -1;
+	}
+
 	int32_t ret;
 	uint8_t lcr = CH341_LCR_ENABLE_RX | CH341_LCR_ENABLE_TX | CH341_LCR_CS8;
 
@@ -300,34 +305,48 @@ void ch341::SetStops(uint8_t s)
 
 
 // TODO
-void ch341::SetFlowControl(uint8_t f)
+int32_t ch341::SetFlowControl(uint8_t f)
 {
 	flow_control = f;
 
+	if (devHandle == 0)
+	{
+		return -1;
+	}
 	// check state
 	uint8_t r[LIBUSB_CONTROL_SETUP_SIZE];
 
-	int ret = libusb_control_transfer(devHandle, CH341_CTRL_IN, CH341_REQ_READ_REG, CH341_REG_STAT, 0, &r[0], 0, timeout);
+	int res = libusb_control_transfer(devHandle, CH341_CTRL_IN, CH341_REQ_READ_REG, CH341_REG_STAT, 0, &r[0], 0, timeout);
 // to check buffer 0x9f, 0xee
+	if (res < 0)
+	{
+		qCritical("SetFlowControl() failed to get chip control information!\n");
+	}
 
 	// TODO check this
 	switch (flow_control)
 	{
 	case 0: // NONE
-		libusb_control_transfer(devHandle, CH341_CTRL_OUT, CH341_REQ_WRITE_REG, CH341_REG_FLOW_CTRL, CH34X_FLOW_CONTROL_NONE, NULL, 0, timeout);
+		res = libusb_control_transfer(devHandle, CH341_CTRL_OUT, CH341_REQ_WRITE_REG, CH341_REG_FLOW_CTRL, CH34X_FLOW_CONTROL_NONE, NULL, 0, timeout);
 
 		break;
 
 	case 1: // RTS_CTS
-		libusb_control_transfer(devHandle, CH341_CTRL_OUT, CH341_REQ_WRITE_REG, CH341_REG_FLOW_CTRL, CH34X_FLOW_CONTROL_RTS_CTS, NULL, 0, timeout);
+		res = libusb_control_transfer(devHandle, CH341_CTRL_OUT, CH341_REQ_WRITE_REG, CH341_REG_FLOW_CTRL, CH34X_FLOW_CONTROL_RTS_CTS, NULL, 0, timeout);
 
 		break;
 
 	case 2: // DSR_DTR
-		libusb_control_transfer(devHandle, CH341_CTRL_OUT, CH341_REQ_WRITE_REG, CH341_REG_FLOW_CTRL, CH34X_FLOW_CONTROL_DSR_DTR, NULL, 0, timeout);
+		res = libusb_control_transfer(devHandle, CH341_CTRL_OUT, CH341_REQ_WRITE_REG, CH341_REG_FLOW_CTRL, CH34X_FLOW_CONTROL_DSR_DTR, NULL, 0, timeout);
 
 		break;
 	}
+
+	if (res < 0)
+	{
+		qCritical("SetFlowControl() failed to set chip control information!\n");
+	}
+	return res;
 }
 
 
@@ -338,6 +357,10 @@ void ch341::SetFlowControl(uint8_t f)
  */
 int32_t ch341::setHandshakeByte(void)
 {
+	if (devHandle == 0)
+	{
+		return -1;
+	}
 // 		uint8_t r[CH341_INPUT_BUF_SIZE];
 // 		int ret = libusb_control_transfer(devHandle, CH341_CTRL_IN, CH341_REQ_MODEM_CTRL, NULL, 0, &r[0], CH341_INPUT_BUF_SIZE, timeout);
 // 		if (ret < 0)
@@ -362,7 +385,7 @@ int32_t ch341::setHandshakeByte(void)
 #endif
 	if (libusb_control_transfer(devHandle, CH341_CTRL_OUT, CH341_REQ_MODEM_CTRL, ~control, 0, NULL, 0, timeout) < 0)
 	{
-		qCritical("Faild to set handshake byte");
+// 		qCritical("Failed to set handshake byte\n");
 		return -1;
 	}
 
@@ -377,11 +400,15 @@ int32_t ch341::setHandshakeByte(void)
 int32_t ch341::getModemState(void)
 {
 	uint8_t r[2];
+	if (devHandle == 0)
+	{
+		return -1;
+	}
 
 	int ret = libusb_control_transfer(devHandle, CH341_CTRL_IN, CH341_REQ_READ_REG, CH341_REG_STAT, 0, &r[0], 2, timeout);
 	if (ret < 0)
 	{
-		qCritical("Faild to get handshake byte %d", ret);
+		qCritical("Failed to get handshake byte %d", ret);
 		return -1;
 	}
 
@@ -565,6 +592,10 @@ int32_t ch341::SetRTSDTR(int st)
 		rts = 0;
 	}
 
+#if DEBUG_CH341
+	qDebug() << "ch341::SetRTSDTR(" << st << ") ";
+#endif
+
 #if 0
 	if (dtr)
 	{
@@ -624,7 +655,7 @@ int32_t ch341::Read(uchar *buf, size_t len)
 	res = libusb_bulk_transfer(devHandle, CH341_DATA_IN, (uchar *)&buf, len, &received, timeout);
 	if (res < 0)
 	{
-		qCritical("libusb_bulk_transfer read error %d\n", res);
+// 		qCritical("libusb_bulk_transfer read error %d\n", res);
 		return -1;
 	}
 	return received;
@@ -652,7 +683,7 @@ int32_t ch341::Write(uchar *buf, size_t len)
 	res = libusb_bulk_transfer(devHandle, CH341_DATA_OUT, (uchar *)&buf, len, &transfered, timeout);
 	if (res < 0)
 	{
-		qCritical("libusb_bulk_transfer write error %d\n", res);
+// 		qCritical("libusb_bulk_transfer write error %d\n", res);
 		return -1;
 	}
 	return transfered;
@@ -660,7 +691,16 @@ int32_t ch341::Write(uchar *buf, size_t len)
 
 
 /**
+ * @brief Execute the data stream command, first output and then input
  *
+ * @param[in] wLength length to be written
+ * @param[in] wBuffer  pointer to a buffer, data to be written
+ * @param[in] readStep The length of the single block to be read, the total length to be read is (iReadStep*iReadTimes)
+ * @param[in] readTimes number of times to prepare for reading
+ * @param[out] rLength pointer to the length unit, and returns to the actual read length
+ * @param[out] rBuffer Pointer to a buffer large enough to hold the read data
+ *
+ * @return 0 if successful
  */
 int32_t ch341::WriteRead(uint wLength, uchar *wBuffer, uint readStep, uint readTimes, uint *rLength, uchar *rBuffer)
 {
@@ -669,11 +709,20 @@ int32_t ch341::WriteRead(uint wLength, uchar *wBuffer, uint readStep, uint readT
 	uint res;
 	uint 	m_length, m_rdlen;
 
+#if DEBUG_CH341
+	qDebug() << "ch341::WriteRead(" << wLength << readStep *readTimes << ") ";
+#endif
+
 	m_rdlen = readStep * readTimes;
 
 	if (m_rdlen == 0)
 	{
-		return (-1);
+		return -1;
+	}
+
+	if (devHandle == 0)
+	{
+		return -1;
 	}
 
 	m_length = MAX(wLength, m_rdlen);
@@ -681,7 +730,6 @@ int32_t ch341::WriteRead(uint wLength, uchar *wBuffer, uint readStep, uint readT
 	res = WriteData((uint *)&wBuffer, &m_length);
 	if (res < 0)
 	{
-		// TODO
 		return res;
 	}
 
@@ -691,7 +739,6 @@ int32_t ch341::WriteRead(uint wLength, uchar *wBuffer, uint readStep, uint readT
 		res = libusb_bulk_transfer(devHandle, CH341_DATA_IN, (uchar *)local_buf, len, &len, timeout);  //64: Max Packet Length usb_bulk_read( usb_dev[ index ], sUSBIO[ index ].in_ep, local_buf, readStep, timeout );
 		if (res < 0)
 		{
-			// TODO
 			return res;
 		}
 		memcpy(rBuffer, local_buf, len);
@@ -702,7 +749,7 @@ int32_t ch341::WriteRead(uint wLength, uchar *wBuffer, uint readStep, uint readT
 
 	*rLength = k;
 
-	return k;
+	return 0;
 }
 
 
@@ -724,6 +771,10 @@ int32_t ch341::GetInput(uint *iStatus)
 	int res;
 	uchar buf[0x28] = {0};
 
+#if DEBUG_CH341
+	qDebug() << "ch341::GetInput() ";
+#endif
+
 	if (dev_vers < 0x20)
 	{
 		res = GetStatus(iStatus);
@@ -734,13 +785,13 @@ int32_t ch341::GetInput(uint *iStatus)
 		buf[0] = CH341_CMD_GET_INPUT;
 		res = WriteRead(1, buf, 0x20, 1, (uint *)&len, buf);
 		// TODO chek the len!!!
-		if (res < 0)
+		if (res >= 0)
 		{
-			// TODO debug
+			*iStatus = (((uint)buf[2] & 0x80) << 8 | ((uint)buf[1] & 0xef)) << 8 | (uint)buf[0];
 		}
 		else
 		{
-			*iStatus = (((uint)buf[2] & 0x80) << 8 | ((uint)buf[1] & 0xef)) << 8 | (uint)buf[0];
+			qCritical("GetInput() write error %d\n", res);
 		}
 	}
 
@@ -748,8 +799,8 @@ int32_t ch341::GetInput(uint *iStatus)
 }
 
 
-// WARNING: Could not reconcile some variable overlaps
 /**
+ * @brief Direct input of data and status via CH341
  * Bit 7-bit 0 corresponds to the D7-D0 pin of CH341
  * Bit 8 corresponds to the ERR#pin of CH341,
  * bit 9 corresponds to the pemp pin of CH341,
@@ -764,7 +815,9 @@ int32_t ch341::GetStatus(uint *iStatus)
 {
 	uchar buf[0x28] = {0};
 	uint len;
-
+#if DEBUG_CH341
+	qDebug() << "ch341::GetStatus() ";
+#endif
 	buf[0] = CH341_GET_STATUS; // command
 	buf[4] = 8; // data len write
 	buf[8] = 0xc0;
@@ -774,13 +827,13 @@ int32_t ch341::GetStatus(uint *iStatus)
 	len = 0x28;
 
 	int res = WriteRead(0x28, buf, 0x20, 1, (uint *)&len, buf);
-	if (res < 0)
+	if (res >= 0)
 	{
-		// TODO debug
+		*iStatus = (((uint)(buf[9] & 0xef) | ((uint)(uchar)buf[10] & 0x80) << 8) << 8) | (uint)buf[8];
 	}
 	else
 	{
-		*iStatus = (((uint)(buf[9] & 0xef) | ((uint)(uchar)buf[10] & 0x80) << 8) << 8) | (uint)buf[8];
+		qCritical("GetStatus write error %d\n", res);
 	}
 
 	return res;
@@ -788,28 +841,33 @@ int32_t ch341::GetStatus(uint *iStatus)
 
 
 /**
- * @brief FUNCTION : Write/Read I2C Data Stream
+ * @brief Handle I2C data stream, 2-wire interface, clock line is SCL pin, data line is SDA pin (quasi-bidirectional I/O), speed is about 56K
  * This function issue a set of packets of iWriteBuffer data
  * arg:
- * iWriteLength : should write the length of data
- * iWriteBuffer : input buffer
- * oReadLength  : should read the length of data
- * oReadBuffer  : output buffer
+ * @param[in] iWriteLength : should write the length of data
+ * @param[in] iWriteBuffer : input buffer
+ * @param[out] oReadLength  : should read the length of data
+ * @param[out] oReadBuffer  : output buffer
  */
 int32_t ch341::StreamI2C(uint iWriteLength, uint *iWriteBuffer, uint iReadLength, uint *oReadBuffer)
 {
 	uchar mBuffer[MAX_BUFFER_LENGTH];
 	uint32_t i, j, mLength;
 	uchar *mWrBuf;
-
+	int res = -1;
+#if DEBUG_CH341
+	qDebug() << "ch341::StreamI2C(" << iWriteLength << iReadLength << ") ";
+#endif
 	if (dev_vers < 0x20)
 	{
+		qCritical("StreamI2C() device version is too old!\n");
 		return -1;
 	}
 
 	mLength = MAX(iWriteLength, iReadLength);
 	if (mLength > MAX_BUFFER_LENGTH)
 	{
+		qCritical("StreamI2C() length is bigger than %d!\n", MAX_BUFFER_LENGTH);
 		return -1;
 	}
 	if (mLength <= DEFAULT_BUFFER_LEN)
@@ -818,9 +876,10 @@ int32_t ch341::StreamI2C(uint iWriteLength, uint *iWriteBuffer, uint iReadLength
 	}
 	else
 	{
-		mWrBuf = (uchar *)malloc(sizeof(uchar) * MAX_BUFFER_LENGTH);
+		mWrBuf = new uchar[MAX_BUFFER_LENGTH];
 		if (mWrBuf == NULL)
 		{
+			qCritical("StreamI2C() new() troubles!\n");
 			return -1;
 		}
 	}
@@ -906,7 +965,7 @@ int32_t ch341::StreamI2C(uint iWriteLength, uint *iWriteBuffer, uint iReadLength
 			{
 				mWrBuf[i++] = CH341_CMD_I2C_STREAM;
 			}
-			mLength = iReadLength - j >= CH341_PACKET_LENGTH ? CH341_PACKET_LENGTH : iReadLength - j;
+			mLength = ((iReadLength - j) >= CH341_PACKET_LENGTH) ? CH341_PACKET_LENGTH : iReadLength - j;
 			mWrBuf[i++] = (uchar)(CH341_CMD_I2C_STM_IN | mLength);
 			j += mLength;
 			if (mLength >= CH341_PACKET_LENGTH)
@@ -958,30 +1017,35 @@ int32_t ch341::StreamI2C(uint iWriteLength, uint *iWriteBuffer, uint iReadLength
 
 	if (iReadLength)
 	{
-		j = WriteRead(i, mWrBuf, 0x20, (iReadLength + 0x1f) >> 5, &mLength, (uchar *)&oReadBuffer);
+		res = WriteRead(i, mWrBuf, 0x20, (iReadLength + 0x1f) >> 5, &mLength, (uchar *)&oReadBuffer);
 		if (mLength != iReadLength)
 		{
-			printf("Return length is not equal to input length\n");
-			j = false;
+			qCritical("Return length is not equal to input length\n");
+			res = -1;
 		}
 	}
 	else
 	{
-		j = WriteData((uint *)&mWrBuf, &i);
+		res = WriteData((uint *)&mWrBuf, &i);
+	}
+
+	if (res < 0)
+	{
+		qCritical("StreamI2C() error %d\n", res);
 	}
 
 //	printf("Return mLength is %d\n", mLength);
 	if (MAX(iWriteLength, iReadLength) >= DEFAULT_BUFFER_LEN)
 	{
-		free(mWrBuf);
+		delete mWrBuf;
 	}
 
-	return (j);
+	return res;
 }
 
 
 /**
- *
+ * @brief Read data block
  */
 int32_t ch341::ReadData(uint *oBuffer, uint *ioLength)
 {
@@ -990,6 +1054,13 @@ int32_t ch341::ReadData(uint *oBuffer, uint *ioLength)
 	uint32_t res;
 	uint *lpInBuffer;
 	uint int_buf [258]; // 4 bytes values, 1024 + 16 bytes
+#if DEBUG_CH341
+	qDebug() << "ch341::ReadData() ";
+#endif
+	if (devHandle == 0)
+	{
+		return -1;
+	}
 
 	pLen = ioLength;
 	if (*ioLength <= 1024)
@@ -1005,6 +1076,7 @@ int32_t ch341::ReadData(uint *oBuffer, uint *ioLength)
 		lpInBuffer = new uint [0x1008]; // 4096 + 8 int values
 		if (lpInBuffer == NULL)
 		{
+			qCritical("ReadData() new() troubles!\n");
 			lpInBuffer = int_buf;
 			*pLen = 0x400;
 		}
@@ -1017,7 +1089,7 @@ int32_t ch341::ReadData(uint *oBuffer, uint *ioLength)
 		curr_len = 32;
 	}
 	lpInBuffer[1] = curr_len; // len, 4 bytes
-	ioLength = (uint *)(curr_len + 8);
+	*ioLength = (curr_len + 8);
 
 	res = libusb_bulk_transfer(devHandle, CH341_DATA_IN, (uchar *)lpInBuffer, (int) * ioLength, (int *)ioLength, timeout);
 
@@ -1041,6 +1113,11 @@ int32_t ch341::ReadData(uint *oBuffer, uint *ioLength)
 		delete lpInBuffer;
 	}
 
+	if (res < 0)
+	{
+		qCritical("ReadData error %d\n", res);
+	}
+
 	return res;
 }
 
@@ -1056,6 +1133,13 @@ int32_t ch341::WriteData(uint *iBuffer, uint *ioLength)
 	uint local_buf [258]; // 1024 + 8 bytes
 	uint len;
 	int transfered;
+#if DEBUG_CH341
+	qDebug() << "ch341::WriteData() ";
+#endif
+	if (devHandle == 0)
+	{
+		return -1;
+	}
 
 	if (*ioLength < 0x401)
 	{
@@ -1070,6 +1154,8 @@ int32_t ch341::WriteData(uint *iBuffer, uint *ioLength)
 		lpOutBuffer = new uint [0x1008]; // 4096 + 32 bytes
 		if (lpOutBuffer == NULL)
 		{
+			qCritical("WriteData() new() troubles!\n");
+
 			lpOutBuffer = local_buf;
 			*ioLength = 0x400;
 		}
@@ -1099,6 +1185,11 @@ int32_t ch341::WriteData(uint *iBuffer, uint *ioLength)
 		delete lpOutBuffer;
 	}
 
+	if (ret < 0)
+	{
+		qCritical("WriteData() error %d\n", ret);
+	}
+
 	return ret;
 }
 
@@ -1110,9 +1201,12 @@ int32_t ch341::FlushBuffer()
 {
 	int ret;
 	uchar buf[0x28] = {0};
-
+#if DEBUG_CH341
+	qDebug() << "ch341::FlushBuffer() ";
+#endif
 	if (dev_vers < 0x20)
 	{
+		qCritical("FlushBuffer() device version too old!\n");
 		return -1;
 	}
 	else
@@ -1131,7 +1225,7 @@ int32_t ch341::FlushBuffer()
 
 		if (ret < 0)
 		{
-			// TODO debug
+			qCritical("FlushBuffer() error %d\n", ret);
 		}
 
 		return ret;
@@ -1140,19 +1234,21 @@ int32_t ch341::FlushBuffer()
 
 
 /**
- * @brief Read data blocks from EEPROM at a speed of approximately 56K bytes (For I2C)
- * arg:
- * iEepromID 	: EEPROM TYPE
- * iAddr 		: the start addr for read
- * iLength  	: should read the length of data
- * oBuffer  	: output buffer
+ * @brief Read data blocks from EEPROM at a speed of approximately 56K (For I2C)
+ *
+ * @param[in] iEepromID 	: EEPROM TYPE
+ * @param[in] iAddr 		: the start addr for read
+ * @param[in] iLength  	: should read the length of data
+ * @param[out] oBuffer  	: output buffer
  *
  */
 int32_t ch341::ReadEEPROM(EEPROM_TYPE iEepromID, uint32_t iAddr, uint32_t iLength, uint *oBuffer)
 {
 	uint32_t mLen;
 	uchar mWrBuf[4];
-
+#if DEBUG_CH341
+	qDebug() << "ch341::ReadEEPROM(" << iAddr << iLength << ") ";
+#endif
 	if (oBuffer == NULL)
 	{
 		return -1;
@@ -1195,17 +1291,18 @@ int32_t ch341::ReadEEPROM(EEPROM_TYPE iEepromID, uint32_t iAddr, uint32_t iLengt
 		return 0;
 	}
 
+	qCritical("ReadEEPROM error\n");
 	return -1;
 }
 
 
 /**
  * @brief  * Write data blocks to EEPROM (For I2C)
- * arg:
- * iEepromID 	: EEPROM TYPE
- * iAddr 		: the start addr for read
- * iLength  	: should write the length of data
- * iBuffer  	: Iutput buffer
+ *
+ * @param[in] iEepromID 	: EEPROM TYPE
+ * @param[in] iAddr 		: the start addr for read
+ * @param[in] iLength  	: should write the length of data
+ * @param[in] iBuffer  	: Iutput buffer
  */
 int32_t ch341::WriteEEPROM(EEPROM_TYPE iEepromID, uint32_t iAddr, uint32_t iLength, uint *iBuffer)
 {
@@ -1216,7 +1313,9 @@ int32_t ch341::WriteEEPROM(EEPROM_TYPE iEepromID, uint32_t iAddr, uint32_t iLeng
 	{
 		return -1;
 	}
-
+#if DEBUG_CH341
+	qDebug() << "ch341::WriteEEPROM(" << iAddr << iLength << ") ";
+#endif
 	if (iEepromID >= ID_24C01 && iEepromID <= ID_24C16)
 	{
 		while (iLength)
@@ -1268,6 +1367,7 @@ int32_t ch341::WriteEEPROM(EEPROM_TYPE iEepromID, uint32_t iAddr, uint32_t iLeng
 		return 0;
 	}
 
+	qCritical("WriteEEPROM() error \n");
 	return -1;
 }
 
@@ -1373,12 +1473,21 @@ int32_t ch341::Set_D5_D0(uchar iSetDirOut, uint iSetDataOut)
 {
 	int res;
 
+#if DEBUG_CH341
+	qDebug() << "ch341::Set_D5_D0(" << iSetDirOut << iSetDataOut << ") ";
+#endif
+
+	if (devHandle == 0)
+	{
+		return -1;
+	}
+
 	if (dev_vers < 0x20)
 	{
 		res = libusb_control_transfer(devHandle, CH341_CTRL_OUT, CH341_REQ_WRITE_REG, 0x1606, (((ushort)iSetDirOut & 0x3f) << 8 | (ushort)(uchar)(iSetDataOut & 0x3f)), NULL, 0, timeout);
 		if (res < 0)
 		{
-			// TODO debug
+			qCritical("Set_D5_D0 write error %d\n", res);
 		}
 	}
 	else
@@ -1393,7 +1502,7 @@ int32_t ch341::Set_D5_D0(uchar iSetDirOut, uint iSetDataOut)
 		res = WriteData((uint *)&buf, &len);
 		if (res < 0 || len < 3)
 		{
-			// TODO debug
+			qCritical("Set_D5_D0 write error %d\n", res);
 		}
 	}
 	return res;
@@ -1406,7 +1515,9 @@ int32_t ch341::ResetInter()
 {
 	uchar buf[0x28] = {0};
 	int32_t res;
-
+#if DEBUG_CH341
+	qDebug() << "ch341::ResetInter() ";
+#endif
 	buf[0] = CH341_REQ_RESET;  // command
 	buf[4] = 4;    // length of write data
 	buf[8] = 5;
@@ -1415,7 +1526,7 @@ int32_t ch341::ResetInter()
 	res = WriteData((uint *)&buf, &len);
 	if (res < 0)
 	{
-		// TODO debug
+		qCritical("ResetInter() error %d\n", res);
 	}
 
 	return res;
@@ -1428,7 +1539,9 @@ int32_t ch341::ResetRead()
 {
 	uchar buf[0x28] = {0};
 	int32_t res;
-
+#if DEBUG_CH341
+	qDebug() << "ch341::ResetRead() ";
+#endif
 	buf[0] = CH341_REQ_RESET;  // command
 	buf[4] = 4;    // length of write data
 	buf[8] = 6;
@@ -1437,7 +1550,7 @@ int32_t ch341::ResetRead()
 	res = WriteData((uint *)&buf, &len);
 	if (res < 0)
 	{
-		// TODO debug
+		qCritical("ResetRead() error %d\n", res);
 	}
 
 	return res;
@@ -1451,7 +1564,9 @@ int32_t ch341::ResetWrite()
 {
 	uchar buf[0x28] = {0};
 	int res;
-
+#if DEBUG_CH341
+	qDebug() << "ch341::ResetWrite() ";
+#endif
 	buf[0] = CH341_REQ_RESET;  // command
 	buf[4] = 4;    // length of write data
 	buf[8] = 7;
@@ -1460,7 +1575,7 @@ int32_t ch341::ResetWrite()
 	res = WriteData((uint *)&buf, &len);
 	if (res < 0)
 	{
-		// TODO debug
+		qCritical("ResetWrite() error %d\n", res);
 	}
 
 	return res;
@@ -1475,8 +1590,12 @@ int32_t ch341::ResetWrite()
 int32_t ch341::SetDelaymS(uint iDelay)
 {
 	uchar buf[0x28] = {0};
+#if DEBUG_CH341
+	qDebug() << "ch341::SetDelaymS(" << iDelay << ") ";
+#endif
 	if (dev_vers < 0x20)
 	{
+		qCritical("SetDelaymS() device version is too old!\n");
 		return -1;
 	}
 
@@ -1495,7 +1614,7 @@ int32_t ch341::SetDelaymS(uint iDelay)
 		res = WriteData((uint *)&buf, &len);
 		if (res < 0)
 		{
-			// TODO debug
+			qCritical("SetDelaymS() error %d\n", res);
 		}
 	}
 
@@ -1511,7 +1630,9 @@ int32_t ch341::ReadI2C(uchar iDevice, uchar iAddr, uchar *oByte)
 	int res;
 	uint len;
 	uchar buf[0x28] = {0};
-
+#if DEBUG_CH341
+	qDebug() << "ch341::ReadI2C(" << iDevice << iAddr << ") ";
+#endif
 	if (dev_vers < 0x20)
 	{
 		buf[0] = 4; // command code
@@ -1542,6 +1663,7 @@ int32_t ch341::ReadI2C(uchar iDevice, uchar iAddr, uchar *oByte)
 
 				if (res < 0)
 				{
+					qCritical("ReadI2C() error %d\n", res);
 					return res;
 				}
 
@@ -1574,6 +1696,11 @@ int32_t ch341::ReadI2C(uchar iDevice, uchar iAddr, uchar *oByte)
 			return 0;
 		}
 	}
+
+	if (res < 0)
+	{
+		qCritical("ReadI2C() error %d\n", res);
+	}
 	return -1;
 }
 
@@ -1583,9 +1710,11 @@ int32_t ch341::ReadI2C(uchar iDevice, uchar iAddr, uchar *oByte)
  */
 int32_t ch341::WriteI2C(uchar iDevice, uchar iAddr, uchar iByte)
 {
-	int ret;
+	int res;
 	uchar buf[0x28] = {0};
-
+#if DEBUG_CH341
+	qDebug() << "ch341::WriteI2C(" << iDevice << iAddr << ") ";
+#endif
 	buf[0] = 4; // command code
 	buf[4] = 8; // len of write data
 	buf[8] = 0x40;
@@ -1595,9 +1724,9 @@ int32_t ch341::WriteI2C(uchar iDevice, uchar iAddr, uchar iByte)
 	buf[14] = 0; // len of read data
 
 	uint len = 0x28;
-	ret = WriteData((uint *)&buf, &len);
+	res = WriteData((uint *)&buf, &len);
 
-	if (ret == 0)
+	if (res == 0)
 	{
 		for (int i = 0; i < 100; i++) // try max 100 times
 		{
@@ -1610,10 +1739,11 @@ int32_t ch341::WriteI2C(uchar iDevice, uchar iAddr, uchar iByte)
 			buf[14] = 8; // len of read data
 
 			len = 0x28;
-			ret = WriteRead(0x28, buf, 0x20, 1, &len, buf);
+			res = WriteRead(0x28, buf, 0x20, 1, &len, buf);
 
-			if (ret < 0)
+			if (res < 0)
 			{
+				qCritical("WriteI2C() error %d\n", res);
 				return -1;
 			}
 			if (((*(ushort *)&buf[12]) & 0x0100) == 0)
@@ -1622,6 +1752,8 @@ int32_t ch341::WriteI2C(uchar iDevice, uchar iAddr, uchar iByte)
 			}
 		}
 	}
+
+	qCritical("WriteI2C() error %d\n", res);
 	return -1;
 }
 
@@ -1632,13 +1764,22 @@ int32_t ch341::SetTimeout(uint iWriteTimeout, uint iReadTimeout)
 {
 	uchar buf[0x28] = {0};
 	uint len = 0x28;
-
+#if DEBUG_CH341
+	qDebug() << "ch341::SetTimeout(" << iWriteTimeout << iReadTimeout << ") ";
+#endif
 	buf[0] = 9; // command code
 	buf[4] = 8; // length of data to write
 	(*(uint *)&buf[8]) = iWriteTimeout;
 	(*(uint *)&buf[12]) = iReadTimeout;
 
-	return WriteData((uint *)&buf, &len);
+	int res = WriteData((uint *)&buf, &len);
+
+	if (res < 0)
+	{
+		qCritical("SetTimeout() error %d\n", res);
+	}
+
+	return res;
 }
 
 
@@ -1648,13 +1789,21 @@ int32_t ch341::SetTimeout(uint iWriteTimeout, uint iReadTimeout)
 int32_t ch341::SetExclusive(uint iExclusive)
 {
 	uchar buf[0x28] = {0};
-
+#if DEBUG_CH341
+	qDebug() << "ch341::SetExclusive(" << iExclusive << ") ";
+#endif
 	buf[0] = 0xb; // command code
 	buf[4] = 1;   // length of written data
 	buf[8] = (iExclusive != 0) ? 1 : 0;
 	uint len = 0x28;
 
-	return WriteData((uint *)&buf, &len);
+	int res = WriteData((uint *)&buf, &len);
+	if (res < 0)
+	{
+		qCritical("SetExclusive() error %d\n", res);
+	}
+
+	return res;
 }
 
 /**
@@ -1663,12 +1812,20 @@ int32_t ch341::SetExclusive(uint iExclusive)
 int32_t ch341::ResetDevice()
 {
 	uchar buf[0x28] = {0};
-
+#if DEBUG_CH341
+	qDebug() << "ch341::ResetDevice() ";
+#endif
 	buf[0] = 0xc;  // command code
 	buf[4] = 0;    // length of written data
 	uint len = 0x28;
 
-	return WriteData((uint *)&buf, &len);
+	int res = WriteData((uint *)&buf, &len);
+	if (res < 0)
+	{
+		qCritical("ResetDevice() error %d\n", res);
+	}
+
+	return res;
 }
 
 
@@ -1678,13 +1835,21 @@ int32_t ch341::ResetDevice()
 int32_t ch341::AbortRead()
 {
 	uchar buf[0x28] = {0};
-
+#if DEBUG_CH341
+	qDebug() << "ch341::AbortRead() ";
+#endif
 	buf[0] = CH341_REQ_ABORT;  // command code
 	buf[4] = 4;    // length of written data
 	buf[8] = 6;
 	uint len = 0x28;
 
-	return WriteData((uint *)&buf, &len);
+	int res = WriteData((uint *)&buf, &len);
+	if (res < 0)
+	{
+		qCritical("AbortRead() error %d\n", res);
+	}
+
+	return res;
 }
 
 
@@ -1694,28 +1859,42 @@ int32_t ch341::AbortRead()
 int32_t ch341::AbortWrite()
 {
 	uchar buf[0x28] = {0};
-
+#if DEBUG_CH341
+	qDebug() << "ch341::AbortWrite() ";
+#endif
 	buf[0] = CH341_REQ_ABORT;  // command code
 	buf[4] = 4;    // length of written data
 	buf[8] = 7;
 	uint len = 0x28;
 
-	return WriteData((uint *)&buf, &len);
+	int res = WriteData((uint *)&buf, &len);
+	if (res < 0)
+	{
+		qCritical("AbortWrite() error %d\n", res);
+	}
+
+	return res;
 }
 
 
-// Processing SPI data stream, support quasi-bidirectional single-input single-out / 3-wire interface, single-input single-out / 4-wire interface, dual-input and double-out/5-line interface
-// chip_select: Chip select control, bit 7 is 0 to ignore chip select control, bit 7 is 1 to enable parameter: Bit 1 bit 0 is 00/01/10 select D0/D1/D2 pin as active low Chip Select
-// length: the number of data bytes to be transferred
-// buffer: points to a buffer, puts the data to be written from SDO, and returns the data read from SDI.
-// buffer2: points to the second buffer of the dual-input and double-out 5-wire interface. 1 is a single-input single-out 4-wire interface mode, and 0 is a SIO quasi-bidirectional 3-wire interface mode.
+/**
+ * @brief Processing SPI data stream, support quasi-bidirectional single-input single-out / 3-wire interface, single-input single-out / 4-wire interface, dual-input and double-out/5-line interface
+ * chip_select: Chip select control
+ * bit 7 is 0 to ignore chip select control, bit 7 is 1 to enable parameter: Bit 1 bit 0 is 00/01/10 select D0/D1/D2 pin as active low Chip Select
+ * length: the number of data bytes to be transferred
+ * buffer: points to a buffer, puts the data to be written from SDO, and returns the data read from SDI.
+ * buffer2: points to the second buffer of the dual-input and double-out 5-wire interface. 1 is a single-input single-out 4-wire interface mode, and 0 is a SIO quasi-bidirectional 3-wire interface mode.
+ */
 int32_t ch341::StreamSPI(unsigned long chip_select, unsigned long length, uchar *buffer, uchar *buffer2)
 {
 	uchar m_buffer[DEFAULT_BUFFER_LEN];
-	uint i, j, m_length, m_select, m_count;
+	uint i, j, m_length, m_select;
 	uchar	*m_write_buffer;
 	uchar c1, c2;
-
+	int res;
+#if DEBUG_CH341
+	qDebug() << "ch341::StreamSPI(" << chip_select << length << ") ";
+#endif
 	if (length > MAX_BUFFER_LENGTH)
 	{
 		return -1;
@@ -1726,9 +1905,10 @@ int32_t ch341::StreamSPI(unsigned long chip_select, unsigned long length, uchar 
 	}
 	else
 	{
-		m_write_buffer = (uchar *)malloc(MAX_BUFFER_LENGTH);
+		m_write_buffer = new uchar [MAX_BUFFER_LENGTH];
 		if (m_write_buffer == NULL)
 		{
+			qCritical("StreamSPI() new() troubles!\n");
 			return -1;
 		}
 	}
@@ -1830,16 +2010,18 @@ int32_t ch341::StreamSPI(unsigned long chip_select, unsigned long length, uchar 
 
 	uchar *p_read_buf = *buffer2 < 4 ? buffer : m_write_buffer;
 
-	j = WriteRead(i, m_write_buffer, CH341_PACKET_LENGTH - 1, (length + CH341_PACKET_LENGTH - 1 - 1) / (CH341_PACKET_LENGTH - 1), &m_length, p_read_buf);
-	if (j && m_length != length)
+	res = WriteRead(i, m_write_buffer, CH341_PACKET_LENGTH - 1, (length + CH341_PACKET_LENGTH - 1 - 1) / (CH341_PACKET_LENGTH - 1), &m_length, p_read_buf);
+	if (res < 0 || m_length != length)
 	{
-		j = -1;
+		res = -1;
 	}
 
 	if (m_write_buffer != m_buffer)
 	{
-		free(m_write_buffer);
+		delete m_write_buffer;
 	}
+
+	j = m_length;
 
 	if (chip_select & 0x80)
 	{
@@ -1860,7 +2042,7 @@ int32_t ch341::StreamSPI(unsigned long chip_select, unsigned long length, uchar 
 		}
 	}
 
-	if (j)
+	if (res == 0) // no errors
 	{
 		if ((unsigned long)buffer2 < 4)
 		{
@@ -1868,7 +2050,7 @@ int32_t ch341::StreamSPI(unsigned long chip_select, unsigned long length, uchar 
 			{
 				for (i = 0; i < length; i++)
 				{
-					m_write_buffer[i++] = ReverseByte(*((uchar *)buffer + j++));      //Copy data
+					m_write_buffer[i] = ReverseByte(*((uchar *)buffer + j++));      //Copy data TODO to check this!
 				}
 			}
 		}
@@ -1892,7 +2074,7 @@ int32_t ch341::StreamSPI(unsigned long chip_select, unsigned long length, uchar 
 		}
 	}
 
-	return (j);
+	return res;
 }
 
 
@@ -1901,7 +2083,7 @@ int32_t ch341::StreamSPI(unsigned long chip_select, unsigned long length, uchar 
  * clock line is DCK / D3 pin
  * output data line is DOUT/DOUT2 pin
  * input data line is DIN / DIN2 pin
- * chip Select line is D0/D1/D2, speed about 8K bits*2
+ * chip Select line is D0/D1/D2, speed about 8K*2
  *
  * iLength
  *
@@ -1921,164 +2103,193 @@ int32_t ch341::StreamSPI(unsigned long chip_select, unsigned long length, uchar 
  */
 int32_t ch341::BitStreamSPI(uint iLength, uint *ioBuffer)
 {
-	uint uVar1;
-	uchar bVar2;
-	uint uVar3;
-	int iVar4;
-	uint uVar5;
-	uchar bVar6;
-	uint *hMem;
-	uint uVar7;
+	int res;
+	uint offs;
+	uint *pBuff;
 	uint local_buf [323]; // 1292 bytes
+#if DEBUG_CH341
+	qDebug() << "ch341::BitStreamSPI(" << iLength << ") ";
+#endif
 
-	uVar1 = iLength;
+	uint curr_len = iLength;
 
-	if (((dev_vers < 0x20) || (uVar7 = 0, iLength == 0)) || (0x400 < iLength))
+	// TODO to decode this
+	if (dev_vers < 0x20)
 	{
 		return -1;
 	}
+
+	if ((iLength == 0) || (iLength > 1024))
+	{
+		return -1;
+	}
+
+	if (iLength <= 256)
+	{
+		pBuff = local_buf;
+	}
 	else
 	{
-		if (iLength < 0x101)
+		pBuff = new uint[5130];
+		if (pBuff == NULL)
 		{
-			hMem = local_buf;
-		}
-		else
-		{
-			hMem = new uint[0x140a];
-			if (hMem == NULL)
-			{
-				return -1;
-			}
-		}
-		uVar5 = 0;
-		if (uVar1 != 0)
-		{
-			do
-			{
-				*(uchar *)(hMem + uVar5) = 0xab;
-				uVar3 = 7;
-				if (uVar1 - uVar7 < 7)
-				{
-					uVar3 = uVar1 - uVar7;
-				}
-				while (true)
-				{
-					iLength = uVar3 - 1;
-					if (uVar3 == 0)
-					{
-						break;
-					}
-					bVar2 = *(uchar *)(ioBuffer + uVar7) & 0x37;
-					uVar7++;
-					bVar6 = bVar2 | 0x80;
-					*(uchar *)(hMem + uVar5 + 1) = bVar6;
-					*(uchar *)(hMem + uVar5 + 2) = bVar2 | 0x88;
-					*(uchar *)(hMem + uVar5 + 3) = 0;
-					uVar5 = uVar5 + 4;
-					*(uchar *)(hMem + uVar5) = bVar6;
-					uVar3 = iLength;
-				}
-				*(uchar *)(hMem + uVar5 + 1) = 0x20;
-				uVar5 = uVar5 + 4;
-			}
-			while (uVar7 < uVar1);
-		}
-		uint len = 0;
-		iVar4 = WriteRead(uVar5, (uchar *)hMem, 7, (uVar1 + 6) / 7, &len, (uchar *)ioBuffer);
-		if ((iVar4 != 0) && (len != uVar1))
-		{
-			iVar4 = 0;
-		}
-		if (hMem != local_buf)
-		{
-			delete hMem;
+			qCritical("BitStreamSPI() new() troubles!\n");
+			return -1;
 		}
 	}
-	return iVar4;
+	offs = 0;
 
-	return 0;
+	for (uint i = 0; ; i < iLength)
+	{
+		*(uchar *)(pBuff + offs) = 0xab;
+		uchar j = 7;
+		if (iLength - i < 7)
+		{
+			j = iLength - i;
+		}
+		while (j != 0)
+		{
+			curr_len = j - 1;
+
+			uchar val = *(uchar *)(ioBuffer + i) & 0x37;
+			i++;
+			val = val | 0x80;
+			*(uchar *)(pBuff + offs + 1) = val;
+			*(uchar *)(pBuff + offs + 2) = val | 0x88;
+			*(uchar *)(pBuff + offs + 3) = 0;
+			offs += 4;
+			*(uchar *)(pBuff + offs) = val;
+			j = curr_len;
+		}
+
+		*(uchar *)(pBuff + offs + 1) = 0x20;
+		offs += 4;
+	}
+
+	uint len = 0;
+	res = WriteRead(offs, (uchar *)pBuff, 7, (iLength + 6) / 7, &len, (uchar *)ioBuffer);
+
+	if ((res < 0) || (len != iLength))
+	{
+		res = -1;
+	}
+	if (pBuff != local_buf)
+	{
+		delete pBuff;
+	}
+
+	if (res < 0)
+	{
+		qCritical("BitStreamSPI() error %d\n", res);
+	}
+
+	return res;
 }
 
 
-// Set the internal buffer upload mode
-// iEnableOrClear 0 is prohibited internal buffer upload mode, use direct upload, non-0 is enabled internal buffer upload mode and clear the existing data in the buffer
-
-// If the internal buffer upload mode is enabled,then the CH341 driver creates a thread that automatically receives the USB upload data to the internal buffer, and clears the existing data in the buffer, and immediately returns the existing data in the buffer when the application calls CH341ReadData
-//
-// iEnableOrClear 0 is prohibited internal buffer upload mode, use direct upload, non-0 is enabled internal buffer upload mode and clear the existing data in the buffer
+/**
+ * Set the internal buffer upload mode
+ * iEnableOrClear 0 is prohibited internal buffer upload mode, use direct upload, non-0 is enabled internal buffer upload mode and clear the existing data in the buffer
+ * If the internal buffer upload mode is enabled,then the CH341 driver creates a thread that automatically receives the USB upload data to the internal buffer, and clears the existing data in the buffer, and immediately returns the existing data in the buffer when the application calls CH341ReadData
+ *
+ * iEnableOrClear 0 is prohibited internal buffer upload mode, use direct upload, non-0 is enabled internal buffer upload mode and clear the existing data in the buffer
+ */
 int32_t ch341::SetBufUpload(uint iEnableOrClear)
 {
 	uchar buf[0x28] = {0};
-
+#if DEBUG_CH341
+	qDebug() << "ch341::SetBufUpload(" << iEnableOrClear << ") ";
+#endif
 	buf[0] = 0x20;
 	buf[4] = 1;
 	(*(uint *)&buf[8]) = -(iEnableOrClear != 0) & 2;
 
 	uint len = 0x28;
 
-	int ret = WriteData((uint *)buf, &len);
+	int res = WriteData((uint *)buf, &len);
 
-	return ret;
+	if (res < 0)
+	{
+		qCritical("SetBufUpload() error %d\n", res);
+	}
+
+	return res;
 }
 
 
-
-// WARNING: Could not reconcile some variable overlaps
-// Query the internal upload buffer the number of existing data packets, the number of packets returned successfully, an error returns -1
+/**
+ * @brief Query the internal upload buffer the number of existing data packets, the number of packets returned successfully, an error returns -1
+ */
 int32_t ch341::QueryBufUpload()
 {
 	uchar buf[0x28] = {0};
+#if DEBUG_CH341
+	qDebug() << "ch341::QueryBufUpload() ";
+#endif
 	buf[0] = 0x20;
 	buf[4] = 1;
-	buf[8] = 0; //??? CONCAT31(local_28._1_3_, 1);
+	buf[8] = 1;
 
 	uint len = 0x28;
 
 	int res = WriteRead(0x28, buf, 0x20, 1, (uint *)&len, buf);
 	if (res < 0)
 	{
+		qCritical("QueryBufUpload() error %d\n", res);
 		return -1;
 	}
+
 	return (*(int *)&buf[8]); // convert to int
 }
 
 
-// Set the internal buffer downstream mode
-//
-// If you enable the internal buffer downstream mode, then when the application calls CH341WriteData will simply be the USB downstream data into the internal buffer and returned immediately, and the thread created by the ch341 driver is sent automatically until finished
-// iEnableOrClear 0 is prohibited internal buffer downstream mode, use the direct downstream, non-0 is enabled internal buffer downstream mode and clear the existing data in the buffer
+/**
+ * @brief Set the internal buffer downstream mode
+ *
+ * If you enable the internal buffer downstream mode, then when the application calls CH341WriteData will simply be the USB downstream data into the internal buffer and returned immediately, and the thread created by the ch341 driver is sent automatically until finished
+ * iEnableOrClear 0 is prohibited internal buffer downstream mode, use the direct downstream, non-0 is enabled internal buffer downstream mode and clear the existing data in the buffer
+ */
 int32_t ch341::SetBufDownload(uint iEnableOrClear)
 {
 	uchar buf[0x28] = {0};
-
+#if DEBUG_CH341
+	qDebug() << "ch341::SetBufDownload(" << iEnableOrClear << ") ";
+#endif
 	buf[0] = 0x21;
 	buf[4] = 1;
 	(*(uint *)&buf[8]) = -(iEnableOrClear != 0) & 2;
 
 	uint len = 0x28;
 
-	int ret = WriteData((uint *)buf, &len);
+	int res = WriteData((uint *)buf, &len);
+	if (res < 0)
+	{
+		qCritical("SetBufDownload() error %d\n", res);
+	}
 
-	return ret;
+	return res;
 }
 
 
 
-// WARNING: Could not reconcile some variable overlaps
-// Query the internal upload buffer the number of existing data packets, the number of packets returned successfully, an error returns -1
+/**
+ * @brief Query the internal upload buffer the number of existing data packets, the number of packets returned successfully, an error returns -1
+ */
 int32_t ch341::QueryBufDownload()
 {
 	uchar buf[0x28] = {0};
-
+#if DEBUG_CH341
+	qDebug() << "ch341::QueryBufDownload() ";
+#endif
 	buf[0] = 0x21;
 	buf[4] = 1;
-	buf[4] = 0; // ???CONCAT31(local_28._1_3_, 1);
+	buf[4] = 1;
 	int len = 0x28;
 
 	int res = WriteRead(0x28, buf, 0x20, 1, (uint *)&len, buf);
 	if (res < 0) // wenn error
 	{
+		qCritical("QueryBufDownload() error %d\n", res);
 		return -1;
 	}
 
@@ -2090,7 +2301,7 @@ int32_t ch341::QueryBufDownload()
  * The clock line is the DCK/D3 pin;
  * The output data line is the DOUT/D5 pin;
  * The input data line is DIN/D7 pin;
- * The chip select line is D0/D1/D2 and the speed is about 110K bytes.
+ * The chip select line is D0/D1/D2 and the speed is about 110K.
  * SPI timing: DCK/D3 pin is the clock output, the default is low level;
  * The DOUT/D5 pin is output during the low period before the rising edge of the clock;
  * The DIN/D7 pin is input during the high period before the falling edge of the clock.
@@ -2103,14 +2314,27 @@ int32_t ch341::QueryBufDownload()
  */
 int32_t ch341::StreamSPI4(uint chip_select, uint length, uchar *buffer)
 {
+	int res = -1;
+#if DEBUG_CH341
+	qDebug() << "ch341::StreamSPI4() ";
+#endif
 	if (StreamMode & 0x40)
 	{
-		if (SetStream(StreamMode & 0xFB) < 0)
+		res = SetStreamMode(StreamMode & 0xFB);
+		if (res < 0)
 		{
+			qCritical("StreamSPI4() error in SetStreamMode %d\n", res);
 			return -1;
 		}
 	}
-	return (StreamSPI(chip_select, length, buffer, (uchar *)1));
+	res = StreamSPI(chip_select, length, buffer, (uchar *)1);
+	if (res < 0)
+	{
+		qCritical("StreamSPI4() error %d\n", res);
+		return -1;
+	}
+
+	return res;
 }
 
 /** Processing SPI data stream, 5-wire interface
@@ -2118,21 +2342,33 @@ int32_t ch341::StreamSPI4(uint chip_select, uint length, uchar *buffer)
  * output data line is DOUT/D5 and DOUT2/D4 pin
  * input data line is DIN/D7 and DIN2/D6 pin
  * chip select line is D0/D1/D2
- * speed about 30K bytes*2
+ * speed about 30K*2
  * SPI Timing: The DCK/D3 pin is the clock output. The default is low.
  * The DOUT/D5 and DOUT2/D4 pins are output during the low period before the rising edge of the clock. DIN/D7 and DIN2/D6 pins.
  * Enter during the high level before the falling edge of the clock
  */
 int32_t ch341::StreamSPI5(uint chip_select, uint length, uchar *buffer, uchar *buffer2)
 {
+	int res = -1;
+#if DEBUG_CH341
+	qDebug() << "ch341::StreamSPI5() ";
+#endif
 	if (StreamMode & 0x40)
 	{
-		if (SetStream(StreamMode | 4) < 0)
+		res = SetStreamMode(StreamMode | 4);
+		if (res < 0)
 		{
+			qCritical("StreamSPI5() error in SetStreamMode %d\n", res);
 			return -1;
 		}
 	}
-	return (StreamSPI(chip_select, length * 2, buffer, buffer2));
+	res = StreamSPI(chip_select, length * 2, buffer, buffer2);
+	if (res < 0)
+	{
+		qCritical("StreamSPI5() error %d\n", res);
+		return -1;
+	}
+	return res;
 }
 
 
@@ -2165,11 +2401,16 @@ int32_t ch341::SetOutput(uint iEnable, uint iSetDirOut, uint iSetDataOut)
 {
 	ushort uVar1;
 	uint uVar2;
-	ushort uVar3;
-	ushort uVar4;
 	int res = -1;
 	ushort reg_nr;
 	uchar buf[0x28] = {0};
+#if DEBUG_CH341
+	qDebug() << "ch341::SetOutput(" << iEnable << iSetDirOut << iSetDataOut << ") ";
+#endif
+	if (devHandle == 0)
+	{
+		return -1;
+	}
 
 	uVar2 = iSetDirOut;
 
@@ -2196,6 +2437,7 @@ int32_t ch341::SetOutput(uint iEnable, uint iSetDirOut, uint iSetDataOut)
 
 		if (res < 0)
 		{
+			qCritical("SetOutput() error %d\n", res);
 			return -1;
 		}
 
@@ -2205,10 +2447,11 @@ int32_t ch341::SetOutput(uint iEnable, uint iSetDirOut, uint iSetDataOut)
 	// for old versions, smaller 0x20
 	if ((iEnable & 3) != 0)
 	{
+		ushort val;
 		if ((iEnable & 3) == 3)
 		{
 			reg_nr = 0x1606;
-			uVar3 = ((ushort)(buf[6] << 8) + (uchar)iSetDataOut);
+			val = ((ushort)(buf[6] << 8) + (uchar)iSetDataOut);
 		}
 		else
 		{
@@ -2216,16 +2459,16 @@ int32_t ch341::SetOutput(uint iEnable, uint iSetDirOut, uint iSetDataOut)
 			{
 				reg_nr = 0x1616;
 				iSetDataOut = buf[6];
-				uVar3 = ((ushort)(buf[6] << 8) + (uchar)iSetDataOut);
+				val = ((ushort)(buf[6] << 8) + (uchar)iSetDataOut);
 			}
 			reg_nr = 0x0606;
-			uVar3 = ((ushort)(iSetDataOut << 8) + (uchar)iSetDataOut);
+			val = ((ushort)(iSetDataOut << 8) + (uchar)iSetDataOut);
 		}
 
-		res = libusb_control_transfer(devHandle, CH341_CTRL_OUT, CH341_REQ_WRITE_REG, reg_nr, uVar3, NULL, 0, timeout);
+		res = libusb_control_transfer(devHandle, CH341_CTRL_OUT, CH341_REQ_WRITE_REG, reg_nr, val, NULL, 0, timeout);
 		if (res < 0)
 		{
-			// TODO debug
+			qCritical("SetOutput() error %d\n", res);
 			return res;
 		}
 	}
@@ -2233,28 +2476,30 @@ int32_t ch341::SetOutput(uint iEnable, uint iSetDirOut, uint iSetDataOut)
 	uVar1 = (ushort)((uint)iSetDataOut >> 8);
 	if ((iEnable & 0xc) != 0)
 	{
+		ushort val;
 		if ((iEnable & 0xc) == 0xc)
 		{
 			reg_nr = 0x1505;
-			uVar4 = ((ushort)((buf[4] << 8) + (uchar)buf[3]) & 0xffef) | 0x1000;
+			val = ((ushort)((buf[4] << 8) + (uchar)buf[3]) & 0xffef) | 0x1000;
 		}
 		else
 		{
 			if ((iEnable & 8) == 0)
 			{
 				reg_nr = 0x0505;
-				uVar4 = (ushort)(iSetDataOut & 0xef00) | (uVar1 & 0xef);
+				val = (ushort)(iSetDataOut & 0xef00) | (uVar1 & 0xef);
 			}
 			else
 			{
 				reg_nr = 0x1515;
-				uVar4 = (ushort)(uVar2 & 0xff10) | (ushort)((uVar2 >> 8) & 0xef) | 0x1010;
+				val = (ushort)(uVar2 & 0xff10) | (ushort)((uVar2 >> 8) & 0xef) | 0x1010;
 			}
 		}
-		res = libusb_control_transfer(devHandle, CH341_CTRL_OUT, CH341_REQ_WRITE_REG, reg_nr, uVar4, NULL, 0, timeout);
+
+		res = libusb_control_transfer(devHandle, CH341_CTRL_OUT, CH341_REQ_WRITE_REG, reg_nr, val, NULL, 0, timeout);
 		if (res < 0)
 		{
-			// TDO debug
+			qCritical("SetOutput() error %d\n", res);
 			return res;
 		}
 	}
@@ -2264,9 +2509,10 @@ int32_t ch341::SetOutput(uint iEnable, uint iSetDirOut, uint iSetDataOut)
 		res = libusb_control_transfer(devHandle, CH341_CTRL_OUT, CH341_REQ_WRITE_REG, 0x707, (ushort)(((uint)iSetDataOut >> 0x10) & 0xf) | (uVar1 & 0xf00), NULL, 0, timeout);
 		if (res < 0)
 		{
-			// TODO debug
+			qCritical("SetOutput() error %d\n", res);
 		}
 	}
+
 	return res;
 }
 
@@ -2278,7 +2524,10 @@ int32_t ch341::SetupSerial(uint32_t paritymode, uint32_t baude)
 	int dv_prescale;
 	int dv_div;
 	int dv_mod;
-
+	int res = -1;
+#if DEBUG_CH341
+	qDebug() << "ch341::SetupSerial(" << paritymode << baude << ") ";
+#endif
 	static QVector<uart_div> speed_divider = {{307200, 307200, 0, {7, 0xD9, 0}},
 		{921600, 921600, 0, {7, 0xF3, 0}},
 		{2999999, 23530, 6000000, {3, 0, 0}},
@@ -2287,14 +2536,21 @@ int32_t ch341::SetupSerial(uint32_t paritymode, uint32_t baude)
 		{367, 1, 11719, {0, 0, 0}}
 	};
 
+	if (devHandle == 0)
+	{
+		return -1;
+	}
+
 	if (((paritymode < 5) && (baude >= 50)) && (baude <= 3000000))
 	{
 		uchar buf[2];
 		uint sz = 2;
 		uchar coef = 0;
-		int res = libusb_control_transfer(devHandle, CH341_CTRL_IN, CH341_REQ_READ_REG, CH341_REG_LCR_GET, 0, &buf[0], sz, timeout);
+
+		res = libusb_control_transfer(devHandle, CH341_CTRL_IN, CH341_REQ_READ_REG, CH341_REG_LCR_GET, 0, &buf[0], sz, timeout);
 		if (res < 0)
 		{
+			qCritical("SetupSerial() error %d\n", res);
 			return res;
 		}
 
@@ -2354,9 +2610,11 @@ int32_t ch341::SetupSerial(uint32_t paritymode, uint32_t baude)
 					break;
 				}
 			}
+
 			res = libusb_control_transfer(devHandle, CH341_CTRL_OUT, CH341_REQ_WRITE_REG, CH341_REG_LCR_SET, ((buf[1] << 8) | (ushort)coef), NULL, 0, timeout);
 			if (res < 0)
 			{
+				qCritical("SetupSerial() error %d\n", res);
 				return res;
 			}
 
@@ -2375,6 +2633,7 @@ int32_t ch341::SetupSerial(uint32_t paritymode, uint32_t baude)
 						uint32_t rem = d.dvr_base_clock % baude;
 						if (div == 0 || div >= 0xFF)
 						{
+							qCritical("SetupSerial() error , div is 0!\n");
 							return -1;
 						}
 
@@ -2403,7 +2662,7 @@ int32_t ch341::SetupSerial(uint32_t paritymode, uint32_t baude)
 						return res;
 					}
 
-					res = libusb_control_transfer(devHandle, CH341_CTRL_OUT, CH341_REQ_WRITE_REG, 0x2c0f, (uint16_t)(dv_mod << 8), NULL, 0, timeout);
+					res = libusb_control_transfer(devHandle, CH341_CTRL_OUT, CH341_REQ_WRITE_REG, CH341_REG_BAUD2, (uint16_t)(dv_mod << 8), NULL, 0, timeout);
 					if (res < 0)
 					{
 						qCritical("failed control transfer CH341_REQ_WRITE_REG, CH341_REG_BAUD2\n");
@@ -2416,12 +2675,20 @@ int32_t ch341::SetupSerial(uint32_t paritymode, uint32_t baude)
 		}
 	}
 
+	qCritical("SetupSerial() error %d, not found\n", res);
 	return -1;
 }
 
 // TODO to check this
 int32_t ch341::SetConfigLCR()
 {
+#if DEBUG_CH341
+	qDebug() << "ch341::SetConfigLCR() ";
+#endif
+	if (devHandle == 0)
+	{
+		return -1;
+	}
 	// TODO in case of same bits for all UART devices, to move this lcr into SerialInterface
 	// now set LCR
 	uint8_t lcr =  CH341_LCR_ENABLE_RX | CH341_LCR_ENABLE_TX;
@@ -2478,10 +2745,12 @@ int32_t ch341::SetConfigLCR()
 #if DEBUG_CH341
 	qDebug() << "ch341::SetConfigLCR(" << lcr << ") ";
 #endif
+
 	int32_t ret = libusb_control_transfer(devHandle, CH341_CTRL_OUT, CH341_REQ_WRITE_REG, CH341_REG_LCR_SET, lcr, NULL, 0, timeout);
 	if (ret < 0)
 	{
 		qCritical("failed control transfer CH341_REQ_WRITE_REG, CH341_REG_LCR\n");
+		return ret;
 	}
 
 	ret = libusb_control_transfer(devHandle, CH341_CTRL_OUT, CH341_REQ_WRITE_REG, CH341_REG_FLOW_CTRL, 0, NULL, 0, timeout);
@@ -2496,10 +2765,14 @@ int32_t ch341::SetConfigLCR()
 
 int32_t ch341::SetBreakControl(int32_t state)
 {
-
 #if DEBUG_CH341
 	qDebug() << "ch341::SetBreakControl(" << state << ") ";
 #endif
+
+	if (devHandle == 0)
+	{
+		return -1;
+	}
 // 	uint16_t reg_contents;
 	uint8_t break_reg[2] = {0, 0};
 
@@ -2547,7 +2820,9 @@ int32_t ch341::SetBaudRate(uint32_t speed)
 	int dv_prescale;
 	int dv_div;
 	int dv_mod;
-
+#if DEBUG_CH341
+	qDebug() << "ch341::SetBaudRate(" << speed << ") ";
+#endif
 	static QVector<uart_div> speed_divider = {{307200, 307200, 0, {7, 0xD9, 0}},
 		{921600, 921600, 0, {7, 0xF3, 0}},
 		{2999999, 23530, 6000000, {3, 0, 0}},
@@ -2555,6 +2830,11 @@ int32_t ch341::SetBaudRate(uint32_t speed)
 		{2941, 368, 93750, {1, 0, 0}},
 		{367, 1, 11719, {0, 0, 0}}
 	};
+
+	if (devHandle == 0)
+	{
+		return -1;
+	}
 
 	if (!speed)
 	{
@@ -2626,14 +2906,36 @@ int32_t ch341::SetBaudRate(uint32_t speed)
  */
 int32_t ch341::ResetChip()
 {
-	return libusb_control_transfer(devHandle, CH341_CTRL_OUT, CH341_REQ_SERIAL_INIT, CH341_RESET_VALUE, CH341_RESET_INDEX, NULL, 0, timeout);
+#if DEBUG_CH341
+	qDebug() << "ch341::ResetChip() ";
+#endif
+	if (devHandle == 0)
+	{
+		return -1;
+	}
+
+	int res = libusb_control_transfer(devHandle, CH341_CTRL_OUT, CH341_REQ_SERIAL_INIT, CH341_RESET_VALUE, CH341_RESET_INDEX, NULL, 0, timeout);
+	if (res < 0)
+	{
+		qCritical("ResetChip() error %d\n", res);
+	}
+	return res;
 }
 
 
 int32_t ch341::ClearChip()
 {
+	if (devHandle == 0)
+	{
+		return -1;
+	}
 //     return libusb_control_transfer(devHandle, CH341_CTRL_OUT, CH341_REQ_SERIAL_INIT, 0, 0, NULL, 0, timeout);
-	return libusb_control_transfer(devHandle, CH341_CTRL_OUT, CH341_REQ_SERIAL_INIT, 0xc29c, 0xb2b9, NULL, 0, timeout);
+	int res = libusb_control_transfer(devHandle, CH341_CTRL_OUT, CH341_REQ_SERIAL_INIT, 0xc29c, 0xb2b9, NULL, 0, timeout);
+	if (res < 0)
+	{
+		qCritical("ClearChip() error %d\n", res);
+	}
+	return res;
 }
 
 
@@ -2645,9 +2947,9 @@ int32_t ch341::Open(uint16_t vid, uint16_t pid, uint8_t mode)
 	struct libusb_device *dev;
 	int32_t ret;
 	struct sigaction sa;
-
+#if DEBUG_CH341
 	qDebug() << "ch341::Open(" << vid << pid << ") ";
-
+#endif
 	uint8_t  desc[0x12];
 
 	if (devHandle != NULL)
@@ -2655,8 +2957,9 @@ int32_t ch341::Open(uint16_t vid, uint16_t pid, uint8_t mode)
 		qCritical() << "Call ch341Release before re-configure";
 		return -1;
 	}
-
+#if DEBUG_CH341
 	qDebug() << "ch341::Configure()";
+#endif
 	ret = libusb_init(NULL);
 
 	if (ret < 0)
@@ -2673,7 +2976,7 @@ int32_t ch341::Open(uint16_t vid, uint16_t pid, uint8_t mode)
 
 	if (!(devHandle = libusb_open_device_with_vid_pid(NULL, vid, pid)))
 	{
-		qCritical("Couldn't open device [%04x:%04x].", vid, pid);
+		qCritical("Couldn't open device [%04x:%04x].\n", vid, pid);
 		return -1;
 	}
 	else
@@ -2695,7 +2998,7 @@ int32_t ch341::Open(uint16_t vid, uint16_t pid, uint8_t mode)
 
 		if (ret)
 		{
-			qCritical("Failed to detach kernel driver: '%s'", strerror(-ret));
+			qCritical("Failed to detach kernel driver: '%s'\n", strerror(-ret));
 			CloseHandle();
 			return -1;
 		}
@@ -2709,7 +3012,7 @@ int32_t ch341::Open(uint16_t vid, uint16_t pid, uint8_t mode)
 
 	if (ret)
 	{
-		qCritical("Failed to claim interface 0: '%s'", strerror(-ret));
+		qCritical("Failed to claim interface 0: '%s'\n", strerror(-ret));
 		CloseHandle();
 		return -1;
 	}
@@ -2722,7 +3025,7 @@ int32_t ch341::Open(uint16_t vid, uint16_t pid, uint8_t mode)
 
 	if (ret < 0)
 	{
-		qCritical("Failed to get device descriptor: '%s'", strerror(-ret));
+		qCritical("Failed to get device descriptor: '%s'\n", strerror(-ret));
 		ReleaseInterface();
 		return -1;
 	}
@@ -2740,7 +3043,7 @@ int32_t ch341::Open(uint16_t vid, uint16_t pid, uint8_t mode)
 	ret = init(mode);
 	if (ret < 0)
 	{
-		qCritical("Failed to init device %d", strerror(-ret));
+		qCritical("Failed to init device %d\n", -ret);
 		ReleaseInterface();
 		return -1;
 	}
@@ -2750,20 +3053,29 @@ int32_t ch341::Open(uint16_t vid, uint16_t pid, uint8_t mode)
 
 int32_t ch341::init(uint8_t mode)
 {
+	int res = -1;
+
+	ChipMode = mode;
+
 	switch (mode)
 	{
 	case USB_MODE_UART:
-		initUART();
+		res = initUART();
 		break;
+
 	case USB_MODE_I2C:
-		initI2C();
+		res = initI2C();
 		break;
+
 	case USB_MODE_SPI:
-		initSPI();
+		res = initSPI();
 		break;
+
 	default:
 		break;
 	}
+
+	return res;
 }
 
 // TODO get from ch341a_spi.c
@@ -2783,6 +3095,11 @@ int32_t ch341::initUART()
 
 	uint8_t buf[2];
 
+	if (devHandle == 0)
+	{
+		return -1;
+	}
+
 	/* expect two bytes 0x27 0x00 */
 	ret = libusb_control_transfer(devHandle, CH341_CTRL_IN, CH341_REQ_READ_VERSION, 0, 0, buf, 2, timeout);
 	if (ret < 0)
@@ -2795,7 +3112,7 @@ int32_t ch341::initUART()
 	qDebug("Chip version: 0x%02x\n", buf[0]);
 #endif
 	dev_vers = buf[0];
-	printf("device version %x \n", dev_vers);
+// 	printf("device version %x \n", dev_vers);
 	// send init to controller (reset)
 	ret = ClearChip();
 	if (ret < 0)
@@ -2885,9 +3202,9 @@ int32_t ch341::Release(void)
 	{
 		return -1;
 	}
-
+#if DEBUG_CH341
 	qDebug() << "ch341::Release()";
-
+#endif
 	libusb_release_interface(devHandle, 0);
 	libusb_close(devHandle);
 	libusb_exit(NULL);
@@ -2927,9 +3244,9 @@ int32_t ch341::usbTransfer(const char *func, uint8_t type, uint *buf, int len)
 #endif
 
 /**
- * FUNCTION : Set Stream Mode
- * arg:
- * Mode : Set Stream Mode
+ * @brief Set the serial port flow mode
+ *
+ * @param[in] Mode : Set Stream Mode
  * -> bit0~1 : set I2C SCL rate
  * 			   --> 00 :	Low Rate /20KHz
  * 			   --> 01 : Default Rate /100KHz
@@ -2943,7 +3260,7 @@ int32_t ch341::usbTransfer(const char *func, uint8_t type, uint *buf, int len)
  *       	   --> 1 : high bit first
  * other bits must keep 0
  */
-int32_t ch341::SetStream(uint32_t mode)
+int32_t ch341::SetStreamMode(uint32_t mode)
 {
 	uint8_t buf[CH341_PACKET_LENGTH];
 
@@ -2956,25 +3273,31 @@ int32_t ch341::SetStream(uint32_t mode)
 	{
 		return -1;
 	}
+	uchar mask = (ChipMode == USB_MODE_I2C) ? 0x03 : 0x0f;
+
 	StreamMode = mode & 0x8F;
 #if DEBUG_CH341
-	qDebug() << "ch341::SetStream()";
+	qDebug() << "ch341::SetStreamMode()";
 #endif
 	buf[0] = CH341_CMD_I2C_STREAM;
-	buf[1] = CH341_CMD_I2C_STM_SET | (StreamMode & 0x0f);
+	buf[1] = CH341_CMD_I2C_STM_SET | (StreamMode & mask);
 	buf[2] = CH341_CMD_I2C_STM_END;
 	uint len = 3;
 
-	return WriteData((uint *)&buf, &len);
+	int res = WriteData((uint *)&buf, &len);
+	if (res < 0)
+	{
+		qCritical("SetStreamMode() error %d\n", res);
+	}
+	return res;
 }
-
 
 /**
  * assert or deassert the chip-select pin of the spi device
  */
-void ch341::SpiChipSelect(uint8_t *ptr, bool selected)
+void ch341::ChipSelectSPI(uint8_t *ptr, bool selected)
 {
-	qDebug() << "ch341::SpiChipSelect()";
+	qDebug() << "ch341::ChipSelectSPI()";
 
 	*ptr++ = CH341_CMD_UIO_STREAM;
 	*ptr++ = CH341_CMD_UIO_STM_OUT | (selected ? 0x36 : 0x37);
@@ -2990,7 +3313,7 @@ void ch341::SpiChipSelect(uint8_t *ptr, bool selected)
 /**
  * transfer len bytes of data to the spi device
  */
-int32_t ch341::SpiStream(uint *out, uint *in, uint32_t len)
+int32_t ch341::StreamSPI(uint *out, uint *in, uint32_t len)
 {
 	uint8_t *inBuf, *outBuf;
 	uint *inPtr, *outPtr;
@@ -3003,23 +3326,34 @@ int32_t ch341::SpiStream(uint *out, uint *in, uint32_t len)
 	{
 		return -1;
 	}
-
-	qDebug() << "ch341::SpiStream()";
-
+#if DEBUG_CH341
+	qDebug() << "ch341::StreamSPI()";
+#endif
 	outBuf = new uint8_t[CH341_PACKET_LENGTH];
+	if (outBuf == NULL)
+	{
+		qCritical("StreamSPI() new() troubles!\n");
+		return -1;
+	}
 
-	SpiChipSelect(outBuf, true);
+	ChipSelectSPI(outBuf, true);
 	int ret_len = 4;
 
 	ret = libusb_bulk_transfer(devHandle, CH341_DATA_OUT, (uchar *)&outBuf, 4, &ret_len, timeout);
 
 	if (ret < 0)
 	{
+		qCritical("StreamSPI() can not write, error %d!\n", ret);
 		delete outBuf;
 		return -1;
 	}
 
 	inBuf = new uint8_t[CH341_PACKET_LENGTH];
+	if (inBuf == NULL)
+	{
+		qCritical("StreamSPI() new() troubles!\n");
+		return -1;
+	}
 
 	inPtr = in;
 
@@ -3068,7 +3402,7 @@ int32_t ch341::SpiStream(uint *out, uint *in, uint32_t len)
 
 	if (!err)
 	{
-		SpiChipSelect(outBuf, false);
+		ChipSelectSPI(outBuf, false);
 		len = 3;
 		ret = libusb_bulk_transfer(devHandle, CH341_DATA_OUT, (uchar *)&outBuf, 3, &ret_len, timeout);
 	}
@@ -3082,6 +3416,7 @@ int32_t ch341::SpiStream(uint *out, uint *in, uint32_t len)
 
 	if (ret < 0)
 	{
+		qCritical("StreamSPI() error %d!\n", ret);
 		return -1;
 	}
 
@@ -3093,7 +3428,7 @@ int32_t ch341::SpiStream(uint *out, uint *in, uint32_t len)
 /**
  * read the JEDEC ID of the SPI Flash
  */
-int32_t ch341::SpiCapacity(void)
+int32_t ch341::CapacitySPI(void)
 {
 	uint8_t *outBuf;
 	uint8_t *inBuf, *ptr, cap;
@@ -3103,10 +3438,16 @@ int32_t ch341::SpiCapacity(void)
 	{
 		return -1;
 	}
-
-	qDebug() << "ch341::SpiCapacity()";
-
+#if DEBUG_CH341
+	qDebug() << "ch341::CapacitySPI()";
+#endif
 	outBuf = new uint8_t[JEDEC_ID_LEN];
+	if (outBuf == NULL)
+	{
+		qCritical("CapacitySPI() new() troubles!\n");
+		return -1;
+	}
+
 	ptr = outBuf;
 	*ptr++ = 0x9F; // Read JEDEC ID
 
@@ -3116,8 +3457,13 @@ int32_t ch341::SpiCapacity(void)
 	}
 
 	inBuf = new uint8_t[JEDEC_ID_LEN];
+	if (outBuf == NULL)
+	{
+		qCritical("CapacitySPI() new() troubles!\n");
+		return -1;
+	}
 
-	ret = SpiStream((uint *)&outBuf, (uint *)&inBuf, JEDEC_ID_LEN);
+	ret = StreamSPI((uint *)&outBuf, (uint *)&inBuf, JEDEC_ID_LEN);
 
 	if (ret < 0)
 	{
@@ -3162,7 +3508,7 @@ int32_t ch341::SpiCapacity(void)
 /**
  * read status register
  */
-int32_t ch341::ReadStatus(void)
+int32_t ch341::ReadStatusSPI(void)
 {
 	uint8_t out[2];
 	uint8_t in[2];
@@ -3172,24 +3518,25 @@ int32_t ch341::ReadStatus(void)
 	{
 		return -1;
 	}
-
-	qDebug() << "ch341::ReadStatus()";
-
+#if DEBUG_CH341
+	qDebug() << "ch341::ReadStatusSPI()";
+#endif
 	out[0] = 0x05; // Read status
-	ret = SpiStream((uint *)&out, (uint *)&in, 2);
+	ret = StreamSPI((uint *)&out, (uint *)&in, 2);
 
 	if (ret < 0)
 	{
+		qCritical("ReadStatusSPI() error %d!\n", ret);
 		return ret;
 	}
 
-	return (in[1]);
+	return ((int)in[1]);
 }
 
 /**
  * write status register
  */
-int32_t ch341::WriteStatus(uint8_t status)
+int32_t ch341::WriteStatusSPI(uint8_t status)
 {
 	uint8_t out[2];
 	uint8_t in[2];
@@ -3199,31 +3546,34 @@ int32_t ch341::WriteStatus(uint8_t status)
 	{
 		return -1;
 	}
-
-	qDebug() << "ch341::WriteStatus()";
-
+#if DEBUG_CH341
+	qDebug() << "ch341::WriteStatusSPI()";
+#endif
 	out[0] = 0x06; // Write enable
-	ret = SpiStream((uint *)&out, (uint *)&in, 1);
+	ret = StreamSPI((uint *)&out, (uint *)&in, 1);
 
 	if (ret < 0)
 	{
+		qCritical("WriteStatusSPI() error %d!\n", ret);
 		return ret;
 	}
 
 	out[0] = 0x01; // Write status
 	out[1] = status;
-	ret = SpiStream((uint *)&out, (uint *)&in, 2);
+	ret = StreamSPI((uint *)&out, (uint *)&in, 2);
 
 	if (ret < 0)
 	{
+		qCritical("WriteStatusSPI() error %d!\n", ret);
 		return ret;
 	}
 
 	out[0] = 0x04; // Write disable
-	ret = SpiStream((uint *)&out, (uint *)&in, 1);
+	ret = StreamSPI((uint *)&out, (uint *)&in, 1);
 
 	if (ret < 0)
 	{
+		qCritical("WriteStatusSPI() error %d!\n", ret);
 		return ret;
 	}
 
@@ -3233,7 +3583,7 @@ int32_t ch341::WriteStatus(uint8_t status)
 /**
  * chip erase
  */
-int32_t ch341::EraseChip(void)
+int32_t ch341::EraseChipSPI(void)
 {
 	uint8_t out[1];
 	uint8_t in[1];
@@ -3243,11 +3593,11 @@ int32_t ch341::EraseChip(void)
 	{
 		return -1;
 	}
-
-	qDebug() << "ch341::EraseChip()";
-
+#if DEBUG_CH341
+	qDebug() << "ch341::EraseChipSPI()";
+#endif
 	out[0] = 0x06; // Write enable
-	ret = SpiStream((uint *)&out, (uint *)&in, 1);
+	ret = StreamSPI((uint *)&out, (uint *)&in, 1);
 
 	if (ret < 0)
 	{
@@ -3255,18 +3605,20 @@ int32_t ch341::EraseChip(void)
 	}
 
 	out[0] = 0xC7; // Chip erase
-	ret = SpiStream((uint *)&out, (uint *)&in, 1);
+	ret = StreamSPI((uint *)&out, (uint *)&in, 1);
 
 	if (ret < 0)
 	{
+		qCritical("EraseChipSPI() error %d!\n", ret);
 		return ret;
 	}
 
 	out[0] = 0x04; // Write disable
-	ret = SpiStream((uint *)&out, (uint *)&in, 1);
+	ret = StreamSPI((uint *)&out, (uint *)&in, 1);
 
 	if (ret < 0)
 	{
+		qCritical("EraseChipSPI() error %d!\n", ret);
 		return ret;
 	}
 
@@ -3276,7 +3628,7 @@ int32_t ch341::EraseChip(void)
 /**
  * read the content of SPI device to buf, make sure the buf is big enough before call
  */
-int32_t ch341::SpiRead(uint *buf, uint32_t add, uint32_t len)
+int32_t ch341::ReadSPI(uint *buf, uint32_t add, uint32_t len)
 {
 	uint8_t out[CH341_MAX_PACKET_LEN];
 	uint8_t in[CH341_PACKET_LENGTH];
@@ -3304,11 +3656,11 @@ int32_t ch341::SpiRead(uint *buf, uint32_t add, uint32_t len)
 	xferBulkIn  = libusb_alloc_transfer(0);
 	xferBulkOut = libusb_alloc_transfer(0);
 
-	printf("Read started!\n");
+// 	printf("Read started!\n");
 	while (len > 0)
 	{
 		fflush(stdout);
-		SpiChipSelect(out, true);
+		ChipSelectSPI(out, true);
 		idx = CH341_PACKET_LENGTH + 1;
 		out[idx++] = 0xC0; // byte swapped command for Flash Read
 		tmp = add;
@@ -3363,12 +3715,13 @@ int32_t ch341::SpiRead(uint *buf, uint32_t add, uint32_t len)
 				old_counter = bulkin_count;
 			}
 		}
-		SpiChipSelect(out, false);
+		ChipSelectSPI(out, false);
 		uint curr_len = 3;
 		res = WriteData((uint *)&out, &curr_len);
 
 		if (res < 0)
 		{
+			qCritical("ReadSPI() error %d!\n", res);
 			break;
 		}
 		if (force_stop == 1)   // user hit ctrl+C
@@ -3376,7 +3729,7 @@ int32_t ch341::SpiRead(uint *buf, uint32_t add, uint32_t len)
 			force_stop = 0;
 			if (len > 0)
 			{
-				fprintf(stderr, "User hit Ctrl+C, reading unfinished.\n");
+				qCritical("User hit Ctrl+C, reading unfinished.\n");
 			}
 			break;
 		}
@@ -3392,7 +3745,7 @@ int32_t ch341::SpiRead(uint *buf, uint32_t add, uint32_t len)
 /**
  * write buffer(*buf) to SPI flash
  */
-int32_t ch341::SpiWrite(uint *buf, uint32_t add, uint32_t len)
+int32_t ch341::WriteSPI(uint *buf, uint32_t add, uint32_t len)
 {
 	uint8_t out[WRITE_PAYLOAD_LENGTH];
 	uint8_t in[CH341_PACKET_LENGTH];
@@ -3411,12 +3764,12 @@ int32_t ch341::SpiWrite(uint *buf, uint32_t add, uint32_t len)
 	xferBulkIn  = libusb_alloc_transfer(0);
 	xferBulkOut = libusb_alloc_transfer(0);
 
-	printf("Write started!\n");
+// 	printf("Write started!\n");
 	while (len > 0)
 	{
 		out[0] = 0x06; // Write enable
-		ret = SpiStream((uint *)&out, (uint *)&in, 1);
-		SpiChipSelect(out, true);
+		ret = StreamSPI((uint *)&out, (uint *)&in, 1);
+		ChipSelectSPI(out, true);
 		idx = CH341_PACKET_LENGTH;
 		out[idx++] = CH341_CMD_SPI_STREAM;
 		out[idx++] = 0x40; // byte swapped command for Flash Page Write
@@ -3478,7 +3831,7 @@ int32_t ch341::SpiWrite(uint *buf, uint32_t add, uint32_t len)
 		{
 			break;
 		}
-		SpiChipSelect(out, false);
+		ChipSelectSPI(out, false);
 
 		uint curr_len = 3;
 		ret = WriteData((uint *)&out, &curr_len);
@@ -3488,10 +3841,10 @@ int32_t ch341::SpiWrite(uint *buf, uint32_t add, uint32_t len)
 			break;
 		}
 		out[0] = 0x04; // Write disable
-		ret = SpiStream((uint *)&out, (uint *)&in, 1);
+		ret = StreamSPI((uint *)&out, (uint *)&in, 1);
 		do
 		{
-			ret = ReadStatus();
+			ret = ReadStatusSPI();
 			if (ret != 0)
 			{
 				libusb_handle_events_timeout(NULL, &tv);
@@ -3503,7 +3856,7 @@ int32_t ch341::SpiWrite(uint *buf, uint32_t add, uint32_t len)
 			force_stop = 0;
 			if (len > 0)
 			{
-				fprintf(stderr, "User hit Ctrl+C, writing unfinished.\n");
+				qCritical("User hit Ctrl+C, writing unfinished.\n");
 			}
 			break;
 		}
@@ -3511,6 +3864,10 @@ int32_t ch341::SpiWrite(uint *buf, uint32_t add, uint32_t len)
 	libusb_free_transfer(xferBulkIn);
 	libusb_free_transfer(xferBulkOut);
 
+	if (ret < 0)
+	{
+		qCritical("WriteSPI() error %d!\n", ret);
+	}
 	return ret;
 }
 

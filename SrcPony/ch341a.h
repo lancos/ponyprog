@@ -172,7 +172,7 @@ typedef	enum _EEPROM_TYPE
 #define    CH341_REG_LCR_GET            0x1824
 #define    CH341_REG_FLOW_CTRL          0x2727
 #define    CH341_REG_BAUD1              0x1312
-#define    CH341_REG_BAUD2              0x0f2c  /*is it right, or 0x0f14 ?? */
+#define    CH341_REG_BAUD2              0x2c0f  /*is it right, or register in linux kernel: 0f2c ?? */
 
 #define    CH341_RESET_VALUE            0x501f    /* line mode? */
 #define    CH341_RESET_INDEX            0xd90a    /* baud rate? */
@@ -285,18 +285,6 @@ class ch341 : public QObject, public USB_Interface
 	virtual void    Close();
 	virtual int32_t SetMode(uint16_t mode = USB_MODE_NONE);
 
-	int32_t SetStream(uint32_t speed);
-	int32_t SpiCapacity(void);
-	int32_t SpiRead(uint *buf, uint32_t add, uint32_t len);
-	int32_t ReadStatus(void);
-	int32_t WriteStatus(uint8_t status);
-	int32_t EraseChip(void);
-	int32_t SpiWrite(uint *buf, uint32_t add, uint32_t len);
-
-	int32_t GetInput(uint *iStatus);
-	int32_t SetDelaymS(uint iDelay);
-	int32_t GetStatus(uint *iStatus);
-
 	virtual int32_t Release(void);
 	virtual int32_t SetBaudRate(uint32_t baudRate);
 	virtual int32_t SetTimeouts(int16_t t);
@@ -304,7 +292,7 @@ class ch341 : public QObject, public USB_Interface
 	virtual void    SetParity(uint8_t p);
 	virtual void    SetBits(uint8_t b);
 	virtual void    SetStops(uint8_t s);
-	virtual void    SetFlowControl(uint8_t f);
+	virtual int32_t SetFlowControl(uint8_t f);
 	virtual int32_t SetDTR(int32_t dtr);
 	virtual int32_t SetRTS(int32_t dtr);
 	virtual int32_t GetDSR();
@@ -369,6 +357,19 @@ class ch341 : public QObject, public USB_Interface
 	int32_t ReadData(uint *oBuffer, uint *ioLength);
 	int32_t WriteData(uint *iBuffer, uint *ioLength);
 
+	int32_t SetStreamMode(uint32_t mode);
+
+	int32_t CapacitySPI(void);
+	int32_t ReadSPI(uint *buf, uint32_t add, uint32_t len);
+	int32_t ReadStatusSPI(void);
+	int32_t WriteStatusSPI(uint8_t status);
+	int32_t EraseChipSPI(void);
+	int32_t WriteSPI(uint *buf, uint32_t add, uint32_t len);
+
+	int32_t GetInput(uint *iStatus);
+	int32_t SetDelaymS(uint iDelay);
+	int32_t GetStatus(uint *iStatus);
+
 	int32_t StreamSPI4(uint chip_select, uint length, uchar *buffer);
 	int32_t StreamSPI5(uint chip_select, uint length, uchar *buffer, uchar *buffer2);
 	int32_t StreamSPI(unsigned long chip_select, unsigned long length, uchar *buffer, uchar *buffer2);
@@ -386,8 +387,8 @@ class ch341 : public QObject, public USB_Interface
 
 	void    updateStatus(uint8_t *data, size_t l);
 
-	void    SpiChipSelect(uint8_t *ptr, bool selected);
-	int32_t SpiStream(uint *out, uint *in, uint32_t len);
+	void    ChipSelectSPI(uint8_t *ptr, bool selected);
+	int32_t StreamSPI(uint *out, uint *in, uint32_t len);
 
   private:
 	struct dv
@@ -437,6 +438,7 @@ class ch341 : public QObject, public USB_Interface
 #endif
 	uint8_t dev_vers;
 	uint8_t StreamMode;
+	uint8_t ChipMode; // NONE, UART, I2C, SPI
 
 	QTimer *breakTimer;
 	int force_stop = 0;
