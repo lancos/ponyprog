@@ -187,7 +187,29 @@ int32_t ch341::setControl()
  */
 int32_t ch341::SetMode(uint16_t mode)
 {
-	return 0;
+	int res = -1;
+
+	ChipMode = mode;
+
+	switch (mode)
+	{
+	case USB_MODE_UART:
+		res = initUART();
+		break;
+
+	case USB_MODE_I2C:
+		res = initI2C();
+		break;
+
+	case USB_MODE_SPI:
+		res = initSPI();
+		break;
+
+	default:
+		break;
+	}
+
+	return res;
 }
 
 
@@ -2942,7 +2964,7 @@ int32_t ch341::ClearChip()
 /**
  * Open CH341A, find the device and set the default interface.
  */
-int32_t ch341::Open(uint16_t vid, uint16_t pid, uint8_t mode)
+int32_t ch341::Open(uint16_t vid, uint16_t pid)
 {
 	struct libusb_device *dev;
 	int32_t ret;
@@ -3040,17 +3062,19 @@ int32_t ch341::Open(uint16_t vid, uint16_t pid, uint8_t mode)
 		perror("Error: cannot handle SIGINT"); // Should not happen
 	}
 
-	ret = init(mode);
-	if (ret < 0)
-	{
-		qCritical("Failed to init device %d\n", -ret);
-		ReleaseInterface();
-		return -1;
-	}
+	ChipMode = USB_MODE_NONE;
+
+// 	ret = init(mode);
+// 	if (ret < 0)
+// 	{
+// 		qCritical("Failed to init device %d\n", -ret);
+// 		ReleaseInterface();
+// 		return -1;
+// 	}
 
 	return 0;
 }
-
+#if 0
 int32_t ch341::init(uint8_t mode)
 {
 	int res = -1;
@@ -3077,7 +3101,7 @@ int32_t ch341::init(uint8_t mode)
 
 	return res;
 }
-
+#endif
 // TODO get from ch341a_spi.c
 int32_t ch341::initSPI()
 {

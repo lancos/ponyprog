@@ -281,7 +281,7 @@ class ch341 : public QObject, public USB_Interface
 	ch341();
 // 	virtual ~ch341();
 
-	virtual int32_t Open(uint16_t vid, uint16_t pid, uint8_t mode);
+	virtual int32_t Open(uint16_t vid, uint16_t pid);
 	virtual void    Close();
 	virtual int32_t SetMode(uint16_t mode = USB_MODE_NONE);
 
@@ -334,7 +334,7 @@ class ch341 : public QObject, public USB_Interface
 
 	virtual int32_t getState();
 	virtual int32_t setControl();
-	virtual int32_t init(uint8_t mode);
+// 	virtual int32_t init(uint8_t mode);
 
 	int32_t initUART();
 	int32_t initSPI();

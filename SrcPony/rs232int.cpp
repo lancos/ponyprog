@@ -66,7 +66,7 @@ SerialInterface::SerialInterface()
 	wait_endTX_mode = false;
 
 	// pointer to ch341
-	uartProg = 0;
+	usbProg = 0;
 
 #ifdef Q_OS_WIN32
 	hCom = INVALID_HANDLE_VALUE;
@@ -124,13 +124,13 @@ int SerialInterface::OpenUSB(uint16_t vid, uint16_t pid)
 
 	if (vid > 0 && pid > 0)
 	{
-		if (uartProg != 0)
+		if (usbProg != 0)
 		{
 			CloseSerial();
 		}
 
-		uartProg = new ch341();
-		uartProg->Open(vid, pid, USB_MODE_UART); // or depended from selected
+		usbProg = new ch341();
+		usbProg->Open(vid, pid); // or depended from selected
 
 		if (SetSerialTimeouts() != OK)
 		{
@@ -298,14 +298,14 @@ void SerialInterface::CloseSerial()
 {
 	qDebug() << "SerialInterface::CloseSerial()";
 
-	if (uartProg != 0)
+	if (usbProg != 0)
 	{
 		//TODO disconnect? when flashing runs?
 		// close the usb
-		uartProg->Close();
+		usbProg->Close();
 
-		delete uartProg;
-		uartProg = 0;
+		delete usbProg;
+		usbProg = 0;
 	}
 
 #ifdef Q_OS_WIN32
@@ -341,9 +341,9 @@ int SerialInterface::SetSerialBreak(int state)
 {
 	int result = E2ERR_OPENFAILED;
 
-	if (uartProg != 0)
+	if (usbProg != 0)
 	{
-		result = uartProg->SetBreakControl(state);
+		result = usbProg->SetBreakControl(state);
 
 		return result;
 	}
@@ -402,7 +402,7 @@ void SerialInterface::SetSerialEventMask(long mask)
  */
 void SerialInterface::SerialFlushRx()
 {
-	if (uartProg != 0)
+	if (usbProg != 0)
 	{
 		// TODO flushRx
 		// this function is not in use
@@ -426,7 +426,7 @@ void SerialInterface::SerialFlushRx()
 
 void SerialInterface::SerialFlushTx()
 {
-	if (uartProg != 0)
+	if (usbProg != 0)
 	{
 		//TODO flushTx
 		// this function is not in use
@@ -450,13 +450,13 @@ void SerialInterface::SerialFlushTx()
 
 void SerialInterface::WaitForTxEmpty()
 {
-	if (uartProg != 0)
+	if (usbProg != 0)
 	{
 		// TODO to check this
 		uint32_t completed;
 		do
 		{
-			completed = uartProg->GetStatusTx();
+			completed = usbProg->GetStatusTx();
 			QApplication::processEvents();
 		}
 		while (!completed);
@@ -491,8 +491,9 @@ long SerialInterface::ReadSerial(uint8_t *buffer, long len)
 {
 	long retval = E2ERR_OPENFAILED;
 
-	if (uartProg != 0)
+	if (usbProg != 0)
 	{
+		// TODO to implement I2C, SPI
 		long nread, nleft;
 		uint8_t *ptr;
 
@@ -502,7 +503,7 @@ long SerialInterface::ReadSerial(uint8_t *buffer, long len)
 		while (nleft > 0)
 		{
 			// TODO ???
-// 			nread = uartProg->Read(ptr, nleft);
+// 			nread = usbProg->Read(ptr, nleft);
 
 			if (nread < 0)
 			{
@@ -606,8 +607,9 @@ long SerialInterface::WriteSerial(uint8_t *buffer, long len)
 {
 	long retval = E2ERR_OPENFAILED;
 
-	if (uartProg != 0)
+	if (usbProg != 0)
 	{
+		// TODO to implement I2C, SPI
 		long nleft;
 		uint8_t *ptr;
 
@@ -617,7 +619,7 @@ long SerialInterface::WriteSerial(uint8_t *buffer, long len)
 		while (nleft > 0)
 		{
 			// TODO ???
-			long nwritten = 0;// = uartProg->Write(ptr, nleft);
+			long nwritten = 0;// = usbProg->Write(ptr, nleft);
 
 			if (nwritten <= 0)
 			{
@@ -741,8 +743,10 @@ int SerialInterface::SetSerialParams(long speed, int bits, int parity, int stops
 
 	// end read of settings
 
-	if (uartProg != 0)
+	if (usbProg != 0)
 	{
+		usbProg->SetMode(USB_MODE_UART);
+
 		if (speed >= 300 && speed <= 115200)
 		{
 			actual_speed = speed;
@@ -752,27 +756,27 @@ int SerialInterface::SetSerialParams(long speed, int bits, int parity, int stops
 		{
 			actual_bits = bits;
 		}
-		uartProg->SetBits(bits);
+		usbProg->SetBits(bits);
 
 		if (parity == 'N' || parity == 'E' || parity == 'O')
 		{
 			actual_parity = parity;
 		}
-		uartProg->SetParity(parity);
+		usbProg->SetParity(parity);
 
 		if (stops >= 1 && stops <= 2)
 		{
 			actual_stops = stops;
 		}
-		uartProg->SetStops(stops);
+		usbProg->SetStops(stops);
 
 		if (flow_control >= 0 && flow_control <= 2)
 		{
 			actual_flowcontrol = flow_control;
 		}
-		uartProg->SetFlowControl(flow_control);
+		usbProg->SetFlowControl(flow_control);
 
-		result = uartProg->SetBaudRate(speed);
+		result = usbProg->SetBaudRate(speed);
 		if (result)
 		{
 			// TODO message
@@ -1028,7 +1032,7 @@ int SerialInterface::SetSerialTimeouts(long init_read, long while_read)
 		read_total_timeout = init_read;
 	}
 
-	if (uartProg != 0)
+	if (usbProg != 0)
 	{
 		// TODO
 
@@ -1087,9 +1091,9 @@ int SerialInterface::SetSerialDTR(int dtr)
 {
 	int result = E2ERR_OPENFAILED;
 
-	if (uartProg != 0)
+	if (usbProg != 0)
 	{
-		result = uartProg->SetDTR(dtr);
+		result = usbProg->SetDTR(dtr);
 
 		if (result)
 		{
@@ -1132,9 +1136,9 @@ int SerialInterface::SetSerialRTS(int rts)
 {
 	int result = E2ERR_OPENFAILED;
 
-	if (uartProg != 0)
+	if (usbProg != 0)
 	{
-		result = uartProg->SetRTS(rts);
+		result = usbProg->SetRTS(rts);
 		if (result)
 		{
 			//TODO message
@@ -1176,9 +1180,9 @@ int SerialInterface::SetSerialRTSDTR(int state)
 {
 	int result = E2ERR_OPENFAILED;
 
-	if (uartProg != 0)
+	if (usbProg != 0)
 	{
-		result = uartProg->SetRTSDTR(state);
+		result = usbProg->SetRTSDTR(state);
 
 		if (result)
 		{
@@ -1230,9 +1234,9 @@ int SerialInterface::GetSerialDSR() const
 {
 	int result = E2ERR_OPENFAILED;
 
-	if (uartProg != 0)
+	if (usbProg != 0)
 	{
-		result = uartProg->GetDSR();
+		result = usbProg->GetDSR();
 
 		return result;
 	}
@@ -1267,10 +1271,10 @@ int SerialInterface::GetSerialCTS() const
 {
 	int result = E2ERR_OPENFAILED;
 
-	if (uartProg != 0)
+	if (usbProg != 0)
 	{
 		// TODO to check bits
-		result = uartProg->GetCTS();
+		result = usbProg->GetCTS();
 
 		return result;
 	}

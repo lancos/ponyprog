@@ -94,7 +94,7 @@ class SerialInterface
 	bool wait_endTX_mode;
 
 	/* supported device */
-	ch341 *uartProg;
+	ch341 *usbProg;
 
 	//      E2Profile *profile;
 #ifdef Q_OS_WIN32
