@@ -252,3 +252,4 @@ long Sde2506Bus::Write(int addr, uint8_t const *data, long length, int page_size
 
 	return curaddr;
 }
+

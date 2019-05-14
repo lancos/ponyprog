@@ -87,8 +87,9 @@ int SIProgInterface::Open(int com_no)
 	if (com_no < 0)
 	{
 		int vid, pid;
-		vid = GetUSBVid();
-		pid = GetUSBPid();
+
+		GetUSB(vid, pid);
+
 		if ((ret_val = SerialInterface::OpenUSB(vid, pid)) == OK)
 		{
 			//      SetSerialEventMask(0);

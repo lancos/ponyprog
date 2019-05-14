@@ -474,8 +474,7 @@ void e2App::SetInterfaceType(HInterfaceType type)
 		iType = FTDI_JTAGKEY;
 		busIntp = &jtagkeyI;
 		jtagkeyI.ConfigPins(E2Profile::GetMpssePinCtrl(), E2Profile::GetMpssePinDataIn(), E2Profile::GetMpssePinDataOut(), E2Profile::GetMpssePinClock());
-		jtagkeyI.SetUSBVid(0x0403);
-		jtagkeyI.SetUSBPid(0xcff8);
+		jtagkeyI.SetUSB(0x0403, 0xcff8);
 		break;
 
 	case USB_AUTO:

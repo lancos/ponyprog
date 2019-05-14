@@ -47,16 +47,13 @@ class BusIO
 	virtual int OpenUSB(int vid, int pid)
 	{
 		Q_CHECK_PTR(busI);
-		busI->SetUSBVid(vid);
-		busI->SetUSBPid(pid);
-		err_no = busI->Open(-1);
+		err_no = busI->OpenUSB(vid, pid);
 		return err_no;
 	}
 	virtual void Close()
 	{
 		Q_CHECK_PTR(busI);
-		busI->SetUSBVid(0);
-		busI->SetUSBPid(0);
+		busI->SetUSB(0, 0);
 		busI->Close();
 	}
 	virtual int Error();
@@ -71,6 +68,7 @@ class BusIO
 
 	virtual long Read(int addr, uint8_t *data, long length, int page_size = 0) = 0;
 	virtual long Write(int addr, uint8_t const *data, long length, int page_size = 0) = 0;
+
 	virtual int Erase(int type = 0)
 	{
 		(void)type;

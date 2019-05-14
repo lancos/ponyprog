@@ -27,10 +27,10 @@
 #ifndef _SIPROGINTERFACE_H
 #define _SIPROGINTERFACE_H
 
-#include "businter.h"
+
 #include "rs232int.h"
 
-class SIProgInterface : public BusInterface, public SerialInterface
+class SIProgInterface : public SerialInterface
 {
   public:
 	SIProgInterface();

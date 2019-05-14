@@ -283,7 +283,8 @@ class ch341 : public QObject, public USB_Interface
 
 	virtual int32_t Open(uint16_t vid, uint16_t pid);
 	virtual void    Close();
-	virtual int32_t SetMode(uint16_t mode = USB_MODE_NONE);
+	virtual int32_t SetChipMode(uint16_t mode = USB_MODE_NONE);
+	virtual int32_t SetStreamSpeed(uint32_t speed = 0);
 
 	virtual int32_t Release(void);
 	virtual int32_t SetBaudRate(uint32_t baudRate);
@@ -308,7 +309,7 @@ class ch341 : public QObject, public USB_Interface
 	virtual int32_t GetStatusTx();
 
 	virtual int32_t Read(uchar *buf, size_t len);
-	virtual int32_t Write(uchar *buf, size_t len);
+	virtual int32_t Write(const uchar *buf, size_t len);
 
 	virtual void    ReleaseInterface(void);
 	virtual void    CloseHandle();

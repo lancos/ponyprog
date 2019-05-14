@@ -36,7 +36,24 @@ class SPIBus : public BusIO
 	SPIBus(BusInterface *ptr = 0, bool cpha = false, bool cpol = false);
 	virtual ~SPIBus();
 
+	long Read(int slave, uint8_t *data, long length, int page_size = 0);
+	long Write(int slave, uint8_t const *data, long length, int page_size = 0);
+
 	virtual int Reset();
+
+	virtual int Open(int port)
+	{
+		Q_CHECK_PTR(busI);
+		busI->SetSPIMode(true);
+		return BusIO::Open(port);
+	}
+
+	virtual int OpenUSB(int vid, int pid)
+	{
+		Q_CHECK_PTR(busI);
+		busI->SetSPIMode(true);
+		return BusIO::OpenUSB(vid, pid);
+	}
 
 	void SetDelay();
 

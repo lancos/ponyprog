@@ -53,6 +53,13 @@ class I2CBus : public BusIO
 		return BusIO::Open(port);
 	}
 
+	virtual int OpenUSB(int vid, int pid)
+	{
+		Q_CHECK_PTR(busI);
+		busI->SetI2CMode(true);
+		return BusIO::OpenUSB(vid, pid);
+	}
+
 	void Close();
 	int TestPort(int port);
 	//int Calibration(int slave = 0xA0);

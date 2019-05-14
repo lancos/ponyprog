@@ -65,8 +65,6 @@ SerialInterface::SerialInterface()
 
 	wait_endTX_mode = false;
 
-	// pointer to ch341
-	usbProg = 0;
 
 #ifdef Q_OS_WIN32
 	hCom = INVALID_HANDLE_VALUE;
@@ -113,7 +111,7 @@ int SerialInterface::OpenSerial(int no)
 
 	return ret_val;
 }
-
+#if 0
 /**
  * @brief
  *
@@ -124,13 +122,9 @@ int SerialInterface::OpenUSB(uint16_t vid, uint16_t pid)
 
 	if (vid > 0 && pid > 0)
 	{
-		if (usbProg != 0)
-		{
-			CloseSerial();
-		}
+		CloseSerial();
 
-		usbProg = new ch341();
-		usbProg->Open(vid, pid); // or depended from selected
+		GetUSBInterface()->Open(vid, pid); // or depended from selected
 
 		if (SetSerialTimeouts() != OK)
 		{
@@ -152,7 +146,7 @@ int SerialInterface::OpenUSB(uint16_t vid, uint16_t pid)
 	}
 	return ret_val;
 }
-
+#endif
 /**
  * @brief
  *
@@ -298,14 +292,11 @@ void SerialInterface::CloseSerial()
 {
 	qDebug() << "SerialInterface::CloseSerial()";
 
-	if (usbProg != 0)
+	if (usb_pid > 0 || usb_vid > 0)
 	{
 		//TODO disconnect? when flashing runs?
 		// close the usb
-		usbProg->Close();
-
-		delete usbProg;
-		usbProg = 0;
+		GetUSBInterface()->Close();
 	}
 
 #ifdef Q_OS_WIN32
@@ -341,9 +332,9 @@ int SerialInterface::SetSerialBreak(int state)
 {
 	int result = E2ERR_OPENFAILED;
 
-	if (usbProg != 0)
+	if (usb_vid > 0 && usb_pid > 0)
 	{
-		result = usbProg->SetBreakControl(state);
+		result = GetUSBInterface()->SetBreakControl(state);
 
 		return result;
 	}
@@ -402,7 +393,7 @@ void SerialInterface::SetSerialEventMask(long mask)
  */
 void SerialInterface::SerialFlushRx()
 {
-	if (usbProg != 0)
+	if (usb_vid > 0 && usb_pid > 0)
 	{
 		// TODO flushRx
 		// this function is not in use
@@ -426,7 +417,7 @@ void SerialInterface::SerialFlushRx()
 
 void SerialInterface::SerialFlushTx()
 {
-	if (usbProg != 0)
+	if (usb_vid > 0 && usb_pid > 0)
 	{
 		//TODO flushTx
 		// this function is not in use
@@ -450,13 +441,13 @@ void SerialInterface::SerialFlushTx()
 
 void SerialInterface::WaitForTxEmpty()
 {
-	if (usbProg != 0)
+	if (usb_vid > 0 && usb_pid > 0)
 	{
 		// TODO to check this
 		uint32_t completed;
 		do
 		{
-			completed = usbProg->GetStatusTx();
+			completed = GetUSBInterface()->GetStatusTx();
 			QApplication::processEvents();
 		}
 		while (!completed);
@@ -491,7 +482,7 @@ long SerialInterface::ReadSerial(uint8_t *buffer, long len)
 {
 	long retval = E2ERR_OPENFAILED;
 
-	if (usbProg != 0)
+	if (usb_vid > 0 && usb_pid > 0)
 	{
 		// TODO to implement I2C, SPI
 		long nread, nleft;
@@ -503,7 +494,7 @@ long SerialInterface::ReadSerial(uint8_t *buffer, long len)
 		while (nleft > 0)
 		{
 			// TODO ???
-// 			nread = usbProg->Read(ptr, nleft);
+			nread = GetUSBInterface()->Read(ptr, nleft);
 
 			if (nread < 0)
 			{
@@ -607,7 +598,7 @@ long SerialInterface::WriteSerial(uint8_t *buffer, long len)
 {
 	long retval = E2ERR_OPENFAILED;
 
-	if (usbProg != 0)
+	if (usb_vid > 0 && usb_pid > 0)
 	{
 		// TODO to implement I2C, SPI
 		long nleft;
@@ -619,7 +610,7 @@ long SerialInterface::WriteSerial(uint8_t *buffer, long len)
 		while (nleft > 0)
 		{
 			// TODO ???
-			long nwritten = 0;// = usbProg->Write(ptr, nleft);
+			long nwritten = GetUSBInterface()->Write(ptr, nleft);
 
 			if (nwritten <= 0)
 			{
@@ -628,6 +619,8 @@ long SerialInterface::WriteSerial(uint8_t *buffer, long len)
 
 			nleft -= nwritten;
 			ptr   += nwritten;
+
+			QApplication::processEvents();
 		}
 
 		retval = len;
@@ -743,11 +736,11 @@ int SerialInterface::SetSerialParams(long speed, int bits, int parity, int stops
 
 	// end read of settings
 
-	if (usbProg != 0)
+	if (usb_vid > 0 && usb_pid > 0)
 	{
-		usbProg->SetMode(USB_MODE_UART);
+		GetUSBInterface()->SetChipMode(USB_MODE_UART);
 
-		if (speed >= 300 && speed <= 115200)
+		if (speed >= 300 && speed <= 230400)
 		{
 			actual_speed = speed;
 		}
@@ -756,27 +749,27 @@ int SerialInterface::SetSerialParams(long speed, int bits, int parity, int stops
 		{
 			actual_bits = bits;
 		}
-		usbProg->SetBits(bits);
+		GetUSBInterface()->SetBits(bits);
 
 		if (parity == 'N' || parity == 'E' || parity == 'O')
 		{
 			actual_parity = parity;
 		}
-		usbProg->SetParity(parity);
+		GetUSBInterface()->SetParity(parity);
 
 		if (stops >= 1 && stops <= 2)
 		{
 			actual_stops = stops;
 		}
-		usbProg->SetStops(stops);
+		GetUSBInterface()->SetStops(stops);
 
 		if (flow_control >= 0 && flow_control <= 2)
 		{
 			actual_flowcontrol = flow_control;
 		}
-		usbProg->SetFlowControl(flow_control);
+		GetUSBInterface()->SetFlowControl(flow_control);
 
-		result = usbProg->SetBaudRate(speed);
+		result = GetUSBInterface()->SetBaudRate(speed);
 		if (result)
 		{
 			// TODO message
@@ -1032,7 +1025,7 @@ int SerialInterface::SetSerialTimeouts(long init_read, long while_read)
 		read_total_timeout = init_read;
 	}
 
-	if (usbProg != 0)
+	if (usb_pid > 0 || usb_vid > 0)
 	{
 		// TODO
 
@@ -1091,9 +1084,9 @@ int SerialInterface::SetSerialDTR(int dtr)
 {
 	int result = E2ERR_OPENFAILED;
 
-	if (usbProg != 0)
+	if (usb_pid > 0 || usb_vid > 0)
 	{
-		result = usbProg->SetDTR(dtr);
+		result = GetUSBInterface()->SetDTR(dtr);
 
 		if (result)
 		{
@@ -1136,9 +1129,9 @@ int SerialInterface::SetSerialRTS(int rts)
 {
 	int result = E2ERR_OPENFAILED;
 
-	if (usbProg != 0)
+	if (usb_pid > 0 || usb_vid > 0)
 	{
-		result = usbProg->SetRTS(rts);
+		result = GetUSBInterface()->SetRTS(rts);
 		if (result)
 		{
 			//TODO message
@@ -1180,9 +1173,9 @@ int SerialInterface::SetSerialRTSDTR(int state)
 {
 	int result = E2ERR_OPENFAILED;
 
-	if (usbProg != 0)
+	if (usb_pid > 0 || usb_vid > 0)
 	{
-		result = usbProg->SetRTSDTR(state);
+		result = GetUSBInterface()->SetRTSDTR(state);
 
 		if (result)
 		{
@@ -1230,15 +1223,13 @@ int SerialInterface::SetSerialRTSDTR(int state)
 	return result;
 }
 
-int SerialInterface::GetSerialDSR() const
+int SerialInterface::GetSerialDSR()
 {
 	int result = E2ERR_OPENFAILED;
 
-	if (usbProg != 0)
+	if (usb_pid > 0 || usb_vid > 0)
 	{
-		result = usbProg->GetDSR();
-
-		return result;
+		return GetUSBInterface()->GetDSR();
 	}
 
 #ifdef Q_OS_WIN32
@@ -1267,14 +1258,14 @@ int SerialInterface::GetSerialDSR() const
 	return result;
 }
 
-int SerialInterface::GetSerialCTS() const
+int SerialInterface::GetSerialCTS()
 {
 	int result = E2ERR_OPENFAILED;
 
-	if (usbProg != 0)
+	if (usb_pid > 0 || usb_vid > 0)
 	{
 		// TODO to check bits
-		result = usbProg->GetCTS();
+		result = GetUSBInterface()->GetCTS();
 
 		return result;
 	}

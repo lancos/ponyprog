@@ -46,6 +46,43 @@ SPIBus::~SPIBus()
 {
 }
 
+long SPIBus::Read(int slave, uint8_t *data, long length, int page_size)
+{
+	long len;
+
+	qDebug() << __PRETTY_FUNCTION__ << "(" << (hex) << slave << "," << (void *)data << "," << (dec) << length << ") - IN";
+	len = 0;//StartRead(slave, data, length);
+
+// 	if (len == length)
+// 		if (err_no || Stop())
+// 		{
+// 			len = 0;
+// 		}
+//
+// 	qDebug() << __PRETTY_FUNCTION__ << "=" << len << ", err_no =" << err_no << " - OUT";
+
+	return len;
+}
+
+long SPIBus::Write(int slave, uint8_t const *data, long length, int page_size)
+{
+	long len;
+
+	qDebug() << __PRETTY_FUNCTION__ << "(" << (hex) << slave << "," << data << "," << (dec) << length << ") - IN";
+
+// 	len = 0;//StartWrite(slave, data, length);
+//
+// 	if (len == length)
+// 		if (err_no || Stop())
+// 		{
+// 			len = 0;
+// 		}
+//
+// 	qDebug() << __PRETTY_FUNCTION__ << "=" << len << ", err_no =" << err_no << " - OUT";
+
+	return len;
+}
+
 void SPIBus::SetDelay()
 {
 	int val = E2Profile::GetSPISpeed();

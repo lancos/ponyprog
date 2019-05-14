@@ -27,6 +27,10 @@
 #ifndef _I2CINTERFACE_H
 #define _I2CINTERFACE_H
 
+
+#include <libusb-1.0/libusb.h>
+
+#include "ch341a.h"
 #include "types.h"
 #include "errcode.h"
 #include "wait.h"
@@ -63,12 +67,36 @@ class BusInterface
 		  installed(-1),
 		  cmd2cmd_delay(0),
 		  shot_delay(5),
-		  i2c_mode(false)
+		  i2c_mode(false),
+		  spi_mode(false)
 	{
 	}
 
 	virtual int Open(int port) = 0;
 	virtual void Close() = 0;
+
+	// for usb devices
+	virtual int OpenUSB(uint16_t vid, uint16_t pid)
+	{
+		int ret_val = E2ERR_OPENFAILED;
+
+		if (vid > 0 && pid > 0)
+		{
+			ret_val = GetUSBInterface()->Open(vid, pid); // or depended from selected
+
+			if (ret_val == OK)
+			{
+				usb_vid = vid;
+				usb_pid = pid;
+			}
+			else
+			{
+				usb_vid = 0;
+				usb_pid = 0;
+			}
+		}
+		return ret_val;
+	}
 
 	virtual int TestOpen(int port)
 	{
@@ -169,27 +197,16 @@ class BusInterface
 		return (installed >= 0) ? true : false;
 	}
 
-	void SetUSBVid(int vid)
+	void SetUSB(int vid, int pid)
 	{
-		if (vid > 0)
-		{
-			usb_vid = vid;
-		}
+		usb_vid = vid;
+		usb_pid = pid;
 	}
-	void SetUSBPid(int pid)
+
+	void GetUSB(int &vid, int &pid)
 	{
-		if (pid > 0)
-		{
-			usb_pid = pid;
-		}
-	}
-	int GetUSBVid()
-	{
-		return usb_vid;
-	}
-	int GetUSBPid()
-	{
-		return usb_pid;
+		vid = usb_vid;
+		pid = usb_pid;
 	}
 
 	virtual void WaitMsec(unsigned int msec)
@@ -362,13 +379,102 @@ class BusInterface
 		return shot_delay;
 	}
 
+	// we are working with USB_Interface pointer because of it is
+	// the abstract basic class for different supported chips
+	USB_Interface *GetUSBInterface() const
+	{
+		// return common interface, abstract class based
+		// TODO to check the VID, PID
+		// if (usb_vid == 0x111 && usb_pid == 0x222)
+		// {
+		//
+		// }
+
+		return (USB_Interface *)&usbI;
+	}
+
 	void SetI2CMode(bool mode)
 	{
 		i2c_mode = mode;
+		if (mode)
+		{
+			spi_mode = false;
+		}
 	}
 	int GetI2CMode() const
 	{
 		return i2c_mode;
+	}
+
+	/**
+	 * @brief write I2C or SPI directly to usb chip
+	 *        they must be supported from chip: ch341a
+	 */
+	int WriteStream(uint8_t const *data, long length, int page_size = 0)
+	{
+		int ret = -1;
+		if (usb_vid == 0 || usb_pid == 0)
+		{
+			return ret;
+		}
+
+		if (i2c_mode)
+		{
+			// usbI direct stream
+			usbI.SetChipMode(USB_MODE_I2C);
+			usbI.SetStreamSpeed(USB_DEFAULT_RATE);
+			ret = usbI.Write(data, length);
+		}
+
+		if (spi_mode)
+		{
+			// usbI direct stream
+			usbI.SetChipMode(USB_MODE_SPI);
+			usbI.SetStreamSpeed(USB_DEFAULT_RATE);
+			ret = usbI.Write(data, length);
+		}
+		return ret;
+	}
+	/**
+	 * @brief read I2C or SPI directly from usb chip
+	 *        they must be supported from chip: ch341a
+	 */
+	int ReadStream(uint8_t *data, long length, int page_size = 0)
+	{
+		int ret = -1;
+		if (usb_vid == 0 || usb_pid == 0)
+		{
+			return ret;
+		}
+
+		if (i2c_mode)
+		{
+			// usbI direct stream
+			usbI.SetChipMode(USB_MODE_I2C);
+			usbI.SetStreamSpeed(USB_DEFAULT_RATE);
+			ret = usbI.Read(data, length);
+		}
+		if (spi_mode)
+		{
+			// usbI direct stream
+			usbI.SetChipMode(USB_MODE_SPI);
+			usbI.SetStreamSpeed(USB_DEFAULT_RATE);
+			ret = usbI.Read(data, length);
+		}
+		return ret;
+	}
+
+	void SetSPIMode(bool mode)
+	{
+		spi_mode = mode;
+		if (mode)
+		{
+			i2c_mode = false;
+		}
+	}
+	int GetSPIMode() const
+	{
+		return spi_mode;
 	}
 
   protected:
@@ -398,11 +504,17 @@ class BusInterface
 	int usb_vid;
 	int usb_pid;
 
+
+
   private:
 	int installed;              // -1 --> not installed, >= 0 number if the installed port
 	int cmd2cmd_delay;			// <> 0 if a delay between commands is needed
 	unsigned int shot_delay;	//delay unit to perform bus timing
 	bool i2c_mode;
+	bool spi_mode;
+
+	/* supported device */
+	ch341 usbI;
 
 	Wait w;
 };

@@ -37,26 +37,20 @@
 #include <windows.h>
 #endif
 
-#include <libusb-1.0/libusb.h>
-
-#include "ch341a.h"
+#include "businter.h"
 #include "types.h"
 #include "e2profil.h"
 
 //#define MAX_COMPORTS    64
 
 // tty: usb uart or com interface
-class SerialInterface
+class SerialInterface : public BusInterface
 {
   public:
-
 	SerialInterface();
 	virtual ~SerialInterface();
 
 	int OpenSerial(int no);
-
-	// for usb devices in UART mode
-	int OpenUSB(uint16_t vid, uint16_t pid);
 
 	void CloseSerial();
 
@@ -71,8 +65,8 @@ class SerialInterface
 
 	int SetSerialDTR(int dtr);
 	int SetSerialRTS(int rts);
-	int GetSerialDSR() const;
-	int GetSerialCTS() const;
+	int GetSerialDSR();
+	int GetSerialCTS();
 	int SetSerialRTSDTR(int state);
 
   private:
@@ -92,9 +86,6 @@ class SerialInterface
 	int actual_bits, actual_parity, actual_stops;
 	int actual_flowcontrol;
 	bool wait_endTX_mode;
-
-	/* supported device */
-	ch341 *usbProg;
 
 	//      E2Profile *profile;
 #ifdef Q_OS_WIN32

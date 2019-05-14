@@ -185,7 +185,7 @@ int32_t ch341::setControl()
 /**
  * @brief
  */
-int32_t ch341::SetMode(uint16_t mode)
+int32_t ch341::SetChipMode(uint16_t mode)
 {
 	int res = -1;
 
@@ -691,7 +691,7 @@ int32_t ch341::Read(uchar *buf, size_t len)
  *
  * @return number of transferred bytes
  */
-int32_t ch341::Write(uchar *buf, size_t len)
+int32_t ch341::Write(const uchar *buf, size_t len)
 {
 	int32_t res;
 	int transfered;
@@ -3266,6 +3266,26 @@ int32_t ch341::usbTransfer(const char *func, uint8_t type, uint *buf, int len)
 	return transfered;
 }
 #endif
+
+// USB_LOW_RATE     0x00 // 20 kHz
+// USB_DEFAULT_RATE 0x01 // 100 kHz
+// USB_FAST_RATE    0x02 // 400 kHz
+// USB_FULL_RATE    0x03 // 750 kHz
+// USB_DOUBLE_LINE  0x04 // dbl data lines
+int32_t ch341::SetStreamSpeed(uint32_t speed)
+{
+	if (ChipMode == USB_MODE_I2C)
+	{
+		return SetStreamMode(speed & 0x03);
+	}
+
+	if (ChipMode == USB_MODE_SPI)
+	{
+		return SetStreamMode(speed & 0x07);
+	}
+
+	return -1;
+}
 
 /**
  * @brief Set the serial port flow mode

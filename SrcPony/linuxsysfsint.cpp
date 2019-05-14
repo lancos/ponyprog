@@ -243,6 +243,7 @@ int LinuxSysFsInterface::Open(int com_no)
 
 	if (com_no < 0)
 	{
+		// USB
 		return -1;
 	}
 
