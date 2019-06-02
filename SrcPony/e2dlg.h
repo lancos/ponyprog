@@ -52,7 +52,6 @@ class e2Dialog : public QDialog, public cTranslator, public Ui::E2Dialog
 	void onTest();
 	void onChangeMain(int i);
 	void onChangeType(int i);
-	void onChangePortNum(int i);
 
   private:
 	int Test(int p = -1, bool open_only = false) const;
@@ -63,6 +62,7 @@ class e2Dialog : public QDialog, public cTranslator, public Ui::E2Dialog
 
 	QStringList lptList;
 	QStringList comList;
+	QStringList usbspeedItems;
 
 	int port_no;                    //Idex of selected port in portList
 	int lpt_no, com_no;

@@ -34,7 +34,6 @@
 #include "e2cmdw.h"
 #include "eeptypes.h"
 #include "types.h"
-// #include "i2cbus.h"
 
 class e2CmdWindow;
 
@@ -56,20 +55,15 @@ e2Dialog::e2Dialog(QWidget *bw, const QString title)
 
 	qDebug() << "e2Dialog::e2Dialog()";
 
-	cbxBaudrate->addItems(QStringList() << "300" << "1200" << "2400" << "4800" << "9600" << "14400" << "19200" << "28800" << "38400" << "57600" << "115200");
-	cbxDatabits->addItems(QStringList() << "5 bits" << "6 bits" << "7 bits" << "8 bits");
-	cbxParity->addItems(QStringList() << "None" << "Even" << "Odd");
-	cbxStopbits->addItems(QStringList() << "1 bit" << "2 bits");
-	cbxFlowControl->addItems(QStringList() << "None" << "RTS/CTS" << "DTR/DSR" << "XON/XOFF");
+	usbspeedItems = (QStringList() << "Slow" << "Normal" << "Fast"  << "High" << "Highest");
+	cbxUSBspeed->addItems(usbspeedItems);
 
 	setWidgetsText();
 
-	// main selection for COM/LPT/USB
-	connect(cbxInterfMain, SIGNAL(currentIndexChanged(int)), this, SLOT(onChangeMain(int)));
+	connect(tabWidget, SIGNAL(currentChanged(int)), this, SLOT(onChangeMain(int)));
+
 	// selection of subtype
 	connect(cbxInterfType, SIGNAL(currentIndexChanged(int)), this, SLOT(onChangeType(int)));
-	// select of interface num
-	connect(cbxInterfNum, SIGNAL(currentIndexChanged(int)), this, SLOT(onChangePortNum(int)));
 
 	connect(pushOk, SIGNAL(clicked()), this, SLOT(onOk()));
 	connect(pushCancel, SIGNAL(clicked()), this, SLOT(reject()));
@@ -93,12 +87,6 @@ extern QStringList GetInterfList(int vector);
  */
 void e2Dialog::onChangeMain(int i)
 {
-	disconnect(cbxInterfMain, SIGNAL(currentIndexChanged(int)), this, SLOT(onChangeMain(int)));
-
-	cbxInterfMain->setCurrentIndex(i);
-
-	connect(cbxInterfMain, SIGNAL(currentIndexChanged(int)), this, SLOT(onChangeMain(int)));
-
 	interf_type = VindexToInterfType(i, 0);
 	qDebug() << "IntefType: " << (int)interf_type << ", index = " << i;
 
@@ -111,95 +99,19 @@ void e2Dialog::onChangeMain(int i)
 
 	connect(cbxInterfType, SIGNAL(currentIndexChanged(int)), this, SLOT(onChangeType(int)));
 
-// 	cbxInterfType->setCurrentIndex(0);
 	onChangeType(0);
-//	interf_type = (HInterfaceType)(i + 3);
 }
-
-void e2Dialog::activateTTYSettings(bool set)
-{
-	cbxBaudrate->setEnabled(set);
-	cbxDatabits->setEnabled(set);
-	cbxParity->setEnabled(set);
-	cbxStopbits->setEnabled(set);
-	cbxFlowControl->setEnabled(set);
-}
-
 /**
  * @brief   slot for selection of subtype
  *
  */
 void e2Dialog::onChangeType(int i)
 {
-	int m = cbxInterfMain->currentIndex();
+	int m = tabWidget->currentIndex();
 
 	interf_type = VindexToInterfType(m, i);
 	qDebug() << "IntefType: " << (int)interf_type << ", subindex = " << i;
-
-	disconnect(cbxInterfNum, SIGNAL(currentIndexChanged(int)), this, SLOT(onChangePortNum(int)));
-	// rebuild the list
-
-	cbxInterfNum->clear();
-
-	switch (m)
-	{
-	case 0: // tty
-		cbxInterfNum->addItems(comList);
-		// TODO is it right??
-#ifdef Q_OS_WIN32
-		activateTTYSettings(false);
-#else
-		activateTTYSettings(true);
-#endif
-		break;
-
-	case 1: // lpt
-		cbxInterfNum->addItems(lptList);
-		activateTTYSettings(false);
-		break;
-
-	case 2: // usb autodetect ch341a
-		cbxInterfNum->addItems(QStringList("Autodetect"));
-		activateTTYSettings(true);
-		break;
-	}
-
-	connect(cbxInterfNum, SIGNAL(currentIndexChanged(int)), this, SLOT(onChangePortNum(int)));
-
-// 	cbxInterfNum->setCurrentText(0);
-	onChangePortNum(0);
-//	interf_type = (HInterfaceType)i;
 }
-
-/**
- * @brief   slot for selection of interface:
- *          COM1(ttyS0), COM2(ttyS1)... LPT1..LPT4 and other
- *
- */
-void e2Dialog::onChangePortNum(int i)
-{
-	switch (cbxInterfType->currentIndex())
-	{
-	case 0:
-		com_no = i;
-		port_no = com_no;
-		qDebug() << "COM port " << port_no;
-		break;
-
-	case 1:
-		lpt_no = i;
-		port_no = lpt_no;
-		qDebug() << "LPT port " << port_no;
-		break;
-
-	case 2:
-		com_no = 0;
-		port_no = 0;
-		qDebug() << "USB auto " << port_no;
-		break;
-	}
-}
-
 
 extern int TypeToInterfVector(HInterfaceType type);
 extern int TypeToInterfIndex(HInterfaceType type);
@@ -219,9 +131,7 @@ void e2Dialog::getSettings()
 
 	int t = TypeToInterfIndex(interf_type);
 
-	onChangeMain(m);
-
-	onChangeType(t);
+	tabWidget->setCurrentIndex(m);
 
 	switch (m)
 	{
@@ -229,13 +139,13 @@ void e2Dialog::getSettings()
 	{
 		com_no = port_no;
 
-		if (com_no >= cbxInterfNum->count())
+		if (com_no >= cbxCOMNum->count())
 		{
 			com_no = 0;
 			port_no = 0;
 		}
 
-		onChangePortNum(com_no);
+		cbxCOMNum->setCurrentIndex(com_no);
 		break;
 	}
 
@@ -243,19 +153,20 @@ void e2Dialog::getSettings()
 	{
 		lpt_no = port_no;
 
-		if (lpt_no >= cbxInterfNum->count())
+		if (lpt_no >= cbxLPTNum->count())
 		{
 			lpt_no = 0;
 			port_no = 0;
 		}
-
-		onChangePortNum(lpt_no);
+		cbxLPTNum->setCurrentIndex(lpt_no);
 		break;
 	}
+
 	case 2: // USB
 	{
-		port_no = 0;
-		onChangePortNum(0); // auto
+		port_no = 0; // auto
+		int usb_speed = E2Profile::GetUSBSpeed();
+		cbxUSBspeed->setCurrentIndex(usb_speed);
 		break;
 	}
 	}
@@ -264,12 +175,6 @@ void e2Dialog::getSettings()
 	chkPol2->setChecked((cmdWin->GetPolarity() & CLOCKINV) ? 1 : 0);
 	chkPol3->setChecked((cmdWin->GetPolarity() & DININV) ? 1 : 0);
 	chkPol4->setChecked((cmdWin->GetPolarity() & DOUTINV) ? 1 : 0);
-
-	cbxBaudrate->setCurrentText(E2Profile::GetBaudrate());
-	cbxDatabits->setCurrentText(E2Profile::GetDatabits());
-	cbxParity->setCurrentText(E2Profile::GetParity());
-	cbxStopbits->setCurrentText(E2Profile::GetStopbits());
-	cbxFlowControl->setCurrentText(E2Profile::GetFlowcontrol());
 }
 
 void e2Dialog::setSettings()
@@ -321,13 +226,11 @@ void e2Dialog::setSettings()
 	//Store values in the INI file
 	E2Profile::SetParInterfType(interf_type);
 	E2Profile::SetPortNumber(port_no);
-	E2Profile::SetPolarityControl(cmdWin->GetPolarity());
 
-	E2Profile::SetBaudrate(cbxBaudrate->currentText());
-	E2Profile::SetDatabits(cbxDatabits->currentText());
-	E2Profile::SetParity(cbxParity->currentText());
-	E2Profile::SetStopbits(cbxStopbits->currentText());
-	E2Profile::SetFlowcontrol(cbxFlowControl->currentText());
+	int usb_speed = cbxUSBspeed->currentIndex();
+	E2Profile::SetUSBSpeed(usb_speed);
+
+	E2Profile::SetPolarityControl(cmdWin->GetPolarity());
 
 	qDebug() << "PortNo: " << port_no;
 }
@@ -335,21 +238,31 @@ void e2Dialog::setSettings()
 
 void e2Dialog::setWidgetsText()
 {
-	labelMain->setText(translate(STR_LBLINTERFSEL));
 	labelType->setText(translate(STR_LBLINTERFTYPE));
-	labelNum->setText(translate(STR_LBLNUM));
+	labelCOMNum->setText(translate(STR_LBLNUM));
+	labelLPTNum->setText(translate(STR_LBLNUM));
+	labelUSBspeed->setText(translate(STR_USBSPEED));
 
 	QStringList mainList;
 #ifdef Q_OS_WIN32
-	mainList << "COM" << "LPT" << "LibUSB";
+	mainList << "COM" << "LPT" << "USB";
 #else
-	mainList << "tty" << "parport" << "LibUSB";
+	mainList << "TTY" << "ParPort" << "USB";
 #endif
-
-	cbxInterfMain->addItems(mainList);
+	for (int i = 0; i < mainList.count(); i++)
+	{
+		tabWidget->setTabText(i, mainList.at(i));
+	}
 
 	lptList = E2Profile::GetLPTDevList();
 	comList = E2Profile::GetCOMDevList();
+
+	cbxCOMNum->addItems(comList);
+	cbxLPTNum->addItems(lptList);
+
+	int idx = tabWidget->currentIndex();
+	QStringList interfList = GetInterfList(idx);
+	cbxInterfType->addItems(interfList);
 
 	grpPolsel->setTitle(translate(STR_LBLSELPOLARITY));
 
@@ -416,7 +329,6 @@ int e2Dialog::Test(int p, bool open_only) const
 	{
 		test = cmdWin->TestPort(p, open_only);
 	}
-
 
 	qDebug() << "e2Dialog::Test() = " << test << " *** OUT";
 

@@ -546,6 +546,7 @@ QString cTranslator::engText[] =
 	"USB device hotpluged",
 	"USB device detached",
 	"Select number:",
+	"Select chip speed:",
 	""
 };
 

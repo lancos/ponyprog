@@ -92,7 +92,9 @@ class E2Profile
 	static HInterfaceType GetParInterfType();
 	static void SetParInterfType(HInterfaceType type);
 	static int GetPortNumber();
+	static int GetUSBSpeed();
 	static void SetPortNumber(int value);
+	static void SetUSBSpeed(int spd);
 
 	static int GetBogoMips();
 	static void SetBogoMips(int value);

@@ -37,7 +37,7 @@
 #define USB_MODE_SPI  2
 #define USB_MODE_I2C  3
 
-#define USB_LOW_RATE     0x00 // 20 kHz
+#define USB_SLOW_RATE    0x00 // 20 kHz
 #define USB_DEFAULT_RATE 0x01 // 100 kHz
 #define USB_FAST_RATE    0x02 // 400 kHz
 #define USB_FULL_RATE    0x03 // 750 kHz

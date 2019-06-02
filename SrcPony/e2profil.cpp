@@ -215,6 +215,10 @@ int E2Profile::GetPortNumber()
 	return s->value("PortNumber", "-1").toInt();
 }
 
+int E2Profile::GetUSBSpeed()
+{
+	return s->value("USBSpeed", "0").toInt();
+}
 
 void E2Profile::SetPortNumber(int port)
 {
@@ -224,7 +228,13 @@ void E2Profile::SetPortNumber(int port)
 	}
 }
 
-
+void E2Profile::SetUSBSpeed(int spd)
+{
+	if (spd >= 0 /* && port < 4 */)
+	{
+		s->setValue("USBSpeed", QString::number(spd));
+	}
+}
 // QString E2Profile::GetLastScript()
 // {
 // 	return s->value("LastScript", "").toString();
