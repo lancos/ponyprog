@@ -11,6 +11,9 @@ SUBSYSTEM=="usb", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="7523", MODE="0666"
 # CH341A in I2C, SPI mode
 SUBSYSTEM=="usb", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="5512", MODE="0666", GROUP="plugdev"
 
+#FTDI Amontec USB JTAG 
+SUBSYSTEM=="usb", ATTRS{idVendor}=="0x0403", ATTRS{idProduct}=="0xcff8", MODE="0666", GROUP="plugdev"
+
 # to activate it later, after interface implementation 
 # CP210x UART
 #SUBSYSTEMS=="usb", ATTRS{idVendor}=="10c4", ATTRS{idProduct}=="ea60", MODE="0666", GROUP="plugdev"
