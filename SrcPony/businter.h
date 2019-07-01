@@ -98,6 +98,12 @@ class BusInterface
 		return ret_val;
 	}
 
+	virtual int SetUSBSpeed(int spd)
+	{
+		int ret_val = GetUSBInterface()->SetStreamSpeed(spd);
+		return ret_val;
+	}
+
 	virtual int TestOpen(int port)
 	{
 		qDebug() << __PRETTY_FUNCTION__ << "(" << port << ") IN";

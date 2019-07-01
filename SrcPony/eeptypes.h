@@ -277,10 +277,10 @@ struct chipInfo
 {
 	QString name;
 	long id;    // pretype | subtype
-	int  sz;    //dimensione in numero di banchi
+	int  sz;    // dimensione in numero di banchi
 	int  splt;  // split
 	int  wpgsz; // page size
-	int  adrsz; //dimensione dello spazio di indirizzamento in numero di banchi
+	int  adrsz; // dimensione dello spazio di indirizzamento in numero di banchi
 };
 
 
