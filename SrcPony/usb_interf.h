@@ -105,6 +105,10 @@ class USB_Interface
 	virtual int32_t SetRTSDTR(int state) = 0;
 	virtual int32_t SetConfigLCR() = 0;
 	virtual int32_t Probe() = 0;
+	virtual int32_t StreamSPI(unsigned long chip_select, unsigned long length, unsigned char *buffer, unsigned char *buffer2) = 0;
+	virtual int32_t StreamI2C(uint iWriteLength, uint *iWriteBuffer, uint iReadLength, uint *oReadBuffer) = 0;
+// 	virtual int32_t StreamSPI(uint *out, uint *in, uint32_t len) = 0;
+// 	virtual int32_t StreamI2C(uint iWriteLength, uint *iWriteBuffer, uint iReadLength, uint *oReadBuffer) = 0;
 
 // 	virtual int32_t GetStatus();
 	virtual int32_t GetStatusRx() = 0;

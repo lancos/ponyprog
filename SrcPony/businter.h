@@ -98,6 +98,18 @@ class BusInterface
 		return ret_val;
 	}
 
+	virtual int32_t StreamSPI(unsigned long chip_select, unsigned long length, unsigned char *buffer, unsigned char *buffer2)
+	{
+		int ret_val = GetUSBInterface()->StreamSPI(chip_select, length, buffer, buffer2);
+		return ret_val;
+	}
+
+	virtual int32_t StreamI2C(uint iWriteLength, uint *iWriteBuffer, uint iReadLength, uint *oReadBuffer)
+	{
+		int ret_val = GetUSBInterface()->StreamI2C(iWriteLength, iWriteBuffer, iReadLength, oReadBuffer);
+		return ret_val;
+	}
+
 	virtual int SetUSBSpeed(int spd)
 	{
 		int ret_val = GetUSBInterface()->SetStreamSpeed(spd);
@@ -214,6 +226,8 @@ class BusInterface
 		vid = usb_vid;
 		pid = usb_pid;
 	}
+
+
 
 	virtual void WaitMsec(unsigned int msec)
 	{

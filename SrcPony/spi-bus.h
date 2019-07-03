@@ -98,6 +98,15 @@ class SPIBus : public BusIO
 
   protected:
 
+// 	int32_t StreamSPI(uint *out, uint *in, uint32_t len)
+// 	{
+// 		Q_CHECK_PTR(busI);
+// 		if (busI->GetSPIMode())
+// 		{
+// 			busI->StreamSPI(out, in, len);
+// 		}
+// 	}
+
 	int SendDataByte(int by);
 	int RecDataByte();
 

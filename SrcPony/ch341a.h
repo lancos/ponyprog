@@ -373,14 +373,14 @@ class ch341 : public QObject, public USB_Interface
 
 	int32_t StreamSPI4(uint chip_select, uint length, uchar *buffer);
 	int32_t StreamSPI5(uint chip_select, uint length, uchar *buffer, uchar *buffer2);
-	int32_t StreamSPI(unsigned long chip_select, unsigned long length, uchar *buffer, uchar *buffer2);
+	virtual int32_t StreamSPI(unsigned long chip_select, unsigned long length, uchar *buffer, uchar *buffer2);
 	int32_t BitStreamSPI(uint param_2, uint *param_3);
 	int32_t SetBufUpload(uint param_2);
 	int32_t QueryBufUpload();
 	int32_t SetBufDownload(uint param_2);
 	int32_t QueryBufDownload();
 
-	int32_t StreamI2C(uint iWriteLength, uint *iWriteBuffer, uint iReadLength, uint *oReadBuffer);
+	virtual int32_t StreamI2C(uint iWriteLength, uint *iWriteBuffer, uint iReadLength, uint *oReadBuffer);
 	int32_t WriteEEPROM(EEPROM_TYPE iEepromID, uint32_t iAddr, uint32_t iLength, uint *iBuffer);
 	int32_t ReadEEPROM(EEPROM_TYPE iEepromID, uint32_t iAddr, uint32_t iLength, uint *oBuffer);
 

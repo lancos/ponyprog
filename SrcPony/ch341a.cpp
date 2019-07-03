@@ -1900,12 +1900,17 @@ int32_t ch341::AbortWrite()
 
 
 /**
- * @brief Processing SPI data stream, support quasi-bidirectional single-input single-out / 3-wire interface, single-input single-out / 4-wire interface, dual-input and double-out/5-line interface
+ * @brief Processing SPI data stream, support quasi-bidirectional single-input single-out / 3-wire interface,
+ * single-input single-out / 4-wire interface,
+ * dual-input and double-out/5-line interface
  * chip_select: Chip select control
- * bit 7 is 0 to ignore chip select control, bit 7 is 1 to enable parameter: Bit 1 bit 0 is 00/01/10 select D0/D1/D2 pin as active low Chip Select
+ * bit 7 is 0 to ignore chip select control,
+ * bit 7 is 1 to enable parameter:
+ * Bit 1 bit 0 is 00/01/10 select D0/D1/D2 pin as active low Chip Select
  * length: the number of data bytes to be transferred
  * buffer: points to a buffer, puts the data to be written from SDO, and returns the data read from SDI.
- * buffer2: points to the second buffer of the dual-input and double-out 5-wire interface. 1 is a single-input single-out 4-wire interface mode, and 0 is a SIO quasi-bidirectional 3-wire interface mode.
+ * buffer2: points to the second buffer of the dual-input and double-out 5-wire interface.
+ * 1 is a single-input single-out 4-wire interface mode, and 0 is a SIO quasi-bidirectional 3-wire interface mode.
  */
 int32_t ch341::StreamSPI(unsigned long chip_select, unsigned long length, uchar *buffer, uchar *buffer2)
 {
