@@ -103,68 +103,154 @@ void At89sBus::SetDelay()
 
 int At89sBus::ReadDataByte(long addr)
 {
-	if (oldmode)
+	if (isUSBInstalled())
 	{
-		SendDataByte(OldReadDataMem | ((addr >> 5) & 0xF8));
+		uint8_t buf[8] = {0};
+		int cnt = 0;
+		if (oldmode)
+		{
+			buf[cnt++] = (OldReadDataMem | ((addr >> 5) & 0xF8));
+		}
+		else
+		{
+			buf[cnt++] = ReadDataByteMem;
+			buf[cnt++] = (addr >> 8);
+		}
+		buf[cnt++] = (addr & 0xFF);
+
+		int ret = StreamSPI(0, cnt, buf, NULL);
+
+		return buf[0];
 	}
 	else
 	{
-		SendDataByte(ReadDataByteMem);
-		SendDataByte(addr >> 8);
-	}
+		if (oldmode)
+		{
+			SendDataByte(OldReadDataMem | ((addr >> 5) & 0xF8));
+		}
+		else
+		{
+			SendDataByte(ReadDataByteMem);
+			SendDataByte(addr >> 8);
+		}
 
-	SendDataByte(addr & 0xFF);
-	return RecDataByte();
+		SendDataByte(addr & 0xFF);
+		return RecDataByte();
+	}
 }
 
 void At89sBus::WriteDataByte(long addr, int data)
 {
-	if (oldmode)
+	if (isUSBInstalled())
 	{
-		SendDataByte(OldWriteDataMem | ((addr >> 5) & 0xF8));
+		uint8_t buf[8] = {0};
+		int cnt = 0;
+		if (oldmode)
+		{
+			buf[cnt++] = (OldWriteDataMem | ((addr >> 5) & 0xF8));
+		}
+		else
+		{
+			buf[cnt++] = WriteDataByteMem;
+			buf[cnt++] = (addr >> 8);
+		}
+		buf[cnt++] = (addr & 0xFF);
+		buf[cnt++] = data;
+
+		int ret = StreamSPI(0, cnt, buf, NULL);
 	}
 	else
 	{
-		SendDataByte(WriteDataByteMem);
-		SendDataByte(addr >> 8);
-	}
+		if (oldmode)
+		{
+			SendDataByte(OldWriteDataMem | ((addr >> 5) & 0xF8));
+		}
+		else
+		{
+			SendDataByte(WriteDataByteMem);
+			SendDataByte(addr >> 8);
+		}
 
-	SendDataByte(addr & 0xFF);
-	SendDataByte(data);
+		SendDataByte(addr & 0xFF);
+		SendDataByte(data);
+	}
 }
 
 int At89sBus::ReadProgByte(long addr)
 {
-	if (oldmode)
+	if (isUSBInstalled())
 	{
-		SendDataByte(OldReadProgMem | ((addr >> 5) & 0xF8) | ((addr >> 11) & 0x04));
+		uint8_t buf[8] = {0};
+		int cnt = 0;
+		if (oldmode)
+		{
+			buf[cnt++] = (OldReadProgMem | ((addr >> 5) & 0xF8) | ((addr >> 11) & 0x04));
+		}
+		else
+		{
+			buf[cnt++] = ReadProgByteMem;
+			buf[cnt++] = (addr >> 8);
+		}
+
+		buf[cnt++] = (addr & 0xFF);
+
+		int ret = StreamSPI(0, cnt, buf, NULL);
+
+		return buf[0];
 	}
 	else
 	{
-		SendDataByte(ReadProgByteMem);
-		SendDataByte(addr >> 8);
-	}
+		if (oldmode)
+		{
+			SendDataByte(OldReadProgMem | ((addr >> 5) & 0xF8) | ((addr >> 11) & 0x04));
+		}
+		else
+		{
+			SendDataByte(ReadProgByteMem);
+			SendDataByte(addr >> 8);
+		}
 
-	SendDataByte(addr & 0xFF);
-	return RecDataByte();
+		SendDataByte(addr & 0xFF);
+		return RecDataByte();
+	}
 }
 
 void At89sBus::WriteProgByte(long addr, int data)
 {
 	SetLastProgrammedAddress(addr);
-
-	if (oldmode)
+	if (isUSBInstalled())
 	{
-		SendDataByte(OldWriteProgMem | ((addr >> 5) & 0xF8) | ((addr >> 11) & 0x04));
+		uint8_t buf[8] = {0};
+		int cnt = 0;
+		if (oldmode)
+		{
+			buf[cnt++] = (OldWriteProgMem | ((addr >> 5) & 0xF8) | ((addr >> 11) & 0x04));
+		}
+		else
+		{
+			buf[cnt++] = WriteProgByteMem;
+			buf[cnt++] = (addr >> 8);
+		}
+
+		buf[cnt++] = (addr & 0xFF);
+		buf[cnt++] = (data);
+		int ret = StreamSPI(0, cnt, buf, NULL);
 	}
 	else
 	{
-		SendDataByte(WriteProgByteMem);
-		SendDataByte(addr >> 8);
-	}
+		if (oldmode)
+		{
+			SendDataByte(OldWriteProgMem | ((addr >> 5) & 0xF8) | ((addr >> 11) & 0x04));
+		}
+		else
+		{
+			SendDataByte(WriteProgByteMem);
+			SendDataByte(addr >> 8);
+		}
 
-	SendDataByte(addr & 0xFF);
-	SendDataByte(data);
+		SendDataByte(addr & 0xFF);
+		SendDataByte(data);
+	}
 }
 
 int At89sBus::WriteProgPage(long addr, uint8_t const *data, long page_size, long timeout)
@@ -180,38 +266,86 @@ int At89sBus::WriteProgPage(long addr, uint8_t const *data, long page_size, long
 	//align addr to page boundary
 	addr &= ~(page_size - 1);			//0xFFFFFF00
 
-	SendDataByte(WriteProgPageMem);
-	SendDataByte(addr >> 8);
-	SendDataByte(addr & 0xff);
-
-	for (k = 0; k < page_size; k++)
+	if (isUSBInstalled())
 	{
-		SendDataByte(data[k]);
-	}
+		uint8_t *buf = new uint8_t[page_size + 4];
+		int cnt = 0;
 
-	SetLastProgrammedAddress(addr + page_size - 1);
+		buf[cnt++] = WriteProgPageMem;
+		buf[cnt++] = (uint8_t)(addr >> 8);
+		buf[cnt++] = (uint8_t)(addr & 0xff);
 
-	if (enable_progpage_polling)
-	{
-		long polling_loc = addr + page_size - 1;		//Read back last loaded byte
-		uint8_t polling_data = data[page_size - 1];
-		WaitUsec(100);
-
-		okflag = false;
-
-		for (k = timeout; k > 0; k--)
+		// TODO memcpy
+		for (k = 0; k < page_size; k++)
 		{
-			if (ReadProgByte(polling_loc) == polling_data)
+			buf[cnt++] = (data[k]);
+		}
+
+		int ret = StreamSPI(0, page_size, buf, NULL);
+
+		SetLastProgrammedAddress(addr + page_size - 1);
+
+		// TODO
+		if (enable_progpage_polling)
+		{
+			long polling_loc = addr + page_size - 1;		//Read back last loaded byte
+			uint8_t polling_data = data[page_size - 1];
+			WaitUsec(100);
+
+			okflag = false;
+
+			for (k = timeout; k > 0; k--)
 			{
-				okflag = true;
-				break;
+				if (ReadProgByte(polling_loc) == polling_data)
+				{
+					okflag = true;
+					break;
+				}
 			}
 		}
+		else
+		{
+			okflag = true;
+			WaitMsec(twd_prog);
+		}
+
+		delete[] buf;
 	}
 	else
 	{
-		okflag = true;
-		WaitMsec(twd_prog);
+		SendDataByte(WriteProgPageMem);
+		SendDataByte(addr >> 8);
+		SendDataByte(addr & 0xff);
+
+		for (k = 0; k < page_size; k++)
+		{
+			SendDataByte(data[k]);
+		}
+
+		SetLastProgrammedAddress(addr + page_size - 1);
+
+		if (enable_progpage_polling)
+		{
+			long polling_loc = addr + page_size - 1;		//Read back last loaded byte
+			uint8_t polling_data = data[page_size - 1];
+			WaitUsec(100);
+
+			okflag = false;
+
+			for (k = timeout; k > 0; k--)
+			{
+				if (ReadProgByte(polling_loc) == polling_data)
+				{
+					okflag = true;
+					break;
+				}
+			}
+		}
+		else
+		{
+			okflag = true;
+			WaitMsec(twd_prog);
+		}
 	}
 
 	return okflag ? OK : E2P_TIMEOUT;
@@ -224,37 +358,81 @@ int At89sBus::WriteDataPage(long addr, uint8_t const *data, long page_size, long
 
 	//align addr to page boundary
 	addr &= ~(page_size - 1);			//0xFFFFFF00
-
-	SendDataByte(WriteDataPageMem);
-	SendDataByte(addr >> 8);
-	SendDataByte(addr & 0xff);
-
-	for (k = 0; k < page_size; k++)
+	if (isUSBInstalled())
 	{
-		SendDataByte(data[k]);
-	}
+		uint8_t *buf = new uint8_t[page_size + 4];
+		int cnt = 0;
+		buf[cnt++] = WriteDataPageMem;
+		buf[cnt++] = (uint8_t)(addr >> 8);
+		buf[cnt++] = (uint8_t)(addr & 0xff);
 
-	if (enable_datapage_polling)
-	{
-		long polling_loc = addr + page_size - 1;        //Read back last loaded byte
-		uint8_t polling_data = data[page_size - 1];
-		WaitUsec(100);
-
-		okflag = false;
-
-		for (k = timeout; k > 0; k--)
+		// TODO memcpy
+		for (k = 0; k < page_size; k++)
 		{
-			if (ReadDataByte(polling_loc) == polling_data)
+			buf[cnt++] = (data[k]);
+		}
+
+		int ret = StreamSPI(0, cnt, buf, NULL);
+
+		// TODO
+		if (enable_datapage_polling)
+		{
+			long polling_loc = addr + page_size - 1;        //Read back last loaded byte
+			uint8_t polling_data = data[page_size - 1];
+			WaitUsec(100);
+
+			okflag = false;
+
+			for (k = timeout; k > 0; k--)
 			{
-				okflag = true;
-				break;
+				if (ReadDataByte(polling_loc) == polling_data)
+				{
+					okflag = true;
+					break;
+				}
 			}
 		}
+		else
+		{
+			okflag = true;
+			WaitMsec(twd_prog);
+		}
+
+		delete[] buf;
 	}
 	else
 	{
-		okflag = true;
-		WaitMsec(twd_prog);
+		SendDataByte(WriteDataPageMem);
+		SendDataByte(addr >> 8);
+		SendDataByte(addr & 0xff);
+
+		for (k = 0; k < page_size; k++)
+		{
+			SendDataByte(data[k]);
+		}
+
+		if (enable_datapage_polling)
+		{
+			long polling_loc = addr + page_size - 1;        //Read back last loaded byte
+			uint8_t polling_data = data[page_size - 1];
+			WaitUsec(100);
+
+			okflag = false;
+
+			for (k = timeout; k > 0; k--)
+			{
+				if (ReadDataByte(polling_loc) == polling_data)
+				{
+					okflag = true;
+					break;
+				}
+			}
+		}
+		else
+		{
+			okflag = true;
+			WaitMsec(twd_prog);
+		}
 	}
 
 	return okflag ? OK : -1;
@@ -267,13 +445,33 @@ void At89sBus::ReadProgPage(long addr, uint8_t *data, long page_size, long timeo
 	//align addr to page boundary
 	addr &= ~(page_size - 1);       //0xFFFFFF00
 
-	SendDataByte(ReadProgPageMem);
-	SendDataByte(addr >> 8);
-	SendDataByte(addr & 0xff);
-
-	for (k = 0; k < page_size; k++)
+	if (isUSBInstalled())
 	{
-		data[k] = RecDataByte();
+		uint8_t *buf = new uint8_t[page_size + 4];
+
+		int cnt = 0;
+		buf[cnt++] = ReadProgPageMem;
+		buf[cnt++] = (uint8_t)(addr >> 8);
+		buf[cnt++] = (uint8_t)(addr & 0xff);
+
+		int ret = StreamSPI(0, cnt, buf, NULL);
+		// TODO memcpy
+		for (k = 0; k < page_size; k++)
+		{
+			data[k] = buf[cnt++];
+		}
+		delete[] buf;
+	}
+	else
+	{
+		SendDataByte(ReadProgPageMem);
+		SendDataByte(addr >> 8);
+		SendDataByte(addr & 0xff);
+
+		for (k = 0; k < page_size; k++)
+		{
+			data[k] = RecDataByte();
+		}
 	}
 }
 
@@ -284,13 +482,33 @@ void At89sBus::ReadDataPage(long addr, uint8_t *data, long page_size, long timeo
 	//align addr to page boundary
 	addr &= ~(page_size - 1);       //0xFFFFFF00
 
-	SendDataByte(ReadDataPageMem);
-	SendDataByte(addr >> 8);
-	SendDataByte(addr & 0xff);
-
-	for (k = 0; k < page_size; k++)
+	if (isUSBInstalled())
 	{
-		data[k] = RecDataByte();
+		uint8_t *buf = new uint8_t[page_size + 4];
+		int cnt = 0;
+		buf[cnt++] = ReadDataPageMem;
+		buf[cnt++] = (uint8_t)(addr >> 8);
+		buf[cnt++] = (uint8_t)(addr & 0xff);
+
+		int ret = StreamSPI(0, cnt, buf, NULL);
+		// TODO memcpy
+		for (k = 0; k < page_size; k++)
+		{
+			data[k] = buf[cnt++];
+		}
+
+		delete[] buf;
+	}
+	else
+	{
+		SendDataByte(ReadDataPageMem);
+		SendDataByte(addr >> 8);
+		SendDataByte(addr & 0xff);
+
+		for (k = 0; k < page_size; k++)
+		{
+			data[k] = RecDataByte();
+		}
 	}
 }
 
@@ -307,14 +525,24 @@ int At89sBus::Reset()
 
 	SPIBus::Reset();
 	WaitMsec(E2Profile::GetAT89DelayAfterReset());		//At least 20msec (from AVR atmel datasheet)
-
-	SendDataByte(EnableProg0);
-	SendDataByte(EnableProg1);
-	SendDataByte(0);
-
-	if (!oldmode)
+	if (isUSBInstalled())
 	{
+		uint8_t buf[8] = {0};
+		buf[0] = EnableProg0;
+		buf[1] = EnableProg1;
+		// TODO old mode: send 3 bytes???
+		int ret = StreamSPI(0, 4, buf, NULL);
+	}
+	else
+	{
+		SendDataByte(EnableProg0);
+		SendDataByte(EnableProg1);
 		SendDataByte(0);
+
+		if (!oldmode)
+		{
+			SendDataByte(0);
+		}
 	}
 
 	return OK;
@@ -349,18 +577,35 @@ int At89sBus::WriteLockBits(uint32_t param, long model)
 
 	if (val1 != -1)
 	{
-		SendDataByte(val1);
-		SendDataByte(val2);
-		SendDataByte(val3);
-
-		if (oldmode)
+		if (isUSBInstalled())
 		{
-			WaitMsec(twd_prog * 5);
+			uint8_t buf[8] = {0};
+			int cnt = 0;
+			buf[cnt++] = val1;
+			buf[cnt++] = val2;
+			buf[cnt++] = val3;
+
+			if (!oldmode)
+			{
+				buf[cnt++] = val4;
+			}
+			int ret = StreamSPI(0, cnt, buf, NULL);
 		}
 		else
 		{
-			SendDataByte(val4);
-			WaitMsec(twd_prog * 10);
+			SendDataByte(val1);
+			SendDataByte(val2);
+			SendDataByte(val3);
+
+			if (oldmode)
+			{
+				WaitMsec(twd_prog * 5);
+			}
+			else
+			{
+				SendDataByte(val4);
+				WaitMsec(twd_prog * 10);
+			}
 		}
 
 		return OK;
@@ -379,21 +624,47 @@ int At89sBus::ReadLockBits(uint32_t &res, long model)
 	switch (model)
 	{
 	case AT89S8253:
-		SendDataByte(ReadLockBits0);
-		SendDataByte(ReadLockBits1);
-		SendDataByte(0);
-		rv1 = RecDataByte();
-		res = ~rv1 & 0x07;
+		if (isUSBInstalled())
+		{
+			uint8_t buf[8] = {0};
+			buf[0] = ReadLockBits0;
+			buf[1] = ReadLockBits1;
+			int ret = StreamSPI(0, 2, buf, NULL);
+
+			rv1 = buf[0];
+			res = ~rv1 & 0x07;
+		}
+		else
+		{
+			SendDataByte(ReadLockBits0);
+			SendDataByte(ReadLockBits1);
+			SendDataByte(0);
+			rv1 = RecDataByte();
+			res = ~rv1 & 0x07;
+		}
 		break;
 
 	case AT89S51:
 	case AT89S52:
 		//NB.Different polarity from other devices: 1 mean programmed (should update message in the dialog)
-		SendDataByte(ReadLockBits0);
-		SendDataByte(ReadLockBits1);
-		SendDataByte(0);
-		rv1 = RecDataByte();
-		res = rv1 & 0x1C;
+		if (isUSBInstalled())
+		{
+			uint8_t buf[8] = {0};
+			buf[0] = ReadLockBits0;
+			buf[1] = ReadLockBits1;
+			int ret = StreamSPI(0, 2, buf, NULL);
+
+			rv1 = buf[0];
+			res = rv1 & 0x1C;
+		}
+		else
+		{
+			SendDataByte(ReadLockBits0);
+			SendDataByte(ReadLockBits1);
+			SendDataByte(0);
+			rv1 = RecDataByte();
+			res = rv1 & 0x1C;
+		}
 		break;
 
 	default:
@@ -425,13 +696,26 @@ int At89sBus::WriteFuseBits(uint32_t param, long model)
 
 	if (val1 != -1)
 	{
-		SendDataByte(val1);
-		SendDataByte(val2);
-		SendDataByte(val3);
-		SendDataByte(val4);
+		if (isUSBInstalled())
+		{
+			uint8_t buf[8] = {0};
+			buf[0] = val1;
+			buf[1] = val2;
+			buf[2] = val3;
+			buf[3] = val4;
+			int ret = StreamSPI(0, 4, buf, NULL);
+		}
+		else
+		{
+			SendDataByte(val1);
+			SendDataByte(val2);
+			SendDataByte(val3);
+			SendDataByte(val4);
 
-		WaitMsec(twd_prog * 10);
+			WaitMsec(twd_prog * 10);
+		}
 		return OK;
+
 	}
 	else
 	{
@@ -447,12 +731,25 @@ int At89sBus::ReadFuseBits(uint32_t &res, long model)
 	switch (model)
 	{
 	case AT89S8253:
-		SendDataByte(ReadUserFuses0);
-		SendDataByte(ReadUserFuses1);
-		SendDataByte(0);
-		rv1 = RecDataByte();
+	{
+		if (isUSBInstalled())
+		{
+			uint8_t buf[8] = {0};
+			buf[0] = ReadUserFuses0;
+			buf[1] = ReadUserFuses1;
+			int ret = StreamSPI(0, 2, buf, NULL);
+			rv1 = buf[0];
+		}
+		else
+		{
+			SendDataByte(ReadUserFuses0);
+			SendDataByte(ReadUserFuses1);
+			SendDataByte(0);
+			rv1 = RecDataByte();
+		}
 		res = ~rv1 & 0x0f;
-		break;
+	}
+	break;
 
 	default:        //No Fuses
 		rval = NOTSUPPORTED;
@@ -464,36 +761,72 @@ int At89sBus::ReadFuseBits(uint32_t &res, long model)
 
 int At89sBus::ReadDeviceCode(int addr)
 {
-	SendDataByte(ReadSignatureByte);
-	SendDataByte(addr >> 8);
-	SendDataByte(addr & 0xff);
+	if (isUSBInstalled())
+	{
+		uint8_t buf[8] = {0};
+		buf[0] = ReadSignatureByte;
+		buf[1] = (addr >> 8);
+		buf[2] = (addr & 0xff);
 
-	return RecDataByte();
+		int ret = StreamSPI(0, 4, buf, NULL);
+		// TODO check
+		ret = buf[0];
+		return ret;
+	}
+	else
+	{
+		SendDataByte(ReadSignatureByte);
+		SendDataByte(addr >> 8);
+		SendDataByte(addr & 0xff);
+
+		return RecDataByte();
+	}
 }
 
 int At89sBus::Erase(int type)
 {
 	//Erase command
-	SendDataByte(ChipErase0);
-
-	if (oldmode)
+	if (isUSBInstalled())
 	{
-		SendDataByte(OldChipErase1);
-		SendDataByte(0);
+		uint8_t buf[8] = {0};
+		buf[0] = ChipErase0;
+
+		if (oldmode)
+		{
+			buf[1] = OldChipErase1;
+		}
+		else
+		{
+			buf[1] = ChipErase1;
+		}
+
+		int ret = StreamSPI(0, 2, buf, NULL);
+		return ret;
 	}
 	else
 	{
-		SendDataByte(ChipErase1);
-		SendDataByte(0);
-		SendDataByte(0);
+		SendDataByte(ChipErase0);
+
+		if (oldmode)
+		{
+			SendDataByte(OldChipErase1);
+			SendDataByte(0);
+		}
+		else
+		{
+			SendDataByte(ChipErase1);
+			SendDataByte(0);
+			SendDataByte(0);
+		}
+
+		WaitMsec(twd_erase);
+		Reset();
+
+		return 1;
 	}
-
-	WaitMsec(twd_erase);
-	Reset();
-
-	return 1;
 }
 
+//
 long At89sBus::Read(int addr, uint8_t *data, long length, int page_size)
 {
 	long len;
@@ -563,6 +896,7 @@ long At89sBus::Read(int addr, uint8_t *data, long length, int page_size)
 	return len;
 }
 
+// TODO USB
 int At89sBus::WaitReadyAfterWrite(int type, long addr, int data, long timeout)
 {
 	int rval = E2P_TIMEOUT;
@@ -607,6 +941,7 @@ bool At89sBus::CheckBlankPage(uint8_t const *data, long length)
 	return blank_page;
 }
 
+//
 long At89sBus::Write(int addr, uint8_t const *data, long length, int page_size)
 {
 	long len;

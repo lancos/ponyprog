@@ -55,53 +55,101 @@ void At250Bus::EndCycle()
 	ShotDelay();
 }
 
+
 int At250Bus::ReadEEPByte(int addr)
 {
 	int rv;
 
-	SendDataByte(ReadData | (((addr >> 8) & 1) << 3));
-	SendDataByte(addr);
+	if (isUSBInstalled())
+	{
+		uint8_t buf[8] = {0};
+		buf[0] = (ReadData | (((addr >> 8) & 1) << 3));
+		buf[1] = addr;
 
-	ShotDelay();
+		int ret = StreamSPI(0, 4, buf, NULL);
 
-	rv = RecDataByte();
+		rv = buf[0];
+	}
+	else
+	{
+		SendDataByte(ReadData | (((addr >> 8) & 1) << 3));
+		SendDataByte(addr);
 
-	EndCycle();
+		ShotDelay();
+
+		rv = RecDataByte();
+
+		EndCycle();
+	}
 
 	return rv;
 }
 
 void At250Bus::WriteEEPByte(int addr, int data)
 {
-	SendDataByte(WriteData | (((addr >> 8) & 1) << 3));
-	SendDataByte(addr);
-	SendDataByte(data);
+	if (isUSBInstalled())
+	{
+		uint8_t buf[8] = {0};
+		buf[0] = (WriteData | (((addr >> 8) & 1) << 3));
+		buf[1] = addr;
+		buf[2] = data;
+		int ret = StreamSPI(0, 4, buf, NULL);
+	}
+	else
+	{
+		SendDataByte(WriteData | (((addr >> 8) & 1) << 3));
+		SendDataByte(addr);
+		SendDataByte(data);
 
-	EndCycle();
+		EndCycle();
+	}
 }
 
 int At250Bus::ReadEEPStatus()
 {
 	int rv;
 
-	SendDataByte(ReadStatus);
-	rv = RecDataByte();
+	if (isUSBInstalled())
+	{
+		uint8_t buf[8] = {0};
+		buf[0] = ReadStatus;
 
-	EndCycle();
+		int ret = StreamSPI(0, 4, buf, NULL);
+
+		rv = buf[0];
+	}
+	else
+	{
+		SendDataByte(ReadStatus);
+		rv = RecDataByte();
+
+		EndCycle();
+	}
 
 	return rv;
 }
 
 int At250Bus::WriteEEPStatus(int data)
 {
-	SendDataByte(WriteEnable);
-	EndCycle();
+	if (isUSBInstalled())
+	{
+		uint8_t buf[8] = {0};
+		buf[0] = WriteEnable;
+		int ret = StreamSPI(0, 4, buf, NULL);
+		buf[0] = WriteStatus;
+		buf[1] = data;
+		ret = StreamSPI(0, 4, buf, NULL);
+	}
+	else
+	{
+		SendDataByte(WriteEnable);
+		EndCycle();
 
-	SendDataByte(WriteStatus);
-	SendDataByte(data);
+		SendDataByte(WriteStatus);
+		SendDataByte(data);
 
-	EndCycle();
-
+		EndCycle();
+	}
 	return 0;
 }
 
@@ -135,6 +183,15 @@ int At250Bus::Reset(void)
 	return OK;
 }
 
+/**
+ * at25080, 160, 320 have 32 byte page operation
+ * at25640 has 64 byte page operation
+ * at25128, 256 have 64 byte page operation
+ * at25010, 020, 040 have 8 byte page operation
+ *
+ *
+ */
+// TODO USB
 long At250Bus::Read(int addr, uint8_t *data, long length, int page_size)
 {
 	qDebug() << __PRETTY_FUNCTION__ << "(" << (hex) << addr << ", " << data << ", " << (dec) << length << ")";
@@ -143,19 +200,47 @@ long At250Bus::Read(int addr, uint8_t *data, long length, int page_size)
 
 	ReadStart();
 
-	for (len = 0; len < length; len++)
+	if (page_size > 1)
 	{
-		*data++ = (uint8_t)ReadEEPByte(addr++);
-
-		if ((len % 10) == 0)
+		uint8_t *buf = new uint8_t[page_size + 4];
+		for (addr = 0, len = 0; len < length; len += page_size, addr += page_size, data += page_size)
 		{
+			int cnt = 0;
+			buf[cnt++] = (ReadData | (((addr >> 8) & 1) << 3));
+			buf[cnt++] = addr;
+
+			// TODO
+			int ret = StreamSPI(0, cnt, buf, NULL);
+
+			// TODO memcpy
+			for (int k = 0; k < page_size; k++)
+			{
+				data[k] = buf[cnt++];
+			}
+
 			if (ReadProgress(len * 100 / length))
 			{
 				break;
 			}
 		}
+		delete[] buf;
 	}
-	WaitMsec(1);		//Flush
+	else
+	{
+		for (len = 0; len < length; len++)
+		{
+			*data++ = (uint8_t)ReadEEPByte(addr++);
+
+			if ((len % 10) == 0)
+			{
+				if (ReadProgress(len * 100 / length))
+				{
+					break;
+				}
+			}
+		}
+		WaitMsec(1);		//Flush
+	}
 
 	ReadEnd();
 
@@ -164,40 +249,75 @@ long At250Bus::Read(int addr, uint8_t *data, long length, int page_size)
 	return len;
 }
 
+// TODO USB
 long At250Bus::Write(int addr, uint8_t const *data, long length, int page_size)
 {
 	long len;
 
 	WriteStart();
+
 	WriteEEPStatus(0);
 
-	// 07/08/99 *** bug fix suggested by Atmel Product engineer
-	if (!WaitEndOfWrite())
+	if (page_size > 1)
 	{
-		return 0;
-	}
-
-	for (len = 0; len < length; len++)
-	{
+		uint8_t *buf = new uint8_t[page_size + 4];
 		SendDataByte(WriteEnable);
-		EndCycle();
 
-		WriteEEPByte(addr++, *data++);
-
-		if (!WaitEndOfWrite())
+		for (addr = 0, len = 0; len < length; len += page_size, addr += page_size, data += page_size)
 		{
-			return 0;		//Must return 0, because > 0 (and != length) means "Abort by user"
-		}
+			int cnt = 0;
 
-		if ((len & 1))
-		{
+			buf[cnt++] = (WriteData | (((addr >> 8) & 1) << 3));
+			buf[cnt++] = addr;
+
+			// TODO memcpy
+			for (int k = 0; k < page_size; k++)
+			{
+				buf[cnt++] = data[k];
+			}
+
+			// TODO
+			int ret = StreamSPI(0, cnt, buf, NULL);
+
 			if (WriteProgress(len * 100 / length))
 			{
 				break;
 			}
 		}
+
+		SendDataByte(WriteDisable);
+		delete[] buf;
 	}
-	WaitMsec(1);		//Flush
+	else
+	{
+		// 07/08/99 *** bug fix suggested by Atmel Product engineer
+		if (!WaitEndOfWrite())
+		{
+			return 0;
+		}
+
+		for (len = 0; len < length; len++)
+		{
+			SendDataByte(WriteEnable);
+			EndCycle();
+
+			WriteEEPByte(addr++, *data++);
+
+			if (!WaitEndOfWrite())
+			{
+				return 0;		//Must return 0, because > 0 (and != length) means "Abort by user"
+			}
+
+			if ((len & 1))
+			{
+				if (WriteProgress(len * 100 / length))
+				{
+					break;
+				}
+			}
+		}
+		WaitMsec(1);		//Flush
+	}
 
 	WriteEnd();
 

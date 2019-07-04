@@ -1059,7 +1059,7 @@ int32_t ch341::StreamI2C(uint iWriteLength, uint *iWriteBuffer, uint iReadLength
 //	printf("Return mLength is %d\n", mLength);
 	if (MAX(iWriteLength, iReadLength) >= DEFAULT_BUFFER_LEN)
 	{
-		delete mWrBuf;
+		delete[] mWrBuf;
 	}
 
 	return res;
@@ -1132,7 +1132,7 @@ int32_t ch341::ReadData(uint *oBuffer, uint *ioLength)
 
 	if (lpInBuffer != int_buf)
 	{
-		delete lpInBuffer;
+		delete[] lpInBuffer;
 	}
 
 	if (res < 0)
@@ -1204,7 +1204,7 @@ int32_t ch341::WriteData(uint *iBuffer, uint *ioLength)
 
 	if (lpOutBuffer != local_buf)
 	{
-		delete lpOutBuffer;
+		delete[] lpOutBuffer;
 	}
 
 	if (ret < 0)
@@ -2045,7 +2045,7 @@ int32_t ch341::StreamSPI(unsigned long chip_select, unsigned long length, uchar 
 
 	if (m_write_buffer != m_buffer)
 	{
-		delete m_write_buffer;
+		delete[] m_write_buffer;
 	}
 
 	j = m_length;
@@ -2202,7 +2202,7 @@ int32_t ch341::BitStreamSPI(uint iLength, uint *ioBuffer)
 	}
 	if (pBuff != local_buf)
 	{
-		delete pBuff;
+		delete[] pBuff;
 	}
 
 	if (res < 0)
@@ -3393,7 +3393,7 @@ int32_t ch341::StreamSPI(uint *out, uint *in, uint32_t len)
 	if (ret < 0)
 	{
 		qCritical("StreamSPI() can not write, error %d!\n", ret);
-		delete outBuf;
+		delete[] outBuf;
 		return -1;
 	}
 
@@ -3460,8 +3460,8 @@ int32_t ch341::StreamSPI(uint *out, uint *in, uint32_t len)
 		ret = -1;
 	}
 
-	delete outBuf;
-	delete inBuf;
+	delete[] outBuf;
+	delete[] inBuf;
 
 	if (ret < 0)
 	{
@@ -3541,6 +3541,7 @@ int32_t ch341::CapacitySPI(void)
 	uint8_t *inBuf, *ptr, cap;
 	int32_t ret;
 
+	cap = -1;
 	if (devHandle == NULL)
 	{
 		return -1;
@@ -3564,9 +3565,10 @@ int32_t ch341::CapacitySPI(void)
 	}
 
 	inBuf = new uint8_t[JEDEC_ID_LEN];
-	if (outBuf == NULL)
+	if (inBuf == NULL)
 	{
 		qCritical("CapacitySPI() new() troubles!\n");
+		delete[] outBuf;
 		return -1;
 	}
 
@@ -3574,8 +3576,8 @@ int32_t ch341::CapacitySPI(void)
 
 	if (ret < 0)
 	{
-		delete inBuf;
-		delete outBuf;
+		delete[] inBuf;
+		delete[] outBuf;
 		return ret;
 	}
 
@@ -3600,13 +3602,13 @@ int32_t ch341::CapacitySPI(void)
 	else
 	{
 		qDebug("Chip not found or missed in ch341a. Check connection");
-		delete inBuf;
-		delete outBuf;
+		delete[] inBuf;
+		delete[] outBuf;
 		exit(0);
 	}
 
-	delete inBuf;
-	delete outBuf;
+	delete[] inBuf;
+	delete[] outBuf;
 
 	return cap;
 }

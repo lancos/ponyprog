@@ -118,6 +118,7 @@ int SPIBus::SendDataByte(int by)
 
 int SPIBus::RecDataByte()
 {
+	// TODO isUSBInstalled()
 	int err = OK;
 	int rv = busI->xferByte(err, 0xff, GetMode() | xMODE_RDONLY);
 	if (err == OK)

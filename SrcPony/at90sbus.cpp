@@ -72,19 +72,45 @@ At90sBus::At90sBus(BusInterface *ptr)
 //limit EEPROM size to 64K max
 int At90sBus::ReadEEPByte(long addr)
 {
-	SendDataByte(ReadEEPMem0);
-	SendDataByte(ReadEEPMem1 | ((addr & 0xFFFF) >> 8));			//19/01/1999 -- the bug is due to an error in the original Atmel datasheet
-	SendDataByte(addr);
+	if (isUSBInstalled())
+	{
+		uint8_t buf[8] = {0};
+		buf[0] = ReadEEPMem0;
+		buf[1] = (ReadEEPMem1 | ((addr & 0xFFFF) >> 8));			//19/01/1999 -- the bug is due to an error in the original Atmel datasheet
+		buf[2] = (addr);
 
-	return RecDataByte();
+		int ret = StreamSPI(0, 4, buf, NULL);
+		return buf[0];
+	}
+	else
+	{
+		SendDataByte(ReadEEPMem0);
+		SendDataByte(ReadEEPMem1 | ((addr & 0xFFFF) >> 8));			//19/01/1999 -- the bug is due to an error in the original Atmel datasheet
+		SendDataByte(addr);
+
+		return RecDataByte();
+	}
 }
 
 void At90sBus::WriteEEPByte(long addr, int data)
 {
-	SendDataByte(WriteEEPMem0);
-	SendDataByte(WriteEEPMem1 | ((addr & 0xFFFF) >> 8));		//19/01/1999
-	SendDataByte(addr);
-	SendDataByte(data);
+	if (isUSBInstalled())
+	{
+		uint8_t buf[8] = {0};
+		buf[0] = WriteEEPMem0;
+		buf[1] = (WriteEEPMem1 | ((addr & 0xFFFF) >> 8));		//19/01/1999
+		buf[2] = addr;
+		buf[3] = data;
+
+		int ret = StreamSPI(0, 4, buf, NULL);
+	}
+	else
+	{
+		SendDataByte(WriteEEPMem0);
+		SendDataByte(WriteEEPMem1 | ((addr & 0xFFFF) >> 8));		//19/01/1999
+		SendDataByte(addr);
+		SendDataByte(data);
+	}
 }
 
 int At90sBus::ReadProgByte(long addr)
@@ -92,25 +118,55 @@ int At90sBus::ReadProgByte(long addr)
 	int lsb = addr & 1;
 	addr >>= 1;				//convert to word address
 
-	//Se fosse little-endian sarebbe l'inverso
-#ifdef  _BIG_ENDIAN_
-	if (!lsb)
-#else
-	if (lsb)
-#endif
+
+	if (isUSBInstalled())
 	{
-		SendDataByte(ReadProgMemH0);
-		SendDataByte(ReadProgMemH1 | (addr >> 8));
+		uint8_t buf[8] = {0};
+
+		//Se fosse little-endian sarebbe l'inverso
+#ifdef  _BIG_ENDIAN_
+		if (!lsb)
+#else
+		if (lsb)
+#endif
+		{
+			buf[0] = ReadProgMemH0;
+			buf[1] = (ReadProgMemH1 | (addr >> 8));
+		}
+		else
+		{
+			buf[0] = ReadProgMemL0;
+			buf[1] = (ReadProgMemL1 | (addr >> 8));
+		}
+
+		buf[2] = addr;
+
+		int ret = StreamSPI(0, 4, buf, NULL);
+
+		return buf[0];
 	}
 	else
 	{
-		SendDataByte(ReadProgMemL0);
-		SendDataByte(ReadProgMemL1 | (addr >> 8));
+		//Se fosse little-endian sarebbe l'inverso
+#ifdef  _BIG_ENDIAN_
+		if (!lsb)
+#else
+		if (lsb)
+#endif
+		{
+			SendDataByte(ReadProgMemH0);
+			SendDataByte(ReadProgMemH1 | (addr >> 8));
+		}
+		else
+		{
+			SendDataByte(ReadProgMemL0);
+			SendDataByte(ReadProgMemL1 | (addr >> 8));
+		}
+
+		SendDataByte(addr);
+
+		return RecDataByte();
 	}
-
-	SendDataByte(addr);
-
-	return RecDataByte();
 }
 
 void At90sBus::WriteProgByte(long addr, int data)
@@ -120,24 +176,50 @@ void At90sBus::WriteProgByte(long addr, int data)
 	int lsb = addr & 1;
 	addr >>= 1;			//convert to word address
 
-	//Se fosse little-endian sarebbe l'inverso
-#ifdef  _BIG_ENDIAN_
-	if (!lsb)
-#else
-	if (lsb)
-#endif
+	if (isUSBInstalled())
 	{
-		SendDataByte(WriteProgMemH0);
-		SendDataByte(WriteProgMemH1 | (addr >> 8));
+		uint8_t buf[8] = {0};
+		//Se fosse little-endian sarebbe l'inverso
+#ifdef  _BIG_ENDIAN_
+		if (!lsb)
+#else
+		if (lsb)
+#endif
+		{
+			buf[0] = WriteProgMemH0;
+			buf[1] = (WriteProgMemH1 | (addr >> 8));
+		}
+		else
+		{
+			buf[0] = WriteProgMemL0;
+			buf[1] = (WriteProgMemL1 | (addr >> 8));
+		}
+
+		buf[2] = addr;
+		buf[3] = data;
+		int ret = StreamSPI(0, 4, buf, NULL);
 	}
 	else
 	{
-		SendDataByte(WriteProgMemL0);
-		SendDataByte(WriteProgMemL1 | (addr >> 8));
-	}
+		//Se fosse little-endian sarebbe l'inverso
+#ifdef  _BIG_ENDIAN_
+		if (!lsb)
+#else
+		if (lsb)
+#endif
+		{
+			SendDataByte(WriteProgMemH0);
+			SendDataByte(WriteProgMemH1 | (addr >> 8));
+		}
+		else
+		{
+			SendDataByte(WriteProgMemL0);
+			SendDataByte(WriteProgMemL1 | (addr >> 8));
+		}
 
-	SendDataByte(addr);
-	SendDataByte(data);
+		SendDataByte(addr);
+		SendDataByte(data);
+	}
 }
 
 int At90sBus::Reset()
@@ -152,22 +234,49 @@ int At90sBus::Reset()
 	{
 		int k;
 
-		for (k = 0; k < 4 && !success_flag; k++)
+		if (isUSBInstalled())
 		{
-			SPIBus::Reset();
+			uint8_t buf[8] = {0};
 
-			WaitMsec(E2Profile::GetAVRDelayAfterReset());		// At least 20msec (AVR datasheets)
-
-			qDebug() << __PRETTY_FUNCTION__ << "() ** SendDataByte";
-
-			SendDataByte(EnableProg0);
-			SendDataByte(EnableProg1);
-			RecDataByte();
-			SendDataByte(0);
-
-			if (ReadDeviceCode(0) == 0x1E)
+			for (k = 0; k < 4 && !success_flag; k++)
 			{
-				success_flag = true;
+				SPIBus::Reset();
+
+				WaitMsec(E2Profile::GetAVRDelayAfterReset());		// At least 20msec (AVR datasheets)
+
+				qDebug() << __PRETTY_FUNCTION__ << "() ** SendDataByte";
+
+				buf[0] = EnableProg0;
+				buf[1] = EnableProg1;
+
+				int ret = StreamSPI(0, 4, buf, NULL);
+
+				if (ReadDeviceCode(0) == 0x1E)
+				{
+					success_flag = true;
+				}
+			}
+
+		}
+		else
+		{
+			for (k = 0; k < 4 && !success_flag; k++)
+			{
+				SPIBus::Reset();
+
+				WaitMsec(E2Profile::GetAVRDelayAfterReset());		// At least 20msec (AVR datasheets)
+
+				qDebug() << __PRETTY_FUNCTION__ << "() ** SendDataByte";
+
+				SendDataByte(EnableProg0);
+				SendDataByte(EnableProg1);
+				RecDataByte();
+				SendDataByte(0);
+
+				if (ReadDeviceCode(0) == 0x1E)
+				{
+					success_flag = true;
+				}
 			}
 		}
 	}
@@ -175,32 +284,68 @@ int At90sBus::Reset()
 	{
 		int j;
 
-		for (j = 0; j < 4 && !success_flag; j++)
+		if (isUSBInstalled())
 		{
-			int val = 0;
+			uint8_t buf[8] = {0};
 
-			SPIBus::Reset();
-
-			WaitMsec(E2Profile::GetAVRDelayAfterReset());		// At least 20msec (AVR datasheets)
-
-			int k;
-
-			for (k = 0; k < 32 && !success_flag; k++)
+			for (j = 0; j < 4 && !success_flag; j++)
 			{
-				qDebug() << __PRETTY_FUNCTION__ << "() ** SendEnableProg";
+				int val = 0;
 
-				SendDataByte(EnableProg0);
-				SendDataByte(EnableProg1);
-				val = RecDataByte();
-				SendDataByte(0);
+				SPIBus::Reset();
 
-				if (val != EnableProg1)			//Echo expected
+				WaitMsec(E2Profile::GetAVRDelayAfterReset());		// At least 20msec (AVR datasheets)
+
+				int k;
+
+				for (k = 0; k < 32 && !success_flag; k++)
 				{
-					RecDataBit();				//Give a pulse on SCK (as AVR datasheets suggest)
+					qDebug() << __PRETTY_FUNCTION__ << "() ** SendEnableProg";
+
+					buf[0] = EnableProg0;
+					buf[1] = EnableProg1;
+					int ret = StreamSPI(0, 4, buf, NULL);
+
+					val = buf[0];
+
+					// TODO
+					if (val == EnableProg1)			//Echo expected
+					{
+						success_flag = true;
+					}
 				}
-				else
+			}
+
+		}
+		else
+		{
+			for (j = 0; j < 4 && !success_flag; j++)
+			{
+				int val = 0;
+
+				SPIBus::Reset();
+
+				WaitMsec(E2Profile::GetAVRDelayAfterReset());		// At least 20msec (AVR datasheets)
+
+				int k;
+
+				for (k = 0; k < 32 && !success_flag; k++)
 				{
-					success_flag = true;
+					qDebug() << __PRETTY_FUNCTION__ << "() ** SendEnableProg";
+
+					SendDataByte(EnableProg0);
+					SendDataByte(EnableProg1);
+					val = RecDataByte();
+					SendDataByte(0);
+
+					if (val != EnableProg1)			//Echo expected
+					{
+						RecDataBit();				//Give a pulse on SCK (as AVR datasheets suggest)
+					}
+					else
+					{
+						success_flag = true;
+					}
 				}
 			}
 		}
@@ -301,24 +446,50 @@ int At90sBus::WriteLockBits(uint32_t param, long model)
 		break;
 	}
 
-	if (val1 != -1)
+	if (isUSBInstalled())
 	{
-		SendDataByte(val1);
-		SendDataByte(val2);
-		SendDataByte(val3);
-		SendDataByte(val4);
+		uint8_t buf[8] = {0};
+		if (val1 != -1)
+		{
+			buf[0] = val1;
+			buf[1] = val2;
+			buf[2] = val3;
+			buf[3] = val4;
+			int ret = StreamSPI(0, 4, buf, NULL);
+			WaitMsec(twd_prog * 10);
+		}
 
-		WaitMsec(twd_prog * 10);
+		if (val5 != -1)
+		{
+			buf[0] = val5;
+			buf[1] = val6;
+			buf[2] = val7;
+			buf[3] = val8;
+			int ret = StreamSPI(0, 4, buf, NULL);
+			WaitMsec(twd_prog * 10);
+		}
 	}
-
-	if (val5 != -1)
+	else
 	{
-		SendDataByte(val5);
-		SendDataByte(val6);
-		SendDataByte(val7);
-		SendDataByte(val8);
+		if (val1 != -1)
+		{
+			SendDataByte(val1);
+			SendDataByte(val2);
+			SendDataByte(val3);
+			SendDataByte(val4);
 
-		WaitMsec(twd_prog * 10);
+			WaitMsec(twd_prog * 10);
+		}
+
+		if (val5 != -1)
+		{
+			SendDataByte(val5);
+			SendDataByte(val6);
+			SendDataByte(val7);
+			SendDataByte(val8);
+
+			WaitMsec(twd_prog * 10);
+		}
 	}
 
 	return OK;
@@ -452,36 +623,71 @@ int At90sBus::WriteFuseBits(uint32_t param, long model)
 		break;
 	}
 
-	if (val1 != -1)
+	if (isUSBInstalled())
 	{
-		SendDataByte(val1);
-		SendDataByte(val2);
-		SendDataByte(val3);
-		SendDataByte(val4);
+		uint8_t buf[8] = {0};
+		if (val1 != -1)
+		{
+			buf[0] = val1;
+			buf[1] = val2;
+			buf[2] = val3;
+			buf[3] = val4;
+			int ret = StreamSPI(0, 4, buf, NULL);
+			WaitMsec(twd_prog * 10);
+		}
 
-		WaitMsec(twd_prog * 10);
+		if (val5 != -1)
+		{
+			buf[0] = val5;
+			buf[1] = val6;
+			buf[2] = val7;
+			buf[3] = val8;
+			int ret = StreamSPI(0, 4, buf, NULL);
+			WaitMsec(twd_prog * 10);
+		}
+
+		if (val9 != -1)
+		{
+			buf[0] = val9;
+			buf[1] = valA;
+			buf[2] = valB;
+			buf[3] = valC;
+			int ret = StreamSPI(0, 4, buf, NULL);
+			WaitMsec(twd_prog * 10);
+		}
 	}
-
-	if (val5 != -1)
+	else
 	{
-		SendDataByte(val5);
-		SendDataByte(val6);
-		SendDataByte(val7);
-		SendDataByte(val8);
+		if (val1 != -1)
+		{
+			SendDataByte(val1);
+			SendDataByte(val2);
+			SendDataByte(val3);
+			SendDataByte(val4);
 
-		WaitMsec(twd_prog * 10);
+			WaitMsec(twd_prog * 10);
+		}
+
+		if (val5 != -1)
+		{
+			SendDataByte(val5);
+			SendDataByte(val6);
+			SendDataByte(val7);
+			SendDataByte(val8);
+
+			WaitMsec(twd_prog * 10);
+		}
+
+		if (val9 != -1)
+		{
+			SendDataByte(val9);
+			SendDataByte(valA);
+			SendDataByte(valB);
+			SendDataByte(valC);
+
+			WaitMsec(twd_prog * 10);
+		}
 	}
-
-	if (val9 != -1)
-	{
-		SendDataByte(val9);
-		SendDataByte(valA);
-		SendDataByte(valB);
-		SendDataByte(valC);
-
-		WaitMsec(twd_prog * 10);
-	}
-
 	return OK;
 }
 
@@ -493,10 +699,22 @@ uint32_t At90sBus::ReadFuseBits(long model)
 	switch (model)
 	{
 	case ATtiny22:
-		SendDataByte(ReadLock0);        //NB Read LOCK!!
-		SendDataByte(ReadLock1);
-		SendDataByte(0);
-		rv1 = RecDataByte();
+		if (isUSBInstalled())
+		{
+			uint8_t buf[8] = {0};
+			buf[0] = ReadLock0;        //NB Read LOCK!!
+			buf[1] = ReadLock1;
+
+			int ret = StreamSPI(0, 4, buf, NULL);
+			rv1 = buf[0];
+		}
+		else
+		{
+			SendDataByte(ReadLock0);        //NB Read LOCK!!
+			SendDataByte(ReadLock1);
+			SendDataByte(0);
+			rv1 = RecDataByte();
+		}
 		retval = ~rv1 & 0x20;
 		break;
 
@@ -504,10 +722,22 @@ uint32_t At90sBus::ReadFuseBits(long model)
 	case AT90S2343:
 	case AT90S4434:
 	case AT90S8535:
-		SendDataByte(ReadLock0);        //NB Read LOCK!!
-		SendDataByte(ReadLock1);
-		SendDataByte(0);
-		rv1 = RecDataByte();
+		if (isUSBInstalled())
+		{
+			uint8_t buf[8] = {0};
+			buf[0] = ReadLock0;        //NB Read LOCK!!
+			buf[1] = ReadLock1;
+
+			int ret = StreamSPI(0, 4, buf, NULL);
+			rv1 = buf[0];
+		}
+		else
+		{
+			SendDataByte(ReadLock0);        //NB Read LOCK!!
+			SendDataByte(ReadLock1);
+			SendDataByte(0);
+			rv1 = RecDataByte();
+		}
 		retval = ~rv1 & 0x21;
 		break;
 
@@ -519,10 +749,22 @@ uint32_t At90sBus::ReadFuseBits(long model)
 	case ATtiny12:
 	case ATtiny15:
 	case ATmega161:
-		SendDataByte(ReadFuse0);
-		SendDataByte(ReadFuse1);
-		SendDataByte(0);
-		rv1 = RecDataByte();
+		if (isUSBInstalled())
+		{
+			uint8_t buf[8] = {0};
+			buf[0] = ReadFuse0;
+			buf[1] = ReadFuse1;
+
+			int ret = StreamSPI(0, 4, buf, NULL);
+			rv1 = buf[0];
+		}
+		else
+		{
+			SendDataByte(ReadFuse0);
+			SendDataByte(ReadFuse1);
+			SendDataByte(0);
+			rv1 = RecDataByte();
+		}
 		retval = ~rv1 & 0xFF;
 		break;
 
@@ -536,16 +778,40 @@ uint32_t At90sBus::ReadFuseBits(long model)
 	case ATmega32:
 	case ATmega8515:
 	case ATmega8535:
-		SendDataByte(ReadFuse0);
-		SendDataByte(ReadFuse1);
-		SendDataByte(0);
-		rv1 = RecDataByte();
+		if (isUSBInstalled())
+		{
+			uint8_t buf[8] = {0};
+			buf[0] = ReadFuse0;
+			buf[1] = ReadFuse1;
+
+			int ret = StreamSPI(0, 4, buf, NULL);
+			rv1 = buf[0];
+		}
+		else
+		{
+			SendDataByte(ReadFuse0);
+			SendDataByte(ReadFuse1);
+			SendDataByte(0);
+			rv1 = RecDataByte();
+		}
 		rv1 = ~rv1 & 0xFF;
 
-		SendDataByte(ReadFuseHigh0);
-		SendDataByte(ReadFuseHigh1);
-		SendDataByte(0);
-		rv2 = RecDataByte();
+		if (isUSBInstalled())
+		{
+			uint8_t buf[8] = {0};
+			buf[0] = ReadFuseHigh0;
+			buf[1] = ReadFuseHigh1;
+
+			int ret = StreamSPI(0, 4, buf, NULL);
+			rv2 = buf[0];
+		}
+		else
+		{
+			SendDataByte(ReadFuseHigh0);
+			SendDataByte(ReadFuseHigh1);
+			SendDataByte(0);
+			rv2 = RecDataByte();
+		}
 		rv2 = ~rv2 & 0xFF;
 
 		retval = (rv2 << 8) | rv1;
@@ -583,22 +849,58 @@ uint32_t At90sBus::ReadFuseBits(long model)
 	case ATmega1281:
 	case ATmega2560:
 	case ATmega2561:
-		SendDataByte(ReadFuse0);
-		SendDataByte(ReadFuse1);
-		SendDataByte(0);
-		rv1 = RecDataByte();
+		if (isUSBInstalled())
+		{
+			uint8_t buf[8] = {0};
+			buf[0] = ReadFuse0;
+			buf[1] = ReadFuse1;
+
+			int ret = StreamSPI(0, 4, buf, NULL);
+			rv1 = buf[0];
+		}
+		else
+		{
+			SendDataByte(ReadFuse0);
+			SendDataByte(ReadFuse1);
+			SendDataByte(0);
+			rv1 = RecDataByte();
+		}
 		rv1 = ~rv1 & 0xFF;
 
-		SendDataByte(ReadFuseHigh0);
-		SendDataByte(ReadFuseHigh1);
-		SendDataByte(0);
-		rv2 = RecDataByte();
+		if (isUSBInstalled())
+		{
+			uint8_t buf[8] = {0};
+			buf[0] = ReadFuseHigh0;
+			buf[1] = ReadFuseHigh1;
+
+			int ret = StreamSPI(0, 4, buf, NULL);
+			rv2 = buf[0];
+		}
+		else
+		{
+			SendDataByte(ReadFuseHigh0);
+			SendDataByte(ReadFuseHigh1);
+			SendDataByte(0);
+			rv2 = RecDataByte();
+		}
 		rv2 = ~rv2 & 0xFF;
 
-		SendDataByte(ReadFuseExt0);
-		SendDataByte(ReadFuseExt1);
-		SendDataByte(0);
-		rv3 = RecDataByte();
+		if (isUSBInstalled())
+		{
+			uint8_t buf[8] = {0};
+			buf[0] = ReadFuseExt0;
+			buf[1] = ReadFuseExt1;
+
+			int ret = StreamSPI(0, 4, buf, NULL);
+			rv3 = buf[0];
+		}
+		else
+		{
+			SendDataByte(ReadFuseExt0);
+			SendDataByte(ReadFuseExt1);
+			SendDataByte(0);
+			rv3 = RecDataByte();
+		}
 		rv3 = ~rv3 & 0xFF;
 
 		retval = (rv3 << 16) | (rv2 << 8) | rv1;
@@ -646,10 +948,22 @@ uint32_t At90sBus::ReadLockBits(long model)
 	case AT90S2343:
 	case AT90S4434:
 	case AT90S8535:
-		SendDataByte(ReadLock0);
-		SendDataByte(ReadLock1);
-		SendDataByte(0);
-		rv2 = rv1 = RecDataByte();
+		if (isUSBInstalled())
+		{
+			uint8_t buf[8] = {0};
+			buf[0] = ReadLock0;
+			buf[1] = ReadLock1;
+
+			int ret = StreamSPI(0, 4, buf, NULL);
+			rv2 = rv1 = buf[0];
+		}
+		else
+		{
+			SendDataByte(ReadLock0);
+			SendDataByte(ReadLock1);
+			SendDataByte(0);
+			rv2 = rv1 = RecDataByte();
+		}
 		rv1 = ~rv1 & 0x80;
 		rv2 = ~rv2 & 0x40;
 		retval = (rv1 >> 6) | (rv2 >> 4);
@@ -661,10 +975,22 @@ uint32_t At90sBus::ReadLockBits(long model)
 	case AT90S4433:
 	case ATmega603:
 	case ATmega103:
-		SendDataByte(ReadLock0);
-		SendDataByte(ReadLock1);
-		SendDataByte(0);
-		rv1 = RecDataByte();
+		if (isUSBInstalled())
+		{
+			uint8_t buf[8] = {0};
+			buf[0] = ReadLock0;
+			buf[1] = ReadLock1;
+
+			int ret = StreamSPI(0, 4, buf, NULL);
+			rv1 = buf[0];
+		}
+		else
+		{
+			SendDataByte(ReadLock0);
+			SendDataByte(ReadLock1);
+			SendDataByte(0);
+			rv1 = RecDataByte();
+		}
 		retval = ~rv1 & 0x06;
 		break;
 
@@ -681,10 +1007,22 @@ uint32_t At90sBus::ReadLockBits(long model)
 	case ATtiny261:
 	case ATtiny461:
 	case ATtiny861:
-		SendDataByte(ReadLock0);
-		SendDataByte(ReadLock1);
-		SendDataByte(0);
-		rv1 = RecDataByte();
+		if (isUSBInstalled())
+		{
+			uint8_t buf[8] = {0};
+			buf[0] = ReadLock0;
+			buf[1] = ReadLock1;
+
+			int ret = StreamSPI(0, 4, buf, NULL);
+			rv1 = buf[0];
+		}
+		else
+		{
+			SendDataByte(ReadLock0);
+			SendDataByte(ReadLock1);
+			SendDataByte(0);
+			rv1 = RecDataByte();
+		}
 		retval = ~rv1 & 0x03;
 		break;
 
@@ -716,10 +1054,22 @@ uint32_t At90sBus::ReadLockBits(long model)
 	case ATmega1281:
 	case ATmega2560:
 	case ATmega2561:
-		SendDataByte(ReadLock0);
-		SendDataByte(ReadLock1);
-		SendDataByte(0);
-		rv1 = RecDataByte();
+		if (isUSBInstalled())
+		{
+			uint8_t buf[8] = {0};
+			buf[0] = ReadLock0;
+			buf[1] = ReadLock1;
+
+			int ret = StreamSPI(0, 4, buf, NULL);
+			rv1 = buf[0];
+		}
+		else
+		{
+			SendDataByte(ReadLock0);
+			SendDataByte(ReadLock1);
+			SendDataByte(0);
+			rv1 = RecDataByte();
+		}
 		retval = ~rv1 & 0x3F;
 		break;
 
@@ -733,22 +1083,49 @@ uint32_t At90sBus::ReadLockBits(long model)
 
 int At90sBus::ReadDeviceCode(int addr)
 {
-	SendDataByte(ReadDevCode0);
-	SendDataByte(ReadDevCode1);
-	SendDataByte(addr & 3);
+	if (isUSBInstalled())
+	{
+		uint8_t buf[8] = {0};
+		buf[0] = ReadDevCode0;
+		buf[1] = ReadDevCode1;
+		buf[2] = (addr & 3);
 
-	return RecDataByte();
+		int ret = StreamSPI(0, 4, buf, NULL);
+		return buf[0];
+	}
+	else
+	{
+		SendDataByte(ReadDevCode0);
+		SendDataByte(ReadDevCode1);
+		SendDataByte(addr & 3);
+
+		return RecDataByte();
+	}
 }
 
 long At90sBus::ReadCalibration(int addr)
 {
-	SendDataByte(ReadCalib0);
-	SendDataByte(ReadCalib1);
-	SendDataByte(addr & 3);
+	if (isUSBInstalled())
+	{
+		uint8_t buf[8] = {0};
+		buf[0] = ReadCalib0;
+		buf[1] = ReadCalib1;
+		buf[2] = (addr & 3);
 
-	return RecDataByte();
+		int ret = StreamSPI(0, 4, buf, NULL);
+		return buf[0];
+	}
+	else
+	{
+		SendDataByte(ReadCalib0);
+		SendDataByte(ReadCalib1);
+		SendDataByte(addr & 3);
+
+		return RecDataByte();
+	}
 }
 
+// TODO USB
 long At90sBus::Read(int addr, uint8_t *data, long length, int page_size)
 {
 	long len;
@@ -798,6 +1175,7 @@ long At90sBus::Read(int addr, uint8_t *data, long length, int page_size)
 	return len;
 }
 
+// TODO USB
 int At90sBus::WaitReadyAfterWrite(int type, long addr, int data, long timeout)
 {
 	int rval;
@@ -873,34 +1251,62 @@ int At90sBus::WaitReadyAfterWrite(int type, long addr, int data, long timeout)
 int At90sBus::Erase(int type)
 {
 	EraseStart();
+	if (isUSBInstalled())
+	{
+		uint8_t buf[8] = {0};
+		//Erase command
+		buf[0] = ChipErase0;
+		buf[1] = ChipErase1;
 
-	//Erase command
-	SendDataByte(ChipErase0);
-	SendDataByte(ChipErase1);
-	SendDataByte(0);
-	SendDataByte(0);
+		int ret = StreamSPI(0, 4, buf, NULL);
+		WaitMsec(twd_erase);
+		Reset();
 
-	WaitMsec(twd_erase);
-	Reset();
+		/** Needed by ATtiny12 **/
+		WriteProgByte(0, 0xFF);
+		WaitMsec(twd_prog);
 
-	/** Needed by ATtiny12 **/
-	WriteProgByte(0, 0xFF);
-	WaitMsec(twd_prog);
+		//Erase command
+		buf[0] = ChipErase0;
+		buf[1] = ChipErase1;
+		ret = StreamSPI(0, 4, buf, NULL);
 
-	//Erase command
-	SendDataByte(ChipErase0);
-	SendDataByte(ChipErase1);
-	SendDataByte(0);
-	SendDataByte(0);
+		WaitMsec(twd_erase);
+		Reset();
 
-	WaitMsec(twd_erase);
-	Reset();
+		EraseEnd();
+	}
+	else
+	{
+		//Erase command
+		SendDataByte(ChipErase0);
+		SendDataByte(ChipErase1);
+		SendDataByte(0);
+		SendDataByte(0);
 
-	EraseEnd();
+		WaitMsec(twd_erase);
+		Reset();
+
+		/** Needed by ATtiny12 **/
+		WriteProgByte(0, 0xFF);
+		WaitMsec(twd_prog);
+
+		//Erase command
+		SendDataByte(ChipErase0);
+		SendDataByte(ChipErase1);
+		SendDataByte(0);
+		SendDataByte(0);
+
+		WaitMsec(twd_erase);
+		Reset();
+
+		EraseEnd();
+	}
 
 	return OK;
 }
 
+// TODO USB
 long At90sBus::Write(int addr, uint8_t const *data, long length, int page_size)
 {
 	long len;
@@ -1016,41 +1422,91 @@ int At90sBus::WriteProgPage(long addr, uint8_t const *data, long page_size, long
 	//align addr to page boundary
 	addr &= ~(page_size - 1);       //0xFFFFFF00
 
-	for (k = 0; k < page_size; k++, data++)
+	if (isUSBInstalled())
 	{
-		if (first_loc < 0 && *data != 0xFF)
+		uint8_t *buf = new uint8_t(page_size + 4);
+		int cnt = 0;
+
+		// TODO memcpy
+		for (k = 0; k < page_size; k++, data++)
 		{
-			first_loc = addr + k;
+			if (first_loc < 0 && *data != 0xFF)
+			{
+				first_loc = addr + k;
+			}
+
+			buf[cnt++] = *data;
 		}
 
-		WriteProgByte(k, *data);
-	}
+		buf[cnt++] = WriteProgPageMem;
+		buf[cnt++] = (addr >> 9);                //send word address
+		buf[cnt++] = (addr >> 1);
+		buf[cnt++] = 0;
 
-	SendDataByte(WriteProgPageMem);
-	SendDataByte(addr >> 9);                //send word address
-	SendDataByte(addr >> 1);
-	SendDataByte(0);
+		int ret = StreamSPI(0, cnt, buf, NULL);
 
-	SetLastProgrammedAddress(addr + page_size - 1);
+		SetLastProgrammedAddress(addr + page_size - 1);
 
-	if (enable_flashpage_polling)
-	{
-		WaitUsec(100);
-		okflag = false;
-
-		for (k = timeout; k > 0; k--)
+		if (enable_flashpage_polling)
 		{
-			if (ReadProgByte(first_loc) != 0xFF)
+			WaitUsec(100);
+			okflag = false;
+
+			for (k = timeout; k > 0; k--)
 			{
-				okflag = true;
-				break;
+				if (ReadProgByte(first_loc) != 0xFF)
+				{
+					okflag = true;
+					break;
+				}
 			}
 		}
+		else
+		{
+			okflag = true;
+			WaitMsec(E2Profile::GetMegaPageDelay());
+		}
+
+		delete buf;
 	}
 	else
 	{
-		okflag = true;
-		WaitMsec(E2Profile::GetMegaPageDelay());
+		for (k = 0; k < page_size; k++, data++)
+		{
+			if (first_loc < 0 && *data != 0xFF)
+			{
+				first_loc = addr + k;
+			}
+
+			WriteProgByte(k, *data);
+		}
+
+		SendDataByte(WriteProgPageMem);
+		SendDataByte(addr >> 9);                //send word address
+		SendDataByte(addr >> 1);
+		SendDataByte(0);
+
+		SetLastProgrammedAddress(addr + page_size - 1);
+
+		if (enable_flashpage_polling)
+		{
+			WaitUsec(100);
+			okflag = false;
+
+			for (k = timeout; k > 0; k--)
+			{
+				if (ReadProgByte(first_loc) != 0xFF)
+				{
+					okflag = true;
+					break;
+				}
+			}
+		}
+		else
+		{
+			okflag = true;
+			WaitMsec(E2Profile::GetMegaPageDelay());
+		}
 	}
 
 	return okflag ? OK : E2P_TIMEOUT;

@@ -58,6 +58,34 @@ class BusIO
 	}
 	virtual int Error();
 
+	virtual bool isUSBInstalled()
+	{
+		int vid;
+		int pid;
+		Q_CHECK_PTR(busI);
+		busI->GetUSB(vid, pid);
+
+		return (vid > 0 && pid > 0);
+	}
+
+	virtual int32_t StreamSPI(unsigned long chip_select, unsigned long length, unsigned char *buffer, unsigned char *buffer2)
+	{
+		if (isUSBInstalled() == false)
+		{
+			return -1;
+		}
+		return busI->StreamSPI(chip_select, length, buffer, buffer2);
+	}
+
+	virtual int32_t StreamI2C(uint iWriteLength, uint *iWriteBuffer, uint iReadLength, uint *oReadBuffer)
+	{
+		if (isUSBInstalled() == false)
+		{
+			return -1;
+		}
+		return busI->StreamI2C(iWriteLength, iWriteBuffer, iReadLength, oReadBuffer);
+	}
+
 	virtual int TestPort(int port)
 	{
 		(void)port;

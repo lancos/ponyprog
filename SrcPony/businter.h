@@ -100,12 +100,26 @@ class BusInterface
 
 	virtual int32_t StreamSPI(unsigned long chip_select, unsigned long length, unsigned char *buffer, unsigned char *buffer2)
 	{
+		if (usb_pid == 0 || usb_vid == 0)
+		{
+			return -1;
+		}
+		GetUSBInterface()->SetChipMode(USB_MODE_SPI);
+		// TODO get rate config from settings
+		GetUSBInterface()->SetStreamSpeed(USB_DEFAULT_RATE);
 		int ret_val = GetUSBInterface()->StreamSPI(chip_select, length, buffer, buffer2);
 		return ret_val;
 	}
 
 	virtual int32_t StreamI2C(uint iWriteLength, uint *iWriteBuffer, uint iReadLength, uint *oReadBuffer)
 	{
+		if (usb_pid == 0 || usb_vid == 0)
+		{
+			return -1;
+		}
+		GetUSBInterface()->SetChipMode(USB_MODE_I2C);
+		// TODO get rate config from settings
+		GetUSBInterface()->SetStreamSpeed(USB_DEFAULT_RATE);
 		int ret_val = GetUSBInterface()->StreamI2C(iWriteLength, iWriteBuffer, iReadLength, oReadBuffer);
 		return ret_val;
 	}
@@ -425,7 +439,7 @@ class BusInterface
 	{
 		return i2c_mode;
 	}
-
+#if 0
 	/**
 	 * @brief write I2C or SPI directly to usb chip
 	 *        they must be supported from chip: ch341a
@@ -483,7 +497,7 @@ class BusInterface
 		}
 		return ret;
 	}
-
+#endif
 	void SetSPIMode(bool mode)
 	{
 		spi_mode = mode;

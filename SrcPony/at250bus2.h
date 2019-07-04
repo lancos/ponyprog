@@ -40,9 +40,8 @@ class At250BigBus: public At250Bus
 	//      int Reset();
 
   protected:
-
-	//      int ReadEEPByte(int addr);
-	//      void WriteEEPByte(int addr, int data);
+	virtual int ReadEEPByte(int addr);
+	virtual void WriteEEPByte(int addr, int data);
 
   private:
 

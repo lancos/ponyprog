@@ -297,14 +297,21 @@ long I2CBus::Read(int slave, uint8_t *data, long length, int page_size)
 	long len;
 
 	qDebug() << __PRETTY_FUNCTION__ << "(" << (hex) << slave << "," << (void *)data << "," << (dec) << length << ") - IN";
-	len = StartRead(slave, data, length);
+	if (isUSBInstalled())
+	{
+	}
+	else
+	{
+		len = StartRead(slave, data, length);
 
-	if (len == length)
-		if (err_no || Stop())
+		if (len == length)
 		{
-			len = 0;
+			if (err_no || Stop())
+			{
+				len = 0;
+			}
 		}
-
+	}
 	qDebug() << __PRETTY_FUNCTION__ << "=" << len << ", err_no =" << err_no << " - OUT";
 
 	return len;
@@ -316,14 +323,21 @@ long I2CBus::Write(int slave, uint8_t const *data, long length, int page_size)
 
 	qDebug() << __PRETTY_FUNCTION__ << "(" << (hex) << slave << "," << data << "," << (dec) << length << ") - IN";
 
-	len = StartWrite(slave, data, length);
+	if (isUSBInstalled())
+	{
+	}
+	else
+	{
+		len = StartWrite(slave, data, length);
 
-	if (len == length)
-		if (err_no || Stop())
+		if (len == length)
 		{
-			len = 0;
+			if (err_no || Stop())
+			{
+				len = 0;
+			}
 		}
-
+	}
 	qDebug() << __PRETTY_FUNCTION__ << "=" << len << ", err_no =" << err_no << " - OUT";
 
 	return len;

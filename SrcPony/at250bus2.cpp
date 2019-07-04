@@ -39,6 +39,59 @@ At250BigBus::At250BigBus(BusInterface *ptr)
 	qDebug() << __PRETTY_FUNCTION__ << "(" << (hex) << ptr << (dec) <<  ")";
 }
 
+
+int At250BigBus::ReadEEPByte(int addr)
+{
+	int rv;
+
+	if (isUSBInstalled())
+	{
+		uint8_t buf[8] = {0};
+		buf[0] = (ReadData | (((addr >> 8) & 1) << 3));
+		buf[1] = ((addr >> 8) & 0xFF);
+		buf[2] = (addr & 0xFF);
+
+		int ret = StreamSPI(0, 4, buf, NULL);
+
+		rv = buf[0];
+	}
+	else
+	{
+		SendDataByte(ReadData);
+		SendDataByte((addr >> 8) & 0xFF);		//MSB
+		SendDataByte(addr & 0xFF);				//LSB
+
+		ShotDelay();
+
+		rv = RecDataByte();
+
+		EndCycle();
+	}
+
+	return rv;
+}
+
+void At250BigBus::WriteEEPByte(int addr, int data)
+{
+	if (isUSBInstalled())
+	{
+		uint8_t buf[8] = {0};
+		buf[0] = WriteData;
+		buf[1] = ((addr >> 8) & 0xFF);
+		buf[2] = (addr & 0xFF);
+
+		int ret = StreamSPI(0, 4, buf, NULL);
+	}
+	else
+	{
+		SendDataByte(WriteData);
+		SendDataByte((addr >> 8) & 0xFF);		//MSB
+		SendDataByte(addr & 0xFF);				//LSB
+
+		EndCycle();
+	}
+}
+
 long At250BigBus::Read(int addr, uint8_t *data, long length, int page_size)
 {
 	qDebug() << __PRETTY_FUNCTION__ << "(" << (hex) << addr << ", " << data << ", " << (dec) << length << ")";
@@ -46,29 +99,60 @@ long At250BigBus::Read(int addr, uint8_t *data, long length, int page_size)
 
 	long len;
 
-	SendDataByte(ReadData);
-	SendDataByte((addr >> 8) & 0xFF);		//MSB
-	SendDataByte(addr & 0xFF);				//LSB
-
-	ShotDelay();
-
-	for (len = 0; len < length; len++)
+	if (page_size > 1)
 	{
-		*data++ = RecDataByte();
-
-		if ((len % 10) == 0)
+		uint8_t *buf = new uint8_t[page_size + 4];
+		for (len = 0; len < length; len += page_size, addr += page_size)
 		{
-			if (ReadProgress(len * 100 / length))
+			int cnt = 0;
+			buf[cnt++] = ReadData;
+			buf[cnt++] = ((addr >> 8) & 0xFF);		//MSB
+			buf[cnt++] = (addr & 0xFF);				//LSB
+
+			int ret = StreamSPI(0, cnt, buf, NULL);
+
+			// TODO memcpy
+			for (len = 0; len < length; len++)
 			{
-				break;
+				*data++ = buf[len];
+			}
+			ReadProgress(len * 100 / length);
+
+			WaitMsec(1);		//Flush
+		}
+
+		EndCycle();
+
+		ReadEnd();
+
+		delete[] buf;
+	}
+	else
+	{
+		SendDataByte(ReadData);
+		SendDataByte((addr >> 8) & 0xFF);		//MSB
+		SendDataByte(addr & 0xFF);				//LSB
+
+		ShotDelay();
+
+		for (len = 0; len < length; len++)
+		{
+			*data++ = RecDataByte();
+
+			if ((len % 10) == 0)
+			{
+				if (ReadProgress(len * 100 / length))
+				{
+					break;
+				}
 			}
 		}
+		WaitMsec(1);		//Flush
+
+		EndCycle();
+
+		ReadEnd();
 	}
-	WaitMsec(1);		//Flush
-
-	EndCycle();
-
-	ReadEnd();
 	qDebug() << __PRETTY_FUNCTION__ << "=" << len;
 
 	return len;
@@ -90,38 +174,67 @@ long At250BigBus::Write(int addr, uint8_t const *data, long length, int page_siz
 		return 0;
 	}
 
-	long count = 0;
-	for (len = 0; len < length; len += writepage_size, addr += writepage_size)
+	SendDataByte(WriteEnable);
+
+	if (page_size > 1)
 	{
-		SendDataByte(WriteEnable);
-		EndCycle();
-
-		SendDataByte(WriteData);
-		SendDataByte((addr >> 8) & 0xFF);		//MSB
-		SendDataByte(addr & 0xFF);				//LSB
-
-		int j;
-
-		for (j = 0; j < writepage_size; j++)
+		uint8_t *buf = new uint8_t[page_size + 4];
+		for (len = 0; len < length; len += writepage_size, addr += writepage_size)
 		{
-			SendDataByte(*data++);
-		}
+			int cnt = 0;
+			buf[cnt++] = WriteData;
+			buf[cnt++] = ((addr >> 8) & 0xFF);		//MSB
+			buf[cnt++] = (addr & 0xFF);				//LSB
 
-		EndCycle();
-
-		if (!WaitEndOfWrite())
-		{
-			return 0;			//Must return 0, because > 0 (and != length) means "Abort by user"
-		}
-
-		if ((++count & 1))
-		{
-			if (WriteProgress(len * 100 / length))
+			for (int j = 0; j < writepage_size; j++)
 			{
-				break;
+				buf[cnt++] = *data++;
+			}
+
+			int ret = StreamSPI(0, cnt, buf, NULL);
+
+			WaitMsec(1);		//Flush
+
+			WriteProgress(len * 100 / length);
+		}
+
+		delete[] buf;
+	}
+	else
+	{
+		int count = 0;
+		for (len = 0; len < length; len += writepage_size, addr += writepage_size)
+		{
+			EndCycle();
+
+			SendDataByte(WriteData);
+			SendDataByte((addr >> 8) & 0xFF);		//MSB
+			SendDataByte(addr & 0xFF);				//LSB
+
+			for (int j = 0; j < writepage_size; j++)
+			{
+				SendDataByte(*data++);
+			}
+
+			EndCycle();
+
+			if (!WaitEndOfWrite())
+			{
+				return 0;			//Must return 0, because > 0 (and != length) means "Abort by user"
+			}
+
+			if ((++count & 1))
+			{
+				if (WriteProgress(len * 100 / length))
+				{
+					break;
+				}
 			}
 		}
 	}
+
+	SendDataByte(WriteDisable);
+
 	WaitMsec(1);			//Flush
 
 	WriteEnd();
