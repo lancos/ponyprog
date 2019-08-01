@@ -209,6 +209,7 @@ class e2App : public cTranslator
 	//      JdmIOInterface jdm_ioI;
 	LinuxSysFsInterface linuxsysfs_ioI;
 	MpsseInterface jtagkeyI;
+	MpsseInterface ponyprog_ftI;
 
 	int port_number;        //port number used
 	BusIO *iniBus;                           //pointer to current Bus

@@ -92,7 +92,7 @@ void MpsseInterface::List()
 	delete list;
 }
 
-void MpsseInterface::ConfigPins(int pinum_ctrl, int pinum_datain, int pinum_dataout, int pinum_clock, int pinum_clockin, int pinum_poweron)
+void MpsseInterface::ConfigPins(int pinum_ctrl, int pinum_datain, int pinum_dataout, int pinum_clock, int pinum_clockin, int pinum_poweron, int pinum_enbus)
 {
 	if (pinum_ctrl < 0)
 	{
@@ -147,6 +147,15 @@ void MpsseInterface::ConfigPins(int pinum_ctrl, int pinum_datain, int pinum_data
 	{
 		pin_poweron = 1 << pinum_poweron;
 	}
+
+	if (pinum_enbus < 0)
+	{
+		pin_enbus = 0;
+	}
+	else
+	{
+		pin_enbus = 1 << pinum_enbus;
+	}
 }
 
 int MpsseInterface::InitPins()
@@ -168,7 +177,7 @@ int MpsseInterface::InitPins()
 				 << " Ctrl=" << pin_ctrl
 				 << ", Clock=" << pin_clock << ", ClockIn=" << pin_clockin
 				 << ", DataIn=" << pin_datain << ", DataOut=" << pin_dataout
-				 << ", Poweron=" << pin_poweron;
+				 << ", Poweron=" << pin_poweron << ", EnBus=" << pin_enbus;
 
 		result = ctx.set_bitmode(0, BITMODE_MPSSE);
 		if (result == 0)
@@ -176,21 +185,24 @@ int MpsseInterface::InitPins()
 			ctx.flush();
 			cmdbuf.clear();
 
+			int new_data = 0;
+
 			if (GetI2CMode())
 			{
 				cmdbuf.append(EN_3_PHASE);
-				last_data = pin_dataout | pin_clock;	//I2C need pins high
+				new_data |= pin_dataout | pin_clock;	//I2C need pins high
+				new_data &= ~pin_enbus;
 			}
 			else
 			{
 				cmdbuf.append(DIS_3_PHASE);
-				last_data = 0;
+				new_data |= pin_enbus;
 			}
 
 			//00011011 --> 0x1B
-			int new_data = 0;
-			int new_directions = pin_ctrl | pin_dataout | pin_clock | pin_poweron;
-			new_directions |= (1 << 4) | (1 << 11);
+			int new_directions = pin_ctrl | pin_dataout | pin_clock | pin_poweron | pin_enbus;
+			if (usb_pid == 0xcff8 && usb_vid == 0x0403)
+				new_directions |= (1 << 4) | (1 << 11);		//hack
 
 			//Force update
 			last_data = ~new_data & 0xffff;
@@ -386,7 +398,7 @@ int MpsseInterface::SendPins(int new_data, int new_directions)
 		ch_dir = 0;
 	}
 
-	new_data &= ~((1 << 4) | (1 << 11));
+	//new_data &= ~((1 << 4) | (1 << 11));
 
 	//what's changed
 	ch_data = (new_data ^ last_data) & 0xffff;
@@ -586,6 +598,7 @@ int MpsseInterface::SetPower(bool onoff)
 		int val = onoff ? 1 : 0;
 
 		SendPins(OutDataMask(pin_poweron, val));
+		Flush();
 	}
 
 	return OK;

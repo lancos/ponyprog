@@ -118,7 +118,7 @@ class MpsseInterface : public BusInterface
 	virtual void SetDelay(int delay);
 	virtual void ShotDelay(int n = 1);
 
-	void ConfigPins(int pinum_ctrl = -1, int pinum_datain = -1, int pinum_dataout = -1, int pinum_clock = -1, int pinum_clockin = -1, int pinum_poweron = -1);
+	void ConfigPins(int pinum_ctrl = -1, int pinum_datain = -1, int pinum_dataout = -1, int pinum_clock = -1, int pinum_clockin = -1, int pinum_poweron = -1, int pinum_enbus = -1);
 
   protected:
 	//int GetPresence() const;
@@ -167,6 +167,7 @@ class MpsseInterface : public BusInterface
 	int pin_clock;
 	int pin_clockin;	//0 if unused
 	int pin_poweron;	//0 if unused
+	int pin_enbus;		//0 if unused
 };
 
 #endif

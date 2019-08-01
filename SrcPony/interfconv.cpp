@@ -54,6 +54,7 @@ static QVector<Interf2Index> index_interface =
 	{1, 5, "EasyI2C-I/O", EASYI2C_IO},
 	{1, 6, "Linux SysFs GPIO", LINUXSYSFS_IO},
 	{1, 7, "FTDI JtagKey", FTDI_JTAGKEY},
+	{1, 8, "FTDI PonyProgFT", PONYPROG_FT},
 };
 
 QStringList GetInterfList(int vector)

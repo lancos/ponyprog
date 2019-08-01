@@ -444,9 +444,17 @@ void e2App::SetInterfaceType(HInterfaceType type)
 	case FTDI_JTAGKEY:
 		iType = FTDI_JTAGKEY;
 		busIntp = &jtagkeyI;
-		jtagkeyI.ConfigPins(E2Profile::GetMpssePinCtrl(), E2Profile::GetMpssePinDataIn(), E2Profile::GetMpssePinDataOut(), E2Profile::GetMpssePinClock());
 		jtagkeyI.SetUSBVid(0x0403);
 		jtagkeyI.SetUSBPid(0xcff8);
+		jtagkeyI.ConfigPins(E2Profile::GetMpssePinCtrl(), E2Profile::GetMpssePinDataIn(), E2Profile::GetMpssePinDataOut(), E2Profile::GetMpssePinClock());
+		break;
+
+	case PONYPROG_FT:
+		iType = PONYPROG_FT;
+		busIntp = &ponyprog_ftI;
+		ponyprog_ftI.SetUSBVid(0x0403);
+		ponyprog_ftI.SetUSBPid(0x6014);
+		ponyprog_ftI.ConfigPins(3, 2, 1, 0, 4, 5, 7);
 		break;
 
 	case SIPROG_API:
