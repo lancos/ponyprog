@@ -453,7 +453,7 @@ void e2App::SetInterfaceType(HInterfaceType type)
 		iType = PONYPROG_FT;
 		busIntp = &ponyprog_ftI;
 		ponyprog_ftI.SetUSBVid(0x0403);
-		ponyprog_ftI.SetUSBPid(0x6014);
+		ponyprog_ftI.SetUSBPid(0x6e38);
 		ponyprog_ftI.ConfigPins(3, 2, 1, 0, 4, 5, 7);
 		break;
 
