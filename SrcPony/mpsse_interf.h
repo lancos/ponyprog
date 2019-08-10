@@ -158,6 +158,7 @@ class MpsseInterface : public BusInterface
 
 	int pin_directions;
 
+	bool ignore_last_data;
 	int last_data;
 	int read_data;
 

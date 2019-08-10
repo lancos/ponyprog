@@ -36,6 +36,7 @@
 
 MpsseInterface::MpsseInterface()
 	: pin_directions(0),
+	  ignore_last_data(true),
 	  last_data(0),
 	  read_data(0),
 	  pin_ctrl(0),
@@ -165,6 +166,7 @@ int MpsseInterface::InitPins()
 	result = ctx.set_bitmode(0, BITMODE_RESET);
 	if (result == 0)
 	{
+		ignore_last_data = true;
 		last_data = 0;
 		pin_directions = 0;
 
@@ -199,6 +201,9 @@ int MpsseInterface::InitPins()
 				new_data |= pin_enbus;
 			}
 
+			//cmdbuf.append(LOOPBACK_END);
+			//cmdbuf.append(DIS_ADAPTIVE);
+
 			//00011011 --> 0x1B
 			int new_directions = pin_ctrl | pin_dataout | pin_clock | pin_poweron | pin_enbus;
 			if (usb_pid == 0xcff8 && usb_vid == 0x0403)
@@ -209,6 +214,7 @@ int MpsseInterface::InitPins()
 			pin_directions = ~new_directions & 0xffff;
 			SendPins(new_data, new_directions);	//set pins to ZERO
 			result = Flush();
+			WaitMsec(10);
 		}
 	}
 
@@ -402,6 +408,8 @@ int MpsseInterface::SendPins(int new_data, int new_directions)
 
 	//what's changed
 	ch_data = (new_data ^ last_data) & 0xffff;
+	if (ignore_last_data)
+		ch_data |= 0xff;
 
 	if ((ch_data & 0x00ff) != 0 || (ch_dir & 0x00ff) != 0)	//low byte
 	{
@@ -418,6 +426,7 @@ int MpsseInterface::SendPins(int new_data, int new_directions)
 
 	//if (queue_mode || Flush() == OK)
 	{
+		ignore_last_data = false;
 		last_data = new_data;
 		pin_directions = new_directions;
 	}
@@ -475,11 +484,6 @@ uint8_t MpsseInterface::xferByte(int &err, uint8_t by, int mode, int bpw, bool l
 		cmd |= MPSSE_LSB;
 	}
 
-	if ((mode & SPIMODE_MASK) == 0 || (mode & SPIMODE_MASK) == 3)
-	{
-		cmd |= MPSSE_WRITE_NEG;
-	}
-
 	//We accept 0 --> default R+W, SPIMODE_WRONLY --> W, SPIMODE_RDONLY --> R, (SPIMODE_WRONLY|SPIMODE_RDONLY) --> Invalid
 	Q_ASSERT((mode & (xMODE_WRONLY | xMODE_RDONLY)) != (xMODE_WRONLY | xMODE_RDONLY));
 	Q_ASSERT(bpw <= 8);
@@ -487,14 +491,33 @@ uint8_t MpsseInterface::xferByte(int &err, uint8_t by, int mode, int bpw, bool l
 	if ((mode & xMODE_WRONLY) != 0)
 	{
 		cmd |= MPSSE_DO_WRITE;
+
+		if ((mode & SPIMODE_MASK) == 0 || (mode & SPIMODE_MASK) == 3)
+		{
+			cmd |= MPSSE_WRITE_NEG;
+		}
 	}
 	else if ((mode & xMODE_RDONLY) != 0)
 	{
 		cmd |= MPSSE_DO_READ;
+
+		if ((mode & SPIMODE_MASK) == 1 || (mode & SPIMODE_MASK) == 2)
+		{
+			cmd |= MPSSE_READ_NEG;
+		}
 	}
 	else
 	{
 		cmd |= (MPSSE_DO_WRITE | MPSSE_DO_READ);
+
+		if ((mode & SPIMODE_MASK) == 0 || (mode & SPIMODE_MASK) == 3)
+		{
+			cmd |= MPSSE_WRITE_NEG;
+		}
+		else
+		{
+			cmd |= MPSSE_READ_NEG;
+		}
 	}
 
 	err = OK;
@@ -540,6 +563,7 @@ uint8_t MpsseInterface::xferByte(int &err, uint8_t by, int mode, int bpw, bool l
 			}
 		}
 	}
+	ignore_last_data = true;
 
 	return ret_byte;
 }
@@ -569,7 +593,7 @@ unsigned long MpsseInterface::xferWord(int &err, unsigned long word_out, int mod
 		if (nbit > 0)
 		{
 			word_in <<= 8;
-			word_in |= xferByte(err, (word_out >> nshift) & 0xff, mode, nbit, false);
+			word_in |= xferByte(err, ((word_out >> nshift) & 0xff) << (8 - nbit), mode, nbit, false);
 			bpw -= nbit;
 		}
 		while (bpw > 0)
