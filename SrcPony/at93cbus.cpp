@@ -143,7 +143,9 @@ long At93cBus::Read(int addr, uint8_t *data, long length, int page_size)
 	{
 		//17/08/98 -- now repeat the command every word
 		clearCS();
+		ShotDelay();
 		setCS();
+		ShotDelay();
 
 		//Send command opcode
 		SendCmdOpcode(ReadCode);

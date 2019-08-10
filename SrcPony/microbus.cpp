@@ -55,27 +55,27 @@ void MicroWireBus::SetDelay()
 	switch (val)
 	{
 	case TURBO:
-		n = 0;		// as fast as your PC can
+		n = 1;		// as fast as your PC can
 		break;
 
 	case FAST:
-		n = 1;
+		n = 5;
 		break;
 
 	case SLOW:
-		n = 10;
+		n = 50;
 		break;
 
 	case VERYSLOW:
-		n = 80;
+		n = 200;
 		break;
 
 	case ULTRASLOW:
-		n = 500;
+		n = 800;
 		break;
 
 	default:
-		n = 5;		//Default (< 100KHz)
+		n = 10;		//Default (< 100KHz)
 		break;
 	}
 
