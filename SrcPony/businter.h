@@ -360,7 +360,7 @@ class BusInterface
 	{
 		i2c_mode = mode;
 	}
-	int GetI2CMode() const
+	bool GetI2CMode() const
 	{
 		return i2c_mode;
 	}
