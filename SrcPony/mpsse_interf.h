@@ -112,6 +112,7 @@ class MpsseInterface : public BusInterface
 	void List();
 	virtual int Flush();
 
+	virtual int xferBit(int &err, int b, int mode = 0);
 	virtual uint8_t xferByte(int &err, uint8_t by, int mode = 0, int bpw = 8, bool lsb_first = false);
 	virtual unsigned long xferWord(int &err, unsigned long word_out, int mode = 0, int bpw = 8, bool lsb_first = false);
 

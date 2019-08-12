@@ -125,7 +125,7 @@ int I2CBus::SendStart()
 	}
 
 	clearSDA();
-	ShotDelay(3);		// tHD;STA = 4 usec
+	ShotDelay(4);		// tHD;STA = 4 usec
 	clearSCL();
 	ShotDelay();
 
@@ -159,7 +159,7 @@ int I2CBus::SendStop()
 #else
 	ShotDelay();
 #endif
-	ShotDelay(3);		// tSU;STOP = 4.7 usec
+	ShotDelay(5);		// tSU;STOP = 4.7 usec
 	setSDA();
 	ShotDelay(2);
 
@@ -170,7 +170,7 @@ int I2CBus::SendStop()
 	}
 
 	//tBUF = 4.7 usec
-	ShotDelay();
+	ShotDelay(2);
 
 	return OK;
 }
@@ -186,6 +186,7 @@ int I2CBus::SendBitMast(int inbit)
 int I2CBus::RecBitMast()
 {
 	int err = OK;
+	setSDA();
 	int rv = busI->xferBit(err, 1, xMODE_RDONLY);
 	if (err == OK)
 	{
@@ -222,6 +223,7 @@ int I2CBus::WriteByte(int by, bool lsb)
 	if (err == OK)
 	{
 		//Receive Ack
+		setSDA();
 		int lrb = busI->xferBit(err, 1, xMODE_RDONLY);
 
 		if (err == OK)
@@ -238,6 +240,7 @@ int I2CBus::WriteByte(int by, bool lsb)
 int I2CBus::ReadByte(int ack, bool lsb)
 {
 	int err = OK;
+	setSDA();
 	int rv = busI->xferByte(err, 0xff, xMODE_RDONLY, 8, lsb);
 	if (err == OK)
 	{
@@ -262,19 +265,19 @@ void I2CBus::SetDelay()
 	switch (val)
 	{
 	case TURBO:
-		n = 0;          // as fast as your PC can (dangerous)
+		n = 1;          // as fast as your PC can (dangerous)
 		break;
 
 	case FAST:
-		n = 1;          // > 100 Khz, < 400 Khz
+		n = 2;          // > 100 Khz, < 400 Khz
 		break;
 
 	case SLOW:
-		n = 10;         // (< 25 Khz)
+		n = 20;         // (< 25 Khz)
 		break;
 
 	case VERYSLOW:
-		n = 50;
+		n = 80;
 		break;
 
 	case ULTRASLOW:
@@ -282,7 +285,7 @@ void I2CBus::SetDelay()
 		break;
 
 	default:
-		n = 3;          //Default (< 100KHz)
+		n = 5;          //Default (< 100KHz)
 		break;
 	}
 
@@ -296,7 +299,7 @@ long I2CBus::Read(int slave, uint8_t *data, long length, int page_size)
 {
 	long len;
 
-	qDebug() << __PRETTY_FUNCTION__ << "(" << (hex) << slave << "," << (void *)data << "," << (dec) << length << ") - IN";
+	//qDebug() << __PRETTY_FUNCTION__ << "(" << (hex) << slave << "," << (void *)data << "," << (dec) << length << ") - IN";
 	len = StartRead(slave, data, length);
 
 	if (len == length)
@@ -305,7 +308,7 @@ long I2CBus::Read(int slave, uint8_t *data, long length, int page_size)
 			len = 0;
 		}
 
-	qDebug() << __PRETTY_FUNCTION__ << "=" << len << ", err_no =" << err_no << " - OUT";
+	//qDebug() << __PRETTY_FUNCTION__ << "=" << len << ", err_no =" << err_no << " - OUT";
 
 	return len;
 }
@@ -314,7 +317,7 @@ long I2CBus::Write(int slave, uint8_t const *data, long length, int page_size)
 {
 	long len;
 
-	qDebug() << __PRETTY_FUNCTION__ << "(" << (hex) << slave << "," << data << "," << (dec) << length << ") - IN";
+	//qDebug() << __PRETTY_FUNCTION__ << "(" << (hex) << slave << "," << data << "," << (dec) << length << ") - IN";
 
 	len = StartWrite(slave, data, length);
 
@@ -324,7 +327,7 @@ long I2CBus::Write(int slave, uint8_t const *data, long length, int page_size)
 			len = 0;
 		}
 
-	qDebug() << __PRETTY_FUNCTION__ << "=" << len << ", err_no =" << err_no << " - OUT";
+	//qDebug() << __PRETTY_FUNCTION__ << "=" << len << ", err_no =" << err_no << " - OUT";
 
 	return len;
 }
@@ -360,7 +363,7 @@ long I2CBus::StartRead(uint8_t slave, uint8_t *data, long length)
 	int temp;
 	long len = length;
 
-	qDebug() << __PRETTY_FUNCTION__ << "(" << (hex) << slave << "," << data << "," << (dec) << length << ") - IN";
+	//qDebug() << __PRETTY_FUNCTION__ << "(" << (hex) << slave << "," << data << "," << (dec) << length << ") - IN";
 
 	if (len > 0)
 	{
@@ -404,7 +407,7 @@ long I2CBus::StartRead(uint8_t slave, uint8_t *data, long length)
 	err_no = 0;
 
 fineR:
-	qDebug() << __PRETTY_FUNCTION__ << "=" << (long)(length - len) << ", err_no =" << err_no << " - OUT";
+	//qDebug() << __PRETTY_FUNCTION__ << "=" << (long)(length - len) << ", err_no =" << err_no << " - OUT";
 
 	return length - len;
 }
@@ -414,7 +417,7 @@ long I2CBus::StartWrite(uint8_t slave, uint8_t const *data, long length)
 	int error;
 	long len = length;
 
-	qDebug() << __PRETTY_FUNCTION__ << "(" << (hex) << slave << "," << data << "," << (dec) << length << ") - IN";
+	//qDebug() << __PRETTY_FUNCTION__ << "(" << (hex) << slave << "," << data << "," << (dec) << length << ") - IN";
 
 	if (len == 0)
 	{
@@ -446,18 +449,18 @@ long I2CBus::StartWrite(uint8_t slave, uint8_t const *data, long length)
 	}
 
 fineW:
-	qDebug() << __PRETTY_FUNCTION__ << "=" << (long)(length - len) << ", err_no =" << err_no << " - OUT";
+	//qDebug() << __PRETTY_FUNCTION__ << "=" << (long)(length - len) << ", err_no =" << err_no << " - OUT";
 
 	return length - len;
 }
 
 int I2CBus::Stop(void)
 {
-	qDebug() << __PRETTY_FUNCTION__ << "- IN";
+	//qDebug() << __PRETTY_FUNCTION__ << "- IN";
 
 	err_no = SendStop() ? IICERR_STOP : 0;
 
-	qDebug() << __PRETTY_FUNCTION__ << "=" << err_no << "- OUT";
+	//qDebug() << __PRETTY_FUNCTION__ << "=" << err_no << "- OUT";
 
 	return err_no;
 }

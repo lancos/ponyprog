@@ -366,6 +366,8 @@ void MpsseInterface::SetDelay(int delay)
 		if (delay > 0)
 		{
 			freq = 1000000 / (delay * 2);
+			if (GetI2CMode())
+				freq = freq * 3 / 2;		//3PHASE_CLOCKING
 		}
 		SetFrequency(freq);
 	}
@@ -376,6 +378,8 @@ void MpsseInterface::ShotDelay(int n)
 {
 	if (BusInterface::GetDelay() > 0)		//avoid any delay if 0
 	{
+		if (GetI2CMode())
+			n *= 3;
 		while (n-- > 0)
 		{
 			cmdbuf.append(SET_BITS_LOW);
@@ -471,6 +475,96 @@ int MpsseInterface::GetPins()
 		}
 	}
 	return ret;
+}
+
+int MpsseInterface::xferBit(int &err, int b, int mode)
+{
+	int cmd = MPSSE_BITMODE;
+	int len = 0;	//0 --> 1bit
+	int by = (b != 0) ? 0xff : 0;
+	uint8_t ret_byte = 0;
+
+	//We accept 0 --> default R+W, SPIMODE_WRONLY --> W, SPIMODE_RDONLY --> R, (SPIMODE_WRONLY|SPIMODE_RDONLY) --> Invalid
+	Q_ASSERT((mode & (xMODE_WRONLY | xMODE_RDONLY)) != (xMODE_WRONLY | xMODE_RDONLY));
+
+	if ((mode & xMODE_WRONLY) != 0)
+	{
+		cmd |= MPSSE_DO_WRITE;
+
+		if ((mode & SPIMODE_MASK) == 0 || (mode & SPIMODE_MASK) == 3)
+		{
+			cmd |= MPSSE_WRITE_NEG;
+		}
+	}
+	else if ((mode & xMODE_RDONLY) != 0)
+	{
+		cmd |= MPSSE_DO_READ;
+
+		if ((mode & SPIMODE_MASK) == 1 || (mode & SPIMODE_MASK) == 2)
+		{
+			cmd |= MPSSE_READ_NEG;
+		}
+	}
+	else
+	{
+		cmd |= (MPSSE_DO_WRITE | MPSSE_DO_READ);
+
+		if ((mode & SPIMODE_MASK) == 0 || (mode & SPIMODE_MASK) == 3)
+		{
+			cmd |= MPSSE_WRITE_NEG;
+		}
+		else
+		{
+			cmd |= MPSSE_READ_NEG;
+		}
+	}
+
+	err = OK;
+
+	if (cmdbuf.almostFull())
+	{
+		Flush();
+	}
+
+	cmdbuf.append(cmd);
+	cmdbuf.append(len);
+	if ((cmd & MPSSE_DO_WRITE) != 0)
+	{
+		cmdbuf.append(by);
+	}
+
+	if ((cmd & MPSSE_DO_READ) != 0)
+	{
+		cmdbuf.append(SEND_IMMEDIATE);
+
+		int ret = Flush();
+		if (ret == OK)
+		{
+			int timeout = 1000;
+			do
+			{
+				ret = ctx.read(&ret_byte, 1);
+				if (ret < 0)
+				{
+					qWarning() << __PRETTY_FUNCTION__ << "read failed:" << ctx.error_string();
+					err = -1;
+				}
+			}
+			while (ret == 0 && --timeout > 0);
+
+			if (ret == 1)
+			{
+				err = OK;
+			}
+			else
+			{
+				err = E2P_TIMEOUT;
+			}
+		}
+	}
+	ignore_last_data = true;
+
+	return (ret_byte & 1);
 }
 
 uint8_t MpsseInterface::xferByte(int &err, uint8_t by, int mode, int bpw, bool lsb_first)
@@ -746,7 +840,7 @@ int MpsseInterface::GetDataIn()
 		}
 		else
 		{
-			qDebug() << __PRETTY_FUNCTION__ << "=" << val;
+			//qDebug() << __PRETTY_FUNCTION__ << "=" << val;
 			val = (val & pin_datain) ? 1 : 0;
 
 			if (cmdWin->GetPolarity() & DININV)
