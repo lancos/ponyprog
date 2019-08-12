@@ -298,7 +298,7 @@ int MpsseInterface::Open(int port)
 		{
 			ctx.reset();
 			//ctx.flush();
-			ctx.set_read_chunk_size(64);
+			ctx.set_read_chunk_size(256);
 			ctx.set_write_chunk_size(1024);
 			//ctx.set_event_char();
 			//ctx.set_error_char();
@@ -476,6 +476,84 @@ int MpsseInterface::GetPins()
 	}
 	return ret;
 }
+
+int MpsseInterface::GetLowPinsMulti(int bufsiz, uint8_t *buf, int len)
+{
+	if (len > bufsiz)
+		len = bufsiz;
+
+	if (cmdbuf.almostFull(len))
+	{
+		Flush();
+	}
+
+	for (int k = 0; k < len; k++)
+		cmdbuf.append(GET_BITS_LOW);
+	cmdbuf.append(SEND_IMMEDIATE);
+
+	int ret = Flush();
+	if (ret == OK)
+	{
+		int timeout = 10000;
+		do
+		{
+			ret = ctx.read(buf, len);
+			if (ret < 0)
+			{
+				qWarning() << __PRETTY_FUNCTION__ << "read failed:" << ctx.error_string();
+				return -1;
+			}
+		}
+		while (ret == 0 && --timeout > 0);
+
+		if (timeout == 0)
+		{
+			ret = E2P_TIMEOUT;
+		}
+	}
+	return ret;
+}
+
+bool MpsseInterface::CheckDataLines(int len, int sda, int scl)
+{
+	uint8_t buf[512];
+	bool test = false;
+
+	Q_ASSERT(len > 0);
+	Q_ASSERT(len <= (int)sizeof(buf));
+
+	if (GetLowPinsMulti(sizeof(buf), buf, len) == len)
+	{
+		test = true;
+
+		for (int k = 0; test && k < len; k++)
+		{
+			if (sda == 0 && scl == 0)
+				test = IsClockDataDOWN(buf[k]);
+			else if (sda > 0 && scl > 0)
+				test = IsClockDataUP(buf[k]);
+			else
+			{
+				bool test_sda = true, test_scl = true;
+
+				if (sda > 0)
+					test_sda = GetDataIn(buf[k]);
+				else if (sda == 0)
+					test_sda = !GetDataIn(buf[k]);
+
+				if (scl > 0)
+					test_scl = GetClock(buf[k]);
+				else if (scl == 0)
+					test_scl = !GetClock(buf[k]);
+
+				test = (test_sda && test_scl);
+			}
+		} while (test && --len > 0);
+	}
+
+	return test;
+}
+
 
 int MpsseInterface::xferBit(int &err, int b, int mode)
 {
@@ -828,6 +906,20 @@ void MpsseInterface::ClearClockData()
 	}
 }
 
+int MpsseInterface::GetDataIn(int val)
+{
+	val = (val & pin_datain) ? 1 : 0;
+
+	if (cmdWin->GetPolarity() & DININV)
+	{
+		return !val;
+	}
+	else
+	{
+		return val;
+	}
+}
+
 int MpsseInterface::GetDataIn()
 {
 	if (IsInstalled())
@@ -840,17 +932,7 @@ int MpsseInterface::GetDataIn()
 		}
 		else
 		{
-			//qDebug() << __PRETTY_FUNCTION__ << "=" << val;
-			val = (val & pin_datain) ? 1 : 0;
-
-			if (cmdWin->GetPolarity() & DININV)
-			{
-				return !val;
-			}
-			else
-			{
-				return val;
-			}
+			return GetDataIn(val);
 		}
 	}
 	else
@@ -859,23 +941,98 @@ int MpsseInterface::GetDataIn()
 	}
 }
 
+int MpsseInterface::GetClock(int val)
+{
+	if (pin_clockin == 0)
+		return 1;
+	else
+		return (val & pin_clockin) ? 1 : 0;
+}
+
 int MpsseInterface::GetClock()
 {
-	return 1;
+	if (pin_clockin == 0)
+	{
+		return 1;
+	}
+	else
+	{
+		if (IsInstalled())
+		{
+			int val = GetPins();
+			if (val < 0)
+			{
+				qWarning() << __PRETTY_FUNCTION__ << "read failed.";
+				return val;
+			}
+			else
+			{
+				return GetClock(val);
+			}
+		}
+		else
+		{
+			return E2ERR_NOTINSTALLED;
+		}
+	}
+}
+
+int MpsseInterface::IsClockDataUP(int val)
+{
+	if (pin_clockin == 0)
+		return GetDataIn(val);
+	else
+		return (GetClock(val) && GetDataIn(val));
 }
 
 int MpsseInterface::IsClockDataUP()
 {
-	//qDebug() << __PRETTY_FUNCTION__ << "*** Inst=" << IsInstalled();
+	if (IsInstalled())
+	{
+		int val = GetPins();
+		if (val < 0)
+		{
+			qWarning() << __PRETTY_FUNCTION__ << "read failed.";
+			return val;
+		}
+		else
+		{
+			return IsClockDataUP(val);
+		}
+	}
+	else
+	{
+		return E2ERR_NOTINSTALLED;
+	}
+}
 
-	return GetDataIn();
+int MpsseInterface::IsClockDataDOWN(int val)
+{
+	if (pin_clockin == 0)
+		return !GetDataIn(val);
+	else
+		return (!GetClock(val) && !GetDataIn(val));
 }
 
 int MpsseInterface::IsClockDataDOWN()
 {
-	//qDebug() << __PRETTY_FUNCTION__ << "*** Inst=" << IsInstalled();
-
-	return !GetDataIn();
+	if (IsInstalled())
+	{
+		int val = GetPins();
+		if (val < 0)
+		{
+			qWarning() << __PRETTY_FUNCTION__ << "read failed.";
+			return val;
+		}
+		else
+		{
+			return IsClockDataDOWN(val);
+		}
+	}
+	else
+	{
+		return E2ERR_NOTINSTALLED;
+	}
 }
 
 /**

@@ -146,6 +146,39 @@ class BusInterface
 	virtual int IsClockDataUP() = 0;
 	virtual int IsClockDataDOWN() = 0;
 
+	virtual bool CheckDataLines(int len = 1, int sda = -1, int scl = -1)
+	{
+		bool test = false;
+
+		if (len > 0)
+		{
+			do {
+				if (sda == 0 && scl == 0)
+					test = IsClockDataDOWN();
+				else if (sda > 0 && scl > 0)
+					test = IsClockDataUP();
+				else
+				{
+					bool test_sda = true, test_scl = true;
+
+					if (sda > 0)
+						test_sda = GetDataIn();
+					else if (sda == 0)
+						test_sda = !GetDataIn();
+
+					if (scl > 0)
+						test_scl = GetClock();
+					else if (scl == 0)
+						test_scl = !GetClock();
+
+					test = (test_sda && test_scl);
+				}
+			} while (test && --len > 0);
+		}
+
+		return test;
+	}
+
 	int GetCmd2CmdDelay() const
 	{
 		return cmd2cmd_delay;

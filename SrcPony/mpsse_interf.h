@@ -98,11 +98,16 @@ class MpsseInterface : public BusInterface
 	virtual void SetDataOut(int sda = 1);
 	virtual void SetClock(int scl = 1);
 	virtual int GetDataIn();
+	virtual int GetDataIn(int val);
 	virtual int GetClock();
+	virtual int GetClock(int val);
 	virtual void SetClockData();
 	virtual void ClearClockData();
+	virtual int IsClockDataUP(int val);
 	virtual int IsClockDataUP();
+	virtual int IsClockDataDOWN(int val);
 	virtual int IsClockDataDOWN();
+	virtual bool CheckDataLines(int len = 1, int sda = -1, int scl = -1);
 
 	//virtual int TestPort(int port);
 
@@ -131,6 +136,7 @@ class MpsseInterface : public BusInterface
 	int SetFrequency(uint32_t freq);
 	int SendPins(int new_data, int new_directions = -1);
 	int GetPins();
+	int GetLowPinsMulti(int bufsiz, uint8_t *buf, int len);
 
 	//utility to set/reset/toggle a pin
 	unsigned int OutDataMask(int old_val, int mask, int val)
