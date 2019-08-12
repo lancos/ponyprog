@@ -286,7 +286,7 @@ int E24xx::bank_out(uint8_t const *copy_buf, int bank, long size, long idx)
 		}
 
 		for (k = timeout_loop; k > 0 && GetBus()->Read(eeprom_addr[bank], buffer, 1) != 1; k--)
-			;
+			qApp->processEvents();
 
 		if (k == 0)
 		{

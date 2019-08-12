@@ -104,7 +104,7 @@ int E24xx2::Write(int probe, int type)
 			int k;
 
 			for (k = timeout_loop; k > 0 && GetBus()->Read(eeprom_addr[0], localbuf, 1) != 1; k--)
-				;
+				qApp->processEvents();;
 
 			if (k == 0)
 			{
