@@ -60,7 +60,8 @@ At90sBus::At90sBus(BusInterface *ptr)
 	  ReadCalib0(0x38), ReadCalib1(0),
 	  p1_a(0x80), p2_a(0x7F), pflash_a(0x7F),
 	  p1_b(0x00), p2_b(0xFF), pflash_b(0xFF),
-	  old1200mode(false)
+	  old1200mode(false),
+	  enable_flashpage_polling(false)
 {
 	qDebug() << __PRETTY_FUNCTION__;
 
@@ -177,21 +178,17 @@ int At90sBus::Reset()
 
 		for (j = 0; j < 4 && !success_flag; j++)
 		{
-			int val = 0;
-
 			SPIBus::Reset();
 
 			WaitMsec(E2Profile::GetAVRDelayAfterReset());		// At least 20msec (AVR datasheets)
 
-			int k;
-
-			for (k = 0; k < 32 && !success_flag; k++)
+			for (int k = 0; k < 32 && !success_flag; k++)
 			{
 				qDebug() << __PRETTY_FUNCTION__ << "() ** SendEnableProg";
 
 				SendDataByte(EnableProg0);
 				SendDataByte(EnableProg1);
-				val = RecDataByte();
+				int val = RecDataByte();
 				SendDataByte(0);
 
 				if (val != EnableProg1)			//Echo expected
