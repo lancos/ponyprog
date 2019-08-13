@@ -52,7 +52,7 @@
 IMBus::IMBus(BusInterface *ptr)
 	: BusIO(ptr)
 {
-	qDebug() << "IMBus::IMBus()";
+	qDebug() << __PRETTY_FUNCTION__;
 
 	StatusLocation = 526;   //526 for NVM3060, 14 for MDA2062
 	SecondaryAddress = false;
@@ -63,9 +63,7 @@ IMBus::IMBus(BusInterface *ptr)
 // Distruttore
 IMBus::~IMBus()
 {
-	qDebug() <<  "IMBus::~IMBus()";
-
-	//      Close();
+	qDebug() << __PRETTY_FUNCTION__;
 }
 
 void IMBus::SetStatusLocation(int val)
@@ -110,15 +108,15 @@ void IMBus::SetDelay()
 		break;
 
 	case FAST:
-		n = 3;
+		n = 4;
 		break;
 
 	case SLOW:
-		n = 18;
+		n = 30;
 		break;
 
 	case VERYSLOW:
-		n = 80;
+		n = 100;
 		break;
 
 	case ULTRASLOW:
@@ -126,46 +124,59 @@ void IMBus::SetDelay()
 		break;
 
 	default:
-		n = 5;         //Default (< 100KHz)
+		n = 10;         //Default (< 100KHz)
 		break;
 	}
 
+	Q_CHECK_PTR(busI);
 	busI->SetDelay(n);
 
-	qDebug() << "IMBus::SetDelay() = " << n;
+	qDebug() << __PRETTY_FUNCTION__ << "=" << n;
 }
 
 int IMBus::SendDataBit(int b)
 {
-	clearCLK();             //set clock low
-	bitDI(b);
-	ShotDelay();
-	setCLK();               //device latch data bit now!
-	ShotDelay();
+	//clearCLK();             //set clock low
+	//bitDI(b);
+	//ShotDelay();
+	//setCLK();               //device latch data bit now!
+	//ShotDelay();
 
-	return OK;
+	int err = OK;
+	setCLK();
+	busI->xferBit(err, b, SPI_MODE_3 | xMODE_WRONLY);
+
+	return err;
 }
 
-// ritorna un numero negativo se c'e` un errore, altrimenti 0 o 1
+// return negative number in case of error, otherwise received bit (0 or 1)
 int IMBus::RecDataBit()
 {
-	register uint8_t b;
+	//clearCLK();                             //the eeprom set data now
+	//ShotDelay();
+	//setCLK();
+	//b = getDO();
+	//ShotDelay();
 
-	clearCLK();                             //the eeprom set data now
-	ShotDelay();
+	int err = OK;
 	setCLK();
-	b = getDO();
-	ShotDelay();
-
-	return b;
+	int rv = busI->xferBit(err, 1, SPI_MODE_3 | xMODE_RDONLY);
+	if (err == OK)
+	{
+		return rv;
+	}
+	else
+	{
+		return err;
+	}
 }
 
 int IMBus::IdentPulse()
 {
 	clearIdent();
-	ShotDelay();
+	ShotDelay(6);
 	setIdent();
-	ShotDelay();
+	ShotDelay(2);
 
 	return OK;
 }
@@ -173,53 +184,63 @@ int IMBus::IdentPulse()
 //byte operations
 int IMBus::SendAddrWord(int wo)
 {
-	int k;
+	int err = OK;
 
+	setCLK();
 	clearIdent();
 
 	//From LSB to MSB
-	for (k = 0; k < 8; k++)
-	{
-		SendDataBit(wo & (1 << k));
-	}
+	//for (int k = 0; k < 8; k++)
+	//	SendDataBit(wo & (1 << k));
+	busI->xferByte(err, wo, SPI_MODE_3 | xMODE_WRONLY, 8, true);
+
+	setCLK();
+	setDI();
+	setIdent();
+	ShotDelay(2);	//1.5 usec
+
+	return err;
+}
+
+int IMBus::SendDataWord(long wo, int wlen)
+{
+	int err = OK;
+
+	setCLK();
+	setIdent();
+
+	//From LSB to MSB
+	//for (int k = 0; k < wlen; k++)
+	//	SendDataBit(wo & (1 << k));
+	busI->xferWord(err, wo, SPI_MODE_3 | xMODE_WRONLY, wlen, true);
+
+	setCLK();
+	setDI();
+
+	return err;
+}
+
+int IMBus::RecDataWord(int wlen)
+{
+	int err = OK;
 
 	setCLK();
 	setDI();
 	setIdent();
 
-	return OK;
-}
-
-int IMBus::SendDataWord(long wo, int wlen)
-{
-	int k;
-
-	//From LSB to MSB
-	for (k = 0; k < wlen; k++)
+	//int val = 0;
+	//for (int k = 0; k < wlen; k++)
+	//	if (RecDataBit())
+	//		val |= 1 << k;
+	int rv = busI->xferWord(err, 0xffff, SPI_MODE_3 | xMODE_RDONLY, wlen, true);
+	if (err == OK)
 	{
-		SendDataBit(wo & (1 << k));
+		return rv;
 	}
-
-	setCLK();
-	setDI();
-
-	return OK;
-}
-
-int IMBus::RecDataWord(int wlen)
-{
-	int k, val = 0;
-
-	setCLK();
-	setDI();
-
-	for (k = 0; k < wlen; k++)
-		if (RecDataBit())
-		{
-			val |= 1 << k;
-		}
-
-	return val;
+	else
+	{
+		return err;
+	}
 }
 
 int IMBus::WaitReadyAfterWrite(int addr, int delay, long timeout)

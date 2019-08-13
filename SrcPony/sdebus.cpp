@@ -92,6 +92,7 @@ int Sde2506Bus::SendDataBit(int b)
 	//clearCLK();             //device latch data bit now!
 
 	int err = OK;
+	clearCLK();
 	busI->xferBit(err, b, SPI_MODE_1 | xMODE_WRONLY);
 
 	return err;
@@ -107,6 +108,7 @@ int Sde2506Bus::RecDataBit()
 	//clearCLK();
 
 	int err = OK;
+	clearCLK();
 	int rv = busI->xferBit(err, 1, SPI_MODE_0 | xMODE_RDONLY);
 	if (err == OK)
 	{
@@ -237,6 +239,7 @@ long Sde2506Bus::Write(int addr, uint8_t const *data, long length, int page_size
 		setDI();
 		WaitReadyAfterWrite();
 		setCE();					//End write
+		ShotDelay();
 
 		if ((curaddr & 1))
 		{

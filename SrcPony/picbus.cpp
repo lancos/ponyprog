@@ -101,6 +101,7 @@ int PicBus::SendDataBit(int b)
 	//ShotDelay();
 
 	int err = OK;
+	clearCLK();
 	busI->xferBit(err, b, SPI_MODE_1 | xMODE_WRONLY);
 
 	return err;
@@ -116,6 +117,7 @@ int PicBus::RecDataBit()
 	//ShotDelay();
 
 	int err = OK;
+	clearCLK();
 	int rv = busI->xferBit(err, 1, SPI_MODE_1 | xMODE_RDONLY);
 	if (err == OK)
 	{
