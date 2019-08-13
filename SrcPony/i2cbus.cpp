@@ -53,9 +53,13 @@ I2CBus::~I2CBus()
 int I2CBus::CheckBusy()
 {
 	if (busI->CheckDataLines(BUSYDELAY, 1, 1))
+	{
 		return OK;
+	}
 	else
+	{
 		return IICERR_BUSBUSY;
+	}
 }
 
 /** I2CBus specification **

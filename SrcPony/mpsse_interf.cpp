@@ -207,7 +207,9 @@ int MpsseInterface::InitPins()
 			//00011011 --> 0x1B
 			int new_directions = pin_ctrl | pin_dataout | pin_clock | pin_poweron | pin_enbus;
 			if (usb_pid == 0xcff8 && usb_vid == 0x0403)
+			{
 				new_directions |= (1 << 4) | (1 << 11);		//hack
+			}
 
 			//Force update
 			last_data = ~new_data & 0xffff;
@@ -367,7 +369,9 @@ void MpsseInterface::SetDelay(int delay)
 		{
 			freq = 1000000 / (delay * 2);
 			if (GetI2CMode())
+			{
 				freq = freq * 3 / 2;		//3PHASE_CLOCKING
+			}
 		}
 		SetFrequency(freq);
 	}
@@ -379,7 +383,9 @@ void MpsseInterface::ShotDelay(int n)
 	if (BusInterface::GetDelay() > 0)		//avoid any delay if 0
 	{
 		if (GetI2CMode())
+		{
 			n *= 3;
+		}
 		while (n-- > 0)
 		{
 			cmdbuf.append(SET_BITS_LOW);
@@ -413,7 +419,9 @@ int MpsseInterface::SendPins(int new_data, int new_directions)
 	//what's changed
 	ch_data = (new_data ^ last_data) & 0xffff;
 	if (ignore_last_data)
+	{
 		ch_data |= 0xff;
+	}
 
 	if ((ch_data & 0x00ff) != 0 || (ch_dir & 0x00ff) != 0)	//low byte
 	{
@@ -454,16 +462,14 @@ int MpsseInterface::GetPins()
 	if (ret == OK)
 	{
 		int timeout = 10000;
-		do
-		{
+		do {
 			ret = ctx.read(buf, 2);
 			if (ret < 0)
 			{
 				qWarning() << __PRETTY_FUNCTION__ << "read failed:" << ctx.error_string();
 				return -1;
 			}
-		}
-		while (ret == 0 && --timeout > 0);
+		} while (ret == 0 && --timeout > 0);
 
 		if (timeout > 0)
 		{
@@ -480,7 +486,9 @@ int MpsseInterface::GetPins()
 int MpsseInterface::GetLowPinsMulti(int bufsiz, uint8_t *buf, int len)
 {
 	if (len > bufsiz)
+	{
 		len = bufsiz;
+	}
 
 	if (cmdbuf.almostFull(len))
 	{
@@ -488,23 +496,23 @@ int MpsseInterface::GetLowPinsMulti(int bufsiz, uint8_t *buf, int len)
 	}
 
 	for (int k = 0; k < len; k++)
+	{
 		cmdbuf.append(GET_BITS_LOW);
+	}
 	cmdbuf.append(SEND_IMMEDIATE);
 
 	int ret = Flush();
 	if (ret == OK)
 	{
 		int timeout = 10000;
-		do
-		{
+		do {
 			ret = ctx.read(buf, len);
 			if (ret < 0)
 			{
 				qWarning() << __PRETTY_FUNCTION__ << "read failed:" << ctx.error_string();
 				return -1;
 			}
-		}
-		while (ret == 0 && --timeout > 0);
+		} while (ret == 0 && --timeout > 0);
 
 		if (timeout == 0)
 		{
@@ -529,26 +537,38 @@ bool MpsseInterface::CheckDataLines(int len, int sda, int scl)
 		for (int k = 0; test && k < len; k++)
 		{
 			if (sda == 0 && scl == 0)
+			{
 				test = IsClockDataDOWN(buf[k]);
+			}
 			else if (sda > 0 && scl > 0)
+			{
 				test = IsClockDataUP(buf[k]);
+			}
 			else
 			{
 				bool test_sda = true, test_scl = true;
 
 				if (sda > 0)
+				{
 					test_sda = GetDataIn(buf[k]);
+				}
 				else if (sda == 0)
+				{
 					test_sda = !GetDataIn(buf[k]);
+				}
 
 				if (scl > 0)
+				{
 					test_scl = GetClock(buf[k]);
+				}
 				else if (scl == 0)
+				{
 					test_scl = !GetClock(buf[k]);
+				}
 
 				test = (test_sda && test_scl);
 			}
-		} while (test && --len > 0);
+		}
 	}
 
 	return test;
@@ -619,16 +639,14 @@ int MpsseInterface::xferBit(int &err, int b, int mode)
 		if (ret == OK)
 		{
 			int timeout = 1000;
-			do
-			{
+			do {
 				ret = ctx.read(&ret_byte, 1);
 				if (ret < 0)
 				{
 					qWarning() << __PRETTY_FUNCTION__ << "read failed:" << ctx.error_string();
 					err = -1;
 				}
-			}
-			while (ret == 0 && --timeout > 0);
+			} while (ret == 0 && --timeout > 0);
 
 			if (ret == 1)
 			{
@@ -714,16 +732,14 @@ uint8_t MpsseInterface::xferByte(int &err, uint8_t by, int mode, int bpw, bool l
 		if (ret == OK)
 		{
 			int timeout = 1000;
-			do
-			{
+			do {
 				ret = ctx.read(&ret_byte, 1);
 				if (ret < 0)
 				{
 					qWarning() << __PRETTY_FUNCTION__ << "read failed:" << ctx.error_string();
 					err = -1;
 				}
-			}
-			while (ret == 0 && --timeout > 0);
+			} while (ret == 0 && --timeout > 0);
 
 			if (ret == 1)
 			{
@@ -944,9 +960,13 @@ int MpsseInterface::GetDataIn()
 int MpsseInterface::GetClock(int val)
 {
 	if (pin_clockin == 0)
+	{
 		return 1;
+	}
 	else
+	{
 		return (val & pin_clockin) ? 1 : 0;
+	}
 }
 
 int MpsseInterface::GetClock()
@@ -980,9 +1000,13 @@ int MpsseInterface::GetClock()
 int MpsseInterface::IsClockDataUP(int val)
 {
 	if (pin_clockin == 0)
+	{
 		return GetDataIn(val);
+	}
 	else
+	{
 		return (GetClock(val) && GetDataIn(val));
+	}
 }
 
 int MpsseInterface::IsClockDataUP()
@@ -1009,9 +1033,13 @@ int MpsseInterface::IsClockDataUP()
 int MpsseInterface::IsClockDataDOWN(int val)
 {
 	if (pin_clockin == 0)
+	{
 		return !GetDataIn(val);
+	}
 	else
+	{
 		return (!GetClock(val) && !GetDataIn(val));
+	}
 }
 
 int MpsseInterface::IsClockDataDOWN()

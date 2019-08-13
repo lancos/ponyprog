@@ -154,22 +154,34 @@ class BusInterface
 		{
 			do {
 				if (sda == 0 && scl == 0)
+				{
 					test = IsClockDataDOWN();
+				}
 				else if (sda > 0 && scl > 0)
+				{
 					test = IsClockDataUP();
+				}
 				else
 				{
 					bool test_sda = true, test_scl = true;
 
 					if (sda > 0)
+					{
 						test_sda = GetDataIn();
+					}
 					else if (sda == 0)
+					{
 						test_sda = !GetDataIn();
+					}
 
 					if (scl > 0)
+					{
 						test_scl = GetClock();
+					}
 					else if (scl == 0)
+					{
 						test_scl = !GetClock();
+					}
 
 					test = (test_sda && test_scl);
 				}
