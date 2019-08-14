@@ -350,7 +350,6 @@ int PonyIOInterface::TestPort(int com_no)
 	if (ret_val == OK)
 	{
 		int a, b;
-		Wait w;
 
 		ret_val = E2ERR_OPENFAILED;
 

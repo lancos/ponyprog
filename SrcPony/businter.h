@@ -435,13 +435,13 @@ class BusInterface
 	int usb_vid;
 	int usb_pid;
 
+	Wait w;
+
   private:
 	int installed;              // -1 --> not installed, >= 0 number if the installed port
 	int cmd2cmd_delay;			// <> 0 if a delay between commands is needed
 	unsigned int shot_delay;	//delay unit to perform bus timing
 	bool i2c_mode;
-
-	Wait w;
 };
 
 #endif

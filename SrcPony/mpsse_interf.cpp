@@ -35,28 +35,26 @@
 #include <QString>
 
 MpsseInterface::MpsseInterface()
-	: pin_directions(0),
-	  ignore_last_data(true),
-	  last_data(0),
-	  read_data(0),
-	  pin_ctrl(0),
-	  pin_datain(0),
-	  pin_dataout(0),
-	  pin_clock(0),
-	  pin_clockin(0),
-	  pin_poweron(0)
+	:	cmdbuf(),
+		pin_directions(0),
+		ignore_last_data(true),
+		last_data(0),
+		read_data(0),
+		pin_ctrl(0),
+		pin_ctrlin(0),
+		pin_datain(0),
+		pin_dataout(0),
+		pin_clock(0),
+		pin_clockin(0),
+		pin_poweron(0)
 {
 	qDebug() << __PRETTY_FUNCTION__;
-
-	//MpsseInterface::List();
-	//DeInstall();
-	//old_portno = GetInstalled();
-
-	cmdbuf.clear();
 }
 
 MpsseInterface::~MpsseInterface()
 {
+	qDebug() << __PRETTY_FUNCTION__;
+
 	Close();
 }
 
@@ -65,9 +63,6 @@ void MpsseInterface::List()
 	//using namespace Ftdi;
 
 	qDebug() << __PRETTY_FUNCTION__;
-
-	// Parse args
-	//int vid = 0x0403, pid = 0xcff8;	//0x6010;
 
 	// Print whole list
 	Ftdi::List *list = Ftdi::List::find_all(ctx, usb_vid, usb_pid);
@@ -93,7 +88,7 @@ void MpsseInterface::List()
 	delete list;
 }
 
-void MpsseInterface::ConfigPins(int pinum_ctrl, int pinum_datain, int pinum_dataout, int pinum_clock, int pinum_clockin, int pinum_poweron, int pinum_enbus)
+void MpsseInterface::ConfigPins(int pinum_ctrl, int pinum_datain, int pinum_dataout, int pinum_clock, int pinum_clockin, int pinum_poweron, int pinum_enbus, int pinnum_ctrlin)
 {
 	if (pinum_ctrl < 0)
 	{
@@ -102,6 +97,15 @@ void MpsseInterface::ConfigPins(int pinum_ctrl, int pinum_datain, int pinum_data
 	else
 	{
 		pin_ctrl = 1 << pinum_ctrl;
+	}
+
+	if (pinnum_ctrlin < 0)
+	{
+		pin_ctrlin = 0;
+	}
+	else
+	{
+		pin_ctrlin = 1 << pinnum_ctrlin;
 	}
 
 	if (pinum_datain < 0)
@@ -325,7 +329,7 @@ int MpsseInterface::Open(int port)
 
 void MpsseInterface::Close()
 {
-	qDebug() << __PRETTY_FUNCTION__ << "IN";
+	qDebug() << __PRETTY_FUNCTION__ << "IN - Installed: " << IsInstalled();
 
 	if (IsInstalled())
 	{
@@ -334,8 +338,6 @@ void MpsseInterface::Close()
 		ctx.close();
 		DeInstall();
 	}
-
-	qDebug() << __PRETTY_FUNCTION__ << "OUT";
 }
 
 int MpsseInterface::Flush()
@@ -384,7 +386,7 @@ void MpsseInterface::ShotDelay(int n)
 	{
 		if (GetI2CMode())
 		{
-			n *= 3;
+			n *= 3;	//I2CBus use 3_PHASE clock
 		}
 		while (n-- > 0)
 		{
@@ -922,6 +924,18 @@ void MpsseInterface::ClearClockData()
 	}
 }
 
+int MpsseInterface::GetCtrlIn(int val)
+{
+	if (pin_ctrlin == 0)
+	{
+		return -1;
+	}
+	else
+	{
+		return (val & pin_ctrlin) ? 1 : 0;
+	}
+}
+
 int MpsseInterface::GetDataIn(int val)
 {
 	val = (val & pin_datain) ? 1 : 0;
@@ -1063,46 +1077,79 @@ int MpsseInterface::IsClockDataDOWN()
 	}
 }
 
-/**
-int MpsseInterface::TestPort(int com_no)
+int MpsseInterface::GetPresence(int mask, int val)
 {
-		qDebug() << "MpsseInterface::TestPort(%d) IN"<< com_no;
-        int ret_val = TestSave(com_no);
+	qDebug() << __PRETTY_FUNCTION__ << "() *** Inst=" << IsInstalled();
 
-        if (ret_val == OK)
-        {
-                int a,b;
-                Wait w;
-
-                ret_val = E2ERR_OPENFAILED;
-
-                SetClockData();
-                w.WaitMsec(50);
-                a = (GetCPWReg() & WF_SCL) ? 1 : 0;
-                b = GetPresence() ? 1 : 0;
-
-                if (a == b)
-                {
-                        ClearClockData();
-                        w.WaitMsec(50);
-                        a = (GetCPWReg() & WF_SCL) ? 1 : 0;
-                        b = GetPresence() ? 1 : 0;
-
-                        if (a == b)
-                        {
-                                SetClockData();
-                                w.WaitMsec(50);
-                                a = (GetCPWReg() & WF_SCL) ? 1 : 0;
-                                b = GetPresence() ? 1 : 0;
-
-                                if (a == b)
-                                        ret_val = OK;
-                        }
-                }
-        }
-        TestRestore();
-		qDebug() << "MpsseInterface::TestPort() = %d OUT"<< ret_val;
-
-        return ret_val;
+	if (IsInstalled())
+	{
+		int pinval = GetPins();
+		if (pinval < 0)
+		{
+			qWarning() << __PRETTY_FUNCTION__ << "read failed.";
+			return val;
+		}
+		else
+		{
+			return ((pinval & mask) == val) ? OK : E2ERR_OPENFAILED;
+		}
+	}
+	else
+	{
+		return E2ERR_NOTINSTALLED;
+	}
 }
-**/
+
+int MpsseInterface::TestPort(int port_no)
+{
+	qDebug() << __PRETTY_FUNCTION__  << "(" << port_no << ") IN";
+
+	int ret_val = TestSave(port_no);
+
+	if (ret_val == OK)
+	{
+		if (usb_vid == 0x0403 && usb_pid == 0x6e38)
+		{	//PonyProgFT
+			w.WaitMsec(10);
+			ret_val = GetPresence(0x0700, 0);
+
+			if (ret_val)
+			{
+				SendPins(OutDataMask(pin_ctrl, 1));
+				SetPower(true);
+				w.WaitMsec(100);
+				int val = GetPins();
+				if (val < 0 || GetCtrlIn(val) != 0)
+				{
+					return E2ERR_NOTINSTALLED;
+				}
+				else
+				{
+					SendPins(OutDataMask(pin_ctrl, 0));
+					w.WaitMsec(100);
+					val = GetPins();
+					if (val < 0 || GetCtrlIn(val) != 1)
+					{
+						return E2ERR_NOTINSTALLED;
+					}
+				}
+				SendPins(OutDataMask(pin_ctrl, 0));
+				SetPower(false);
+			}
+		}
+		else if (usb_vid == 0x0403 && usb_pid == 0xcff8)
+		{	//JtagKey
+			ret_val = OK;
+		}
+		else
+		{
+			ret_val = E2ERR_NOTINSTALLED;
+		}
+	}
+
+	TestRestore();
+
+	qDebug() << __PRETTY_FUNCTION__ << "() = " << ret_val << " OUT";
+
+	return ret_val;
+}

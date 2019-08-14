@@ -109,7 +109,7 @@ class MpsseInterface : public BusInterface
 	virtual int IsClockDataDOWN();
 	virtual bool CheckDataLines(int len = 1, int sda = -1, int scl = -1);
 
-	//virtual int TestPort(int port);
+	virtual int TestPort(int port);
 
 	int SetPower(bool onoff);
 	void SetControlLine(int res = 1);
@@ -124,10 +124,11 @@ class MpsseInterface : public BusInterface
 	virtual void SetDelay(int delay);
 	virtual void ShotDelay(int n = 1);
 
-	void ConfigPins(int pinum_ctrl = -1, int pinum_datain = -1, int pinum_dataout = -1, int pinum_clock = -1, int pinum_clockin = -1, int pinum_poweron = -1, int pinum_enbus = -1);
+	void ConfigPins(int pinum_ctrl = -1, int pinum_datain = -1, int pinum_dataout = -1, int pinum_clock = -1, int pinum_clockin = -1, int pinum_poweron = -1, int pinum_enbus = -1, int pinnum_ctrlin = -1);
 
   protected:
-	//int GetPresence() const;
+	int GetPresence(int mask, int val);
+	int GetCtrlIn(int val);
 
   private:
 	int InitPins();
@@ -170,6 +171,7 @@ class MpsseInterface : public BusInterface
 	int read_data;
 
 	int pin_ctrl;
+	int pin_ctrlin;		//0 if unused
 	int pin_datain;
 	int pin_dataout;
 	int pin_clock;

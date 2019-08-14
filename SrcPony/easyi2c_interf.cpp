@@ -255,7 +255,6 @@ int EasyI2CInterface::TestPort(int port)
 	qDebug() << "EasyI2CInterface::TestPort(" << port << ") IN";
 
 	int ret_val = TestSave(port);
-	Wait w;
 
 	if (ret_val == OK)
 	{

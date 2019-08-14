@@ -260,7 +260,6 @@ int SIProgInterface::TestPort(int com_no)
 	if (ret_val == OK)
 	{
 		ret_val = E2ERR_OPENFAILED;
-		Wait w;
 
 		SetPower(false);
 		w.WaitMsec(100);

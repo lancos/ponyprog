@@ -377,7 +377,6 @@ int AvrISPInterface::TestPort(int port)
 	qDebug() << "AvrISPInterface::TestPort(" << port << ") IN";
 
 	int ret_val = TestSave(port);
-	Wait w;
 
 	if (ret_val == OK)
 	{
