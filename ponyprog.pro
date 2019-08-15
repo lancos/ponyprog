@@ -259,6 +259,7 @@ HEADERS  += SrcPony/e2app.h \
             SrcPony/rs232int.h \
             SrcPony/x2444.h \
             SrcPony/Translator.h \
+            SrcPony/interfconv.h \
             qhexedit2/src/chunks.h \
             qhexedit2/src/commands.h \
             qhexedit2/src/qhexedit.h

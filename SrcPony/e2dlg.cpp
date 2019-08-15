@@ -35,6 +35,7 @@
 #include "eeptypes.h"
 #include "types.h"
 #include "i2cbus.h"
+#include "interfconv.h"
 
 class e2CmdWindow;
 
@@ -43,6 +44,8 @@ e2Dialog::e2Dialog(QWidget *bw, const QString title)
 	  lpt_no(2),
 	  com_no(3)
 {
+	qDebug() << "e2Dialog::e2Dialog()";
+
 	setupUi(this);
 
 	setWindowTitle(title);
@@ -54,118 +57,27 @@ e2Dialog::e2Dialog(QWidget *bw, const QString title)
 		setStyleSheet(cmdw->getStyleSheet());
 	}
 
-	qDebug() << "e2Dialog::e2Dialog()";
+	setWidgetsText();		//NB Must be called before getSettings()
 
-	setWidgetsText();
+	//connect(rdbComPort, SIGNAL(toggled(bool)), this, SLOT(onChangePort(bool)));
+	//connect(rdbLptPort, SIGNAL(toggled(bool)), this, SLOT(onChangePort(bool)));
 
-	connect(rdbComPort, SIGNAL(toggled(bool)), this, SLOT(onChangePort(bool)));
-	connect(rdbLptPort, SIGNAL(toggled(bool)), this, SLOT(onChangePort(bool)));
+	//connect(cbxInterfCOM, SIGNAL(currentIndexChanged(int)), this, SLOT(onSelectCOM(int)));
+	//connect(cbxInterfLPT, SIGNAL(currentIndexChanged(int)), this, SLOT(onSelectLPT(int)));
 
-	connect(cbxInterfCOM, SIGNAL(currentIndexChanged(int)), this, SLOT(onSelectCOM(int)));
-	connect(cbxInterfLPT, SIGNAL(currentIndexChanged(int)), this, SLOT(onSelectLPT(int)));
-
-	connect(cbxInterfNum, SIGNAL(currentIndexChanged(int)), this, SLOT(onSelectNum(int)));
+	//connect(cbxInterfCOMNum, SIGNAL(currentIndexChanged(int)), this, SLOT(onSelectCOMNum(int)));
 
 	connect(pushOk, SIGNAL(clicked()), this, SLOT(onOk()));
 	connect(pushCancel, SIGNAL(clicked()), this, SLOT(reject()));
 	connect(pushTest, SIGNAL(clicked(bool)), this, SLOT(onTest()));
 
-
 	getSettings();
 }
-
 
 e2Dialog::~e2Dialog()
 {
 	qDebug() << "e2Dialog::~e2Dialog()";
 }
-
-extern HInterfaceType VindexToInterfType(int vector, int index);
-
-void e2Dialog::onSelectLPT(int i)
-{
-	interf_type = VindexToInterfType(1, i);
-	qDebug() << "IntefType: " << (int)interf_type << ", index = " << i << ", LPT";
-//	interf_type = (HInterfaceType)(i + 3);
-}
-
-
-void e2Dialog::onSelectCOM(int i)
-{
-	interf_type = VindexToInterfType(0, i);
-	qDebug() << "IntefType: " << (int)interf_type << ", index = " << i << ", COM";
-//	interf_type = (HInterfaceType)i;
-}
-
-
-void e2Dialog::onSelectNum(int i)
-{
-	if (rdbLptPort->isChecked() == true)
-	{
-		lpt_no = i;
-		port_no = lpt_no;
-		qDebug() << "LPT port " << port_no;
-	}
-	else
-	{
-		com_no = i;
-		port_no = com_no;
-		qDebug() << "COM port " << port_no;
-	}
-}
-
-void e2Dialog::onChangePort(bool b)
-{
-	if (b)
-	{
-		QRadioButton *s = static_cast<QRadioButton *>(sender());
-		//bool state = s->isChecked();
-
-		//disconnect(rdbComPort, SIGNAL(toggled(bool)), this, SLOT(onChangePort(bool)));
-		//disconnect(rdbLptPort, SIGNAL(toggled(bool)), this, SLOT(onChangePort(bool)));
-
-		if (s == rdbComPort)
-		{
-			qDebug() << "COM Port selected";
-
-			cbxInterfCOM->setEnabled(true);
-			cbxInterfLPT->setEnabled(false);
-
-			disconnect(cbxInterfNum, SIGNAL(currentIndexChanged(int)), this, SLOT(onSelectNum(int)));
-			cbxInterfNum->clear();
-			cbxInterfNum->addItems(comList);
-			connect(cbxInterfNum, SIGNAL(currentIndexChanged(int)), this, SLOT(onSelectNum(int)));
-
-			port_no = com_no;
-			cbxInterfNum->setCurrentIndex(com_no);
-
-			interf_type = VindexToInterfType(0, cbxInterfCOM->currentIndex());
-		}
-		else
-		{
-			qDebug() << "LPT Port selected";
-
-			cbxInterfCOM->setEnabled(false);
-			cbxInterfLPT->setEnabled(true);
-
-			disconnect(cbxInterfNum, SIGNAL(currentIndexChanged(int)), this, SLOT(onSelectNum(int)));
-			cbxInterfNum->clear();
-			cbxInterfNum->addItems(lptList);
-			connect(cbxInterfNum, SIGNAL(currentIndexChanged(int)), this, SLOT(onSelectNum(int)));
-
-			port_no = lpt_no;
-			cbxInterfNum->setCurrentIndex(lpt_no);
-
-			interf_type = VindexToInterfType(1, cbxInterfLPT->currentIndex());
-		}
-
-		//connect(rdbComPort, SIGNAL(toggled(bool)), this, SLOT(onChangePort(bool)));
-		//connect(rdbLptPort, SIGNAL(toggled(bool)), this, SLOT(onChangePort(bool)));
-	}
-}
-
-extern int TypeToInterfVector(HInterfaceType type);
-extern int TypeToInterfIndex(HInterfaceType type);
 
 void e2Dialog::getSettings()
 {
@@ -179,37 +91,37 @@ void e2Dialog::getSettings()
 	port_no = cmdWin->GetPort();
 
 	// init of radiobuttons
-	if (TypeToInterfVector(interf_type) == 0)		//COM
+	if (TypeToInterfVector(interf_type) == INTERF_COM)		//COM
 	{
-		cbxInterfCOM->setCurrentIndex(TypeToInterfIndex(interf_type));
-		cbxInterfLPT->setCurrentIndex(0);
-
 		com_no = port_no;
-		rdbComPort->setChecked(true);
-
-		if (com_no >= cbxInterfNum->count())
+		if (com_no >= comList.count())
 		{
 			com_no = 0;
 			port_no = 0;
 		}
+		cbxInterfCOMNum->setCurrentIndex(com_no);
+		cbxInterfCOM->setCurrentIndex(TypeToInterfIndex(interf_type));
 
-		cbxInterfNum->setCurrentIndex(com_no);
+		if (tabWidget->currentIndex() != INTERF_COM)
+			tabWidget->setCurrentIndex(INTERF_COM);
+		else
+			on_tabWidget_currentChanged(INTERF_COM);
 	}
-	else
+	else if (TypeToInterfVector(interf_type) == INTERF_LPT)
 	{
-		cbxInterfLPT->setCurrentIndex(TypeToInterfIndex(interf_type));
-		cbxInterfCOM->setCurrentIndex(0);
-
 		lpt_no = port_no;
-		rdbLptPort->setChecked(true);
-
-		if (lpt_no >= cbxInterfNum->count())
+		if (lpt_no >= lptList.count())
 		{
 			lpt_no = 0;
 			port_no = 0;
 		}
+		cbxInterfLPTNum->setCurrentIndex(lpt_no);
+		cbxInterfLPT->setCurrentIndex(TypeToInterfIndex(interf_type));
 
-		cbxInterfNum->setCurrentIndex(lpt_no);
+		if (tabWidget->currentIndex() != INTERF_LPT)
+			tabWidget->setCurrentIndex(INTERF_LPT);
+		else
+			on_tabWidget_currentChanged(INTERF_LPT);
 	}
 
 	chkPol1->setChecked((cmdWin->GetPolarity() & RESETINV) ? 1 : 0);
@@ -272,23 +184,26 @@ void e2Dialog::setSettings()
 	qDebug() << "PortNo: " << port_no;
 }
 
-extern QStringList GetInterfList(int vector);
-
 void e2Dialog::setWidgetsText()
 {
 	//Serial interfaces list
-	QStringList interfListC = GetInterfList(0);
+	QStringList interfListC = GetInterfList(INTERF_COM);
 	cbxInterfCOM->addItems(interfListC);
 
 	//Parallel interfaces list
-	QStringList interfListL = GetInterfList(1);
+	QStringList interfListL = GetInterfList(INTERF_LPT);
 	cbxInterfLPT->addItems(interfListL);
 
-	rdbComPort->setText(translate(STR_LBLSERIAL));
-	rdbLptPort->setText(translate(STR_LBLPARALLEL));
+	//rdbComPort->setText(translate(STR_LBLSERIAL));
+	//rdbLptPort->setText(translate(STR_LBLPARALLEL));
 
 	lptList = E2Profile::GetLPTDevList();
 	comList = E2Profile::GetCOMDevList();
+
+	cbxInterfCOMNum->clear();
+	cbxInterfCOMNum->addItems(comList);
+	cbxInterfLPTNum->clear();
+	cbxInterfLPTNum->addItems(lptList);
 
 	lblPol1->setText(translate(STR_LBLSELPOLARITY));
 
@@ -362,3 +277,50 @@ int e2Dialog::Test(int p, bool open_only) const
 	return test;
 }
 
+void e2Dialog::on_tabWidget_currentChanged(int index)
+{
+	if (index == INTERF_COM)
+	{
+		qDebug() << "COM Port selected: " << port_no;
+
+		port_no = com_no;
+		cbxInterfCOMNum->setCurrentIndex(com_no);
+
+		interf_type = VindexToInterfType(INTERF_COM, cbxInterfCOM->currentIndex());
+	}
+	else if (index == INTERF_LPT)
+	{
+		qDebug() << "LPT Port selected: " << port_no;
+
+		port_no = lpt_no;
+		cbxInterfLPTNum->setCurrentIndex(lpt_no);
+
+		interf_type = VindexToInterfType(INTERF_LPT, cbxInterfLPT->currentIndex());
+	}
+}
+
+void e2Dialog::on_cbxInterfCOM_currentIndexChanged(int index)
+{
+	interf_type = VindexToInterfType(INTERF_COM, index);
+	qDebug() << "Selected IntefType: " << (int)interf_type << ", index = " << index << ", COM";
+}
+
+void e2Dialog::on_cbxInterfLPT_currentIndexChanged(int index)
+{
+	interf_type = VindexToInterfType(INTERF_LPT, index);
+	qDebug() << "Selected IntefType: " << (int)interf_type << ", index = " << index << ", LPT";
+}
+
+void e2Dialog::on_cbxInterfCOMNum_currentIndexChanged(int index)
+{
+	com_no = index;
+	port_no = com_no;
+	qDebug() << "Selected COM port " << port_no;
+}
+
+void e2Dialog::on_cbxInterfLPTNum_currentIndexChanged(int index)
+{
+	lpt_no = index;
+	port_no = lpt_no;
+	qDebug() << "Selected LPT port " << port_no;
+}

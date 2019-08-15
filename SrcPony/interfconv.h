@@ -24,50 +24,21 @@
 //                                                                         //
 //=========================================================================//
 
-#ifndef e2DIALOG_H
-#define e2DIALOG_H
+#ifndef INTERFCONV_H
+#define INTERFCONV_H
 
-#include <QDialog>
-#include <QWidget>
-#include <QObject>
-
-#include "Translator.h"
-#include "globals.h"
-
-#include "ui_e2dlg.h"
-
-class e2Dialog : public QDialog, public cTranslator, public Ui::E2Dialog
-{
-	Q_OBJECT
-
-  public:
-	e2Dialog(QWidget *bw, const QString title = translate(STR_MSGINTSETUP));
-	virtual ~e2Dialog();            // Destructor
-
-  protected:
-
-  private slots:
-	void onOk();
-	void onTest();
-	void on_tabWidget_currentChanged(int index);
-	void on_cbxInterfCOM_currentIndexChanged(int index);
-	void on_cbxInterfLPT_currentIndexChanged(int index);
-	void on_cbxInterfCOMNum_currentIndexChanged(int index);
-	void on_cbxInterfLPTNum_currentIndexChanged(int index);
-
-private:
-	int Test(int p = -1, bool open_only = false) const;
-	void setWidgetsText();
-	void getSettings();
-	void setSettings();
-
-	QStringList lptList;
-	QStringList comList;
-	QStringList usbList;
-
-	int port_no;                    //Idex of selected port in portList
-	int lpt_no, com_no;
-	HInterfaceType interf_type;
+enum {
+	INTERF_USB,
+	INTERF_COM,
+	INTERF_LPT,
+	INTERF_GPIO
 };
 
-#endif
+extern QStringList GetInterfList(int vector);
+extern HInterfaceType NameToInterfType(const QString &name);
+extern QString TypeToInterfName(HInterfaceType type);
+extern int TypeToInterfVector(HInterfaceType type);
+extern int TypeToInterfIndex(HInterfaceType type);
+extern HInterfaceType VindexToInterfType(int vector, int index);
+
+#endif // INTERFCONV_H

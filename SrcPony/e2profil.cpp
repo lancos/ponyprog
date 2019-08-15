@@ -1511,7 +1511,7 @@ static QString retrieve_ttyS_name()
 	}
 	else
 	{
-		qDebug() << "Can't open file /proc/tty/drivers";
+		qWarning() << "Can't open file /proc/tty/drivers";
 	}
 
 	return sp;
@@ -1556,7 +1556,7 @@ static QStringList retrieve_ttyS_list()
 	}
 	else
 	{
-		qDebug() << "Can't open file /proc/tty/drivers";
+		qWarning() << "Can't open file /proc/tty/driver/serial";
 	}
 
 	return lst;

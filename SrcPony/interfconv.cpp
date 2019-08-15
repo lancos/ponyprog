@@ -30,6 +30,7 @@
 
 #include "types.h"
 #include "globals.h"
+#include "interfconv.h"
 
 struct Interf2Index
 {
@@ -41,20 +42,19 @@ struct Interf2Index
 
 static QVector<Interf2Index> index_interface =
 {
-	//AutoTag
 	//Interfaces vector
-	{0, 0, "SI-ProgAPI", SIPROG_API},
-	{0, 1, "SI-ProgI/O", SIPROG_IO},
-	{0, 2, "JDM-API", JDM_API},
-	{1, 0, "AvrISP-API", AVRISP},
-	{1, 1, "AvrISP-I/O", AVRISP_IO},
-	{1, 2, "DT-006-API", DT006_API},
-	{1, 3, "DT-006-I/O", DT006_IO},
-	{1, 4, "EasyI2C-API", EASYI2C_API},
-	{1, 5, "EasyI2C-I/O", EASYI2C_IO},
-	{1, 6, "Linux SysFs GPIO", LINUXSYSFS_IO},
-	{1, 7, "FTDI JtagKey", FTDI_JTAGKEY},
-	{1, 8, "FTDI PonyProgFT", PONYPROG_FT},
+	{INTERF_COM, 0, "SI-ProgAPI", SIPROG_API},
+	{INTERF_COM, 1, "SI-ProgI/O", SIPROG_IO},
+	{INTERF_COM, 2, "JDM-API", JDM_API},
+	{INTERF_LPT, 0, "AvrISP-API", AVRISP},
+	{INTERF_LPT, 1, "AvrISP-I/O", AVRISP_IO},
+	{INTERF_LPT, 2, "DT-006-API", DT006_API},
+	{INTERF_LPT, 3, "DT-006-I/O", DT006_IO},
+	{INTERF_LPT, 4, "EasyI2C-API", EASYI2C_API},
+	{INTERF_LPT, 5, "EasyI2C-I/O", EASYI2C_IO},
+	{INTERF_USB, 0, "FTDI PonyProgFT", PONYPROG_FT},
+	{INTERF_USB, 1, "FTDI JtagKey", FTDI_JTAGKEY},
+	{INTERF_GPIO, 0, "Linux SysFs GPIO", LINUXSYSFS_IO},
 };
 
 QStringList GetInterfList(int vector)
@@ -72,7 +72,6 @@ QStringList GetInterfList(int vector)
 	return lst;
 }
 
-// EK 2017
 HInterfaceType NameToInterfType(const QString &name)
 {
 	if (name.length())
@@ -99,7 +98,6 @@ HInterfaceType NameToInterfType(const QString &name)
 	return LAST_HT;
 }
 
-
 QString TypeToInterfName(HInterfaceType type)
 {
 	for (int k = 0; k < index_interface.count(); k++)
@@ -112,7 +110,6 @@ QString TypeToInterfName(HInterfaceType type)
 
 	return "";
 }
-
 
 int TypeToInterfVector(HInterfaceType type)
 {
@@ -127,7 +124,6 @@ int TypeToInterfVector(HInterfaceType type)
 	return -1;
 }
 
-
 int TypeToInterfIndex(HInterfaceType type)
 {
 	for (int k = 0; k < index_interface.count(); k++)
@@ -140,7 +136,6 @@ int TypeToInterfIndex(HInterfaceType type)
 
 	return -1;
 }
-
 
 HInterfaceType VindexToInterfType(int vector, int index)
 {
