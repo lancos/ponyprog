@@ -27,12 +27,8 @@
 //=========================================================================//
 
 #include <QDebug>
-#include <QTimer>
 
-#include "ch341a.h"
 #include "usbwatcher.h"
-
-class USBWatcher;
 
 int LIBUSB_CALL hotplug_callback(struct libusb_context *ctx, struct libusb_device *dev,
 								 libusb_hotplug_event event, void *user_data)
@@ -41,133 +37,112 @@ int LIBUSB_CALL hotplug_callback(struct libusb_context *ctx, struct libusb_devic
 
 	(void)libusb_get_device_descriptor(dev, &desc);
 
+	//unsigned char ser[256] = "";
+	//int n = libusb_get_string_descriptor_ascii(dev, desc.iSerialNumber, ser, sizeof(ser));
+	struct usb_data ud = { .vid = desc.idVendor, .pid = desc.idProduct };
+	//if (n > 0)
+	//	ud.serial = QString(ser);
+
+	//QVector <usb_data> *v;
+	//v = (QVector <usb_data> *)user_data;
+	USBWatcher *w = (USBWatcher *)user_data;
+	Q_CHECK_PTR(w);
+
 	if (LIBUSB_HOTPLUG_EVENT_DEVICE_ARRIVED == event)
 	{
-		emit reinterpret_cast<USBWatcher *>(user_data)->USBConnected((const quint16 &)desc.idVendor, (const quint16 &)desc.idProduct);
-		return 0;
-	}
+		w->vUSB.append(ud);
+		emit w->notify(true, (const quint16 &)desc.idVendor, (const quint16 &)desc.idProduct);
 
-	if (LIBUSB_HOTPLUG_EVENT_DEVICE_LEFT == event)
+		qDebug() << "Connected VID:PID " << (hex) << desc.idVendor << " - " << desc.idProduct;
+	}
+	else if (LIBUSB_HOTPLUG_EVENT_DEVICE_LEFT == event)
 	{
-		emit reinterpret_cast<USBWatcher *>(user_data)->USBDisconnected();
+		int idx = w->vUSB.indexOf(ud);
+		if (idx != -1)
+		{
+			w->vUSB.remove(idx);
+		}
+		emit w->notify(false, (const quint16 &)desc.idVendor, (const quint16 &)desc.idProduct);
+
+		qDebug() << "Disconnected VID:PID " << (hex) << desc.idVendor << " - " << desc.idProduct;
 	}
 
 	return 0;
 }
 
-/**
- * @brief   constructor
- *          init vector of supported devices
- */
-USBWatcher::USBWatcher(QObject *p) : QThread(p)
+void USBWatcher::doPoll()
 {
-	vUSB << (usb_data)
-	{
-		CH34x_VENDOR_ID2, CH340_UART_PRODUCT
-	};
-	vUSB << (usb_data)
-	{
-		CH34x_VENDOR_ID2, CH341_UART_PRODUCT
-	};
+	struct timeval zero_tv = { .tv_sec = 0, .tv_usec = 0 };
+	//zero_tv.tv_sec = 1; // timeout 1 sec
 
-	// autostart 1 second later
-	QTimer::singleShot(1000, this, SLOT(autoStart()));
+	int rv = libusb_handle_events_timeout_completed(usb_ctx,
+													const_cast<timeval *>(&zero_tv),
+													NULL);
+	if (rv != LIBUSB_SUCCESS)
+		qWarning() << "libusb_handle_events_timeout_completed() failed: " << rv;
 }
 
+USBWatcher::USBWatcher()
+	: cbHandle(0),
+	  usb_ctx(0),
+	  timer(0)
+{
+	//vUSB << (usb_data)
+	//{
+	//	CH34x_VENDOR_ID2, CH340_UART_PRODUCT
+	//};
+	//vUSB << (usb_data)
+	//{
+	//	CH34x_VENDOR_ID2, CH341_UART_PRODUCT
+	//};
+
+	vUSB.clear();
+
+	hotplug_register();
+}
 
 USBWatcher::~USBWatcher()
 {
-	for (int i = 0; i < vHandle.count(); i++)
+	hotplug_deregister();
+}
+
+void USBWatcher::hotplug_deregister()
+{
+	if (timer)
 	{
-		libusb_hotplug_deregister_callback(usb_ctx, vHandle.at(i));
+		timer->stop();
+		delete timer;
 	}
-
-	vHandle.clear();
-
-	libusb_exit(usb_ctx);
-
-	exit(0);
-}
-
-void USBWatcher::autoStart()
-{
-	this->start();
-}
-
-void USBWatcher::run()
-{
-	hotplug_register();
-
-	struct timeval zero_tv;
-	zero_tv.tv_sec = 1; // timeout 1 sec
-	zero_tv.tv_usec = 0;
-
-	while (usb_thread_loop)
+	if (usb_ctx)
 	{
-		libusb_handle_events_timeout_completed(usb_ctx, const_cast<timeval *>(&zero_tv), NULL);
+		libusb_hotplug_deregister_callback(usb_ctx, cbHandle);
+		libusb_exit(usb_ctx);
 	}
-
-	exit(0);
 }
 
-
-void USBWatcher::hotplug_register()
+bool USBWatcher::hotplug_register(quint16 vid, quint16 pid)
 {
-	usb_thread_loop = true;
-
 	libusb_init(&usb_ctx);
 
-	foreach (usb_data u, vUSB)
-	{
-		int rc;
-		libusb_hotplug_callback_handle h;
-		libusb_device_handle *devh;
-		devh = libusb_open_device_with_vid_pid(usb_ctx, u.vendor, u.product);
-		if (devh != NULL)   // connected
-		{
-
-#ifndef Q_OS_WIN32
-			if (libusb_kernel_driver_active(devh, 0))
-			{
-				rc = libusb_detach_kernel_driver(devh, 0);
-
-				if (rc)
-				{
-					qCritical("Failed to detach kernel driver: '%s'", strerror(-rc));
-// 			CloseHandle();
-// 			return -1;
-				}
-				else
-				{
-					qDebug() << "Detach kernel driver";
-				}
-			}
-#endif
-			quint16 v = u.vendor;
-			quint16 p = u.product;
-
-			// after detach from kernel it will automatically hotplugged from registered function
-			// TODO what is under windows?
-			emit USBConnected(v, p);
-			libusb_close(devh);
-		}
-
-		rc = libusb_hotplug_register_callback(usb_ctx, (libusb_hotplug_event)(LIBUSB_HOTPLUG_EVENT_DEVICE_ARRIVED | LIBUSB_HOTPLUG_EVENT_DEVICE_LEFT),
+	int rc = libusb_hotplug_register_callback(usb_ctx,
+											  (libusb_hotplug_event)(LIBUSB_HOTPLUG_EVENT_DEVICE_ARRIVED | LIBUSB_HOTPLUG_EVENT_DEVICE_LEFT),
 											  LIBUSB_HOTPLUG_ENUMERATE,
-											  u.vendor,
-											  u.product,
+											  (vid == 0) ? LIBUSB_HOTPLUG_MATCH_ANY : vid,
+											  (pid == 0) ? LIBUSB_HOTPLUG_MATCH_ANY : pid,
 											  LIBUSB_HOTPLUG_MATCH_ANY,
 											  hotplug_callback,
-											  this,
-											  &h);
-		if (LIBUSB_SUCCESS != rc)
-		{
-			libusb_exit(usb_ctx);
-
-			exit(0);
-		}
-
-		vHandle << h;
+											  this, //&vUSB,
+											  &cbHandle);
+	if (LIBUSB_SUCCESS != rc)
+	{
+		libusb_exit(usb_ctx);
+		return false;
+	}
+	else
+	{
+		QTimer *timer = new QTimer(this);
+		connect(timer, SIGNAL(timeout()), this, SLOT(doPoll()));
+		timer->start(100);
+		return true;
 	}
 }
-

@@ -26,52 +26,54 @@
 //                                                                         //
 //=========================================================================//
 
-
 #ifndef USBWATCHER_H
 #define USBWATCHER_H
 
-#include <QThread>
 #include <QObject>
 #include <QVector>
+#include <QTimer>
 
 #include <libusb-1.0/libusb.h> //Include libsub
 
-
-
-class USBWatcher: public QThread
+class usb_data
 {
-	Q_OBJECT
   public:
-	USBWatcher(QObject *p);
-	~USBWatcher();
 
-	struct usb_data
+	bool operator==(const usb_data &a)
 	{
-		quint16 vendor;
-		quint16 product;
-	};
-
-	void hotplug_register();
-
-  public:
-	QVector <libusb_hotplug_callback_handle> vHandle;
-	libusb_context *usb_ctx;
-
-  signals:
-	void USBConnected(const quint16 &vid, const quint16 &pid);
-	void USBDisconnected();
-
-  private slots:
-	void autoStart();
-
-  private:
-	void run();
-
-  private:
-	QVector <usb_data> vUSB;
-	bool usb_thread_loop;
+		return (a.pid == pid && a.vid == vid);
+	}
+	quint16 vid;
+	quint16 pid;
+	//QString serial;
 };
 
+class USBWatcher : public QObject
+{
+	Q_OBJECT
+
+	//QThread workerThread;
+
+  public:
+	USBWatcher();
+	~USBWatcher();
+
+	QVector <usb_data> vUSB;
+
+  signals:
+	void notify(bool connected, const quint16 &vid, const quint16 &pid);
+
+  public slots:
+	void doPoll();
+
+  private:
+	bool hotplug_register(quint16 vid = 0, quint16 pid = 0);
+	void hotplug_deregister();
+
+	libusb_hotplug_callback_handle cbHandle;
+	libusb_context *usb_ctx;
+	QTimer *timer;
+};
 
 #endif // USBWATCHER_H
 

@@ -178,6 +178,7 @@ SOURCES  += SrcPony/aboutmdlg.cpp \
             SrcPony/x2444bus.cpp \
             SrcPony/sdebus.cpp \
             SrcPony/Translator.cpp \
+            SrcPony/usbwatcher.cpp \
             qhexedit2/src/chunks.cpp \
             qhexedit2/src/commands.cpp \
             qhexedit2/src/qhexedit.cpp \
@@ -260,6 +261,7 @@ HEADERS  += SrcPony/e2app.h \
             SrcPony/x2444.h \
             SrcPony/Translator.h \
             SrcPony/interfconv.h \
+            SrcPony/usbwatcher.h \
             qhexedit2/src/chunks.h \
             qhexedit2/src/commands.h \
             qhexedit2/src/qhexedit.h
