@@ -37,33 +37,17 @@ static int LIBUSB_CALL hotplug_callback(struct libusb_context *ctx, struct libus
 
 	(void)libusb_get_device_descriptor(dev, &desc);
 
-	//unsigned char ser[256] = "";
-	//int n = libusb_get_string_descriptor_ascii(dev, desc.iSerialNumber, ser, sizeof(ser));
-	struct VidPid ud = { .vid = desc.idVendor, .pid = desc.idProduct };
-	//if (n > 0)
-	//	ud.serial = QString(ser);
-
-	//QVector <VidPid> *v;
-	//v = (QVector <VidPid> *)user_data;
-	USBWatcher *w = (USBWatcher *)user_data;
+	USBWatcher *w = static_cast<USBWatcher *>(user_data);
 	Q_CHECK_PTR(w);
 
 	if (LIBUSB_HOTPLUG_EVENT_DEVICE_ARRIVED == event)
 	{
-		w->vUSB.append(ud);
-		emit w->notify(true, (const quint16 &)desc.idVendor, (const quint16 &)desc.idProduct);
-
+		w->hotplug_notify(true, desc.idVendor, desc.idProduct);
 		qDebug() << "Connected VID:PID " << (hex) << desc.idVendor << " - " << desc.idProduct;
 	}
 	else if (LIBUSB_HOTPLUG_EVENT_DEVICE_LEFT == event)
 	{
-		int idx = w->vUSB.indexOf(ud);
-		if (idx != -1)
-		{
-			w->vUSB.remove(idx);
-		}
-		emit w->notify(false, (const quint16 &)desc.idVendor, (const quint16 &)desc.idProduct);
-
+		w->hotplug_notify(false, desc.idVendor, desc.idProduct);
 		qDebug() << "Disconnected VID:PID " << (hex) << desc.idVendor << " - " << desc.idProduct;
 	}
 

@@ -75,6 +75,9 @@ e2Dialog::e2Dialog(QWidget *bw, const QString title)
 	connect(pushCancel, SIGNAL(clicked()), this, SLOT(reject()));
 	connect(pushTest, SIGNAL(clicked(bool)), this, SLOT(onTest()));
 
+	connect(&watcher, SIGNAL(notify(bool, quint16, quint16)),
+			this, SLOT(onUSB(bool, quint16, quint16)));
+
 	getSettings();
 }
 
@@ -382,6 +385,16 @@ void e2Dialog::on_cbxInterfUSBNum_currentIndexChanged(int index)
 	if (index >= 0)
 	{
 		port_no = usb_no = index;
-		qDebug() << "Selected USB port " << port_no;
+		qDebug() << __PRETTY_FUNCTION__ << "Selected USB port " << port_no;
 	}
+}
+
+void e2Dialog::onUSB(bool connected, quint16 vid, quint16 pid)
+{
+	qDebug() << __PRETTY_FUNCTION__ << " " << connected << " " << vid << " " << pid;
+
+	usbList.clear();
+	usbList = MpsseInterface::find_all(usb_vp.vid, usb_vp.pid);
+	cbxInterfUSBNum->clear();
+	cbxInterfUSBNum->addItems(usbList);
 }

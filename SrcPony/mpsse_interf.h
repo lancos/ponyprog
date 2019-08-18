@@ -153,11 +153,7 @@ class MpsseInterface : public BusInterface
 					qDebug() << "Man : " << QString(man)
 							 << "Desc: " << QString(desc)
 							 << "Ser : " << QString(ser);
-					QString s = QString(ser);
-					if (s.length() > 0)
-						retList << s;
-					else
-						retList << QString(desc);
+					retList << QString(ser) + "/" + QString(desc);
 				}
 			}
 			ftdi_list_free(&dlist);

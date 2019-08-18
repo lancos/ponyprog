@@ -5540,9 +5540,6 @@ menuToGroup *e2CmdWindow::searchMenuInDeviceVector(int pre_type)
 
 void e2CmdWindow::UpdateMenues(menuToGroup &mnu, QAction &act)
 {
-	Q_CHECK_PTR(&mnu);
-	Q_CHECK_PTR(&act);
-
 	if (currentMenu != &mnu || currentAct != &act) // main menu was changed
 	{
 		Q_CHECK_PTR(cbxEEPType);

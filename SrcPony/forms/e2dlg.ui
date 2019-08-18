@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>411</width>
-    <height>547</height>
+    <height>550</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -76,6 +76,12 @@
          <layout class="QGridLayout" name="gridLayout_8">
           <item row="0" column="1">
            <widget class="QComboBox" name="cbxInterfUSB">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="toolTip">
              <string notr="true"/>
             </property>
@@ -96,6 +102,12 @@
           </item>
           <item row="1" column="1">
            <widget class="QComboBox" name="cbxInterfUSBNum">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="toolTip">
              <string notr="true"/>
             </property>
@@ -103,8 +115,14 @@
           </item>
           <item row="1" column="0">
            <widget class="QLabel" name="label_port_3">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="text">
-             <string>Detected Serial Number</string>
+             <string>Detected S/N</string>
             </property>
            </widget>
           </item>
@@ -346,6 +364,12 @@
           <layout class="QGridLayout" name="gridLayout_4">
            <item row="0" column="1">
             <widget class="QComboBox" name="cbxInterfCOM">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
              <property name="toolTip">
               <string notr="true"/>
              </property>
@@ -372,6 +396,12 @@
           <layout class="QGridLayout" name="gridLayout_3">
            <item row="0" column="1">
             <widget class="QComboBox" name="cbxInterfCOMNum">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
              <property name="toolTip">
               <string notr="true"/>
              </property>
@@ -454,7 +484,7 @@
         <item>
          <widget class="QLabel" name="lblMainMsg_2">
           <property name="text">
-           <string>Serial port settings</string>
+           <string>Parallel port settings</string>
           </property>
          </widget>
         </item>
@@ -469,6 +499,12 @@
           <layout class="QGridLayout" name="gridLayout_6">
            <item row="0" column="1">
             <widget class="QComboBox" name="cbxInterfLPT">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
              <property name="toolTip">
               <string notr="true"/>
              </property>
@@ -495,6 +531,12 @@
           <layout class="QGridLayout" name="gridLayout_7">
            <item row="0" column="1">
             <widget class="QComboBox" name="cbxInterfLPTNum">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
              <property name="toolTip">
               <string notr="true"/>
              </property>

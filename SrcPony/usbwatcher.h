@@ -49,10 +49,26 @@ class USBWatcher : public QObject
 
 	bool hotplug_register(quint16 vid = 0, quint16 pid = 0);
 
-	QVector <VidPid> vUSB;
+	void hotplug_notify(bool connected, quint16 vid, quint16 pid)
+	{
+		if (connected)
+		{
+			vUSB.append(VidPid(vid, pid));
+			emit notify(true, vid, pid);
+		}
+		else
+		{
+			int idx = vUSB.indexOf(VidPid(vid, pid));
+			if (idx != -1)
+			{
+				vUSB.remove(idx);
+			}
+			emit notify(false, vid, pid);
+		}
+	}
 
   signals:
-	void notify(bool connected, const quint16 &vid, const quint16 &pid);
+	void notify(bool connected, quint16 vid, quint16 pid);
 
   public slots:
 	void doPoll();
@@ -60,6 +76,7 @@ class USBWatcher : public QObject
   private:
 	void hotplug_deregister();
 
+	QVector <VidPid> vUSB;
 	libusb_hotplug_callback_handle cbHandle;
 	libusb_context *usb_ctx;
 	QTimer *timer;

@@ -47,6 +47,9 @@ class e2Dialog : public QDialog, public cTranslator, public Ui::E2Dialog
 
   protected:
 
+  public slots:
+	void onUSB(bool connected, quint16 vid, quint16 pid);
+
   private slots:
 	void onOk();
 	void onTest();
