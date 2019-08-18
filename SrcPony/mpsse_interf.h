@@ -29,6 +29,7 @@
 
 #include "businter.h"
 #include "ftdi.hpp"
+#include "interfconv.h"
 
 class MpsseCommandQueue
 {
@@ -124,7 +125,47 @@ class MpsseInterface : public BusInterface
 	virtual void SetDelay(int delay);
 	virtual void ShotDelay(int n = 1);
 
-	void ConfigPins(int pinum_ctrl = -1, int pinum_datain = -1, int pinum_dataout = -1, int pinum_clock = -1, int pinum_clockin = -1, int pinum_poweron = -1, int pinum_enbus = -1, int pinnum_ctrlin = -1);
+	virtual void ConfigPins(int pinum_ctrl = -1, int pinum_datain = -1, int pinum_dataout = -1, int pinum_clock = -1, int pinum_clockin = -1, int pinum_poweron = -1, int pinum_enbus = -1, int pinnum_ctrlin = -1);
+
+	static QStringList find_all(unsigned int vendor, unsigned int product)
+	{
+		QStringList retList;
+		struct ftdi_device_list *dlist = 0;
+		struct ftdi_context ftdi;
+
+		ftdi_init(&ftdi);
+		int count = ftdi_usb_find_all(&ftdi, &dlist, vendor, product);
+		if (count > 0)
+		{
+			// Iterate list
+			struct ftdi_device_list *l = dlist;
+			for (int k = 0; l != 0 && k < count; l = l->next, k++)
+			{
+				char man[256];
+				char desc[256];
+				char ser[256];
+				int rv = ftdi_usb_get_strings(&ftdi, l->dev,
+												man, sizeof(man),
+												desc, sizeof(desc),
+												ser, sizeof(ser));
+				if (rv == 0)
+				{
+					qDebug() << "Man : " << QString(man)
+							 << "Desc: " << QString(desc)
+							 << "Ser : " << QString(ser);
+					QString s = QString(ser);
+					if (s.length() > 0)
+						retList << s;
+					else
+						retList << QString(desc);
+				}
+			}
+			ftdi_list_free(&dlist);
+		}
+		ftdi_deinit(&ftdi);
+
+		return retList;
+	}
 
   protected:
 	int GetPresence(int mask, int val);

@@ -35,6 +35,7 @@
 #include "globals.h"
 
 #include "ui_e2dlg.h"
+#include "usbwatcher.h"
 
 class e2Dialog : public QDialog, public cTranslator, public Ui::E2Dialog
 {
@@ -55,18 +56,24 @@ class e2Dialog : public QDialog, public cTranslator, public Ui::E2Dialog
 	void on_cbxInterfCOMNum_currentIndexChanged(int index);
 	void on_cbxInterfLPTNum_currentIndexChanged(int index);
 
+	void on_cbxInterfUSB_currentIndexChanged(int index);
+
+	void on_cbxInterfUSBNum_currentIndexChanged(int index);
+
 private:
 	int Test(int p = -1, bool open_only = false) const;
 	void setWidgetsText();
 	void getSettings();
 	void setSettings();
 
+	USBWatcher watcher;
 	QStringList lptList;
 	QStringList comList;
 	QStringList usbList;
 
 	int port_no;                    //Idex of selected port in portList
-	int lpt_no, com_no;
+	int lpt_no, com_no, usb_no;
+	VidPid usb_vp;
 	HInterfaceType interf_type;
 };
 

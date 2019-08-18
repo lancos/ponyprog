@@ -41,8 +41,12 @@ class e2CmdWindow;
 
 e2Dialog::e2Dialog(QWidget *bw, const QString title)
 	: QDialog(bw),
+	  port_no(0),
 	  lpt_no(2),
-	  com_no(3)
+	  com_no(3),
+	  usb_no(0),
+	  usb_vp(0),
+	  interf_type(SIPROG_API)
 {
 	qDebug() << "e2Dialog::e2Dialog()";
 
@@ -90,7 +94,6 @@ void e2Dialog::getSettings()
 
 	port_no = cmdWin->GetPort();
 
-	// init of radiobuttons
 	if (TypeToInterfVector(interf_type) == INTERF_COM)		//COM
 	{
 		com_no = port_no;
@@ -122,6 +125,21 @@ void e2Dialog::getSettings()
 			tabWidget->setCurrentIndex(INTERF_LPT);
 		else
 			on_tabWidget_currentChanged(INTERF_LPT);
+	}
+	else if (TypeToInterfVector(interf_type) == INTERF_USB)
+	{
+		usb_no = port_no;
+		//usb_vp = TypeToInterfVidPid(interf_type);
+		//watcher.hotplug_register(usb_vp.vid, usb_vp.pid);
+		//usbList = MpsseInterface::find_all(usb_vp.vid, usb_vp.pid);
+
+		cbxInterfUSB->setCurrentIndex(TypeToInterfIndex(interf_type));
+		cbxInterfUSBNum->setCurrentIndex(usb_no);
+
+		if (tabWidget->currentIndex() != INTERF_USB)
+			tabWidget->setCurrentIndex(INTERF_USB);
+		else
+			on_tabWidget_currentChanged(INTERF_USB);
 	}
 
 	chkPol1->setChecked((cmdWin->GetPolarity() & RESETINV) ? 1 : 0);
@@ -194,16 +212,22 @@ void e2Dialog::setWidgetsText()
 	QStringList interfListL = GetInterfList(INTERF_LPT);
 	cbxInterfLPT->addItems(interfListL);
 
+	QStringList interfListU = GetInterfList(INTERF_USB);
+	cbxInterfUSB->addItems(interfListU);
+
 	//rdbComPort->setText(translate(STR_LBLSERIAL));
 	//rdbLptPort->setText(translate(STR_LBLPARALLEL));
 
 	lptList = E2Profile::GetLPTDevList();
 	comList = E2Profile::GetCOMDevList();
+	usbList.clear();
 
 	cbxInterfCOMNum->clear();
 	cbxInterfCOMNum->addItems(comList);
 	cbxInterfLPTNum->clear();
 	cbxInterfLPTNum->addItems(lptList);
+	cbxInterfUSBNum->clear();
+	cbxInterfUSBNum->addItems(usbList);
 
 	lblPol1->setText(translate(STR_LBLSELPOLARITY));
 
@@ -281,7 +305,7 @@ void e2Dialog::on_tabWidget_currentChanged(int index)
 {
 	if (index == INTERF_COM)
 	{
-		qDebug() << "COM Port selected: " << port_no;
+		qDebug() << "COM Port selected: " << com_no;
 
 		port_no = com_no;
 		cbxInterfCOMNum->setCurrentIndex(com_no);
@@ -290,12 +314,25 @@ void e2Dialog::on_tabWidget_currentChanged(int index)
 	}
 	else if (index == INTERF_LPT)
 	{
-		qDebug() << "LPT Port selected: " << port_no;
+		qDebug() << "LPT Port selected: " << lpt_no;
 
 		port_no = lpt_no;
 		cbxInterfLPTNum->setCurrentIndex(lpt_no);
 
 		interf_type = VindexToInterfType(INTERF_LPT, cbxInterfLPT->currentIndex());
+	}
+	else if (index == INTERF_USB)
+	{
+		qDebug() << "USB Port selected: " << usb_no;
+
+		//usb_vp = TypeToInterfVidPid(interf_type);
+		//watcher.hotplug_register(usb_vp.vid, usb_vp.pid);
+		//usbList = MpsseInterface::find_all(usb_vp.vid, usb_vp.pid);
+
+		int idx = cbxInterfUSB->currentIndex();
+		on_cbxInterfUSB_currentIndexChanged(idx);
+		port_no = usb_no;
+		cbxInterfUSBNum->setCurrentIndex(port_no);
 	}
 }
 
@@ -311,16 +348,40 @@ void e2Dialog::on_cbxInterfLPT_currentIndexChanged(int index)
 	qDebug() << "Selected IntefType: " << (int)interf_type << ", index = " << index << ", LPT";
 }
 
+void e2Dialog::on_cbxInterfUSB_currentIndexChanged(int index)
+{
+	interf_type = VindexToInterfType(INTERF_USB, index);
+	qDebug() << "Selected IntefType: " << (int)interf_type << ", index = " << index << ", USB";
+	usb_vp = TypeToInterfVidPid(interf_type);
+	watcher.hotplug_register(usb_vp.vid, usb_vp.pid);
+	usbList = MpsseInterface::find_all(usb_vp.vid, usb_vp.pid);
+	cbxInterfUSBNum->clear();
+	cbxInterfUSBNum->addItems(usbList);
+}
+
 void e2Dialog::on_cbxInterfCOMNum_currentIndexChanged(int index)
 {
-	com_no = index;
-	port_no = com_no;
-	qDebug() << "Selected COM port " << port_no;
+	if (index >= 0)
+	{
+		port_no = com_no = index;
+		qDebug() << "Selected COM port " << port_no;
+	}
 }
 
 void e2Dialog::on_cbxInterfLPTNum_currentIndexChanged(int index)
 {
-	lpt_no = index;
-	port_no = lpt_no;
-	qDebug() << "Selected LPT port " << port_no;
+	if (index >= 0)
+	{
+		port_no = lpt_no = index;
+		qDebug() << "Selected LPT port " << port_no;
+	}
+}
+
+void e2Dialog::on_cbxInterfUSBNum_currentIndexChanged(int index)
+{
+	if (index >= 0)
+	{
+		port_no = usb_no = index;
+		qDebug() << "Selected USB port " << port_no;
+	}
 }

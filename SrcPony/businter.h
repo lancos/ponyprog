@@ -24,12 +24,14 @@
 //                                                                         //
 //=========================================================================//
 
-#ifndef _I2CINTERFACE_H
-#define _I2CINTERFACE_H
+#ifndef _BUSINTERFACE_H
+#define _BUSINTERFACE_H
 
 #include "types.h"
 #include "errcode.h"
 #include "wait.h"
+#include "globals.h"
+#include "interfconv.h"
 
 #include <QDebug>
 
@@ -58,8 +60,7 @@ class BusInterface
   public:
 	BusInterface()
 		: old_portno(-1),
-		  usb_vid(0),
-		  usb_pid(0),
+		  usb_vp(0),
 		  installed(-1),
 		  cmd2cmd_delay(0),
 		  shot_delay(5),
@@ -208,27 +209,13 @@ class BusInterface
 		return (installed >= 0) ? true : false;
 	}
 
-	void SetUSBVid(int vid)
+	void SetUSBVidPid(VidPid vp)
 	{
-		if (vid > 0)
-		{
-			usb_vid = vid;
-		}
+		usb_vp = vp;
 	}
-	void SetUSBPid(int pid)
+	VidPid GetUSBVid()
 	{
-		if (pid > 0)
-		{
-			usb_pid = pid;
-		}
-	}
-	int GetUSBVid()
-	{
-		return usb_vid;
-	}
-	int GetUSBPid()
-	{
-		return usb_pid;
+		return usb_vp;
 	}
 
 	virtual void WaitMsec(unsigned int msec)
@@ -410,6 +397,14 @@ class BusInterface
 		return i2c_mode;
 	}
 
+	virtual void ConfigPins(int pinum_ctrl = -1, int pinum_datain = -1, int pinum_dataout = -1, int pinum_clock = -1, int pinum_clockin = -1, int pinum_poweron = -1, int pinum_enbus = -1, int pinnum_ctrlin = -1)
+	{
+	}
+	virtual void ConfigPins(InterfPins pins)
+	{
+		ConfigPins(pins.ctrl, pins.datain, pins.dataout, pins.clock, pins.clockin, pins.poweron, pins.enbus, pins.ctrlin);
+	}
+
   protected:
 	void Install(int val)
 	{
@@ -432,8 +427,7 @@ class BusInterface
 	}
 
 	int old_portno;             // TestSave() save the status here
-	int usb_vid;
-	int usb_pid;
+	VidPid usb_vp;
 
 	Wait w;
 

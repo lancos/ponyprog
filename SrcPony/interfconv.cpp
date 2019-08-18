@@ -38,6 +38,8 @@ struct Interf2Index
 	int index;
 	QString name;
 	HInterfaceType type;
+	VidPid vp;
+	InterfPins pins;
 };
 
 static QVector<Interf2Index> index_interface =
@@ -52,10 +54,55 @@ static QVector<Interf2Index> index_interface =
 	{INTERF_LPT, 3, "DT-006-I/O", DT006_IO},
 	{INTERF_LPT, 4, "EasyI2C-API", EASYI2C_API},
 	{INTERF_LPT, 5, "EasyI2C-I/O", EASYI2C_IO},
-	{INTERF_USB, 0, "FTDI PonyProgFT", PONYPROG_FT},
-	{INTERF_USB, 1, "FTDI JtagKey", FTDI_JTAGKEY},
+	{INTERF_USB, 0, "FTDI PonyProgFT", PONYPROG_FT, VidPid(0x0403, 0x6e38), {3, 2, 1, 0, /* 4 */ -1, 5, 7, 6}},
+	{INTERF_USB, 1, "FTDI JtagKey", FTDI_JTAGKEY, VidPid(0x0403, 0xcff8), {9, 2, 1, 0, -1, -1, -1, -1}},
 	{INTERF_GPIO, 0, "Linux SysFs GPIO", LINUXSYSFS_IO},
 };
+
+bool TypeToInterfPins(HInterfaceType type, InterfPins &pins)
+{
+	for (int k = 0; k < index_interface.count(); k++)
+	{
+		if (index_interface.at(k).type == type)
+		{
+			pins = index_interface.at(k).pins;
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool TypeToInterfVidPid(HInterfaceType type, unsigned int &vid, unsigned int &pid)
+{
+	for (int k = 0; k < index_interface.count(); k++)
+	{
+		if (index_interface.at(k).type == type)
+		{
+			vid = index_interface.at(k).vp.vid;
+			pid = index_interface.at(k).vp.pid;
+			return true;
+		}
+	}
+
+	return false;
+}
+
+VidPid TypeToInterfVidPid(HInterfaceType type)
+{
+	VidPid rv;
+
+	for (int k = 0; k < index_interface.count(); k++)
+	{
+		if (index_interface.at(k).type == type)
+		{
+			rv = index_interface.at(k).vp;
+			break;
+		}
+	}
+
+	return rv;
+}
 
 QStringList GetInterfList(int vector)
 {

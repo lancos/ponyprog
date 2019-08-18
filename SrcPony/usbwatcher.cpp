@@ -30,7 +30,7 @@
 
 #include "usbwatcher.h"
 
-int LIBUSB_CALL hotplug_callback(struct libusb_context *ctx, struct libusb_device *dev,
+static int LIBUSB_CALL hotplug_callback(struct libusb_context *ctx, struct libusb_device *dev,
 								 libusb_hotplug_event event, void *user_data)
 {
 	struct libusb_device_descriptor desc;
@@ -39,12 +39,12 @@ int LIBUSB_CALL hotplug_callback(struct libusb_context *ctx, struct libusb_devic
 
 	//unsigned char ser[256] = "";
 	//int n = libusb_get_string_descriptor_ascii(dev, desc.iSerialNumber, ser, sizeof(ser));
-	struct usb_data ud = { .vid = desc.idVendor, .pid = desc.idProduct };
+	struct VidPid ud = { .vid = desc.idVendor, .pid = desc.idProduct };
 	//if (n > 0)
 	//	ud.serial = QString(ser);
 
-	//QVector <usb_data> *v;
-	//v = (QVector <usb_data> *)user_data;
+	//QVector <VidPid> *v;
+	//v = (QVector <VidPid> *)user_data;
 	USBWatcher *w = (USBWatcher *)user_data;
 	Q_CHECK_PTR(w);
 
@@ -85,20 +85,12 @@ void USBWatcher::doPoll()
 USBWatcher::USBWatcher()
 	: cbHandle(0),
 	  usb_ctx(0),
-	  timer(0)
+	  timer(0),
+	  count(0)
 {
-	//vUSB << (usb_data)
-	//{
-	//	CH34x_VENDOR_ID2, CH340_UART_PRODUCT
-	//};
-	//vUSB << (usb_data)
-	//{
-	//	CH34x_VENDOR_ID2, CH341_UART_PRODUCT
-	//};
-
 	vUSB.clear();
 
-	hotplug_register();
+	//hotplug_register();
 }
 
 USBWatcher::~USBWatcher()
@@ -108,20 +100,26 @@ USBWatcher::~USBWatcher()
 
 void USBWatcher::hotplug_deregister()
 {
-	if (timer)
+	if (count > 0)
 	{
-		timer->stop();
-		delete timer;
-	}
-	if (usb_ctx)
-	{
-		libusb_hotplug_deregister_callback(usb_ctx, cbHandle);
-		libusb_exit(usb_ctx);
+		if (timer)
+		{
+			timer->stop();
+			delete timer;
+		}
+		if (usb_ctx)
+		{
+			libusb_hotplug_deregister_callback(usb_ctx, cbHandle);
+			libusb_exit(usb_ctx);
+		}
+		count--;
 	}
 }
 
 bool USBWatcher::hotplug_register(quint16 vid, quint16 pid)
 {
+	hotplug_deregister();
+
 	libusb_init(&usb_ctx);
 
 	int rc = libusb_hotplug_register_callback(usb_ctx,
@@ -143,6 +141,7 @@ bool USBWatcher::hotplug_register(quint16 vid, quint16 pid)
 		QTimer *timer = new QTimer(this);
 		connect(timer, SIGNAL(timeout()), this, SLOT(doPoll()));
 		timer->start(100);
+		count++;
 		return true;
 	}
 }

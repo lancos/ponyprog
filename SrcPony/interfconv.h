@@ -27,6 +27,20 @@
 #ifndef INTERFCONV_H
 #define INTERFCONV_H
 
+#include "globals.h"
+
+struct InterfPins
+{
+	int ctrl;
+	int datain;
+	int dataout;
+	int clock;
+	int clockin;
+	int poweron;
+	int enbus;
+	int ctrlin;
+};
+
 enum {
 	INTERF_USB,
 	INTERF_COM,
@@ -40,5 +54,8 @@ extern QString TypeToInterfName(HInterfaceType type);
 extern int TypeToInterfVector(HInterfaceType type);
 extern int TypeToInterfIndex(HInterfaceType type);
 extern HInterfaceType VindexToInterfType(int vector, int index);
+extern bool TypeToInterfVidPid(HInterfaceType type, unsigned int &vid, unsigned int &pid);
+extern VidPid TypeToInterfVidPid(HInterfaceType type);
+extern bool TypeToInterfPins(HInterfaceType type, InterfPins &pins);
 
 #endif // INTERFCONV_H

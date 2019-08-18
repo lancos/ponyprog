@@ -40,6 +40,7 @@
 #endif
 
 #include "microbus.h"
+#include "interfconv.h"
 
 //const int idAskToSave = 100; // Dummy Command
 
@@ -444,17 +445,11 @@ void e2App::SetInterfaceType(HInterfaceType type)
 	case FTDI_JTAGKEY:
 		iType = FTDI_JTAGKEY;
 		busIntp = &jtagkeyI;
-		jtagkeyI.SetUSBVid(0x0403);
-		jtagkeyI.SetUSBPid(0xcff8);
-		jtagkeyI.ConfigPins(E2Profile::GetMpssePinCtrl(), E2Profile::GetMpssePinDataIn(), E2Profile::GetMpssePinDataOut(), E2Profile::GetMpssePinClock());
 		break;
 
 	case PONYPROG_FT:
 		iType = PONYPROG_FT;
 		busIntp = &ponyprog_ftI;
-		ponyprog_ftI.SetUSBVid(0x0403);
-		ponyprog_ftI.SetUSBPid(0x6e38);
-		ponyprog_ftI.ConfigPins(3, 2, 1, 0, /* 4 */ -1, 5, 7, 6);
 		break;
 
 	case SIPROG_API:
@@ -463,6 +458,11 @@ void e2App::SetInterfaceType(HInterfaceType type)
 		busIntp = &siprog_apiI;
 		break;
 	}
+
+	busIntp->SetUSBVidPid(TypeToInterfVidPid(iType));
+	InterfPins pins;
+	if (TypeToInterfPins(iType, pins))
+		busIntp->ConfigPins(pins);
 
 	int k;
 

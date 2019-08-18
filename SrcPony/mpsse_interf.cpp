@@ -65,7 +65,7 @@ void MpsseInterface::List()
 	qDebug() << __PRETTY_FUNCTION__;
 
 	// Print whole list
-	Ftdi::List *list = Ftdi::List::find_all(ctx, usb_vid, usb_pid);
+	Ftdi::List *list = Ftdi::List::find_all(ctx, usb_vp.vid, usb_vp.pid);
 	for (Ftdi::List::iterator it = list->begin(); it != list->end(); it++)
 	{
 		qDebug() << "FTDI (" << &*it << "): "
@@ -210,7 +210,7 @@ int MpsseInterface::InitPins()
 
 			//00011011 --> 0x1B
 			int new_directions = pin_ctrl | pin_dataout | pin_clock | pin_poweron | pin_enbus;
-			if (usb_pid == 0xcff8 && usb_vid == 0x0403)
+			if (usb_vp == TypeToInterfVidPid(FTDI_JTAGKEY))
 			{
 				new_directions |= (1 << 4) | (1 << 11);		//hack
 			}
@@ -273,7 +273,7 @@ int MpsseInterface::SetFrequency(uint32_t freq)
 
 int MpsseInterface::Open(int port)
 {
-	qDebug() << __PRETTY_FUNCTION__ << "(" << port << (hex) << usb_vid << usb_pid << ") IN";
+	qDebug() << __PRETTY_FUNCTION__ << "(" << port << (hex) << usb_vp.vid << ":" << usb_vp.pid << ") IN";
 
 	int ret_val = OK;
 
@@ -298,7 +298,10 @@ int MpsseInterface::Open(int port)
 		int result = ctx.set_interface(interf);
 		if (result == 0)
 		{
-			result = ctx.open(usb_vid, usb_pid);
+			std::string sdesc, sser;
+
+			//result = ctx.open(usb_vp.vid, usb_vp.pid);
+			result = ctx.open(usb_vp.vid, usb_vp.pid, sdesc, sser, port);
 		}
 		if (result == 0)
 		{
@@ -1108,7 +1111,7 @@ int MpsseInterface::TestPort(int port_no)
 
 	if (ret_val == OK)
 	{
-		if (usb_vid == 0x0403 && usb_pid == 0x6e38)
+		if (TypeToInterfVidPid(PONYPROG_FT) == usb_vp)
 		{	//PonyProgFT
 			w.WaitMsec(10);
 			ret_val = GetPresence(0x0700, 0);
@@ -1137,7 +1140,7 @@ int MpsseInterface::TestPort(int port_no)
 				SetPower(false);
 			}
 		}
-		else if (usb_vid == 0x0403 && usb_pid == 0xcff8)
+		else if (TypeToInterfVidPid(FTDI_JTAGKEY) == usb_vp)
 		{	//JtagKey
 			ret_val = OK;
 		}

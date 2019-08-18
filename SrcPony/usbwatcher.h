@@ -35,18 +35,7 @@
 
 #include <libusb-1.0/libusb.h> //Include libsub
 
-class usb_data
-{
-  public:
-
-	bool operator==(const usb_data &a)
-	{
-		return (a.pid == pid && a.vid == vid);
-	}
-	quint16 vid;
-	quint16 pid;
-	//QString serial;
-};
+#include "globals.h"
 
 class USBWatcher : public QObject
 {
@@ -58,7 +47,9 @@ class USBWatcher : public QObject
 	USBWatcher();
 	~USBWatcher();
 
-	QVector <usb_data> vUSB;
+	bool hotplug_register(quint16 vid = 0, quint16 pid = 0);
+
+	QVector <VidPid> vUSB;
 
   signals:
 	void notify(bool connected, const quint16 &vid, const quint16 &pid);
@@ -67,12 +58,12 @@ class USBWatcher : public QObject
 	void doPoll();
 
   private:
-	bool hotplug_register(quint16 vid = 0, quint16 pid = 0);
 	void hotplug_deregister();
 
 	libusb_hotplug_callback_handle cbHandle;
 	libusb_context *usb_ctx;
 	QTimer *timer;
+	int count;
 };
 
 #endif // USBWATCHER_H

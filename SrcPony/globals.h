@@ -40,7 +40,6 @@
 #define ALL_TYPE        0x7 // (PROG_TYPE|DATA_TYPE|CONFIG_TYPE)
 
 
-
 #define NO_OF_FILETYPE  LAST_FT
 enum FileType
 {
@@ -96,8 +95,26 @@ enum BusType
 	LAST_BT
 };
 
+class VidPid
+{
+  public:
+
+	VidPid(unsigned int _vid = 0, unsigned int _pid = 0)
+	{
+		vid = _vid;
+		pid = _pid;
+	}
+	bool operator==(const VidPid &a)
+	{
+		return (a.pid == pid && a.vid == vid);
+	}
+	void operator=(const VidPid &a)
+	{
+		vid = a.vid;
+		pid = a.pid;
+	}
+	unsigned int vid;
+	unsigned int pid;
+};
 
 #endif
-
-
-
