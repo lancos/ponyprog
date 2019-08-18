@@ -104,9 +104,9 @@ void BitFieldWidget::initWidget()
 		}
 
 		// reset not used bits
-		for (int i = (lastBit + 1); i < 32; i++)
+		for (unsigned int i = (lastBit + 1); i < 32; i++)
 		{
-			bField &= ~(1 << i);
+			bField &= ~(1U << i);
 		}
 
 		treeWidget->expandAll();

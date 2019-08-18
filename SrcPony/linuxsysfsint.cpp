@@ -277,12 +277,12 @@ void LinuxSysFsInterface::SetControlLine(int res)
 
 	if (IsInstalled())
 	{
+#ifdef Q_OS_LINUX
 		if (cmdWin->GetPolarity() & RESETINV)
 		{
 			res = !res;
 		}
 
-#ifdef Q_OS_LINUX
 		int ret;
 
 		if (res)
@@ -309,12 +309,12 @@ void LinuxSysFsInterface::SetDataOut(int sda)
 
 	if (IsInstalled())
 	{
+#ifdef Q_OS_LINUX
 		if ((cmdWin->GetPolarity() & DOUTINV))
 		{
 			sda = !sda;
 		}
 
-#ifdef Q_OS_LINUX
 		int ret;
 
 		if (sda)
@@ -341,12 +341,12 @@ void LinuxSysFsInterface::SetClock(int scl)
 
 	if (IsInstalled())
 	{
+#ifdef Q_OS_LINUX
 		if ((cmdWin->GetPolarity() & CLOCKINV))
 		{
 			scl = !scl;
 		}
 
-#ifdef Q_OS_LINUX
 		int ret;
 
 		if (scl)
@@ -408,17 +408,14 @@ int LinuxSysFsInterface::GetDataIn()
 			qWarning("LinuxSysFsInterface::GetDataIn() read failed (%d)\n", ret);
 			exit(1);
 		}
-#endif
 		qDebug() << "LinuxSysFsInterface::GetDataIn()=" << val << ", fd=" << fd_datain;
 
 		if (cmdWin->GetPolarity() & DININV)
 		{
-			return !val;
+			val = !val;
 		}
-		else
-		{
-			return val;
-		}
+#endif
+		return val;
 	}
 	else
 	{

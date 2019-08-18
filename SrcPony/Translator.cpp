@@ -609,15 +609,14 @@ bool cTranslator::loadTranslation(const QString fname)
 
 		if (llEng.indexOf(QRegExp("t[0-9]+=")) == 0)
 		{
-			int num, pos;
 			QString str;
-			pos = llEng.indexOf("=");
+			int pos = llEng.indexOf("=");
 
 			if (pos > 0)
 			{
 				str = llEng.mid(pos + 1);
 				//
-				num = llEng.mid(1, pos - 1).toShort();
+				int num = llEng.mid(1, pos - 1).toShort();
 
 				//                     qDebug() << num << str;
 				if (num >= vecSize)

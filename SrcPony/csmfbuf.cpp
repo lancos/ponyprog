@@ -278,7 +278,7 @@ int csmFileBuf::Save(int savetype, long relocation_offfset)
 		else
 		{
 			QTextStream out(&fh);
-			int addr, value;
+			int addr;
 
 			//Write Header
 			out << "\"\n" << header << "\n\"";
@@ -286,7 +286,7 @@ int csmFileBuf::Save(int savetype, long relocation_offfset)
 			//Write buffer
 			for (addr = 0; addr < size; addr++)
 			{
-				value = ptr[addr];
+				int value = ptr[addr];
 				out << (hex) << addr << " " << value << "\n";
 			}
 

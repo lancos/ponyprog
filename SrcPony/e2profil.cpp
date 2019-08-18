@@ -2053,7 +2053,7 @@ void E2Profile::SetAutoDetectPorts(bool enabled)
 }
 
 
-int E2Profile::GetCOMAddress(int &com1, int &com2, int &com3, int &com4)
+int E2Profile::GetCOMAddress(unsigned int &com1, unsigned int &com2, unsigned int &com3, unsigned int &com4)
 {
 	QString sp = s->value("COMPorts").toString();
 
@@ -2071,7 +2071,7 @@ int E2Profile::GetCOMAddress(int &com1, int &com2, int &com3, int &com4)
 }
 
 
-void E2Profile::SetCOMAddress(int com1, int com2, int com3, int com4)
+void E2Profile::SetCOMAddress(unsigned int com1, unsigned int com2, unsigned int com3, unsigned int com4)
 {
 	QString str;
 
@@ -2105,7 +2105,7 @@ void E2Profile::SetCOMAddress(int com1, int com2, int com3, int com4)
 }
 
 
-int E2Profile::GetLPTAddress(int &lpt1, int &lpt2, int &lpt3)
+int E2Profile::GetLPTAddress(unsigned int &lpt1, unsigned int &lpt2, unsigned int &lpt3)
 {
 	QString sp = s->value("LPTPorts").toString();
 
@@ -2122,7 +2122,7 @@ int E2Profile::GetLPTAddress(int &lpt1, int &lpt2, int &lpt3)
 }
 
 
-void E2Profile::SetLPTAddress(int lpt1, int lpt2, int lpt3)
+void E2Profile::SetLPTAddress(unsigned int lpt1, unsigned int lpt2, unsigned int lpt3)
 {
 	QString str;
 

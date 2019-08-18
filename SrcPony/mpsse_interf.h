@@ -115,7 +115,7 @@ class MpsseInterface : public BusInterface
 	int SetPower(bool onoff);
 	void SetControlLine(int res = 1);
 
-	void List();
+	//void List();
 	virtual int Flush();
 
 	virtual int xferBit(int &err, int b, int mode = 0);
@@ -153,7 +153,7 @@ class MpsseInterface : public BusInterface
 					qDebug() << "Man : " << QString(man)
 							 << "Desc: " << QString(desc)
 							 << "Ser : " << QString(ser);
-					retList << QString(ser) + "/" + QString(desc);
+					retList << QString(ser) + " / " + QString(desc);
 				}
 			}
 			ftdi_list_free(&dlist);

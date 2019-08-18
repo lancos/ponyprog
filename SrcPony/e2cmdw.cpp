@@ -1405,7 +1405,7 @@ void e2CmdWindow::selectTypeSubtype(const QString &tp, const QString &subtp)
 // 	qDebug() << "selectTypeSubtype" << t_tmp << st_tmp << currentMenu->title;
 //         bool rebuildSubmenu = true;
 
-	if (currentMenu == NULL || (currentMenu != NULL && currentMenu->title != t_tmp) || cbxEEPSubType->count() == 0) // update the type combobox
+	if (currentMenu == NULL || currentMenu->title != t_tmp || cbxEEPSubType->count() == 0) // update the type combobox
 	{
 		int nt = cbxEEPType->findText(t_tmp);
 

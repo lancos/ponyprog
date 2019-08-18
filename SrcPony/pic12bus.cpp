@@ -358,7 +358,6 @@ long Pic12Bus::Read(int addr, uint8_t *data, long length, int page_size)
 long Pic12Bus::Write(int addr, uint8_t const *data, long length, int page_size)
 {
 	long len;
-	int rv = OK;
 
 	qDebug() << __PRETTY_FUNCTION__ << "(" << addr << ", " << (hex) << data << ", " << (dec) << length << ") IN";
 
@@ -381,7 +380,7 @@ long Pic12Bus::Write(int addr, uint8_t const *data, long length, int page_size)
 		val  = (uint16_t)(*data++);
 		val |= (uint16_t)(*data++) << 8;
 #endif
-		rv = WriteProgWord(val, length - 1);
+		int rv = WriteProgWord(val, length - 1);
 
 		if (rv != OK)
 		{

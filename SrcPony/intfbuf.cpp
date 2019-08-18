@@ -126,43 +126,40 @@ int IntelFileBuf::WriteAddressRecord(QFile &fh, long curaddr, bool linear_addres
 
 	out << ":";
 
-	if (rval)
+	int checksum = 0;
+	int len = 2;
+
+	//byte count
+	out << QString().sprintf("%02X", len & 0xFF);
+	checksum += len & 0xFF;
+
+	//addr field
+	out << QString().sprintf("%04X", 0);
+
+	if (linear_address)
 	{
-		int checksum = 0;
-		int len = 2;
+		//record type
+		out << QString().sprintf("%02X", LIN_ADDR_RECORD & 0xFF);
+		checksum += LIN_ADDR_RECORD & 0xFF;
 
-		//byte count
-		out << QString().sprintf("%02X", len & 0xFF);
-		checksum += len & 0xFF;
-
-		//addr field
-		out << QString().sprintf("%04X", 0);
-
-		if (linear_address)
-		{
-			//record type
-			out << QString().sprintf("%02X", LIN_ADDR_RECORD & 0xFF);
-			checksum += LIN_ADDR_RECORD & 0xFF;
-
-			//adjust extended linear address
-			curaddr >>= 16;
-		}
-		else
-		{
-			//record type
-			out << QString().sprintf("%02X", SEG_ADDR_RECORD & 0xFF);
-			checksum += SEG_ADDR_RECORD & 0xFF;
-
-			//adjust extended segmented address
-			curaddr >>= 4;
-		}
-
-		out << QString().sprintf("%04lX", curaddr & 0xFFFF);
-		checksum += (curaddr >> 8) & 0xFF;
-		checksum += curaddr & 0xFF;
-
-		out << QString().sprintf("%02X\n", (~checksum + 1) & 0xFF);
+		//adjust extended linear address
+		curaddr >>= 16;
 	}
+	else
+	{
+		//record type
+		out << QString().sprintf("%02X", SEG_ADDR_RECORD & 0xFF);
+		checksum += SEG_ADDR_RECORD & 0xFF;
+
+		//adjust extended segmented address
+		curaddr >>= 4;
+	}
+
+	out << QString().sprintf("%04lX", curaddr & 0xFFFF);
+	checksum += (curaddr >> 8) & 0xFF;
+	checksum += curaddr & 0xFF;
+
+	out << QString().sprintf("%02X\n", (~checksum + 1) & 0xFF);
 
 	return rval;
 }
@@ -309,7 +306,6 @@ int IntelFileBuf::Load(int loadtype, long relocation_offset)
 
 // 		char *s;
 		int pos;
-		int k;
 
 		if ((pos = riga.indexOf(":")) < 0)
 		{
@@ -384,6 +380,7 @@ int IntelFileBuf::Load(int loadtype, long relocation_offset)
 
 			bool ok = true;
 			uint8_t *p;
+			unsigned int k;
 
 			for (k = 0, p = dp + laddr; k < bcount && ok; k++)
 			{

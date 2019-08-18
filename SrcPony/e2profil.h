@@ -233,10 +233,10 @@ class E2Profile
 	static bool GetAutoDetectPorts();
 	static void SetAutoDetectPorts(bool enabled = true);
 
-	static int GetCOMAddress(int &com1, int &com2, int &com3, int &com4);
-	static void SetCOMAddress(int com1, int com2, int com3, int com4);
-	static int GetLPTAddress(int &lpt1, int &lpt2, int &lpt3);
-	static void SetLPTAddress(int lpt1, int lpt2, int lpt3);
+	static int GetCOMAddress(unsigned int &com1, unsigned int &com2, unsigned int &com3, unsigned int &com4);
+	static void SetCOMAddress(unsigned int com1, unsigned int com2, unsigned int com3, unsigned int com4);
+	static int GetLPTAddress(unsigned int &lpt1, unsigned int &lpt2, unsigned int &lpt3);
+	static void SetLPTAddress(unsigned int lpt1, unsigned int lpt2, unsigned int lpt3);
 
 //	static void SetConfigFile(const QString &n);
 	static QString GetConfigFile()

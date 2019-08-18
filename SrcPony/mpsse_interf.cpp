@@ -58,6 +58,7 @@ MpsseInterface::~MpsseInterface()
 	Close();
 }
 
+/**
 void MpsseInterface::List()
 {
 	//using namespace Ftdi;
@@ -66,7 +67,7 @@ void MpsseInterface::List()
 
 	// Print whole list
 	Ftdi::List *list = Ftdi::List::find_all(ctx, usb_vp.vid, usb_vp.pid);
-	for (Ftdi::List::iterator it = list->begin(); it != list->end(); it++)
+	for (Ftdi::List::iterator it = list->begin(); it != list->end(); ++it)
 	{
 		qDebug() << "FTDI (" << &*it << "): "
 				 << QString::fromStdString(it->vendor()) << ", "
@@ -87,6 +88,7 @@ void MpsseInterface::List()
 	}
 	delete list;
 }
+**/
 
 void MpsseInterface::ConfigPins(int pinum_ctrl, int pinum_datain, int pinum_dataout, int pinum_clock, int pinum_clockin, int pinum_poweron, int pinum_enbus, int pinnum_ctrlin)
 {
@@ -462,10 +464,10 @@ int MpsseInterface::GetPins()
 	cmdbuf.append(GET_BITS_HIGH);
 	cmdbuf.append(SEND_IMMEDIATE);
 
-	uint8_t buf[2];
 	int ret = Flush();
 	if (ret == OK)
 	{
+		uint8_t buf[2];
 		int timeout = 10000;
 		do {
 			ret = ctx.read(buf, 2);

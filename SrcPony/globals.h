@@ -104,14 +104,20 @@ class VidPid
 		vid = _vid;
 		pid = _pid;
 	}
+	VidPid(const VidPid &p2)
+	{
+		vid = p2.vid;
+		pid = p2.pid;
+	}
 	bool operator==(const VidPid &a)
 	{
 		return (a.pid == pid && a.vid == vid);
 	}
-	void operator=(const VidPid &a)
+	VidPid &operator=(const VidPid &a)
 	{
 		vid = a.vid;
 		pid = a.pid;
+		return *this;
 	}
 	unsigned int vid;
 	unsigned int pid;

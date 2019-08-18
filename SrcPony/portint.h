@@ -47,7 +47,7 @@ typedef BOOL (__stdcall *lpIsXP64Bit)(void);
 
 struct base_len
 {
-	int base, len;
+	unsigned int base, len;
 };
 
 class PortInterface

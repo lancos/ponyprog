@@ -48,22 +48,15 @@
 #include "errcode.h"
 #include "crc.h"
 
-// #include "e2awinfo.h"
-
 MotorolaSFileBuf::MotorolaSFileBuf(e2AppWinInfo *wininfo)
-	: FileBuf(wininfo)
+	: FileBuf(wininfo),
+	  highestPC(NULL),
+	  highestAddr(0),
+	  lowestAddr(0x7fffffff),
+	  valid_record_count(0)
 {
 	file_type = MOTOS;
-
-	highestPC = NULL;
-	highestAddr = 0;
-	lowestAddr = 0x7fffffff;
 }
-
-MotorolaSFileBuf::~MotorolaSFileBuf()
-{
-}
-
 
 int MotorolaSFileBuf::WriteRecord(QTextStream &outs, uint8_t *bptr, long curaddr, long recsize, int fmt)
 {
@@ -366,7 +359,7 @@ int MotorolaSFileBuf::Load(int loadtype, long relocation_offset)
 
 	if (nocopy_mode)
 	{
-		if ((highestAddr - lowestAddr) > GetBufSize())
+		if (((int)highestAddr - (int)lowestAddr) > GetBufSize())
 		{
 			rval = BUFFEROVERFLOW;
 		}
@@ -432,13 +425,13 @@ int MotorolaSFileBuf::Load(int loadtype, long relocation_offset)
 */
 int MotorolaSFileBuf::ParseRecord(char *lbufPC, uint8_t *buf_startP, uint8_t *buf_endP, long offset, int nocopy)
 {
-	long addrL;
-	uint8_t cksmB,              // checksum of addr, count, & data length
-			*bufPC = 0;      // Pointer into memory array
-	int i, countN,           // Number of bytes represented in record
-		oheadN = 0,      // Number of overhead (addr + chksum) bytes
-		tvalN;           // Temp for check checksum
+	unsigned long addrL;
+	uint8_t cksmB,				// checksum of addr, count, & data length
+			*bufPC = 0;			// Pointer into memory array
+	unsigned int oheadN = 0,	// Number of overhead (addr + chksum) bytes
+			tvalN;				// Temp for check checksum
 	int unknow_rec = 0;
+	unsigned int countN;		// Number of bytes represented in record
 
 	if (lbufPC[0] == '\n' || lbufPC[0] == '\r')
 	{
@@ -506,7 +499,7 @@ int MotorolaSFileBuf::ParseRecord(char *lbufPC, uint8_t *buf_startP, uint8_t *bu
 		cksmB = 0;
 		countN++;                   /* Bump counter to read final checksum too */
 
-		for (i = 1; i <= countN; i++)
+		for (unsigned int i = 1; i <= countN; i++)
 		{
 			sscanf(lbufPC + i * 2, "%2X", &tvalN);   /* Scan a 2 hex digit byte  */
 			cksmB += (uint8_t)tvalN;
@@ -529,7 +522,7 @@ int MotorolaSFileBuf::ParseRecord(char *lbufPC, uint8_t *buf_startP, uint8_t *bu
 			lowestAddr = addrL;
 		}
 
-		if (addrL < offset)
+		if ((long)addrL < offset)
 		{
 			return BUFFERUNDERFLOW;
 		}
@@ -545,7 +538,7 @@ int MotorolaSFileBuf::ParseRecord(char *lbufPC, uint8_t *buf_startP, uint8_t *bu
 		cksmB = 0;
 		countN++;                   /* Bump counter to read final checksum too */
 
-		for (i = 1; i <= countN; i++)
+		for (unsigned int i = 1; i <= countN; i++)
 		{
 			sscanf(lbufPC + i * 2, "%2X", &tvalN);   /* Scan a 2 hex digit byte  */
 			cksmB += (uint8_t)tvalN;
