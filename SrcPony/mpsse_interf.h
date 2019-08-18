@@ -145,9 +145,9 @@ class MpsseInterface : public BusInterface
 				char desc[256];
 				char ser[256];
 				int rv = ftdi_usb_get_strings(&ftdi, l->dev,
-												man, sizeof(man),
-												desc, sizeof(desc),
-												ser, sizeof(ser));
+											  man, sizeof(man),
+											  desc, sizeof(desc),
+											  ser, sizeof(ser));
 				if (rv == 0)
 				{
 					qDebug() << "Man : " << QString(man)

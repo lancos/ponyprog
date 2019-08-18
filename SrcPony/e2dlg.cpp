@@ -109,9 +109,13 @@ void e2Dialog::getSettings()
 		cbxInterfCOM->setCurrentIndex(TypeToInterfIndex(interf_type));
 
 		if (tabWidget->currentIndex() != INTERF_COM)
+		{
 			tabWidget->setCurrentIndex(INTERF_COM);
+		}
 		else
+		{
 			on_tabWidget_currentChanged(INTERF_COM);
+		}
 	}
 	else if (TypeToInterfVector(interf_type) == INTERF_LPT)
 	{
@@ -125,9 +129,13 @@ void e2Dialog::getSettings()
 		cbxInterfLPT->setCurrentIndex(TypeToInterfIndex(interf_type));
 
 		if (tabWidget->currentIndex() != INTERF_LPT)
+		{
 			tabWidget->setCurrentIndex(INTERF_LPT);
+		}
 		else
+		{
 			on_tabWidget_currentChanged(INTERF_LPT);
+		}
 	}
 	else if (TypeToInterfVector(interf_type) == INTERF_USB)
 	{
@@ -140,9 +148,13 @@ void e2Dialog::getSettings()
 		cbxInterfUSBNum->setCurrentIndex(usb_no);
 
 		if (tabWidget->currentIndex() != INTERF_USB)
+		{
 			tabWidget->setCurrentIndex(INTERF_USB);
+		}
 		else
+		{
 			on_tabWidget_currentChanged(INTERF_USB);
+		}
 	}
 
 	chkPol1->setChecked((cmdWin->GetPolarity() & RESETINV) ? 1 : 0);

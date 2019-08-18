@@ -462,7 +462,9 @@ void e2App::SetInterfaceType(HInterfaceType type)
 	busIntp->SetUSBVidPid(TypeToInterfVidPid(iType));
 	InterfPins pins;
 	if (TypeToInterfPins(iType, pins))
+	{
 		busIntp->ConfigPins(pins);
+	}
 
 	int k;
 

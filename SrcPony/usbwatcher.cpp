@@ -31,7 +31,7 @@
 #include "usbwatcher.h"
 
 static int LIBUSB_CALL hotplug_callback(struct libusb_context *ctx, struct libusb_device *dev,
-								 libusb_hotplug_event event, void *user_data)
+										libusb_hotplug_event event, void *user_data)
 {
 	struct libusb_device_descriptor desc;
 
@@ -60,10 +60,12 @@ void USBWatcher::doPoll()
 	//zero_tv.tv_sec = 1; // timeout 1 sec
 
 	int rv = libusb_handle_events_timeout_completed(usb_ctx,
-													const_cast<timeval *>(&zero_tv),
-													NULL);
+			 const_cast<timeval *>(&zero_tv),
+			 NULL);
 	if (rv != LIBUSB_SUCCESS)
+	{
 		qWarning() << "libusb_handle_events_timeout_completed() failed: " << rv;
+	}
 }
 
 USBWatcher::USBWatcher()
@@ -107,14 +109,14 @@ bool USBWatcher::hotplug_register(quint16 vid, quint16 pid)
 	libusb_init(&usb_ctx);
 
 	int rc = libusb_hotplug_register_callback(usb_ctx,
-											  (libusb_hotplug_event)(LIBUSB_HOTPLUG_EVENT_DEVICE_ARRIVED | LIBUSB_HOTPLUG_EVENT_DEVICE_LEFT),
-											  LIBUSB_HOTPLUG_ENUMERATE,
-											  (vid == 0) ? LIBUSB_HOTPLUG_MATCH_ANY : vid,
-											  (pid == 0) ? LIBUSB_HOTPLUG_MATCH_ANY : pid,
-											  LIBUSB_HOTPLUG_MATCH_ANY,
-											  hotplug_callback,
-											  this, //&vUSB,
-											  &cbHandle);
+			 (libusb_hotplug_event)(LIBUSB_HOTPLUG_EVENT_DEVICE_ARRIVED | LIBUSB_HOTPLUG_EVENT_DEVICE_LEFT),
+			 LIBUSB_HOTPLUG_ENUMERATE,
+			 (vid == 0) ? LIBUSB_HOTPLUG_MATCH_ANY : vid,
+			 (pid == 0) ? LIBUSB_HOTPLUG_MATCH_ANY : pid,
+			 LIBUSB_HOTPLUG_MATCH_ANY,
+			 hotplug_callback,
+			 this, //&vUSB,
+			 &cbHandle);
 	if (LIBUSB_SUCCESS != rc)
 	{
 		libusb_exit(usb_ctx);

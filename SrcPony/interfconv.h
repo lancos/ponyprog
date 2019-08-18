@@ -41,7 +41,8 @@ struct InterfPins
 	int ctrlin;
 };
 
-enum {
+enum
+{
 	INTERF_USB,
 	INTERF_COM,
 	INTERF_LPT,
