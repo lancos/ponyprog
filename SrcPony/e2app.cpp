@@ -95,11 +95,6 @@ e2App::e2App() :
 e2App::~e2App()
 {
 	qDebug() << "e2App::~e2App()";
-
-	// Destructor
-
-	//      if (_e2CmdWin)
-	//              delete _e2CmdWin;
 }
 
 
@@ -107,19 +102,6 @@ void e2App::initSettings()
 {
 	QString str;
 
-#ifdef  __unix__
-	//QString sp;
-
-	//sp = getenv("HOME");
-
-	//if (sp.length() > 0)
-	//{
-	//	str = sp + "/";
-	//}
-
-	//str += QString("." + APPNAME + "rc");
-	//E2Profile::SetConfigFile(str);
-#endif
 	qDebug() << "Settings file: " << E2Profile::GetConfigFile();	// << " - Format: " << E2Profile::s->format();
 
 	QString currentAppDir = qApp->applicationDirPath();

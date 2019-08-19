@@ -152,7 +152,7 @@ void SIProgInterface::SetClockData()
 
 	if (IsInstalled())
 	{
-		int control = cmdWin->GetPolarity();
+		unsigned int control = cmdWin->GetPolarity();
 
 		if ((control & CLOCKINV) && (control & DOUTINV))
 		{
@@ -185,7 +185,7 @@ void SIProgInterface::ClearClockData()  //aggiunto il 06/03/98
 
 	if (IsInstalled())
 	{
-		int control = cmdWin->GetPolarity();
+		unsigned int control = cmdWin->GetPolarity();
 
 		if ((control & CLOCKINV) && (control & DOUTINV))
 		{

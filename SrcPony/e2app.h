@@ -137,11 +137,11 @@ class e2App : public cTranslator
 		return err_soundfile;
 	}
 
-	uint8_t GetPolarity() const
+	unsigned int GetPolarity() const
 	{
 		return polarity_control;
 	}
-	void SetPolarity(uint8_t val)
+	void SetPolarity(unsigned int val)
 	{
 		polarity_control = val;
 	}
@@ -161,7 +161,7 @@ class e2App : public cTranslator
 
 	void SetAWInfo(e2AppWinInfo *awi)
 	{
-		//             qDebug() << "SetAWInfo" << awi;
+		Q_CHECK_PTR(awi);
 		awip = awi;
 	}
 	e2AppWinInfo *GetAWInfo() const
@@ -193,7 +193,7 @@ class e2App : public cTranslator
 
 	BusInterface *busIntp;  //pointer to current interface type
 
-	uint8_t polarity_control; //polarity for control lines
+	unsigned int polarity_control; //polarity for control lines
 
 	//AutoTag
 	//List of available interface types

@@ -148,7 +148,7 @@ void EasyI2CInterface::SetClockData()
 
 	if (IsInstalled())
 	{
-		int control     = cmdWin->GetPolarity();
+		unsigned int control = cmdWin->GetPolarity();
 		uint8_t cpreg = GetLastData();
 
 		if (control & CLOCKINV)
