@@ -96,6 +96,7 @@ e2CmdWindow::e2CmdWindow(QWidget *parent) :
 	cmdWin = this;
 
 	setupUi(this);
+	E2Profile::readDialogSettings(this, false);
 
 	qDebug() << "e2CmdWindow::e2CmdWindow(" APP_NAME ")";
 
@@ -309,96 +310,6 @@ e2CmdWindow::~e2CmdWindow()
 		delete e2Prg;
 	}
 }
-
-
-
-#if 0
-int e2CmdWindow::CloseAppWin()
-{
-	if (!IsAppReady())
-	{
-		//06/09/99
-		SetAbortFlag();
-		//SendWindowCommandAll(idCloseAllDialog, 0, C_Button);
-		//CheckEvents();
-
-		SetAppReady();
-	}
-
-	if (IsAppReady())
-	{
-		// This will be called BEFORE a window has been unregistered or
-		// closed.  Default behavior: unregister and close the window.
-		int really_close = 0;
-
-		qDebug() << "e2App::CloseAppWin()";
-
-		if (!e2CmdWindow::exit_ok && IsBufChanged())
-		{
-			int ret = QMessageBox::warning(this, "PonyProg",
-										   translate(STR_MSGCLOSEWINSAVE),
-										   QMessageBox::Yes | QMessageBox::No);
-
-			if (ret == QMessageBox::Yes)
-			{
-				CmdSave();
-			}
-		}
-
-		// EK 2017
-		// TODO now is the winCounter deactivated
-		if (/*winCounter > 1 || */ e2CmdWindow::exit_ok)
-		{
-			really_close = 1;
-		}
-		else
-		{
-			int ret = QMessageBox::warning(this, "PonyProg",
-										   translate(STR_MSGCLOSEWINEXIT),
-										   QMessageBox::Yes | QMessageBox::No);
-
-			if (ret == QMessageBox::Yes)
-			{
-				really_close = 1;
-			}
-		}
-
-		if (really_close)
-		{
-			// EK 2017
-			// TODO we can do it about program settings: use QSettings
-#ifdef Q_OS_WIN32
-			HKEY key;       // Save window position to Win7-safe, roaming hive of registry
-
-			if (!RegCreateKeyEx(HKEY_CURRENT_USER, "Software\\h#s\\PonyProg",
-								0, NULL, REG_OPTION_NON_VOLATILE, KEY_SET_VALUE, NULL, &key, NULL))
-			{
-				WINDOWPLACEMENT wp;
-				wp.length = sizeof wp;
-
-				if (GetWindowPlacement(theApp->winHwnd(), &wp))
-				{
-					RegSetValueEx(key, "WinPos", 0, REG_BINARY, (LPBYTE)&wp.rcNormalPosition, sizeof wp.rcNormalPosition);
-				}
-
-				RegCloseKey(key);
-			}
-
-#endif
-			//                      winCounter--;                           //decrementa il numero di finestre
-
-			qApp->quit();
-		}
-		else
-		{
-			return 0;
-		}
-	}
-
-	return 0;
-}
-#endif
-
 
 /**
  * @brief create the list of loaded data files
@@ -1851,6 +1762,15 @@ void e2CmdWindow::onGetInfo()
 void e2CmdWindow::onExit()
 {
 	Exit();
+	qApp->quit();
+}
+
+#include <QCloseEvent>
+void e2CmdWindow::closeEvent(QCloseEvent *event)
+{
+	Exit();
+	//event->ignore();
+	event->accept();
 }
 
 #if 0
@@ -2363,8 +2283,8 @@ void e2CmdWindow::onByteSwap()
 }
 
 
-HIDDEN int FileExist(const QString &name);
-HIDDEN bool CmpExtension(const QString &name, const QString &ext);
+static bool FileExist(const QString &name);
+static bool CmpExtension(const QString &name, const QString &ext);
 
 int e2CmdWindow::CmdSave(int type, const QString &fname, long relocation)
 {
@@ -5780,8 +5700,8 @@ void e2CmdWindow::UpdateStrFromStr(const QString &s1, const QString &s2)
 }
 
 
-HIDDEN QStringList script_filter = QStringList({ "Script Files (*.e2s)", "All Files (*)" });
-// HIDDEN int script_filterIndex = 0;
+static QStringList script_filter = QStringList({ "Script Files (*.e2s)", "All Files (*)" });
+//static int script_filterIndex = 0;
 
 int e2CmdWindow::OpenScript(const QString &file)
 {
@@ -5840,14 +5760,14 @@ int e2CmdWindow::OpenScript(const QString &file)
 }
 
 
-HIDDEN QStringList filter = QStringList({ "*.e2p", "*.hex", "*.mot", "*.bin", "*.csm", "*" });
+static QStringList filter = QStringList({ "*.e2p", "*.hex", "*.mot", "*.bin", "*.csm", "*" });
 //                                         ^^^^^    ^^^^^    ^^^^^    ^^^^^    ^^^^^
 //                                       form E2P  form Intel  form S-rec, form Binary (Raw), CSM,    gli altri non aggiungono ulteriori formati
-HIDDEN QStringList filterInfo = QStringList({ "E2P files (*.e2p)", "Intel hex files (*.hex)", "S-rec mot files (*.mot)", "Binary files (*.bin)", "CSM (*.csm)",  "No filter (*)" });
+static QStringList filterInfo = QStringList({ "E2P files (*.e2p)", "Intel hex files (*.hex)", "S-rec mot files (*.mot)", "Binary files (*.bin)", "CSM (*.csm)",  "No filter (*)" });
 
-HIDDEN int filterIndex = 0;
+static int filterIndex = 0;
 
-HIDDEN void AddExtension(QString &name)
+static void AddExtension(QString &name)
 {
 	int p = name.lastIndexOf('.');  //look for extension
 
@@ -5858,7 +5778,7 @@ HIDDEN void AddExtension(QString &name)
 	}
 }
 
-HIDDEN bool CmpExtension(const QString &name, const QString &ext)
+static bool CmpExtension(const QString &name, const QString &ext)
 {
 	if ((name.length() > 0) && (ext.length() > 0))
 	{
@@ -6002,7 +5922,6 @@ QString e2CmdWindow::convertFilterListToString(const QStringList &lst)
 
 	return fltr;
 }
-
 
 
 int e2CmdWindow::SaveFile(int force_select)
@@ -6519,12 +6438,10 @@ void e2CmdWindow::Print()
 	}
 }
 
-
-HIDDEN int FileExist(const QString &name)
+static bool FileExist(const QString &name)
 {
 	return QFile::exists(name);
 }
-
 
 bool e2CmdWindow::GetAbortFlag()
 {
@@ -6577,7 +6494,7 @@ void e2CmdWindow::SetProgress(int progress)
 
 void e2CmdWindow::SetAppBusy()
 {
-	qDebug() << "SetAppBusy()";
+	qDebug() << __PRETTY_FUNCTION__;
 	app_status = AppBusy;
 	// EK 2017
 	// TODO
@@ -6586,7 +6503,7 @@ void e2CmdWindow::SetAppBusy()
 
 void e2CmdWindow::SetAppReady()
 {
-	qDebug() << "SetAppReady()";
+	qDebug() << __PRETTY_FUNCTION__;
 	app_status = AppReady;
 	// EK 2017
 	// TODO
@@ -6595,13 +6512,10 @@ void e2CmdWindow::SetAppReady()
 
 void e2CmdWindow::Exit()
 {
-	// This is called to close all windows.
-
-	qDebug() << "e2App::Exit()";
+	qDebug() << __PRETTY_FUNCTION__;
 
 	if (!IsAppReady())
 	{
-		//06/09/99
 		SetAbortFlag();
 		//SendWindowCommandAll(idCloseAllDialog, 0, C_Button);
 		//CheckEvents();
@@ -6612,8 +6526,6 @@ void e2CmdWindow::Exit()
 	{
 		if (!scriptMode)
 		{
-			qDebug() << "e2App::CloseAppWin()";
-
 			if (IsBufChanged())
 			{
 				QMessageBox msgBox(QMessageBox::Warning, "PonyProg", translate(STR_MSGCLOSEWINSAVE),
@@ -6630,24 +6542,8 @@ void e2CmdWindow::Exit()
 				}
 			}
 
-			// EK 2017
-			// TODO now is the winCounter deactivated
-			//if (winCounter > 1 || exit_ok)
-			//{
-			//      really_close = true;
-			//}
-			//else
-			//{
-			//      int ret = QMessageBox::warning(this, "PonyProg",
-			//                                                                 translate(STR_MSGCLOSEWINEXIT),
-			//                                                                 QMessageBox::Yes | QMessageBox::No);
-			//      if ( ret == QMessageBox::Yes )
-			//      {
-			//              really_close = true;
-			//      }
-			//}
+			E2Profile::writeDialogSettings(this, false);
+			E2Profile::sync();
 		}
-
-		qApp->quit();
 	}
 }

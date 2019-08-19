@@ -33,12 +33,16 @@
 #include "globals.h"
 
 #include <QString>
+#include <QWidget>
 
 #define CLOCKINV (1<<0)
 #define RESETINV (1<<1)
 #define DININV   (1<<2)
 #define DOUTINV  (1<<3)
 #define POWERINV (1<<4)
+#define ENBUSINV	(1<<5)
+#define CLOCKININV	(1<<6)
+#define CTRLININV	(1<<7)
 
 #define RELOAD_idx              0
 #define READFLASH_idx           1
@@ -89,6 +93,10 @@ class E2Profile
 	//E2Profile(const QString &nm);
 	//virtual ~E2Profile();
 
+	static void sync()
+	{
+		s->sync();
+	}
 	static HInterfaceType GetParInterfType();
 	static void SetParInterfType(HInterfaceType type);
 	static int GetPortNumber();
@@ -289,7 +297,12 @@ class E2Profile
 	static bool GetEditBufferEnabled();
 	static void SetEditBufferEnabled(bool enable);
 
+	static void readDialogSettings(QWidget *window, bool recurse = true);
+	static void writeDialogSettings(QWidget *window, bool recurse = true);
+
   protected:
+	static void recurseRead(QObject *object);
+	static void recurseWrite(QObject *object);
 	static void SetLastFiles(const QStringList &l);
 	static QSettings *s;
 

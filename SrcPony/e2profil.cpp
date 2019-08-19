@@ -2424,3 +2424,74 @@ void E2Profile::SetMpsseInterfacePort(const QString &intname)
 		s->setValue("MpsseInterfacePort", intname);
 	}
 }
+
+void E2Profile::readDialogSettings(QWidget *window, bool recurse)
+{
+	s->beginGroup(window->objectName());
+	window->restoreGeometry(s->value("geometry").toByteArray());
+	//QVariant value = s->value("pos");
+	//if (!value.isNull())
+	//{
+		//window->move(s->value("pos").toPoint());
+		//window->resize(s->value("size").toSize());
+	//}
+	if (recurse)
+	{
+		recurseRead(window);
+	}
+	s->endGroup();
+}
+
+void E2Profile::writeDialogSettings(QWidget *window, bool recurse)
+{
+	s->beginGroup(window->objectName());
+	s->setValue("geometry", window->saveGeometry());
+	//s->setValue("pos", window->pos());
+	//s->setValue("size", window->size());
+	if (recurse)
+	{
+		recurseWrite(window);
+	}
+	s->endGroup();
+}
+
+#include <QtGui/QCheckBox>
+#include <QtGui/QComboBox>
+
+void E2Profile::recurseRead(QObject *object)
+{
+	QCheckBox *checkbox = dynamic_cast<QCheckBox *>(object);
+	if (0 != checkbox)
+	{
+		checkbox->setChecked(s->value(checkbox->objectName()).toBool());
+	}
+	QComboBox *combobox = dynamic_cast<QComboBox *>(object);
+	if (0 != combobox)
+	{
+		combobox->setCurrentIndex(s->value(combobox->objectName()).toInt());
+	}
+
+	foreach(QObject *child, object->children())
+	{
+		recurseRead(child);
+	}
+}
+
+void E2Profile::recurseWrite(QObject *object)
+{
+	QCheckBox *checkbox = dynamic_cast<QCheckBox *>(object);
+	if (0 != checkbox)
+	{
+		s->setValue(checkbox->objectName(), checkbox->isChecked());
+	}
+	QComboBox *combobox = dynamic_cast<QComboBox *>(object);
+	if (0 != combobox)
+	{
+		s->setValue(combobox->objectName(), combobox->currentIndex());
+	}
+
+	foreach(QObject *child, object->children())
+	{
+		recurseWrite(child);
+	}
+}

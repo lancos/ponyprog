@@ -238,6 +238,7 @@ class e2CmdWindow : public QMainWindow, public e2App, public Ui::MainWindow
 
   protected:
 	//void CmdRemoteMode();
+	void closeEvent(QCloseEvent *event) override;
 
   private:
 	//All commands
@@ -297,7 +298,6 @@ class e2CmdWindow : public QMainWindow, public e2App, public Ui::MainWindow
 
 	void createScriptList();
 	void createFileList();
-
 
   private:
 	void createSignalSlotConnections();
