@@ -282,7 +282,7 @@ ELSE()
 ENDIF()
 
 #target_link_libraries(${CMAKE_PROJECT_NAME} ${LIBFTDI_LIBRARIES} )
-target_link_libraries(${CMAKE_PROJECT_NAME} ftdipp1 )
+target_link_libraries(${CMAKE_PROJECT_NAME} ftdipp1 ${LIBFTDI_LIBRARIES} )
 
 ADD_CUSTOM_TARGET (tags
     COMMAND  ctags -R -f tags ${CMAKE_SOURCE_DIR}/SrcPony

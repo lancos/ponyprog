@@ -1,4 +1,4 @@
-# 3.0.2 - PonyProg - Serial Device Programmer
+# 3.1.0 - PonyProg - Serial Device Programmer
 PonyProg is a serial device programmer software with a user friendly GUI framework available for Windows and Linux. It's purpose is reading and writing every serial device. With PonyProg and SI-Prog you can program Wafercard for SAT, eeprom within GSM, TV or CAR-RADIO. Furthermore it can be used as a low cost starter kit for PIC and AVR.
 Ponyprog supports AVR, SPI eeprom, AVR micro, 12C bus 8bit eeprom, PIC 16 micro, PIC 12 micro, AT89S micro and SDE2506 eeprom family chips.
 You can open any HEX, e2p, mot, csm, rom, eep, bin files and burn them to uC or PIC. You can even backup the old program on the chip using Ponyprog. Ponyprog enables the user to write, verify and erase data on the microchip.
