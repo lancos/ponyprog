@@ -68,6 +68,7 @@ enum HInterfaceType
 	LINUXSYSFS_IO,
 	FTDI_JTAGKEY,
 	PONYPROG_FT,
+	//PONYPROG_RPI,
 	LAST_HT
 };
 

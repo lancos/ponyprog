@@ -132,7 +132,7 @@ void E2Profile::SetLastDevType(long devtype)
 {
 	QString sp = GetEEPTypeString(devtype);
 
-	s->setValue("PonyProgVers", "3.0.0");
+	s->setValue("PonyProgVers", APP_VERSION);
 
 	if (sp.length())
 	{
@@ -150,7 +150,6 @@ HInterfaceType E2Profile::GetParInterfType()
 	return NameToInterfType(v);
 }
 
-
 void E2Profile::SetParInterfType(HInterfaceType type)
 {
 	QString TypeToInterfName(HInterfaceType type);
@@ -163,7 +162,6 @@ int E2Profile::GetPortNumber()
 {
 	return s->value("PortNumber", "-1").toInt();
 }
-
 
 void E2Profile::SetPortNumber(int port)
 {
@@ -214,7 +212,6 @@ void E2Profile::SetLastFile(const QString &name, int data_type)
 		SetLastFiles(l);
 	}
 }
-
 
 QString E2Profile::GetLastFile(int &data, int index)
 {
@@ -316,72 +313,23 @@ void E2Profile::SetLastScripts(const QStringList &l)
 	}
 }
 
-uint8_t E2Profile::GetPolarityControl()
+
+unsigned int E2Profile::GetPolarityLines()
 {
-	uint8_t res;
-	QString rval;
+	unsigned int rval = 0;
+	QString sp = s->value("PolarityLines", "0").toString();
 
-	res = 0;
-	rval = s->value("ClockPolarity", "").toString();
+	if (sp.length())
+	{
+		rval = sp.toUInt();
+	}
 
-	if (rval.length())
-		if (rval == "INV")
-		{
-			res |= CLOCKINV;
-		}
-
-	rval = s->value("ResetPolarity", "").toString();
-
-	if (rval.length())
-		if (rval == "INV")
-		{
-			res |= RESETINV;
-		}
-
-	rval = s->value("DOutPolarity", "").toString();
-
-	if (rval.length())
-		if (rval == "INV")
-		{
-			res |= DOUTINV;
-		}
-
-	rval = s->value("DInPolarity", "").toString();
-
-	if (rval.length())
-		if (rval == "INV")
-		{
-			res |= DININV;
-		}
-
-	rval = s->value("PowerOnPolarity", "").toString();
-
-	if (rval.length())
-		if (rval == "INV")
-		{
-			res |= POWERINV;
-		}
-
-	return res;
+	return rval;
 }
 
-
-void E2Profile::SetPolarityControl(uint8_t polarity_control)
+void E2Profile::SetPolarityLines(unsigned int polarity)
 {
-	s->setValue("ResetPolarity",
-				(polarity_control & RESETINV) ? "INV" : "TRUE");
-
-	s->setValue("ClockPolarity",
-				(polarity_control & CLOCKINV) ? "INV" : "TRUE");
-
-	s->setValue("DOutPolarity",
-				(polarity_control & DOUTINV) ? "INV" : "TRUE");
-
-	s->setValue("DInPolarity",
-				(polarity_control & DININV) ? "INV" : "TRUE");
-
-	s->setValue("PowerOnPolarity",
-				(polarity_control & POWERINV) ? "INV" : "TRUE");
+	s->setValue("PolarityLines", QString::number(polarity));
 }
 
 
@@ -922,7 +870,6 @@ void E2Profile::GetPrinterSettings(QPrinter &p)
 	s->endGroup();
 }
 
-
 void E2Profile::SetPrinterSettings(QPrinter &p)
 {
 	s->beginGroup("Printer");
@@ -1035,7 +982,6 @@ int E2Profile::GetPowerUpDelay()
 	return rval;
 }
 
-
 void E2Profile::SetPowerUpDelay(int delay)
 {
 	if (delay > 0)
@@ -1071,7 +1017,7 @@ void E2Profile::SetAVRProgDelay(int delay)
 int E2Profile::GetFontSize()
 {
 	QString sp = s->value("FontSize", "9").toString();
-	int rval = 9;          //Default: 20 msec
+	int rval = 9;
 
 	if (sp.length())
 	{
@@ -1080,7 +1026,6 @@ int E2Profile::GetFontSize()
 
 	return rval;
 }
-
 
 void E2Profile::SetFontSize(int sz)
 {
@@ -1156,7 +1101,7 @@ void E2Profile::SetNVMProgDelay(int delay)
 
 unsigned long E2Profile::GetSerialNumVal()
 {
-	QString sp = s->value("SerialNumberVal", "0").toString();
+	QString sp = s->value("SerialNumber/Value", "0").toString();
 	unsigned long rval = 0;         //Default 0
 
 	if (sp.length())
@@ -1167,12 +1112,11 @@ unsigned long E2Profile::GetSerialNumVal()
 	return rval;
 }
 
-
 void E2Profile::SetSerialNumVal(unsigned long val)
 {
 	if (val > 0)
 	{
-		s->setValue("SerialNumberVal", QString::number(val));
+		s->setValue("SerialNumber/Value", QString::number(val));
 	}
 }
 
@@ -1186,7 +1130,7 @@ int E2Profile::GetSerialNumAddress(long &start, int &size, bool &mtype)
 	size = 1;
 	mtype = false;
 
-	if ((sp = s->value("SerialNumberAddr", "0").toString()).length())
+	if ((sp = s->value("SerialNumber/Address", "0").toString()).length())
 	{
 		start = sp.toLong(&ok, 0);
 
@@ -1196,12 +1140,12 @@ int E2Profile::GetSerialNumAddress(long &start, int &size, bool &mtype)
 		}
 	}
 
-	if ((sp = s->value("SerialNumberSize", "1").toString()).length())
+	if ((sp = s->value("SerialNumber/Size", "1").toString()).length())
 	{
 		size = sp.toInt();
 	}
 
-	if ((sp = s->value("SerialNumberType", "PROG").toString()).length())
+	if ((sp = s->value("SerialNumber/Type", "PROG").toString()).length())
 	{
 		if (sp == "DATA")
 		{
@@ -1212,26 +1156,22 @@ int E2Profile::GetSerialNumAddress(long &start, int &size, bool &mtype)
 	return OK;
 }
 
-
 void E2Profile::SetSerialNumAddress(unsigned long start, int size, bool mtype)
 {
-//	if (start >= 0)
-	{
-		s->setValue("SerialNumberAddr", QString::number(start));
-	}
+	s->setValue("SerialNumber/Address", QString::number(start));
 
 	if (size >= 1)
 	{
-		s->setValue("SerialNumberSize", QString::number(size));
+		s->setValue("SerialNumber/Size", QString::number(size));
 	}
 
-	s->setValue("SerialNumberType", mtype ? "DATA" : "PROG");
+	s->setValue("SerialNumber/Type", mtype ? "DATA" : "PROG");
 }
 
 
 FmtEndian E2Profile::GetSerialNumFormat()
 {
-	QString sp = s->value("SerialNumberFormat", "BIGENDIAN").toString();
+	QString sp = s->value("SerialNumber/Format", "BIGENDIAN").toString();
 
 	if (sp.length() && ("LITTLEENDIAN" == sp))
 	{
@@ -1243,23 +1183,15 @@ FmtEndian E2Profile::GetSerialNumFormat()
 	}
 }
 
-
 void E2Profile::SetSerialNumFormat(FmtEndian fmt)
 {
-	if (fmt == FMT_BIG_ENDIAN)
-	{
-		s->setValue("SerialNumberFormat", "BIGENDIAN");
-	}
-	else
-	{
-		s->setValue("SerialNumberFormat", "LITTLEENDIAN");
-	}
+	s->setValue("SerialNumber/Format", (fmt == FMT_BIG_ENDIAN) ? "BIGENDIAN" : "LITTLEENDIAN");
 }
 
 
 bool E2Profile::GetSerialNumAutoInc()
 {
-	QString sp = s->value("SerialNumAutoIncrement", "YES").toString();
+	QString sp = s->value("SerialNumber/AutoIncrement", "YES").toString();
 
 	if (sp.length() && (sp == "NO"))
 	{
@@ -1271,26 +1203,19 @@ bool E2Profile::GetSerialNumAutoInc()
 	}
 }
 
-
 void E2Profile::SetSerialNumAutoInc(bool val)
 {
-	if (val)
-	{
-		s->setValue("SerialNumAutoIncrement", "YES");
-	}
-	else
-	{
-		s->setValue("SerialNumAutoIncrement", "NO");
-	}
+	s->setValue("SerialNumber/AutoIncrement", val ? "YES" : "NO");
 }
 
 
 long E2Profile::GetProgramOptions()
 {
-	long res;
+	long res = 0;
 	QString rval;
 
-	res = 0;
+	s->beginGroup("ProgramOptions");
+
 	rval = s->value("ReloadOption", "").toString();
 
 	if (rval.length())
@@ -1371,12 +1296,15 @@ long E2Profile::GetProgramOptions()
 			res |= LOCK_YES;
 		}
 
+	s->endGroup();
+
 	return res;
 }
 
 
 void E2Profile::SetProgramOptions(long prog_option)
 {
+	s->beginGroup("ProgramOptions");
 	s->setValue("ReloadOption",
 				(prog_option & RELOAD_YES) ? "YES" : "NO");
 	s->setValue("ReadFlashOption",
@@ -1397,6 +1325,7 @@ void E2Profile::SetProgramOptions(long prog_option)
 				(prog_option & EEPROM_YES) ? "YES" : "NO");
 	s->setValue("WriteSecurityOption",
 				(prog_option & LOCK_YES) ? "YES" : "NO");
+	s->endGroup();
 }
 
 
@@ -1717,7 +1646,7 @@ void E2Profile::SetLanguageCode(const QString &name)
 
 bool E2Profile::GetLogEnabled()
 {
-	QString sp = s->value("LogEnabled", "").toString();
+	QString sp = s->value("LogEnabled", "NO").toString();
 
 	if (sp.length() && (sp == "YES"))
 	{
@@ -1729,23 +1658,15 @@ bool E2Profile::GetLogEnabled()
 	}
 }
 
-
 void E2Profile::SetLogEnabled(bool enabled)
 {
-	if (enabled)
-	{
-		s->setValue("LogEnabled", "YES");
-	}
-	else
-	{
-		s->setValue("LogEnabled", "NO");
-	}
+	s->setValue("LogEnabled", enabled ? "YES" : "NO");
 }
 
 
 bool E2Profile::GetSkipStartupDialog()
 {
-	QString sp = s->value("SkipStartupDialog", "").toString();
+	QString sp = s->value("Preferences/SkipStartupDialog", "NO").toString();
 
 	if (sp.length() && (sp == "YES"))
 	{
@@ -1760,14 +1681,7 @@ bool E2Profile::GetSkipStartupDialog()
 
 void E2Profile::SetSkipStartupDialog(bool skip)
 {
-	if (skip)
-	{
-		s->setValue("SkipStartupDialog", "YES");
-	}
-	else
-	{
-		s->setValue("SkipStartupDialog", "NO");
-	}
+	s->setValue("Preferences/SkipStartupDialog", skip ? "YES" : "NO");
 }
 
 
@@ -2181,7 +2095,6 @@ FileType E2Profile::GetDefaultFileType()
 	return ft;
 }
 
-
 void E2Profile::SetDefaultFileType(FileType ft)
 {
 	QString str;
@@ -2214,97 +2127,50 @@ void E2Profile::SetDefaultFileType(FileType ft)
 }
 
 
-//RaspberryPi default pins
-#define DEF_GPIO_CTRL                   23  //Rst pin 16
-#define DEF_GPIO_DATAIN                 27  //Miso pin 13
-#define DEF_GPIO_DATAOUT                17  //Mosi pin 11
-#define DEF_GPIO_CLOCK                  24  //Clock pin 18
-
 int E2Profile::GetGpioPinCtrl()
 {
-	QString sp;
-	int rval = DEF_GPIO_CTRL;               //Default pin number
-
-	sp = s->value("GpioPinCtrl", "").toString();
-
-	if (sp.length())
-	{
-		rval = sp.toInt();
-	}
-
-	return rval;
+	return  s->value("GpioPin/ControlOut", DEF_GPIO_CTRL).toInt();
 }
-
 
 void E2Profile::SetGpioPinCtrl(int pin)
 {
-	s->setValue("GpioPinCtrl", QString::number(pin));
+	s->setValue("GpioPin/ControlOut", pin);
 }
 
 
 int E2Profile::GetGpioPinClock()
 {
-	QString sp;
-	int rval = DEF_GPIO_CLOCK;              //Default pin number
-
-	sp = s->value("GpioPinClock").toString();
-
-	if (sp.length())
-	{
-		rval = sp.toInt();
-	}
-
-	return rval;
+	return s->value("GpioPin/ClockOut", DEF_GPIO_CLOCK).toInt();
 }
 
 
 void E2Profile::SetGpioPinClock(int pin)
 {
-	s->setValue("GpioPinClock", QString::number(pin));
+	s->setValue("GpioPin/ClockOut", pin);
 }
 
 
 int E2Profile::GetGpioPinDataIn()
 {
-	QString sp;
-	int rval = DEF_GPIO_DATAIN;             //Default pin number
-
-	sp = s->value("GpioPinDataIn").toString();
-
-	if (sp.length())
-	{
-		rval = sp.toInt();
-	}
-
-	return rval;
+	return s->value("GpioPin/DataIn", DEF_GPIO_DATAIN).toInt();
 }
 
 
 void E2Profile::SetGpioPinDataIn(int pin)
 {
-	s->setValue("GpioPinDataIn", QString::number(pin));
+	s->setValue("GpioPin/DataIn", pin);
 }
 
 
 int E2Profile::GetGpioPinDataOut()
 {
-	QString sp;
-	int rval = DEF_GPIO_DATAOUT;    //Default pin number
-
-	sp = s->value("GpioPinDataOut").toString();
-
-	if (sp.length())
-	{
-		rval = sp.toInt();
-	}
-
-	return rval;
+	return s->value("GpioPin/DataOut", DEF_GPIO_DATAOUT).toInt();
 }
 
 
 void E2Profile::SetGpioPinDataOut(int pin)
 {
-	s->setValue("GpioPinDataOut", QString::number(pin));
+	s->setValue("GpioPin/DataOut", QString::number(pin));
 }
 
 bool E2Profile::GetEditBufferEnabled()
@@ -2428,13 +2294,20 @@ void E2Profile::SetMpsseInterfacePort(const QString &intname)
 void E2Profile::readDialogSettings(QWidget *window, bool recurse)
 {
 	s->beginGroup(window->objectName());
-	window->restoreGeometry(s->value("geometry").toByteArray());
-	//QVariant value = s->value("pos");
-	//if (!value.isNull())
-	//{
-		//window->move(s->value("pos").toPoint());
-		//window->resize(s->value("size").toSize());
-	//}
+	//window->restoreGeometry(s->value("geometry").toByteArray());
+	if (s->value("maximized", false).toBool())
+	{
+		window->showMaximized();
+	}
+	else
+	{
+		QVariant value = s->value("pos");
+		if (!value.isNull())
+		{
+			window->move(s->value("pos").toPoint());
+			window->resize(s->value("size").toSize());
+		}
+	}
 	if (recurse)
 	{
 		recurseRead(window);
@@ -2445,9 +2318,17 @@ void E2Profile::readDialogSettings(QWidget *window, bool recurse)
 void E2Profile::writeDialogSettings(QWidget *window, bool recurse)
 {
 	s->beginGroup(window->objectName());
-	s->setValue("geometry", window->saveGeometry());
-	//s->setValue("pos", window->pos());
-	//s->setValue("size", window->size());
+	//s->setValue("geometry", window->saveGeometry());
+	if (window->isMaximized())
+	{
+		s->setValue("maximized", true);
+	}
+	else
+	{
+		s->setValue("maximized", false);
+		s->setValue("pos", window->pos());
+		s->setValue("size", window->size());
+	}
 	if (recurse)
 	{
 		recurseWrite(window);
@@ -2455,8 +2336,8 @@ void E2Profile::writeDialogSettings(QWidget *window, bool recurse)
 	s->endGroup();
 }
 
-#include <QtGui/QCheckBox>
-#include <QtGui/QComboBox>
+#include <QCheckBox>
+#include <QComboBox>
 
 void E2Profile::recurseRead(QObject *object)
 {

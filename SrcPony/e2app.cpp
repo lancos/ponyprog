@@ -135,9 +135,9 @@ void e2App::initSettings()
 	}
 
 	// Read parameters from INI file
-	SetInterfaceType((HInterfaceType) E2Profile::GetParInterfType());
+	SetInterfaceType(E2Profile::GetParInterfType());
 	SetPort(E2Profile::GetPortNumber());
-	SetPolarity(E2Profile::GetPolarityControl());
+	SetPolarity(E2Profile::GetPolarityLines());
 #if 0
 	// Make sure all parameters (even default values) are written
 	//   to the INI file.

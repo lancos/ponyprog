@@ -56,7 +56,8 @@ static QVector<Interf2Index> index_interface =
 	{INTERF_LPT, 5, "EasyI2C-I/O", EASYI2C_IO},
 	{INTERF_USB, 0, "FTDI PonyProgFT", PONYPROG_FT, VidPid(0x0403, 0x6e38), {3, 2, 1, 0, /* 4 */ -1, 5, 7, 6}},
 	{INTERF_USB, 1, "FTDI JtagKey", FTDI_JTAGKEY, VidPid(0x0403, 0xcff8), {9, 2, 1, 0, -1, -1, -1, -1}},
-	{INTERF_GPIO, 0, "Linux SysFs GPIO", LINUXSYSFS_IO},
+	{INTERF_GPIO, 0, "Linux SysFs GPIO", LINUXSYSFS_IO, VidPid(), {23, 27, 17, 24, -1, -1, -1, -1}},
+	//{INTERF_GPIO, 1, "PonyProgRPi", PONYPROG_RPI},
 };
 
 bool TypeToInterfPins(HInterfaceType type, InterfPins &pins)

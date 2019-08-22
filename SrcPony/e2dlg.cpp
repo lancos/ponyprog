@@ -45,13 +45,11 @@ e2Dialog::e2Dialog(QWidget *bw, const QString title)
 	  lpt_no(2),
 	  com_no(3),
 	  usb_no(0),
+	  gpio_no(0),
 	  usb_vp(0),
 	  interf_type(SIPROG_API)
 {
-	qDebug() << "e2Dialog::e2Dialog()";
-
 	setupUi(this);
-
 	setWindowTitle(title);
 
 	e2CmdWindow *cmdw = static_cast<e2CmdWindow *>(bw);
@@ -81,13 +79,10 @@ e2Dialog::e2Dialog(QWidget *bw, const QString title)
 	getSettings();
 }
 
-e2Dialog::~e2Dialog()
-{
-	qDebug() << "e2Dialog::~e2Dialog()";
-}
-
 void e2Dialog::getSettings()
 {
+	E2Profile::readDialogSettings(this);
+
 	interf_type = cmdWin->GetInterfaceType();
 
 	if (interf_type < SIPROG_API || interf_type >= LAST_HT)
@@ -116,6 +111,10 @@ void e2Dialog::getSettings()
 		{
 			on_tabWidget_currentChanged(INTERF_COM);
 		}
+		ckControlOutCOM->setChecked((cmdWin->GetPolarity() & RESETINV) ? true : false);
+		ckClockOutCOM->setChecked((cmdWin->GetPolarity() & CLOCKINV) ? true : false);
+		ckDataInCOM->setChecked((cmdWin->GetPolarity() & DININV) ? true : false);
+		ckDataOutCOM->setChecked((cmdWin->GetPolarity() & DOUTINV) ? true : false);
 	}
 	else if (TypeToInterfVector(interf_type) == INTERF_LPT)
 	{
@@ -136,6 +135,14 @@ void e2Dialog::getSettings()
 		{
 			on_tabWidget_currentChanged(INTERF_LPT);
 		}
+		ckControlOutLPT->setChecked((cmdWin->GetPolarity() & RESETINV) ? true : false);
+		ckClockOutLPT->setChecked((cmdWin->GetPolarity() & CLOCKINV) ? true : false);
+		ckDataInLPT->setChecked((cmdWin->GetPolarity() & DININV) ? true : false);
+		ckDataOutLPT->setChecked((cmdWin->GetPolarity() & DOUTINV) ? true : false);
+		//ckPowerOnLPT->setChecked((cmdWin->GetPolarity() & POWERINV) ? true : false);
+		//ckEnaODLPT->setChecked((cmdWin->GetPolarity() & ENBUSINV) ? true : false);
+		ckClockInLPT->setChecked((cmdWin->GetPolarity() & CLOCKININV) ? true : false);
+		//ckControlInLPT->setChecked((cmdWin->GetPolarity() & CTRLININV) ? true : false);
 	}
 	else if (TypeToInterfVector(interf_type) == INTERF_USB)
 	{
@@ -155,52 +162,121 @@ void e2Dialog::getSettings()
 		{
 			on_tabWidget_currentChanged(INTERF_USB);
 		}
+		ckControlOutUSB->setChecked((cmdWin->GetPolarity() & RESETINV) ? true : false);
+		ckClockOutUSB->setChecked((cmdWin->GetPolarity() & CLOCKINV) ? true : false);
+		ckDataInUSB->setChecked((cmdWin->GetPolarity() & DININV) ? true : false);
+		ckDataOutUSB->setChecked((cmdWin->GetPolarity() & DOUTINV) ? true : false);
+		ckPowerOnUSB->setChecked((cmdWin->GetPolarity() & POWERINV) ? true : false);
+		ckEnaODUSB->setChecked((cmdWin->GetPolarity() & ENBUSINV) ? true : false);
+		ckClockInUSB->setChecked((cmdWin->GetPolarity() & CLOCKININV) ? true : false);
+		ckControlInUSB->setChecked((cmdWin->GetPolarity() & CTRLININV) ? true : false);
+	}
+	else if (TypeToInterfVector(interf_type) == INTERF_GPIO)
+	{
+		gpio_no = port_no;
+		if (gpio_no >= gpioList.count())
+		{
+			gpio_no = 0;
+			port_no = 0;
+		}
+		cbxInterfGPIONum->setCurrentIndex(gpio_no);
+		cbxInterfGPIO->setCurrentIndex(TypeToInterfIndex(interf_type));
+
+		if (tabWidget->currentIndex() != INTERF_GPIO)
+		{
+			tabWidget->setCurrentIndex(INTERF_GPIO);
+		}
+		else
+		{
+			on_tabWidget_currentChanged(INTERF_GPIO);
+		}
+		ckControlOutGPIO->setChecked((cmdWin->GetPolarity() & RESETINV) ? true : false);
+		ckClockOutGPIO->setChecked((cmdWin->GetPolarity() & CLOCKINV) ? true : false);
+		ckDataInGPIO->setChecked((cmdWin->GetPolarity() & DININV) ? true : false);
+		ckDataOutGPIO->setChecked((cmdWin->GetPolarity() & DOUTINV) ? true : false);
+		ckPowerOnGPIO->setChecked((cmdWin->GetPolarity() & POWERINV) ? true : false);
+		ckEnaODGPIO->setChecked((cmdWin->GetPolarity() & ENBUSINV) ? true : false);
+		ckClockInGPIO->setChecked((cmdWin->GetPolarity() & CLOCKININV) ? true : false);
+		ckControlInGPIO->setChecked((cmdWin->GetPolarity() & CTRLININV) ? true : false);
 	}
 
-	chkPol1->setChecked((cmdWin->GetPolarity() & RESETINV) ? 1 : 0);
-	chkPol2->setChecked((cmdWin->GetPolarity() & CLOCKINV) ? 1 : 0);
-	chkPol3->setChecked((cmdWin->GetPolarity() & DININV) ? 1 : 0);
-	chkPol4->setChecked((cmdWin->GetPolarity() & DOUTINV) ? 1 : 0);
+	cbxClockOutGPIO->setCurrentIndex(E2Profile::GetGpioPinClock());
+	cbxControlOutGPIO->setCurrentIndex(E2Profile::GetGpioPinCtrl());
+	cbxDataInGPIO->setCurrentIndex(E2Profile::GetGpioPinDataIn());
+	cbxDataOutGPIO->setCurrentIndex(E2Profile::GetGpioPinDataOut());
+
+	//TODO: A way to detect if run on RaspberryPi
+	//if (QSysInfo::currentCpuArchitecture().startsWith("arm"))
+	cbxInterfGPIONum->setEnabled(false);
 }
 
 void e2Dialog::setSettings()
 {
-	// *** Add code to process dialog values here
-	if (chkPol1->isChecked())
-	{
-		cmdWin->SetPolarity(cmdWin->GetPolarity() | (uint8_t)RESETINV);
-	}
-	else
-	{
-		cmdWin->SetPolarity(cmdWin->GetPolarity() & (uint8_t)~RESETINV);
-	}
+	E2Profile::writeDialogSettings(this);
 
-	if (chkPol2->isChecked())
+	unsigned int pol = 0;
+	switch (TypeToInterfVector(interf_type))
 	{
-		cmdWin->SetPolarity(cmdWin->GetPolarity() | (uint8_t)CLOCKINV);
+	case INTERF_COM:
+		if (ckControlOutCOM->isChecked())
+			pol |= RESETINV;
+		if (ckClockOutCOM->isChecked())
+			pol |= CLOCKINV;
+		if (ckDataInCOM->isChecked())
+			pol |= DININV;
+		if (ckDataOutCOM->isChecked())
+			pol |= DOUTINV;
+		break;
+	case INTERF_LPT:
+		if (ckControlOutLPT->isChecked())
+			pol |= RESETINV;
+		if (ckClockOutLPT->isChecked())
+			pol |= CLOCKINV;
+		if (ckDataInLPT->isChecked())
+			pol |= DININV;
+		if (ckDataOutLPT->isChecked())
+			pol |= DOUTINV;
+		if (ckClockInLPT->isChecked())
+			pol |= CLOCKININV;
+		break;
+	case INTERF_USB:
+		if (ckControlOutUSB->isChecked())
+			pol |= RESETINV;
+		if (ckClockOutUSB->isChecked())
+			pol |= CLOCKINV;
+		if (ckDataInUSB->isChecked())
+			pol |= DININV;
+		if (ckDataOutUSB->isChecked())
+			pol |= DOUTINV;
+		if (ckPowerOnUSB->isChecked())
+			pol |= POWERINV;
+		if (ckEnaODUSB->isChecked())
+			pol |= ENBUSINV;
+		if (ckClockInUSB->isChecked())
+			pol |= CLOCKININV;
+		if (ckControlInUSB->isChecked())
+			pol |= CTRLININV;
+		break;
+	case INTERF_GPIO:
+		if (ckControlOutGPIO->isChecked())
+			pol |= RESETINV;
+		if (ckClockOutGPIO->isChecked())
+			pol |= CLOCKINV;
+		if (ckDataInGPIO->isChecked())
+			pol |= DININV;
+		if (ckDataOutGPIO->isChecked())
+			pol |= DOUTINV;
+		if (ckPowerOnGPIO->isChecked())
+			pol |= POWERINV;
+		if (ckEnaODGPIO->isChecked())
+			pol |= ENBUSINV;
+		if (ckClockInGPIO->isChecked())
+			pol |= CLOCKININV;
+		if (ckControlInGPIO->isChecked())
+			pol |= CTRLININV;
+		break;
 	}
-	else
-	{
-		cmdWin->SetPolarity(cmdWin->GetPolarity() & (uint8_t)~CLOCKINV);
-	}
-
-	if (chkPol3->isChecked())
-	{
-		cmdWin->SetPolarity(cmdWin->GetPolarity() | (uint8_t)DININV);
-	}
-	else
-	{
-		cmdWin->SetPolarity(cmdWin->GetPolarity() & (uint8_t)~DININV);
-	}
-
-	if (chkPol4->isChecked())
-	{
-		cmdWin->SetPolarity(cmdWin->GetPolarity() | (uint8_t)DOUTINV);
-	}
-	else
-	{
-		cmdWin->SetPolarity(cmdWin->GetPolarity() & (uint8_t)~DOUTINV);
-	}
+	cmdWin->SetPolarity(pol);
 
 	if (interf_type != cmdWin->GetInterfaceType())
 	{
@@ -212,23 +288,57 @@ void e2Dialog::setSettings()
 	//Store values in the INI file
 	E2Profile::SetParInterfType(interf_type);
 	E2Profile::SetPortNumber(port_no);
-	E2Profile::SetPolarityControl(cmdWin->GetPolarity());
+	E2Profile::SetPolarityLines(cmdWin->GetPolarity());
 
 	qDebug() << "PortNo: " << port_no;
+
+	E2Profile::SetGpioPinClock(cbxClockOutGPIO->currentIndex());
+	E2Profile::SetGpioPinCtrl(cbxControlOutGPIO->currentIndex());
+	E2Profile::SetGpioPinDataIn(cbxDataInGPIO->currentIndex());
+	E2Profile::SetGpioPinDataOut(cbxDataOutGPIO->currentIndex());
 }
+
+static QStringList generatePinList(int min, int max)
+{
+	QStringList pinList;
+
+	Q_ASSERT(min <= max);
+
+	for (int k = min; k <= max; k++)
+	{
+		pinList << QString::number(k);
+	}
+
+	return pinList;
+}
+
+#define PIN_MAX_RANGE	27
 
 void e2Dialog::setWidgetsText()
 {
-	//Serial interfaces list
-	QStringList interfListC = GetInterfList(INTERF_COM);
-	cbxInterfCOM->addItems(interfListC);
+#ifndef Q_OS_LINUX
+	//remove the tab on system different from Linux
+	tabWidget->removeTab(INTERF_GPIO);
+#endif
+	//recurseCbxHide(groupBoxUSBPol);
+	recurseCbxHide(groupBoxCOMPol);		//No pin select on legacy COM
+	recurseCbxHide(groupBoxLPTPol);		//No pin select on legacy LPT
+	//recurseCbxHide(groupBoxGPIOPol);
 
-	//Parallel interfaces list
-	QStringList interfListL = GetInterfList(INTERF_LPT);
-	cbxInterfLPT->addItems(interfListL);
+	cbxClockOutGPIO->addItems(generatePinList(0, PIN_MAX_RANGE));
+	cbxDataOutGPIO->addItems(generatePinList(0, PIN_MAX_RANGE));
+	cbxDataInGPIO->addItems(generatePinList(0, PIN_MAX_RANGE));
+	cbxControlOutGPIO->addItems(generatePinList(0, PIN_MAX_RANGE));
 
-	QStringList interfListU = GetInterfList(INTERF_USB);
-	cbxInterfUSB->addItems(interfListU);
+	cbxClockInGPIO->addItems(generatePinList(0, PIN_MAX_RANGE));
+	cbxControlInGPIO->addItems(generatePinList(0, PIN_MAX_RANGE));
+	cbxEnaODGPIO->addItems(generatePinList(0, PIN_MAX_RANGE));
+	cbxPowerOnGPIO->addItems(generatePinList(0, PIN_MAX_RANGE));
+
+	cbxInterfCOM->addItems(GetInterfList(INTERF_COM));
+	cbxInterfLPT->addItems(GetInterfList(INTERF_LPT));
+	cbxInterfUSB->addItems(GetInterfList(INTERF_USB));
+	cbxInterfGPIO->addItems(GetInterfList(INTERF_GPIO));
 
 	//rdbComPort->setText(translate(STR_LBLSERIAL));
 	//rdbLptPort->setText(translate(STR_LBLPARALLEL));
@@ -236,6 +346,7 @@ void e2Dialog::setWidgetsText()
 	lptList = E2Profile::GetLPTDevList();
 	comList = E2Profile::GetCOMDevList();
 	usbList.clear();
+	gpioList = QString("0 1 2 3 4 5 6 7").split(' ');
 
 	cbxInterfCOMNum->clear();
 	cbxInterfCOMNum->addItems(comList);
@@ -243,13 +354,45 @@ void e2Dialog::setWidgetsText()
 	cbxInterfLPTNum->addItems(lptList);
 	cbxInterfUSBNum->clear();
 	cbxInterfUSBNum->addItems(usbList);
+	cbxInterfGPIONum->clear();
+	cbxInterfGPIONum->addItems(gpioList);
 
-	lblPol1->setText(translate(STR_LBLSELPOLARITY));
+	groupBoxCOMPol->setTitle(translate(STR_LBLSELPOLARITY));
+	groupBoxLPTPol->setTitle(translate(STR_LBLSELPOLARITY));
+	groupBoxUSBPol->setTitle(translate(STR_LBLSELPOLARITY));
+	groupBoxGPIOPol->setTitle(translate(STR_LBLSELPOLARITY));
 
-	chkPol1->setText(translate(STR_LBLINVRESET));
-	chkPol2->setText(translate(STR_LBLINVSCK));
-	chkPol3->setText(translate(STR_LBLINVDATAIN));
-	chkPol4->setText(translate(STR_LBLINVDATAOUT));
+	ckControlOutCOM->setToolTip(translate(STR_LBLINVRESET));
+	ckControlOutLPT->setToolTip(translate(STR_LBLINVRESET));
+	ckControlOutUSB->setToolTip(translate(STR_LBLINVRESET));
+	ckControlOutGPIO->setToolTip(translate(STR_LBLINVRESET));
+
+	ckClockOutCOM->setToolTip(translate(STR_LBLINVSCK));
+	ckClockOutLPT->setToolTip(translate(STR_LBLINVSCK));
+	ckClockOutUSB->setToolTip(translate(STR_LBLINVSCK));
+	ckClockOutGPIO->setToolTip(translate(STR_LBLINVSCK));
+
+	ckDataInCOM->setToolTip(translate(STR_LBLINVDATAIN));
+	ckDataInLPT->setToolTip(translate(STR_LBLINVDATAIN));
+	ckDataInUSB->setToolTip(translate(STR_LBLINVDATAIN));
+	ckDataInGPIO->setToolTip(translate(STR_LBLINVDATAIN));
+
+	ckDataOutCOM->setToolTip(translate(STR_LBLINVDATAOUT));
+	ckDataOutLPT->setToolTip(translate(STR_LBLINVDATAOUT));
+	ckDataOutUSB->setToolTip(translate(STR_LBLINVDATAOUT));
+	ckDataOutGPIO->setToolTip(translate(STR_LBLINVDATAOUT));
+
+	cbxControlOutGPIO->setToolTip("Select Control-Out Pin");
+	cbxClockOutGPIO->setToolTip("Select Clock-Out Pin");
+	cbxDataOutGPIO->setToolTip("Select Data-Out Pin");
+	cbxDataInGPIO->setToolTip("Select Data-In Pin");
+
+	//lblPol1->setText(translate(STR_LBLSELPOLARITY));
+
+	//chkPol1->setText(translate(STR_LBLINVRESET));
+	//chkPol2->setText(translate(STR_LBLINVSCK));
+	//chkPol3->setText(translate(STR_LBLINVDATAIN));
+	//chkPol4->setText(translate(STR_LBLINVDATAOUT));
 
 	pushOk->setText(translate(STR_BTNOK));
 	pushTest->setText(translate(STR_BTNPROBE));
@@ -349,6 +492,15 @@ void e2Dialog::on_tabWidget_currentChanged(int index)
 		port_no = usb_no;
 		cbxInterfUSBNum->setCurrentIndex(port_no);
 	}
+	else if (index == INTERF_GPIO)
+	{
+		qDebug() << "GPIO Port selected: " << gpio_no;
+
+		port_no = gpio_no;
+		cbxInterfGPIONum->setCurrentIndex(gpio_no);
+
+		interf_type = VindexToInterfType(INTERF_GPIO, cbxInterfGPIO->currentIndex());
+	}
 }
 
 void e2Dialog::on_cbxInterfCOM_currentIndexChanged(int index)
@@ -409,4 +561,69 @@ void e2Dialog::onUSB(bool connected, quint16 vid, quint16 pid)
 	usbList = MpsseInterface::find_all(usb_vp.vid, usb_vp.pid);
 	cbxInterfUSBNum->clear();
 	cbxInterfUSBNum->addItems(usbList);
+}
+
+void e2Dialog::on_pushDefaultsUSB_clicked()
+{
+	ckControlOutUSB->setChecked(false);
+	ckClockOutUSB->setChecked(false);
+	ckDataInUSB->setChecked(false);
+	ckDataOutUSB->setChecked(false);
+	ckPowerOnUSB->setChecked(false);
+	ckEnaODUSB->setChecked(false);
+	ckClockInUSB->setChecked(false);
+	ckControlInUSB->setChecked(false);
+}
+
+void e2Dialog::on_pushDefaultsCOM_clicked()
+{
+	ckControlOutCOM->setChecked(false);
+	ckClockOutCOM->setChecked(false);
+	ckDataInCOM->setChecked(false);
+	ckDataOutCOM->setChecked(false);
+}
+
+void e2Dialog::on_pushDefaultsLPT_clicked()
+{
+	ckControlOutLPT->setChecked(false);
+	ckClockOutLPT->setChecked(false);
+	ckDataInLPT->setChecked(false);
+	ckDataOutLPT->setChecked(false);
+	//ckPowerOnLPT->setChecked(false);
+	//ckEnaODLPT->setChecked(false);
+	ckClockInLPT->setChecked(false);
+	//ckControlInLPT->setChecked(false);
+}
+
+void e2Dialog::on_pushDefaultsGPIO_clicked()
+{
+	ckControlOutGPIO->setChecked(false);
+	ckClockOutGPIO->setChecked(false);
+	ckDataInGPIO->setChecked(false);
+	ckDataOutGPIO->setChecked(false);
+	ckPowerOnGPIO->setChecked(false);
+	ckEnaODGPIO->setChecked(false);
+	ckClockInGPIO->setChecked(false);
+	ckControlInGPIO->setChecked(false);
+
+	cbxClockOutGPIO->setCurrentIndex(DEF_GPIO_CLOCK);
+	cbxControlOutGPIO->setCurrentIndex(DEF_GPIO_CTRL);
+	cbxDataInGPIO->setCurrentIndex(DEF_GPIO_DATAIN);
+	cbxDataOutGPIO->setCurrentIndex(DEF_GPIO_DATAOUT);
+}
+
+#include <QComboBox>
+
+void e2Dialog::recurseCbxHide(QObject *object)
+{
+	QComboBox *combobox = dynamic_cast<QComboBox *>(object);
+	if (0 != combobox)
+	{
+		combobox->hide();
+	}
+
+	foreach(QObject *child, object->children())
+	{
+		recurseCbxHide(child);
+	}
 }

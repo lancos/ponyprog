@@ -66,6 +66,11 @@
 #define LOCK_YES                (1<<LOCK_idx)
 #define READOSCAL_YES          (1<<READOSCCAL_idx)
 
+//RaspberryPi default pins
+#define DEF_GPIO_CTRL                   23  //Rst pin 16
+#define DEF_GPIO_DATAIN                 27  //Miso pin 13
+#define DEF_GPIO_DATAOUT                17  //Mosi pin 11
+#define DEF_GPIO_CLOCK                  24  //Clock pin 18
 
 typedef enum
 {
@@ -82,8 +87,6 @@ enum
 	TURBO,
 	ULTRASLOW
 };
-
-#define STRBUFSIZE      256
 
 
 class E2Profile
@@ -115,8 +118,8 @@ class E2Profile
 // 	static QString GetLastScript();
 	static void SetLastScript(const QString &name);
 
-	static uint8_t GetPolarityControl();
-	static void SetPolarityControl(uint8_t polarity_control);
+	static unsigned int GetPolarityLines();
+	static void SetPolarityLines(unsigned int polarity_control);
 
 	static int GetSPIPageWrite();
 	static void SetSPIPageWrite(int page_write = 1);

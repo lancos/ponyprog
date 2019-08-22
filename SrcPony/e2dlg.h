@@ -43,7 +43,7 @@ class e2Dialog : public QDialog, public cTranslator, public Ui::E2Dialog
 
   public:
 	e2Dialog(QWidget *bw, const QString title = translate(STR_MSGINTSETUP));
-	virtual ~e2Dialog();            // Destructor
+	//virtual ~e2Dialog();            // Destructor
 
   protected:
 
@@ -58,24 +58,29 @@ class e2Dialog : public QDialog, public cTranslator, public Ui::E2Dialog
 	void on_cbxInterfLPT_currentIndexChanged(int index);
 	void on_cbxInterfCOMNum_currentIndexChanged(int index);
 	void on_cbxInterfLPTNum_currentIndexChanged(int index);
-
 	void on_cbxInterfUSB_currentIndexChanged(int index);
-
 	void on_cbxInterfUSBNum_currentIndexChanged(int index);
+	void on_pushDefaultsUSB_clicked();
+	void on_pushDefaultsCOM_clicked();
+	void on_pushDefaultsLPT_clicked();
+	void on_pushDefaultsGPIO_clicked();
 
-  private:
+private:
 	int Test(int p = -1, bool open_only = false) const;
 	void setWidgetsText();
 	void getSettings();
 	void setSettings();
 
+	void recurseCbxHide(QObject *object);
+
 	USBWatcher watcher;
 	QStringList lptList;
 	QStringList comList;
 	QStringList usbList;
+	QStringList gpioList;
 
-	int port_no;                    //Idex of selected port in portList
-	int lpt_no, com_no, usb_no;
+	int port_no;                    //Index of selected port in portList
+	int lpt_no, com_no, usb_no, gpio_no;
 	VidPid usb_vp;
 	HInterfaceType interf_type;
 };

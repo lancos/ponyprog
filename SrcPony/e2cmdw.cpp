@@ -96,7 +96,6 @@ e2CmdWindow::e2CmdWindow(QWidget *parent) :
 	cmdWin = this;
 
 	setupUi(this);
-	E2Profile::readDialogSettings(this, false);
 
 	qDebug() << "e2CmdWindow::e2CmdWindow(" APP_NAME ")";
 
@@ -281,6 +280,8 @@ e2CmdWindow::e2CmdWindow(QWidget *parent) :
 
 	first_line = 0;
 	//curIndex = 0;
+
+	E2Profile::readDialogSettings(this, false);
 }
 
 //void e2CmdWindow::SetSubType()

@@ -37,6 +37,7 @@ SerNumDialog::SerNumDialog(QWidget *bw, const QString title) :
 	setupUi(this);
 
 	setWindowTitle(title);
+	setTextWidgets();
 
 	loc = 0;
 	val = 0;
@@ -50,16 +51,10 @@ SerNumDialog::SerNumDialog(QWidget *bw, const QString title) :
 	autoinc = E2Profile::GetSerialNumAutoInc();
 	fmt = E2Profile::GetSerialNumFormat();
 
-
-	setTextWidgets();
-
-	loc = (loc < 0) ? 0 : loc;
-	size = (size < 0 || size > 4) ? 4 : size;
-	memtype = (memtype == 0 || memtype == 1) ? memtype : 0;
-
-	lblLoc->setText(translate(STR_MSGADDRESS));
-	lblLen->setText(translate(STR_MSGSIZE2));
-	lblVal->setText(translate(STR_MSGVALUE));
+	if (loc < 0)
+		loc = 0;
+	if (size < 0 || size > 4)
+		size = 4;
 
 	QString str;
 	str = QString().sprintf("0x%04lX", loc);
@@ -180,6 +175,8 @@ void SerNumDialog::onOk()
 	E2Profile::SetSerialNumVal(val);
 	E2Profile::SetSerialNumFormat(fmt);
 	E2Profile::SetSerialNumAutoInc(autoinc);
+
+	E2Profile::writeDialogSettings(this, false);
 
 	accept();
 }
