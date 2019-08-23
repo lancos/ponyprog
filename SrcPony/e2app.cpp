@@ -85,7 +85,8 @@ e2App::e2App() :
 	busvetp[X2444B - 1] = &x2444B;
 	busvetp[S2430B - 1] = &s2430B;
 
-	SetInterfaceType();     //Set default interface
+	//duplicated call in initSettings()
+	//SetInterfaceType();     //Set default interface
 
 	initSettings();
 }
@@ -443,14 +444,10 @@ void e2App::SetInterfaceType(HInterfaceType type)
 
 	busIntp->SetUSBVidPid(TypeToInterfVidPid(iType));
 	InterfPins pins;
-	if (TypeToInterfPins(iType, pins))
-	{
-		busIntp->ConfigPins(pins);
-	}
+	E2Profile::GetInterfacePins(iType, pins);
+	busIntp->ConfigPins(pins);
 
-	int k;
-
-	for (k = 0; k < NO_OF_BUSTYPE; k++)
+	for (int k = 0; k < NO_OF_BUSTYPE; k++)
 	{
 		busvetp[k]->SetBusInterface(busIntp);
 	}

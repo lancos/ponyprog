@@ -834,10 +834,7 @@
                <string/>
               </property>
               <property name="editable">
-               <bool>true</bool>
-              </property>
-              <property name="currentText">
-               <string/>
+               <bool>false</bool>
               </property>
              </widget>
             </item>
@@ -890,10 +887,7 @@
             <item>
              <widget class="QComboBox" name="cbxDataOutGPIO">
               <property name="editable">
-               <bool>true</bool>
-              </property>
-              <property name="currentText">
-               <string/>
+               <bool>false</bool>
               </property>
              </widget>
             </item>
@@ -918,10 +912,7 @@
             <item>
              <widget class="QComboBox" name="cbxDataInGPIO">
               <property name="editable">
-               <bool>true</bool>
-              </property>
-              <property name="currentText">
-               <string/>
+               <bool>false</bool>
               </property>
              </widget>
             </item>
@@ -946,10 +937,7 @@
             <item>
              <widget class="QComboBox" name="cbxControlOutGPIO">
               <property name="editable">
-               <bool>true</bool>
-              </property>
-              <property name="currentText">
-               <string/>
+               <bool>false</bool>
               </property>
              </widget>
             </item>

@@ -46,7 +46,8 @@ MpsseInterface::MpsseInterface()
 		pin_dataout(0),
 		pin_clock(0),
 		pin_clockin(0),
-		pin_poweron(0)
+		pin_poweron(0),
+		ftdi_port(FTDI_PORTA)
 {
 	qDebug() << __PRETTY_FUNCTION__;
 }
@@ -58,108 +59,45 @@ MpsseInterface::~MpsseInterface()
 	Close();
 }
 
-/**
-void MpsseInterface::List()
-{
-	//using namespace Ftdi;
-
-	qDebug() << __PRETTY_FUNCTION__;
-
-	// Print whole list
-	Ftdi::List *list = Ftdi::List::find_all(ctx, usb_vp.vid, usb_vp.pid);
-	for (Ftdi::List::iterator it = list->begin(); it != list->end(); ++it)
-	{
-		qDebug() << "FTDI (" << &*it << "): "
-				 << QString::fromStdString(it->vendor()) << ", "
-				 << QString::fromStdString(it->description()) << ", "
-				 << QString::fromStdString(it->serial());
-
-		// Open test
-		if (it->open() == 0)
-		{
-			qDebug() << " (Open OK)";
-		}
-		else
-		{
-			qDebug() << " (Open FAILED)";
-		}
-
-		it->close();
-	}
-	delete list;
-}
-**/
-
 void MpsseInterface::ConfigPins(int pinum_ctrl, int pinum_datain, int pinum_dataout, int pinum_clock, int pinum_clockin, int pinum_poweron, int pinum_enbus, int pinnum_ctrlin)
 {
-	if (pinum_ctrl < 0)
-	{
-		pin_ctrl = 0;
-	}
-	else
+	BusInterface::ConfigPins(pinum_ctrl, pinum_datain, pinum_dataout, pinum_clock, pinum_clockin, pinum_poweron, pinum_enbus, pinnum_ctrlin);
+
+	if (pinum_ctrl >= 0)
 	{
 		pin_ctrl = 1 << pinum_ctrl;
 	}
 
-	if (pinnum_ctrlin < 0)
-	{
-		pin_ctrlin = 0;
-	}
-	else
-	{
-		pin_ctrlin = 1 << pinnum_ctrlin;
-	}
-
-	if (pinum_datain < 0)
-	{
-		pin_datain = 0;
-	}
-	else
+	if (pinum_datain >= 0)
 	{
 		pin_datain = 1 << pinum_datain;
 	}
 
-	if (pinum_dataout < 0)
+	if (pinum_dataout >= 0)
 	{
-		pin_dataout = 0;
-	}
-	else
-	{
-		pin_dataout = 1 << pinum_dataout;
+		pin_dataout	= 1 << pinum_dataout;
 	}
 
-	if (pinum_clock < 0)
-	{
-		pin_clock = 0;
-	}
-	else
+	if (pinum_clock >= 0)
 	{
 		pin_clock = 1 << pinum_clock;
 	}
-
-	if (pinum_clockin < 0)
+	if (pinnum_ctrlin >= 0)
 	{
-		pin_clockin = 0;
+		pin_ctrlin = 1 << pinnum_ctrlin;
 	}
-	else
+
+	if (pinum_clockin >= 0)
 	{
 		pin_clockin = 1 << pinum_clockin;
 	}
 
-	if (pinum_poweron < 0)
-	{
-		pin_poweron = 0;
-	}
-	else
+	if (pinum_poweron >= 0)
 	{
 		pin_poweron = 1 << pinum_poweron;
 	}
 
-	if (pinum_enbus < 0)
-	{
-		pin_enbus = 0;
-	}
-	else
+	if (pinum_enbus >= 0)
 	{
 		pin_enbus = 1 << pinum_enbus;
 	}
@@ -178,7 +116,8 @@ int MpsseInterface::InitPins()
 
 		if (pin_ctrl == 0 && pin_clock == 0 && pin_datain == 0 && pin_dataout == 0)
 		{
-			ConfigPins(E2Profile::GetMpssePinCtrl(), E2Profile::GetMpssePinDataIn(), E2Profile::GetMpssePinDataOut(), E2Profile::GetMpssePinClock());
+			qWarning() << __PRETTY_FUNCTION__ << " Unconfigured pins";
+			return E2ERR_OPENFAILED;
 		}
 
 		qDebug() << __PRETTY_FUNCTION__ << (hex)
@@ -281,18 +220,19 @@ int MpsseInterface::Open(int port)
 
 	if (GetInstalled() != port)
 	{
-		QString qs = E2Profile::GetMpsseInterfacePort();
+		ftdi_port = TypeToInterfPort(cmdWin->GetInterfaceType());
+
 		ftdi_interface interf = INTERFACE_A;
 
-		if (qs.compare("B", Qt::CaseInsensitive) == 0)
+		if (ftdi_port == FTDI_PORTB)
 		{
 			interf = INTERFACE_B;
 		}
-		else if (qs.compare("C", Qt::CaseInsensitive) == 0)
+		else if (ftdi_port == FTDI_PORTC)
 		{
 			interf = INTERFACE_C;
 		}
-		else if (qs.compare("D", Qt::CaseInsensitive) == 0)
+		else if (ftdi_port == FTDI_PORTD)
 		{
 			interf = INTERFACE_D;
 		}
@@ -317,8 +257,15 @@ int MpsseInterface::Open(int port)
 			//ctx.set_usb_write_timeout(5000);
 			ctx.set_latency(1);
 			result = InitPins();
-			Q_ASSERT(result == 0);
-			Install(port);
+			if (result == 0)
+			{
+				Install(port);
+			}
+			else
+			{
+				ctx.close();
+				ret_val = E2ERR_OPENFAILED;
+			}
 		}
 		else
 		{

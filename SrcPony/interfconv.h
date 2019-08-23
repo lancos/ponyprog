@@ -29,6 +29,13 @@
 
 #include "globals.h"
 
+enum {
+	FTDI_PORTA = 0,
+	FTDI_PORTB,
+	FTDI_PORTC,
+	FTDI_PORTD
+};
+
 struct InterfPins
 {
 	int ctrl;
@@ -42,8 +49,8 @@ struct InterfPins
 };
 
 enum
-{
-	INTERF_USB,
+{	//Directly correspond to setup interface dialog tab index
+	INTERF_USB = 0,
 	INTERF_COM,
 	INTERF_LPT,
 	INTERF_GPIO
@@ -58,5 +65,6 @@ extern HInterfaceType VindexToInterfType(int vector, int index);
 extern bool TypeToInterfVidPid(HInterfaceType type, unsigned int &vid, unsigned int &pid);
 extern VidPid TypeToInterfVidPid(HInterfaceType type);
 extern bool TypeToInterfPins(HInterfaceType type, InterfPins &pins);
+extern int TypeToInterfPort(HInterfaceType type);
 
 #endif // INTERFCONV_H

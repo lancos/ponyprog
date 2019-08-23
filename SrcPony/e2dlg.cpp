@@ -200,11 +200,6 @@ void e2Dialog::getSettings()
 		ckControlInGPIO->setChecked((cmdWin->GetPolarity() & CTRLININV) ? true : false);
 	}
 
-	cbxClockOutGPIO->setCurrentIndex(E2Profile::GetGpioPinClock());
-	cbxControlOutGPIO->setCurrentIndex(E2Profile::GetGpioPinCtrl());
-	cbxDataInGPIO->setCurrentIndex(E2Profile::GetGpioPinDataIn());
-	cbxDataOutGPIO->setCurrentIndex(E2Profile::GetGpioPinDataOut());
-
 	//TODO: A way to detect if run on RaspberryPi
 	//if (QSysInfo::currentCpuArchitecture().startsWith("arm"))
 	cbxInterfGPIONum->setEnabled(false);
@@ -213,6 +208,7 @@ void e2Dialog::getSettings()
 void e2Dialog::setSettings()
 {
 	E2Profile::writeDialogSettings(this);
+	InterfPins pins = {-1, -1, -1, -1, -1, -1, -1, -1};
 
 	unsigned int pol = 0;
 	switch (TypeToInterfVector(interf_type))
@@ -256,6 +252,19 @@ void e2Dialog::setSettings()
 			pol |= CLOCKININV;
 		if (ckControlInUSB->isChecked())
 			pol |= CTRLININV;
+
+		//Set pins configuration
+		pins.clock = cbxClockOutUSB->currentIndex();
+		pins.ctrl = cbxControlOutUSB->currentIndex();
+		pins.datain = cbxDataInUSB->currentIndex();
+		pins.dataout = cbxDataOutUSB->currentIndex();
+
+		pins.clockin = cbxClockInUSB->currentIndex();
+		pins.ctrlin = cbxControlInUSB->currentIndex();
+		pins.enbus = cbxEnaODUSB->currentIndex();
+		pins.poweron = cbxPowerOnUSB->currentIndex();
+
+		E2Profile::SetInterfacePins(interf_type, pins);
 		break;
 	case INTERF_GPIO:
 		if (ckControlOutGPIO->isChecked())
@@ -274,6 +283,18 @@ void e2Dialog::setSettings()
 			pol |= CLOCKININV;
 		if (ckControlInGPIO->isChecked())
 			pol |= CTRLININV;
+
+		pins.clock = cbxClockOutGPIO->currentIndex();
+		pins.ctrl = cbxControlOutGPIO->currentIndex();
+		pins.datain = cbxDataInGPIO->currentIndex();
+		pins.dataout = cbxDataOutGPIO->currentIndex();
+
+		pins.clockin = cbxClockInGPIO->currentIndex();
+		pins.ctrlin = cbxControlInGPIO->currentIndex();
+		pins.enbus = cbxEnaODGPIO->currentIndex();
+		pins.poweron = cbxPowerOnGPIO->currentIndex();
+
+		E2Profile::SetInterfacePins(interf_type, pins);
 		break;
 	}
 	cmdWin->SetPolarity(pol);
@@ -283,6 +304,11 @@ void e2Dialog::setSettings()
 		cmdWin->ClosePort();
 		cmdWin->SetInterfaceType(interf_type);
 	}
+	else
+	{
+		cmdWin->GetInterfPtr()->ConfigPins(pins);
+	}
+
 	cmdWin->SetPort(port_no);
 
 	//Store values in the INI file
@@ -291,11 +317,6 @@ void e2Dialog::setSettings()
 	E2Profile::SetPolarityLines(cmdWin->GetPolarity());
 
 	qDebug() << "PortNo: " << port_no;
-
-	E2Profile::SetGpioPinClock(cbxClockOutGPIO->currentIndex());
-	E2Profile::SetGpioPinCtrl(cbxControlOutGPIO->currentIndex());
-	E2Profile::SetGpioPinDataIn(cbxDataInGPIO->currentIndex());
-	E2Profile::SetGpioPinDataOut(cbxDataOutGPIO->currentIndex());
 }
 
 static QStringList generatePinList(int min, int max)
@@ -312,7 +333,8 @@ static QStringList generatePinList(int min, int max)
 	return pinList;
 }
 
-#define PIN_MAX_RANGE	27
+#define GPIO_PIN_MAX	31		//may be 27 for RaspberryPi
+#define USB_PIN_MAX		15		//0-7 for ADBUS, 8-15 for ACBUS
 
 void e2Dialog::setWidgetsText()
 {
@@ -325,15 +347,27 @@ void e2Dialog::setWidgetsText()
 	recurseCbxHide(groupBoxLPTPol);		//No pin select on legacy LPT
 	//recurseCbxHide(groupBoxGPIOPol);
 
-	cbxClockOutGPIO->addItems(generatePinList(0, PIN_MAX_RANGE));
-	cbxDataOutGPIO->addItems(generatePinList(0, PIN_MAX_RANGE));
-	cbxDataInGPIO->addItems(generatePinList(0, PIN_MAX_RANGE));
-	cbxControlOutGPIO->addItems(generatePinList(0, PIN_MAX_RANGE));
+	QStringList pinlist = generatePinList(0, GPIO_PIN_MAX);
+	cbxClockOutGPIO->addItems(pinlist);
+	cbxDataOutGPIO->addItems(pinlist);
+	cbxDataInGPIO->addItems(pinlist);
+	cbxControlOutGPIO->addItems(pinlist);
 
-	cbxClockInGPIO->addItems(generatePinList(0, PIN_MAX_RANGE));
-	cbxControlInGPIO->addItems(generatePinList(0, PIN_MAX_RANGE));
-	cbxEnaODGPIO->addItems(generatePinList(0, PIN_MAX_RANGE));
-	cbxPowerOnGPIO->addItems(generatePinList(0, PIN_MAX_RANGE));
+	cbxClockInGPIO->addItems(pinlist);
+	cbxControlInGPIO->addItems(pinlist);
+	cbxEnaODGPIO->addItems(pinlist);
+	cbxPowerOnGPIO->addItems(pinlist);
+
+	pinlist = generatePinList(0, USB_PIN_MAX);
+	cbxClockOutUSB->addItems(pinlist);
+	cbxDataOutUSB->addItems(pinlist);
+	cbxDataInUSB->addItems(pinlist);
+	cbxControlOutUSB->addItems(pinlist);
+
+	cbxClockInUSB->addItems(pinlist);
+	cbxControlInUSB->addItems(pinlist);
+	cbxEnaODUSB->addItems(pinlist);
+	cbxPowerOnUSB->addItems(pinlist);
 
 	cbxInterfCOM->addItems(GetInterfList(INTERF_COM));
 	cbxInterfLPT->addItems(GetInterfList(INTERF_LPT));
@@ -386,6 +420,11 @@ void e2Dialog::setWidgetsText()
 	cbxClockOutGPIO->setToolTip("Select Clock-Out Pin");
 	cbxDataOutGPIO->setToolTip("Select Data-Out Pin");
 	cbxDataInGPIO->setToolTip("Select Data-In Pin");
+
+	cbxControlOutUSB->setToolTip("Select Control-Out Pin");
+	cbxClockOutUSB->setToolTip("Select Clock-Out Pin");
+	cbxDataOutUSB->setToolTip("Select Data-Out Pin");
+	cbxDataInUSB->setToolTip("Select Data-In Pin");
 
 	//lblPol1->setText(translate(STR_LBLSELPOLARITY));
 
@@ -491,6 +530,19 @@ void e2Dialog::on_tabWidget_currentChanged(int index)
 		on_cbxInterfUSB_currentIndexChanged(idx);
 		port_no = usb_no;
 		cbxInterfUSBNum->setCurrentIndex(port_no);
+
+		//Get pins configuration
+		InterfPins pins = E2Profile::GetInterfacePins(interf_type);
+
+		cbxClockOutUSB->setCurrentIndex(pins.clock);
+		cbxControlOutUSB->setCurrentIndex(pins.ctrl);
+		cbxDataInUSB->setCurrentIndex(pins.datain);
+		cbxDataOutUSB->setCurrentIndex(pins.dataout);
+
+		cbxClockInUSB->setCurrentIndex(pins.clockin);
+		cbxControlInUSB->setCurrentIndex(pins.ctrlin);
+		cbxEnaODUSB->setCurrentIndex(pins.enbus);
+		cbxPowerOnUSB->setCurrentIndex(pins.poweron);
 	}
 	else if (index == INTERF_GPIO)
 	{
@@ -500,6 +552,19 @@ void e2Dialog::on_tabWidget_currentChanged(int index)
 		cbxInterfGPIONum->setCurrentIndex(gpio_no);
 
 		interf_type = VindexToInterfType(INTERF_GPIO, cbxInterfGPIO->currentIndex());
+
+		//Get pins configuration
+		InterfPins pins = E2Profile::GetInterfacePins(interf_type);
+
+		cbxClockOutGPIO->setCurrentIndex(pins.clock);
+		cbxControlOutGPIO->setCurrentIndex(pins.ctrl);
+		cbxDataInGPIO->setCurrentIndex(pins.datain);
+		cbxDataOutGPIO->setCurrentIndex(pins.dataout);
+
+		cbxClockInGPIO->setCurrentIndex(pins.clockin);
+		cbxControlInGPIO->setCurrentIndex(pins.ctrlin);
+		cbxEnaODGPIO->setCurrentIndex(pins.enbus);
+		cbxPowerOnGPIO->setCurrentIndex(pins.poweron);
 	}
 }
 
@@ -524,6 +589,12 @@ void e2Dialog::on_cbxInterfUSB_currentIndexChanged(int index)
 	usbList = MpsseInterface::find_all(usb_vp.vid, usb_vp.pid);
 	cbxInterfUSBNum->clear();
 	cbxInterfUSBNum->addItems(usbList);
+}
+
+void e2Dialog::on_cbxInterfGPIO_currentIndexChanged(int index)
+{
+	interf_type = VindexToInterfType(INTERF_GPIO, index);
+	qDebug() << "Selected IntefType: " << (int)interf_type << ", index = " << index << ", GPIO";
 }
 
 void e2Dialog::on_cbxInterfCOMNum_currentIndexChanged(int index)
@@ -553,6 +624,15 @@ void e2Dialog::on_cbxInterfUSBNum_currentIndexChanged(int index)
 	}
 }
 
+void e2Dialog::on_cbxInterfGPIONum_currentIndexChanged(int index)
+{
+	if (index >= 0)
+	{
+		port_no = gpio_no = index;
+		qDebug() << __PRETTY_FUNCTION__ << "Selected GPIO port " << port_no;
+	}
+}
+
 void e2Dialog::onUSB(bool connected, quint16 vid, quint16 pid)
 {
 	qDebug() << __PRETTY_FUNCTION__ << " " << connected << " " << vid << " " << pid;
@@ -573,6 +653,18 @@ void e2Dialog::on_pushDefaultsUSB_clicked()
 	ckEnaODUSB->setChecked(false);
 	ckClockInUSB->setChecked(false);
 	ckControlInUSB->setChecked(false);
+
+	InterfPins dpins;	//default pins
+	if (!TypeToInterfPins(interf_type, dpins))
+		qWarning() << __PRETTY_FUNCTION__ << " TypeToInterfPins(" << interf_type << ") Failed";
+	cbxClockOutUSB->setCurrentIndex(dpins.clock);
+	cbxControlOutUSB->setCurrentIndex(dpins.ctrl);
+	cbxDataInUSB->setCurrentIndex(dpins.datain);
+	cbxDataOutUSB->setCurrentIndex(dpins.dataout);
+	cbxClockInUSB->setCurrentIndex(dpins.clockin);
+	cbxControlInUSB->setCurrentIndex(dpins.ctrlin);
+	cbxPowerOnUSB->setCurrentIndex(dpins.poweron);
+	cbxEnaODUSB->setCurrentIndex(dpins.enbus);
 }
 
 void e2Dialog::on_pushDefaultsCOM_clicked()
@@ -606,10 +698,18 @@ void e2Dialog::on_pushDefaultsGPIO_clicked()
 	ckClockInGPIO->setChecked(false);
 	ckControlInGPIO->setChecked(false);
 
-	cbxClockOutGPIO->setCurrentIndex(DEF_GPIO_CLOCK);
-	cbxControlOutGPIO->setCurrentIndex(DEF_GPIO_CTRL);
-	cbxDataInGPIO->setCurrentIndex(DEF_GPIO_DATAIN);
-	cbxDataOutGPIO->setCurrentIndex(DEF_GPIO_DATAOUT);
+	InterfPins dpins;	//default pins
+	if (!TypeToInterfPins(interf_type, dpins))
+		qWarning() << __PRETTY_FUNCTION__ << " TypeToInterfPins(" << interf_type << ") Failed";
+	cbxClockOutGPIO->setCurrentIndex(dpins.clock);
+	cbxControlOutGPIO->setCurrentIndex(dpins.ctrl);
+	cbxDataInGPIO->setCurrentIndex(dpins.datain);
+	cbxDataOutGPIO->setCurrentIndex(dpins.dataout);
+
+	//cbxClockOutGPIO->setCurrentIndex(DEF_GPIO_CLOCK);
+	//cbxControlOutGPIO->setCurrentIndex(DEF_GPIO_CTRL);
+	//cbxDataInGPIO->setCurrentIndex(DEF_GPIO_DATAIN);
+	//cbxDataOutGPIO->setCurrentIndex(DEF_GPIO_DATAOUT);
 }
 
 #include <QComboBox>

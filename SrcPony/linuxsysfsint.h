@@ -29,7 +29,6 @@
 
 #include "businter.h"
 
-
 class LinuxSysFsInterface : public BusInterface
 {
   public:
@@ -48,22 +47,17 @@ class LinuxSysFsInterface : public BusInterface
 	virtual int IsClockDataUP();
 	virtual int IsClockDataDOWN();
 
-	//      virtual int TestPort(int port);
+	//virtual int TestPort(int port);
 
 	int SetPower(bool onoff);
 	void SetControlLine(int res = 1);
 
   protected:
-	//      int GetPresence() const;
+	//int GetPresence() const;
 
   private:
-	int InitPins();
+	int InitPins(int idx);
 	void DeInitPins();
-
-	int pin_ctrl;
-	int pin_datain;
-	int pin_dataout;
-	int pin_clock;
 
 	int fd_ctrl;
 	int fd_datain;

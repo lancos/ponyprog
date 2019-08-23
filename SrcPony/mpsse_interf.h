@@ -215,6 +215,8 @@ class MpsseInterface : public BusInterface
 	int pin_clockin;	//0 if unused
 	int pin_poweron;	//0 if unused
 	int pin_enbus;		//0 if unused
+
+	int ftdi_port;
 };
 
 #endif

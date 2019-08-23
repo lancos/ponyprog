@@ -31,46 +31,41 @@
 #include <QSettings>
 #include "types.h"
 #include "globals.h"
+#include "interfconv.h"
 
 #include <QString>
 #include <QWidget>
 
-#define CLOCKINV (1<<0)
-#define RESETINV (1<<1)
-#define DININV   (1<<2)
-#define DOUTINV  (1<<3)
-#define POWERINV (1<<4)
-#define ENBUSINV	(1<<5)
-#define CLOCKININV	(1<<6)
-#define CTRLININV	(1<<7)
+#define CLOCKINV				(1<<0)
+#define RESETINV				(1<<1)
+#define DININV					(1<<2)
+#define DOUTINV					(1<<3)
+#define POWERINV				(1<<4)
+#define ENBUSINV				(1<<5)
+#define CLOCKININV				(1<<6)
+#define CTRLININV				(1<<7)
 
-#define RELOAD_idx              0
-#define READFLASH_idx           1
-#define READEEP_idx             2
-#define BYTESWAP_idx            3
-#define SETID_idx               4
-#define READOSCCAL_idx          5
-#define ERASE_idx               6
-#define FLASH_idx               7
-#define EEPROM_idx              8
-#define LOCK_idx                9
+#define RELOAD_idx				0
+#define READFLASH_idx			1
+#define READEEP_idx				2
+#define BYTESWAP_idx			3
+#define SETID_idx				4
+#define READOSCCAL_idx			5
+#define ERASE_idx				6
+#define FLASH_idx				7
+#define EEPROM_idx				8
+#define LOCK_idx				9
 
-#define RELOAD_YES              (1<<RELOAD_idx)
-#define READFLASH_YES           (1<<READFLASH_idx)
-#define READEEP_YES             (1<<READEEP_idx)
-#define BYTESWAP_YES            (1<<BYTESWAP_idx)
-#define SETID_YES               (1<<SETID_idx)
-#define ERASE_YES               (1<<ERASE_idx)
-#define FLASH_YES               (1<<FLASH_idx)
-#define EEPROM_YES              (1<<EEPROM_idx)
-#define LOCK_YES                (1<<LOCK_idx)
-#define READOSCAL_YES          (1<<READOSCCAL_idx)
-
-//RaspberryPi default pins
-#define DEF_GPIO_CTRL                   23  //Rst pin 16
-#define DEF_GPIO_DATAIN                 27  //Miso pin 13
-#define DEF_GPIO_DATAOUT                17  //Mosi pin 11
-#define DEF_GPIO_CLOCK                  24  //Clock pin 18
+#define RELOAD_YES				(1<<RELOAD_idx)
+#define READFLASH_YES			(1<<READFLASH_idx)
+#define READEEP_YES				(1<<READEEP_idx)
+#define BYTESWAP_YES			(1<<BYTESWAP_idx)
+#define SETID_YES				(1<<SETID_idx)
+#define ERASE_YES				(1<<ERASE_idx)
+#define FLASH_YES				(1<<FLASH_idx)
+#define EEPROM_YES				(1<<EEPROM_idx)
+#define LOCK_YES				(1<<LOCK_idx)
+#define READOSCAL_YES			(1<<READOSCCAL_idx)
 
 typedef enum
 {
@@ -87,7 +82,6 @@ enum
 	TURBO,
 	ULTRASLOW
 };
-
 
 class E2Profile
 {
@@ -273,16 +267,16 @@ class E2Profile
 
 	static QString GetHtmlBrowseApp();
 	static void SetHtmlBrowseApp(const QString &name);
+/**
+	static int GetGpioPinCtrl(int idx);
+	static int GetGpioPinClock(int idx);
+	static int GetGpioPinDataIn(int idx);
+	static int GetGpioPinDataOut(int idx);
 
-	static int GetGpioPinCtrl();
-	static int GetGpioPinClock();
-	static int GetGpioPinDataIn();
-	static int GetGpioPinDataOut();
-
-	static void SetGpioPinCtrl(int pin);
-	static void SetGpioPinClock(int pin);
-	static void SetGpioPinDataIn(int pin);
-	static void SetGpioPinDataOut(int pin);
+	static void SetGpioPinCtrl(int idx, int pin);
+	static void SetGpioPinClock(int idx, int pin);
+	static void SetGpioPinDataIn(int idx, int pin);
+	static void SetGpioPinDataOut(int idx, int pin);
 
 	static int GetMpssePinCtrl();
 	static int GetMpssePinClock();
@@ -293,9 +287,19 @@ class E2Profile
 	static void SetMpssePinClock(int pin);
 	static void SetMpssePinDataIn(int pin);
 	static void SetMpssePinDataOut(int pin);
+**/
+	static int GetInterfacePort();
+	static void SetInterfacePort(int port_index);
 
-	static QString GetMpsseInterfacePort();
-	static void SetMpsseInterfacePort(const QString &intname);
+	static void GetInterfacePins(HInterfaceType type, InterfPins &pins);
+	static InterfPins GetInterfacePins(HInterfaceType type)
+	{
+		InterfPins pins;
+		GetInterfacePins(type, pins);
+		return pins;
+	}
+
+	static void SetInterfacePins(HInterfaceType type, const InterfPins &pins);
 
 	static bool GetEditBufferEnabled();
 	static void SetEditBufferEnabled(bool enable);

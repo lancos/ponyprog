@@ -200,21 +200,22 @@ int LinuxSysFsInterface::SetPower(bool onoff)
 	return OK;
 }
 
-int LinuxSysFsInterface::InitPins()
+int LinuxSysFsInterface::InitPins(int idx)
 {
-	pin_ctrl = E2Profile::GetGpioPinCtrl();
-	pin_datain = E2Profile::GetGpioPinDataIn();
-	pin_dataout = E2Profile::GetGpioPinDataOut();
-	pin_clock = E2Profile::GetGpioPinClock();
+	if (pins.ctrl == 0 && pins.clock == 0 && pins.datain == 0 && pins.dataout == 0)
+	{
+		qWarning() << "LinuxSysFsInterface::InitPins() Unconfigured pins";
+		return E2ERR_OPENFAILED;
+	}
 
-	qDebug() << "LinuxSysFsInterface::InitPins Ctrl=" << pin_ctrl << ", Clock= " << pin_clock;
-	qDebug() << "DataIn=" << pin_datain << ", DataOut=" << pin_dataout;
+	qDebug() << "LinuxSysFsInterface::InitPins Ctrl=" << pins.ctrl << ", Clock= " << pins.clock;
+	qDebug() << "DataIn=" << pins.datain << ", DataOut=" << pins.dataout;
 
 #ifdef Q_OS_LINUX
-	fd_ctrl = gpio_open(pin_ctrl, GPIO_OUT);
-	fd_clock = gpio_open(pin_clock, GPIO_OUT);
-	fd_datain = gpio_open(pin_datain, GPIO_IN);
-	fd_dataout = gpio_open(pin_dataout, GPIO_OUT);
+	fd_ctrl = gpio_open(pins.ctrl, GPIO_OUT);
+	fd_clock = gpio_open(pins.clock, GPIO_OUT);
+	fd_datain = gpio_open(pins.datain, GPIO_IN);
+	fd_dataout = gpio_open(pins.dataout, GPIO_OUT);
 
 	if (fd_ctrl < 0 || fd_clock < 0 || fd_datain < 0 || fd_dataout < 0)
 	{
@@ -229,36 +230,36 @@ int LinuxSysFsInterface::InitPins()
 void LinuxSysFsInterface::DeInitPins()
 {
 #ifdef Q_OS_LINUX
-	gpio_close(pin_ctrl, fd_ctrl);
-	gpio_close(pin_clock, fd_clock);
-	gpio_close(pin_datain, fd_datain);
-	gpio_close(pin_dataout, fd_dataout);
+	gpio_close(pins.ctrl, fd_ctrl);
+	gpio_close(pins.clock, fd_clock);
+	gpio_close(pins.datain, fd_datain);
+	gpio_close(pins.dataout, fd_dataout);
 	fd_ctrl = fd_clock = fd_datain = fd_dataout = -1;
 #endif
 }
 
-int LinuxSysFsInterface::Open(int com_no)
+int LinuxSysFsInterface::Open(int port_no)
 {
-	qDebug() << "LinuxSysFsInterface::Open(" << com_no << ") IN";
+	qDebug() << __PRETTY_FUNCTION__ << " (" << port_no << ") IN";
 
 	int ret_val = OK;
 
-	if (GetInstalled() != com_no)
+	if (GetInstalled() != port_no)
 	{
-		if ((ret_val = InitPins()) == OK)
+		if ((ret_val = InitPins(port_no)) == OK)
 		{
-			Install(com_no);
+			Install(port_no);
 		}
 	}
 
-	qDebug() << "LinuxSysFsInterface::Open() = " << ret_val << " OUT";
+	qDebug() << __PRETTY_FUNCTION__ << " = " << ret_val << " OUT";
 
 	return ret_val;
 }
 
 void LinuxSysFsInterface::Close()
 {
-	qDebug() << "LinuxSysFsInterface::Close() IN";
+	qDebug() << __PRETTY_FUNCTION__ << " IN";
 
 	if (IsInstalled())
 	{
@@ -267,13 +268,13 @@ void LinuxSysFsInterface::Close()
 		DeInstall();
 	}
 
-	qDebug() << "LinuxSysFsInterface::Close() OUT";
+	qDebug() << __PRETTY_FUNCTION__ << " OUT";
 }
 
 // Per l'AVR e` la linea di RESET
 void LinuxSysFsInterface::SetControlLine(int res)
 {
-	qDebug() << "LinuxSysFsInterface::SetControlLine(" << res << ") *** Inst=" <<  IsInstalled() << ", fd=" << fd_ctrl;
+	qDebug() << __PRETTY_FUNCTION__ << " (" << res << ") *** Inst=" <<  IsInstalled() << ", fd=" << fd_ctrl;
 
 	if (IsInstalled())
 	{
@@ -305,7 +306,7 @@ void LinuxSysFsInterface::SetControlLine(int res)
 
 void LinuxSysFsInterface::SetDataOut(int sda)
 {
-	qDebug() << "LinuxSysFsInterface::SetDataOut(" << sda << ") *** Inst=" << IsInstalled() << ", fd=" << fd_dataout;
+	qDebug() << __PRETTY_FUNCTION__ << "(" << sda << ") *** Inst=" << IsInstalled() << ", fd=" << fd_dataout;
 
 	if (IsInstalled())
 	{
@@ -337,7 +338,7 @@ void LinuxSysFsInterface::SetDataOut(int sda)
 
 void LinuxSysFsInterface::SetClock(int scl)
 {
-	qDebug() << "LinuxSysFsInterface::SetClock(" << scl << ") *** Inst=" << IsInstalled() << ", fd=" << fd_clock;
+	qDebug() << __PRETTY_FUNCTION__ << "(" << scl << ") *** Inst=" << IsInstalled() << ", fd=" << fd_clock;
 
 	if (IsInstalled())
 	{
@@ -369,7 +370,7 @@ void LinuxSysFsInterface::SetClock(int scl)
 
 void LinuxSysFsInterface::SetClockData()
 {
-	qDebug() << "LinuxSysFsInterface::SetClockData() *** Inst=" << IsInstalled();
+	qDebug() << __PRETTY_FUNCTION__ << " *** Inst=" << IsInstalled();
 
 	if (IsInstalled())
 	{
@@ -378,10 +379,9 @@ void LinuxSysFsInterface::SetClockData()
 	}
 }
 
-
 void LinuxSysFsInterface::ClearClockData()
 {
-	qDebug() << "LinuxSysFsInterface::ClearClockData() *** Inst=" << IsInstalled();
+	qDebug() << __PRETTY_FUNCTION__ << " *** Inst=" << IsInstalled();
 
 	if (IsInstalled())
 	{
@@ -408,7 +408,7 @@ int LinuxSysFsInterface::GetDataIn()
 			qWarning("LinuxSysFsInterface::GetDataIn() read failed (%d)\n", ret);
 			exit(1);
 		}
-		qDebug() << "LinuxSysFsInterface::GetDataIn()=" << val << ", fd=" << fd_datain;
+		qDebug() << __PRETTY_FUNCTION__ << "=" << val << ", fd=" << fd_datain;
 
 		if (cmdWin->GetPolarity() & DININV)
 		{
@@ -430,14 +430,14 @@ int LinuxSysFsInterface::GetClock()
 
 int LinuxSysFsInterface::IsClockDataUP()
 {
-	qDebug() << "LinuxSysFsInterface::IsClockDataUP() *** Inst=" << IsInstalled();
+	qDebug() << __PRETTY_FUNCTION__ << " *** Inst=" << IsInstalled();
 
 	return GetDataIn();
 }
 
 int LinuxSysFsInterface::IsClockDataDOWN()
 {
-	qDebug() << "LinuxSysFsInterface::IsClockDataDOWN() *** Inst=" << IsInstalled();
+	qDebug() << __PRETTY_FUNCTION__ << " *** Inst=" << IsInstalled();
 
 	return !GetDataIn();
 }

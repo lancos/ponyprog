@@ -55,11 +55,13 @@ class e2Dialog : public QDialog, public cTranslator, public Ui::E2Dialog
 	void onTest();
 	void on_tabWidget_currentChanged(int index);
 	void on_cbxInterfCOM_currentIndexChanged(int index);
-	void on_cbxInterfLPT_currentIndexChanged(int index);
 	void on_cbxInterfCOMNum_currentIndexChanged(int index);
+	void on_cbxInterfLPT_currentIndexChanged(int index);
 	void on_cbxInterfLPTNum_currentIndexChanged(int index);
 	void on_cbxInterfUSB_currentIndexChanged(int index);
 	void on_cbxInterfUSBNum_currentIndexChanged(int index);
+	void on_cbxInterfGPIO_currentIndexChanged(int index);
+	void on_cbxInterfGPIONum_currentIndexChanged(int index);
 	void on_pushDefaultsUSB_clicked();
 	void on_pushDefaultsCOM_clicked();
 	void on_pushDefaultsLPT_clicked();

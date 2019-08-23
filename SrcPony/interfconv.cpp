@@ -40,7 +40,19 @@ struct Interf2Index
 	HInterfaceType type;
 	VidPid vp;
 	InterfPins pins;
+	int port;
 };
+
+//RaspberryPi default pins
+#define DEF_GPIO_CTRL			23  //Rst pin 16
+#define DEF_GPIO_DATAIN			27  //Miso pin 13
+#define DEF_GPIO_DATAOUT		17  //Mosi pin 11
+#define DEF_GPIO_CLOCK			24  //Clock pin 18
+
+#define DEF_MPSSE_CTRL			9  //ACBUS1
+#define DEF_MPSSE_DATAIN		2  //ADBUS2
+#define DEF_MPSSE_DATAOUT		1  //ADBUS1
+#define DEF_MPSSE_CLOCK			0  //ADBUS0
 
 static QVector<Interf2Index> index_interface =
 {
@@ -54,11 +66,24 @@ static QVector<Interf2Index> index_interface =
 	{INTERF_LPT, 3, "DT-006-I/O", DT006_IO},
 	{INTERF_LPT, 4, "EasyI2C-API", EASYI2C_API},
 	{INTERF_LPT, 5, "EasyI2C-I/O", EASYI2C_IO},
-	{INTERF_USB, 0, "FTDI PonyProgFT", PONYPROG_FT, VidPid(0x0403, 0x6e38), {3, 2, 1, 0, /* 4 */ -1, 5, 7, 6}},
-	{INTERF_USB, 1, "FTDI JtagKey", FTDI_JTAGKEY, VidPid(0x0403, 0xcff8), {9, 2, 1, 0, -1, -1, -1, -1}},
+	{INTERF_USB, 0, "FTDI PonyProgFT", PONYPROG_FT, VidPid(0x0403, 0x6e38), {3, 2, 1, 0, /* 4 */ -1, 5, 7, 6}, FTDI_PORTA},
+	{INTERF_USB, 1, "FTDI JtagKey", FTDI_JTAGKEY, VidPid(0x0403, 0xcff8), {9, 2, 1, 0, -1, -1, -1, -1}, FTDI_PORTA},
 	{INTERF_GPIO, 0, "Linux SysFs GPIO", LINUXSYSFS_IO, VidPid(), {23, 27, 17, 24, -1, -1, -1, -1}},
 	//{INTERF_GPIO, 1, "PonyProgRPi", PONYPROG_RPI},
 };
+
+int TypeToInterfPort(HInterfaceType type)
+{
+	for (int k = 0; k < index_interface.count(); k++)
+	{
+		if (index_interface.at(k).type == type)
+		{
+			return index_interface.at(k).port;
+		}
+	}
+
+	return -1;
+}
 
 bool TypeToInterfPins(HInterfaceType type, InterfPins &pins)
 {

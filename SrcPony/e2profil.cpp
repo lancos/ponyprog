@@ -2126,52 +2126,53 @@ void E2Profile::SetDefaultFileType(FileType ft)
 	}
 }
 
-
-int E2Profile::GetGpioPinCtrl()
+/**
+int E2Profile::GetGpioPinCtrl(int idx)
 {
-	return  s->value("GpioPin/ControlOut", DEF_GPIO_CTRL).toInt();
+	return  s->value(QString("Gpio%1/PinControlOut").arg(idx), DEF_GPIO_CTRL).toInt();
 }
 
-void E2Profile::SetGpioPinCtrl(int pin)
+void E2Profile::SetGpioPinCtrl(int idx, int pin)
 {
-	s->setValue("GpioPin/ControlOut", pin);
-}
-
-
-int E2Profile::GetGpioPinClock()
-{
-	return s->value("GpioPin/ClockOut", DEF_GPIO_CLOCK).toInt();
+	s->setValue(QString("Gpio%1/PinControlOut").arg(idx), pin);
 }
 
 
-void E2Profile::SetGpioPinClock(int pin)
+int E2Profile::GetGpioPinClock(int idx)
 {
-	s->setValue("GpioPin/ClockOut", pin);
+	return s->value(QString("Gpio%1/PinClockOut").arg(idx), DEF_GPIO_CLOCK).toInt();
 }
 
 
-int E2Profile::GetGpioPinDataIn()
+void E2Profile::SetGpioPinClock(int idx, int pin)
 {
-	return s->value("GpioPin/DataIn", DEF_GPIO_DATAIN).toInt();
+	s->setValue(QString("Gpio%1/PinClockOut").arg(idx), pin);
 }
 
 
-void E2Profile::SetGpioPinDataIn(int pin)
+int E2Profile::GetGpioPinDataIn(int idx)
 {
-	s->setValue("GpioPin/DataIn", pin);
+	return s->value(QString("Gpio%1/PinDataIn").arg(idx), DEF_GPIO_DATAIN).toInt();
 }
 
 
-int E2Profile::GetGpioPinDataOut()
+void E2Profile::SetGpioPinDataIn(int idx, int pin)
 {
-	return s->value("GpioPin/DataOut", DEF_GPIO_DATAOUT).toInt();
+	s->setValue(QString("Gpio%1/PinDataIn").arg(idx), pin);
 }
 
 
-void E2Profile::SetGpioPinDataOut(int pin)
+int E2Profile::GetGpioPinDataOut(int idx)
 {
-	s->setValue("GpioPin/DataOut", QString::number(pin));
+	return s->value(QString("Gpio%1/PinDataOut").arg(idx), DEF_GPIO_DATAOUT).toInt();
 }
+
+
+void E2Profile::SetGpioPinDataOut(int idx, int pin)
+{
+	s->setValue(QString("Gpio%1/PinDataOut").arg(idx), QString::number(pin));
+}
+**/
 
 bool E2Profile::GetEditBufferEnabled()
 {
@@ -2183,113 +2184,126 @@ void E2Profile::SetEditBufferEnabled(bool enable)
 	s->setValue("Editor/ReadOnlyMode", !enable);
 }
 
-#define DEF_MPSSE_CTRL                   9  //ACBUS1
-#define DEF_MPSSE_DATAIN                 2  //ADBUS2
-#define DEF_MPSSE_DATAOUT                1  //ADBUS1
-#define DEF_MPSSE_CLOCK                  0  //ADBUS0
 
+void E2Profile::GetInterfacePins(HInterfaceType type, InterfPins &pins)
+{
+	InterfPins dpins;	//default pins
+	if (!TypeToInterfPins(type, dpins))
+		qWarning() << "TypeToInterfPins(" << type << ") Failed";
+
+	s->beginGroup("InterfacePins-" + TypeToInterfName(type));
+	pins.clock = s->value("clockout", dpins.clock).toInt();
+	pins.clockin = s->value("clockin", dpins.clockin).toInt();
+	pins.ctrl = s->value("controlout", dpins.ctrl).toInt();
+	pins.ctrlin = s->value("controlin", dpins.ctrlin).toInt();
+	pins.datain = s->value("datain", dpins.datain).toInt();
+	pins.dataout = s->value("dataout", dpins.dataout).toInt();
+	pins.enbus = s->value("enbus", dpins.enbus).toInt();
+	pins.poweron = s->value("poweron", dpins.poweron).toInt();
+	s->endGroup();
+}
+
+void E2Profile::SetInterfacePins(HInterfaceType type, const InterfPins &pins)
+{
+	s->beginGroup("InterfacePins-" + TypeToInterfName(type));
+	if (pins.clock > -1)
+		s->setValue("clockout", pins.clock);
+	if (pins.clockin > -1)
+		s->setValue("clockin", pins.clockin);
+	if (pins.ctrl > -1)
+		s->setValue("controlout", pins.ctrl);
+	if (pins.ctrlin > -1)
+		s->setValue("controlin", pins.ctrlin);
+	if (pins.datain > -1)
+		s->setValue("datain", pins.datain);
+	if (pins.dataout > -1)
+		s->setValue("dataout", pins.dataout);
+	if (pins.enbus > -1)
+		s->setValue("enbus", pins.enbus);
+	if (pins.poweron > -1)
+		s->setValue("poweron", pins.poweron);
+	s->endGroup();
+}
+
+/**
 int E2Profile::GetMpssePinCtrl()
 {
-	QString sp;
-	int rval = DEF_MPSSE_CTRL;               //Default pin number
-
-	sp = s->value("MpssePinCtrl", "").toString();
-
-	if (sp.length())
-	{
-		rval = sp.toInt();
-	}
-
-	return rval;
+	return s->value("Mpsse/PinControl", DEF_MPSSE_CTRL).toInt();
 }
 
 void E2Profile::SetMpssePinCtrl(int pin)
 {
-	s->setValue("MpssePinCtrl", QString::number(pin));
+	s->setValue("Mpsse/PinControl", pin);
 }
 
 
 int E2Profile::GetMpssePinClock()
 {
-	QString sp;
-	int rval = DEF_MPSSE_CLOCK;              //Default pin number
-
-	sp = s->value("MpssePinClock").toString();
-
-	if (sp.length())
-	{
-		rval = sp.toInt();
-	}
-
-	return rval;
+	return s->value("Mpsse/PinClock", DEF_MPSSE_CLOCK).toInt();
 }
 
 void E2Profile::SetMpssePinClock(int pin)
 {
-	s->setValue("MpssePinClock", QString::number(pin));
+	s->setValue("Mpsse/PinClock", pin);
 }
 
 
 int E2Profile::GetMpssePinDataIn()
 {
-	QString sp;
-	int rval = DEF_MPSSE_DATAIN;             //Default pin number
-
-	sp = s->value("MpssePinDataIn").toString();
-
-	if (sp.length())
-	{
-		rval = sp.toInt();
-	}
-
-	return rval;
+	return s->value("Mpsse/PinDataIn", DEF_MPSSE_DATAIN).toInt();
 }
 
 void E2Profile::SetMpssePinDataIn(int pin)
 {
-	s->setValue("MpssePinDataIn", QString::number(pin));
+	s->setValue("Mpsse/PinDataIn", pin);
 }
 
 
 int E2Profile::GetMpssePinDataOut()
 {
-	QString sp;
-	int rval = DEF_MPSSE_DATAOUT;    //Default pin number
-
-	sp = s->value("MpssePinDataOut").toString();
-
-	if (sp.length())
-	{
-		rval = sp.toInt();
-	}
-
-	return rval;
+	return s->value("Mpsse/PinDataOut", DEF_MPSSE_DATAOUT).toInt();
 }
 
 void E2Profile::SetMpssePinDataOut(int pin)
 {
-	s->setValue("MpssePinDataOut", QString::number(pin));
+	s->setValue("Mpsse/PinDataOut", pin);
 }
+**/
 
-QString E2Profile::GetMpsseInterfacePort()
+int E2Profile::GetInterfacePort()
 {
-	QString sp = s->value("MpsseInterfacePort", "A").toString();
+	QString sp = s->value("InterfacePort", "A").toString();
+	int rv = FTDI_PORTA;
 
-	if (sp.length() == 0)
+	if (sp.length() != 0)
 	{
-		sp = "A";
+		if (sp.compare("B", Qt::CaseInsensitive) == 0 || sp.compare("1") == 0)
+		{
+			rv = FTDI_PORTB;
+		}
+		else if (sp.compare("C", Qt::CaseInsensitive) == 0 || sp.compare("2") == 0)
+		{
+			rv = FTDI_PORTC;
+		}
+		else if (sp.compare("D", Qt::CaseInsensitive) == 0 || sp.compare("3") == 0)
+		{
+			rv = FTDI_PORTD;
+		}
 	}
 
-	return sp;
+	return rv;
 }
 
-void E2Profile::SetMpsseInterfacePort(const QString &intname)
+void E2Profile::SetInterfacePort(int port_index)
 {
+	QString intname = QString::number(port_index);
+
 	if (intname.length())
 	{
-		s->setValue("MpsseInterfacePort", intname);
+		s->setValue("InterfacePort", intname);
 	}
 }
+
 
 void E2Profile::readDialogSettings(QWidget *window, bool recurse)
 {

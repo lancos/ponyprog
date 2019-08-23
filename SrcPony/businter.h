@@ -399,10 +399,18 @@ class BusInterface
 
 	virtual void ConfigPins(int pinum_ctrl = -1, int pinum_datain = -1, int pinum_dataout = -1, int pinum_clock = -1, int pinum_clockin = -1, int pinum_poweron = -1, int pinum_enbus = -1, int pinnum_ctrlin = -1)
 	{
+		pins.ctrl = pinum_ctrl;
+		pins.datain = pinum_datain;
+		pins.dataout = pinum_dataout;
+		pins.clock = pinum_clock;
+		pins.ctrlin = pinnum_ctrlin;
+		pins.clockin = pinum_clockin;
+		pins.poweron = pinum_poweron;
+		pins.enbus = pinum_enbus;
 	}
-	virtual void ConfigPins(InterfPins pins)
+	virtual void ConfigPins(InterfPins p)
 	{
-		ConfigPins(pins.ctrl, pins.datain, pins.dataout, pins.clock, pins.clockin, pins.poweron, pins.enbus, pins.ctrlin);
+		ConfigPins(p.ctrl, p.datain, p.dataout, p.clock, p.clockin, p.poweron, p.enbus, p.ctrlin);
 	}
 
   protected:
@@ -428,8 +436,8 @@ class BusInterface
 
 	int old_portno;             // TestSave() save the status here
 	VidPid usb_vp;
-
 	Wait w;
+	InterfPins pins;
 
   private:
 	int installed;              // -1 --> not installed, >= 0 number if the installed port
