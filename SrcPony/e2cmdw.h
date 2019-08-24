@@ -204,8 +204,7 @@ class e2CmdWindow : public QMainWindow, public e2App, public Ui::MainWindow
 	void onSetSerialNumber();
 	void onClearBuf();
 	void onEditNote();
-	void onReadCalibration(int idx);
-	void onWriteCalibration(int idx);
+	void onReadCalibration();
 	void onReadSecurity(bool display_dialog);
 	//void onWriteSecurity();
 	void onFillBuf();
@@ -233,7 +232,9 @@ class e2CmdWindow : public QMainWindow, public e2App, public Ui::MainWindow
 	void onSelectFile(QAction *a);
 	void onDtaChanged();
 
-  public:
+	void on_actionPreferences_triggered();
+
+public:
 	int CmdHelp();
 
   protected:

@@ -75,12 +75,12 @@ typedef enum
 
 enum
 {
+	ULTRASLOW = 0,
 	VERYSLOW,
 	SLOW,
 	NORMAL,
 	FAST,
-	TURBO,
-	ULTRASLOW
+	TURBO
 };
 
 class E2Profile
@@ -106,10 +106,7 @@ class E2Profile
 	static void SetLastDevType(long devtype);
 
 	static QString GetLastFile(int &data, int index = 0);
-// 	static QString GetPrevFile(int &data);
 	static void SetLastFile(const QString &name, int data = ALL_TYPE);
-
-// 	static QString GetLastScript();
 	static void SetLastScript(const QString &name);
 
 	static unsigned int GetPolarityLines();
@@ -232,8 +229,8 @@ class E2Profile
 	static bool GetVerifyAfterWrite();
 	static void SetVerifyAfterWrite(bool enabled = true);
 
-	static int GetJDMCmd2CmdDelay();
-	static void SetJDMCmd2CmdDelay(int delay = 4000);
+	static unsigned int GetJDMCmd2CmdDelay();
+	static void SetJDMCmd2CmdDelay(unsigned int delay = 4000);
 
 	static bool GetAutoDetectPorts();
 	static void SetAutoDetectPorts(bool enabled = true);
@@ -243,16 +240,11 @@ class E2Profile
 	static int GetLPTAddress(unsigned int &lpt1, unsigned int &lpt2, unsigned int &lpt3);
 	static void SetLPTAddress(unsigned int lpt1, unsigned int lpt2, unsigned int lpt3);
 
-//	static void SetConfigFile(const QString &n);
 	static QString GetConfigFile()
 	{
 		return s->fileName();
 	}
 
-	//static QString GetLockDir();
-	//static void SetLockDir(const QString &name);
-	//static QString GetDevDir();
-	//static void SetDevDir(const QString &name);
 	static QString GetCOMDevName();
 	static void SetCOMDevName(const QString &name);
 	static QStringList GetCOMDevList();
@@ -265,29 +257,9 @@ class E2Profile
 	static FileType GetDefaultFileType();
 	static void SetDefaultFileType(FileType ft);
 
-	static QString GetHtmlBrowseApp();
-	static void SetHtmlBrowseApp(const QString &name);
-/**
-	static int GetGpioPinCtrl(int idx);
-	static int GetGpioPinClock(int idx);
-	static int GetGpioPinDataIn(int idx);
-	static int GetGpioPinDataOut(int idx);
+	//static QString GetHtmlBrowseApp();
+	//static void SetHtmlBrowseApp(const QString &name);
 
-	static void SetGpioPinCtrl(int idx, int pin);
-	static void SetGpioPinClock(int idx, int pin);
-	static void SetGpioPinDataIn(int idx, int pin);
-	static void SetGpioPinDataOut(int idx, int pin);
-
-	static int GetMpssePinCtrl();
-	static int GetMpssePinClock();
-	static int GetMpssePinDataIn();
-	static int GetMpssePinDataOut();
-
-	static void SetMpssePinCtrl(int pin);
-	static void SetMpssePinClock(int pin);
-	static void SetMpssePinDataIn(int pin);
-	static void SetMpssePinDataOut(int pin);
-**/
 	static int GetInterfacePort();
 	static void SetInterfacePort(int port_index);
 
@@ -314,7 +286,7 @@ class E2Profile
 	static QSettings *s;
 
   private:
-//	static QString filename;       //name of .INI file
+
 };
 
 #endif

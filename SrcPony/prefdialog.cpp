@@ -24,67 +24,59 @@
 //                                                                         //
 //=========================================================================//
 
-#ifndef SerNumDIALOG_H
-#define SerNumDIALOG_H
+#include "prefdialog.h"
+#include "ui_prefdialog.h"
 
-#include "ui_osccalibr.h"
-#include "ui_sernumcfg.h"
-
-#include <QString>
-#include <QDialog>
-
-#include "Translator.h"
-
-#include "types.h"
 #include "e2profil.h"
-#include "e2awinfo.h"
 
+//	ULTRASLOW = 0,
+//	VERYSLOW,
+//	SLOW,
+//	NORMAL,
+//	FAST,
+//	TURBO
 
-class SerNumDialog : public QDialog, public cTranslator, public Ui::SNCfgDialog
+PrefDialog::PrefDialog(QWidget *parent, const QString title) :
+	QDialog(parent),
+	ui(new Ui::PrefDialog)
 {
-	Q_OBJECT
-  public:
-	SerNumDialog(QWidget *bw, const QString title = translate(STR_MSGSERNUMCFG));
-	virtual ~SerNumDialog();                // Destructor
+	ui->setupUi(this);
+	setWindowTitle(title);
 
-  private slots:
-	void onOk();
+	QStringList speedItems = (QStringList() << "Slowest" << "Very Slow" << "Slow" << "Normal" << "Fast"  << "Fastest");
+	ui->cbxBusSpeedSPI->addItems(speedItems);
+	ui->cbxBusSpeedI2C->addItems(speedItems);
+	ui->cbxBusSpeedIM->addItems(speedItems);
+	ui->cbxBusSpeedPIC->addItems(speedItems);
+	ui->cbxBusSpeedSDE->addItems(speedItems);
+	ui->cbxBusSpeedMicroWire->addItems(speedItems);
 
-  protected:
+	ui->lblBusSpeedSPI->setText("SPI Bus Speed");
+	ui->lblBusSpeedI2C->setText("I2C Bus Speed");
+	ui->lblBusSpeedIM->setText("IM Bus Speed");
+	ui->lblBusSpeedPIC->setText("PIC Bus Speed");
+	ui->lblBusSpeedSDE->setText("SDE Bus Speed");
+	ui->lblBusSpeedMicroWire->setText("MicroWire Bus Speed");
 
-  private:
-	void setTextWidgets();
-  private:
-	long loc;
-	unsigned long val;
-	bool memtype;
-	bool autoinc;
-	int size;
-	FmtEndian fmt;
-};
+	ui->cbxBusSpeedSPI->setCurrentIndex(E2Profile::GetSPISpeed());
+	ui->cbxBusSpeedI2C->setCurrentIndex(E2Profile::GetI2CSpeed());
+	ui->cbxBusSpeedIM->setCurrentIndex(E2Profile::GetIMBusSpeed());
+	ui->cbxBusSpeedPIC->setCurrentIndex(E2Profile::GetPICSpeed());
+	ui->cbxBusSpeedSDE->setCurrentIndex(E2Profile::GetSDESpeed());
+	ui->cbxBusSpeedMicroWire->setCurrentIndex(E2Profile::GetMicroWireSpeed());
+}
 
-
-class OscCalibDialog : public QDialog, public cTranslator, public Ui::OscCalibrDialog
+PrefDialog::~PrefDialog()
 {
-	Q_OBJECT
-  public:
-	OscCalibDialog(QWidget *bw, e2AppWinInfo *aw, const QString title = translate(STR_MSGOSCCALIBCFG));
-	virtual ~OscCalibDialog();              // Destructor
+	delete ui;
+}
 
-  private slots:
-	void onOk();
-	void onRead();
-
-  protected:
-
-  private:
-	long loc;
-	int val;
-	bool memtype;
-	bool enabled;
-	int size;
-
-	e2AppWinInfo *awip;
-};
-
-#endif
+void PrefDialog::on_buttonBox_accepted()
+{
+	E2Profile::SetSPISpeed(ui->cbxBusSpeedSPI->currentIndex());
+	E2Profile::SetI2CSpeed(ui->cbxBusSpeedI2C->currentIndex());
+	E2Profile::SetIMBusSpeed(ui->cbxBusSpeedIM->currentIndex());
+	E2Profile::SetPICSpeed(ui->cbxBusSpeedPIC->currentIndex());
+	E2Profile::SetSDESpeed(ui->cbxBusSpeedSDE->currentIndex());
+	E2Profile::SetMicroWireSpeed(ui->cbxBusSpeedMicroWire->currentIndex());
+}

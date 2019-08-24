@@ -179,9 +179,10 @@ SOURCES  += SrcPony/aboutmdlg.cpp \
             SrcPony/sdebus.cpp \
             SrcPony/Translator.cpp \
             SrcPony/usbwatcher.cpp \
+            SrcPony/prefdialog.cpp \
             qhexedit2/src/chunks.cpp \
             qhexedit2/src/commands.cpp \
-            qhexedit2/src/qhexedit.cpp \
+            qhexedit2/src/qhexedit.cpp
 
 HEADERS  += SrcPony/e2app.h \ 
             SrcPony/e2awinfo.h \
@@ -262,6 +263,7 @@ HEADERS  += SrcPony/e2app.h \
             SrcPony/Translator.h \
             SrcPony/interfconv.h \
             SrcPony/usbwatcher.h \
+            SrcPony/prefdialog.h \
             qhexedit2/src/chunks.h \
             qhexedit2/src/commands.h \
             qhexedit2/src/qhexedit.h
@@ -275,7 +277,8 @@ FORMS    += SrcPony/forms/aboutdlg.ui \
             SrcPony/forms/mainwindow.ui \
             SrcPony/forms/osccalibr.ui \
             SrcPony/forms/progoption.ui \
-            SrcPony/forms/sernumcfg.ui
+            SrcPony/forms/sernumcfg.ui \
+			SrcPony/forms/prefdialog.ui
 
 # for next version, when script for ts files convertion is implemented
 #TRANSLATIONS += localization/qtbase_cs.ts 

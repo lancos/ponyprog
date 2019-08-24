@@ -41,55 +41,15 @@
 //QSettings *E2Profile::s = new QSettings("ponyprog.ini", QSettings::IniFormat);
 QSettings *E2Profile::s = new QSettings(APP_NAME);
 
-#if 0
-E2Profile::E2Profile(const QString &nm)  :
-	s(0)
-{
-	if (nm.length())
-	{
-		filename = nm;
-	}
-	else
-	{
-		filename = "e2p.ini";
-	}
-
-	s = new QSettings(filename, QSettings::IniFormat);
-}
-
-
-E2Profile::~E2Profile()
-{
-	s->sync();
-}
-#endif
 
 int E2Profile::GetBogoMips()
 {
-	QString sp = s->value("BogoMipsX1000", "0").toString();
-	int rval = 0;           //Defaultvalue
-
-	if (sp.length())
-	{
-		rval = sp.toInt();
-	}
-
-	return rval;
+	return s->value("BogoMipsX1000", 0).toInt();
 }
-
 
 void E2Profile::SetBogoMips(int value)
 {
-	//      QString str;
-	s->setValue("BogoMipsX1000", QString::number(value));
-	//      if ( decnum2str(value, str, MAXNUMDIGIT) == OK )
-	//      {
-	//              return s->setValue("BogoMipsX1000", str);
-	//      }
-	//      else
-	//      {
-	//              return BADPARAM;
-	//      }
+	s->setValue("BogoMipsX1000", value);
 }
 
 
@@ -117,17 +77,6 @@ long E2Profile::GetLastDevType()
 	}
 }
 
-
-//void E2Profile::SetConfigFile(const QString &nm)
-//{
-//	if (nm.length())
-//	{
-//		delete s;
-//		s = new QSettings(nm, QSettings::IniFormat);
-//	}
-//}
-
-
 void E2Profile::SetLastDevType(long devtype)
 {
 	QString sp = GetEEPTypeString(devtype);
@@ -143,39 +92,29 @@ void E2Profile::SetLastDevType(long devtype)
 
 HInterfaceType E2Profile::GetParInterfType()
 {
-	extern HInterfaceType NameToInterfType(const QString & name);
+	QString sp = s->value("InterfaceType", TypeToInterfName(SIPROG_API)).toString();
 
-	QString v = s->value("InterfaceType", "SI-ProgAPI").toString();
-
-	return NameToInterfType(v);
+	return NameToInterfType(sp);
 }
 
 void E2Profile::SetParInterfType(HInterfaceType type)
 {
-	QString TypeToInterfName(HInterfaceType type);
-
 	s->setValue("InterfaceType", TypeToInterfName(type));
 }
 
 
 int E2Profile::GetPortNumber()
 {
-	return s->value("PortNumber", "-1").toInt();
+	return s->value("PortNumber", -1).toInt();
 }
 
 void E2Profile::SetPortNumber(int port)
 {
 	if (port >= 0 /* && port < 4 */)
 	{
-		s->setValue("PortNumber", QString::number(port));
+		s->setValue("PortNumber", port);
 	}
 }
-
-
-// QString E2Profile::GetLastScript()
-// {
-// 	return s->value("LastScript", "").toString();
-// }
 
 
 void E2Profile::SetLastScript(const QString &name)
@@ -247,11 +186,6 @@ QString E2Profile::GetLastFile(int &data, int index)
 	return sp;
 }
 
-//QString E2Profile::GetPrevFile(int &data)
-//{
-//	return GetLastFile(data, 1);
-//}
-
 
 QStringList E2Profile::GetLastFiles()
 {
@@ -316,65 +250,39 @@ void E2Profile::SetLastScripts(const QStringList &l)
 
 unsigned int E2Profile::GetPolarityLines()
 {
-	unsigned int rval = 0;
-	QString sp = s->value("PolarityLines", "0").toString();
-
-	if (sp.length())
-	{
-		rval = sp.toUInt();
-	}
-
-	return rval;
+	return s->value("PolarityLines", 0).toUInt();
 }
 
 void E2Profile::SetPolarityLines(unsigned int polarity)
 {
-	s->setValue("PolarityLines", QString::number(polarity));
+	s->setValue("PolarityLines", polarity);
 }
 
 
 int E2Profile::GetI2CPageWrite()
 {
-	QString sp = s->value("I2CBusPageWrite", "16").toString();
-	int rval = 16;          //Default: 16 bytes page write (only for 16-bit I2C Bus eeprom)
-
-	if (sp.length())
-	{
-		rval = sp.toInt();
-	}
-
-	return rval;
+	return s->value("I2CBusPageWrite", 16).toInt();
 }
-
 
 void E2Profile::SetI2CPageWrite(int page_write)
 {
 	if (page_write > 0)
 	{
-		s->setValue("I2CBusPageWrite", QString::number(page_write));
+		s->setValue("I2CBusPageWrite", page_write);
 	}
 }
 
 
 int E2Profile::GetSPIPageWrite()
 {
-	QString sp = s->value("BigSPIPageWrite", "16").toString();
-	int rval = 16;          //Default: 16 bytes page write
-
-	if (sp.length())
-	{
-		rval = sp.toInt();
-	}
-
-	return rval;
+	return s->value("BigSPIPageWrite", 16).toInt();
 }
-
 
 void E2Profile::SetSPIPageWrite(int page_write)
 {
 	if (page_write > 0)
 	{
-		s->setValue("BigSPIPageWrite", QString::number(page_write));
+		s->setValue("BigSPIPageWrite", page_write);
 	}
 }
 
@@ -390,7 +298,7 @@ int E2Profile::GetI2CBaseAddr()
 
 		rval = sp.toLong(&ok, 0);
 
-		if (ok == false)
+		if (!ok)
 		{
 			rval = 0xA0;
 		}
@@ -398,7 +306,6 @@ int E2Profile::GetI2CBaseAddr()
 
 	return rval;
 }
-
 
 void E2Profile::SetI2CBaseAddr(int base_addr)
 {
@@ -441,7 +348,6 @@ int E2Profile::GetI2CSpeed()
 	return rval;
 }
 
-
 void E2Profile::SetI2CSpeed(int speed)
 {
 	if (speed == TURBO)
@@ -473,84 +379,53 @@ void E2Profile::SetI2CSpeed(int speed)
 
 int E2Profile::GetSPIResetPulse()
 {
-	QString sp = s->value("SPIResetPulse", "100").toString();
-	int rval = 100;         //Default: 100 msec
-
-	if (sp.length())
-	{
-		rval = sp.toInt();
-	}
-
-	return rval;
+	//Default: 100 msec
+	return s->value("SPIResetPulse", 100).toInt();
 }
-
 
 void E2Profile::SetSPIResetPulse(int delay)
 {
 	if (delay > 0)
 	{
-		s->setValue("SPIResetPulse", QString::number(delay));
+		s->setValue("SPIResetPulse", delay);
 	}
 }
 
 
 int E2Profile::GetSPIDelayAfterReset()
 {
-	QString sp = s->value("SPIDelayAfterReset", "50").toString();
-	int rval = 50;          //Default: 50 msec
-
-	if (sp.length())
-	{
-		rval = sp.toInt();
-	}
-
-	return rval;
+	//Default: 50 msec
+	return s->value("SPIDelayAfterReset", 50).toInt();
 }
-
 
 void E2Profile::SetSPIDelayAfterReset(int delay)
 {
 	if (delay > 0)
 	{
-		s->setValue("SPIDelayAfterReset", QString::number(delay));
+		s->setValue("SPIDelayAfterReset", delay);
 	}
 }
 
 
 int E2Profile::GetAT89DelayAfterReset()
 {
-	QString sp = s->value("AT89DelayAfterReset", "50").toString();
-	int rval = 50;          //Default: 50 msec
-
-	if (sp.length())
-	{
-		rval = sp.length();
-	}
-
-	return rval;
+	//Default: 50 msec
+	return s->value("AT89DelayAfterReset", 50).toInt();
 }
-
 
 void E2Profile::SetAT89DelayAfterReset(int delay)
 {
 	if (delay > 0)
 	{
-		s->setValue("AT89DelayAfterReset", QString::number(delay));
+		s->setValue("AT89DelayAfterReset", delay);
 	}
 }
 
 
 int E2Profile::GetAVRDelayAfterReset()
 {
-	QString sp = s->value("AVRDelayAfterReset", "50").toString();
-	int rval = 50;          //Default: 50 msec
-
-	if (sp.length())
-	{
-		rval = sp.toInt();
-	}
-
-	return rval;
+	//Default: 50 msec
+	return s->value("AVRDelayAfterReset", 50).toInt();
 }
 
 
@@ -558,7 +433,7 @@ void E2Profile::SetAVRDelayAfterReset(int delay)
 {
 	if (delay > 0)
 	{
-		s->setValue("AVRDelayAfterReset", QString::number(delay));
+		s->setValue("AVRDelayAfterReset", delay);
 	}
 }
 
@@ -595,7 +470,6 @@ int E2Profile::GetSPISpeed()
 	return rval;
 }
 
-
 void E2Profile::SetSPISpeed(int speed)
 {
 	if (speed == TURBO)
@@ -621,29 +495,6 @@ void E2Profile::SetSPISpeed(int speed)
 	else if (speed == ULTRASLOW)
 	{
 		s->setValue("SPIBusSpeed", "ULTRASLOW");
-	}
-}
-
-
-int E2Profile::GetMegaPageDelay()
-{
-	QString sp = s->value("ATMegaPageWriteDelay", "50").toString();
-	int rval = 50;          //Default: 50 msec
-
-	if (sp.length())
-	{
-		rval = sp.toInt();
-	}
-
-	return rval;
-}
-
-
-void E2Profile::SetMegaPageDelay(int delay)
-{
-	if (delay > 0)
-	{
-		s->setValue("ATMegaPageWriteDelay", QString::number(delay));
 	}
 }
 
@@ -680,7 +531,6 @@ int E2Profile::GetMicroWireSpeed()
 	return rval;
 }
 
-
 void E2Profile::SetMicroWireSpeed(int speed)
 {
 	if (speed == TURBO)
@@ -708,7 +558,6 @@ void E2Profile::SetMicroWireSpeed(int speed)
 		s->setValue("MicroWireBusSpeed", "ULTRASLOW");
 	}
 }
-
 
 int E2Profile::GetPICSpeed()
 {
@@ -741,7 +590,6 @@ int E2Profile::GetPICSpeed()
 
 	return rval;
 }
-
 
 void E2Profile::SetPICSpeed(int speed)
 {
@@ -804,7 +652,6 @@ int E2Profile::GetSDESpeed()
 	return rval;
 }
 
-
 void E2Profile::SetSDESpeed(int speed)
 {
 	if (speed == TURBO)
@@ -830,6 +677,67 @@ void E2Profile::SetSDESpeed(int speed)
 	else if (speed == ULTRASLOW)
 	{
 		s->setValue("SDEBusSpeed", "ULTRASLOW");
+	}
+}
+
+
+int E2Profile::GetIMBusSpeed()
+{
+	QString sp = s->value("IMBusSpeed", "NORMAL").toString();
+	int rval = NORMAL;              //Default speed
+
+	if (sp.length())
+	{
+		if (sp == "TURBO")
+		{
+			rval = TURBO;
+		}
+		else if (sp == "FAST")
+		{
+			rval = FAST;
+		}
+		else if (sp == "SLOW")
+		{
+			rval = SLOW;
+		}
+		else if (sp == "VERYSLOW")
+		{
+			rval = VERYSLOW;
+		}
+		else if (sp == "ULTRASLOW")
+		{
+			rval = ULTRASLOW;
+		}
+	}
+
+	return rval;
+}
+
+void E2Profile::SetIMBusSpeed(int speed)
+{
+	if (speed == TURBO)
+	{
+		s->setValue("IMBusSpeed", "TURBO");
+	}
+	else if (speed == FAST)
+	{
+		s->setValue("IMBusSpeed", "FAST");
+	}
+	else if (speed == NORMAL)
+	{
+		s->setValue("IMBusSpeed", "NORMAL");
+	}
+	else if (speed == SLOW)
+	{
+		s->setValue("IMBusSpeed", "SLOW");
+	}
+	else if (speed == VERYSLOW)
+	{
+		s->setValue("IMBusSpeed", "VERYSLOW");
+	}
+	else if (speed == ULTRASLOW)
+	{
+		s->setValue("IMBusSpeed", "ULTRASLOW");
 	}
 }
 
@@ -907,195 +815,107 @@ void E2Profile::SetPrinterSettings(QPrinter &p)
 }
 
 
-int E2Profile::GetIMBusSpeed()
+int E2Profile::GetMegaPageDelay()
 {
-	QString sp = s->value("IMBusSpeed", "NORMAL").toString();
-	int rval = NORMAL;              //Default speed
-
-	if (sp.length())
-	{
-		if (sp == "TURBO")
-		{
-			rval = TURBO;
-		}
-		else if (sp == "FAST")
-		{
-			rval = FAST;
-		}
-		else if (sp == "SLOW")
-		{
-			rval = SLOW;
-		}
-		else if (sp == "VERYSLOW")
-		{
-			rval = VERYSLOW;
-		}
-		else if (sp == "ULTRASLOW")
-		{
-			rval = ULTRASLOW;
-		}
-	}
-
-	return rval;
+	//Default: 50 msec
+	return s->value("ATMegaPageWriteDelay", 50).toInt();
 }
 
-
-void E2Profile::SetIMBusSpeed(int speed)
+void E2Profile::SetMegaPageDelay(int delay)
 {
-	if (speed == TURBO)
+	if (delay > 0)
 	{
-		s->setValue("IMBusSpeed", "TURBO");
-	}
-	else if (speed == FAST)
-	{
-		s->setValue("IMBusSpeed", "FAST");
-	}
-	else if (speed == NORMAL)
-	{
-		s->setValue("IMBusSpeed", "NORMAL");
-	}
-	else if (speed == SLOW)
-	{
-		s->setValue("IMBusSpeed", "SLOW");
-	}
-	else if (speed == VERYSLOW)
-	{
-		s->setValue("IMBusSpeed", "VERYSLOW");
-	}
-	else if (speed == ULTRASLOW)
-	{
-		s->setValue("IMBusSpeed", "ULTRASLOW");
+		s->setValue("ATMegaPageWriteDelay", delay);
 	}
 }
 
 
 int E2Profile::GetPowerUpDelay()
 {
-	QString sp = s->value("PowerUpDelay", "200").toString();
-	int rval = 200;         //Default: 200 msec
-
-	if (sp.length())
-	{
-		rval = sp.toInt();
-	}
-
-	return rval;
+	//Default: 200 msec
+	return s->value("PowerUpDelay", 200).toInt();
 }
 
 void E2Profile::SetPowerUpDelay(int delay)
 {
 	if (delay > 0)
 	{
-		s->setValue("PowerUpDelay", QString::number(delay));
+		s->setValue("PowerUpDelay", delay);
 	}
 }
 
 
 int E2Profile::GetAVRProgDelay()
 {
-	QString sp = s->value("AVRByteWriteDelay", "20").toString();
-	int rval = 20;          //Default: 20 msec
-
-	if (sp.length())
-	{
-		rval = sp.toInt();
-	}
-
-	return rval;
+	//Default: 20 msec
+	return s->value("AVRByteWriteDelay", 20).toInt();
 }
-
 
 void E2Profile::SetAVRProgDelay(int delay)
 {
 	if (delay > 0)
 	{
-		s->setValue("AVRByteWriteDelay", QString::number(delay));
+		s->setValue("AVRByteWriteDelay", delay);
 	}
 }
 
 
 int E2Profile::GetFontSize()
 {
-	QString sp = s->value("FontSize", "9").toString();
-	int rval = 9;
-
-	if (sp.length())
-	{
-		rval = sp.toInt();
-	}
-
-	return rval;
+	return s->value("FontSize", 9).toInt();
 }
 
 void E2Profile::SetFontSize(int sz)
 {
 	if (sz > 0)
 	{
-		s->setValue("FontSize", QString::number(sz));
+		s->setValue("FontSize", sz);
 	}
 }
 
 
 int E2Profile::GetAVREraseDelay()
 {
-	QString sp = s->value("AVREraseDelay", "50").toString();
-	int rval = 50;          //Default: 50 msec
-
-	if (sp.length())
-	{
-		rval = sp.toInt();
-	}
-
-	return rval;
+	//Default: 50 msec
+	return s->value("AVREraseDelay", 50).toInt();
 }
-
 
 void E2Profile::SetAVREraseDelay(int delay)
 {
 	if (delay > 0)
 	{
-		s->setValue("AVREraseDelay", QString::number(delay));
+		s->setValue("AVREraseDelay", delay);
 	}
 }
 
 
 int E2Profile::GetMDAProgDelay()
 {
-	QString sp = s->value("MDAWriteDelay", "30").toString();
-	int rval = 30;          //Default: 30 msec
-
-	if (sp.length())
-	{
-		rval = sp.toInt();
-	}
-
-	return rval;
+	//Default: 30 msec
+	return s->value("MDAWriteDelay", 30).toInt();
 }
-
 
 void E2Profile::SetMDAProgDelay(int delay)
 {
-	return s->setValue("MDAWriteDelay", QString::number(delay));
+	if (delay >= 0)
+	{
+		s->setValue("MDAWriteDelay", delay);
+	}
 }
 
 
 int E2Profile::GetNVMProgDelay()
 {
-	QString sp = s->value("NVMWriteDelay", "30").toString();
-	int rval = 30;          //Default: 30 msec
-
-	if (sp.length())
-	{
-		rval = sp.toInt();
-	}
-
-	return rval;
+	//Default: 30 msec
+	return s->value("NVMWriteDelay", 30).toInt();
 }
-
 
 void E2Profile::SetNVMProgDelay(int delay)
 {
-	return s->setValue("NVMWriteDelay", QString::number(delay));
+	if (delay >= 0)
+	{
+		s->setValue("NVMWriteDelay", delay);
+	}
 }
 
 
@@ -1106,7 +926,12 @@ unsigned long E2Profile::GetSerialNumVal()
 
 	if (sp.length())
 	{
-		rval = sp.toULong();
+		bool ok;
+		rval = sp.toULong(&ok);
+		if (!ok)
+		{
+			rval = 0;
+		}
 	}
 
 	return rval;
@@ -1114,10 +939,7 @@ unsigned long E2Profile::GetSerialNumVal()
 
 void E2Profile::SetSerialNumVal(unsigned long val)
 {
-	if (val > 0)
-	{
-		s->setValue("SerialNumber/Value", QString::number(val));
-	}
+	s->setValue("SerialNumber/Value", QString::number(val));
 }
 
 
@@ -1127,10 +949,10 @@ int E2Profile::GetSerialNumAddress(long &start, int &size, bool &mtype)
 	bool ok;
 
 	start = 0;
-	size = 1;
-	mtype = false;
 
-	if ((sp = s->value("SerialNumber/Address", "0").toString()).length())
+	s->beginGroup("SerialNumber");
+	sp = s->value("Address", "0").toString();
+	if (sp.length())
 	{
 		start = sp.toLong(&ok, 0);
 
@@ -1140,32 +962,35 @@ int E2Profile::GetSerialNumAddress(long &start, int &size, bool &mtype)
 		}
 	}
 
-	if ((sp = s->value("SerialNumber/Size", "1").toString()).length())
+	size = s->value("Size", 1).toInt(&ok);
+	if (!ok)
 	{
-		size = sp.toInt();
+		size = 1;
 	}
 
-	if ((sp = s->value("SerialNumber/Type", "PROG").toString()).length())
+	mtype = false;
+	sp = s->value("Type", "PROG").toString();
+	if (sp.length() && sp == "DATA")
 	{
-		if (sp == "DATA")
-		{
-			mtype = true;
-		}
+		mtype = true;
 	}
+	s->endGroup();
 
 	return OK;
 }
 
 void E2Profile::SetSerialNumAddress(unsigned long start, int size, bool mtype)
 {
-	s->setValue("SerialNumber/Address", QString::number(start));
+	s->beginGroup("SerialNumber");
+	s->setValue("Address", QString().sprintf("0x%04lX", start));
 
 	if (size >= 1)
 	{
-		s->setValue("SerialNumber/Size", QString::number(size));
+		s->setValue("Size", size);
 	}
 
-	s->setValue("SerialNumber/Type", mtype ? "DATA" : "PROG");
+	s->setValue("Type", mtype ? "DATA" : "PROG");
+	s->endGroup();
 }
 
 
@@ -1191,21 +1016,12 @@ void E2Profile::SetSerialNumFormat(FmtEndian fmt)
 
 bool E2Profile::GetSerialNumAutoInc()
 {
-	QString sp = s->value("SerialNumber/AutoIncrement", "YES").toString();
-
-	if (sp.length() && (sp == "NO"))
-	{
-		return false;
-	}
-	else
-	{
-		return true;
-	}
+	return s->value("SerialNumber/AutoIncrement", true).toBool();
 }
 
 void E2Profile::SetSerialNumAutoInc(bool val)
 {
-	s->setValue("SerialNumber/AutoIncrement", val ? "YES" : "NO");
+	s->setValue("SerialNumber/AutoIncrement", val);
 }
 
 
@@ -1217,90 +1033,69 @@ long E2Profile::GetProgramOptions()
 	s->beginGroup("ProgramOptions");
 
 	rval = s->value("ReloadOption", "").toString();
-
-	if (rval.length())
-		if (rval != "NO")
-		{
-			res |= RELOAD_YES;
-		}
+	if (rval.length() && rval != "NO")
+	{
+		res |= RELOAD_YES;
+	}
 
 	rval = s->value("ReadFlashOption", "").toString();
-
-	if (rval.length())
-		if (rval != "NO")
-		{
-			res |= READFLASH_YES;
-		}
+	if (rval.length() && rval != "NO")
+	{
+		res |= READFLASH_YES;
+	}
 
 	rval = s->value("ReadEEpromOption", "").toString();
-
-	if (rval.length())
-		if (rval != "NO")
-		{
-			res |= READEEP_YES;
-		}
+	if (rval.length() && rval != "NO")
+	{
+		res |= READEEP_YES;
+	}
 
 	rval = s->value("ByteSwapOption", "").toString();
-
-	if (rval.length())
-		if (rval != "NO")
-		{
-			res |= BYTESWAP_YES;
-		}
+	if (rval.length() && rval != "NO")
+	{
+		res |= BYTESWAP_YES;
+	}
 
 	rval = s->value("SetIDkeyOption", "").toString();
-
-	if (rval.length())
-		if (rval != "NO")
-		{
-			res |= SETID_YES;
-		}
+	if (rval.length() && rval != "NO")
+	{
+		res |= SETID_YES;
+	}
 
 	rval = s->value("ReadOscCalibration", "").toString();
-
-	if (rval.length())
-		if (rval != "NO")
-		{
-			res |= READOSCAL_YES;
-		}
+	if (rval.length() && rval != "NO")
+	{
+		res |= READOSCAL_YES;
+	}
 
 	rval = s->value("EraseOption", "").toString();
-
-	if (rval.length())
-		if (rval != "NO")
-		{
-			res |= ERASE_YES;
-		}
+	if (rval.length() && rval != "NO")
+	{
+		res |= ERASE_YES;
+	}
 
 	rval = s->value("WriteFlashOption", "").toString();
-
-	if (rval.length())
-		if (rval != "NO")
-		{
-			res |= FLASH_YES;
-		}
+	if (rval.length() && rval != "NO")
+	{
+		res |= FLASH_YES;
+	}
 
 	rval = s->value("WriteEEpromOption", "").toString();
-
-	if (rval.length())
-		if (rval != "NO")
-		{
-			res |= EEPROM_YES;
-		}
+	if (rval.length() && rval != "NO")
+	{
+		res |= EEPROM_YES;
+	}
 
 	rval = s->value("WriteSecurityOption", "").toString();
-
-	if (rval.length())
-		if (rval != "NO")
-		{
-			res |= LOCK_YES;
-		}
+	if (rval.length() && rval != "NO")
+	{
+		res |= LOCK_YES;
+	}
 
 	s->endGroup();
 
 	return res;
 }
-
 
 void E2Profile::SetProgramOptions(long prog_option)
 {
@@ -1334,7 +1129,6 @@ QString E2Profile::GetLangDir()
 	return s->value("LangDir", "").toString();
 }
 
-
 void E2Profile::SetLangDir(const QString &name)
 {
 	if (name.length())
@@ -1346,11 +1140,8 @@ void E2Profile::SetLangDir(const QString &name)
 
 QString E2Profile::GetCurrentLang()
 {
-	QString sp = s->value("CurrentLang", "english").toString();
-
-	return sp;
+	return s->value("CurrentLang", "english").toString();
 }
-
 
 void E2Profile::SetCurrentLang(const QString &name)
 {
@@ -1367,7 +1158,6 @@ QString E2Profile::GetLogFileName()
 
 	return sp;
 }
-
 
 void E2Profile::SetLogFileName(const QString &name)
 {
@@ -1495,7 +1285,7 @@ static QStringList retrieve_ttyS_list()
 
 QString E2Profile::GetCOMDevName()
 {
-	QString sp = s->value("COMDevName", "").toString();
+	QString sp = s->value("LegacyPorts/COMDevName", "").toString();
 
 	if (sp.length() == 0)
 	{
@@ -1513,14 +1303,14 @@ void E2Profile::SetCOMDevName(const QString &name)
 {
 	if (name.length())
 	{
-		s->setValue("COMDevName", name);
+		s->setValue("LegacyPorts/COMDevName", name);
 	}
 }
 
 
 QStringList E2Profile::GetCOMDevList()
 {
-	QStringList lst = s->value("COMDevList", QStringList()).toStringList();
+	QStringList lst = s->value("LegacyPorts/COMDevList", QStringList()).toStringList();
 
 	if (lst.count() == 0)
 	{
@@ -1554,13 +1344,13 @@ QStringList E2Profile::GetCOMDevList()
 
 void E2Profile::SetCOMDevList(const QStringList &lst)
 {
-	s->setValue("COMDevList", lst);
+	s->setValue("LegacyPorts/COMDevList", lst);
 }
 
 
 QString E2Profile::GetLPTDevName()
 {
-	QString sp = s->value("LPTDevName", "").toString();
+	QString sp = s->value("LegacyPorts/LPTDevName", "").toString();
 
 	if (sp.length() == 0)
 	{
@@ -1578,14 +1368,14 @@ void E2Profile::SetLPTDevName(const QString &name)
 {
 	if (name.length())
 	{
-		s->setValue("LPTDevName", name);
+		s->setValue("LegacyPorts/LPTDevName", name);
 	}
 }
 
 
 QStringList E2Profile::GetLPTDevList()
 {
-	QStringList lst = s->value("LPTDevList", QStringList()).toStringList();
+	QStringList lst = s->value("LegacyPorts/LPTDevList", QStringList()).toStringList();
 
 	if (lst.count() == 0)
 	{
@@ -1605,7 +1395,7 @@ QStringList E2Profile::GetLPTDevList()
 
 void E2Profile::SetLPTDevList(const QStringList &lst)
 {
-	s->setValue("LPTDevList", lst);
+	s->setValue("LegacyPorts/LPTDevList", lst);
 }
 
 
@@ -1646,21 +1436,12 @@ void E2Profile::SetLanguageCode(const QString &name)
 
 bool E2Profile::GetLogEnabled()
 {
-	QString sp = s->value("LogEnabled", "NO").toString();
-
-	if (sp.length() && (sp == "YES"))
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+	return s->value("LogEnabled", false).toBool();
 }
 
 void E2Profile::SetLogEnabled(bool enabled)
 {
-	s->setValue("LogEnabled", enabled ? "YES" : "NO");
+	s->setValue("LogEnabled", enabled);
 }
 
 
@@ -1678,7 +1459,6 @@ bool E2Profile::GetSkipStartupDialog()
 	}
 }
 
-
 void E2Profile::SetSkipStartupDialog(bool skip)
 {
 	s->setValue("Preferences/SkipStartupDialog", skip ? "YES" : "NO");
@@ -1687,7 +1467,7 @@ void E2Profile::SetSkipStartupDialog(bool skip)
 
 bool E2Profile::GetClearBufBeforeLoad()
 {
-	QString sp = s->value("ClearBufferBeforeLoad").toString();
+	QString sp = s->value("ClearBufferBeforeLoad", "NO").toString();
 
 	if (sp.length() && (sp == "YES"))
 	{
@@ -1699,23 +1479,15 @@ bool E2Profile::GetClearBufBeforeLoad()
 	}
 }
 
-
 void E2Profile::SetClearBufBeforeLoad(bool enabled)
 {
-	if (enabled)
-	{
-		s->setValue("ClearBufferBeforeLoad", "YES");
-	}
-	else
-	{
-		s->setValue("ClearBufferBeforeLoad", "NO");
-	}
+	s->setValue("ClearBufferBeforeLoad", enabled ? "YES" : "NO");
 }
 
 
 bool E2Profile::GetClearBufBeforeRead()
 {
-	QString sp = s->value("ClearBufferBeforeRead", "").toString();
+	QString sp = s->value("ClearBufferBeforeRead", "NO").toString();
 
 	if (sp.length() && (sp == "YES"))
 	{
@@ -1730,20 +1502,13 @@ bool E2Profile::GetClearBufBeforeRead()
 
 void E2Profile::SetClearBufBeforeRead(bool enabled)
 {
-	if (enabled)
-	{
-		s->setValue("ClearBufferBeforeRead", "YES");
-	}
-	else
-	{
-		s->setValue("ClearBufferBeforeRead", "NO");
-	}
+	s->setValue("ClearBufferBeforeRead", enabled ? "YES" : "NO");
 }
 
 
 bool E2Profile::GetAt89PageOp()
 {
-	QString sp = s->value("AT89SPageOpEnabled", "").toString();
+	QString sp = s->value("AT89SPageOpEnabled", "YES").toString();
 
 	if (sp.length() && (sp == "NO"))
 	{
@@ -1755,23 +1520,15 @@ bool E2Profile::GetAt89PageOp()
 	}
 }
 
-
 void E2Profile::SetAt89PageOp(bool enabled)
 {
-	if (enabled)
-	{
-		s->setValue("AT89SPageOpEnabled", "YES");
-	}
-	else
-	{
-		s->setValue("AT89SPageOpEnabled", "NO");
-	}
+	s->setValue("AT89SPageOpEnabled", enabled ? "YES" : "NO");
 }
 
 
 bool E2Profile::Get8253FallEdge()
 {
-	QString sp = s->value("AT89S8253FallEdgeSampling", "").toString();
+	QString sp = s->value("AT89S8253FallEdgeSampling", "YES").toString();
 
 	if (sp.length() && (sp == "NO"))
 	{
@@ -1783,23 +1540,15 @@ bool E2Profile::Get8253FallEdge()
 	}
 }
 
-
 void E2Profile::Set8253FallEdge(bool enabled)
 {
-	if (enabled)
-	{
-		s->setValue("AT89S8253FallEdgeSampling", "YES");
-	}
-	else
-	{
-		s->setValue("AT89S8253FallEdgeSampling", "NO");
-	}
+	s->setValue("AT89S8253FallEdgeSampling", enabled ? "YES" : "NO");
 }
 
 
 bool E2Profile::GetSoundEnabled()
 {
-	QString sp = s->value("SoundEnabled", "").toString();
+	QString sp = s->value("Preferences/SoundEnabled", "NO").toString();
 
 	if (sp.length() && (sp == "YES"))
 	{
@@ -1811,17 +1560,9 @@ bool E2Profile::GetSoundEnabled()
 	}
 }
 
-
 void E2Profile::SetSoundEnabled(bool enabled)
 {
-	if (enabled)
-	{
-		s->setValue("SoundEnabled", "YES");
-	}
-	else
-	{
-		s->setValue("SoundEnabled", "NO");
-	}
+	s->setValue("Preferences/SoundEnabled", enabled ? "YES" : "NO");
 }
 
 
@@ -1830,20 +1571,12 @@ int E2Profile::GetCalibrationAddress(bool &enabled, long &start, int &size, bool
 	QString sp;
 	bool ok;
 
-	enabled = true;
+	s->beginGroup("OscillatorCalibration");
+	enabled = s->value("Enabled", true).toBool();
+
 	start = 0;
-	size = 1;
-	mtype = false;
-
-	if ((sp = s->value("OscCalibrationEnabled", "NO").toString()).length())
-	{
-		if (sp == "NO")
-		{
-			enabled = false;
-		}
-	}
-
-	if ((sp = s->value("OscCalibrationAddr", "0").toString()).length())
+	sp = s->value("StartAddress", "0").toString();
+	if (sp.length())
 	{
 		start = sp.toLong(&ok, 0);
 
@@ -1853,123 +1586,74 @@ int E2Profile::GetCalibrationAddress(bool &enabled, long &start, int &size, bool
 		}
 	}
 
-	if ((sp = s->value("OscCalibrationSize", "1").toString()).length())
+	size = s->value("Size", 1).toInt(&ok);
+	if (!ok)
 	{
-		size = sp.toInt();
+		size = 1;
 	}
 
-	if ((sp = s->value("OscCalibrationMemType", "PROG").toString()).length())
+	mtype = false;
+	sp = s->value("MemoryType", "PROG").toString();
+	if (sp.length() && sp == "DATA")
 	{
-		if (sp == "DATA")
-		{
-			mtype = true;
-		}
+		mtype = true;
 	}
+	s->endGroup();
 
 	return OK;
 }
 
-
 void E2Profile::SetCalibrationAddress(bool enabled, unsigned long start, int size, bool mtype)
 {
-	s->setValue("OscCalibrationEnabled", enabled ? "YES" : "NO");
-
-	//      if (start >= 0)
-	{
-		s->setValue("OscCalibrationAddr", QString::number(start));
-	}
-
+	s->beginGroup("OscillatorCalibration");
+	s->setValue("Enabled", enabled);
+	s->setValue("StartAddress", QString().sprintf("0x%04lX", start));
 	if (size >= 1)
 	{
-		s->setValue("OscCalibrationSize", QString::number(size));
+		s->setValue("Size", size);
 	}
-
-	s->setValue("OscCalibrationType", mtype ? "DATA" : "PROG");
+	s->setValue("MemoryType", mtype ? "DATA" : "PROG");
+	s->endGroup();
 }
 
 
-int E2Profile::GetJDMCmd2CmdDelay()
+unsigned int E2Profile::GetJDMCmd2CmdDelay()
 {
-	QString sp = s->value("JDM-CmdToCmdDelay", "4000").toString();
-	int rval = 4000;                //Default: 4000 usec
-
-	if (sp.length())
-	{
-		rval = sp.toInt();
-	}
-
-	return rval;
+	//Default: 4000 usec
+	return s->value("JDM-CmdToCmdDelay", 4000).toUInt();
 }
 
-
-void E2Profile::SetJDMCmd2CmdDelay(int delay)
+void E2Profile::SetJDMCmd2CmdDelay(unsigned int delay)
 {
-	if (delay >= 0)
-	{
-		s->setValue("JDM-CmdToCmdDelay", QString::number(delay));
-	}
+	s->setValue("JDM-CmdToCmdDelay", delay);
 }
 
 
 bool E2Profile::GetVerifyAfterWrite()
 {
-	QString sp = s->value("VerifyAfterWrite", "YES").toString();
-
-	if (sp.length() && (sp == "NO"))
-	{
-		return false;
-	}
-	else
-	{
-		return true;
-	}
+	return s->value("VerifyAfterWrite", true).toBool();
 }
-
 
 void E2Profile::SetVerifyAfterWrite(bool enabled)
 {
-	if (enabled)
-	{
-		s->setValue("VerifyAfterWrite", "YES");
-	}
-	else
-	{
-		s->setValue("VerifyAfterWrite", "NO");
-	}
+	s->setValue("VerifyAfterWrite", enabled);
 }
 
 
 bool E2Profile::GetAutoDetectPorts()
 {
-	QString sp = s->value("AutoDetectPorts", "YES").toString();
-
-	if (sp.length() && (sp == "NO"))
-	{
-		return false;
-	}
-	else
-	{
-		return true;
-	}
+	return s->value("LegacyPorts/AutoDetectPorts", true).toBool();
 }
-
 
 void E2Profile::SetAutoDetectPorts(bool enabled)
 {
-	if (enabled)
-	{
-		s->setValue("AutoDetectPorts", "YES");
-	}
-	else
-	{
-		s->setValue("AutoDetectPorts", "NO");
-	}
+	s->setValue("LegacyPorts/AutoDetectPorts", enabled);
 }
 
 
 int E2Profile::GetCOMAddress(unsigned int &com1, unsigned int &com2, unsigned int &com3, unsigned int &com4)
 {
-	QString sp = s->value("COMPorts").toString();
+	QString sp = s->value("LegacyPorts/COMPorts").toString();
 
 	com1 = 0x3F8;
 	com2 = 0x2F8;
@@ -1983,7 +1667,6 @@ int E2Profile::GetCOMAddress(unsigned int &com1, unsigned int &com2, unsigned in
 
 	return OK;
 }
-
 
 void E2Profile::SetCOMAddress(unsigned int com1, unsigned int com2, unsigned int com3, unsigned int com4)
 {
@@ -2014,14 +1697,14 @@ void E2Profile::SetCOMAddress(unsigned int com1, unsigned int com2, unsigned int
 			str.sprintf("%X", com1);
 		}
 
-		s->setValue("COMPorts", str);
+		s->setValue("LegacyPorts/COMPorts", str);
 	}
 }
 
 
 int E2Profile::GetLPTAddress(unsigned int &lpt1, unsigned int &lpt2, unsigned int &lpt3)
 {
-	QString sp = s->value("LPTPorts").toString();
+	QString sp = s->value("LegacyPorts/LPTPorts").toString();
 
 	lpt1 = 0x378;
 	lpt2 = 0x278;
@@ -2034,7 +1717,6 @@ int E2Profile::GetLPTAddress(unsigned int &lpt1, unsigned int &lpt2, unsigned in
 
 	return OK;
 }
-
 
 void E2Profile::SetLPTAddress(unsigned int lpt1, unsigned int lpt2, unsigned int lpt3)
 {
@@ -2058,7 +1740,7 @@ void E2Profile::SetLPTAddress(unsigned int lpt1, unsigned int lpt2, unsigned int
 			str.sprintf("%X", lpt1);
 		}
 
-		s->setValue("LPTPorts", str);
+		s->setValue("LegacyPorts/LPTPorts", str);
 	}
 }
 
@@ -2126,53 +1808,6 @@ void E2Profile::SetDefaultFileType(FileType ft)
 	}
 }
 
-/**
-int E2Profile::GetGpioPinCtrl(int idx)
-{
-	return  s->value(QString("Gpio%1/PinControlOut").arg(idx), DEF_GPIO_CTRL).toInt();
-}
-
-void E2Profile::SetGpioPinCtrl(int idx, int pin)
-{
-	s->setValue(QString("Gpio%1/PinControlOut").arg(idx), pin);
-}
-
-
-int E2Profile::GetGpioPinClock(int idx)
-{
-	return s->value(QString("Gpio%1/PinClockOut").arg(idx), DEF_GPIO_CLOCK).toInt();
-}
-
-
-void E2Profile::SetGpioPinClock(int idx, int pin)
-{
-	s->setValue(QString("Gpio%1/PinClockOut").arg(idx), pin);
-}
-
-
-int E2Profile::GetGpioPinDataIn(int idx)
-{
-	return s->value(QString("Gpio%1/PinDataIn").arg(idx), DEF_GPIO_DATAIN).toInt();
-}
-
-
-void E2Profile::SetGpioPinDataIn(int idx, int pin)
-{
-	s->setValue(QString("Gpio%1/PinDataIn").arg(idx), pin);
-}
-
-
-int E2Profile::GetGpioPinDataOut(int idx)
-{
-	return s->value(QString("Gpio%1/PinDataOut").arg(idx), DEF_GPIO_DATAOUT).toInt();
-}
-
-
-void E2Profile::SetGpioPinDataOut(int idx, int pin)
-{
-	s->setValue(QString("Gpio%1/PinDataOut").arg(idx), QString::number(pin));
-}
-**/
 
 bool E2Profile::GetEditBufferEnabled()
 {
@@ -2225,50 +1860,6 @@ void E2Profile::SetInterfacePins(HInterfaceType type, const InterfPins &pins)
 	s->endGroup();
 }
 
-/**
-int E2Profile::GetMpssePinCtrl()
-{
-	return s->value("Mpsse/PinControl", DEF_MPSSE_CTRL).toInt();
-}
-
-void E2Profile::SetMpssePinCtrl(int pin)
-{
-	s->setValue("Mpsse/PinControl", pin);
-}
-
-
-int E2Profile::GetMpssePinClock()
-{
-	return s->value("Mpsse/PinClock", DEF_MPSSE_CLOCK).toInt();
-}
-
-void E2Profile::SetMpssePinClock(int pin)
-{
-	s->setValue("Mpsse/PinClock", pin);
-}
-
-
-int E2Profile::GetMpssePinDataIn()
-{
-	return s->value("Mpsse/PinDataIn", DEF_MPSSE_DATAIN).toInt();
-}
-
-void E2Profile::SetMpssePinDataIn(int pin)
-{
-	s->setValue("Mpsse/PinDataIn", pin);
-}
-
-
-int E2Profile::GetMpssePinDataOut()
-{
-	return s->value("Mpsse/PinDataOut", DEF_MPSSE_DATAOUT).toInt();
-}
-
-void E2Profile::SetMpssePinDataOut(int pin)
-{
-	s->setValue("Mpsse/PinDataOut", pin);
-}
-**/
 
 int E2Profile::GetInterfacePort()
 {

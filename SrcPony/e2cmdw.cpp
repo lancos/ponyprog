@@ -59,7 +59,7 @@
 #include "sernumdlg.h"
 #include "errcode.h"
 #include "eeptypes.h"
-
+#include "prefdialog.h"
 
 
 #define STATUSBAR_FORM  "    Size     0 Bytes     CRC  0000h      "
@@ -97,7 +97,7 @@ e2CmdWindow::e2CmdWindow(QWidget *parent) :
 
 	setupUi(this);
 
-	qDebug() << "e2CmdWindow::e2CmdWindow(" APP_NAME ")";
+	qDebug() << __PRETTY_FUNCTION__ << "(" APP_NAME ")";
 
 	cbxEEPType = NULL;
 	cbxEEPSubType = NULL;
@@ -116,7 +116,7 @@ e2CmdWindow::e2CmdWindow(QWidget *parent) :
 	//      sysFont = sysFont;
 	// EK 2017
 	// to check this
-	fontSize = E2Profile::GetFontSize();//sysFont.pointSize();
+	fontSize = E2Profile::GetFontSize();	//sysFont.pointSize();
 
 	programStyleSheet = QString().sprintf("font-size: %dpt", fontSize);
 
@@ -131,7 +131,6 @@ e2CmdWindow::e2CmdWindow(QWidget *parent) :
 		setStyleSheet(programStyleSheet);
 	}
 
-
 	if (readLangDir() == false)   // init from langFiles variable in format "filename:language"
 	{
 		QMessageBox msgBox(QMessageBox::Warning, "Warning", "Directory with other languages not found\nDefault GUI language is english", QMessageBox::Close);
@@ -139,7 +138,6 @@ e2CmdWindow::e2CmdWindow(QWidget *parent) :
 		msgBox.setButtonText(QMessageBox::Close, "Close");
 		msgBox.exec();
 	}
-
 
 	createFontSizeMenu();
 
@@ -284,13 +282,9 @@ e2CmdWindow::e2CmdWindow(QWidget *parent) :
 	E2Profile::readDialogSettings(this, false);
 }
 
-//void e2CmdWindow::SetSubType()
-//{
-//}
-
 e2CmdWindow::~e2CmdWindow()
 {
-	qDebug() << "e2CmdWindow::~e2CmdWindow()";
+	qDebug() << __PRETTY_FUNCTION__;
 
 	// Now put a delete for each new in the constructor.
 
@@ -611,7 +605,8 @@ void e2CmdWindow::translateGUI()
 	menuSetup->setTitle(translate(STR_MENUSETUP));
 	// TODO translation for font size
 	actionInterfaceSetup->setText(translate(STR_INTERFSETUP));
-	actionCalibration->setText(translate(STR_CALIBRATION));
+	actionCalibration->setText(translate(STR_CALIBRATION) + "...");
+	actionPreferences->setText(translate(STR_PREFERENCES) + "...");
 	//     STR_REMOTEMODE
 
 	menuHelp->setTitle(translate(STR_MENUQMARK));
@@ -677,7 +672,7 @@ int e2CmdWindow::OnError(int err_no, const QString &msgerr)
 	{
 	case 0:
 	{
-		QMessageBox note(QMessageBox::Critical,  "Error", translate(STR_DEVNOTRESP), QMessageBox::Close);
+		QMessageBox note(QMessageBox::Critical, "Error", translate(STR_DEVNOTRESP), QMessageBox::Close);
 		note.setStyleSheet(programStyleSheet);
 		note.setButtonText(QMessageBox::Close, translate(STR_CLOSE));
 		note.exec();
@@ -1701,11 +1696,10 @@ void e2CmdWindow::createSignalSlotConnections()
 	connect(actiontEEPType, SIGNAL(triggered()), this, SLOT(onSelectEEPType(int val)));
 	connect(actiontEEPSubtype, SIGNAL(triggered()), this, SLOT(onEEPSubType(int val)));
 #endif
-	//connect(actionCalibration, SIGNAL(triggered()), this, SLOT(onReadCalibration(int idx)));
+	connect(actionReadOscByte, SIGNAL(triggered()), this, SLOT(onReadCalibration()));
 	// interface setup
 	connect(actionInterfaceSetup, SIGNAL(triggered()), this, SLOT(onInterfSetup()));
 	connect(actionSetup, SIGNAL(triggered()), this, SLOT(onInterfSetup()));
-	//      connect(actiontWriteCalibration, SIGNAL(triggered()), this, SLOT( onWriteCalibration(int idx)));
 	//      connect(actiontReadSecurity, SIGNAL(triggered()), this, SLOT( onReadSecurity(bool display_dialog)));
 
 	//     connect(pushOk, SIGNAL(clicked()), this, SLOT(onOk()));
@@ -2046,20 +2040,11 @@ void e2CmdWindow::onHelp()
 }
 
 
-void e2CmdWindow::onReadCalibration(int idx)
+void e2CmdWindow::onReadCalibration()
 {
 	if (IsAppReady())
 	{
 		CmdReadCalibration(0);
-	}
-}
-
-
-void e2CmdWindow::onWriteCalibration(int idx)
-{
-	if (IsAppReady())
-	{
-		OscCalibOption();
 	}
 }
 
@@ -2624,12 +2609,12 @@ int e2CmdWindow::CmdRead(int type)
 		rval = awip->Read(type);
 		e2Prg->reset();
 
+		first_line = 0;
+		//curIndex = 0;
+		Draw();
+
 		if (rval > 0)
 		{
-			first_line = 0;
-			//curIndex = 0;
-			Draw();
-
 			QString sp;
 			//sp = GetEEPTypeString(awip->GetEEPPriType(), awip->GetEEPSubType());
 			sp = GetEEPTypeString(awip->GetEEPId());
@@ -2651,10 +2636,6 @@ int e2CmdWindow::CmdRead(int type)
 		}
 		else
 		{
-			first_line = 0;
-			//curIndex = 0;
-			Draw();
-
 			qDebug() << "CmdWindow->Read -- Error";
 
 			result = rval;
@@ -2766,25 +2747,19 @@ int e2CmdWindow::CmdWrite(int type, bool verify)
 
 					if (rval > 0)     //23/10/1999
 					{
-						//Aggiunto il 01/10/98
 						first_line = 0;
-						//                                              curIndex = 0;
-						// EK 2017
-						// TODO
 						Draw();
 
 						if (GetDevSize() == 0)
 						{
 							QString sp;
-							//                                                      sp = GetEEPTypeString(awip->GetEEPPriType(), awip->GetEEPSubType());
+							//sp = GetEEPTypeString(awip->GetEEPPriType(), awip->GetEEPSubType());
 							sp = GetEEPTypeString(awip->GetEEPId());
-							//                             qDebug() << "CmdWrite" << awip->GetEEPPriType() << awip->GetEEPSubType() << sp;
+							//qDebug() << "CmdWrite" << awip->GetEEPPriType() << awip->GetEEPSubType() << sp;
 							UpdateStrFromStr(sp);
 						}
 
 						awip->RecalcCRC();
-						//---
-
 						UpdateStatusBar();
 
 						if (verbose == verboseAll)
@@ -2792,7 +2767,6 @@ int e2CmdWindow::CmdWrite(int type, bool verify)
 							QMessageBox note(QMessageBox::Information, "Write", translate(STR_MSGWRITEOK), QMessageBox::Ok);
 							note.setStyleSheet(programStyleSheet);
 							note.setButtonText(QMessageBox::Ok, translate(STR_CLOSE));
-//
 							note.exec();
 						}
 					}
@@ -2803,7 +2777,6 @@ int e2CmdWindow::CmdWrite(int type, bool verify)
 							QMessageBox note(QMessageBox::Warning, "Write", translate(STR_MSGWRITEFAIL), QMessageBox::Ok);
 							note.setStyleSheet(programStyleSheet);
 							note.setButtonText(QMessageBox::Ok, translate(STR_CLOSE));
-//
 							note.exec();
 						}
 
@@ -5257,7 +5230,6 @@ void e2CmdWindow::UpdateStatusBar()
 		return;
 	}
 
-
 	lblStringID->setText(" ");
 
 	if (awip)
@@ -6546,5 +6518,15 @@ void e2CmdWindow::Exit()
 			E2Profile::writeDialogSettings(this, false);
 			E2Profile::sync();
 		}
+	}
+}
+
+void e2CmdWindow::on_actionPreferences_triggered()
+{
+	if (IsAppReady())
+	{
+		PrefDialog prefDlg(this, translate(STR_PREFERENCES));
+
+		prefDlg.exec();
 	}
 }

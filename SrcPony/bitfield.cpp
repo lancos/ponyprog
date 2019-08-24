@@ -527,6 +527,3 @@ void BitFieldWidget::onBitClicked(QTreeWidgetItem *itm, int col)
 		}
 	}
 }
-
-
-

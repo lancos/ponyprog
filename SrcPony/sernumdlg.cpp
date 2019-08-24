@@ -24,12 +24,10 @@
 //                                                                         //
 //=========================================================================//
 
-
 #include <QDebug>
 
 #include "types.h"
 #include "sernumdlg.h"
-
 
 SerNumDialog::SerNumDialog(QWidget *bw, const QString title) :
 	QDialog(bw)
@@ -38,6 +36,8 @@ SerNumDialog::SerNumDialog(QWidget *bw, const QString title) :
 
 	setWindowTitle(title);
 	setTextWidgets();
+
+	E2Profile::readDialogSettings(this, false);
 
 	loc = 0;
 	val = 0;
@@ -56,15 +56,9 @@ SerNumDialog::SerNumDialog(QWidget *bw, const QString title) :
 	if (size < 0 || size > 4)
 		size = 4;
 
-	QString str;
-	str = QString().sprintf("0x%04lX", loc);
-	txiLoc->setText(str);
-
-	str = QString().sprintf("%d", size);
-	txiLen->setText(str);
-
-	str = QString().sprintf("%lu", (unsigned long)val);
-	txiVal->setText(str);
+	txiLoc->setText(QString().sprintf("0x%04lX", loc));
+	txiLen->setText(QString().sprintf("%d", size));
+	txiVal->setText(QString().sprintf("%lu", val));
 
 	chkMemOffset->setChecked(memtype);
 	chkAutoInc->setChecked(autoinc);
@@ -83,14 +77,13 @@ SerNumDialog::SerNumDialog(QWidget *bw, const QString title) :
 	connect(pushOk, SIGNAL(clicked()), this, SLOT(onOk()));
 	connect(pushCancel, SIGNAL(clicked()), this, SLOT(reject()));
 
-	qDebug() << "SerNumDialog::SerNumDialog()";
+	qDebug() << __PRETTY_FUNCTION__;
 }
 
 SerNumDialog::~SerNumDialog()
 {
-	qDebug() << "SerNumDialog::~SerNumDialog()";
+	qDebug() << __PRETTY_FUNCTION__;
 }
-
 
 void SerNumDialog::setTextWidgets()
 {
@@ -109,7 +102,6 @@ void SerNumDialog::setTextWidgets()
 	rdbLittleEnd->setText(translate(STR_MSGLITTLEEND));
 	rdbBigEnd->setText(translate(STR_MSGBIGENDIAN));
 }
-
 
 void SerNumDialog::onOk()
 {
@@ -182,12 +174,10 @@ void SerNumDialog::onOk()
 }
 
 
-
 OscCalibDialog::OscCalibDialog(QWidget *bw, e2AppWinInfo *aw, const QString title) :
 	QDialog(bw)
 {
 	setupUi(this);
-
 	setWindowTitle(title);
 
 	loc = 0;
@@ -196,7 +186,9 @@ OscCalibDialog::OscCalibDialog(QWidget *bw, e2AppWinInfo *aw, const QString titl
 	enabled = false;
 	size = 1;
 
-	qDebug() << "OscCalibDialog::OscCalibDialog()";
+	qDebug() << __PRETTY_FUNCTION__;
+
+	E2Profile::readDialogSettings(this, false);
 
 	E2Profile::GetCalibrationAddress(enabled, loc, size, memtype);
 
@@ -206,20 +198,13 @@ OscCalibDialog::OscCalibDialog(QWidget *bw, e2AppWinInfo *aw, const QString titl
 	chkMemOffset->setText(translate(STR_MSGOFFSET));
 	chkEnabled->setText(translate(STR_CALIBRENABLED));
 
-	QString str1;
-	QString str3;
-
 	loc = (loc < 0) ? 0 : loc;
 
-	str1 = QString().sprintf("0x%04lX", loc);
-	str3 = QString().sprintf("%d", val);
-
-	txiLoc->setText(str1);
-	txiVal->setText(str3);
+	txiLoc->setText(QString().sprintf("0x%04lX", loc));
+	txiVal->setText(QString().sprintf("%d", val));
 
 	chkMemOffset->setChecked(memtype);
 	chkEnabled->setChecked(enabled);
-
 
 	pushOk->setText(translate(STR_BTNOK));
 	pushCancel->setText(translate(STR_BTNCANC));
@@ -232,19 +217,17 @@ OscCalibDialog::OscCalibDialog(QWidget *bw, e2AppWinInfo *aw, const QString titl
 	awip = aw;
 }
 
-
 OscCalibDialog::~OscCalibDialog()
 {
-	qDebug() << "OscCalibDialog::~OscCalibDialog()";
+	qDebug() << __PRETTY_FUNCTION__;
 }
-
 
 void OscCalibDialog::onOk()
 {
-	bool ok;
-	long i = txiLoc->text().toLong(&ok);
+	bool ok1, ok2;
+	long i = txiLoc->text().toLong(&ok1, 0);
 
-	if (ok == true)
+	if (ok1)
 	{
 		loc = i;
 	}
@@ -253,39 +236,50 @@ void OscCalibDialog::onOk()
 		QPalette *palette = new QPalette();
 		palette->setColor(QPalette::Text, Qt::red);
 		txiLoc->setPalette(*palette);
-
-		return;
 	}
 
-	long v = txiVal->text().toLong(&ok);
+	int v = txiVal->text().toInt(&ok2, 0);
 
-	if (ok == true)
+	if (ok2)
 	{
-		val = (uint8_t)v;
+		val = v;
 	}
 	else
 	{
 		QPalette *palette = new QPalette();
 		palette->setColor(QPalette::Text, Qt::red);
 		txiVal->setPalette(*palette);
-
-		return;
 	}
 
-	memtype = chkMemOffset->isChecked();
-	enabled = chkEnabled->isChecked();
+	if (ok1 && ok2)
+	{
+		memtype = chkMemOffset->isChecked();
+		enabled = chkEnabled->isChecked();
 
-	E2Profile::SetCalibrationAddress(enabled, loc, size, memtype);
+		E2Profile::SetCalibrationAddress(enabled, loc, size, memtype);
+		E2Profile::writeDialogSettings(this, false);
 
-	accept();
+		accept();
+	}
 }
-
 
 void OscCalibDialog::onRead()
 {
-	int val;
-	val = awip->ReadOscCalibration();
-	QString str = QString().sprintf("0x%02X", val);
-	txiVal->setText(str);
+	int val = awip->ReadOscCalibration();
+	if (val >= 0)
+	{
+		txiVal->setText(QString().sprintf("0x%02X", val));
+	}
+	else
+	{
+		qWarning() << "Error " << val;
+		//if (verbose != verboseNo)
+		//{
+		//	rval = OnError(rval);
+		//}
+		QPalette *palette = new QPalette();
+		palette->setColor(QPalette::Text, Qt::red);
+		txiVal->setPalette(*palette);
+		txiVal->setText(QString("Error %1").arg(val));
+	}
 }
-

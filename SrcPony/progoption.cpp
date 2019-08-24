@@ -33,8 +33,6 @@
 #include "eeptypes.h"
 #include "globals.h"
 
-
-
 progOptionDialog::progOptionDialog(QWidget *bw, long type, int &reload, int &reep, int &erase, int &flash, int &eeprom, int &lock, const QString title) :
 	QDialog(bw)
 {
@@ -54,7 +52,7 @@ progOptionDialog::progOptionDialog(QWidget *bw, long type, int &reload, int &ree
 	//Checked
 	for (int k = 0; k < chk.count(); k++)
 	{
-		chk[k]->setChecked((prog_opt & (1 << k)) ? 1 : 0);
+		chk[k]->setChecked((prog_opt & (1 << k)) ? true : false);
 	}
 
 	connect(pushOk, SIGNAL(clicked()), this, SLOT(onOk()));
@@ -96,4 +94,3 @@ void progOptionDialog::onOk()
 
 	accept();
 }
-

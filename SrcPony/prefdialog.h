@@ -24,67 +24,28 @@
 //                                                                         //
 //=========================================================================//
 
-#ifndef SerNumDIALOG_H
-#define SerNumDIALOG_H
+#ifndef PREFDIALOG_H
+#define PREFDIALOG_H
 
-#include "ui_osccalibr.h"
-#include "ui_sernumcfg.h"
-
-#include <QString>
 #include <QDialog>
 
-#include "Translator.h"
+namespace Ui {
+class PrefDialog;
+}
 
-#include "types.h"
-#include "e2profil.h"
-#include "e2awinfo.h"
-
-
-class SerNumDialog : public QDialog, public cTranslator, public Ui::SNCfgDialog
+class PrefDialog : public QDialog
 {
 	Q_OBJECT
+
   public:
-	SerNumDialog(QWidget *bw, const QString title = translate(STR_MSGSERNUMCFG));
-	virtual ~SerNumDialog();                // Destructor
+	explicit PrefDialog(QWidget *parent, const QString title);
+	~PrefDialog();
 
-  private slots:
-	void onOk();
+private slots:
+	void on_buttonBox_accepted();
 
-  protected:
-
-  private:
-	void setTextWidgets();
-  private:
-	long loc;
-	unsigned long val;
-	bool memtype;
-	bool autoinc;
-	int size;
-	FmtEndian fmt;
+private:
+	Ui::PrefDialog *ui;
 };
 
-
-class OscCalibDialog : public QDialog, public cTranslator, public Ui::OscCalibrDialog
-{
-	Q_OBJECT
-  public:
-	OscCalibDialog(QWidget *bw, e2AppWinInfo *aw, const QString title = translate(STR_MSGOSCCALIBCFG));
-	virtual ~OscCalibDialog();              // Destructor
-
-  private slots:
-	void onOk();
-	void onRead();
-
-  protected:
-
-  private:
-	long loc;
-	int val;
-	bool memtype;
-	bool enabled;
-	int size;
-
-	e2AppWinInfo *awip;
-};
-
-#endif
+#endif // PREFDIALOG_H
