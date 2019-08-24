@@ -1824,7 +1824,9 @@ void E2Profile::GetInterfacePins(HInterfaceType type, InterfPins &pins)
 {
 	InterfPins dpins;	//default pins
 	if (!TypeToInterfPins(type, dpins))
+	{
 		qWarning() << "TypeToInterfPins(" << type << ") Failed";
+	}
 
 	s->beginGroup("InterfacePins-" + TypeToInterfName(type));
 	pins.clock = s->value("clockout", dpins.clock).toInt();
@@ -1842,21 +1844,37 @@ void E2Profile::SetInterfacePins(HInterfaceType type, const InterfPins &pins)
 {
 	s->beginGroup("InterfacePins-" + TypeToInterfName(type));
 	if (pins.clock > -1)
+	{
 		s->setValue("clockout", pins.clock);
+	}
 	if (pins.clockin > -1)
+	{
 		s->setValue("clockin", pins.clockin);
+	}
 	if (pins.ctrl > -1)
+	{
 		s->setValue("controlout", pins.ctrl);
+	}
 	if (pins.ctrlin > -1)
+	{
 		s->setValue("controlin", pins.ctrlin);
+	}
 	if (pins.datain > -1)
+	{
 		s->setValue("datain", pins.datain);
+	}
 	if (pins.dataout > -1)
+	{
 		s->setValue("dataout", pins.dataout);
+	}
 	if (pins.enbus > -1)
+	{
 		s->setValue("enbus", pins.enbus);
+	}
 	if (pins.poweron > -1)
+	{
 		s->setValue("poweron", pins.poweron);
+	}
 	s->endGroup();
 }
 
@@ -1957,7 +1975,7 @@ void E2Profile::recurseRead(QObject *object)
 		combobox->setCurrentIndex(s->value(combobox->objectName()).toInt());
 	}
 
-	foreach(QObject *child, object->children())
+	foreach (QObject *child, object->children())
 	{
 		recurseRead(child);
 	}
@@ -1976,7 +1994,7 @@ void E2Profile::recurseWrite(QObject *object)
 		s->setValue(combobox->objectName(), combobox->currentIndex());
 	}
 
-	foreach(QObject *child, object->children())
+	foreach (QObject *child, object->children())
 	{
 		recurseWrite(child);
 	}

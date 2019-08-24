@@ -36,18 +36,18 @@
 
 MpsseInterface::MpsseInterface()
 	:	cmdbuf(),
-		pin_directions(0),
-		ignore_last_data(true),
-		last_data(0),
-		read_data(0),
-		pin_ctrl(0),
-		pin_ctrlin(0),
-		pin_datain(0),
-		pin_dataout(0),
-		pin_clock(0),
-		pin_clockin(0),
-		pin_poweron(0),
-		ftdi_port(FTDI_PORTA)
+	  pin_directions(0),
+	  ignore_last_data(true),
+	  last_data(0),
+	  read_data(0),
+	  pin_ctrl(0),
+	  pin_ctrlin(0),
+	  pin_datain(0),
+	  pin_dataout(0),
+	  pin_clock(0),
+	  pin_clockin(0),
+	  pin_poweron(0),
+	  ftdi_port(FTDI_PORTA)
 {
 	qDebug() << __PRETTY_FUNCTION__;
 }
@@ -416,14 +416,16 @@ int MpsseInterface::GetPins()
 	{
 		uint8_t buf[2];
 		int timeout = 10000;
-		do {
+		do
+		{
 			ret = ctx.read(buf, 2);
 			if (ret < 0)
 			{
 				qWarning() << __PRETTY_FUNCTION__ << "read failed:" << ctx.error_string();
 				return -1;
 			}
-		} while (ret == 0 && --timeout > 0);
+		}
+		while (ret == 0 && --timeout > 0);
 
 		if (timeout > 0)
 		{
@@ -459,14 +461,16 @@ int MpsseInterface::GetLowPinsMulti(int bufsiz, uint8_t *buf, int len)
 	if (ret == OK)
 	{
 		int timeout = 10000;
-		do {
+		do
+		{
 			ret = ctx.read(buf, len);
 			if (ret < 0)
 			{
 				qWarning() << __PRETTY_FUNCTION__ << "read failed:" << ctx.error_string();
 				return -1;
 			}
-		} while (ret == 0 && --timeout > 0);
+		}
+		while (ret == 0 && --timeout > 0);
 
 		if (timeout == 0)
 		{
@@ -593,14 +597,16 @@ int MpsseInterface::xferBit(int &err, int b, int mode)
 		if (ret == OK)
 		{
 			int timeout = 1000;
-			do {
+			do
+			{
 				ret = ctx.read(&ret_byte, 1);
 				if (ret < 0)
 				{
 					qWarning() << __PRETTY_FUNCTION__ << "read failed:" << ctx.error_string();
 					err = -1;
 				}
-			} while (ret == 0 && --timeout > 0);
+			}
+			while (ret == 0 && --timeout > 0);
 
 			if (ret == 1)
 			{
@@ -686,14 +692,16 @@ uint8_t MpsseInterface::xferByte(int &err, uint8_t by, int mode, int bpw, bool l
 		if (ret == OK)
 		{
 			int timeout = 1000;
-			do {
+			do
+			{
 				ret = ctx.read(&ret_byte, 1);
 				if (ret < 0)
 				{
 					qWarning() << __PRETTY_FUNCTION__ << "read failed:" << ctx.error_string();
 					err = -1;
 				}
-			} while (ret == 0 && --timeout > 0);
+			}
+			while (ret == 0 && --timeout > 0);
 
 			if (ret == 1)
 			{
@@ -1061,7 +1069,8 @@ int MpsseInterface::TestPort(int port_no)
 	if (ret_val == OK)
 	{
 		if (TypeToInterfVidPid(PONYPROG_FT) == usb_vp)
-		{	//PonyProgFT
+		{
+			//PonyProgFT
 			w.WaitMsec(10);
 			ret_val = GetPresence(0x0700, 0);
 
@@ -1090,7 +1099,8 @@ int MpsseInterface::TestPort(int port_no)
 			}
 		}
 		else if (TypeToInterfVidPid(FTDI_JTAGKEY) == usb_vp)
-		{	//JtagKey
+		{
+			//JtagKey
 			ret_val = OK;
 		}
 		else

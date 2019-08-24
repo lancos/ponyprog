@@ -52,9 +52,13 @@ SerNumDialog::SerNumDialog(QWidget *bw, const QString title) :
 	fmt = E2Profile::GetSerialNumFormat();
 
 	if (loc < 0)
+	{
 		loc = 0;
+	}
 	if (size < 0 || size > 4)
+	{
 		size = 4;
+	}
 
 	txiLoc->setText(QString().sprintf("0x%04lX", loc));
 	txiLen->setText(QString().sprintf("%d", size));

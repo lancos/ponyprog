@@ -234,7 +234,7 @@ class e2CmdWindow : public QMainWindow, public e2App, public Ui::MainWindow
 
 	void on_actionPreferences_triggered();
 
-public:
+  public:
 	int CmdHelp();
 
   protected:

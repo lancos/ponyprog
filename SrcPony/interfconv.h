@@ -29,7 +29,8 @@
 
 #include "globals.h"
 
-enum {
+enum
+{
 	FTDI_PORTA = 0,
 	FTDI_PORTB,
 	FTDI_PORTC,

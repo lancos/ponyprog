@@ -29,7 +29,8 @@
 
 #include <QDialog>
 
-namespace Ui {
+namespace Ui
+{
 class PrefDialog;
 }
 
@@ -41,10 +42,10 @@ class PrefDialog : public QDialog
 	explicit PrefDialog(QWidget *parent, const QString title);
 	~PrefDialog();
 
-private slots:
+  private slots:
 	void on_buttonBox_accepted();
 
-private:
+  private:
 	Ui::PrefDialog *ui;
 };
 

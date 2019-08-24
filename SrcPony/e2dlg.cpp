@@ -215,43 +215,77 @@ void e2Dialog::setSettings()
 	{
 	case INTERF_COM:
 		if (ckControlOutCOM->isChecked())
+		{
 			pol |= RESETINV;
+		}
 		if (ckClockOutCOM->isChecked())
+		{
 			pol |= CLOCKINV;
+		}
 		if (ckDataInCOM->isChecked())
+		{
 			pol |= DININV;
+		}
 		if (ckDataOutCOM->isChecked())
+		{
 			pol |= DOUTINV;
+		}
 		break;
 	case INTERF_LPT:
 		if (ckControlOutLPT->isChecked())
+		{
 			pol |= RESETINV;
+		}
 		if (ckClockOutLPT->isChecked())
+		{
 			pol |= CLOCKINV;
+		}
 		if (ckDataInLPT->isChecked())
+		{
 			pol |= DININV;
+		}
 		if (ckDataOutLPT->isChecked())
+		{
 			pol |= DOUTINV;
+		}
 		if (ckClockInLPT->isChecked())
+		{
 			pol |= CLOCKININV;
+		}
 		break;
 	case INTERF_USB:
 		if (ckControlOutUSB->isChecked())
+		{
 			pol |= RESETINV;
+		}
 		if (ckClockOutUSB->isChecked())
+		{
 			pol |= CLOCKINV;
+		}
 		if (ckDataInUSB->isChecked())
+		{
 			pol |= DININV;
+		}
 		if (ckDataOutUSB->isChecked())
+		{
 			pol |= DOUTINV;
+		}
 		if (ckPowerOnUSB->isChecked())
+		{
 			pol |= POWERINV;
+		}
 		if (ckEnaODUSB->isChecked())
+		{
 			pol |= ENBUSINV;
+		}
 		if (ckClockInUSB->isChecked())
+		{
 			pol |= CLOCKININV;
+		}
 		if (ckControlInUSB->isChecked())
+		{
 			pol |= CTRLININV;
+		}
 
 		//Set pins configuration
 		pins.clock = cbxClockOutUSB->currentIndex();
@@ -268,21 +302,37 @@ void e2Dialog::setSettings()
 		break;
 	case INTERF_GPIO:
 		if (ckControlOutGPIO->isChecked())
+		{
 			pol |= RESETINV;
+		}
 		if (ckClockOutGPIO->isChecked())
+		{
 			pol |= CLOCKINV;
+		}
 		if (ckDataInGPIO->isChecked())
+		{
 			pol |= DININV;
+		}
 		if (ckDataOutGPIO->isChecked())
+		{
 			pol |= DOUTINV;
+		}
 		if (ckPowerOnGPIO->isChecked())
+		{
 			pol |= POWERINV;
+		}
 		if (ckEnaODGPIO->isChecked())
+		{
 			pol |= ENBUSINV;
+		}
 		if (ckClockInGPIO->isChecked())
+		{
 			pol |= CLOCKININV;
+		}
 		if (ckControlInGPIO->isChecked())
+		{
 			pol |= CTRLININV;
+		}
 
 		pins.clock = cbxClockOutGPIO->currentIndex();
 		pins.ctrl = cbxControlOutGPIO->currentIndex();
@@ -656,7 +706,9 @@ void e2Dialog::on_pushDefaultsUSB_clicked()
 
 	InterfPins dpins;	//default pins
 	if (!TypeToInterfPins(interf_type, dpins))
+	{
 		qWarning() << __PRETTY_FUNCTION__ << " TypeToInterfPins(" << interf_type << ") Failed";
+	}
 	cbxClockOutUSB->setCurrentIndex(dpins.clock);
 	cbxControlOutUSB->setCurrentIndex(dpins.ctrl);
 	cbxDataInUSB->setCurrentIndex(dpins.datain);
@@ -700,7 +752,9 @@ void e2Dialog::on_pushDefaultsGPIO_clicked()
 
 	InterfPins dpins;	//default pins
 	if (!TypeToInterfPins(interf_type, dpins))
+	{
 		qWarning() << __PRETTY_FUNCTION__ << " TypeToInterfPins(" << interf_type << ") Failed";
+	}
 	cbxClockOutGPIO->setCurrentIndex(dpins.clock);
 	cbxControlOutGPIO->setCurrentIndex(dpins.ctrl);
 	cbxDataInGPIO->setCurrentIndex(dpins.datain);
@@ -722,7 +776,7 @@ void e2Dialog::recurseCbxHide(QObject *object)
 		combobox->hide();
 	}
 
-	foreach(QObject *child, object->children())
+	foreach (QObject *child, object->children())
 	{
 		recurseCbxHide(child);
 	}

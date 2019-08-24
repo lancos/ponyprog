@@ -67,7 +67,7 @@ class e2Dialog : public QDialog, public cTranslator, public Ui::E2Dialog
 	void on_pushDefaultsLPT_clicked();
 	void on_pushDefaultsGPIO_clicked();
 
-private:
+  private:
 	int Test(int p = -1, bool open_only = false) const;
 	void setWidgetsText();
 	void getSettings();
