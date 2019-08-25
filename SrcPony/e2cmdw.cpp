@@ -205,8 +205,17 @@ e2CmdWindow::e2CmdWindow(QWidget *parent) :
 
 	// The Canvas
 	qbuf = new QBuffer(this);
-	e2HexEdit = new QHexEdit(this); //e2TextCanvasPane(this);
-	setCentralWidget(e2HexEdit);
+	e2HexEdit = new QHexEdit(this);
+	//e2HexEdit->setMinimumSize(100, 100);
+	qbufSplit = new QBuffer(this);
+	e2HexEditSplit = new QHexEdit(this);
+	splitter = new QSplitter(this);
+	splitter->setOrientation(Qt::Vertical);
+	splitter->setChildrenCollapsible(false);
+	splitter->addWidget(e2HexEdit);
+	splitter->addWidget(e2HexEditSplit);
+
+	setCentralWidget(splitter);
 	e2HexEdit->setFocus();
 
 	// create all signals, from e2HexEdit too
@@ -262,16 +271,21 @@ e2CmdWindow::e2CmdWindow(QWidget *parent) :
 	//         UpdateMenuType( GetE2PPriType(E2Profile::GetLastDevType()), GetE2PSubType(E2Profile::GetLastDevType()) );
 
 	e2HexEdit->setReadOnly(!actionEditBuferEnabled->isChecked());
+	e2HexEditSplit->setReadOnly(!actionEditBuferEnabled->isChecked());
 
 	//      e2HexEdit->setHighlightingColor(settings.value("Editor/HighlightingColor").value<QColor>());
 	//      e2HexEdit->setSelectionColor(settings.value("Editor/SelectionColor").value<QColor>());
 	//      e2HexEdit->setAddressAreaColor(settings.value("Editor/AddressAreaColor").value<QColor>());
 	e2HexEdit->setAddressFontColor(Qt::darkRed);
+	e2HexEditSplit->setAddressFontColor(Qt::darkRed);
 	//      e2HexEdit->setAsciiAreaColor(settings.value("Editor/AsciiAreaColor").value<QColor>());
 
 	e2HexEdit->setAsciiFontColor(Qt::darkMagenta);
+	e2HexEditSplit->setAsciiFontColor(Qt::darkMagenta);
 	e2HexEdit->setHexFontColor(Qt::darkBlue);
+	e2HexEditSplit->setHexFontColor(Qt::darkGreen);
 	e2HexEdit->setHexCaps(true);
+	e2HexEditSplit->setHexCaps(true);
 	//      e2HexEdit->setFont(settings.value("Editor/Font").value<QFont>());
 	//      e2HexEdit->setAddressWidth(settings.value("AddressAreaWidth").toInt());
 	//      e2HexEdit->setBytesPerLine(settings.value("BytesPerLine").toInt());
@@ -280,6 +294,7 @@ e2CmdWindow::e2CmdWindow(QWidget *parent) :
 	//curIndex = 0;
 
 	E2Profile::readDialogSettings(this, false);
+	E2Profile::restoreSplitter(splitter);
 }
 
 e2CmdWindow::~e2CmdWindow()
@@ -288,9 +303,12 @@ e2CmdWindow::~e2CmdWindow()
 
 	// Now put a delete for each new in the constructor.
 
-	//      delete e2Menu;
+	//delete splitter;
 	delete e2HexEdit;
+	delete e2HexEditSplit;
 	delete qbuf;
+	delete qbufSplit;
+
 	// EK 2017
 	// TODO remove created QAction* lists and other
 
@@ -1463,8 +1481,10 @@ void e2CmdWindow::setFontForWidgets()
 {
 #ifdef Q_OS_WIN32
 	e2HexEdit->setFont(QFont("Courier", E2Profile::GetFontSize()));
+	e2HexEditSplit->setFont(QFont("Courier", E2Profile::GetFontSize()));
 #else
 	e2HexEdit->setFont(QFont("Monospace", E2Profile::GetFontSize()));
+	e2HexEditSplit->setFont(QFont("Monospace", E2Profile::GetFontSize()));
 #endif
 
 	//     buttonsWidget->setStyleSheet(programStyleSheet);
@@ -1510,7 +1530,7 @@ void e2CmdWindow::onDtaChanged()
 {
 	if (awip)
 	{
-		awip->BufChanged(e2HexEdit->isModified());
+		awip->BufChanged(e2HexEdit->isModified() || e2HexEditSplit->isModified());
 		UpdateStatusBar();
 	}
 }
@@ -1527,6 +1547,7 @@ void e2CmdWindow::createSignalSlotConnections()
 	// hex editor connections
 	//      connect(e2HexEdit, SIGNAL(overwriteModeChanged(bool)), this, SLOT(onOverwriteMode(bool)));
 	connect(e2HexEdit, SIGNAL(dataChanged()), this, SLOT(onDtaChanged()));
+	connect(e2HexEditSplit, SIGNAL(dataChanged()), this, SLOT(onDtaChanged()));
 
 	// EK 2017
 	// TODO
@@ -2107,6 +2128,7 @@ void e2CmdWindow::onEditBufToggle()
 	bool b = actionEditBuferEnabled->isChecked();
 
 	e2HexEdit->setReadOnly(!b);
+	e2HexEditSplit->setReadOnly(!b);
 	E2Profile::SetEditBufferEnabled(b);
 
 	// EK 2017
@@ -6198,10 +6220,24 @@ void e2CmdWindow::UpdateFileMenu()
 //Update the buffer with edit changes
 void e2CmdWindow::UpdateBuffer()
 {
+	bool flag1 = false, flag2 = false;
+
 	if (e2HexEdit->isModified())
 	{
 		const char *ptr = e2HexEdit->data().constData();
-		memcpy(awip->GetBufPtr(), ptr, awip->GetSize());
+		memcpy(awip->GetBufPtr(), ptr, e2HexEdit->data().length());
+		//memcpy(awip->GetBufPtr(), ptr, awip->GetSize());
+		flag1 = true;
+	}
+	if (e2HexEditSplit->isModified())
+	{
+		const char *ptr = e2HexEditSplit->data().constData();
+		memcpy(awip->GetBufPtr(), ptr, e2HexEditSplit->data().length());
+		flag1 = true;
+	}
+
+	if (flag1 || flag2)
+	{
 		awip->BufChanged();
 		Draw();
 	}
@@ -6209,24 +6245,35 @@ void e2CmdWindow::UpdateBuffer()
 
 void e2CmdWindow::Draw()
 {
-	if (awip == 0)
+	if (awip == 0 || !awip->IsBufferValid())
 	{
 		return;        // ** Vlib 1.22 call Draw before the AppWinInfo is created ** 28/08/99
 	}
 
-	if (!awip->IsBufferValid())     // ** 01/05/1998 **
+	if (awip->GetSplittedInfo() > 0)
 	{
-		return;
+		qbuf->setData(reinterpret_cast<char *>(awip->GetBufPtr()), awip->GetSplittedInfo());
+		e2HexEdit->setData(*qbuf);
+
+		qDebug() << __PRETTY_FUNCTION__ << "Datalen: " << e2HexEdit->data().length() << " Splitted: " << awip->GetSplittedInfo() << " Size: " << awip->GetSize();
+
+		char *ptr = reinterpret_cast<char *>(awip->GetBufPtr());
+		long ofst = awip->GetSplittedInfo();
+		long len = awip->GetSize() - ofst;
+		ptr += ofst;
+
+		qbufSplit->setData(ptr, len);
+		e2HexEditSplit->setData(*qbufSplit);
+		e2HexEditSplit->show();
+
+		qDebug() << __PRETTY_FUNCTION__ << "Datalen: " << e2HexEditSplit->data().length() << " Offset: " << ofst << " Len: " << len;
 	}
-
-	qbuf->setData(reinterpret_cast<char *>(awip->GetBufPtr()), awip->GetSize());
-	//         dev.open();
-	//         dev.read(reinterpret_cast<char*>(awip->GetBufPtr()), awip->GetBufSize());
-
-	//      QByteArray databuf = QByteArray(reinterpret_cast<char*>(awip->GetBufPtr()), awip->GetBufSize());
-	// qDebug() << databuf;
-	e2HexEdit->setData(*qbuf);
-	//         dev.close();
+	else
+	{
+		qbuf->setData(reinterpret_cast<char *>(awip->GetBufPtr()), awip->GetSize());
+		e2HexEdit->setData(*qbuf);
+		e2HexEditSplit->hide();
+	}
 #if 0
 	int no_line;
 	int new_top, new_shown;
@@ -6515,6 +6562,7 @@ void e2CmdWindow::Exit()
 				}
 			}
 
+			E2Profile::saveSplitter(splitter);
 			E2Profile::writeDialogSettings(this, false);
 			E2Profile::sync();
 		}

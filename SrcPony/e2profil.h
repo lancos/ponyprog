@@ -35,6 +35,7 @@
 
 #include <QString>
 #include <QWidget>
+#include <QSplitter>
 
 #define CLOCKINV				(1<<0)
 #define RESETINV				(1<<1)
@@ -279,6 +280,9 @@ class E2Profile
 	static void readDialogSettings(QWidget *window, bool recurse = true);
 	static void writeDialogSettings(QWidget *window, bool recurse = true);
 
+	static void restoreSplitter(QSplitter *spl);
+	static void saveSplitter(QSplitter *spl);
+
   protected:
 	static void recurseRead(QObject *object);
 	static void recurseWrite(QObject *object);
@@ -287,6 +291,8 @@ class E2Profile
 
   private:
 
+	static int getSpeedIndex(const QString &sp);
+	static QString getSpeedName(int speed);
 };
 
 #endif

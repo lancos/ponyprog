@@ -48,7 +48,7 @@
 #include <QMenu>
 #include <QVector>
 #include <QFont>
-
+#include <QSplitter>
 
 #include "device.h"
 #include "Translator.h"
@@ -406,7 +406,10 @@ class e2CmdWindow : public QMainWindow, public e2App, public Ui::MainWindow
 
 	// Standard elements
 	QHexEdit *e2HexEdit;             // For the canvas
+	QHexEdit *e2HexEditSplit;
 	QBuffer *qbuf;
+	QBuffer *qbufSplit;
+	QSplitter *splitter;
 
 	QProgressDialog *e2Prg;
 

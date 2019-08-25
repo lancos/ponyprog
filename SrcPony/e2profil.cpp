@@ -316,67 +316,6 @@ void E2Profile::SetI2CBaseAddr(int base_addr)
 }
 
 
-int E2Profile::GetI2CSpeed()
-{
-	QString sp = s->value("I2CBusSpeed", "NORMAL").toString();
-	int rval = NORMAL;              //Default speed
-
-	if (sp.length())
-	{
-		if (sp == "TURBO")
-		{
-			rval = TURBO;
-		}
-		else if (sp == "FAST")
-		{
-			rval = FAST;
-		}
-		else if (sp == "SLOW")
-		{
-			rval = SLOW;
-		}
-		else if (sp == "VERYSLOW")
-		{
-			rval = VERYSLOW;
-		}
-		else if (sp == "ULTRASLOW")
-		{
-			rval = ULTRASLOW;
-		}
-	}
-
-	return rval;
-}
-
-void E2Profile::SetI2CSpeed(int speed)
-{
-	if (speed == TURBO)
-	{
-		s->setValue("I2CBusSpeed", "TURBO");
-	}
-	else if (speed == FAST)
-	{
-		s->setValue("I2CBusSpeed", "FAST");
-	}
-	else if (speed == NORMAL)
-	{
-		s->setValue("I2CBusSpeed", "NORMAL");
-	}
-	else if (speed == SLOW)
-	{
-		s->setValue("I2CBusSpeed", "SLOW");
-	}
-	else if (speed == VERYSLOW)
-	{
-		s->setValue("I2CBusSpeed", "VERYSLOW");
-	}
-	else if (speed == ULTRASLOW)
-	{
-		s->setValue("I2CBusSpeed", "ULTRASLOW");
-	}
-}
-
-
 int E2Profile::GetSPIResetPulse()
 {
 	//Default: 100 msec
@@ -438,10 +377,37 @@ void E2Profile::SetAVRDelayAfterReset(int delay)
 }
 
 
-int E2Profile::GetSPISpeed()
+QString E2Profile::getSpeedName(int speed)
 {
-	QString sp = s->value("SPIBusSpeed", "NORMAL").toString();
-	int rval = NORMAL;              //Default speed
+	if (speed == TURBO)
+	{
+		return QString("TURBO");
+	}
+	else if (speed == FAST)
+	{
+		return QString("FAST");
+	}
+	else if (speed == SLOW)
+	{
+		return QString("SLOW");
+	}
+	else if (speed == VERYSLOW)
+	{
+		return QString("VERYSLOW");
+	}
+	else if (speed == ULTRASLOW)
+	{
+		return QString("ULTRASLOW");
+	}
+	else	//if (speed == NORMAL)
+	{
+		return QString("NORMAL");
+	}
+}
+
+int E2Profile::getSpeedIndex(const QString &sp)
+{
+	int rval = NORMAL;		//Default speed
 
 	if (sp.length())
 	{
@@ -470,275 +436,76 @@ int E2Profile::GetSPISpeed()
 	return rval;
 }
 
+
+int E2Profile::GetI2CSpeed()
+{
+	QString sp = s->value("BusSpeed/I2CBusSpeed", getSpeedName(NORMAL)).toString();
+	return getSpeedIndex(sp);
+}
+
+void E2Profile::SetI2CSpeed(int speed)
+{
+	s->setValue("BusSpeed/I2CBusSpeed", getSpeedName(speed));
+}
+
+
+int E2Profile::GetSPISpeed()
+{
+	QString sp = s->value("BusSpeed/SPIBusSpeed", getSpeedName(NORMAL)).toString();
+	return getSpeedIndex(sp);
+}
+
 void E2Profile::SetSPISpeed(int speed)
 {
-	if (speed == TURBO)
-	{
-		s->setValue("SPIBusSpeed", "TURBO");
-	}
-	else if (speed == FAST)
-	{
-		s->setValue("SPIBusSpeed", "FAST");
-	}
-	else if (speed == NORMAL)
-	{
-		s->setValue("SPIBusSpeed", "NORMAL");
-	}
-	else if (speed == SLOW)
-	{
-		s->setValue("SPIBusSpeed", "SLOW");
-	}
-	else if (speed == VERYSLOW)
-	{
-		s->setValue("SPIBusSpeed", "VERYSLOW");
-	}
-	else if (speed == ULTRASLOW)
-	{
-		s->setValue("SPIBusSpeed", "ULTRASLOW");
-	}
+	s->setValue("BusSpeed/SPIBusSpeed", getSpeedName(speed));
 }
 
 
 int E2Profile::GetMicroWireSpeed()
 {
-	QString sp = s->value("MicroWireBusSpeed", "NORMAL").toString();
-	int rval = NORMAL;              //Default speed
-
-	if (sp.length())
-	{
-		if (sp == "TURBO")
-		{
-			rval = TURBO;
-		}
-		else if (sp == "FAST")
-		{
-			rval = FAST;
-		}
-		else if (sp == "SLOW")
-		{
-			rval = SLOW;
-		}
-		else if (sp == "VERYSLOW")
-		{
-			rval = VERYSLOW;
-		}
-		else if (sp == "ULTRASLOW")
-		{
-			rval = ULTRASLOW;
-		}
-	}
-
-	return rval;
+	QString sp = s->value("BusSpeed/MicroWireBusSpeed", getSpeedName(NORMAL)).toString();
+	return getSpeedIndex(sp);
 }
 
 void E2Profile::SetMicroWireSpeed(int speed)
 {
-	if (speed == TURBO)
-	{
-		s->setValue("MicroWireBusSpeed", "TURBO");
-	}
-	else if (speed == FAST)
-	{
-		s->setValue("MicroWireBusSpeed", "FAST");
-	}
-	else if (speed == NORMAL)
-	{
-		s->setValue("MicroWireBusSpeed", "NORMAL");
-	}
-	else if (speed == SLOW)
-	{
-		s->setValue("MicroWireBusSpeed", "SLOW");
-	}
-	else if (speed == VERYSLOW)
-	{
-		s->setValue("MicroWireBusSpeed", "VERYSLOW");
-	}
-	else if (speed == ULTRASLOW)
-	{
-		s->setValue("MicroWireBusSpeed", "ULTRASLOW");
-	}
+	s->setValue("BusSpeed/MicroWireBusSpeed", getSpeedName(speed));
 }
+
 
 int E2Profile::GetPICSpeed()
 {
-	QString sp = s->value("PICBusSpeed", "NORMAL").toString();
-	int rval = NORMAL;              //Default speed
-
-	if (sp.length())
-	{
-		if (sp == "TURBO")
-		{
-			rval = TURBO;
-		}
-		else if (sp == "FAST")
-		{
-			rval = FAST;
-		}
-		else if (sp == "SLOW")
-		{
-			rval = SLOW;
-		}
-		else if (sp == "VERYSLOW")
-		{
-			rval = VERYSLOW;
-		}
-		else if (sp == "ULTRASLOW")
-		{
-			rval = ULTRASLOW;
-		}
-	}
-
-	return rval;
+	QString sp = s->value("BusSpeed/PICBusSpeed", getSpeedName(NORMAL)).toString();
+	return getSpeedIndex(sp);
 }
 
 void E2Profile::SetPICSpeed(int speed)
 {
-	if (speed == TURBO)
-	{
-		s->setValue("PICBusSpeed", "TURBO");
-	}
-	else if (speed == FAST)
-	{
-		s->setValue("PICBusSpeed", "FAST");
-	}
-	else if (speed == NORMAL)
-	{
-		s->setValue("PICBusSpeed", "NORMAL");
-	}
-	else if (speed == SLOW)
-	{
-		s->setValue("PICBusSpeed", "SLOW");
-	}
-	else if (speed == VERYSLOW)
-	{
-		s->setValue("PICBusSpeed", "VERYSLOW");
-	}
-	else if (speed == ULTRASLOW)
-	{
-		s->setValue("PICBusSpeed", "ULTRASLOW");
-	}
+	s->setValue("BusSpeed/PICBusSpeed", getSpeedName(speed));
 }
 
 
 int E2Profile::GetSDESpeed()
 {
-	QString sp = s->value("SDEBusSpeed", "NORMAL").toString();
-	int rval = NORMAL;              //Default speed
-
-	if (sp.length())
-	{
-		if (sp == "TURBO")
-		{
-			rval = TURBO;
-		}
-		else if (sp == "FAST")
-		{
-			rval = FAST;
-		}
-		else if (sp == "SLOW")
-		{
-			rval = SLOW;
-		}
-		else if (sp == "VERYSLOW")
-		{
-			rval = VERYSLOW;
-		}
-		else if (sp == "ULTRASLOW")
-		{
-			rval = ULTRASLOW;
-		}
-	}
-
-	return rval;
+	QString sp = s->value("BusSpeed/SDEBusSpeed", getSpeedName(NORMAL)).toString();
+	return getSpeedIndex(sp);
 }
 
 void E2Profile::SetSDESpeed(int speed)
 {
-	if (speed == TURBO)
-	{
-		s->setValue("SDEBusSpeed", "TURBO");
-	}
-	else if (speed == FAST)
-	{
-		s->setValue("SDEBusSpeed", "FAST");
-	}
-	else if (speed == NORMAL)
-	{
-		s->setValue("SDEBusSpeed", "NORMAL");
-	}
-	else if (speed == SLOW)
-	{
-		s->setValue("SDEBusSpeed", "SLOW");
-	}
-	else if (speed == VERYSLOW)
-	{
-		s->setValue("SDEBusSpeed", "VERYSLOW");
-	}
-	else if (speed == ULTRASLOW)
-	{
-		s->setValue("SDEBusSpeed", "ULTRASLOW");
-	}
+	s->setValue("BusSpeed/SDEBusSpeed", getSpeedName(speed));
 }
 
 
 int E2Profile::GetIMBusSpeed()
 {
-	QString sp = s->value("IMBusSpeed", "NORMAL").toString();
-	int rval = NORMAL;              //Default speed
-
-	if (sp.length())
-	{
-		if (sp == "TURBO")
-		{
-			rval = TURBO;
-		}
-		else if (sp == "FAST")
-		{
-			rval = FAST;
-		}
-		else if (sp == "SLOW")
-		{
-			rval = SLOW;
-		}
-		else if (sp == "VERYSLOW")
-		{
-			rval = VERYSLOW;
-		}
-		else if (sp == "ULTRASLOW")
-		{
-			rval = ULTRASLOW;
-		}
-	}
-
-	return rval;
+	QString sp = s->value("BusSpeed/IMBusSpeed", getSpeedName(NORMAL)).toString();
+	return getSpeedIndex(sp);
 }
 
 void E2Profile::SetIMBusSpeed(int speed)
 {
-	if (speed == TURBO)
-	{
-		s->setValue("IMBusSpeed", "TURBO");
-	}
-	else if (speed == FAST)
-	{
-		s->setValue("IMBusSpeed", "FAST");
-	}
-	else if (speed == NORMAL)
-	{
-		s->setValue("IMBusSpeed", "NORMAL");
-	}
-	else if (speed == SLOW)
-	{
-		s->setValue("IMBusSpeed", "SLOW");
-	}
-	else if (speed == VERYSLOW)
-	{
-		s->setValue("IMBusSpeed", "VERYSLOW");
-	}
-	else if (speed == ULTRASLOW)
-	{
-		s->setValue("IMBusSpeed", "ULTRASLOW");
-	}
+	s->setValue("BusSpeed/IMBusSpeed", getSpeedName(speed));
 }
 
 
@@ -1964,6 +1731,7 @@ void E2Profile::writeDialogSettings(QWidget *window, bool recurse)
 
 void E2Profile::recurseRead(QObject *object)
 {
+	Q_CHECK_PTR(object);
 	QCheckBox *checkbox = dynamic_cast<QCheckBox *>(object);
 	if (0 != checkbox)
 	{
@@ -1974,6 +1742,11 @@ void E2Profile::recurseRead(QObject *object)
 	{
 		combobox->setCurrentIndex(s->value(combobox->objectName()).toInt());
 	}
+	QSplitter *spl = dynamic_cast<QSplitter *>(object);
+	if (0 != spl)
+	{
+		spl->restoreState(s->value(spl->objectName()).toByteArray());
+	}
 
 	foreach (QObject *child, object->children())
 	{
@@ -1983,6 +1756,7 @@ void E2Profile::recurseRead(QObject *object)
 
 void E2Profile::recurseWrite(QObject *object)
 {
+	Q_CHECK_PTR(object);
 	QCheckBox *checkbox = dynamic_cast<QCheckBox *>(object);
 	if (0 != checkbox)
 	{
@@ -1993,9 +1767,26 @@ void E2Profile::recurseWrite(QObject *object)
 	{
 		s->setValue(combobox->objectName(), combobox->currentIndex());
 	}
+	QSplitter *spl = dynamic_cast<QSplitter *>(object);
+	if (0 != spl)
+	{
+		s->setValue(spl->objectName(), spl->saveState());
+	}
 
 	foreach (QObject *child, object->children())
 	{
 		recurseWrite(child);
 	}
+}
+
+void E2Profile::restoreSplitter(QSplitter *spl)
+{
+	Q_CHECK_PTR(spl);
+	spl->restoreState(s->value("MainWindow/splitterSizes").toByteArray());
+}
+
+void E2Profile::saveSplitter(QSplitter *spl)
+{
+	Q_CHECK_PTR(spl);
+	s->setValue("MainWindow/splitterSizes", spl->saveState());
 }
