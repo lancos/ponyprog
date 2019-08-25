@@ -44,13 +44,12 @@
 
 //const int idAskToSave = 100; // Dummy Command
 
-//=========================>>> e2App::e2App <<<==========================
 e2App::e2App() :
 	awip(0),
 	port_number(0)
 {
 	// Constructor
-	qDebug() << "e2App::e2App()";
+	qDebug() << __PRETTY_FUNCTION__;
 
 	//         awinfo = 0;
 
@@ -92,10 +91,9 @@ e2App::e2App() :
 }
 
 
-//=========================>>> e2App::e2App <<<==========================
 e2App::~e2App()
 {
-	qDebug() << "e2App::~e2App()";
+	qDebug() << __PRETTY_FUNCTION__;
 }
 
 
@@ -169,13 +167,8 @@ void e2App::initSettings()
 	E2Profile::Get8253FallEdge();
 
 #ifdef Q_OS_LINUX
-	E2Profile::GetHtmlBrowseApp();
 	E2Profile::GetLockDir();
 	E2Profile::GetDevDir();
-	E2Profile::GetGpioPinClock();
-	E2Profile::GetGpioPinCtrl();
-	E2Profile::GetGpioPinDataIn();
-	E2Profile::GetGpioPinDataOut();
 #endif
 
 	E2Profile::GetDevName();
@@ -188,7 +181,7 @@ void e2App::initSettings()
 //=====================>>> e2App::OpenPort <<<==============================
 int e2App::OpenPort(int port)
 {
-	qDebug() << "e2App::OpenPort(" << port << ")";
+	qDebug() << __PRETTY_FUNCTION__ << "(" << port << ")";
 
 	if (port >= 0)
 	{
@@ -203,20 +196,20 @@ int e2App::OpenPort(int port)
 //=====================>>> e2App::ClosePort <<<==============================
 void e2App::ClosePort()
 {
-	qDebug() << "e2App::ClosePort() iniBus=" << (hex) << iniBus << (dec);
+	qDebug() << __PRETTY_FUNCTION__ << " iniBus=" << (hex) << iniBus << (dec);
 	iniBus->Close();
 }
 
 //=====================>>> e2App::TestPort <<<==============================
 int e2App::TestPort(int port, bool open_only)
 {
-	qDebug() << "e2App::TestPort(port=" << port << ", open_only=" << open_only << ")";
+	qDebug() << __PRETTY_FUNCTION__ << "(port=" << port << ", open_only=" << open_only << ")";
 
 	int rv = (open_only) ?
 			 busIntp->TestOpen(port) :
 			 busIntp->TestPort(port);
 
-	qDebug() << "e2App::TestPort() = " << rv;
+	qDebug() << __PRETTY_FUNCTION__ << " = " << rv;
 
 	return rv;
 }
@@ -224,32 +217,32 @@ int e2App::TestPort(int port, bool open_only)
 //=====================>>> e2App::OpenBus <<<==============================
 int e2App::OpenBus(BusIO *p)
 {
-	qDebug() << "e2App::OpenBus(" << (hex) << p << (dec) << ")";
+	qDebug() << __PRETTY_FUNCTION__ << "(" << (hex) << p << (dec) << ")";
 
 	iniBus->Close();
 
-	qDebug() << "e2App::OpenBus() ** Close";
+	qDebug() << __PRETTY_FUNCTION__ << " ** Close";
 
 	iniBus = p;
 	int rv = iniBus->Open(GetPort());
 
-	qDebug() << "e2App::OpenBus() ** Open = " << rv;
+	qDebug() << __PRETTY_FUNCTION__ << " ** Open = " << rv;
 
 	if (rv == OK)
 	{
 		rv = busIntp->SetPower(true);
 
-		qDebug() << "e2App::OpenBus() ** SetPower";
+		qDebug() << __PRETTY_FUNCTION__ << " ** SetPower";
 
 		//Power up delay
 		busIntp->WaitMsec(E2Profile::GetPowerUpDelay());
 
-		qDebug() << "e2App::OpenBus() ** Reset";
+		qDebug() << __PRETTY_FUNCTION__ << " ** Reset";
 
 		iniBus->Reset();        //28/10/98
 	}
 
-	qDebug() << "e2App::OpenBus() = " << rv;
+	qDebug() << __PRETTY_FUNCTION__ << " = " << rv;
 
 	return rv;
 }
@@ -257,11 +250,11 @@ int e2App::OpenBus(BusIO *p)
 //=====================>>> e2App::SleepBus <<<==============================
 void e2App::SleepBus()
 {
-	qDebug() << "e2App::CloseBus() iniBus=" << (hex) << iniBus << (dec);
+	qDebug() << __PRETTY_FUNCTION__ << " iniBus=" << (hex) << iniBus << (dec);
 
-	busIntp->WaitMsec(5);    // 08/04/98 -- hold time dell'alimentazione
+	busIntp->WaitMsec(5);		// 08/04/98 -- power hold time
 	busIntp->SetPower(false);
-	iniBus->Close();                // 28/09/98 -- richiude la porta dopo averla usata
+	iniBus->Close();			// 28/09/98 -- richiude la porta dopo averla usata
 }
 
 
@@ -325,10 +318,9 @@ vWindow *e2App::NewAppWin(vWindow *win, char *name,
 
 #endif
 
-//=====================>>> e2App::Calibration <<<==============================
 int e2App::Calibration()
 {
-	qDebug() << "e2App::Calibration()";
+	qDebug() << __PRETTY_FUNCTION__;
 
 	int rv = OK;
 	//      OpenBus(&iicB);         //aggiunto il 06/03/98
@@ -338,30 +330,6 @@ int e2App::Calibration()
 	return rv;
 }
 
-#if 0
-// EK 2017
-//=====================>>> e2App::AppCommand <<<==============================
-void e2App::AppCommand(vWindow *win, ItemVal id, ItemVal val, CmdType cType)
-{
-	// Commands not processed by the window will be passed here
-
-	qDebug() << "e2App::AppCmd(ID: " << id << ")";
-	vApp::AppCommand(win, id, val, cType);
-}
-#endif
-
-//=========================>>> e2App::KeyIn <<<==============================
-// EK 2017 key event filter
-#if 0
-void e2App::KeyIn(vWindow *win, vKey key, unsigned int shift)
-{
-	// Key strokes not processed by the window will be passed here
-
-	vApp::KeyIn(win, key, shift);
-}
-#endif
-
-//=======================>>> e2App::SetInterface <<<=========================
 void e2App::SetInterfaceType(HInterfaceType type)
 {
 	switch (type)
