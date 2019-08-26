@@ -8,7 +8,7 @@ QT  += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport multimedia
 
-CONFIG += rtti_off exceptions_off warn_on
+CONFIG += exceptions_off warn_on
 
 TARGET = ponyprog
 TEMPLATE = app
@@ -278,7 +278,7 @@ FORMS    += SrcPony/forms/aboutdlg.ui \
             SrcPony/forms/osccalibr.ui \
             SrcPony/forms/progoption.ui \
             SrcPony/forms/sernumcfg.ui \
-			SrcPony/forms/prefdialog.ui
+            SrcPony/forms/prefdialog.ui
 
 # for next version, when script for ts files convertion is implemented
 #TRANSLATIONS += localization/qtbase_cs.ts 

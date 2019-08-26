@@ -5,7 +5,7 @@
 AppName={#APPNAME}
 AppPublisher=LancOS 
 AppPublisherURL=http://www.LancOS.com/
-AppUpdatesURL=http://ponyprog.sourceforge.net
+AppUpdatesURL=https://github.com/lancos/ponyprog/releases
 AppVersion={#APPVERSION}
 AppVerName={#APPNAME} {#APPVERSION}
 AppCopyright={#APPCOPYRIGHT}
