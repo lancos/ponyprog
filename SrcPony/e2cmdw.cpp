@@ -374,7 +374,9 @@ void e2CmdWindow::onSelectFile(QAction *a)
 		load_type = ALL_TYPE;
 	}
 
-	QString fname = a->text();
+	//We don't use text() here because some systems (KDE) insert '&' automatically to text. See https://bugs.kde.org/show_bug.cgi?id=337491
+	//don't use fname.remove(Qchar'&') in case there is a '&' in the filename
+	QString fname = a->iconText();
 	fname.replace("~", QDir().homePath());
 
 	if (QFile().exists(fname))
@@ -540,12 +542,14 @@ bool e2CmdWindow::readLangDir()
 void e2CmdWindow::setLang(QAction *mnu)
 {
 	QString lngStr;
-	qDebug() << "setLang";
+
 	//mnu = langGroup->checkedAction();
 
 	lngStr = mnu->text();
-	lngStr = lngStr.remove("&");
+	lngStr = lngStr.remove(QChar('&'));
 	lngStr = lngStr.toLower();
+
+	qDebug() << __PRETTY_FUNCTION__ << " lang: " << lngStr;
 
 	E2Profile::SetCurrentLang(lngStr);
 
@@ -659,25 +663,24 @@ bool e2CmdWindow::getLangTable()
 
 	if (fileLang == "")
 	{
-		return (false);
+		return false;
 	}
 
-	qDebug() << "getLangTable" << fileLang;
+	qDebug() << __PRETTY_FUNCTION__ << " " << fileLang;
 
 	if (QFile::exists(E2Profile::GetLangDir() + "/" + fileLang) == false)
 	{
-		QMessageBox msgBox(QMessageBox::Warning, "Warning", "Language file not exists!\n\n"
+		QMessageBox msgBox(QMessageBox::Warning, "Warning", "Language file does not exist!\n\n"
 						   + E2Profile::GetLangDir() + "\n\n" + fileLang, QMessageBox::Close);
 		msgBox.setStyleSheet(programStyleSheet);
 		msgBox.setButtonText(QMessageBox::Close, translate(STR_CLOSE));
 		msgBox.exec();
 		// not found
-		return (false);
+		return false;
 	}
 
 	return loadTranslation(E2Profile::GetLangDir() + "/" + fileLang);
 }
-
 
 
 int e2CmdWindow::OnError(int err_no, const QString &msgerr)
@@ -1308,7 +1311,6 @@ void e2CmdWindow::onSelectChip(QAction *a)
 
 	selectTypeSubtype(t, st);
 
-	//
 	if (currentAct != NULL)
 	{
 		currentAct->setChecked(false);
@@ -1322,13 +1324,13 @@ void e2CmdWindow::onSelectChip(QAction *a)
 void e2CmdWindow::selectTypeSubtype(const QString &tp, const QString &subtp)
 {
 	QString t_tmp = tp;
-	t_tmp = t_tmp.remove("&");
+	t_tmp.remove(QChar('&'));
 
 	QString st_tmp = subtp;
-	st_tmp = st_tmp.remove("&");
+	st_tmp.remove(QChar('&'));
 
-// 	qDebug() << "selectTypeSubtype" << t_tmp << st_tmp << currentMenu->title;
-//         bool rebuildSubmenu = true;
+	//qDebug() << __PRETTY_FUNCTION__ << " " << t_tmp << st_tmp << currentMenu->title;
+	//bool rebuildSubmenu = true;
 
 	if (currentMenu == NULL || currentMenu->title != t_tmp || cbxEEPSubType->count() == 0) // update the type combobox
 	{
@@ -1479,6 +1481,7 @@ void e2CmdWindow::selectFontSize(QAction *mnu)
 
 void e2CmdWindow::setFontForWidgets()
 {
+	//TODO: use font selection dialog to select the font
 #ifdef Q_OS_WIN32
 	e2HexEdit->setFont(QFont("Courier", E2Profile::GetFontSize()));
 	e2HexEditSplit->setFont(QFont("Courier", E2Profile::GetFontSize()));
@@ -1973,7 +1976,7 @@ void e2CmdWindow::onSelectScript(QAction *a)
 {
 	if (IsAppReady())
 	{
-		QString fname = a->text();
+		QString fname = a->iconText();
 		fname.replace("~", QDir().homePath());
 
 		if (QFile().exists(fname))
@@ -2291,7 +2294,6 @@ void e2CmdWindow::onByteSwap()
 }
 
 
-static bool FileExist(const QString &name);
 static bool CmpExtension(const QString &name, const QString &ext);
 
 int e2CmdWindow::CmdSave(int type, const QString &fname, long relocation)
@@ -2446,7 +2448,7 @@ int e2CmdWindow::CmdReload()
 
 	QString sp1 = E2Profile::GetLastFile(dt1, 0);
 
-	if (sp1.length() && FileExist(sp1))
+	if (sp1.length() && QFile::exists(sp1))
 	{
 		QString sp2 = E2Profile::GetLastFile(dt2, 1);
 
@@ -2455,7 +2457,7 @@ int e2CmdWindow::CmdReload()
 		// because we don't want PrevFile change the selected device. In
 		// case of LastFile is ALL_TYPE there's no need to reload even
 		// PrevFile
-		if (sp2.length() && FileExist(sp2) && dt1 != ALL_TYPE &&
+		if (sp2.length() && QFile::exists(sp2) && dt1 != ALL_TYPE &&
 				CmpExtension(sp2.toLower(), ".e2p") != 0)
 		{
 			awip->SetLoadType(dt2);
@@ -3169,8 +3171,6 @@ int e2CmdWindow::CmdProgram()
 
 	if (result == OK)
 	{
-
-
 		if (verbose == verboseAll)
 		{
 			QMessageBox note(QMessageBox::Information, "Program", translate(STR_MSGPROGRAMOK), QMessageBox::Ok);
@@ -3181,8 +3181,6 @@ int e2CmdWindow::CmdProgram()
 	}
 	else
 	{
-
-
 		if (verbose != verboseNo)
 		{
 			QString str;
@@ -3457,7 +3455,7 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 					}
 				}
 
-				if (ok && !FileExist(lst.at(1)))
+				if (ok && !QFile::exists(lst.at(1)))
 				{
 					ok = false;
 					result = ScriptError(linecounter, 1, lst.at(1), translate(STR_MSGFILENOTFOUND));
@@ -3493,7 +3491,7 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 					}
 				}
 
-				if (ok && !FileExist(lst.at(1)))
+				if (ok && !QFile::exists(lst.at(1)))
 				{
 					ok = false;
 					result = ScriptError(linecounter, 1, lst.at(1), translate(STR_MSGFILENOTFOUND));
@@ -3529,7 +3527,7 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 					}
 				}
 
-				if (ok && !FileExist(lst.at(1)))
+				if (ok && !QFile::exists(lst.at(1)))
 				{
 					ok = false;
 					result = ScriptError(linecounter, 1, lst.at(1), translate(STR_MSGFILENOTFOUND));
@@ -5720,7 +5718,7 @@ int e2CmdWindow::OpenScript(const QString &file)
 
 	if (fileName.length() > 0)
 	{
-		if (FileExist(fileName))
+		if (QFile::exists(fileName))
 		{
 			QString oldname = script_name;
 
@@ -5832,7 +5830,7 @@ int e2CmdWindow::OpenFile(const QString &file)
 
 	if (fileName.length() > 0)
 	{
-		if (FileExist(fileName))
+		if (QFile::exists(fileName))
 		{
 			QString oldfname = awip->GetFileName();
 			awip->SetFileName(fileName);
@@ -6061,6 +6059,8 @@ void e2CmdWindow::UpdateScriptMenu()
 
 				scrptsMenu->addAction(tmpAction);
 				scrListgrp->addAction(tmpAction);
+
+				tmpAction->setIconText(fname);
 			}
 		}
 
@@ -6125,6 +6125,8 @@ void e2CmdWindow::UpdateFileMenu()
 
 				filesMenu->addAction(tmpAction);
 				fileListgrp->addAction(tmpAction);
+
+				tmpAction->setIconText(e);	//make sure icontext is equal to text
 
 				if (stype == "PROG")
 				{
@@ -6456,11 +6458,6 @@ void e2CmdWindow::Print()
 			doc.print(&printer);
 		}
 	}
-}
-
-static bool FileExist(const QString &name)
-{
-	return QFile::exists(name);
 }
 
 bool e2CmdWindow::GetAbortFlag()
