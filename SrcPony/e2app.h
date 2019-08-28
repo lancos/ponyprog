@@ -172,11 +172,11 @@ class e2App : public cTranslator
 	bool scriptMode;        //Script Mode
 	int returnValue;        //return value in Command Line mode
 
-	QString script_name;
-
   protected:
 	// AppWinInfo associated with this window
 	e2AppWinInfo *awip;
+
+	QString script_name;
 
   private:
 	void initSettings();

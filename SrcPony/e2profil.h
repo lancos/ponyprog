@@ -110,6 +110,8 @@ class E2Profile
 	static void SetLastFile(const QString &name, int data = ALL_TYPE);
 	static void SetLastScript(const QString &name);
 
+	static QStringList GetLastScripts();
+
 	static unsigned int GetPolarityLines();
 	static void SetPolarityLines(unsigned int polarity_control);
 
@@ -168,9 +170,6 @@ class E2Profile
 	static void SetFontSize(int sz = 9);
 
 	static QStringList GetLastFiles();
-
-	static QStringList GetLastScripts();
-	static void SetLastScripts(const QStringList &l);
 
 	static int GetAVREraseDelay();
 	static void SetAVREraseDelay(int delay = 30);
@@ -287,6 +286,7 @@ class E2Profile
 	static void recurseRead(QObject *object);
 	static void recurseWrite(QObject *object);
 	static void SetLastFiles(const QStringList &l);
+	static void SetLastScripts(const QStringList &l);
 	static QSettings *s;
 
   private:
