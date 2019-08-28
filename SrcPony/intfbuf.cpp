@@ -300,7 +300,7 @@ int IntelFileBuf::Load(int loadtype, long relocation_offset)
 
 	QTextStream stream(&fh);
 
-	while (!fh.atEnd())
+	while (!stream.atEnd())
 	{
 		riga = stream.readLine();
 
