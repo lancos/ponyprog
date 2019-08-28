@@ -117,22 +117,39 @@ void E2Profile::SetPortNumber(int port)
 }
 
 
+//Check if the entry is already in the list, in this case remove
+//then insert the entry in the head of the list
 void E2Profile::SetLastScript(const QString &name)
 {
-	QStringList l = GetLastScripts();
-	l.insert(0, name);
-	SetLastScripts(l);
-// 	s->setValue("LastScript", name);
+	//Save complete file path
+	QString fname = QFileInfo(name).canonicalFilePath();
+
+	if (fname.length() > 0)
+	{
+		QStringList l = GetLastScripts();
+
+		//Check if already in the list
+		int idx = l.indexOf(fname);
+		if (idx != 0)
+		{
+			l.insert(0, fname);
+			l.removeDuplicates();
+			SetLastScripts(l);
+		}
+	}
 }
 
 //Check if the entry is already in the list, in this case remove
 //then insert the entry in the head of the list
 void E2Profile::SetLastFile(const QString &name, int data_type)
 {
-	if (name.length() > 0)
+	//Save complete file path
+	QString fname = QFileInfo(name).canonicalFilePath();
+
+	if (fname.length() > 0)
 	{
 		QStringList l = GetLastFiles();
-		QString item_name = name;
+		QString item_name = fname;
 		if (data_type == PROG_TYPE)
 		{
 			item_name += "?PROG";
@@ -185,7 +202,6 @@ QString E2Profile::GetLastFile(int &data, int index)
 
 	return sp;
 }
-
 
 QStringList E2Profile::GetLastFiles()
 {

@@ -159,7 +159,7 @@ e2CmdWindow::e2CmdWindow(QWidget *parent) :
 		{
 			//Switch to script mode
 			scriptMode = true;
-			script_name = param;// param, MAXPATH);
+			script_name = param;
 		}
 		else if (param == "-s" || param == "--script")
 		{
@@ -2022,10 +2022,12 @@ void e2CmdWindow::onLoadScript()
 
 		if (rv == OK)
 		{
-			E2Profile::SetLastScript(script_name);
-			UpdateScriptMenu();
-
-			CmdRunScript();
+			rv = CmdRunScript();
+			if (rv != BADPARAM && rv != FILENOTFOUND)	//rv != CMD_SCRIPTERROR
+			{
+				E2Profile::SetLastScript(script_name);
+				UpdateScriptMenu();
+			}
 		}
 
 		SetAppReady();
@@ -5710,7 +5712,16 @@ int e2CmdWindow::OpenScript(const QString &file)
 		else
 		{
 			QString fltr = convertFilterListToString(script_filter);
-			QString open_path = QDir::homePath();			//TODO: load from settings E2Profile::GetLastScriptPath();
+			QString open_path("");
+			QStringList l = E2Profile::GetLastScripts();
+			if (l.count() > 0)
+			{
+				open_path = QFileInfo(l.at(0)).canonicalPath();
+			}
+			if (open_path.length() == 0)
+			{
+				open_path = QDir::homePath();
+			}
 
 			fileName = QFileDialog::getOpenFileName(this, translate(STR_MSGOPENSCRIPT), open_path, fltr);
 		}
@@ -6034,8 +6045,6 @@ QString e2CmdWindow::GetFileName()
 
 void e2CmdWindow::UpdateScriptMenu()
 {
-// 	QString sp;
-
 	if (!scriptMode)
 	{
 		disconnect(scrListgrp, SIGNAL(triggered(QAction *)), this, SLOT(onSelectScript(QAction *)));
