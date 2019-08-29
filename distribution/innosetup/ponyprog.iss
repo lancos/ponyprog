@@ -1,5 +1,5 @@
 ; PonyProg setup script.
-; Copyright by Claudio Lanconelli 1999-2017
+; Copyright by Claudio Lanconelli 1999-2019
 
 [Setup]
 AppName={#APPNAME}
@@ -22,7 +22,6 @@ OutputBaseFilename={#APPNAME}-{#APPVERSION}-setup
 RestartIfNeededByRun=yes
 ;AlwaysRestart=yes
 
-;I never tested with WinNT 3.51, may be we need to replace 3.51 with 4.00
 MinVersion=5.0
 
 [Files]
@@ -49,6 +48,8 @@ Source: "PonyProg.url"; DestDir: "{app}"
 Source: "installdriver.exe"; DestDir: "{app}"
 Source: "inpout32.dll"; DestDir: "{app}"
 ;Source: "INPOUT32.DLL"; DestDir: "{sys}"; Flags: sharedfile promptifolder
+Source: "wdi-simple-64.exe"; DestDir: "{app}"; Flags: replacesameversion promptifolder;
+Source: "wdi-simple-32.exe"; DestDir: "{app}"; Flags: replacesameversion promptifolder;
 
 [UninstallDelete] 
 Type: files; Name: "{app}\bogomips.out"
@@ -58,7 +59,32 @@ Name: "{group}\PonyProg"; Filename: "{app}\{#APPNAME}.exe"; WorkingDir: "{app}"
 Name: "{group}\Visit LancOS PonyProg Web Site"; Filename: "{app}\PonyProg.url"
 
 [Run] 
-Filename: "{app}\installdriver.exe"; Parameters: "install"; StatusMsg: "Installing I/O driver..."
+Filename: "{app}\installdriver.exe"; Parameters: "install"; StatusMsg: "Installing legacy COM/LPT I/O driver..."
+; call wdi-simple
+;
+; -n, --name <name>          set the device name
+; -f, --inf <name>           set the inf name
+; -m, --manufacturer <name>  set the manufacturer name
+; -v, --vid <id>             set the vendor ID (VID)
+; -p, --pid <id>             set the product ID (PID)
+; -i, --iid <id>             set the interface ID (MI)
+; -t, --type <driver_type>   set the driver to install
+;                            (0=WinUSB, 1=libusb0, 2=libusbK, 3=usbser, 4=custom)
+; -d, --dest <dir>           set the extraction directory
+; -x, --extract              extract files only (don't install)
+; -c, --cert <certname>      install certificate <certname> from the
+;                            embedded user files as a trusted publisher
+;     --stealth-cert         installs certificate above without prompting
+; -s, --silent               silent mode
+; -b, --progressbar=[HWND]   display a progress bar during install
+;                            an optional HWND can be specified
+; -o, --timeout              set timeout (in ms) to wait for any
+;                            pending installations
+; -l, --log                  set log level (0=debug, 4=none)
+; -h, --help                 display usage
+;
+Filename: "{app}\wdi-simple-64.exe"; Flags: "runhidden"; Parameters: " --name PonyProgFT --manufacturer ""Eurek srl"" --vid 0x0403 --pid 0x6e38 --progressbar={wizardhwnd} --timeout 120000"; StatusMsg: "Installing PonyProgFT 64bit USB driver (this may take several seconds) ..."; Check: IsWin64
+Filename: "{app}\wdi-simple-32.exe"; Flags: "runhidden"; Parameters: " --name PonyProgFT --manufacturer ""Eurek srl"" --vid 0x0403 --pid 0x6e38 --progressbar={wizardhwnd} --timeout 120000"; StatusMsg: "Installing PonyProgFT 32bit USB driver (this may take several seconds) ..."; Check: not IsWin64
 
 [UninstallRun] 
 Filename: "{app}\installdriver.exe"; Parameters: "remove"
