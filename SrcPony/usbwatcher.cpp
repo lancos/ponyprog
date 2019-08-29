@@ -56,15 +56,26 @@ static int LIBUSB_CALL hotplug_callback(struct libusb_context *ctx, struct libus
 
 void USBWatcher::doPoll()
 {
-	struct timeval zero_tv = { .tv_sec = 0, .tv_usec = 0 };
-	//zero_tv.tv_sec = 1; // timeout 1 sec
-
-	int rv = libusb_handle_events_timeout_completed(usb_ctx,
-			 const_cast<timeval *>(&zero_tv),
-			 NULL);
-	if (rv != LIBUSB_SUCCESS)
+	if (count > 0)
 	{
-		qWarning() << "libusb_handle_events_timeout_completed() failed: " << rv;
+		if (usb_ctx)
+		{
+			struct timeval zero_tv = { .tv_sec = 0, .tv_usec = 0 };
+			//zero_tv.tv_sec = 1; // timeout 1 sec
+
+			int rv = libusb_handle_events_timeout_completed(usb_ctx,
+					 const_cast<timeval *>(&zero_tv),
+					 NULL);
+			if (rv != LIBUSB_SUCCESS)
+			{
+				qWarning() << "libusb_handle_events_timeout_completed() failed: " << rv;
+			}
+		}
+		else
+		{
+			//Don't support hotplug, simulate it with a timer event
+			emit notify(false, 0, 0);
+		}
 	}
 }
 
@@ -75,8 +86,6 @@ USBWatcher::USBWatcher()
 	  count(0)
 {
 	vUSB.clear();
-
-	//hotplug_register();
 }
 
 USBWatcher::~USBWatcher()
@@ -97,6 +106,7 @@ void USBWatcher::hotplug_deregister()
 		{
 			libusb_hotplug_deregister_callback(usb_ctx, cbHandle);
 			libusb_exit(usb_ctx);
+			usb_ctx = 0;
 		}
 		count--;
 	}
@@ -104,30 +114,48 @@ void USBWatcher::hotplug_deregister()
 
 bool USBWatcher::hotplug_register(quint16 vid, quint16 pid)
 {
-	hotplug_deregister();
+	bool result = false;
 
-	libusb_init(&usb_ctx);
+	if (count == 0)
+	{
+		int tval = 1000;
 
-	int rc = libusb_hotplug_register_callback(usb_ctx,
-			 (libusb_hotplug_event)(LIBUSB_HOTPLUG_EVENT_DEVICE_ARRIVED | LIBUSB_HOTPLUG_EVENT_DEVICE_LEFT),
-			 LIBUSB_HOTPLUG_ENUMERATE,
-			 (vid == 0) ? LIBUSB_HOTPLUG_MATCH_ANY : vid,
-			 (pid == 0) ? LIBUSB_HOTPLUG_MATCH_ANY : pid,
-			 LIBUSB_HOTPLUG_MATCH_ANY,
-			 hotplug_callback,
-			 this, //&vUSB,
-			 &cbHandle);
-	if (LIBUSB_SUCCESS != rc)
-	{
-		libusb_exit(usb_ctx);
-		return false;
-	}
-	else
-	{
+		libusb_init(&usb_ctx);
+		if (libusb_has_capability(LIBUSB_CAP_HAS_HOTPLUG))
+		{
+			int rc = libusb_hotplug_register_callback(usb_ctx,
+					 (libusb_hotplug_event)(LIBUSB_HOTPLUG_EVENT_DEVICE_ARRIVED | LIBUSB_HOTPLUG_EVENT_DEVICE_LEFT),
+					 LIBUSB_HOTPLUG_ENUMERATE,
+					 (vid == 0) ? LIBUSB_HOTPLUG_MATCH_ANY : vid,
+					 (pid == 0) ? LIBUSB_HOTPLUG_MATCH_ANY : pid,
+					 LIBUSB_HOTPLUG_MATCH_ANY,
+					 hotplug_callback,
+					 this,
+					 &cbHandle);
+			if (LIBUSB_SUCCESS != rc)
+			{
+				libusb_exit(usb_ctx);
+				usb_ctx = 0;
+			}
+			else
+			{
+				tval = 100;
+				result = true;
+			}
+		}
+		else
+		{
+			libusb_exit(usb_ctx);
+			usb_ctx = 0;
+
+			qWarning() << "NO USB HotPlug capability (simulate it with a timer)";
+		}
+
 		QTimer *timer = new QTimer(this);
 		connect(timer, SIGNAL(timeout()), this, SLOT(doPoll()));
-		timer->start(100);
+		timer->start(tval);
 		count++;
-		return true;
 	}
+
+	return result;
 }
