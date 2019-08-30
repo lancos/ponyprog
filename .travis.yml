@@ -1,22 +1,25 @@
 language: cpp
 compiler: gcc
-dist: trusty
+dist: xenial
 
 addons:
   apt:
     packages:
+      - g++-5
       - pkg-config
+      - libusb-1.0-0
       - libusb-1.0-0-dev
+      - libftdi1-2
+      - libftdi1-dev
+      - libftdipp1-2v5
+      - libftdipp1-dev
 
 before_install:
-# C++11
-- sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
-- sudo add-apt-repository -y ppa:kbs/kbs
-- sudo apt-get update -qq
+- gcc -v
 
-install:
+#install:
 # C++11
-- sudo apt-get install -qq g++-5 libftdi1-2 libftdi1-dev libftdipp1-2 libftdipp1-dev
+#- sudo apt-get install -qq g++-5 libftdi1-2 libftdi1-dev libftdipp1-2 libftdipp1-dev
 
 script:
 - qmake ponyprog.pro -r -spec linux-g++-64 CONFIG+=debug QMAKE_CXX=g++-5 QMAKE_LINK=g++-5
