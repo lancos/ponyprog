@@ -38,9 +38,11 @@
 #include "globals.h"
 #include "portint.h"
 
-//QSettings *E2Profile::s = new QSettings("ponyprog.ini", QSettings::IniFormat);
-QSettings *E2Profile::s = new QSettings(APP_NAME);
-
+#ifdef Q_OS_WIN32
+	QSettings *E2Profile::s = new QSettings(QSettings::IniFormat, QSettings::UserScope, "LancOS", APP_NAME);
+#else
+	QSettings *E2Profile::s = new QSettings(APP_NAME);
+#endif
 
 int E2Profile::GetBogoMips()
 {

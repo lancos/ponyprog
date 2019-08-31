@@ -39,7 +39,7 @@ Source: "translations\*"; DestDir: "{app}\translations"
 
 Source: "lang\*"; DestDir: "{app}\lang"
 
-Source: "{#APPNAME}.ini"; DestDir: "{app}"; Permissions: users-modify
+;Source: "{#APPNAME}.ini"; DestDir: "{app}"; Permissions: users-modify
 Source: "{#APPNAME}.html"; DestDir: "{app}"
 Source: "oksound.wav"; DestDir: "{app}"
 Source: "*.jpg"; DestDir: "{app}"
@@ -59,7 +59,7 @@ Name: "{group}\PonyProg"; Filename: "{app}\{#APPNAME}.exe"; WorkingDir: "{app}"
 Name: "{group}\Visit LancOS PonyProg Web Site"; Filename: "{app}\PonyProg.url"
 
 [Run] 
-Filename: "{app}\installdriver.exe"; Parameters: "install"; StatusMsg: "Installing legacy COM/LPT I/O driver..."
+Filename: "{app}\installdriver.exe"; Parameters: "install"; StatusMsg: "Installing legacy COM and LPT I/O driver..."
 ; call wdi-simple
 ;
 ; -n, --name <name>          set the device name

@@ -14,8 +14,8 @@ addons:
       - libftdipp1-2v5
       - libftdipp1-dev
 
-before_install:
-- gcc -v
+#before_install:
+#- gcc -v
 
 #install:
 # C++11

@@ -482,23 +482,17 @@ void e2App::LookForBogoMips()
 	DWORD multiplier = 1;
 
 	QString strbuf;
-	strbuf = helpfile;
-
-	int sp = strbuf.lastIndexOf("\\");
-
-	if (sp < 0)
+	QFileInfo fi(E2Profile::GetConfigFile());
+	if (fi.exists())
 	{
-		sp = strbuf.lastIndexOf("/");
-	}
-
-	if (sp < 0)
-	{
-		strbuf = "bogomips.out";
+		strbuf = fi.canonicalPath();
 	}
 	else
 	{
-		strbuf += "bogomips.out";
+		strbuf = qApp->applicationDirPath();
 	}
+
+	strbuf.append("/bogomips.out");
 
 	QFile fh(strbuf);
 
