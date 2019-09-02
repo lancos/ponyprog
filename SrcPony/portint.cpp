@@ -659,7 +659,18 @@ static int DetectPortsNT(const QString &ServiceName, const QString &PortFormat, 
 	QString buf;
 	int Count = 0;          // return value (can be greater than nports)
 
-	QFile fh("detect_ports_NT.log");
+	QString fname;
+	QFileInfo fi(E2Profile::GetConfigFile());
+	if (fi.exists())
+	{
+		fname = fi.canonicalPath();
+	}
+	else
+	{
+		fname = qApp->applicationDirPath();
+	}
+	fname.append("/detect_ports_NT.log");
+	QFile fh(fname);
 
 	if (!fh.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text))
 	{
@@ -670,7 +681,9 @@ static int DetectPortsNT(const QString &ServiceName, const QString &PortFormat, 
 
 	out << "Enter DetectPortsNT(" << ServiceName << ", " << PortFormat << ", " << (hex) << ports << (dec) << ", " << nports << ")\n";
 
-	memset(ports, 0, nports * sizeof(base_len));    // Clear port array
+	if (ports != 0)
+		memset(ports, 0, nports * sizeof(base_len));    // Clear port array
+
 	HKEY hCCS;              // Open the registry (first stage)
 	retval = RegOpenKeyEx(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet", 0, KEY_PERMISSIONS, &hCCS);
 
@@ -750,8 +763,11 @@ static int DetectPortsNT(const QString &ServiceName, const QString &PortFormat, 
 											{
 												out << strbuf2 << (dec) << " [0]=" << p[0] << ", [1]=" << p[1] << ", [2]=" << (hex) << p[2] << "h, [3]=" << p[3] << "h, [4]=" << (dec) << p[4] << "\n";
 
-												ports[Index].base = p[2];       // We got one
-												ports[Index].len = p[4];        // (NO check for typical ISA addresses anymore!!)
+												if (ports != 0)
+												{
+													ports[Index].base = p[2];       // We got one
+													ports[Index].len = p[4];        // (NO check for typical ISA addresses anymore!!)
+												}
 											}
 										}
 										else
