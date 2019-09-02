@@ -41,7 +41,7 @@ class e2CmdWindow;
 
 e2Dialog::e2Dialog(QWidget *bw, const QString title)
 	: QDialog(bw),
-	  port_no(0),
+	  port_no(-1),
 	  lpt_no(2),
 	  com_no(3),
 	  usb_no(0),
@@ -434,8 +434,58 @@ void e2Dialog::setWidgetsText()
 
 	cbxInterfCOMNum->clear();
 	cbxInterfCOMNum->addItems(comList);
+	//Check valid com ports
+	interf_type = SIPROG_API;
+	port_no = -1;
+	for (const auto& i : comList)
+	{
+		qDebug() << "comList " << i;
+
+		QString devname = E2Profile::GetCOMDevName();
+		QString s = i;
+		if (s.startsWith(devname))
+		{
+			int n = s.midRef(devname.length()).toString().toInt();
+#ifdef Q_OS_WIN32
+			n--;
+#endif
+			if (n >= 0 && Test(n, true) != OK)
+			{
+				//comList.removeOne(s);
+				cbxInterfCOMNum->setItemData(n, QColor(Qt::lightGray), Qt::BackgroundRole);
+			}
+		}
+	}
+
 	cbxInterfLPTNum->clear();
 	cbxInterfLPTNum->addItems(lptList);
+	//Check valid com ports
+#ifdef Q_OS_WIN32
+	interf_type = AVRISP_IO;
+#else
+	interf_type = AVRISP;
+#endif
+	port_no = -1;
+	for (const auto& i : lptList)
+	{
+		qDebug() << "lptList " << i;
+
+		QString devname = E2Profile::GetLPTDevName();
+		QString s = i;
+		if (s.startsWith(devname))
+		{
+			int n = s.midRef(devname.length()).toString().toInt();
+#ifdef Q_OS_WIN32
+			n--;
+#endif
+			if (n >= 0 && Test(n, true) != OK)
+			{
+				cbxInterfLPTNum->setItemData(n, QColor(Qt::lightGray), Qt::BackgroundRole);
+			}
+		}
+	}
+
+
 	cbxInterfUSBNum->clear();
 	cbxInterfUSBNum->addItems(usbList);
 	cbxInterfGPIONum->clear();
