@@ -437,7 +437,7 @@ void e2Dialog::setWidgetsText()
 	//Check valid com ports
 	interf_type = SIPROG_API;
 	port_no = -1;
-	for (const auto& i : comList)
+	for (const auto &i : comList)
 	{
 		qDebug() << "comList " << i;
 
@@ -466,7 +466,7 @@ void e2Dialog::setWidgetsText()
 	interf_type = AVRISP;
 #endif
 	port_no = -1;
-	for (const auto& i : lptList)
+	for (const auto &i : lptList)
 	{
 		qDebug() << "lptList " << i;
 

@@ -682,7 +682,9 @@ static int DetectPortsNT(const QString &ServiceName, const QString &PortFormat, 
 	out << "Enter DetectPortsNT(" << ServiceName << ", " << PortFormat << ", " << (hex) << ports << (dec) << ", " << nports << ")\n";
 
 	if (ports != 0)
+	{
 		memset(ports, 0, nports * sizeof(base_len));    // Clear port array
+	}
 
 	HKEY hCCS;              // Open the registry (first stage)
 	retval = RegOpenKeyEx(HKEY_LOCAL_MACHINE, L"SYSTEM\\CurrentControlSet", 0, KEY_PERMISSIONS, &hCCS);

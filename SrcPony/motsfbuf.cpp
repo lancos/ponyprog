@@ -429,7 +429,7 @@ int MotorolaSFileBuf::ParseRecord(char *lbufPC, uint8_t *buf_startP, uint8_t *bu
 	uint8_t cksmB,				// checksum of addr, count, & data length
 			*bufPC = 0;			// Pointer into memory array
 	unsigned int oheadN = 0,	// Number of overhead (addr + chksum) bytes
-			tvalN;				// Temp for check checksum
+				 tvalN;				// Temp for check checksum
 	int unknow_rec = 0;
 	unsigned int countN;		// Number of bytes represented in record
 
