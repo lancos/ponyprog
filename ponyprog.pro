@@ -19,6 +19,8 @@ MOC_DIR = $$DESTDIR/.moc
 RCC_DIR = $$DESTDIR/.qrc
 UI_DIR = $$DESTDIR/.ui
 
+RC_ICONS = icons/ponyprog.ico
+
 APP_NAME                      = "PonyProg"
 APP_LOW_NAME                  = "ponyprog"
 APP_LOW_H_NAME                = ".ponyprog"
