@@ -77,6 +77,7 @@ SET(PONY_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/aboutmdlg.cpp
                  ${CMAKE_CURRENT_SOURCE_DIR}/pic16xx.cpp
                  ${CMAKE_CURRENT_SOURCE_DIR}/x2444bus.cpp
 #                  ${CMAKE_CURRENT_SOURCE_DIR}/profile.cpp
+                 ${CMAKE_CURRENT_SOURCE_DIR}/prefdialog.cpp
                  ${CMAKE_CURRENT_SOURCE_DIR}/sdebus.cpp)
 
 
@@ -159,6 +160,7 @@ SET(PONY_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/fusemdlg.h
 #                 ${CMAKE_CURRENT_SOURCE_DIR}/ch341a.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/e2dlg.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/aboutmdlg.h
+                 ${CMAKE_CURRENT_SOURCE_DIR}/prefdialog.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/progoption.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/sernumdlg.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/infomdlg.h)
@@ -172,6 +174,7 @@ SET(PONY_FORMS  ${CMAKE_CURRENT_SOURCE_DIR}/forms/aboutdlg.ui
                 ${CMAKE_CURRENT_SOURCE_DIR}/forms/fusedlg.ui
                 ${CMAKE_CURRENT_SOURCE_DIR}/forms/mainwindow.ui
                 ${CMAKE_CURRENT_SOURCE_DIR}/forms/osccalibr.ui
+                ${CMAKE_CURRENT_SOURCE_DIR}/forms/prefdialog.ui
                 ${CMAKE_CURRENT_SOURCE_DIR}/forms/progoption.ui
                 ${CMAKE_CURRENT_SOURCE_DIR}/forms/sernumcfg.ui
                 PARENT_SCOPE)
