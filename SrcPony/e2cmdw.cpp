@@ -282,8 +282,8 @@ e2CmdWindow::e2CmdWindow(QWidget *parent) :
 
 	e2HexEdit->setAsciiFontColor(Qt::darkMagenta);
 	e2HexEditSplit->setAsciiFontColor(Qt::darkMagenta);
-	e2HexEdit->setHexFontColor(Qt::darkBlue);
-	e2HexEditSplit->setHexFontColor(Qt::darkGreen);
+	//e2HexEdit->setHexFontColor(Qt::darkGreen);
+	e2HexEditSplit->setHexFontColor(Qt::darkBlue);
 	e2HexEdit->setHexCaps(true);
 	e2HexEditSplit->setHexCaps(true);
 	//      e2HexEdit->setFont(settings.value("Editor/Font").value<QFont>());
@@ -6263,6 +6263,7 @@ void e2CmdWindow::Draw()
 
 	if (awip->GetSplittedInfo() > 0)
 	{
+		e2HexEdit->setHexFontColor(Qt::darkGreen);
 		qbuf->setData(reinterpret_cast<char *>(awip->GetBufPtr()), awip->GetSplittedInfo());
 		e2HexEdit->setData(*qbuf);
 
@@ -6281,6 +6282,7 @@ void e2CmdWindow::Draw()
 	}
 	else
 	{
+		e2HexEdit->setHexFontColor(Qt::darkBlue);
 		qbuf->setData(reinterpret_cast<char *>(awip->GetBufPtr()), awip->GetSize());
 		e2HexEdit->setData(*qbuf);
 		e2HexEditSplit->hide();

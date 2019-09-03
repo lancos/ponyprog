@@ -1,4 +1,5 @@
 .directory
+Thumbs.db
 .kdev4
 build*
 *.kdev4
