@@ -5475,13 +5475,8 @@ void e2CmdWindow::UpdateMenues(menuToGroup &mnu, QAction &act)
 }
 
 
-void e2CmdWindow::UpdateMenuType(long new_type/*, long old_type*/)
+void e2CmdWindow::UpdateMenuType(long new_type)
 {
-	if (!IsAppReady())
-	{
-		return;
-	}
-
 	if (new_type == 0)
 	{
 		new_type = awip->GetEEPId();
@@ -5489,7 +5484,7 @@ void e2CmdWindow::UpdateMenuType(long new_type/*, long old_type*/)
 
 	int new_pritype = GetE2PPriType(new_type);
 
-	qDebug() << "UpdateMenuType, hex:" << (hex) << new_type << "pre" << new_pritype << (dec);
+	qDebug() << Q_FUNC_INFO << " (hex) type:" << (hex) << new_type << " pri:" << new_pritype << (dec);
 
 	menuToGroup *newMenu = NULL;
 	QAction *newAct = NULL;
@@ -6242,8 +6237,11 @@ void e2CmdWindow::UpdateBuffer()
 	}
 	if (e2HexEditSplit->isModified())
 	{
+		Q_ASSERT(awip->GetSplittedInfo() > 0);
+
 		const char *ptr = e2HexEditSplit->data().constData();
-		memcpy(awip->GetBufPtr(), ptr, e2HexEditSplit->data().length());
+		long ofst = awip->GetSplittedInfo();
+		memcpy(awip->GetBufPtr() + ofst, ptr, e2HexEditSplit->data().length());
 		flag1 = true;
 	}
 
