@@ -217,6 +217,8 @@ class MpsseInterface : public BusInterface
 	int pin_enbus;		//0 if unused
 
 	int ftdi_port;
+
+	int test_step;
 };
 
 #endif

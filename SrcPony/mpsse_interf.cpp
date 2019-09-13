@@ -47,7 +47,8 @@ MpsseInterface::MpsseInterface()
 	  pin_clock(0),
 	  pin_clockin(0),
 	  pin_poweron(0),
-	  ftdi_port(FTDI_PORTA)
+	  ftdi_port(FTDI_PORTA),
+	  test_step(0)
 {
 	qDebug() << Q_FUNC_INFO;
 }
@@ -1062,7 +1063,10 @@ int MpsseInterface::GetPresence(int mask, int val)
 
 int MpsseInterface::TestPort(int port_no)
 {
-	qDebug() << Q_FUNC_INFO  << "(" << port_no << ") IN";
+#if 1
+	test_step = 0;
+#endif
+	qDebug() << Q_FUNC_INFO  << "(port_no:" << port_no << ", test_step:" << test_step << ") IN";
 
 	int ret_val = TestSave(port_no);
 
@@ -1070,32 +1074,108 @@ int MpsseInterface::TestPort(int port_no)
 	{
 		if (TypeToInterfVidPid(PONYPROG_FT) == usb_vp)
 		{
-			//PonyProgFT
-			w.WaitMsec(10);
-			ret_val = GetPresence(0x0700, 0);
-
-			if (ret_val)
+			if (test_step++ > 0)
 			{
-				SendPins(OutDataMask(pin_ctrl, 1));
-				SetPower(true);
-				w.WaitMsec(100);
-				int val = GetPins();
-				if (val < 0 || GetCtrlIn(val) != 0)
+				bool test_inv = false;
+				int errcount = 0;
+
+				if (test_step > 2)
 				{
-					return E2ERR_NOTINSTALLED;
+					test_step = 0;
+					SendPins(OutDataMask(pin_enbus, 0));
 				}
 				else
 				{
-					SendPins(OutDataMask(pin_ctrl, 0));
+					SendPins(OutDataMask(pin_enbus, 1));
+				}
+
+				int val, pmask_clkin = (1 << 4), seto;
+
+				SetPower(true);
+				w.WaitMsec(150);
+
+				for (seto = 1; seto >= 0; seto--)
+				{
+					int geti = test_inv ? !seto : seto;
+
+					SendPins(OutDataMask(pin_dataout, seto));
 					w.WaitMsec(100);
 					val = GetPins();
-					if (val < 0 || GetCtrlIn(val) != 1)
+					if (val < 0)
 					{
 						return E2ERR_NOTINSTALLED;
 					}
+					if ((val & pin_datain) != 0)
+						val = 1;
+					else
+						val = 0;
+					if (val != geti)
+					{
+						qWarning() << Q_FUNC_INFO  << " Data Write " << seto << " read " << val << "(" << geti << ")";
+						errcount++;
+					}
 				}
-				SendPins(OutDataMask(pin_ctrl, 0));
+
+				for (seto = 1; seto >= 0; seto--)
+				{
+					int geti = test_inv ? !seto : seto;
+
+					SendPins(OutDataMask(pin_clock, seto));
+					w.WaitMsec(100);
+					val = GetPins();
+					if (val < 0)
+					{
+						return E2ERR_NOTINSTALLED;
+					}
+					if ((val & pmask_clkin) != 0)
+						val = 1;
+					else
+						val = 0;
+					if (val != geti)
+					{
+						qWarning() << Q_FUNC_INFO  << " Clock Write " << seto << " read " << val << "(" << geti << ")";
+						errcount++;
+					}
+				}
+
+				SendPins(OutDataMask(pin_enbus, 1));
+				SendPins(OutDataMask(pin_ctrl|pin_dataout|pin_clock, 0));
 				SetPower(false);
+
+				if (errcount > 0)
+				{
+					ret_val = E2ERR_NOTINSTALLED;
+				}
+			}
+			else
+			{
+				//PonyProgFT
+				w.WaitMsec(10);
+				ret_val = GetPresence(0x0700, 0);
+
+				if (ret_val == OK)
+				{
+					SendPins(OutDataMask(pin_ctrl, 1));
+					SetPower(true);
+					w.WaitMsec(150);
+					int val = GetPins();
+					if (val < 0 || GetCtrlIn(val) != 0)
+					{
+						ret_val = E2ERR_NOTINSTALLED;
+					}
+					else
+					{
+						SendPins(OutDataMask(pin_ctrl, 0));
+						w.WaitMsec(100);
+						val = GetPins();
+						if (val < 0 || GetCtrlIn(val) != 1)
+						{
+							ret_val = E2ERR_NOTINSTALLED;
+						}
+					}
+					SendPins(OutDataMask(pin_ctrl, 0));
+					SetPower(false);
+				}
 			}
 		}
 		else if (TypeToInterfVidPid(FTDI_JTAGKEY) == usb_vp)
