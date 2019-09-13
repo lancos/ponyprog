@@ -124,7 +124,7 @@ int At250Bus::WaitEndOfWrite(int timeout)               // 07/08/99
 
 int At250Bus::Reset(void)
 {
-	qDebug() << __PRETTY_FUNCTION__;
+	qDebug() << Q_FUNC_INFO;
 
 	SPIBus::Reset();
 	ShotDelay();
@@ -137,7 +137,7 @@ int At250Bus::Reset(void)
 
 long At250Bus::Read(int addr, uint8_t *data, long length, int page_size)
 {
-	qDebug() << __PRETTY_FUNCTION__ << "(" << (hex) << addr << ", " << data << ", " << (dec) << length << ")";
+	qDebug() << Q_FUNC_INFO << "(" << (hex) << addr << ", " << data << ", " << (dec) << length << ")";
 
 	long len;
 
@@ -159,7 +159,7 @@ long At250Bus::Read(int addr, uint8_t *data, long length, int page_size)
 
 	ReadEnd();
 
-	qDebug() << __PRETTY_FUNCTION__ << "=" << len;
+	qDebug() << Q_FUNC_INFO << "=" << len;
 
 	return len;
 }

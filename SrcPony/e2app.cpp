@@ -49,7 +49,7 @@ e2App::e2App() :
 	port_number(0)
 {
 	// Constructor
-	qDebug() << __PRETTY_FUNCTION__;
+	qDebug() << Q_FUNC_INFO;
 
 	//         awinfo = 0;
 
@@ -93,7 +93,7 @@ e2App::e2App() :
 
 e2App::~e2App()
 {
-	qDebug() << __PRETTY_FUNCTION__;
+	qDebug() << Q_FUNC_INFO;
 }
 
 
@@ -181,7 +181,7 @@ void e2App::initSettings()
 //=====================>>> e2App::OpenPort <<<==============================
 int e2App::OpenPort(int port)
 {
-	qDebug() << __PRETTY_FUNCTION__ << "(" << port << ")";
+	qDebug() << Q_FUNC_INFO << "(" << port << ")";
 
 	if (port >= 0)
 	{
@@ -196,20 +196,20 @@ int e2App::OpenPort(int port)
 //=====================>>> e2App::ClosePort <<<==============================
 void e2App::ClosePort()
 {
-	qDebug() << __PRETTY_FUNCTION__ << " iniBus=" << (hex) << iniBus << (dec);
+	qDebug() << Q_FUNC_INFO << " iniBus=" << (hex) << iniBus << (dec);
 	iniBus->Close();
 }
 
 //=====================>>> e2App::TestPort <<<==============================
 int e2App::TestPort(int port, bool open_only)
 {
-	qDebug() << __PRETTY_FUNCTION__ << "(port=" << port << ", open_only=" << open_only << ")";
+	qDebug() << Q_FUNC_INFO << "(port=" << port << ", open_only=" << open_only << ")";
 
 	int rv = (open_only) ?
 			 busIntp->TestOpen(port) :
 			 busIntp->TestPort(port);
 
-	qDebug() << __PRETTY_FUNCTION__ << " = " << rv;
+	qDebug() << Q_FUNC_INFO << " = " << rv;
 
 	return rv;
 }
@@ -217,32 +217,32 @@ int e2App::TestPort(int port, bool open_only)
 //=====================>>> e2App::OpenBus <<<==============================
 int e2App::OpenBus(BusIO *p)
 {
-	qDebug() << __PRETTY_FUNCTION__ << "(" << (hex) << p << (dec) << ")";
+	qDebug() << Q_FUNC_INFO << "(" << (hex) << p << (dec) << ")";
 
 	iniBus->Close();
 
-	qDebug() << __PRETTY_FUNCTION__ << " ** Close";
+	qDebug() << Q_FUNC_INFO << " ** Close";
 
 	iniBus = p;
 	int rv = iniBus->Open(GetPort());
 
-	qDebug() << __PRETTY_FUNCTION__ << " ** Open = " << rv;
+	qDebug() << Q_FUNC_INFO << " ** Open = " << rv;
 
 	if (rv == OK)
 	{
 		rv = busIntp->SetPower(true);
 
-		qDebug() << __PRETTY_FUNCTION__ << " ** SetPower";
+		qDebug() << Q_FUNC_INFO << " ** SetPower";
 
 		//Power up delay
 		busIntp->WaitMsec(E2Profile::GetPowerUpDelay());
 
-		qDebug() << __PRETTY_FUNCTION__ << " ** Reset";
+		qDebug() << Q_FUNC_INFO << " ** Reset";
 
 		iniBus->Reset();        //28/10/98
 	}
 
-	qDebug() << __PRETTY_FUNCTION__ << " = " << rv;
+	qDebug() << Q_FUNC_INFO << " = " << rv;
 
 	return rv;
 }
@@ -250,7 +250,7 @@ int e2App::OpenBus(BusIO *p)
 //=====================>>> e2App::SleepBus <<<==============================
 void e2App::SleepBus()
 {
-	qDebug() << __PRETTY_FUNCTION__ << " iniBus=" << (hex) << iniBus << (dec);
+	qDebug() << Q_FUNC_INFO << " iniBus=" << (hex) << iniBus << (dec);
 
 	busIntp->WaitMsec(5);		// 08/04/98 -- power hold time
 	busIntp->SetPower(false);
@@ -320,7 +320,7 @@ vWindow *e2App::NewAppWin(vWindow *win, char *name,
 
 int e2App::Calibration()
 {
-	qDebug() << __PRETTY_FUNCTION__;
+	qDebug() << Q_FUNC_INFO;
 
 	int rv = OK;
 	//      OpenBus(&iicB);         //aggiunto il 06/03/98

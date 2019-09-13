@@ -89,7 +89,7 @@ void PicBus::SetDelay()
 	Q_CHECK_PTR(busI);
 	busI->SetDelay(n);
 
-	qDebug() << __PRETTY_FUNCTION__ << "=" << n;
+	qDebug() << Q_FUNC_INFO << "=" << n;
 }
 
 int PicBus::SendDataBit(int b)

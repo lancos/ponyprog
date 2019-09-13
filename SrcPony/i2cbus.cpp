@@ -152,7 +152,7 @@ int I2CBus::SendStop()
 
 		if (k == 0)
 		{
-			qWarning() << __PRETTY_FUNCTION__ << "*** SCL error";
+			qWarning() << Q_FUNC_INFO << "*** SCL error";
 			return IICERR_SCLCONFLICT;
 		}
 	}
@@ -165,7 +165,7 @@ int I2CBus::SendStop()
 
 	if (getSDA() == 0)
 	{
-		qWarning() << __PRETTY_FUNCTION__ << "*** SDA error";
+		qWarning() << Q_FUNC_INFO << "*** SDA error";
 		return IICERR_SDACONFLICT;
 	}
 
@@ -292,14 +292,14 @@ void I2CBus::SetDelay()
 	Q_CHECK_PTR(busI);
 	busI->SetDelay(n);
 
-	qDebug() << __PRETTY_FUNCTION__ << "=" << n;
+	qDebug() << Q_FUNC_INFO << "=" << n;
 }
 
 long I2CBus::Read(int slave, uint8_t *data, long length, int page_size)
 {
 	long len;
 
-	//qDebug() << __PRETTY_FUNCTION__ << "(" << (hex) << slave << "," << (void *)data << "," << (dec) << length << ") - IN";
+	//qDebug() << Q_FUNC_INFO << "(" << (hex) << slave << "," << (void *)data << "," << (dec) << length << ") - IN";
 	len = StartRead(slave, data, length);
 
 	if (len == length)
@@ -308,7 +308,7 @@ long I2CBus::Read(int slave, uint8_t *data, long length, int page_size)
 			len = 0;
 		}
 
-	//qDebug() << __PRETTY_FUNCTION__ << "=" << len << ", err_no =" << err_no << " - OUT";
+	//qDebug() << Q_FUNC_INFO << "=" << len << ", err_no =" << err_no << " - OUT";
 
 	return len;
 }
@@ -317,7 +317,7 @@ long I2CBus::Write(int slave, uint8_t const *data, long length, int page_size)
 {
 	long len;
 
-	//qDebug() << __PRETTY_FUNCTION__ << "(" << (hex) << slave << "," << data << "," << (dec) << length << ") - IN";
+	//qDebug() << Q_FUNC_INFO << "(" << (hex) << slave << "," << data << "," << (dec) << length << ") - IN";
 
 	len = StartWrite(slave, data, length);
 
@@ -327,7 +327,7 @@ long I2CBus::Write(int slave, uint8_t const *data, long length, int page_size)
 			len = 0;
 		}
 
-	//qDebug() << __PRETTY_FUNCTION__ << "=" << len << ", err_no =" << err_no << " - OUT";
+	//qDebug() << Q_FUNC_INFO << "=" << len << ", err_no =" << err_no << " - OUT";
 
 	return len;
 }
@@ -363,7 +363,7 @@ long I2CBus::StartRead(uint8_t slave, uint8_t *data, long length)
 	int temp;
 	long len = length;
 
-	//qDebug() << __PRETTY_FUNCTION__ << "(" << (hex) << slave << "," << data << "," << (dec) << length << ") - IN";
+	//qDebug() << Q_FUNC_INFO << "(" << (hex) << slave << "," << data << "," << (dec) << length << ") - IN";
 
 	if (len > 0)
 	{
@@ -407,7 +407,7 @@ long I2CBus::StartRead(uint8_t slave, uint8_t *data, long length)
 	err_no = 0;
 
 fineR:
-	//qDebug() << __PRETTY_FUNCTION__ << "=" << (long)(length - len) << ", err_no =" << err_no << " - OUT";
+	//qDebug() << Q_FUNC_INFO << "=" << (long)(length - len) << ", err_no =" << err_no << " - OUT";
 
 	return length - len;
 }
@@ -417,7 +417,7 @@ long I2CBus::StartWrite(uint8_t slave, uint8_t const *data, long length)
 	int error;
 	long len = length;
 
-	//qDebug() << __PRETTY_FUNCTION__ << "(" << (hex) << slave << "," << data << "," << (dec) << length << ") - IN";
+	//qDebug() << Q_FUNC_INFO << "(" << (hex) << slave << "," << data << "," << (dec) << length << ") - IN";
 
 	if (len == 0)
 	{
@@ -449,25 +449,25 @@ long I2CBus::StartWrite(uint8_t slave, uint8_t const *data, long length)
 	}
 
 fineW:
-	//qDebug() << __PRETTY_FUNCTION__ << "=" << (long)(length - len) << ", err_no =" << err_no << " - OUT";
+	//qDebug() << Q_FUNC_INFO << "=" << (long)(length - len) << ", err_no =" << err_no << " - OUT";
 
 	return length - len;
 }
 
 int I2CBus::Stop(void)
 {
-	//qDebug() << __PRETTY_FUNCTION__ << "- IN";
+	//qDebug() << Q_FUNC_INFO << "- IN";
 
 	err_no = SendStop() ? IICERR_STOP : 0;
 
-	//qDebug() << __PRETTY_FUNCTION__ << "=" << err_no << "- OUT";
+	//qDebug() << Q_FUNC_INFO << "=" << err_no << "- OUT";
 
 	return err_no;
 }
 
 int I2CBus::Reset(void)
 {
-	qDebug() << __PRETTY_FUNCTION__ << "- IN";
+	qDebug() << Q_FUNC_INFO << "- IN";
 
 	SetDelay();
 
@@ -476,14 +476,14 @@ int I2CBus::Reset(void)
 	setSCLSDA();
 	WaitMsec(100);			//a big delay to allow no-CMOS 2402 to work
 
-	qDebug() << __PRETTY_FUNCTION__ << "- OUT";
+	qDebug() << Q_FUNC_INFO << "- OUT";
 
 	return OK;
 }
 
 void I2CBus::Close(void)
 {
-	qDebug() << __PRETTY_FUNCTION__ << "busI=" << (hex) << busI << (dec);
+	qDebug() << Q_FUNC_INFO << "busI=" << (hex) << busI << (dec);
 
 	setSCLSDA();
 	BusIO::Close();

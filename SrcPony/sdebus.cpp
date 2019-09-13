@@ -36,12 +36,12 @@
 Sde2506Bus::Sde2506Bus(BusInterface *ptr)
 	: BusIO(ptr)
 {
-	qDebug() << __PRETTY_FUNCTION__;
+	qDebug() << Q_FUNC_INFO;
 }
 
 Sde2506Bus::~Sde2506Bus()
 {
-	qDebug() << __PRETTY_FUNCTION__;
+	qDebug() << Q_FUNC_INFO;
 }
 
 void Sde2506Bus::SetDelay()
@@ -79,7 +79,7 @@ void Sde2506Bus::SetDelay()
 	Q_CHECK_PTR(busI);
 	busI->SetDelay(n);
 
-	qDebug() << __PRETTY_FUNCTION__ << "=" << n;
+	qDebug() << Q_FUNC_INFO << "=" << n;
 }
 
 int Sde2506Bus::SendDataBit(int b)
@@ -156,7 +156,7 @@ int Sde2506Bus::WaitReadyAfterWrite(long timeout)
 
 int Sde2506Bus::Reset(void)
 {
-	qDebug() << __PRETTY_FUNCTION__;
+	qDebug() << Q_FUNC_INFO;
 
 	SetDelay();
 
@@ -169,7 +169,7 @@ int Sde2506Bus::Reset(void)
 
 long Sde2506Bus::Read(int addr, uint8_t *data, long length, int page_size)
 {
-	qDebug() << __PRETTY_FUNCTION__ << "(" << (hex) << addr << ", " << data << ", " << (dec) << length << ")";
+	qDebug() << Q_FUNC_INFO << "(" << (hex) << addr << ", " << data << ", " << (dec) << length << ")";
 	ReadStart();
 
 	long len;
@@ -202,7 +202,7 @@ long Sde2506Bus::Read(int addr, uint8_t *data, long length, int page_size)
 	WaitMsec(1);		//Flush
 
 	ReadEnd();
-	qDebug() << __PRETTY_FUNCTION__ << "=" << len;
+	qDebug() << Q_FUNC_INFO << "=" << len;
 
 	return len;
 }

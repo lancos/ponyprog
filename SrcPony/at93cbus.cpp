@@ -49,7 +49,7 @@ At93cBus::At93cBus(BusInterface *ptr)
 	  address_len(6),			//9346
 	  organization(ORG16)
 {
-	qDebug() << __PRETTY_FUNCTION__;
+	qDebug() << Q_FUNC_INFO;
 }
 
 int At93cBus::Erase(int type)
@@ -180,7 +180,7 @@ long At93cBus::Read(int addr, uint8_t *data, long length, int page_size)
 
 	ReadEnd();
 
-	qDebug() << __PRETTY_FUNCTION__ << "=" << len;
+	qDebug() << Q_FUNC_INFO << "=" << len;
 
 	return len;
 }

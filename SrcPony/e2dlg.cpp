@@ -720,7 +720,7 @@ void e2Dialog::on_cbxInterfUSBNum_currentIndexChanged(int index)
 	if (index >= 0)
 	{
 		port_no = usb_no = index;
-		qDebug() << __PRETTY_FUNCTION__ << "Selected USB port " << port_no;
+		qDebug() << Q_FUNC_INFO << "Selected USB port " << port_no;
 	}
 }
 
@@ -729,13 +729,13 @@ void e2Dialog::on_cbxInterfGPIONum_currentIndexChanged(int index)
 	if (index >= 0)
 	{
 		port_no = gpio_no = index;
-		qDebug() << __PRETTY_FUNCTION__ << "Selected GPIO port " << port_no;
+		qDebug() << Q_FUNC_INFO << "Selected GPIO port " << port_no;
 	}
 }
 
 void e2Dialog::onUSB(bool connected, quint16 vid, quint16 pid)
 {
-	qDebug() << __PRETTY_FUNCTION__ << " " << connected << " " << vid << " " << pid;
+	qDebug() << Q_FUNC_INFO << " " << connected << " " << vid << " " << pid;
 
 	usbList.clear();
 	usbList = MpsseInterface::find_all(usb_vp.vid, usb_vp.pid);
@@ -757,7 +757,7 @@ void e2Dialog::on_pushDefaultsUSB_clicked()
 	InterfPins dpins;	//default pins
 	if (!TypeToInterfPins(interf_type, dpins))
 	{
-		qWarning() << __PRETTY_FUNCTION__ << " TypeToInterfPins(" << interf_type << ") Failed";
+		qWarning() << Q_FUNC_INFO << " TypeToInterfPins(" << interf_type << ") Failed";
 	}
 	cbxClockOutUSB->setCurrentIndex(dpins.clock);
 	cbxControlOutUSB->setCurrentIndex(dpins.ctrl);
@@ -803,7 +803,7 @@ void e2Dialog::on_pushDefaultsGPIO_clicked()
 	InterfPins dpins;	//default pins
 	if (!TypeToInterfPins(interf_type, dpins))
 	{
-		qWarning() << __PRETTY_FUNCTION__ << " TypeToInterfPins(" << interf_type << ") Failed";
+		qWarning() << Q_FUNC_INFO << " TypeToInterfPins(" << interf_type << ") Failed";
 	}
 	cbxClockOutGPIO->setCurrentIndex(dpins.clock);
 	cbxControlOutGPIO->setCurrentIndex(dpins.ctrl);

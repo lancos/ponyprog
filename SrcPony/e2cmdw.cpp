@@ -97,7 +97,7 @@ e2CmdWindow::e2CmdWindow(QWidget *parent) :
 
 	setupUi(this);
 
-	qDebug() << __PRETTY_FUNCTION__ << "(" APP_NAME ")";
+	qDebug() << Q_FUNC_INFO << "(" APP_NAME ")";
 
 	cbxEEPType = NULL;
 	cbxEEPSubType = NULL;
@@ -299,7 +299,7 @@ e2CmdWindow::e2CmdWindow(QWidget *parent) :
 
 e2CmdWindow::~e2CmdWindow()
 {
-	qDebug() << __PRETTY_FUNCTION__;
+	qDebug() << Q_FUNC_INFO;
 
 	// Now put a delete for each new in the constructor.
 
@@ -549,7 +549,7 @@ void e2CmdWindow::setLang(QAction *mnu)
 	lngStr = lngStr.remove(QChar('&'));
 	lngStr = lngStr.toLower();
 
-	qDebug() << __PRETTY_FUNCTION__ << " lang: " << lngStr;
+	qDebug() << Q_FUNC_INFO << " lang: " << lngStr;
 
 	E2Profile::SetCurrentLang(lngStr);
 
@@ -666,7 +666,7 @@ bool e2CmdWindow::getLangTable()
 		return false;
 	}
 
-	qDebug() << __PRETTY_FUNCTION__ << " " << fileLang;
+	qDebug() << Q_FUNC_INFO << " " << fileLang;
 
 	if (QFile::exists(E2Profile::GetLangDir() + "/" + fileLang) == false)
 	{
@@ -1329,7 +1329,7 @@ void e2CmdWindow::selectTypeSubtype(const QString &tp, const QString &subtp)
 	QString st_tmp = subtp;
 	st_tmp.remove(QChar('&'));
 
-	//qDebug() << __PRETTY_FUNCTION__ << " " << t_tmp << st_tmp << currentMenu->title;
+	//qDebug() << Q_FUNC_INFO << " " << t_tmp << st_tmp << currentMenu->title;
 	//bool rebuildSubmenu = true;
 
 	if (currentMenu == NULL || currentMenu->title != t_tmp || cbxEEPSubType->count() == 0) // update the type combobox
@@ -6265,7 +6265,7 @@ void e2CmdWindow::Draw()
 		qbuf->setData(reinterpret_cast<char *>(awip->GetBufPtr()), awip->GetSplittedInfo());
 		e2HexEdit->setData(*qbuf);
 
-		qDebug() << __PRETTY_FUNCTION__ << "Datalen: " << e2HexEdit->data().length() << " Splitted: " << awip->GetSplittedInfo() << " Size: " << awip->GetSize();
+		qDebug() << Q_FUNC_INFO << "Datalen: " << e2HexEdit->data().length() << " Splitted: " << awip->GetSplittedInfo() << " Size: " << awip->GetSize();
 
 		char *ptr = reinterpret_cast<char *>(awip->GetBufPtr());
 		long ofst = awip->GetSplittedInfo();
@@ -6276,7 +6276,7 @@ void e2CmdWindow::Draw()
 		e2HexEditSplit->setData(*qbufSplit);
 		e2HexEditSplit->show();
 
-		qDebug() << __PRETTY_FUNCTION__ << "Datalen: " << e2HexEditSplit->data().length() << " Offset: " << ofst << " Len: " << len;
+		qDebug() << Q_FUNC_INFO << "Datalen: " << e2HexEditSplit->data().length() << " Offset: " << ofst << " Len: " << len;
 	}
 	else
 	{
@@ -6520,7 +6520,7 @@ void e2CmdWindow::SetProgress(int progress)
 
 void e2CmdWindow::SetAppBusy()
 {
-	qDebug() << __PRETTY_FUNCTION__;
+	qDebug() << Q_FUNC_INFO;
 	app_status = AppBusy;
 	// EK 2017
 	// TODO
@@ -6529,7 +6529,7 @@ void e2CmdWindow::SetAppBusy()
 
 void e2CmdWindow::SetAppReady()
 {
-	qDebug() << __PRETTY_FUNCTION__;
+	qDebug() << Q_FUNC_INFO;
 	app_status = AppReady;
 	// EK 2017
 	// TODO
@@ -6538,7 +6538,7 @@ void e2CmdWindow::SetAppReady()
 
 void e2CmdWindow::Exit()
 {
-	qDebug() << __PRETTY_FUNCTION__;
+	qDebug() << Q_FUNC_INFO;
 
 	if (!IsAppReady())
 	{

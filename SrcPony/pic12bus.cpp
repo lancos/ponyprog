@@ -54,7 +54,7 @@ Pic12Bus::Pic12Bus(BusInterface *ptr)
 	  //              BeginProgOnlyCode(0x18)         //Begin Programming Only Cycle
 	  EndProgCode(0x0e)
 {
-	qDebug() << __PRETTY_FUNCTION__ << "()";
+	qDebug() << Q_FUNC_INFO << "()";
 
 	OverProgrammingMult = 11;               //Default OverProgramming X value (x11)
 	OverProgrammingAdd = 0;                 //Default OverProgramming + value (+0)
@@ -100,7 +100,7 @@ void Pic12Bus::SetDelay()
 
 	busI->SetDelay(n);
 
-	qDebug() << __PRETTY_FUNCTION__ << "() = " << n;
+	qDebug() << Q_FUNC_INFO << "() = " << n;
 }
 
 int Pic12Bus::SendDataBit(int b)
@@ -191,7 +191,7 @@ long Pic12Bus::RecDataWord(int wlen)
 
 int Pic12Bus::Reset(void)
 {
-	qDebug() << __PRETTY_FUNCTION__ << " IN";
+	qDebug() << Q_FUNC_INFO << " IN";
 
 	SetDelay();
 
@@ -211,7 +211,7 @@ int Pic12Bus::Reset(void)
 
 	current_address = -1;
 
-	qDebug() << __PRETTY_FUNCTION__ << " OUT";
+	qDebug() << Q_FUNC_INFO << " OUT";
 
 	return OK;
 }
@@ -240,7 +240,7 @@ long Pic12Bus::ReadConfig(uint16_t &data)
 #endif
 	IncAddress(1);
 
-	qDebug() << __PRETTY_FUNCTION__ << "(" << (hex) << val << ") OUT";
+	qDebug() << Q_FUNC_INFO << "(" << (hex) << val << ") OUT";
 
 	return OK;
 }
@@ -248,7 +248,7 @@ long Pic12Bus::ReadConfig(uint16_t &data)
 
 long Pic12Bus::WriteConfig(uint16_t data)
 {
-	qDebug() << __PRETTY_FUNCTION__ << "(" << (hex) << data  << ") IN";
+	qDebug() << Q_FUNC_INFO << "(" << (hex) << data  << ") IN";
 
 	//      Reset();
 
@@ -312,7 +312,7 @@ long Pic12Bus::Read(int addr, uint8_t *data, long length, int page_size)
 {
 	long len;
 
-	qDebug() << __PRETTY_FUNCTION__ << "(" << addr << ", " << (hex) << data << ", " << (dec) <<  length << ") IN";
+	qDebug() << Q_FUNC_INFO << "(" << addr << ", " << (hex) << data << ", " << (dec) <<  length << ") IN";
 
 	ReadStart();
 	length >>= 1;   //contatore da byte a word
@@ -350,7 +350,7 @@ long Pic12Bus::Read(int addr, uint8_t *data, long length, int page_size)
 
 	len <<= 1;      //contatore da word a byte
 
-	qDebug() << __PRETTY_FUNCTION__ << "() = " << len << " OUT";
+	qDebug() << Q_FUNC_INFO << "() = " << len << " OUT";
 
 	return len;
 }
@@ -359,7 +359,7 @@ long Pic12Bus::Write(int addr, uint8_t const *data, long length, int page_size)
 {
 	long len;
 
-	qDebug() << __PRETTY_FUNCTION__ << "(" << addr << ", " << (hex) << data << ", " << (dec) << length << ") IN";
+	qDebug() << Q_FUNC_INFO << "(" << addr << ", " << (hex) << data << ", " << (dec) << length << ") IN";
 
 	WriteStart();
 	length >>= 1;   //contatore da byte a word
@@ -401,7 +401,7 @@ long Pic12Bus::Write(int addr, uint8_t const *data, long length, int page_size)
 		len <<= 1;        //contatore da word a byte
 	}
 
-	qDebug() << __PRETTY_FUNCTION__ << "() = " << len << " ** " <<  GetLastProgrammedAddress() << " OUT";
+	qDebug() << Q_FUNC_INFO << "() = " << len << " ** " <<  GetLastProgrammedAddress() << " OUT";
 
 	return len;
 }
@@ -411,7 +411,7 @@ int Pic12Bus::WriteProgWord(uint16_t val, long rc_addr)
 	int k;
 	int rval = OK;
 
-	qDebug() << __PRETTY_FUNCTION__ << "(" << (hex) << val << ", " << (dec) <<  current_address << ") IN";
+	qDebug() << Q_FUNC_INFO << "(" << (hex) << val << ", " << (dec) <<  current_address << ") IN";
 
 	//Check for RC calibration location
 	if (current_address == rc_addr)
@@ -500,14 +500,14 @@ int Pic12Bus::WriteProgWord(uint16_t val, long rc_addr)
 		}
 	}
 
-	qDebug() << __PRETTY_FUNCTION__ << "() = " << rval << " OUT";
+	qDebug() << Q_FUNC_INFO << "() = " << rval << " OUT";
 
 	return rval;
 }
 
 void Pic12Bus::IncAddress(int n)
 {
-	qDebug() << __PRETTY_FUNCTION__ << "(" << n << ") IN";
+	qDebug() << Q_FUNC_INFO << "(" << n << ") IN";
 
 	while (n--)
 	{
@@ -515,14 +515,14 @@ void Pic12Bus::IncAddress(int n)
 		current_address++;
 	}
 
-	qDebug() << __PRETTY_FUNCTION__ << "() OUT ** cur_addr = " << current_address;
+	qDebug() << Q_FUNC_INFO << "() OUT ** cur_addr = " << current_address;
 }
 
 int Pic12Bus::ProgramPulse(uint16_t val, int verify, int width)
 {
 	int rval = OK;
 
-	qDebug() << __PRETTY_FUNCTION__ << "(" << (hex) << val << ", " << (dec) <<  verify << ", " << width << ") IN";
+	qDebug() << Q_FUNC_INFO << "(" << (hex) << val << ", " << (dec) <<  verify << ", " << width << ") IN";
 
 	SendCmdCode(LoadProgCode);
 	SendProgCode(val);
@@ -540,7 +540,7 @@ int Pic12Bus::ProgramPulse(uint16_t val, int verify, int width)
 		rval = CompareSingleWord(val, RecvProgCode(), ProgMask);
 	}
 
-	qDebug() << __PRETTY_FUNCTION__ << "() = " << rval << " OUT";
+	qDebug() << Q_FUNC_INFO << "() = " << rval << " OUT";
 
 	return rval;
 }

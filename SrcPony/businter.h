@@ -73,19 +73,19 @@ class BusInterface
 
 	virtual int TestOpen(int port)
 	{
-		qDebug() << __PRETTY_FUNCTION__ << "(" << port << ") IN";
+		qDebug() << Q_FUNC_INFO << "(" << port << ") IN";
 
 		int ret_val = TestSave(port);
 
 		TestRestore();
 
-		qDebug() << __PRETTY_FUNCTION__ << "=" << ret_val << " OUT";
+		qDebug() << Q_FUNC_INFO << "=" << ret_val << " OUT";
 
 		return ret_val;
 	}
 	virtual int TestPort(int port)
 	{
-		qDebug() << __PRETTY_FUNCTION__ << "(" << port << ") IN";
+		qDebug() << Q_FUNC_INFO << "(" << port << ") IN";
 
 		return TestOpen(port);
 	}
@@ -93,7 +93,7 @@ class BusInterface
 	{
 		int ret_val;
 
-		qDebug() << __PRETTY_FUNCTION__ << "(" << port << ") IN";
+		qDebug() << Q_FUNC_INFO << "(" << port << ") IN";
 
 		old_portno = installed;
 
@@ -103,13 +103,13 @@ class BusInterface
 		{
 		}
 
-		qDebug() << __PRETTY_FUNCTION__ << "=" << ret_val << " OUT";
+		qDebug() << Q_FUNC_INFO << "=" << ret_val << " OUT";
 
 		return ret_val;
 	}
 	virtual void TestRestore()
 	{
-		qDebug() << __PRETTY_FUNCTION__ << "IN *** Inst=" << installed;
+		qDebug() << Q_FUNC_INFO << "IN *** Inst=" << installed;
 
 		if (IsInstalled())
 		{
@@ -122,7 +122,7 @@ class BusInterface
 			old_portno = -1;
 		}
 
-		qDebug() << __PRETTY_FUNCTION__ << "OUT";
+		qDebug() << Q_FUNC_INFO << "OUT";
 	}
 
 	virtual int SetPower(bool onoff)

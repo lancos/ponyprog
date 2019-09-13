@@ -81,12 +81,12 @@ SerNumDialog::SerNumDialog(QWidget *bw, const QString title) :
 	connect(pushOk, SIGNAL(clicked()), this, SLOT(onOk()));
 	connect(pushCancel, SIGNAL(clicked()), this, SLOT(reject()));
 
-	qDebug() << __PRETTY_FUNCTION__;
+	qDebug() << Q_FUNC_INFO;
 }
 
 SerNumDialog::~SerNumDialog()
 {
-	qDebug() << __PRETTY_FUNCTION__;
+	qDebug() << Q_FUNC_INFO;
 }
 
 void SerNumDialog::setTextWidgets()
@@ -190,7 +190,7 @@ OscCalibDialog::OscCalibDialog(QWidget *bw, e2AppWinInfo *aw, const QString titl
 	enabled = false;
 	size = 1;
 
-	qDebug() << __PRETTY_FUNCTION__;
+	qDebug() << Q_FUNC_INFO;
 
 	E2Profile::readDialogSettings(this, false);
 
@@ -223,7 +223,7 @@ OscCalibDialog::OscCalibDialog(QWidget *bw, e2AppWinInfo *aw, const QString titl
 
 OscCalibDialog::~OscCalibDialog()
 {
-	qDebug() << __PRETTY_FUNCTION__;
+	qDebug() << Q_FUNC_INFO;
 }
 
 void OscCalibDialog::onOk()

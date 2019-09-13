@@ -39,12 +39,12 @@
 MicroWireBus::MicroWireBus(BusInterface *ptr)
 	: BusIO(ptr)
 {
-	qDebug() << __PRETTY_FUNCTION__;
+	qDebug() << Q_FUNC_INFO;
 }
 
 MicroWireBus::~MicroWireBus()
 {
-	qDebug() << __PRETTY_FUNCTION__;
+	qDebug() << Q_FUNC_INFO;
 }
 
 void MicroWireBus::SetDelay()
@@ -82,7 +82,7 @@ void MicroWireBus::SetDelay()
 	Q_CHECK_PTR(busI);
 	busI->SetDelay(n);
 
-	qDebug() << __PRETTY_FUNCTION__ << "=" << n;
+	qDebug() << Q_FUNC_INFO << "=" << n;
 }
 
 int MicroWireBus::SendDataBit(int b)
@@ -192,14 +192,14 @@ int MicroWireBus::WaitReadyAfterWrite(long timeout)
 		WaitUsec(1);
 	}
 
-	qDebug() << __PRETTY_FUNCTION__ << "=" << k;
+	qDebug() << Q_FUNC_INFO << "=" << k;
 
 	return k ? OK : E2P_TIMEOUT;
 }
 
 int MicroWireBus::Reset(void)
 {
-	qDebug() << __PRETTY_FUNCTION__;
+	qDebug() << Q_FUNC_INFO;
 
 	SetDelay();
 

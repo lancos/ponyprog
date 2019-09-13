@@ -63,7 +63,7 @@ At90sBus::At90sBus(BusInterface *ptr)
 	  old1200mode(false),
 	  enable_flashpage_polling(false)
 {
-	qDebug() << __PRETTY_FUNCTION__;
+	qDebug() << Q_FUNC_INFO;
 
 	//With this values the AVR can be programmed even at low voltage (3.2V)
 	twd_erase = 30;
@@ -145,7 +145,7 @@ int At90sBus::Reset()
 {
 	bool success_flag = false;
 
-	qDebug() << __PRETTY_FUNCTION__ << "I";
+	qDebug() << Q_FUNC_INFO << "I";
 
 	RefreshParameters();
 
@@ -159,7 +159,7 @@ int At90sBus::Reset()
 
 			WaitMsec(E2Profile::GetAVRDelayAfterReset());		// At least 20msec (AVR datasheets)
 
-			qDebug() << __PRETTY_FUNCTION__ << "() ** SendDataByte";
+			qDebug() << Q_FUNC_INFO << "() ** SendDataByte";
 
 			SendDataByte(EnableProg0);
 			SendDataByte(EnableProg1);
@@ -184,7 +184,7 @@ int At90sBus::Reset()
 
 			for (int k = 0; k < 32 && !success_flag; k++)
 			{
-				qDebug() << __PRETTY_FUNCTION__ << "() ** SendEnableProg";
+				qDebug() << Q_FUNC_INFO << "() ** SendEnableProg";
 
 				SendDataByte(EnableProg0);
 				SendDataByte(EnableProg1);

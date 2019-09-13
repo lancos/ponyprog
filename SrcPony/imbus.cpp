@@ -52,7 +52,7 @@
 IMBus::IMBus(BusInterface *ptr)
 	: BusIO(ptr)
 {
-	qDebug() << __PRETTY_FUNCTION__;
+	qDebug() << Q_FUNC_INFO;
 
 	StatusLocation = 526;   //526 for NVM3060, 14 for MDA2062
 	SecondaryAddress = false;
@@ -63,7 +63,7 @@ IMBus::IMBus(BusInterface *ptr)
 // Distruttore
 IMBus::~IMBus()
 {
-	qDebug() << __PRETTY_FUNCTION__;
+	qDebug() << Q_FUNC_INFO;
 }
 
 void IMBus::SetStatusLocation(int val)
@@ -131,7 +131,7 @@ void IMBus::SetDelay()
 	Q_CHECK_PTR(busI);
 	busI->SetDelay(n);
 
-	qDebug() << __PRETTY_FUNCTION__ << "=" << n;
+	qDebug() << Q_FUNC_INFO << "=" << n;
 }
 
 int IMBus::SendDataBit(int b)
