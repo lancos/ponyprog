@@ -65,6 +65,8 @@
 #define OUTOFMEMORY             -31
 #define BUFFERUNDERFLOW         -32
 
+#define E2ERR_IOTEST			-33
+
 //Codici di errore restituiti dall'interprete di comandi a menu
 #define CMD_BUFFEREMPTY         -39
 #define CMD_NOTHINGTOWRITE      -40

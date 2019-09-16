@@ -29,6 +29,7 @@
 #include <QCheckBox>
 #include <QStringList>
 #include <QDebug>
+#include <QComboBox>
 
 #include "e2dlg.h"
 #include "e2cmdw.h"
@@ -552,7 +553,13 @@ void e2Dialog::onTest()
 
 	if (test)
 	{
-		QMessageBox msgBox(QMessageBox::Critical, "Failed", translate(STR_TEST) + " " + translate(STR_MSGFAILED), QMessageBox::Ok);
+		QString extraMsg = "";
+		if (test == E2ERR_IOTEST)
+		{
+			if (cmdWin->GetInterfaceType() == PONYPROG_FT)
+				extraMsg = "\nBe sure the VTarget is on (check J3)";
+		}
+		QMessageBox msgBox(QMessageBox::Critical, "Failed", translate(STR_TEST) + " " + translate(STR_MSGFAILED) + extraMsg, QMessageBox::Ok);
 		msgBox.setStyleSheet(cmdWin->getStyleSheet());
 		msgBox.setButtonText(QMessageBox::Ok, translate(STR_CLOSE));
 		msgBox.exec();
@@ -815,8 +822,6 @@ void e2Dialog::on_pushDefaultsGPIO_clicked()
 	//cbxDataInGPIO->setCurrentIndex(DEF_GPIO_DATAIN);
 	//cbxDataOutGPIO->setCurrentIndex(DEF_GPIO_DATAOUT);
 }
-
-#include <QComboBox>
 
 void e2Dialog::recurseCbxHide(QObject *object)
 {

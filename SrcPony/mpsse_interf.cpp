@@ -1061,6 +1061,8 @@ int MpsseInterface::GetPresence(int mask, int val)
 	}
 }
 
+#include <QMessageBox>
+
 int MpsseInterface::TestPort(int port_no)
 {
 #if 1
@@ -1081,11 +1083,19 @@ int MpsseInterface::TestPort(int port_no)
 
 				if (test_step > 2)
 				{
+					QMessageBox mbox;
+					mbox.setText("Passo " + QString::number(test_step) + " Insert check-board");
+					mbox.exec();
+
 					test_step = 0;
 					SendPins(OutDataMask(pin_enbus, 0));
 				}
 				else
 				{
+					QMessageBox mbox;
+					mbox.setText("Passo " + QString::number(test_step) + " Remove check-board");
+					mbox.exec();
+
 					SendPins(OutDataMask(pin_enbus, 1));
 				}
 
@@ -1155,25 +1165,33 @@ int MpsseInterface::TestPort(int port_no)
 
 				if (ret_val == OK)
 				{
-					SendPins(OutDataMask(pin_ctrl, 1));
+					SendPins(OutDataMask(pin_enbus, 1));	//en_bus active low
+					SendPins(OutDataMask(pin_ctrl|pin_dataout|pin_clock, 0));
 					SetPower(true);
 					w.WaitMsec(150);
 					int val = GetPins();
-					if (val < 0 || GetCtrlIn(val) != 0)
+					if (val < 0 || GetCtrlIn(val) != 1)
 					{
-						ret_val = E2ERR_NOTINSTALLED;
-					}
-					else
-					{
-						SendPins(OutDataMask(pin_ctrl, 0));
-						w.WaitMsec(100);
-						val = GetPins();
-						if (val < 0 || GetCtrlIn(val) != 1)
+						if (GetDataIn(val) != 1)
+						{
+							ret_val = E2ERR_IOTEST;
+						}
+						else
 						{
 							ret_val = E2ERR_NOTINSTALLED;
 						}
 					}
-					SendPins(OutDataMask(pin_ctrl, 0));
+					else
+					{
+						SendPins(OutDataMask(pin_ctrl, 1));
+						w.WaitMsec(100);
+						val = GetPins();
+						if (val < 0 || GetCtrlIn(val) != 0)
+						{
+							ret_val = E2ERR_NOTINSTALLED;
+						}
+					}
+					SendPins(OutDataMask(pin_ctrl|pin_dataout|pin_clock, 0));
 					SetPower(false);
 				}
 			}
