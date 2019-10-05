@@ -59,12 +59,10 @@ SET( PONYPROG_CPACK_PACKAGE_DESCRIPTION "EEPROM and microcontroller flasher" )
 SET( PONYPROG_CPACK_PACKAGE_DESCRIPTION_SUMMARY "EEPROM and microcontroller flasher for PIC, Atmega and other chips" )
 # SET( PACKAGE_DEPENDS ${hugr_dependencies} )
 
-#SET( PONYPROG_CPACK_PACKAGE_DEPENDS "${PONYPROG_CPACK_PACKAGE_SHLIBDEPS}" )
-SET( PONYPROG_CPACK_PACKAGE_DEPENDS "libusb-1.0-0, libftdi1-2, libftdipp1-3, libqt5core5a, libqt5gui5, libqt5widgets5, libqt5multimedia5, libqt5printsupport5" )
+SET( PONYPROG_CPACK_PACKAGE_DEPENDS "${PONYPROG_CPACK_PACKAGE_SHLIBDEPS}" )
+#SET( PONYPROG_CPACK_PACKAGE_DEPENDS "libusb-1.0-0, libftdi1-2, libftdipp1-3, libqt5core5a, libqt5gui5, libqt5widgets5, libqt5multimedia5, libqt5printsupport5" )
 
-#SET( PONYPROG_CPACK_PACKAGE_DEPENDS "libhttrack2, libqtcore4, libqtgui4, libc6, libstdc++6" )
-# SET( PONYPROG_CPACK_PACKAGE_DEPENDS "libhttrack2, libqtcore4, libqtgui4" )
-# SET( PACKAGE_DEPENDS "libc6 (>= 2.1.3), libhttrack (>= 3.42.1), libqtcore4 (>= 4:4.6.1), libqtgui4 (>= 4:4.5.3), libstdc++6 (>= 4.1.1)" )
+# SET( PACKAGE_DEPENDS "libc6 (>= 2.1.3), libqtcore4 (>= 4:4.6.1), libqtgui4 (>= 4:4.5.3), libstdc++6 (>= 4.1.1)" )
 
 
 # SET( PONYPROG_CPACK_PACKAGE_GROUP "Groupe" )
