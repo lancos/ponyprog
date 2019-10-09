@@ -1,7 +1,6 @@
 -----------------
 PREPARE FOR BUILD
 -----------------
-For compiling with Qt4 should be installed libqtcore4, libqtgui4, libqt4-dev, packages
 Compiling with Qt5 needs qtbase5-dev, qtmultimedia5-dev, libqt5printsupport5, libqt5multimedia5 
 Name of packages can be different on distributions.
 
@@ -9,12 +8,13 @@ Name of packages can be different on distributions.
 BUILD for Linux
 ---------------
 On linux systems you need the following packages installed to build: cmake, make, g++ and selected Qt packages
+Other packages needed un ubuntu 18.04: libftdi1-dev libftdipp1-dev libusb-1.0.0-dev
 To build the executable binary file run the script:
 
 # ./create_elf_binary.sh
 
 In this shell script you can change followed options in the line: 
-cmake -DUSE_DEBUGGER=ON -DUSE_QT5=OFF ..
+cmake -DUSE_DEBUGGER=ON -DUSE_QT5=ON ..
 
 USE_DEBUGGER ON/OFF: the debug information in binary file
 USE_QT5      ON/OFF: select Qt5 or Qt4
