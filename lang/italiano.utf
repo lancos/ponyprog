@@ -334,3 +334,6 @@ t282=Bit di Configurazione e Sicurezza
 t283=Consulta il datasheet del dispositivo
 t284=Il bit selezionato significa programmato
 t285=Il bit non selezionato significa non programmato
+t286=Salva il risultato nel buffer alla locazione indicata
+t287=Preferenze
+t288=Assicurati che VTarget sia ON (controlla il jumper J3) e di non avere nessun dispositivo 'target' collegato

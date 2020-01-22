@@ -340,3 +340,6 @@ t282=Security and Configuration Bits
 t283=Refer to device datasheet, please
 t284=Checked items means programmed
 t285=UnChecked items means unprogrammed
+t286=Save the result in the buffer at given location
+t287=Preferences
+t288=Be sure the VTarget is on (check J3) and NO target attached for the test
