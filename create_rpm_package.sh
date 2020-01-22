@@ -30,7 +30,7 @@ fi
 if [ -d "$DIRECTORY" ]; then
     cd "$DIRECTORY"
     rm * -rf
-    cmake -DUSE_DEBUGGER=OFF ..
+    cmake -DUSE_DEBUGGER=OFF -DUSE_QT5=ON -DUDEV_INSTALL_DIR="/usr/lib/udev/rules.d" ..
     make -j$CPU_NUM
     strip -s ponyprog
     make package-binary-rpm
