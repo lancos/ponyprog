@@ -360,7 +360,7 @@ class e2CmdWindow : public QMainWindow, public e2App, public Ui::MainWindow
 	//      int CoordToIndex(int row, int col);
 	//      void IndexToCoord(int index, int &row, int &col);
 // 	void setMenuIndexes();
-	void selectTypeSubtype(const QString &t, const QString &st);
+	long selectTypeSubtype(const QString &t, const QString &st);
 	int ScriptError(int line_number, int arg_index, const QString &s, const QString msg = "");
 
 

@@ -1309,7 +1309,7 @@ void e2CmdWindow::onSelectChip(QAction *a)
 	QString t = ((QAction *)a->parent())->text(); // current type
 	QString st = a->text(); // current subtype
 
-	selectTypeSubtype(t, st);
+	long new_id = selectTypeSubtype(t, st);
 
 	if (currentAct != NULL)
 	{
@@ -1318,10 +1318,15 @@ void e2CmdWindow::onSelectChip(QAction *a)
 
 	currentAct = a;
 	currentAct->setChecked(true);
+
+	qDebug() << Q_FUNC_INFO << "Id: " << (hex) << awip->GetEEPId() << " NewId: " << new_id;
+
+	if (awip->GetEEPId() != new_id)
+		CmdSelectDevice(new_id);
 }
 
 
-void e2CmdWindow::selectTypeSubtype(const QString &tp, const QString &subtp)
+long e2CmdWindow::selectTypeSubtype(const QString &tp, const QString &subtp)
 {
 	QString t_tmp = tp;
 	t_tmp.remove(QChar('&'));
@@ -1400,7 +1405,7 @@ void e2CmdWindow::selectTypeSubtype(const QString &tp, const QString &subtp)
 		else
 		{
 			qDebug() << "selectTypeSubtype, something is wrong with search" << currentMenu->title;
-			return;
+			return EID_INVALID;
 		}
 
 		connect(cbxEEPSubType, SIGNAL(currentIndexChanged(int)), this, SLOT(onDevSubType(int)));
@@ -1417,14 +1422,14 @@ void e2CmdWindow::selectTypeSubtype(const QString &tp, const QString &subtp)
 	cbxEEPSubType->setCurrentIndex(nst);
 	connect(cbxEEPSubType, SIGNAL(currentIndexChanged(int)), this, SLOT(onDevSubType(int)));
 
-	// search id
-	long new_id = EID_INVALID;
-
 	if (currentMenu == NULL)
 	{
 		qDebug() << "selectTypeSubtype, something is wrong with data pointer";
-		return;
+		return EID_INVALID;
 	}
+
+	// search id
+	long new_id = EID_INVALID;
 
 	for (int i = 0; i < currentMenu->info.count(); i++)
 	{
@@ -1436,7 +1441,7 @@ void e2CmdWindow::selectTypeSubtype(const QString &tp, const QString &subtp)
 
 	Q_ASSERT(new_id != EID_INVALID);
 
-	CmdSelectDevice(new_id);
+	return new_id;
 }
 
 
@@ -5102,35 +5107,17 @@ int e2CmdWindow::CmdEditNote()
 // new_type is the chip id
 int e2CmdWindow::CmdSelectDevice(long new_type, bool init)
 {
-	if (init)
-	{
-		awip->SetEEProm(new_type);
-		UpdateMenuType(new_type);
+	awip->SetEEProm(new_type);
+	UpdateMenuType(new_type);
 
-		first_line = 0;
-		//curIndex = 0;
-		Draw();
-		awip->RecalcCRC();
-		UpdateStatusBar();
-	}
-	else
-	{
-		long old_type = awip->GetEEPId();
+	first_line = 0;
+	//curIndex = 0;
+	Draw();
+	awip->RecalcCRC();
+	UpdateStatusBar();
 
-		if (new_type != old_type)
-		{
-			awip->SetEEProm(new_type);
-			UpdateMenuType(new_type/*, old_type*/);
-
-			first_line = 0;
-			//curIndex = 0;
-			Draw();
-			awip->RecalcCRC();
-			UpdateStatusBar();
-
-			E2Profile::SetLastDevType(new_type);
-		}
-	}
+	if (!init)
+		E2Profile::SetLastDevType(new_type);
 
 	return OK;
 }
@@ -5840,7 +5827,7 @@ int e2CmdWindow::OpenFile(const QString &file)
 		{
 			QString oldfname = awip->GetFileName();
 			awip->SetFileName(fileName);
-			//long old_type = awip->GetEEPId();			//EEP type can be changed by E2P file load
+			long old_type = awip->GetEEPId();			//EEP type can be changed by E2P file load
 
 			rval = awip->Load();
 
@@ -5863,7 +5850,8 @@ int e2CmdWindow::OpenFile(const QString &file)
 				UpdateStrFromBuf();
 
 				//UpdateChipType();
-				UpdateMenuType(awip->GetEEPId()/*, old_type*/);
+				if (awip->GetEEPId() != old_type)
+					UpdateMenuType(awip->GetEEPId());
 
 				first_line = 0;
 				//curIndex = 0;
