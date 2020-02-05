@@ -2,7 +2,7 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2019   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2020   Claudio Lanconelli                           //
 //                                                                         //
 //  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
@@ -35,7 +35,7 @@
 #include "e2profil.h"
 
 static const QString AUTHORWEB     = "http://www.LancOS.com";
-static const QString COPYRIGHTYEAR = "1997-2019";
+static const QString COPYRIGHTYEAR = "1997-2020";
 static const QString PORTERGQT     = "Eduard Kalinowski";
 static const QString PORTERMAIL    = "eduard_kalinowski@yahoo.de";
 
