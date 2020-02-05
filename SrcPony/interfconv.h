@@ -50,7 +50,8 @@ struct InterfPins
 };
 
 enum
-{	//Directly correspond to setup interface dialog tab index
+{
+	//Directly correspond to setup interface dialog tab index
 	INTERF_USB = 0,
 	INTERF_COM,
 	INTERF_LPT,

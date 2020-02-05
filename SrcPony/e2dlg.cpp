@@ -557,7 +557,9 @@ void e2Dialog::onTest()
 		if (test == E2ERR_IOTEST || E2ERR_NOTINSTALLED)
 		{
 			if (cmdWin->GetInterfaceType() == PONYPROG_FT)
+			{
 				extraMsg = "\n" + translate(STR_EXTRAPROBEMSG_FTPROG);
+			}
 		}
 		QMessageBox msgBox(QMessageBox::Critical, "Failed", translate(STR_TEST) + " " + translate(STR_MSGFAILED) + extraMsg, QMessageBox::Ok);
 		msgBox.setStyleSheet(cmdWin->getStyleSheet());

@@ -1116,9 +1116,13 @@ int MpsseInterface::TestPort(int port_no)
 						return E2ERR_NOTINSTALLED;
 					}
 					if ((val & pin_datain) != 0)
+					{
 						val = 1;
+					}
 					else
+					{
 						val = 0;
+					}
 					if (val != geti)
 					{
 						qWarning() << Q_FUNC_INFO  << " Data Write " << seto << " read " << val << "(" << geti << ")";
@@ -1138,9 +1142,13 @@ int MpsseInterface::TestPort(int port_no)
 						return E2ERR_NOTINSTALLED;
 					}
 					if ((val & pmask_clkin) != 0)
+					{
 						val = 1;
+					}
 					else
+					{
 						val = 0;
+					}
 					if (val != geti)
 					{
 						qWarning() << Q_FUNC_INFO  << " Clock Write " << seto << " read " << val << "(" << geti << ")";
@@ -1149,7 +1157,7 @@ int MpsseInterface::TestPort(int port_no)
 				}
 
 				SendPins(OutDataMask(pin_enbus, 1));
-				SendPins(OutDataMask(pin_ctrl|pin_dataout|pin_clock, 0));
+				SendPins(OutDataMask(pin_ctrl | pin_dataout | pin_clock, 0));
 				SetPower(false);
 
 				if (errcount > 0)
@@ -1166,7 +1174,7 @@ int MpsseInterface::TestPort(int port_no)
 				if (ret_val == OK)
 				{
 					SendPins(OutDataMask(pin_enbus, 1));	//en_bus active low
-					SendPins(OutDataMask(pin_ctrl|pin_dataout|pin_clock, 0));
+					SendPins(OutDataMask(pin_ctrl | pin_dataout | pin_clock, 0));
 					SetPower(true);
 					w.WaitMsec(150);
 					int val = GetPins();
@@ -1191,7 +1199,7 @@ int MpsseInterface::TestPort(int port_no)
 							ret_val = E2ERR_NOTINSTALLED;
 						}
 					}
-					SendPins(OutDataMask(pin_ctrl|pin_dataout|pin_clock, 0));
+					SendPins(OutDataMask(pin_ctrl | pin_dataout | pin_clock, 0));
 					SetPower(false);
 				}
 			}

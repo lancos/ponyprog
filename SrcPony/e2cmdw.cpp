@@ -1322,7 +1322,9 @@ void e2CmdWindow::onSelectChip(QAction *a)
 	qDebug() << Q_FUNC_INFO << "Id: " << (hex) << awip->GetEEPId() << " NewId: " << new_id;
 
 	if (awip->GetEEPId() != new_id)
+	{
 		CmdSelectDevice(new_id);
+	}
 }
 
 
@@ -5117,7 +5119,9 @@ int e2CmdWindow::CmdSelectDevice(long new_type, bool init)
 	UpdateStatusBar();
 
 	if (!init)
+	{
 		E2Profile::SetLastDevType(new_type);
+	}
 
 	return OK;
 }
@@ -5851,7 +5855,9 @@ int e2CmdWindow::OpenFile(const QString &file)
 
 				//UpdateChipType();
 				if (awip->GetEEPId() != old_type)
+				{
 					UpdateMenuType(awip->GetEEPId());
+				}
 
 				first_line = 0;
 				//curIndex = 0;
