@@ -55,12 +55,14 @@ e2AppWinInfo::e2AppWinInfo(e2CmdWindow *p, const QString &name, BusIO **busvptr)
 	fuse_ok(false),
 	crc(0)
 {
-	qDebug() << "e2AppWinInfo::e2AppWinInfo()";
+	qDebug() << Q_FUNC_INFO;
 
 	// Constructor
 //	cmdWin = static_cast<e2CmdWindow*>(p);
 
 	fname = "";
+
+	readXmlDir();
 
 	//qDebug() << "e2awinfo" << p << this;
 
@@ -87,50 +89,6 @@ e2AppWinInfo::e2AppWinInfo(e2CmdWindow *p, const QString &name, BusIO **busvptr)
 	eep2444 = new X2444(this, busvptr[X2444B - 1]);
 	eep2430 = new X2444(this, busvptr[S2430B - 1]);
 
-
-	//AutoTag
-	//Initialize Device Pointers vector
-	//      eep24xx.SetAWInfo(this);
-	//      eep24xx.SetBus(busvptr[I2C - 1]);
-	//      eep2401.SetAWInfo(this);
-	//      eep2401.SetBus(busvptr[I2C - 1]);
-	//      eep24xx1.SetAWInfo(this);
-	//      eep24xx1.SetBus(busvptr[I2C - 1]);
-	//      eep24xx2.SetAWInfo(this);
-	//      eep24xx2.SetBus(busvptr[I2C - 1]);
-	//      eep24xx5.SetAWInfo(this);
-	//      eep24xx5.SetBus(busvptr[I2C - 1]);
-	//      eepAt90s.SetAWInfo(this);
-	//      eepAt90s.SetBus(busvptr[AT90S - 1]);
-	//      eepAt89s.SetAWInfo(this);
-	//      eepAt89s.SetBus(busvptr[AT89S - 1]);
-	//      eep93xx16.SetAWInfo(this);
-	//      eep93xx16.SetBus(busvptr[AT93C - 1]);
-	//      eep93xx8.SetAWInfo(this);
-	//      eep93xx8.SetBus(busvptr[AT93C - 1]);
-	//      eepPic16.SetAWInfo(this);
-	//      eepPic16.SetBus(busvptr[PICB - 1]);
-	//      eep250xx.SetAWInfo(this);
-	//      eep250xx.SetBus(busvptr[AT250 - 1]);
-	//      eep25xxx.SetAWInfo(this);
-	//      eep25xxx.SetBus(busvptr[AT250BIG - 1]);
-	//      eep2506.SetAWInfo(this);
-	//      eep2506.SetBus(busvptr[SDEB - 1]);
-	//      eepPic168xx.SetAWInfo(this);
-	//      eepPic168xx.SetBus(busvptr[PICNEWB - 1]);
-	//      eep3060.SetAWInfo(this);
-	//      eep3060.SetBus(busvptr[IMBUS - 1]);
-	//      eepPic125xx.SetAWInfo(this);
-	//      eepPic125xx.SetBus(busvptr[PIC12B - 1]);
-	//      eep17xxx.SetAWInfo(this);
-	//      eep17xxx.SetBus(busvptr[I2C - 1]);
-	//      eep2444.SetAWInfo(this);
-	//      eep2444.SetBus(busvptr[X2444B - 1]);
-	//      eep2444.DefaultBankSize();
-	//      eep2430.SetAWInfo(this);
-	//      eep2430.SetBus(busvptr[S2430B - 1]);
-	//      eep2430.DefaultBankSize();
-
 	SetFileName(name);
 
 	//Initialize File Formats vector
@@ -150,7 +108,10 @@ e2AppWinInfo::e2AppWinInfo(e2CmdWindow *p, const QString &name, BusIO **busvptr)
 
 	ClearBuffer();                          //Clear the new buffer
 
-	SetEEProm(E2Profile::GetLastDevType());
+	QString nm = E2Profile::GetLastDevType();
+	quint32 type = GetEEPTypeFromString(nm);
+	SetEEProm(type);
+
 	SetFileBuf(E2Profile::GetDefaultFileType());       //      SetFileBuf(E2P);
 
 	SetLoadAutoClearBuf(E2Profile::GetClearBufBeforeLoad());
@@ -214,28 +175,522 @@ e2AppWinInfo::e2AppWinInfo(e2CmdWindow *p, const QString &name, BusIO **busvptr)
 			cmdWin->ClosePort();
 		}
 	}
-#if 0
-	else if (GetFileName().length())
-	{
-		if (Load() <= 0)
-		{
-			SetFileName("");
-		}
-	}
-
-#endif
-	//      cmdWin->PostInit();
-
 }
 
 
 e2AppWinInfo::~e2AppWinInfo()
 {
-	qDebug() << "e2AppWinInfo::~e2AppWinInfo()";
+	qDebug() << Q_FUNC_INFO;
 
 	// Destructor
 	fname = "";
 }
+
+
+
+/**
+ * @brief scan the directory with translations. language files are with .utf extentions
+ *
+ */
+bool e2AppWinInfo::readXmlDir()
+{
+	bool found = false;
+	QString xmlDirName;
+	QStringList dirsXml;
+	QDir dir;
+	QStringList xmlList;
+	// EK 2020
+	// this for linux
+	QString path = QDir::currentPath();
+	QString bdir = "/build";
+	if (path.endsWith(bdir))
+	{
+		int pos = path.lastIndexOf(bdir);
+		path.remove(pos, bdir.length());
+	}
+	path += "/ics";
+
+	if (path.length() == 0)
+	{
+		xmlDirName = qApp->applicationDirPath() + "/ics";
+	}
+	else
+	{
+		xmlDirName = path;
+	}
+
+	qDebug() << "readXmlDir path:" << path << ", Saved: " << xmlDirName;
+
+#ifdef Q_OS_LINUX
+	dirsXml << xmlDirName << "/usr/share/ponyprog/ics" << "/usr/local/share/ponyprog/ics" << path;
+#else
+	dirsXml << xmlDirName << path;
+#endif
+
+	foreach (const QString entry, dirsXml)
+	{
+		dir = QDir(entry);
+
+		if (dir.exists() == true)
+		{
+			xmlList = dir.entryList(QStringList("*.xml"));
+			if (xmlList.count() > 0)
+			{
+				xmlDirName = entry + "/";
+				found = true;
+				break;
+			}
+		}
+	}
+
+	if (found == false)
+	{
+		return false;
+	}
+
+	foreach (const QString iL, xmlList)
+	{
+		if (readConfigFromXml(xmlDirName + iL) == false)
+		{
+			// TODO Message
+			return false;
+		}
+	}
+
+	return true;
+}
+
+/**
+ * convert string 1k, 2k ... to int
+ */
+int e2AppWinInfo::convertSize(const QString &s)
+{
+	int res = 0;
+	bool cnv = true;
+
+	if (s.indexOf(QRegExp("[0-9]+k")) >= 0)
+	{
+		QString s_tmp = s;
+		s_tmp.remove("k");
+		res = s_tmp.toInt(&cnv);
+		res *= 1024;
+	}
+	else if (s.indexOf(QRegExp("0x[0-9a-fA-F]+")) >= 0)
+	{
+		res = s.toInt(&cnv, 16);
+	}
+	else
+	{
+		res = s.toInt(&cnv);
+	}
+
+	if (cnv == false)
+	{
+		res = -1;
+	}
+
+	return res;
+}
+
+
+bool e2AppWinInfo::readConfigFromXml(const QString &filename)
+{
+	QDomDocument doc;
+	QFile file(filename);
+	if (!file.open(QIODevice::ReadOnly) || !doc.setContent(&file))
+	{
+		return false;
+	}
+
+	bool err = false;
+	qDebug() << "read from config" << filename;
+
+	QDomNodeList ics = doc.elementsByTagName("chip");
+
+	for (int i = 0; i < ics.size(); i++)
+	{
+		QDomNode n = ics.item(i);
+
+		QString menuStr = n.attributes().namedItem("menu").nodeValue();
+		QString idStr = n.attributes().namedItem("id").nodeValue();
+
+		qDebug() << menuStr << idStr;
+		groupElement *grE = NULL;
+
+		int pre_nr = idStr.toInt(NULL, 16);
+
+		bool newGroupElem = false;
+
+		for (int gr_nr = 0; gr_nr < groupList.count(); gr_nr++)
+		{
+			if (menuStr == groupList.at(gr_nr).menuName)
+			{
+				grE = &groupList[gr_nr];
+				break;
+			}
+		}
+
+		if (grE == NULL)
+		{
+			grE = new groupElement;
+			grE->menuName = menuStr;
+			newGroupElem = true;
+		}
+
+		grE->vId.push_back(pre_nr);
+
+		QDomNodeList icList = n.childNodes();
+
+		icElement *iE = NULL;
+		int run_id = 0;
+
+		for (int j = 0; j < icList.size(); j++)
+		{
+			QDomElement memInfo = icList.at(j).toElement();
+
+			if (memInfo.isNull())
+			{
+				continue;
+			}
+
+			if (memInfo.nodeName() == "ic")
+			{
+				if (!memInfo.hasAttribute("menu"))
+				{
+					err = true;
+					qDebug() << "attribute 'menu' was not found";
+					break;
+				}
+
+				run_id++;
+
+				QString mName = memInfo.attribute("menu");
+				QString code_sz = memInfo.attribute("code_sz", "-1");
+				QString dat_sz = memInfo.attribute("data_sz", "-1");
+				QString adr_sz = memInfo.attribute("adr_sz", "-1");
+				QString wpg_sz = memInfo.attribute("wpg_sz", "-1");
+				QString boot_addr = memInfo.attribute("boot", "0");
+
+				QString sgn = memInfo.attribute("signature", "0");
+
+				iE = new icElement;
+				bool cnv;
+
+				iE->name = mName;
+				iE->sign = sgn.toInt(&cnv, 16);
+				iE->chMap.prog_sz = convertSize(code_sz);
+				iE->chMap.data_sz = convertSize(dat_sz);
+				iE->chMap.wpg_sz = convertSize(wpg_sz);
+				iE->chMap.adr_sz = convertSize(adr_sz);
+				iE->chMap.boot = convertSize(boot_addr);
+
+				iE->id = (pre_nr << 16) + run_id;
+
+				grE->vChip.push_back(*iE);
+			}
+
+			if (memInfo.nodeName() == "descr")
+			{
+				QDomElement helpInfo = memInfo.toElement();//.firstChildElement("descr");
+				run_id = 0;
+
+				QString names = helpInfo.attributes().namedItem("list").nodeValue();
+
+				QStringList nList = names.split(QRegExp(",\\s*"));
+
+				chipBits bStruct;
+
+				bStruct.chNames = nList;
+
+				//TODO check names
+
+				QDomNodeList icLock = memInfo.childNodes();
+
+				for (int k = 0; k < icLock.size(); k++)
+				{
+					QDomNode n = icLock.item(k);
+					if (n.isNull())
+					{
+						continue;
+					}
+
+					if (n.nodeName() == "lock")
+					{
+						QDomNodeList intNodes = n.childNodes();
+
+						for (int l = 0; l < intNodes.count(); l++)
+						{
+							if (intNodes.at(l).nodeName() == "bit")
+							{
+								QDomElement bitInfo = intNodes.at(l).toElement();
+
+								//children "bit" with attributes "offset", "name", "index" -> struct BitInfo
+								QString offset = bitInfo.attribute("offset");
+								QString name = bitInfo.attribute("name");
+								QString index = bitInfo.attribute("index");
+								QString description = bitInfo.attribute("text");
+
+								BitInfo *bhelp = new BitInfo;
+								bhelp->bit = offset.toInt();
+								bhelp->idx = index.toInt();
+								bhelp->ShortDescr = name;
+								bhelp->LongDescr = description;
+
+								bStruct.lock << *bhelp;
+							}
+
+							if (intNodes.at(l).nodeName() == "set")
+							{
+								QDomElement setInfo = intNodes.at(l).toElement();
+
+								//children "set" with attributes "code" "text" and optional "additional" -> struct MaskDescr
+								QString code = setInfo.attribute("code");
+								QString text = setInfo.attribute("text");
+								QString additional = setInfo.attribute("additional", "");
+
+								MaskDescr *mHelp = new MaskDescr;
+								mHelp->mask = code;
+								mHelp->LongDescr = text;
+								mHelp->ExtDescr = additional;
+
+								bStruct.lockDescr << *mHelp;
+							}
+						}
+					}
+
+					if (n.nodeName() == "fuse")
+					{
+						QDomNodeList intNodes = n.childNodes();
+
+						for (int l = 0; l < intNodes.count(); l++)
+						{
+							if (intNodes.at(l).nodeName() == "bit")
+							{
+								QDomElement bitInfo = intNodes.at(l).toElement();
+								//children "bit" with attributes "offset", "name", "index" -> struct BitInfo
+								QString offset = bitInfo.attribute("offset");
+								QString name = bitInfo.attribute("name");
+								QString index = bitInfo.attribute("index");
+								QString description = bitInfo.attribute("text");
+
+								BitInfo *bhelp = new BitInfo;
+								bhelp->bit = offset.toInt();
+								bhelp->idx = index.toInt();
+								bhelp->ShortDescr = name;
+								bhelp->LongDescr = description;
+
+								bStruct.fuse << *bhelp;
+							}
+
+							if (intNodes.at(l).nodeName() == "set")
+							{
+								QDomElement setInfo = intNodes.at(l).toElement();
+								//children "set" with attributes "code" "text" and optional "additional" -> struct MaskDescr
+								QString code = setInfo.attribute("code");
+								QString text = setInfo.attribute("text");
+								QString additional = setInfo.attribute("additional", "");
+
+								MaskDescr *mHelp = new MaskDescr;
+								mHelp->mask = code;
+								mHelp->LongDescr = text;
+								mHelp->ExtDescr = additional;
+
+								bStruct.fuseDescr << *mHelp;
+							}
+						}
+					}
+
+					iE->helper = bStruct;
+				}
+			}
+		}
+
+		if (newGroupElem)
+		{
+			groupList << *grE;
+		}
+	}
+
+	return !err;
+}
+
+
+/**
+ * @brief search the name in vectors
+ *
+ */
+quint32 e2AppWinInfo::GetEEPTypeFromString(const QString &name)
+{
+	foreach (groupElement g, groupList)
+	{
+		foreach (icElement i, g.vChip)
+		{
+			if (i.name == name)
+			{
+				return i.id;
+			}
+		}
+	}
+
+	return EID_INVALID;
+}
+
+
+chipBits *e2AppWinInfo::eepFindFuses(quint32 type)
+{
+	quint16 pri_type = ((type & 0x0ff0000) >> 16);
+	foreach (groupElement g, groupList)
+	{
+		if (g.vId.indexOf(pri_type) == -1)
+		{
+			continue;
+		}
+
+		foreach (icElement i, g.vChip)
+		{
+			if (i.id == type)
+			{
+				chipBits *p = &i.helper;
+				return p;
+			}
+		}
+	}
+
+	return NULL;
+}
+
+quint32 e2AppWinInfo::BuildE2PType(quint32 pritype, quint32 subtype)
+{
+	return (((quint32)pritype & 0x7F) << 16) | (subtype & 0x7FFF);
+}
+
+
+quint32 e2AppWinInfo::GetE2PSubType(quint32 type)
+{
+	if (type == EID_INVALID)
+	{
+		return -1;
+	}
+	else
+	{
+		return (quint32)(type & 0x7FFF);
+	}
+}
+
+quint32 e2AppWinInfo::GetE2PPriType(quint32 type)
+{
+	//      qDebug() << "GetE2PPriType" << type << ((type >> 16) & 0x7F);
+	if (type == EID_INVALID)
+	{
+		return -1;
+	}
+	else
+	{
+		return (int)((type >> 16) & 0x7F);
+	}
+}
+
+
+chipMap e2AppWinInfo::GetChipMap(quint32 type)
+{
+	chipMap info = {};
+
+	foreach (groupElement g, groupList)
+	{
+		if (g.vId.indexOf((type >> 16) & 0x7f) == -1)
+		{
+			continue;
+		}
+		foreach (icElement iE, g.vChip)
+		{
+			// extract only subtype
+			if (iE.id == type)
+			{
+				info = iE.chMap;
+				break;
+			}
+		}
+	}
+
+	return info;
+}
+
+
+quint32 e2AppWinInfo::GetEEPTypeFromSize(quint32 type, int size)
+{
+	foreach (groupElement g, groupList)
+	{
+		if (g.vId.indexOf((type >> 16) & 0x7f) == -1)
+		{
+			continue;
+		}
+
+		foreach (icElement iE, g.vChip)
+		{
+			if ((iE.chMap.prog_sz + iE.chMap.data_sz) == size)
+			{
+				return iE.id;
+			}
+		}
+	}
+
+	return -1;
+}
+
+
+int e2AppWinInfo::GetEEPTypeSize(quint32 type)
+{
+	chipMap i = GetChipMap(type);
+
+	return (i.prog_sz + i.data_sz);
+}
+
+
+int e2AppWinInfo::GetEEPAddrSize(quint32 type)
+{
+	chipMap i = GetChipMap(type);
+
+	return i.adr_sz;
+}
+
+
+int e2AppWinInfo::GetEEPTypeSplit(quint32 type)
+{
+	chipMap i = GetChipMap(type);
+
+	return i.prog_sz;
+}
+
+
+int e2AppWinInfo::GetEEPTypeWPageSize(quint32 type)
+{
+	chipMap i = GetChipMap(type);
+
+	return i.wpg_sz;
+}
+
+
+QString e2AppWinInfo::GetEEPTypeString(quint32 type)
+{
+	foreach (groupElement g, groupList)
+	{
+		if (g.vId.indexOf((type >> 16) & 0x7f) == -1)
+		{
+			continue;
+		}
+
+		foreach (icElement i, g.vChip)
+		{
+			if (i.id == type)
+			{
+				return i.name;
+			}
+		}
+	}
+
+	return "";
+}
+
 
 
 bool e2AppWinInfo::SetFileName(const QString &name)
@@ -276,13 +731,29 @@ void e2AppWinInfo::Reset()
 	SleepBus();
 }
 
-
-void e2AppWinInfo::SetEEProm(unsigned long id)
+quint32 e2AppWinInfo::GetFirstFromPritype(quint32 id)
 {
-	//      extern long BuildE2PType(int x, int y = 0);
-	extern int GetE2PSubType(unsigned long x);
-	extern int GetE2PPriType(unsigned long x);
+	foreach (groupElement g, groupList)
+	{
+		if (g.vId.indexOf(id) == -1)
+		{
+			continue;
+		}
 
+		foreach (icElement iE, g.vChip)
+		{
+			if (((iE.id >> 16) & 0x7f) == id)
+			{
+				return iE.id;
+			}
+		}
+	}
+
+	return EID_INVALID;
+}
+
+void e2AppWinInfo::SetEEProm(quint32 id)
+{
 	if (id == 0)
 	{
 		id = E2400;         //to avoid segV
@@ -291,11 +762,15 @@ void e2AppWinInfo::SetEEProm(unsigned long id)
 	eep_id = id;
 
 	//eep_type, eep_subtype are local shadow variables of eep_id
-	int eep_type = GetE2PPriType(id);
-	int eep_subtype = GetE2PSubType(id);
+	quint32 eep_type = GetE2PPriType(id);
+	quint32 eep_subtype = GetE2PSubType(id);
 
-//	int eep_type = type;
-//	int eep_subtype = subtype;                  //0 indica di usare GetNoOfBlock()
+	qDebug() << "SetEEProm" << hex << eep_type << eep_subtype << dec;
+
+	if (eep_subtype == 0)
+	{
+		eep_subtype = GetFirstFromPritype(eep_type);
+	}
 
 	switch (eep_type)
 	{
@@ -303,38 +778,19 @@ void e2AppWinInfo::SetEEProm(unsigned long id)
 	//Setting the device pointer to selected type
 	case E24XX:
 		eep = eep24xx;
-		break;
-
-	case E24XX1_A:
-		eep = eep24xx1;
-
-		if (eep_subtype == 0)
+		if (eep_subtype == GetE2PSubType(E2401_A))
 		{
-			//no autodetect: set a reasonable default
-			eep_subtype = GetE2PSubType(E2401_A);
+			eep = eep24xx1;
 		}
 
-		break;
-
-	case E24XX1_B:
-		eep = eep2401;
-
-		if (eep_subtype == 0)
+		if (eep_subtype == GetE2PSubType(E2401_B))
 		{
-			//no autodetect: set a reasonable default
-			eep_subtype = GetE2PSubType(E2401_B);
+			eep = eep2401;
 		}
-
 		break;
 
 	case E24XX2:
 		eep = eep24xx2;
-
-		if (eep_subtype == 0)
-		{
-			//no autodetect: set a reasonable default
-			eep_subtype = GetE2PSubType(E2432);
-		}
 
 		eep->DefaultBankSize();
 		break;
@@ -344,16 +800,13 @@ void e2AppWinInfo::SetEEProm(unsigned long id)
 		break;
 
 	case AT90SXX:
+	case ATtiny:
+	case ATmega:
 	{
 		eep = eepAt90s;
 
-		if (eep_subtype == 0)
-		{
-			//no autodetect: set a reasonable default
-			eep_subtype = GetE2PSubType(AT90S1200);
-		}
+		quint32 xtype = GetEEPId();
 
-		long xtype = GetEEPId();
 		eep->SetProgPageSize(GetEEPTypeWPageSize(xtype), false);
 		At90sBus *b = static_cast<At90sBus *>(eep->GetBus());
 		b->SetFlashPagePolling((xtype != ATmega603) && (xtype != ATmega103));
@@ -365,14 +818,8 @@ void e2AppWinInfo::SetEEProm(unsigned long id)
 	{
 		eep = eepAt89s;
 
-		if (eep_subtype == 0)
-		{
-			//no autodetect: set a reasonable default
-			eep_subtype = GetE2PSubType(AT89S8252);
-		}
-
-		long xtype = GetEEPId();
-
+		quint32 xtype = GetEEPId();
+		qDebug() << hex << xtype << dec;
 		if (E2Profile::GetAt89PageOp())
 		{
 			eep->SetProgPageSize(GetEEPTypeWPageSize(GetEEPId()), false);        //write prog page size
@@ -392,118 +839,54 @@ void e2AppWinInfo::SetEEProm(unsigned long id)
 	case E93X6:
 		eep = eep93xx16;
 
-		if (eep_subtype == 0)
-		{
-			//no autodetect: set a reasonable default
-			eep_subtype = GetE2PSubType(E9306);
-		}
-
 		break;
 
 	case E93XX_8:
 		eep = eep93xx8;
-
-		if (eep_subtype == 0)
-		{
-			//no autodetect: set a reasonable default
-			eep_subtype = GetE2PSubType(E9306_8);
-		}
 
 		break;
 
 	case PIC16XX:
 		eep = eepPic16;
 
-		if (eep_subtype == 0)
-		{
-			//no autodetect: set a reasonable default
-			eep_subtype = GetE2PSubType(PIC1684);
-		}
-
 		break;
 
 	case PIC168XX:
 		eep = eepPic168xx;
-		//      if (eep_subtype == 0)
-		//      {
-		//              eep_subtype = GetE2PSubType(PIC1684A);
-		//      }
+
 		break;
 
 	case PIC125XX:
 		eep = eepPic125xx;
-
-		if (eep_subtype == 0)
-		{
-			//no autodetect: set a reasonable default
-			eep_subtype = GetE2PSubType(PIC12508);
-		}
 
 		break;
 
 	case E250XX:
 		eep = eep250xx;
 
-		if (eep_subtype == 0)
-		{
-			//no autodetect: set a reasonable default
-			eep_subtype = GetE2PSubType(E25010);
-		}
-
 		break;
 
 	case E25XXX:
 		eep = eep25xxx;
 
-		if (eep_subtype == 0)
-		{
-			//no autodetect: set a reasonable default
-			eep_subtype = GetE2PSubType(E25080);
-		}
-
-		//eep->SetBus(GetBusVectorPtr()[AT250BIG-1]);
 		break;
 
 	case E2506XX:
 		eep = eep2506;
-
-		if (eep_subtype == 0)
-		{
-			//no autodetect: set a reasonable default
-			eep_subtype = GetE2PSubType(E2506);
-		}
 
 		break;
 
 	case ENVMXXX:
 		eep = eep3060;
 
-		if (eep_subtype == 0)
-		{
-			//no autodetect: set a reasonable default
-			eep_subtype = GetE2PSubType(ENVM3060);
-		}
-
 		break;
 
 	case AT17XXX:
 		eep = eep17xxx;
 
-		if (eep_subtype == 0)
-		{
-			//no autodetect: set a reasonable default
-			eep_subtype = GetE2PSubType(AT1765);
-		}
-
 		break;
 
 	case X24C44XX:
-		if (eep_subtype == 0)
-		{
-			//no autodetect: set a reasonable default
-			eep_subtype = GetE2PSubType(S24H30);
-		}
-
 		if (GetEEPId() == S24H30)
 		{
 			eep = eep2430;

@@ -47,7 +47,7 @@
 
 RS232Interface::RS232Interface()
 {
-	qDebug() << "RS232Interface::RS232Interface()";
+	qDebug() << Q_FUNC_INFO;
 
 	//      profile = prof;
 
@@ -73,12 +73,12 @@ RS232Interface::RS232Interface()
 	//By default com_no == 0, so don't open any serial port if the constructor is called with zero paramameters
 //	OpenSerial(com_no);
 
-	qDebug() << "RS232Interface::RS232Interface() O";
+// 	qDebug() << "RS232Interface::RS232Interface() O";
 }
 
 RS232Interface::~RS232Interface()
 {
-	qDebug() << "RS232Interface::~RS232Interface()";
+	qDebug() << Q_FUNC_INFO;
 
 	CloseSerial();
 }
@@ -291,7 +291,7 @@ int RS232Interface::SetSerialBreak(int state)
 
 #elif defined(Q_OS_LINUX)
 
-#if defined(TIOCSBRK) && defined(TIOCCBRK) //check if available for compilation 
+#if defined(TIOCSBRK) && defined(TIOCCBRK) //check if available for compilation
 
 	if (state)
 	{

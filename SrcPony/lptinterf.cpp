@@ -67,7 +67,7 @@
 
 LPTInterface::LPTInterface()
 {
-	qDebug() << "LPTInterface::LPTInterface()";
+	qDebug() << Q_FUNC_INFO;
 
 	last_ctrl = last_data = 0;
 	lpt_control.LPPort = -1;         //no used port
@@ -79,7 +79,7 @@ LPTInterface::LPTInterface()
 
 LPTInterface::~LPTInterface()
 {
-	qDebug() <<  "LPTInterface::~LPTInterface()";
+	qDebug() << Q_FUNC_INFO;
 
 	Close();
 }

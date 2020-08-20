@@ -123,7 +123,8 @@ class e2AppWinInfo // : public QObject
 	}
 
 //	void SetEEProm(int type = E24XX, int subtype = 0);
-	void SetEEProm(unsigned long id = E2400);
+	quint32 GetFirstFromPritype(quint32 id);
+	void SetEEProm(quint32 id = E2400);
 
 	void SetFileBuf(FileType type);
 	FileType GetFileBuf() const;
@@ -141,27 +142,11 @@ class e2AppWinInfo // : public QObject
 	QString GetComment();
 	void SetComment(const QString &s);
 
-	int GetEEPId() const
+	quint32 GetEEPId() const
 	{
 		return eep_id;
 	}
 
-#if 0
-	int GetEEPPriType() const
-	{
-		return eep_type;
-	}
-	int GetEEPSubType() const
-	{
-		return eep_subtype ? eep_subtype : GetE2PSubType(GetEEPTypeFromSize(eep_type, GetNoOfBlock()));
-	} //GetNoOfBlock(); }
-
-	int GetEEPType() const
-	{
-		return BuildE2PType(eep_type, eep_subtype);
-	}
-#endif
-//	void SetEEPTypeId(unsigned long e2type_id);
 	int GetBankRollOver() const
 	{
 		return roll_over;
@@ -262,21 +247,51 @@ class e2AppWinInfo // : public QObject
 	{
 		clear_buffer_before_load = val;
 	}
+
+	QString GetEEPTypeString(quint32 type);
+
 	long GetDetectedType() const
 	{
 		return eep ? eep->GetDetectedType() : 0;
 	}
-	QString GetDetectedTypeStr() const
+	QString GetDetectedTypeStr()
 	{
 		return GetEEPTypeString(GetDetectedType());
 	}
-	QString GetDetectedSignatureStr() const
+	QString GetDetectedSignatureStr()
 	{
 		return eep ? eep->GetDetectedSignatureStr() : "";
 	}
 
+	quint32 BuildE2PType(quint32 pritype, quint32 subtype = 0);
+	quint32 GetE2PSubType(quint32 type);
+	quint32 GetE2PPriType(quint32 type);
+
+	chipMap GetChipMap(quint32 subtype);
+
+
+
+	int GetEEPTypeIndex(quint32 type);
+	QVector<icElement> GetEEPSubTypeVector(quint32 type);
+	int GetEEPTypeSize(quint32 type);
+	int GetEEPAddrSize(quint32 type);
+	int GetEEPTypeSplit(quint32 type);
+
+	quint32 GetEEPTypeFromSize(quint32 type, int size);
+	quint32 GetEEPTypeFromString(const QString &name);
+
+	int GetEEPTypeWPageSize(quint32 type);
+
+	chipBits *eepFindFuses(quint32 type);
+
+	// this is the global list of information from xml files
+	QVector <groupElement> groupList;
+
   protected:
 //	e2CmdWindow* cmdWin;
+
+
+
 
   private:
 	int OpenBus();
@@ -286,6 +301,10 @@ class e2AppWinInfo // : public QObject
 		block_size = blk;
 	}
 	int LoadFile();
+
+	bool readXmlDir();
+	int convertSize(const QString &s);
+	bool readConfigFromXml(const QString &filename);
 
 	QString fname;                            //nome del file
 
@@ -308,9 +327,8 @@ class e2AppWinInfo // : public QObject
 	bool buf_ok;                            //true if buffer is valid
 	bool buf_changed;                       //true if buffer changed/edited
 
-	unsigned long eep_id;
-	//      int eep_type;                           //indica il tipo di chip di eeprom
-	//      int eep_subtype;                        //sottotipo (in pratica il numero di banchi)
+	quint32 eep_id;
+
 	//se zero viene usato GetNoOfBank(), serve per una forzatura manuale
 
 

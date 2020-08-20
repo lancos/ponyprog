@@ -116,12 +116,12 @@ int FileBuf::GetRollOver() const
 	return awi->GetBankRollOver();
 }
 
-uint32_t FileBuf::GetLockBits() const
+quint32 FileBuf::GetLockBits() const
 {
 	return awi->GetLockBits();
 }
 
-uint32_t FileBuf::GetFuseBits() const
+quint32 FileBuf::GetFuseBits() const
 {
 	return awi->GetFuseBits();
 }
@@ -141,12 +141,12 @@ void FileBuf::SetSplitted(long spl)
 	awi->SetSplittedInfo(spl);
 }
 
-void FileBuf::SetLockBits(uint32_t bits)
+void FileBuf::SetLockBits(quint32 bits)
 {
 	awi->SetLockBits(bits);
 }
 
-void FileBuf::SetFuseBits(uint32_t bits)
+void FileBuf::SetFuseBits(quint32 bits)
 {
 	awi->SetFuseBits(bits);
 }
@@ -156,29 +156,29 @@ void FileBuf::SetCRC(uint16_t c)
 	awi->SetCRC(c);
 }
 
-long FileBuf::GetEEpromType() const
+quint32 FileBuf::GetEEpromType() const
 {
 	return awi->GetEEPId();
 }
 
-int FileBuf::GetEEpromPriType() const
+quint32 FileBuf::GetEEpromPriType() const
 {
-	return GetE2PPriType(awi->GetEEPId());
+	return awi->GetE2PPriType(awi->GetEEPId());
 }
 
-int FileBuf::GetEEpromSubType() const
+quint32 FileBuf::GetEEpromSubType() const
 {
-	return GetE2PSubType(awi->GetEEPId());
+	return awi->GetE2PSubType(awi->GetEEPId());
 }
 
-void FileBuf::SetEEpromType(int pritype, int subtype)
+void FileBuf::SetEEpromType(quint32 pritype, quint32 subtype)
 {
-	extern long BuildE2PType(int pritype, int subtype);
+// 	extern long BuildE2PType(int pritype, int subtype);
 
-	awi->SetEEProm(BuildE2PType(pritype, subtype));
+	awi->SetEEProm(awi->BuildE2PType(pritype, subtype));
 }
 
-void FileBuf::SetEEpromType(unsigned long id)
+void FileBuf::SetEEpromType(quint32 id)
 {
 	awi->SetEEProm(id);
 }

@@ -37,7 +37,7 @@
 At89sxx::At89sxx(e2AppWinInfo *wininfo, BusIO *busp)
 	:       Device(wininfo, busp, 1 /*BANK_SIZE*/)
 {
-	qDebug() << "At89sxx::At89sxx()";
+	qDebug() << Q_FUNC_INFO;
 }
 
 int At89sxx::SecurityRead(uint32_t &bits)
@@ -88,7 +88,7 @@ int At89sxx::FusesWrite(uint32_t bits)
 	return rv;
 }
 
-int At89sxx::QueryType(long &type)
+int At89sxx::QueryType(quint32 &type)
 {
 	int rv;
 	int code[3];
@@ -155,13 +155,13 @@ int At89sxx::Probe(int probe_size)
 		case AT89S52:
 		case AT89S8253:
 		{
-			long type;
+			quint32 type;
 			rv = QueryType(type);
-			int subtype = GetE2PSubType(type);
+			quint32 subtype = GetAWInfo()->GetE2PSubType(type);
 
 			if (rv == OK)
 			{
-				if (GetE2PSubType(GetAWInfo()->GetEEPId()) == subtype)
+				if (GetAWInfo()->GetE2PSubType(GetAWInfo()->GetEEPId()) == subtype)
 				{
 					rv = GetSize();
 				}

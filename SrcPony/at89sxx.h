@@ -60,7 +60,7 @@ class At89sxx : public Device
 
   protected:
 
-	int QueryType(long &type);
+	int QueryType(quint32 &type);
 
   private:
 

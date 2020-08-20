@@ -35,7 +35,7 @@
 X2444::X2444(e2AppWinInfo *wininfo, BusIO *busp)
 	:       Device(wininfo, busp, 2)
 {
-	qDebug() << "X2444::X2444()";
+	qDebug() << Q_FUNC_INFO;
 	DefaultBankSize();
 }
 

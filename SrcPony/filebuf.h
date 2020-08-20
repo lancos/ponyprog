@@ -60,11 +60,11 @@ class FileBuf
 	int GetBlockSize() const;
 	int GetNoOfBlock() const;
 	void SetNoOfBlock(int no_blk);
-	long GetEEpromType() const;
-	int GetEEpromPriType() const;
-	int GetEEpromSubType() const;
-	void SetEEpromType(int pritype, int subtype);
-	void SetEEpromType(unsigned long id);
+	quint32 GetEEpromType() const;
+	quint32 GetEEpromPriType() const;
+	quint32 GetEEpromSubType() const;
+	void SetEEpromType(quint32 pritype, quint32 subtype);
+	void SetEEpromType(quint32 id);
 
 	QString GetStringID();
 	void SetStringID(const QString &s);
@@ -77,10 +77,10 @@ class FileBuf
 	long GetSplitted() const;
 	void SetSplitted(long spl);
 
-	uint32_t GetLockBits() const;
-	void SetLockBits(uint32_t bits);
-	uint32_t GetFuseBits() const;
-	void SetFuseBits(uint32_t bits);
+	quint32 GetLockBits() const;
+	void SetLockBits(quint32 bits);
+	quint32 GetFuseBits() const;
+	void SetFuseBits(quint32 bits);
 
 	//      uint16_t GetCRC() const
 	//              { return awi->GetCRC(); }

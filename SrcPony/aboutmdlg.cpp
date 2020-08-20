@@ -43,7 +43,7 @@ static const QString PORTERMAIL    = "eduard_kalinowski@yahoo.de";
 AboutModalDialog::AboutModalDialog(QWidget *bw, const QString title)
 	: QDialog(bw)
 {
-	qDebug() << "AboutModalDialog::AboutModalDialog()";
+	qDebug() << Q_FUNC_INFO;
 
 	setupUi(this);
 
@@ -88,7 +88,7 @@ AboutModalDialog::AboutModalDialog(QWidget *bw, const QString title)
 
 AboutModalDialog::~AboutModalDialog()
 {
-	qDebug() << "AboutModalDialog::~AboutModalDialog()";
+	qDebug() << Q_FUNC_INFO;
 }
 
 

@@ -39,15 +39,6 @@
 
 #include "e2cmdw.h"
 
-typedef struct
-{
-	QVector<long> type; // chip id's for same descriptions of chip bits
-	QVector<BitInfo> fuse;
-	QVector<MaskDescr> fuseDescr;
-	QVector<BitInfo> lock;
-	QVector<MaskDescr> lockDescr;
-} ChipBits;
-
 
 class fuseModalDialog : public QDialog, public cTranslator, public Ui::FuseDialog
 {
@@ -73,12 +64,10 @@ class fuseModalDialog : public QDialog, public cTranslator, public Ui::FuseDialo
 	void setTextWidgets();
 
 	void initWidgets(const QString &msg, bool readonly);
-	int  eepFindFuses(long type);
+
 
 
   private:
-	static QVector<ChipBits> eep_bits;
-
 	e2CmdWindow *cmdw;
 	e2AppWinInfo *awip;
 
@@ -90,8 +79,7 @@ class fuseModalDialog : public QDialog, public cTranslator, public Ui::FuseDialo
 	bool fuseEnabled;
 	bool lockEnabled;
 
-	int currentChip;
-	ChipBits currentBitField;
+	chipBits *currentBitField;
 
 	bool write;
 	bool read;

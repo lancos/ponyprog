@@ -75,7 +75,7 @@ enum UartRegs
 
 PonyIOInterface::PonyIOInterface()
 {
-	//qDebug() << "PonyIOInterface::PonyIOInterface()";
+	//qDebug() << Q_FUNC_INFO;
 
 	//DeInstall();
 	//old_portno = GetInstalled();

@@ -49,7 +49,7 @@ blockDialog::blockDialog(e2CmdWindow *bw, e2AppWinInfo *p, bool readonly, const 
 		setStyleSheet(cmdw->getStyleSheet());
 	}
 
-	qDebug() << "blockDialog::blockDialog()";
+	qDebug() << Q_FUNC_INFO;
 
 
 	lblFrom->setText(translate(STR_MSGFIRSTBLK));
@@ -83,7 +83,7 @@ blockDialog::blockDialog(e2CmdWindow *bw, e2AppWinInfo *p, bool readonly, const 
 
 blockDialog::~blockDialog()
 {
-	qDebug() << "blockDialog::~blockDialog()";
+	qDebug() << Q_FUNC_INFO;
 }
 
 

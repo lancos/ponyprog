@@ -36,6 +36,9 @@
 
 #include <QProgressBar>
 
+#include <QXmlReader>
+#include <QDomNode>
+
 #include <QCloseEvent>
 #include <QComboBox>
 #include <QKeyEvent>
@@ -55,22 +58,29 @@
 #include "e2app.h"
 #include "e2awinfo.h"
 
-
+#include "eeptypes.h"
 #include "ui_mainwindow.h"
 #include "qhexedit.h"
 
 
+struct chipMenuInfo
+{
+	QString name;
+	quint32 id;
+};
 
 struct menuToGroup
 {
 	QMenu *mnu;
 	QString title;
-	QString filter;
+// 	QString filter;
 	QActionGroup *grp;
+	QVector<quint32> vId;
 	// vector of main type
-	QVector <int> pre_type;
+	QVector <chipMenuInfo> vChip;
+	//QVector <int> pre_type;
 	// copy of chipInfo
-	QVector<chipInfo> info;
+	//QVector<chipInfo> info;
 };
 
 
@@ -144,7 +154,7 @@ class e2CmdWindow : public QMainWindow, public e2App, public Ui::MainWindow
 	void SetAppBusy();
 	void SetAppReady();
 
-	long GetCurrentChipType()
+	quint32 GetCurrentChipType()
 	{
 		if (awip)
 		{
@@ -199,8 +209,8 @@ class e2CmdWindow : public QMainWindow, public e2App, public Ui::MainWindow
 	//void onProgress(int val);
 	//void onCloseAllDialog();
 
-	void onSelectEEPType(int val);
-	void onEEPSubType(int val);
+// 	void onSelectEEPType(int val);
+// 	void onEEPSubType(int val);
 	void onSetSerialNumber();
 	void onClearBuf();
 	void onEditNote();
@@ -271,9 +281,9 @@ class e2CmdWindow : public QMainWindow, public e2App, public Ui::MainWindow
 	int CmdCalibration();
 
 	int CmdEditNote();
-	int CmdSelectDevice(long new_type, bool init = false);
-	int CmdSetDeviceType(int val); // or const QString* ?
-	int CmdSetDeviceSubType(int val);
+	int CmdSelectDevice(quint32 new_type, bool init = false);
+// 	int CmdSetDeviceType(int val); // or const QString* ?
+// 	int CmdSetDeviceSubType(int val);
 	int CmdProgram();
 	int CmdSetSerialNumber();
 	int CmdReadCalibration(int idx);
@@ -289,7 +299,7 @@ class e2CmdWindow : public QMainWindow, public e2App, public Ui::MainWindow
 	void createStatusWidgets();
 
 	//int findItemInMenuVector(const QString &n);
-
+	quint32 GetEEPTypeFromMenu(const QString &name);
 	void addMenuVector(menuToGroup *vecMnu, const QString &filter = "");
 
 	bool readLangDir();
@@ -313,20 +323,6 @@ class e2CmdWindow : public QMainWindow, public e2App, public Ui::MainWindow
 // 	menuToGroup *searchMenuInDeviceVector(int new_type);
 
 	void createDeviceMenues();
-	void addI2C8Struct();
-	void addI2C16Struct();
-	void addI2CAT17Struct();
-	void addMW16Struct();
-	void addMW8Struct();
-	void addSPIStruct();
-	void addAT90Struct();
-	void addAT89Struct();
-	void addPIC16Struct();
-	void addPIC12Struct();
-	void addIMBUSStruct();
-	void addSDEStruct();
-	void addX24CStruct();
-
 
 	int SaveFile(int force_select = 0);
 	int OpenFile(const QString &file = 0);
@@ -335,19 +331,12 @@ class e2CmdWindow : public QMainWindow, public e2App, public Ui::MainWindow
 	void UpdateStrFromStr(const QString &s1);
 	void UpdateStatusBar();
 
-	//      void UpdateChipType(int pritype = -1, int subtype = -1);
-	//      void SetChipSubType(int pritype, int subtype = 0);
 	void UpdateMenues(menuToGroup &grp, QAction &act);
-	void UpdateMenuType(long new_type = 0/*, long old_type = 0*/);
+	void UpdateMenuType(quint32 new_type = 0/*, long old_type = 0*/);
 	void UpdateFileMenu();
 	void UpdateScriptMenu();
 
-	//      int TypeToMenuId(long type);
-	//      long MenuIdToType(QAction * id);
-	//      void MenuIdToCbxId(int id, int &idx1, int &idx2);
-	//      void TypeToCbxId(long type, int &idx1, int &idx2);
 	void CbxMenuInit();
-	long CbxIdToType(int idx1, int idx2);
 	int OpenScript(const QString &file);
 
 	int OnError(int err_no, const QString &msgerr = 0);
@@ -358,10 +347,7 @@ class e2CmdWindow : public QMainWindow, public e2App, public Ui::MainWindow
 	void setFontForWidgets(void);
 	void createFontSizeMenu();
 
-	//      int CoordToIndex(int row, int col);
-	//      void IndexToCoord(int index, int &row, int &col);
-// 	void setMenuIndexes();
-	long selectTypeSubtype(const QString &t, const QString &st);
+	quint32 selectTypeSubtype(const QString &t, const QString &st);
 	int ScriptError(int line_number, int arg_index, const QString &s, const QString msg = "");
 
 

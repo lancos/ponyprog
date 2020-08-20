@@ -50,7 +50,7 @@ class Pic168xx : public Pic16xx
 		return static_cast<PicBusNew *>(Device::GetBus());
 	}
 
-	int QueryType(long &type);
+	int QueryType(quint32 &type);
 	int CodeProtectAdjust(uint16_t &config, int read = 0);
 
   private:

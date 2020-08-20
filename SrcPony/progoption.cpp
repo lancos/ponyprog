@@ -58,12 +58,12 @@ progOptionDialog::progOptionDialog(QWidget *bw, long type, int &reload, int &ree
 	connect(pushOk, SIGNAL(clicked()), this, SLOT(onOk()));
 	connect(pushCancel, SIGNAL(clicked()), this, SLOT(reject()));
 
-	qDebug() << "progOptionDialog::progOptionDialog()";
+	qDebug() << Q_FUNC_INFO;
 }
 
 progOptionDialog::~progOptionDialog()
 {
-	qDebug() << "progOptionDialog::~progOptionDialog()";
+	qDebug() << Q_FUNC_INFO;
 }
 
 

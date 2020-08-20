@@ -161,12 +161,12 @@ PortInterface::PortInterface()
 	cpwreg = read_port = write_port = 0;
 	first_port = last_port = no_ports = 0;
 
-	qDebug() << "PortInterface::PortInterface() O";
+// 	qDebug() << "PortInterface::PortInterface() O";
 }
 
 PortInterface::~PortInterface()
 {
-	qDebug() <<  "PortInterface::~PortInterface()";
+	qDebug() << Q_FUNC_INFO;
 
 #ifdef Q_OS_WIN32
 	if (hInpOutDll != NULL)

@@ -33,28 +33,9 @@
 #include <QVector>
 #include <QComboBox>
 
+#include "eeptypes.h"
 #include "ui_bitfield.h"
 
-/**
- * @brief BitInfo is the main structure for displaying in the QTreeWidget
- */
-typedef struct
-{
-	int  bit;                 // bit number
-	const QString ShortDescr; // first column
-	const QString LongDescr;  // second column
-	const QString ExtDescr;   // for additional infos
-} BitInfo;
-
-/**
- * @brief MaskDescr is the structure for QComboBoxes with help information
- */
-typedef struct
-{
-	const QString mask;      // in mask are coded name of mask and bits
-	const QString LongDescr; //
-	const QString ExtDescr;  // for additional infos
-} MaskDescr;
 
 
 class BitFieldWidget : public QWidget, public Ui::FormBitField

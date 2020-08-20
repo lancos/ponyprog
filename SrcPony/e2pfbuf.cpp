@@ -79,8 +79,8 @@ void e2pFileBuf::check_offsets()
 
 int e2pFileBuf::Load(int loadtype, long relocation_offset)
 {
-	extern int GetE2PSubType(unsigned long x);
-	extern int GetE2PPriType(unsigned long x);
+// 	extern int GetE2PSubType(unsigned long x);
+// 	extern int GetE2PPriType(unsigned long x);
 
 	QFile fh(FileBuf::GetFileName());
 	e2pHeader hdr;
@@ -108,6 +108,8 @@ int e2pFileBuf::Load(int loadtype, long relocation_offset)
 			//                      fread(FileBuf::GetBufPtr(), hdr.e2pSize, 1, fh) )
 		{
 			SetEEpromType(hdr.e2pType);  //set eeprom device type (and block size too)
+
+			quint32 pri_type = ((hdr.e2pType >> 16) & 0xff);
 			//FileBuf::SetNoOfBlock( hdr.e2pSize / FileBuf::GetBlockSize() );
 
 			if (hdr.fversion > 0)
@@ -118,9 +120,9 @@ int e2pFileBuf::Load(int loadtype, long relocation_offset)
 			else
 			{
 				//Old file version
-				if (GetE2PPriType(hdr.e2pType) == PIC16XX ||
-						GetE2PPriType(hdr.e2pType) == PIC168XX ||
-						GetE2PPriType(hdr.e2pType) == PIC125XX)
+				if (pri_type == PIC16XX ||
+						pri_type == PIC168XX ||
+						pri_type == PIC125XX)
 				{
 					SetLockBits(((uint32_t)hdr.e2pLockBits << 8) | hdr.e2pFuseBits);
 				}

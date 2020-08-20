@@ -37,8 +37,8 @@
 //AutoTag
 //Device type description vectors
 
-
-static QVector<chipInfo> const eep24xx_map =
+#if 0
+static QVector<icElement> const eep24xx_map =
 {
 	{"24XX Auto", E2400, AUTOSIZE_ID / 256, -1, -1, -1 },
 	{"2402", E2402, 1, -1, -1, -1},
@@ -48,14 +48,14 @@ static QVector<chipInfo> const eep24xx_map =
 };
 
 
-static QVector<chipInfo> const eep24xx1A_map =
+static QVector<icElement> const eep24xx1A_map =
 {
 	//      "Auto",
 	{"2401-A", E2401_A, 1, -1, -1, -1}
 };
 
 
-static QVector<chipInfo> const eep24xx1B_map =
+static QVector<icElement> const eep24xx1B_map =
 {
 	//      "Auto",
 	{"2401-B", E2401_B, 1, -1, -1, -1}
@@ -63,7 +63,7 @@ static QVector<chipInfo> const eep24xx1B_map =
 
 
 
-static QVector<chipInfo> const eep24xx2_map =
+static QVector<icElement> const eep24xx2_map =
 {
 	//      "Auto",
 	{"24E16", E24E16, 8, -1, -1, -1},
@@ -75,14 +75,14 @@ static QVector<chipInfo> const eep24xx2_map =
 };
 
 
-static QVector<chipInfo> const eep24xx5_map =
+static QVector<icElement> const eep24xx5_map =
 {
 	//      "Auto",
 	{"24325", E24325, 16, -1, -1, -1},
 	{"24645", E24645, 32, -1, -1, -1}
 };
 
-static QVector<chipInfo> const eepAT90_map =
+static QVector<icElement> const eepAT90_map =
 {
 	{"ATmega8515", ATmega8515, (KB(8) + 512), KB(8), 64, -1 },
 	{"ATmega8535", ATmega8535, (KB(8) + 512), KB(8), 64, -1 },
@@ -149,7 +149,7 @@ static QVector<chipInfo> const eepAT90_map =
 };
 
 
-static QVector<chipInfo> const eepAt89s_map =
+static QVector<icElement> const eepAt89s_map =
 {
 	//      "AT89SXX Auto", AT89S0000
 	{"AT89S8252", AT89S8252, KB(8) + KB(2), KB(8), 0, -1 },
@@ -160,7 +160,7 @@ static QVector<chipInfo> const eepAt89s_map =
 };
 
 
-static QVector<chipInfo> const eep93x6_map =
+static QVector<icElement> const eep93x6_map =
 {
 	//      "93XX Auto", E9300
 	{"9306", E9306, 16, -1, -1, 64},
@@ -173,7 +173,7 @@ static QVector<chipInfo> const eep93x6_map =
 };
 
 
-static QVector<chipInfo> const eep93xx8_map =
+static QVector<icElement> const eep93xx8_map =
 {
 	//      "93XX Auto",
 	{"9306", E9306_8, 32, -1, -1, 128},
@@ -186,7 +186,7 @@ static QVector<chipInfo> const eep93xx8_map =
 };
 
 
-static QVector<chipInfo> const eepPic16_map =
+static QVector<icElement> const eepPic16_map =
 {
 	//      "PIC16XX Auto",
 	{"PIC16X83", PIC1683, KB(1) + 64, KB(1), -1, -1},
@@ -194,7 +194,7 @@ static QVector<chipInfo> const eepPic16_map =
 };
 
 
-static QVector<chipInfo> const eepPic168xx_map =
+static QVector<icElement> const eepPic168xx_map =
 {
 	{"PIC168XX Auto", PIC16800, AUTOSIZE_ID, 0, -1, -1},
 	{"PIC16F84A", PIC1684A, KB(2) + 64, KB(2), -1, -1},
@@ -217,7 +217,7 @@ static QVector<chipInfo> const eepPic168xx_map =
 };
 
 
-static QVector<chipInfo> const eepPic125_map =
+static QVector<icElement> const eepPic125_map =
 {
 	//      "PIC125XX Auto",PIC12500
 	{"PIC12C508", PIC12508, KB(1), KB(1), -1, -1},
@@ -233,7 +233,7 @@ static QVector<chipInfo> const eepPic125_map =
 };
 
 
-static QVector<chipInfo> const eep250xx_map =
+static QVector<icElement> const eep250xx_map =
 {
 	//      "250X0 Auto",
 	{"25010", E25010, 128, -1, -1, -1},
@@ -242,7 +242,7 @@ static QVector<chipInfo> const eep250xx_map =
 };
 
 
-static QVector<chipInfo> const eep25xxx_map =
+static QVector<icElement> const eep25xxx_map =
 {
 	//      "25XXX Auto",E25XX0
 	{"25080", E25080, KB(1), -1, -1, -1},
@@ -254,14 +254,14 @@ static QVector<chipInfo> const eep25xxx_map =
 };
 
 
-static QVector<chipInfo> const eep2506_map =
+static QVector<icElement> const eep2506_map =
 {
 	//      "250X0 Auto",E25000
 	{"SDE2506", E2506, 128, -1, -1, -1}
 };
 
 
-static QVector<chipInfo> const eepnvm3060_map =
+static QVector<icElement> const eepnvm3060_map =
 {
 	//      "NVMXX Auto",ENVM3000
 	{"MDA2062", EMDA2062, 128, -1, -1, -1},
@@ -269,7 +269,7 @@ static QVector<chipInfo> const eepnvm3060_map =
 };
 
 
-static QVector<chipInfo> const eep2444_map =
+static QVector<icElement> const eep2444_map =
 {
 	//      "XX Auto",
 	{"S2430", S24H30, 8, -1, -1, 8},
@@ -278,7 +278,7 @@ static QVector<chipInfo> const eep2444_map =
 };
 
 
-static QVector<chipInfo> const eep17xxx_map =
+static QVector<icElement> const eep17xxx_map =
 {
 	//      "Auto",AT1700
 	{"AT1765", AT1765, KB(8), -1, -1, -1},
@@ -291,12 +291,13 @@ static QVector<chipInfo> const eep17xxx_map =
 
 
 
+
 long BuildE2PType(int pritype, int subtype)
 {
 	return (((long)pritype & 0x7FFF) << 16) | (subtype & 0x7FFF);
 }
 
-int GetE2PSubType(unsigned long type)
+int GetE2PSubType(quint32 type)
 {
 	if (type == EID_INVALID)
 	{
@@ -308,7 +309,7 @@ int GetE2PSubType(unsigned long type)
 	}
 }
 
-int GetE2PPriType(unsigned long type)
+int GetE2PPriType(quint32 type)
 {
 	//      qDebug() << "GetE2PPriType" << type << ((type >> 16) & 0x7F);
 	if (type == EID_INVALID)
@@ -322,16 +323,16 @@ int GetE2PPriType(unsigned long type)
 }
 
 
-chipInfo GetChipInfo(QVector<chipInfo> &c, long subtype)
+chipMap GetChipMap(QVector<icElement> &c, quint32 subtype)
 {
-	chipInfo info = {};
+	chipMap info = {};
 
 	for (int i = 0; i < c.count(); i++)
 	{
 		// extract only subtype
 		if ((c.at(i).id & 0x7FFF) == (subtype & 0x7FFF))
 		{
-			info = c.at(i);
+			info = c.at(i).chMap;
 			break;
 		}
 	}
@@ -339,11 +340,18 @@ chipInfo GetChipInfo(QVector<chipInfo> &c, long subtype)
 	return info;
 }
 
-// EK 2017
-// don't worry, it's not a copy of vector
-// it's smart pointer to vector
-static QVector<chipInfo> const GetMap(int pritype)
+groupElement *GetMap(quint32 pritype)
 {
+	for (int i = 0; i < groupList.count(); i++)
+	{
+		if (groupList.at(i).id == pritype)
+		{
+			return &groupList[i];
+		}
+	}
+
+	return NULL;
+#if 0
 	switch (pritype)
 	{
 	//AutoTag
@@ -351,7 +359,7 @@ static QVector<chipInfo> const GetMap(int pritype)
 	case E24XX:
 		return eep24xx_map;
 		break;
-
+#if 0
 	case E24XX1_A:
 		return eep24xx1A_map;
 		break;
@@ -359,7 +367,7 @@ static QVector<chipInfo> const GetMap(int pritype)
 	case E24XX1_B:
 		return eep24xx1B_map;
 		break;
-
+#endif
 	case E24XX2:
 		return eep24xx2_map;
 		break;
@@ -421,15 +429,16 @@ static QVector<chipInfo> const GetMap(int pritype)
 		break;
 
 	default:
-		return QVector<chipInfo>();
+		return QVector<icElement>();
 		break;
 	}
+#endif
 }
 
-#if 0
+
 long GetEEPTypeFromSize(int pritype, int size)
 {
-	QVector<chipInfo> mp = GetMap(pritype);
+	QVector<icElement> mp = GetMap(pritype);
 
 	if (mp.count() == 0)
 	{
@@ -446,31 +455,31 @@ long GetEEPTypeFromSize(int pritype, int size)
 
 	return -1;
 }
-#endif
 
 
-long GetEEPTypeFromSize(unsigned long type, int size)
+
+long GetEEPTypeFromSize(quint32 type, int size)
 {
 	int pritype = GetE2PPriType(type);
-	QVector<chipInfo> mp = GetMap(pritype);
+	groupElement *mp = GetMap(pritype);
 
-	if (mp.count() == 0)
+	if (mp == NULL)
 	{
 		return -1;
 	}
 
-	for (int j = 0; j < mp.count(); j++)
+	for (int j = 0; j < mp->chip.count(); j++)
 	{
-		if (mp.at(j).sz == size)
+		if ((mp->chip.at(j).chMap.prog_sz + mp->chip.at(j).chMap.data_sz) == size)
 		{
-			return mp.at(j).id;
+			return mp->chip.at(j).id;
 		}
 	}
 
 	return -1;
 }
 
-#if 0
+
 int GetEEPTypeSize(int pritype, int subtype)
 {
 	if (pritype == 0)
@@ -478,207 +487,211 @@ int GetEEPTypeSize(int pritype, int subtype)
 		return 0;
 	}
 
-	QVector<chipInfo> mp = GetMap(pritype);
+	QVector<icElement> mp = GetMap(pritype);
 
 	if (mp.count() == 0)
 	{
 		return 0;
 	}
 
-	chipInfo i = GetChipInfo(mp, subtype);
+	icElement i = GetChipMap(mp, subtype);
 
 	return i.sz;
 }
-#endif
 
-int GetEEPTypeSize(unsigned long type)
+
+int GetEEPTypeSize(quint32 type)
 {
 	int pritype = GetE2PPriType(type);
-	int subtype = GetE2PSubType(type);
+// 	int subtype = GetE2PSubType(type);
 
 	if (pritype == 0)
 	{
 		return 0;
 	}
 
-	QVector<chipInfo> mp = GetMap(pritype);
+	groupElement *mp = GetMap(pritype);
 
-	if (mp.count() == 0)
+	if (mp == 0)
 	{
 		return 0;
 	}
 
-	chipInfo i = GetChipInfo(mp, subtype);
+	chipMap i = GetChipMap(mp->chip, type);
 
-	return i.sz;
+	return (i.prog_sz + i.data_sz);
 }
 
 //Serve solamente nei bus che utilizzano la dimensione
 // di word degli indirizzi dinamica (per es. Microwire)
-#if 0
+
 int GetEEPAddrSize(int pritype, int subtype)
 {
-	QVector<chipInfo> mp = GetMap(pritype);
+	QVector<icElement> mp = GetMap(pritype);
 
 	if (mp.count() == 0)
 	{
 		return -1;
 	}
 
-	chipInfo i = GetChipInfo(mp, subtype);
+	icElement i = GetChipMap(mp, subtype);
 
-	return i.adrsz;
+	return i.adr_sz;
 }
-#endif
 
-int GetEEPAddrSize(unsigned long type)
+
+int GetEEPAddrSize(quint32 type)
 {
 	int pritype = GetE2PPriType(type);
-	int subtype = GetE2PSubType(type);
+// 	int subtype = GetE2PSubType(type);
 
-	QVector<chipInfo> mp = GetMap(pritype);
+	groupElement *mp = GetMap(pritype);
 
-	if (mp.count() == 0)
+	if (mp == NULL)
 	{
 		return -1;
 	}
 
-	chipInfo i = GetChipInfo(mp, subtype);
+	chipMap i = GetChipMap(mp->chip, type);
 
-	return i.adrsz;
+	return i.adr_sz;
 }
 
-#if 0
+
 int GetEEPTypeSplit(int pritype, int subtype)
 {
-	QVector<chipInfo> mp = GetMap(pritype);
+	QVector<icElement> mp = GetMap(pritype);
 
 	if (mp.count() == 0)
 	{
 		return -1;
 	}
 
-	chipInfo i = GetChipInfo(mp, subtype);
+	icElement i = GetChipMap(mp->chip, subtype);
 
 	return i.splt;
 }
-#endif
 
-int GetEEPTypeSplit(unsigned long type)
+
+int GetEEPTypeSplit(quint32 type)
 {
 	int pritype = GetE2PPriType(type);
-	int subtype = GetE2PSubType(type);
+// 	int subtype = GetE2PSubType(type);
 
-	QVector<chipInfo> mp = GetMap(pritype);
+	groupElement *mp = GetMap(pritype);
 
-	if (mp.count() == 0)
+	if (mp == NULL)
 	{
 		return -1;
 	}
 
-	chipInfo i = GetChipInfo(mp, subtype);
+	chipMap i = GetChipMap(mp->chip, type);
 
-	return i.splt;
+	return i.data_sz;
 }
 
-#if 0
+
 int GetEEPTypeWPageSize(int pritype, int subtype)
 {
-	QVector<chipInfo> mp = GetMap(pritype);
+	QVector<icElement> mp = GetMap(pritype);
 
 	if (mp.count() == 0)
 	{
 		return -1;
 	}
 
-	chipInfo i = GetChipInfo(mp, subtype);
+	icElement i = GetChipMap(mp->chip, subtype);
 
-	return i.wpgsz;
+	return i.wpg_sz;
 }
-#endif
 
-int GetEEPTypeWPageSize(unsigned long type)
+
+int GetEEPTypeWPageSize(quint32 type)
 {
 	int pritype = GetE2PPriType(type);
-	int subtype = GetE2PSubType(type);
+// 	int subtype = GetE2PSubType(type);
 
-	QVector<chipInfo> mp = GetMap(pritype);
+	groupElement *mp = GetMap(pritype);
+
+	if (mp == NULL)
+	{
+		return -1;
+	}
+
+	chipMap i = GetChipMap(mp->chip, type);
+
+	return i.wpg_sz;
+}
+
+
+QVector<icElement> GetEEPSubTypeVector(int type)
+{
+	groupElement *mp = GetMap(type);
+
+	return &mp;
+}
+
+
+int GetEEPSubTypeIndex(quint32 type)
+{
+	QVector<icElement> mp = GetEEPSubTypeVector(GetE2PPriType(type));
 
 	if (mp.count() == 0)
 	{
 		return -1;
 	}
 
-	chipInfo i = GetChipInfo(mp, subtype);
-
-	return i.wpgsz;
-}
-
-
-QVector<chipInfo> GetEEPSubTypeVector(int type)
-{
-	QVector<chipInfo> mp = GetMap(type);
-
-	return mp;
-}
-
-
-int GetEEPSubTypeIndex(long type)
-{
-	QVector<chipInfo> mp = GetEEPSubTypeVector(GetE2PPriType(type));
-
-	if (mp.count() == 0)
-	{
-		return -1;
-	}
-
-	chipInfo i = GetChipInfo(mp, type);
+	chipMap i = GetChipMap(mp.chip, type);
 
 	return i.id;
 }
+#endif
 
 #if 0
 QString  GetEEPTypeString(int pritype, int subtype)
 {
-	QVector<chipInfo> mp = GetMap(pritype);
+	QVector<icElement> mp = GetMap(pritype);
 
 	if (mp.count())
 	{
 		qDebug() << "mp" << mp.count();
 
-		foreach (chipInfo i, mp)
+		foreach (icElement i, mp)
 		{
 			if ((i.id & 0x07fff) == subtype)
 			{
 				return i.name;
 			}
+		}
+	}
+
+	return "";
+}
+
+
+QString GetEEPTypeString(quint32 type)
+{
+	int pritype = GetE2PPriType(type);
+// 	int subtype = GetE2PSubType(type);
+
+	groupElement *mp = GetMap(pritype);
+
+	if (mp == NULL)
+	{
+		return "";
+	}
+
+	foreach (icElement i, mp->chip)
+	{
+		if ((i.id & 0x07fff) == (type & 0x07fff))
+		{
+			return i.name;
 		}
 	}
 
 	return "";
 }
 #endif
-
-QString GetEEPTypeString(unsigned long type)
-{
-	int pritype = GetE2PPriType(type);
-	int subtype = GetE2PSubType(type);
-
-	QVector<chipInfo> mp = GetMap(pritype);
-
-	if (mp.count())
-	{
-		foreach (chipInfo i, mp)
-		{
-			if ((i.id & 0x07fff) == subtype)
-			{
-				return i.name;
-			}
-		}
-	}
-
-	return "";
-}
 
 //18/10/98
 #if 0

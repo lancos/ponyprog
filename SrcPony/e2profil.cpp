@@ -58,7 +58,7 @@ void E2Profile::SetBogoMips(int value)
 #include "eeptypes.h"
 
 
-long E2Profile::GetLastDevType()
+QString E2Profile::GetLastDevType()
 {
 	QString vrs = s->value("PonyProgVers", "pre").toString();
 
@@ -69,20 +69,21 @@ long E2Profile::GetLastDevType()
 		sp = "24XX Auto";
 	}
 
-	if (sp.length())
+	if (sp.length() == 0)
 	{
-		return GetEEPTypeFromString(sp);
+		sp = "24XX Auto";
+		//return GetEEPTypeFromString(sp);
 	}
-	else
-	{
-		return E2400;        //Default device type
-	}
+// 	else
+// 	{
+// 		return E2400;        //Default device type
+// 	}
+	return sp;
 }
 
-void E2Profile::SetLastDevType(long devtype)
+void E2Profile::SetLastDevType(const QString &name)
 {
-	QString sp = GetEEPTypeString(devtype);
-
+	QString sp = name;
 	s->setValue("PonyProgVers", APP_VERSION);
 
 	if (sp.length())
