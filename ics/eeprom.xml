@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config type="PonyProg" version="3">
+    <chip menu="I2C Bus 8bit eeprom" group="E24XX" id="0x01">
+        <ic menu="24XX Auto" def="E2400" />
+        <ic menu="2401-A" def="E2401_A" code_sz="1" />
+        <ic menu="2401-B" def="E2401_B" code_sz="1" />
+        <ic menu="2402" def="E2402" code_sz="1" />
+        <ic menu="2404" def="E2404" code_sz="2" />
+        <ic menu="2408" def="E2408" code_sz="4" />
+        <ic menu="2416" def="E2416" code_sz="8" />
+    </chip>
+    <chip menu="I2C Bus 8bit eeprom" group="E24XX5" id="0x08">
+        <ic menu="24325" def="E24325" code_sz="16" />
+        <ic menu="24645" def="E24645" code_sz="32" />
+    </chip>
+    <chip menu="I2C Bus 16bit eeprom" group="E24XX2" id="0x02">
+        <ic menu="24XX Auto" def="E24000" />
+        <ic menu="24E16" def="E24E16" code_sz="8" />
+        <ic menu="2432" def="E2432" code_sz="16" />
+        <ic menu="2464" def="E2464" code_sz="32" />
+        <ic menu="24128" def="E24128" code_sz="64" />
+        <ic menu="24256" def="E24256" code_sz="128" />
+        <ic menu="24512" def="E24512" code_sz="256" />
+    </chip>
+    <chip menu="I2C Bus AT17 eeprom" group="AT17XXX" id="0x12">
+        <ic menu="AT1765" def="AT1765" code_sz="8k" />
+        <ic menu="AT17128" def="AT17128" code_sz="16k" />
+        <ic menu="AT17256" def="AT17256" code_sz="32k" />
+        <ic menu="AT17512" def="AT17512" code_sz="64k" />
+        <ic menu="AT17010" def="AT17010" code_sz="128k" />
+    </chip>
+    <chip menu="MicroWire8 eeprom" group="E93XX_8" id="0x0d">
+        <ic menu="93XX Auto" def="E9300_8" />
+        <ic menu="9306" def="E9306_8" code_sz="32" adr_sz="128" />
+        <ic menu="9346" def="E9346_8" code_sz="128" adr_sz="128" />
+        <ic menu="9356" def="E9356_8" code_sz="256" adr_sz="512" />
+        <ic menu="9357" def="E9357_8" code_sz="256" adr_sz="256" />
+        <ic menu="9366" def="E9366_8" code_sz="512" adr_sz="512" />
+        <ic menu="9376" def="E9376_8" code_sz="1k" adr_sz="2k" />
+        <ic menu="9386" def="E9386_8" code_sz="2k" adr_sz="2k" />
+    </chip>
+    <chip menu="MicroWire16 eeprom" group="E93X6" id="0x04">
+        <ic menu="93XX Auto" def="E9300" />
+        <ic menu="9306" def="E9306" code_sz="16" adr_sz="64" />
+        <ic menu="9346" def="E9346" code_sz="64" adr_sz="64" />
+        <ic menu="9356" def="E9356" code_sz="128" adr_sz="256" />
+        <ic menu="9357" def="E9357" code_sz="128" adr_sz="128" />
+        <ic menu="9366" def="E9366" code_sz="256" adr_sz="256" />
+        <ic menu="9376" def="E9376" code_sz="512" adr_sz="1k" />
+        <ic menu="9386" def="E9386" code_sz="1k" adr_sz="1k" />
+    </chip>
+    <chip menu="SPI eeprom" group="E250XX" id="0x06">
+        <ic menu="250X0 Auto" def="E25000" />
+        <ic menu="25010" def="E25010" code_sz="128" />
+        <ic menu="25020" def="E25020" code_sz="256" />
+        <ic menu="25040" def="E25040" code_sz="512" />
+    </chip>
+    <chip menu="SPI eeprom" group="E25XXX" id="0x09">
+        <ic menu="25XXX Auto" def="E25XX0" />
+        <ic menu="25080" def="E25080" code_sz="1k" />
+        <ic menu="25160" def="E25160" code_sz="2k" />
+        <ic menu="25320" def="E25320" code_sz="4k" />
+        <ic menu="25640" def="E25640" code_sz="8k" />
+        <ic menu="25128" def="E25128" code_sz="16k" />
+        <ic menu="25256" def="E25256" code_sz="32k" />
+    </chip>
+    <chip menu="ImBus eeprom" group="ENVMXXX" id="0x0c">
+        <ic menu="MDA2062" def="EMDA2062" code_sz="128" />
+        <ic menu="NVM3060" def="ENVM3060" code_sz="512" />
+    </chip>
+    <chip menu="SDE2506 eeprom" group="E2506XX" id="0x07">
+        <ic menu="SDE2506XX Auto" def="E250600" />
+        <ic menu="SDE2506" def="E2506" code_sz="128" />
+    </chip>
+    <chip menu="X2444 eeprom" group="X24C44XX" id="0x10">
+        <ic menu="S2440" def="S24H30" code_sz="8" adr_sz="8" />
+        <ic menu="X2444" def="X24C44" code_sz="16" adr_sz="16" />
+        <ic menu="X2445" def="X24C45" code_sz="16" adr_sz="16" />
+    </chip>
+</config>
