@@ -8,3 +8,4 @@ ponyprog.pro.user*
 doxygen/html
 doxygen/latex
 SrcPony/version.h
+SrcPony/defines.h
