@@ -43,7 +43,7 @@ SET(PONY_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/aboutmdlg.cpp
                  ${CMAKE_CURRENT_SOURCE_DIR}/at93cxx.cpp
                  ${CMAKE_CURRENT_SOURCE_DIR}/device.cpp
 #                  ${CMAKE_CURRENT_SOURCE_DIR}/e2cnv.cpp
-                 ${CMAKE_CURRENT_SOURCE_DIR}/eeptypes.cpp
+#                  ${CMAKE_CURRENT_SOURCE_DIR}/eeptypes.cpp
                  ${CMAKE_CURRENT_SOURCE_DIR}/imbus.cpp
                  ${CMAKE_CURRENT_SOURCE_DIR}/linuxsysfsint.cpp
 #                  ${CMAKE_CURRENT_SOURCE_DIR}/modaldlg_utilities.cpp
@@ -81,8 +81,8 @@ SET(PONY_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/aboutmdlg.cpp
                  ${CMAKE_CURRENT_SOURCE_DIR}/sdebus.cpp)
 
 
-SET(PONY_NOMOC_HEADERS 
-                 ${CMAKE_CURRENT_SOURCE_DIR}/e2app.h 
+SET(PONY_NOMOC_HEADERS
+                 ${CMAKE_CURRENT_SOURCE_DIR}/e2app.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/e2awinfo.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/Translator.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/globals.h
@@ -152,11 +152,11 @@ SET(PONY_NOMOC_HEADERS
 
 
 SET(PONY_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/fusemdlg.h
-                 ${CMAKE_CURRENT_SOURCE_DIR}/usbwatcher.h 
+                 ${CMAKE_CURRENT_SOURCE_DIR}/usbwatcher.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/bitfield.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/filldlg.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/blockmdlg.h
-                 ${CMAKE_CURRENT_SOURCE_DIR}/e2cmdw.h 
+                 ${CMAKE_CURRENT_SOURCE_DIR}/e2cmdw.h
 #                 ${CMAKE_CURRENT_SOURCE_DIR}/ch341a.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/e2dlg.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/aboutmdlg.h
@@ -182,17 +182,17 @@ SET(PONY_FORMS  ${CMAKE_CURRENT_SOURCE_DIR}/forms/aboutdlg.ui
 
 SET(PONY_SOURCES ${PONY_SOURCES}
 		PARENT_SCOPE)
-		
+
 SET(PONY_NOMOC_HEADERS ${PONY_NOMOC_HEADERS}
 		PARENT_SCOPE)
 
 SET(PONY_HEADERS ${PONY_HEADERS}
 		PARENT_SCOPE)
-		
-# SET(FILES_TO_TRANSLATE ${FILES_TO_TRANSLATE} ${MAIN_SOURCES} ${MAIN_FORMS} ${MAIN_HEADERS} 
+
+# SET(FILES_TO_TRANSLATE ${FILES_TO_TRANSLATE} ${MAIN_SOURCES} ${MAIN_FORMS} ${MAIN_HEADERS}
 #                  PARENT_SCOPE)
 
-		 
+
 SET(APP_RESOURCES  ${CMAKE_CURRENT_SOURCE_DIR}/ponyprog.qrc
 		 PARENT_SCOPE)
 

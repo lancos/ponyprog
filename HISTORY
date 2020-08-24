@@ -1,5 +1,7 @@
 Version history
 
+3.2.0   Supported ICs with structures are in separate XML file
+
 3.1.2	bug fix: AT90S4433 need a power cycle to verify fuse bits programmed
 		fix: AT90S2313 doesn't have any fuse bits readable from ISP
 		fix and refactor handling of edit notes (Id and comment)
