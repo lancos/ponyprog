@@ -56,9 +56,9 @@ e2AppWinInfo *FileBuf::GetAWInfo()
 	return awi;
 }
 
-uint8_t *FileBuf::GetBufPtr() const
+quint8 *FileBuf::GetBufPtr() const
 {
-	return (uint8_t *)awi->GetBufPtr();
+	return (quint8 *)awi->GetBufPtr();
 }
 
 long FileBuf::GetBufSize() const
@@ -151,7 +151,7 @@ void FileBuf::SetFuseBits(quint32 bits)
 	awi->SetFuseBits(bits);
 }
 
-void FileBuf::SetCRC(uint16_t c)
+void FileBuf::SetCRC(quint16 c)
 {
 	awi->SetCRC(c);
 }

@@ -167,7 +167,7 @@ void At89sBus::WriteProgByte(long addr, int data)
 	SendDataByte(data);
 }
 
-int At89sBus::WriteProgPage(long addr, uint8_t const *data, long page_size, long timeout)
+int At89sBus::WriteProgPage(long addr, quint8 const *data, long page_size, long timeout)
 {
 	long k;
 	bool okflag;
@@ -194,7 +194,7 @@ int At89sBus::WriteProgPage(long addr, uint8_t const *data, long page_size, long
 	if (enable_progpage_polling)
 	{
 		long polling_loc = addr + page_size - 1;		//Read back last loaded byte
-		uint8_t polling_data = data[page_size - 1];
+		quint8 polling_data = data[page_size - 1];
 		WaitUsec(100);
 
 		okflag = false;
@@ -217,7 +217,7 @@ int At89sBus::WriteProgPage(long addr, uint8_t const *data, long page_size, long
 	return okflag ? OK : E2P_TIMEOUT;
 }
 
-int At89sBus::WriteDataPage(long addr, uint8_t const *data, long page_size, long timeout)
+int At89sBus::WriteDataPage(long addr, quint8 const *data, long page_size, long timeout)
 {
 	long k;
 	bool okflag;
@@ -237,7 +237,7 @@ int At89sBus::WriteDataPage(long addr, uint8_t const *data, long page_size, long
 	if (enable_datapage_polling)
 	{
 		long polling_loc = addr + page_size - 1;        //Read back last loaded byte
-		uint8_t polling_data = data[page_size - 1];
+		quint8 polling_data = data[page_size - 1];
 		WaitUsec(100);
 
 		okflag = false;
@@ -260,7 +260,7 @@ int At89sBus::WriteDataPage(long addr, uint8_t const *data, long page_size, long
 	return okflag ? OK : -1;
 }
 
-void At89sBus::ReadProgPage(long addr, uint8_t *data, long page_size, long timeout)
+void At89sBus::ReadProgPage(long addr, quint8 *data, long page_size, long timeout)
 {
 	long k;
 
@@ -277,7 +277,7 @@ void At89sBus::ReadProgPage(long addr, uint8_t *data, long page_size, long timeo
 	}
 }
 
-void At89sBus::ReadDataPage(long addr, uint8_t *data, long page_size, long timeout)
+void At89sBus::ReadDataPage(long addr, quint8 *data, long page_size, long timeout)
 {
 	long k;
 
@@ -320,7 +320,7 @@ int At89sBus::Reset()
 	return OK;
 }
 
-int At89sBus::WriteLockBits(uint32_t param, long model)
+int At89sBus::WriteLockBits(quint32 param, long model)
 {
 	int val1, val2, val3, val4;
 
@@ -371,10 +371,10 @@ int At89sBus::WriteLockBits(uint32_t param, long model)
 	}
 }
 
-int At89sBus::ReadLockBits(uint32_t &res, long model)
+int At89sBus::ReadLockBits(quint32 &res, long model)
 {
 	int rval = OK;
-	uint32_t rv1;
+	quint32 rv1;
 
 	switch (model)
 	{
@@ -404,7 +404,7 @@ int At89sBus::ReadLockBits(uint32_t &res, long model)
 	return rval;
 }
 
-int At89sBus::WriteFuseBits(uint32_t param, long model)
+int At89sBus::WriteFuseBits(quint32 param, long model)
 {
 	int val1, val2, val3, val4;
 
@@ -439,10 +439,10 @@ int At89sBus::WriteFuseBits(uint32_t param, long model)
 	}
 }
 
-int At89sBus::ReadFuseBits(uint32_t &res, long model)
+int At89sBus::ReadFuseBits(quint32 &res, long model)
 {
 	int rval = OK;
-	uint32_t rv1;
+	quint32 rv1;
 
 	switch (model)
 	{
@@ -494,7 +494,7 @@ int At89sBus::Erase(int type)
 	return 1;
 }
 
-long At89sBus::Read(int addr, uint8_t *data, long length, int page_size)
+long At89sBus::Read(int addr, quint8 *data, long length, int page_size)
 {
 	long len;
 
@@ -519,7 +519,7 @@ long At89sBus::Read(int addr, uint8_t *data, long length, int page_size)
 		{
 			for (addr = 0, len = 0; len < length; len++)
 			{
-				*data++ = (uint8_t)ReadDataByte(addr++);
+				*data++ = (quint8)ReadDataByte(addr++);
 
 				if (ReadProgress(len * 100 / length))
 				{
@@ -547,7 +547,7 @@ long At89sBus::Read(int addr, uint8_t *data, long length, int page_size)
 		{
 			for (addr = 0, len = 0; len < length; len++)
 			{
-				*data++ = (uint8_t)ReadProgByte(addr++);
+				*data++ = (quint8)ReadProgByte(addr++);
 
 				if (ReadProgress(len * 100 / length))
 				{
@@ -591,7 +591,7 @@ int At89sBus::WaitReadyAfterWrite(int type, long addr, int data, long timeout)
 	return rval;
 }
 
-bool At89sBus::CheckBlankPage(uint8_t const *data, long length)
+bool At89sBus::CheckBlankPage(quint8 const *data, long length)
 {
 	bool blank_page = true;
 
@@ -607,7 +607,7 @@ bool At89sBus::CheckBlankPage(uint8_t const *data, long length)
 	return blank_page;
 }
 
-long At89sBus::Write(int addr, uint8_t const *data, long length, int page_size)
+long At89sBus::Write(int addr, quint8 const *data, long length, int page_size)
 {
 	long len;
 

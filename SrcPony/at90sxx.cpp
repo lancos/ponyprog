@@ -46,7 +46,7 @@ At90sxx::~At90sxx()
 	qDebug() << Q_FUNC_INFO;
 }
 
-int At90sxx::SecurityRead(uint32_t &bits)
+int At90sxx::SecurityRead(quint32 &bits)
 {
 	int rv = Probe();               //No size probe needed, just probe for presence
 
@@ -59,7 +59,7 @@ int At90sxx::SecurityRead(uint32_t &bits)
 	return rv;
 }
 
-int At90sxx::SecurityWrite(uint32_t bits)
+int At90sxx::SecurityWrite(quint32 bits)
 {
 	int rv = Probe();               //No size probe needed, just probe for presence
 
@@ -71,7 +71,7 @@ int At90sxx::SecurityWrite(uint32_t bits)
 	return rv;
 }
 
-int At90sxx::FusesRead(uint32_t &bits)
+int At90sxx::FusesRead(quint32 &bits)
 {
 	int rv = Probe();               //No size probe needed, just probe for presence
 
@@ -84,7 +84,7 @@ int At90sxx::FusesRead(uint32_t &bits)
 	return rv;
 }
 
-int At90sxx::FusesWrite(uint32_t bits)
+int At90sxx::FusesWrite(quint32 bits)
 {
 	int rv = Probe();               //No size probe needed, just probe for presence
 
@@ -501,7 +501,7 @@ int At90sxx::Read(int probe, int type)
 				if (type & CONFIG_TYPE)
 				{
 					// read the fuses
-					uint32_t f = GetBus()->ReadFuseBits(GetAWInfo()->GetEEPId());
+					quint32 f = GetBus()->ReadFuseBits(GetAWInfo()->GetEEPId());
 					GetAWInfo()->SetFuseBits(f);
 
 					f = GetBus()->ReadLockBits(GetAWInfo()->GetEEPId());
@@ -548,7 +548,7 @@ int At90sxx::Write(int probe, int type)
 					if (GetAWInfo()->GetEEPId() == AT90S4433 || GetAWInfo()->GetEEPId() == AT90S2333)
 					{
 						//write the locks
-						uint32_t f = GetAWInfo()->GetLockBits();
+						quint32 f = GetAWInfo()->GetLockBits();
 						GetBus()->WriteLockBits(f, GetAWInfo()->GetEEPId());
 
 						GetBus()->WaitMsec(100);
@@ -560,7 +560,7 @@ int At90sxx::Write(int probe, int type)
 					else
 					{
 						//write the fuses
-						uint32_t f = GetAWInfo()->GetFuseBits();
+						quint32 f = GetAWInfo()->GetFuseBits();
 						GetBus()->WriteFuseBits(f, GetAWInfo()->GetEEPId());
 
 						//write the locks
@@ -603,8 +603,8 @@ int At90sxx::Verify(int type)
 		if (type & CONFIG_TYPE)
 		{
 			// read the fuses & locks
-			uint32_t f = GetBus()->ReadFuseBits(GetAWInfo()->GetEEPId());
-			uint32_t l = GetBus()->ReadLockBits(GetAWInfo()->GetEEPId());
+			quint32 f = GetBus()->ReadFuseBits(GetAWInfo()->GetEEPId());
+			quint32 l = GetBus()->ReadLockBits(GetAWInfo()->GetEEPId());
 
 			if (GetAWInfo()->GetLockBits() == l && GetAWInfo()->GetFuseBits() == f)
 			{

@@ -538,7 +538,7 @@ quint32 e2AppWinInfo::GetEEPTypeFromString(const QString &name)
 
 chipBits *e2AppWinInfo::eepFindFuses(quint32 type)
 {
-	quint16 pri_type = ((type & 0x0ff0000) >> 16);
+	quint16 pri_type = ((type >> 16) & 0x07f);
 	foreach (groupElement g, groupList)
 	{
 		if (g.vId.indexOf(pri_type) == -1)
@@ -1130,19 +1130,19 @@ int e2AppWinInfo::Load()
 
 					//Now copy data memory (copy only low byte every word)
 					int k;
-					uint8_t *dst = GetBufPtr() + GetSplittedInfo();
-					uint16_t *src = (uint16_t *)GetBufPtr() + 0x2100;
+					quint8 *dst = GetBufPtr() + GetSplittedInfo();
+					quint16 *src = (quint16 *)GetBufPtr() + 0x2100;
 
 					for (k = 0; k < GetSize() - GetSplittedInfo(); k++)
 					{
-						*dst++ = (uint8_t)(*src++ & 0xff);
+						*dst++ = (quint8)(*src++ & 0xff);
 					}
 
 					//memcpy(GetBufPtr()+GetSplittedInfo()+16, GetBufPtr() + (0x2100 * 2), GetSize() - (GetSplittedInfo() + 16) );
 
 					//Set fuse bits so the dialog shows the correct values
-					uint8_t *ptr = GetBufPtr() + GetSize() + 14;
-					uint16_t config = ptr[0] + ((uint16_t)ptr[1] << 8);             //little endian buffer
+					quint8 *ptr = GetBufPtr() + GetSize() + 14;
+					quint16 config = ptr[0] + ((quint16)ptr[1] << 8);             //little endian buffer
 					config = ~config & 0x3fff;              //      CodeProtectAdjust(config, 1);
 					SetLockBits(config);
 				}
@@ -1156,8 +1156,8 @@ int e2AppWinInfo::Load()
 				}
 
 				//Set fuse bits so the dialog shows the correct values
-				uint8_t *ptr = GetBufPtr() + GetSize() + 14;
-				uint16_t config = ptr[0] + ((uint16_t)ptr[1] << 8);             //little endian buffer
+				quint8 *ptr = GetBufPtr() + GetSize() + 14;
+				quint16 config = ptr[0] + ((quint16)ptr[1] << 8);             //little endian buffer
 				SetLockBits(~config & 0x0fff);
 			}
 		}
@@ -1205,7 +1205,7 @@ int e2AppWinInfo::Save()
 {
 	int rval;
 
-	uint8_t *localbuf = new uint8_t[GetBufSize()];
+	quint8 *localbuf = new quint8[GetBufSize()];
 
 	//save buffer
 	memcpy(localbuf, GetBufPtr(), GetBufSize());
@@ -1235,7 +1235,7 @@ int e2AppWinInfo::Save()
 				//Set fuse bits so the dialog shows the correct values
 				if (0x2000 * 2 + 16 <= GetBufSize())
 				{
-					uint16_t config = (uint16_t)GetLockBits();
+					quint16 config = (quint16)GetLockBits();
 
 					if (GetEEPId() == PIC1683 ||
 							GetEEPId() == PIC1684 ||
@@ -1253,9 +1253,9 @@ int e2AppWinInfo::Save()
 
 					config = ~config & 0x3fff;              //      CodeProtectAdjust(config, 0);
 
-					uint8_t *ptr = GetBufPtr() + (0x2000 * 2) + 14;
-					ptr[0] = (uint8_t)(config & 0xFF);                      //little endian buffer
-					ptr[1] = (uint8_t)(config >> 8);
+					quint8 *ptr = GetBufPtr() + (0x2000 * 2) + 14;
+					ptr[0] = (quint8)(config & 0xFF);                      //little endian buffer
+					ptr[1] = (quint8)(config >> 8);
 				}
 
 				//Copy prog memory
@@ -1269,8 +1269,8 @@ int e2AppWinInfo::Save()
 				{
 					//copy only low byte every word
 					int k;
-					uint8_t *src = localbuf + GetSplittedInfo();
-					uint16_t *dst = (uint16_t *)GetBufPtr() + 0x2100;
+					quint8 *src = localbuf + GetSplittedInfo();
+					quint16 *dst = (quint16 *)GetBufPtr() + 0x2100;
 
 					for (k = 0; k < GetSize() - GetSplittedInfo(); k++)
 					{
@@ -1293,13 +1293,13 @@ int e2AppWinInfo::Save()
 			//Set fuse bits so the dialog shows the correct values
 			if (0xFFF * 2 + 2 <= GetBufSize())
 			{
-				uint16_t config = (uint16_t)GetLockBits();
+				quint16 config = (quint16)GetLockBits();
 
 				config = ~config & 0x0fff;              //      CodeProtectAdjust(config, 0);
 
-				uint8_t *ptr = GetBufPtr() + (0xFFF * 2);
-				ptr[0] = (uint8_t)(config & 0xFF);                      //little endian buffer
-				ptr[1] = (uint8_t)(config >> 8);
+				quint8 *ptr = GetBufPtr() + (0xFFF * 2);
+				ptr[0] = (quint8)(config & 0xFF);                      //little endian buffer
+				ptr[1] = (quint8)(config >> 8);
 			}
 		}
 	}
@@ -1382,12 +1382,12 @@ int e2AppWinInfo::SetSaveType(int val)
 	return rval;
 }
 
-void e2AppWinInfo::SetLockBits(uint32_t bits)
+void e2AppWinInfo::SetLockBits(quint32 bits)
 {
 	lock_bits = bits;
 }
 
-void e2AppWinInfo::SetFuseBits(uint32_t bits)
+void e2AppWinInfo::SetFuseBits(quint32 bits)
 {
 	fuse_bits = bits;
 	fuse_ok = true;
@@ -1529,7 +1529,7 @@ void e2AppWinInfo::SwapBytes()
 
 	for (k = 0; k < size; k += 2)
 	{
-		uint8_t tmp = buffer[k];
+		quint8 tmp = buffer[k];
 		buffer[k] = buffer[k + 1];
 		buffer[k + 1] = tmp;
 	}
@@ -1572,7 +1572,7 @@ void e2AppWinInfo::DoubleSize()
 	BufChanged();
 }
 
-int e2AppWinInfo::SecurityRead(uint32_t &bits)
+int e2AppWinInfo::SecurityRead(quint32 &bits)
 {
 	int rv;
 
@@ -1590,7 +1590,7 @@ int e2AppWinInfo::SecurityRead(uint32_t &bits)
 	return rv;
 }
 
-int e2AppWinInfo::SecurityWrite(uint32_t bits, bool no_param)
+int e2AppWinInfo::SecurityWrite(quint32 bits, bool no_param)
 {
 	int rv;
 
@@ -1610,7 +1610,7 @@ int e2AppWinInfo::SecurityWrite(uint32_t bits, bool no_param)
 // in place of Fuse bits.
 // Use the same variable because there is no room for
 // both in the e2p header.
-int e2AppWinInfo::HighEnduranceRead(uint32_t &block_no)
+int e2AppWinInfo::HighEnduranceRead(quint32 &block_no)
 {
 	int rv;
 
@@ -1626,7 +1626,7 @@ int e2AppWinInfo::HighEnduranceRead(uint32_t &block_no)
 	return rv;
 }
 
-int e2AppWinInfo::HighEnduranceWrite(uint32_t block_no, bool no_param)
+int e2AppWinInfo::HighEnduranceWrite(quint32 block_no, bool no_param)
 {
 	int rv;
 
@@ -1641,7 +1641,7 @@ int e2AppWinInfo::HighEnduranceWrite(uint32_t block_no, bool no_param)
 
 	if (rv == OK)
 	{
-		uint32_t block2;
+		quint32 block2;
 
 		OpenBus();
 		rv = eep->HighEnduranceRead(block2);
@@ -1656,7 +1656,7 @@ int e2AppWinInfo::HighEnduranceWrite(uint32_t block_no, bool no_param)
 	return rv;
 }
 
-int e2AppWinInfo::FusesRead(uint32_t &bits)
+int e2AppWinInfo::FusesRead(quint32 &bits)
 {
 	int rv;
 
@@ -1672,7 +1672,7 @@ int e2AppWinInfo::FusesRead(uint32_t &bits)
 	return rv;
 }
 
-int e2AppWinInfo::FusesWrite(uint32_t bits, bool no_param)
+int e2AppWinInfo::FusesWrite(quint32 bits, bool no_param)
 {
 	int rv;
 
@@ -1689,7 +1689,7 @@ int e2AppWinInfo::FusesWrite(uint32_t bits, bool no_param)
 	the read op doesn't work with every device
 	        if (rv == OK)
 	        {
-	                uint32_t bits2;
+	                quint32 bits2;
 
 	                OpenBus();
 	                rv = eep->FusesRead(bits2);
@@ -1715,9 +1715,9 @@ int e2AppWinInfo::ReadOscCalibration(int addr)
 
 #include "crc.h"
 
-uint16_t e2AppWinInfo::RecalcCRC()
+quint16 e2AppWinInfo::RecalcCRC()
 {
-	uint16_t crc_val = mcalc_crc(GetBufPtr(), GetSize());
+	quint16 crc_val = mcalc_crc(GetBufPtr(), GetSize());
 	SetCRC(crc_val);
 	return crc_val;
 }

@@ -39,7 +39,7 @@ At17xxx::At17xxx(e2AppWinInfo *wininfo, BusIO *busp)
 	writepage_size = 64;
 }
 
-int At17xxx::WritePage(long addr, int addr_bytes, uint8_t *buf, int len)
+int At17xxx::WritePage(long addr, int addr_bytes, quint8 *buf, int len)
 {
 	int j;
 	int rval;
@@ -149,7 +149,7 @@ int At17xxx::Write(int probe, int type)
 }
 
 
-int At17xxx::ReadPage(long addr, int addr_bytes, uint8_t *buf, int len)
+int At17xxx::ReadPage(long addr, int addr_bytes, quint8 *buf, int len)
 {
 	int j;
 	int rval;
@@ -194,7 +194,7 @@ int At17xxx::ReadPage(long addr, int addr_bytes, uint8_t *buf, int len)
 			return rval;
 		}
 
-		*buf++ = (uint8_t)rval;
+		*buf++ = (quint8)rval;
 	}
 
 	//ultimo byte senza ACK
@@ -205,7 +205,7 @@ int At17xxx::ReadPage(long addr, int addr_bytes, uint8_t *buf, int len)
 		return rval;
 	}
 
-	*buf++ = (uint8_t)rval;
+	*buf++ = (quint8)rval;
 
 	GetBus()->Stop();
 

@@ -110,7 +110,7 @@ int At93cBus::Erase(int type)
 
 
 //ATTENTION!!! 93CXX are read and written a WORD at a time (not BYTE)
-long At93cBus::Read(int addr, uint8_t *data, long length, int page_size)
+long At93cBus::Read(int addr, quint8 *data, long length, int page_size)
 {
 	(void)page_size;
 
@@ -151,21 +151,21 @@ long At93cBus::Read(int addr, uint8_t *data, long length, int page_size)
 		SendCmdOpcode(ReadCode);
 		SendAddress(addr++, address_len);
 
-		uint16_t val = RecDataWord(organization);
+		quint16 val = RecDataWord(organization);
 
 		if (organization == ORG16)
 		{
 #ifdef  _BIG_ENDIAN_
-			*data++ = (uint8_t)(val >> 8);
-			*data++ = (uint8_t)(val & 0xFF);
+			*data++ = (quint8)(val >> 8);
+			*data++ = (quint8)(val & 0xFF);
 #else
-			*data++ = (uint8_t)(val & 0xFF);
-			*data++ = (uint8_t)(val >> 8);
+			*data++ = (quint8)(val & 0xFF);
+			*data++ = (quint8)(val >> 8);
 #endif
 		}
 		else
 		{
-			*data++ = (uint8_t)(val & 0xFF);
+			*data++ = (quint8)(val & 0xFF);
 		}
 
 		if ((len % 4) == 0)
@@ -185,7 +185,7 @@ long At93cBus::Read(int addr, uint8_t *data, long length, int page_size)
 	return len;
 }
 
-long At93cBus::Write(int addr, uint8_t const *data, long length, int page_size)
+long At93cBus::Write(int addr, quint8 const *data, long length, int page_size)
 {
 	long curaddr;
 
@@ -212,16 +212,16 @@ long At93cBus::Write(int addr, uint8_t const *data, long length, int page_size)
 
 	for (curaddr = 0; curaddr < length; curaddr++)
 	{
-		uint16_t val;
+		quint16 val;
 
 		if (organization == ORG16)
 		{
 #ifdef  _BIG_ENDIAN_
-			val  = (uint16_t)(*data++) << 8;
-			val |= (uint16_t)(*data++);
+			val  = (quint16)(*data++) << 8;
+			val |= (quint16)(*data++);
 #else
-			val  = (uint16_t)(*data++);
-			val |= (uint16_t)(*data++) << 8;
+			val  = (quint16)(*data++);
+			val |= (quint16)(*data++) << 8;
 #endif
 		}
 		else

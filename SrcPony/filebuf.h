@@ -82,13 +82,13 @@ class FileBuf
 	quint32 GetFuseBits() const;
 	void SetFuseBits(quint32 bits);
 
-	//      uint16_t GetCRC() const
+	//      quint16 GetCRC() const
 	//              { return awi->GetCRC(); }
-	void SetCRC(uint16_t c);
+	void SetCRC(quint16 c);
 
   protected:
 
-	uint8_t *GetBufPtr() const;
+	quint8 *GetBufPtr() const;
 	long GetBufSize() const;
 	e2AppWinInfo *GetAWInfo();
 	long GetFileSize(QFile &fh);

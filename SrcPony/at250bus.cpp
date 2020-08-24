@@ -135,7 +135,7 @@ int At250Bus::Reset(void)
 	return OK;
 }
 
-long At250Bus::Read(int addr, uint8_t *data, long length, int page_size)
+long At250Bus::Read(int addr, quint8 *data, long length, int page_size)
 {
 	qDebug() << Q_FUNC_INFO << "(" << (hex) << addr << ", " << data << ", " << (dec) << length << ")";
 
@@ -145,7 +145,7 @@ long At250Bus::Read(int addr, uint8_t *data, long length, int page_size)
 
 	for (len = 0; len < length; len++)
 	{
-		*data++ = (uint8_t)ReadEEPByte(addr++);
+		*data++ = (quint8)ReadEEPByte(addr++);
 
 		if ((len % 10) == 0)
 		{
@@ -164,7 +164,7 @@ long At250Bus::Read(int addr, uint8_t *data, long length, int page_size)
 	return len;
 }
 
-long At250Bus::Write(int addr, uint8_t const *data, long length, int page_size)
+long At250Bus::Write(int addr, quint8 const *data, long length, int page_size)
 {
 	long len;
 

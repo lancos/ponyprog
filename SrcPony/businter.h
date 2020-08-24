@@ -319,15 +319,15 @@ class BusInterface
 		return ret;
 	}
 
-	virtual uint8_t xferByte(int &err, uint8_t by, int mode = 0, int bpw = 8, bool lsb_first = false)
+	virtual quint8 xferByte(int &err, quint8 by, int mode = 0, int bpw = 8, bool lsb_first = false)
 	{
-		return (uint8_t)xferWord(err, by, mode, bpw, lsb_first);
+		return (quint8)xferWord(err, by, mode, bpw, lsb_first);
 	}
 
 	virtual unsigned long xferWord(int &err, unsigned long word_out, int mode = 0, int bpw = 8, bool lsb_first = false)
 	{
-		uint32_t word_in = 0;
-		uint32_t bitmask;
+		quint32 word_in = 0;
+		quint32 bitmask;
 		err = OK;
 
 		if (!i2c_mode)	//if ((mode & I2CMODE_MASK) == 0)

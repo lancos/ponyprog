@@ -239,7 +239,7 @@ int LPTInterface::OutDataPort(int val, int port_no)
 
 	if (hLpt != INVALID_HANDLE_VALUE)
 	{
-		lpt_control.LPByte = last_data = (uint8_t)val;
+		lpt_control.LPByte = last_data = (quint8)val;
 
 		if (ioctl(hLpt, PPWDATA, &lpt_control.LPByte))
 		{
@@ -300,7 +300,7 @@ int LPTInterface::OutControlPort(int val, int port_no)
 
 	if (hLpt != INVALID_HANDLE_VALUE)
 	{
-		lpt_control.LPByte = last_ctrl = (uint8_t)val & 0x0F;
+		lpt_control.LPByte = last_ctrl = (quint8)val & 0x0F;
 
 		if (ioctl(hLpt, PPWCONTROL, &lpt_control.LPByte))
 		{

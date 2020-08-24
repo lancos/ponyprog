@@ -47,11 +47,11 @@ class At89sxx : public Device
 
 	//      int Erase(int probe = 1, int type = ALL_TYPE);
 
-	int SecurityRead(uint32_t &bits);
-	int SecurityWrite(uint32_t bits);
+	int SecurityRead(quint32 &bits);
+	int SecurityWrite(quint32 bits);
 
-	int FusesRead(uint32_t &bits);
-	int FusesWrite(uint32_t bits);
+	int FusesRead(quint32 &bits);
+	int FusesWrite(quint32 bits);
 
 	At89sBus *GetBus()
 	{

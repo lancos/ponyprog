@@ -48,10 +48,10 @@ class IntelFileBuf : public FileBuf
 
   private:
 
-	int WriteRecord(QFile &fh, uint8_t *bptr, long curaddr, long recsize, int fmt);
+	int WriteRecord(QFile &fh, quint8 *bptr, long curaddr, long recsize, int fmt);
 	int WriteAddressRecord(QFile &fh, long curaddr, bool linear_address = false);
 
-	bool ScanHex(const QString &s, uint32_t &result);
-	bool ScanHex(const QString &s, uint16_t &result);
+	bool ScanHex(const QString &s, quint32 &result);
+	bool ScanHex(const QString &s, quint16 &result);
 };
 #endif

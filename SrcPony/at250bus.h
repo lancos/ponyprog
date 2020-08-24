@@ -35,8 +35,8 @@ class At250Bus : public SPIBus
 	At250Bus(BusInterface *ptr = 0);
 	//virtual ~At250Bus();
 
-	long Read(int addr, uint8_t *data, long length, int page_size = 0);
-	long Write(int addr, uint8_t const *data, long length, int page_size = 0);
+	long Read(int addr, quint8 *data, long length, int page_size = 0);
+	long Write(int addr, quint8 const *data, long length, int page_size = 0);
 
 	int Reset();
 
@@ -50,17 +50,17 @@ class At250Bus : public SPIBus
 	int WaitEndOfWrite(int timeout = 0);		// 07/08/99
 
 	//Programming commands
-	const uint8_t WriteEnable;
-	const uint8_t WriteDisable;
-	const uint8_t ReadStatus;
-	const uint8_t WriteStatus;
-	const uint8_t ReadData;
-	const uint8_t WriteData;
+	const quint8 WriteEnable;
+	const quint8 WriteDisable;
+	const quint8 ReadStatus;
+	const quint8 WriteStatus;
+	const quint8 ReadData;
+	const quint8 WriteData;
 
 	//Status flags
-	const uint8_t NotReadyFlag;
-	const uint8_t WenFlag;
-	const uint8_t BPFlags;
+	const quint8 NotReadyFlag;
+	const quint8 WenFlag;
+	const quint8 BPFlags;
 
 	const int loop_timeout;
 

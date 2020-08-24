@@ -46,7 +46,7 @@ mE2401::mE2401(e2AppWinInfo *wininfo, BusIO *busp, int def_banksize)
 int mE2401::Probe(int probe_size)
 {
 	int retval = 1;
-	uint8_t ch;
+	quint8 ch;
 
 	qDebug() << "mE2401::Probe(" << probe_size << ") - IN";
 
@@ -126,7 +126,7 @@ int mE2401::Write(int probe, int type)
 	if (type & PROG_TYPE)
 	{
 		int j;
-		uint8_t ch;
+		quint8 ch;
 
 		for (j = 0; j < size; j += writepage_size)
 		{

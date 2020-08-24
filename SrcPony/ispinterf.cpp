@@ -262,7 +262,7 @@ void AvrISPInterface::SetClockData()
 	if (IsInstalled())
 	{
 		unsigned int control = cmdWin->GetPolarity();
-		uint8_t cpreg = GetLastData();
+		quint8 cpreg = GetLastData();
 
 		if (control & CLOCKINV)
 		{
@@ -294,7 +294,7 @@ void AvrISPInterface::ClearClockData()
 	if (IsInstalled())
 	{
 		unsigned int control = cmdWin->GetPolarity();
-		uint8_t cpreg = GetLastData();
+		quint8 cpreg = GetLastData();
 
 		if (control & CLOCKINV)
 		{

@@ -40,7 +40,7 @@ At89sxx::At89sxx(e2AppWinInfo *wininfo, BusIO *busp)
 	qDebug() << Q_FUNC_INFO;
 }
 
-int At89sxx::SecurityRead(uint32_t &bits)
+int At89sxx::SecurityRead(quint32 &bits)
 {
 	int rv = Probe();               //No size probe needed, just probe for presence
 
@@ -52,7 +52,7 @@ int At89sxx::SecurityRead(uint32_t &bits)
 	return rv;
 }
 
-int At89sxx::SecurityWrite(uint32_t bits)
+int At89sxx::SecurityWrite(quint32 bits)
 {
 	int rv = Probe();               //No size probe needed, just probe for presence
 
@@ -64,7 +64,7 @@ int At89sxx::SecurityWrite(uint32_t bits)
 	return rv;
 }
 
-int At89sxx::FusesRead(uint32_t &bits)
+int At89sxx::FusesRead(quint32 &bits)
 {
 	int rv = Probe();               //No size probe needed, just probe for presence
 
@@ -76,7 +76,7 @@ int At89sxx::FusesRead(uint32_t &bits)
 	return rv;
 }
 
-int At89sxx::FusesWrite(uint32_t bits)
+int At89sxx::FusesWrite(quint32 bits)
 {
 	int rv = Probe();               //No size probe needed, just probe for presence
 
@@ -208,7 +208,7 @@ int At89sxx::Read(int probe, int type)
 			if (rv > 0 && (type & CONFIG_TYPE))
 			{
 				// read the fuses
-				uint32_t f = 0;
+				quint32 f = 0;
 
 				if (GetBus()->ReadFuseBits(f, GetAWInfo()->GetEEPId()) == OK)
 				{
@@ -252,7 +252,7 @@ int At89sxx::Write(int probe, int type)
 			if (rv > 0 && (type & CONFIG_TYPE))
 			{
 				//write the fuses
-				uint32_t f = GetAWInfo()->GetFuseBits();
+				quint32 f = GetAWInfo()->GetFuseBits();
 				GetBus()->WriteFuseBits(f, GetAWInfo()->GetEEPId());
 
 				//write the locks
@@ -292,7 +292,7 @@ int At89sxx::Verify(int type)
 
 		if (type & CONFIG_TYPE)
 		{
-			uint32_t fval, lval;
+			quint32 fval, lval;
 			int fret, lret;
 
 			// read the fuses & locks

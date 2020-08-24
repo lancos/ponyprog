@@ -33,7 +33,7 @@
 
 #include "e2awinfo.h"
 
-#define CONFIG_SIZE     ( 8 * sizeof(uint16_t) )
+#define CONFIG_SIZE     ( 8 * sizeof(quint16) )
 
 Pic125xx::Pic125xx(e2AppWinInfo *wininfo, BusIO *busp)
 	:       Device(wininfo, busp, 1 /*BANK_SIZE*/)
@@ -45,20 +45,20 @@ Pic125xx::~Pic125xx()
 {
 }
 
-int Pic125xx::CodeProtectAdjust(uint16_t &config, int read)
+int Pic125xx::CodeProtectAdjust(quint16 &config, int read)
 {
 	config = ~config & 0x0fff;
 
 	return OK;
 }
 
-int Pic125xx::SecurityRead(uint32_t &bits)
+int Pic125xx::SecurityRead(quint32 &bits)
 {
 	int rv = GetBus()->ReadConfig(config_word);
 
 	if (rv == OK)
 	{
-		uint16_t config = config_word;
+		quint16 config = config_word;
 		CodeProtectAdjust(config, 1);
 
 		bits = config;
@@ -67,9 +67,9 @@ int Pic125xx::SecurityRead(uint32_t &bits)
 	return rv;
 }
 
-int Pic125xx::SecurityWrite(uint32_t bits)
+int Pic125xx::SecurityWrite(quint32 bits)
 {
-	uint16_t config = (uint16_t)bits;
+	quint16 config = (quint16)bits;
 
 	CodeProtectAdjust(config, 0);
 
@@ -93,7 +93,7 @@ int Pic125xx::Read(int probe, int type)
 		{
 			// read the config locations
 			// this must be the FIRST operation (just after reset)
-			uint32_t f;
+			quint32 f;
 			SecurityRead(f);
 			GetAWInfo()->SetLockBits(f);
 		}
@@ -129,7 +129,7 @@ int Pic125xx::Write(int probe, int type)
 		{
 			// write the config locations
 			// this must be the FIRST operation (just after reset)
-			uint32_t f;
+			quint32 f;
 
 			GetBus()->Reset();
 
@@ -164,7 +164,7 @@ int Pic125xx::Verify(int type)
 
 		if (type & CONFIG_TYPE)
 		{
-			uint32_t f;
+			quint32 f;
 			SecurityRead(f);
 
 			qDebug() << "Pic125xx::Verify() ** " << f << " <-> " << (unsigned long)GetAWInfo()->GetLockBits();

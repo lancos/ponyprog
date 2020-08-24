@@ -231,7 +231,7 @@ void PonyIOInterface::SetClockData()
 	if (IsInstalled())
 	{
 		unsigned int control = cmdWin->GetPolarity();
-		uint8_t cpreg = GetCPWReg();
+		quint8 cpreg = GetCPWReg();
 
 		if (control & CLOCKINV)
 		{
@@ -263,7 +263,7 @@ void PonyIOInterface::ClearClockData()
 	if (IsInstalled())
 	{
 		unsigned int control = cmdWin->GetPolarity();
-		uint8_t cpreg = GetCPWReg();
+		quint8 cpreg = GetCPWReg();
 
 		if (control & CLOCKINV)
 		{

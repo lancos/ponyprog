@@ -44,7 +44,7 @@ class e24xx_infoModalDialog : public QDialog, public cTranslator, public Ui::Edi
 {
 	Q_OBJECT
   public:
-	e24xx_infoModalDialog(QWidget *bw, int rlv, uint16_t crc, long size, const QString title = translate(STR_MSGDEVINFO));
+	e24xx_infoModalDialog(QWidget *bw, int rlv, quint16 crc, long size, const QString title = translate(STR_MSGDEVINFO));
 	virtual ~e24xx_infoModalDialog();               // Destructor
 	//      virtual int infoAction(char* msg = "Device Info");
 
@@ -63,7 +63,7 @@ class other_infoModalDialog : public QDialog, public cTranslator, public Ui::Edi
 {
 	Q_OBJECT
   public:
-	other_infoModalDialog(QWidget *bw, long fsize, long esize, uint16_t crc, const QString title = translate(STR_MSGDEVINFO));
+	other_infoModalDialog(QWidget *bw, long fsize, long esize, quint16 crc, const QString title = translate(STR_MSGDEVINFO));
 	virtual ~other_infoModalDialog();               // Destructor
 	//      virtual int infoAction(char* msg = "Device Info");
 

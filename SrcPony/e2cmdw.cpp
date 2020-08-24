@@ -2656,9 +2656,9 @@ int e2CmdWindow::CmdReadCalibration(int idx)
 					(loc + size <= awip->GetBufSize())
 			   )
 			{
-				uint8_t *bp = awip->GetBufPtr() + loc;
+				quint8 *bp = awip->GetBufPtr() + loc;
 
-				*bp = (uint8_t)rval;
+				*bp = (quint8)rval;
 
 				awip->RecalcCRC();
 				//awip->BufChanged();
@@ -4092,7 +4092,7 @@ int e2CmdWindow::CmdGetInfo()
 
 	if (pritype == E24XX || pritype == E24XX2 || pritype == E24XX5)
 	{
-		//      uint32_t hblock, secbits;
+		//      quint32 hblock, secbits;
 		int rlv;
 
 		if (pritype != E24XX)
@@ -4273,7 +4273,7 @@ int e2CmdWindow::CmdFillBuf()
 int e2CmdWindow::SpecialBits(bool readonly)
 {
 	//int rval;
-	//uint32_t lock, fuse;
+	//quint32 lock, fuse;
 
 	//If the current fuse settings is invalid try to read it from the device
 	if (!awip->IsFuseValid())
@@ -4555,7 +4555,7 @@ int e2CmdWindow::CmdWriteLock()
 int e2CmdWindow::CmdReadLock()
 {
 	int result = OK;
-	uint32_t bits;
+	quint32 bits;
 
 	ClearIgnoreFlag();
 
@@ -4623,7 +4623,7 @@ int e2CmdWindow::CmdReadLock()
 int e2CmdWindow::CmdReadSpecial()
 {
 	int result = OK;
-	uint32_t bits;
+	quint32 bits;
 
 	ClearIgnoreFlag();
 
@@ -4889,7 +4889,7 @@ int e2CmdWindow::CmdSetSerialNumber()
 {
 	long loc = 0;
 	int size = 1;
-	uint32_t val = 0;
+	quint32 val = 0;
 	bool memtype = false;
 
 	val = E2Profile::GetSerialNumVal();
@@ -4902,50 +4902,50 @@ int e2CmdWindow::CmdSetSerialNumber()
 
 	if ((size > 0 && size <= 4) && (loc + size <= awip->GetBufSize()))
 	{
-		uint8_t *bp = awip->GetBufPtr() + loc;
+		quint8 *bp = awip->GetBufPtr() + loc;
 
 		if (E2Profile::GetSerialNumFormat() == FMT_BIG_ENDIAN)
 		{
 			if (size > 3)
 			{
-				*bp++ = (uint8_t)((val >> 24) & 0xff);
+				*bp++ = (quint8)((val >> 24) & 0xff);
 			}
 
 			if (size > 2)
 			{
-				*bp++ = (uint8_t)((val >> 16) & 0xff);
+				*bp++ = (quint8)((val >> 16) & 0xff);
 			}
 
 			if (size > 1)
 			{
-				*bp++ = (uint8_t)((val >> 8) & 0xff);
+				*bp++ = (quint8)((val >> 8) & 0xff);
 			}
 
 			if (size > 0)
 			{
-				*bp++ = (uint8_t)(val & 0xff);
+				*bp++ = (quint8)(val & 0xff);
 			}
 		}
 		else
 		{
 			if (size > 0)
 			{
-				*bp++ = (uint8_t)(val & 0xff);
+				*bp++ = (quint8)(val & 0xff);
 			}
 
 			if (size > 1)
 			{
-				*bp++ = (uint8_t)((val >> 8) & 0xff);
+				*bp++ = (quint8)((val >> 8) & 0xff);
 			}
 
 			if (size > 2)
 			{
-				*bp++ = (uint8_t)((val >> 16) & 0xff);
+				*bp++ = (quint8)((val >> 16) & 0xff);
 			}
 
 			if (size > 3)
 			{
-				*bp++ = (uint8_t)((val >> 24) & 0xff);
+				*bp++ = (quint8)((val >> 24) & 0xff);
 			}
 		}
 

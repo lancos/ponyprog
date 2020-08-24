@@ -46,8 +46,8 @@ class Pic125xx : public Device
 	int Verify(int type = ALL_TYPE);
 
 	//Write lock bits
-	int SecurityRead(uint32_t &bits);
-	int SecurityWrite(uint32_t bits);
+	int SecurityRead(quint32 &bits);
+	int SecurityWrite(quint32 bits);
 
   protected:
 
@@ -56,12 +56,12 @@ class Pic125xx : public Device
 		return static_cast<Pic12Bus *>(Device::GetBus());
 	}
 
-	virtual int CodeProtectAdjust(uint16_t &config, int read = 0);
+	virtual int CodeProtectAdjust(quint16 &config, int read = 0);
 	//      virtual int WriteProg();
 	virtual int VerifyProg(unsigned char *localbuf);
 
   private:
 
-	uint16_t config_word;
+	quint16 config_word;
 };
 #endif

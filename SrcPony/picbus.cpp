@@ -173,7 +173,7 @@ int PicBus::SendCmdCode(int opcode)
 	return SendDataWord(opcode, 6);
 }
 
-int PicBus::SendProgCode(uint16_t data)
+int PicBus::SendProgCode(quint16 data)
 {
 	//the code is 14 bit data with leading and trailing 0's
 	data &= ProgMask;
@@ -181,12 +181,12 @@ int PicBus::SendProgCode(uint16_t data)
 	return SendDataWord(data);
 }
 
-uint16_t PicBus::RecvProgCode()
+quint16 PicBus::RecvProgCode()
 {
-	return (uint16_t)(RecDataWord() >> 1) & ProgMask;
+	return (quint16)(RecDataWord() >> 1) & ProgMask;
 }
 
-int PicBus::SendDataCode(uint16_t data)
+int PicBus::SendDataCode(quint16 data)
 {
 	//the code is 8 bit data with leading and trailing 0's
 	data &= DataMask;
@@ -194,9 +194,9 @@ int PicBus::SendDataCode(uint16_t data)
 	return SendDataWord(data);
 }
 
-uint16_t PicBus::RecvDataCode()
+quint16 PicBus::RecvDataCode()
 {
-	return (uint16_t)(RecDataWord() >> 1) & DataMask;
+	return (quint16)(RecDataWord() >> 1) & DataMask;
 }
 
 int PicBus::WaitReadyAfterWrite(long timeout)
@@ -253,7 +253,7 @@ void PicBus::DisableCodeProtect()
 	Reset();
 }
 
-long PicBus::ReadConfig(uint16_t *data)
+long PicBus::ReadConfig(quint16 *data)
 {
 	Q_CHECK_PTR(data);
 
@@ -269,8 +269,8 @@ long PicBus::ReadConfig(uint16_t *data)
 
 	for (k = 0; k < 8; k++, data++)
 	{
-		uint8_t *bp = (uint8_t *)data;
-		uint16_t val;
+		quint8 *bp = (quint8 *)data;
+		quint16 val;
 
 		SendCmdCode(ReadProgCode);
 
@@ -282,11 +282,11 @@ long PicBus::ReadConfig(uint16_t *data)
 		}
 
 #ifdef  _BIG_ENDIAN_
-		*bp++ = (uint8_t)(val >> 8);
-		*bp++ = (uint8_t)(val & 0xFF);
+		*bp++ = (quint8)(val >> 8);
+		*bp++ = (quint8)(val & 0xFF);
 #else
-		*bp++ = (uint8_t)(val & 0xFF);
-		*bp++ = (uint8_t)(val >> 8);
+		*bp++ = (quint8)(val & 0xFF);
+		*bp++ = (quint8)(val >> 8);
 #endif
 		SendCmdCode(IncAddressCode);
 	}
@@ -296,7 +296,7 @@ long PicBus::ReadConfig(uint16_t *data)
 	return OK;
 }
 
-long PicBus::WriteConfig(uint16_t *data)
+long PicBus::WriteConfig(quint16 *data)
 {
 	Q_CHECK_PTR(data);
 
@@ -314,18 +314,18 @@ long PicBus::WriteConfig(uint16_t *data)
 	{
 		if (*data != 0xffff)
 		{
-			uint8_t *bp = (uint8_t *)data;
-			uint16_t val;
+			quint8 *bp = (quint8 *)data;
+			quint16 val;
 
 			//Write Data code
 			SendCmdCode(LoadProgCode);
 
 #ifdef  _BIG_ENDIAN_
-			val  = (uint16_t)(*bp++) << 8;
-			val |= (uint16_t)(*bp++);
+			val  = (quint16)(*bp++) << 8;
+			val |= (quint16)(*bp++);
 #else
-			val  = (uint16_t)(*bp++);
-			val |= (uint16_t)(*bp++) << 8;
+			val  = (quint16)(*bp++);
+			val |= (quint16)(*bp++) << 8;
 #endif
 			SendProgCode(val);
 			SendCmdCode(BeginEraseProgCode);
@@ -386,7 +386,7 @@ int PicBus::Erase(int type)
 }
 
 
-long PicBus::Read(int addr, uint8_t *data, long length, int page_size)
+long PicBus::Read(int addr, quint8 *data, long length, int page_size)
 {
 	long len;
 
@@ -405,7 +405,7 @@ long PicBus::Read(int addr, uint8_t *data, long length, int page_size)
 		{
 			//Read DataCode
 			SendCmdCode(ReadDataCode);
-			*data++ = (uint8_t)RecvDataCode();
+			*data++ = (quint8)RecvDataCode();
 
 			SendCmdCode(IncAddressCode);
 		}
@@ -413,7 +413,7 @@ long PicBus::Read(int addr, uint8_t *data, long length, int page_size)
 		{
 			//Read Program Code
 			SendCmdCode(ReadProgCode);
-			uint16_t val = RecvProgCode();
+			quint16 val = RecvProgCode();
 
 			if (val == ProgMask)
 			{
@@ -421,11 +421,11 @@ long PicBus::Read(int addr, uint8_t *data, long length, int page_size)
 			}
 
 #ifdef  _BIG_ENDIAN_
-			*data++ = (uint8_t)(val >> 8);
-			*data++ = (uint8_t)(val & 0xFF);
+			*data++ = (quint8)(val >> 8);
+			*data++ = (quint8)(val & 0xFF);
 #else
-			*data++ = (uint8_t)(val & 0xFF);
-			*data++ = (uint8_t)(val >> 8);
+			*data++ = (quint8)(val & 0xFF);
+			*data++ = (quint8)(val >> 8);
 #endif
 			SendCmdCode(IncAddressCode);
 		}
@@ -447,7 +447,7 @@ long PicBus::Read(int addr, uint8_t *data, long length, int page_size)
 	return len;
 }
 
-long PicBus::Write(int addr, uint8_t const *data, long length, int page_size)
+long PicBus::Write(int addr, quint8 const *data, long length, int page_size)
 {
 	long len;
 
@@ -460,14 +460,14 @@ long PicBus::Write(int addr, uint8_t const *data, long length, int page_size)
 
 	for (len = 0; len < length; len++)
 	{
-		uint16_t val;
+		quint16 val;
 
 		//Send command opcode
 		if (addr)
 		{
 			//Write Data code
 			SendCmdCode(LoadDataCode);
-			val  = (uint16_t)(*data++);
+			val  = (quint16)(*data++);
 			SendDataCode(val);
 			SendCmdCode(BeginEraseProgCode);
 
@@ -489,11 +489,11 @@ long PicBus::Write(int addr, uint8_t const *data, long length, int page_size)
 			SendCmdCode(LoadProgCode);
 
 #ifdef  _BIG_ENDIAN_
-			val  = (uint16_t)(*data++) << 8;
-			val |= (uint16_t)(*data++);
+			val  = (quint16)(*data++) << 8;
+			val |= (quint16)(*data++);
 #else
-			val  = (uint16_t)(*data++);
-			val |= (uint16_t)(*data++) << 8;
+			val  = (quint16)(*data++);
+			val |= (quint16)(*data++) << 8;
 #endif
 			SendProgCode(val);
 			SendCmdCode(BeginEraseProgCode);
@@ -528,12 +528,12 @@ long PicBus::Write(int addr, uint8_t const *data, long length, int page_size)
 	return len;
 }
 
-int PicBus::CompareSingleWord(uint16_t data1, uint16_t data2, uint16_t mask)
+int PicBus::CompareSingleWord(quint16 data1, quint16 data2, quint16 mask)
 {
 	return (data1 & mask) != (data2 & mask);
 }
 
-int PicBus::CompareMultiWord(uint8_t *data1, uint8_t *data2, long length, int split)
+int PicBus::CompareMultiWord(quint8 *data1, quint8 *data2, long length, int split)
 {
 	int retval = 0;
 
@@ -548,20 +548,20 @@ int PicBus::CompareMultiWord(uint8_t *data1, uint8_t *data2, long length, int sp
 
 		for (k = 0; k < length; k += 2)
 		{
-			uint16_t val1, val2;
+			quint16 val1, val2;
 
 #ifdef  _BIG_ENDIAN_
-			val1  = (uint16_t)(*data1++) << 8;
-			val1 |= (uint16_t)(*data1++);
+			val1  = (quint16)(*data1++) << 8;
+			val1 |= (quint16)(*data1++);
 
-			val2  = (uint16_t)(*data2++) << 8;
-			val2 |= (uint16_t)(*data2++);
+			val2  = (quint16)(*data2++) << 8;
+			val2 |= (quint16)(*data2++);
 #else
-			val1  = (uint16_t)(*data1++);
-			val1 |= (uint16_t)(*data1++) << 8;
+			val1  = (quint16)(*data1++);
+			val1 |= (quint16)(*data1++) << 8;
 
-			val2  = (uint16_t)(*data2++);
-			val2 |= (uint16_t)(*data2++) << 8;
+			val2  = (quint16)(*data2++);
+			val2 |= (quint16)(*data2++) << 8;
 #endif
 
 			if ((retval = CompareSingleWord(val1, val2, ProgMask)))

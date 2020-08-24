@@ -167,7 +167,7 @@ int Sde2506Bus::Reset(void)
 	return OK;
 }
 
-long Sde2506Bus::Read(int addr, uint8_t *data, long length, int page_size)
+long Sde2506Bus::Read(int addr, quint8 *data, long length, int page_size)
 {
 	qDebug() << Q_FUNC_INFO << "(" << (hex) << addr << ", " << data << ", " << (dec) << length << ")";
 	ReadStart();
@@ -207,7 +207,7 @@ long Sde2506Bus::Read(int addr, uint8_t *data, long length, int page_size)
 	return len;
 }
 
-long Sde2506Bus::Write(int addr, uint8_t const *data, long length, int page_size)
+long Sde2506Bus::Write(int addr, quint8 const *data, long length, int page_size)
 {
 	long curaddr;
 

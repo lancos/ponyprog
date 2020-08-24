@@ -49,10 +49,10 @@ class MotorolaSFileBuf : public FileBuf
 
   private:
 
-	int WriteRecord(QTextStream &outs, uint8_t *bptr, long curaddr, long recsize, int fmt);
-	int ParseRecord(char *lbufPC, uint8_t *buf_startP, uint8_t *buf_endP, long offset, int nocopy);
+	int WriteRecord(QTextStream &outs, quint8 *bptr, long curaddr, long recsize, int fmt);
+	int ParseRecord(char *lbufPC, quint8 *buf_startP, quint8 *buf_endP, long offset, int nocopy);
 
-	uint8_t *highestPC;
+	quint8 *highestPC;
 	unsigned long highestAddr;
 	unsigned long lowestAddr;
 

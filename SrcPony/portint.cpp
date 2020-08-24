@@ -709,7 +709,7 @@ static int DetectPortsNT(const QString &ServiceName, const QString &PortFormat, 
 				{
 					buf = QString::number(i);
 					//_snprintf(buf, sizeof(buf), "%d", i);   // A simple number
-					uint16_t PnpPath[MAX_PATH];         // Another buffer (small changes in code would avoid even this)
+					quint16 PnpPath[MAX_PATH];         // Another buffer (small changes in code would avoid even this)
 					DWORD lptyp;
 					Length = sizeof(PnpPath);
 					retval = RegQueryValueEx(hSvcEnum, (LPCWSTR)buf.utf16(), NULL, &lptyp, (LPBYTE)PnpPath, &Length);
@@ -730,7 +730,7 @@ static int DetectPortsNT(const QString &ServiceName, const QString &PortFormat, 
 						if (retval == ERROR_SUCCESS)
 						{
 							int Index;
-							uint16_t buf2[MAX_PATH];
+							quint16 buf2[MAX_PATH];
 							Length = sizeof(buf2);
 							retval = RegQueryValueEx(hParams, L"PortName", NULL, &lptyp, (LPBYTE)buf2, &Length);
 

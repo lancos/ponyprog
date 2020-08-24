@@ -253,7 +253,7 @@ int IMBus::WaitReadyAfterWrite(int addr, int delay, long timeout)
 	}
 	else
 	{
-		uint8_t val = 0xff;
+		quint8 val = 0xff;
 
 		while ((val & (1 << 1)) && timeout--)
 		{
@@ -266,7 +266,7 @@ int IMBus::WaitReadyAfterWrite(int addr, int delay, long timeout)
 
 			//Receive data
 			SendAddrWord(IMADDR_READ(SecondaryAddress));
-			val = (uint8_t)RecDataWord(Data16_mode ? 16 : 8);
+			val = (quint8)RecDataWord(Data16_mode ? 16 : 8);
 			IdentPulse();
 		}
 
@@ -294,7 +294,7 @@ int IMBus::Reset(void)
 	return OK;
 }
 
-long IMBus::Read(int addr, uint8_t *data, long length, int page_size)
+long IMBus::Read(int addr, quint8 *data, long length, int page_size)
 {
 	qDebug() << "IMBus::Read(" << (hex) << addr << ", " << data << ", " << (dec) <<  length << ")";
 
@@ -310,7 +310,7 @@ long IMBus::Read(int addr, uint8_t *data, long length, int page_size)
 
 		//Receive data
 		SendAddrWord(IMADDR_READ(SecondaryAddress));
-		*data++ = (uint8_t)RecDataWord(Data16_mode ? 16 : 8);
+		*data++ = (quint8)RecDataWord(Data16_mode ? 16 : 8);
 		IdentPulse();
 
 		if ((len % 4) == 0)
@@ -329,10 +329,10 @@ long IMBus::Read(int addr, uint8_t *data, long length, int page_size)
 	return len;
 }
 
-long IMBus::Write(int addr, uint8_t const *data, long length, int page_size)
+long IMBus::Write(int addr, quint8 const *data, long length, int page_size)
 {
 	long len;
-	uint8_t bval;
+	quint8 bval;
 	int loop_timeout;
 
 	WriteStart();
@@ -386,7 +386,7 @@ long IMBus::Write(int addr, uint8_t const *data, long length, int page_size)
 
 			//Receive data
 			SendAddrWord(IMADDR_READ(SecondaryAddress));
-			bval = (uint8_t)RecDataWord(Data16_mode ? 16 : 8);
+			bval = (quint8)RecDataWord(Data16_mode ? 16 : 8);
 			IdentPulse();
 		} //for
 

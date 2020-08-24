@@ -47,22 +47,22 @@
 struct e2pHeader
 {
 	char fileID[E2P_ID_SIZE];
-	uint8_t e2pFuseBits;
-	uint8_t e2pLockBits;
-	uint32_t e2pType;
-	int32_t e2pSize;
-	uint8_t flags;          //rollOver, splitted
-	uint16_t e2pExtFuseBits;
-	uint16_t e2pExtLockBits;
-	uint8_t fversion;       //file version
-	uint16_t split_size_Low;        //used by splitted devices
+	quint8 e2pFuseBits;
+	quint8 e2pLockBits;
+	quint32 e2pType;
+	qint32 e2pSize;
+	quint8 flags;          //rollOver, splitted
+	quint16 e2pExtFuseBits;
+	quint16 e2pExtLockBits;
+	quint8 fversion;       //file version
+	quint16 split_size_Low;        //used by splitted devices
 	char e2pStringID[E2P_STRID_SIZE];
-	uint32_t e2pProgBits;
+	quint32 e2pProgBits;
 	char e2pComment[E2P_COMM_SIZE];
-	uint16_t split_size_High;
-	uint16_t pad;
-	uint16_t e2pCrc;
-	uint16_t headCrc;
+	quint16 split_size_High;
+	quint16 pad;
+	quint16 e2pCrc;
+	quint16 headCrc;
 } PACK;
 
 #ifdef Q_OS_WIN32

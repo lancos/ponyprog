@@ -5,9 +5,9 @@
 /* Calcola il CRC in un file a partire da ini_ofs per un numero di bytes
    dato da len. Se len e` zero prosegue fino alla fine del file, il file
    deve essere aperto in modo da permettere la lettura (r, r+, w+) */
-uint16_t fcalc_crc(QFile &fh, long ini_ofs, long len)
+quint16 fcalc_crc(QFile &fh, long ini_ofs, long len)
 {
-	uint16_t crc16 = 0;
+	quint16 crc16 = 0;
 	char ch;
 	long old_pos;
 
@@ -38,10 +38,10 @@ uint16_t fcalc_crc(QFile &fh, long ini_ofs, long len)
 
 /* Calcola il CRC in una zona di memoria a partire da ini_addr per un numero
    di bytes dato da len */
-uint16_t mcalc_crc(void *ini_addr, long len)
+quint16 mcalc_crc(void *ini_addr, long len)
 {
-	uint16_t crc16;
-	uint8_t *bp = (uint8_t *)ini_addr;
+	quint16 crc16;
+	quint8 *bp = (quint8 *)ini_addr;
 
 	if (len == 0)
 	{
@@ -61,7 +61,7 @@ uint16_t mcalc_crc(void *ini_addr, long len)
 #define M16     0xA001          /* crc-16 mask */
 
 /* tables */
-static uint16_t crc16tab[256] =
+static quint16 crc16tab[256] =
 {
 	0x0000, 0xC0C1, 0xC181, 0x0140, 0xC301, 0x03C0, 0x0280, 0xC241,
 	0xC601, 0x06C0, 0x0780, 0xC741, 0x0500, 0xC5C1, 0xC481, 0x0440,
@@ -98,11 +98,11 @@ static uint16_t crc16tab[256] =
 };
 
 /* update crc reverse */
-uint16_t updcrcr(uint16_t crc, uint16_t c)
+quint16 updcrcr(quint16 crc, quint16 c)
 {
 	int tmp;
 
-	tmp = (uint8_t)(crc ^ c);
+	tmp = (quint8)(crc ^ c);
 	crc = (crc >> 8) ^ crc16tab[tmp];
 	return crc;
 }

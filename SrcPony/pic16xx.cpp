@@ -31,7 +31,7 @@
 
 #include "e2awinfo.h"
 
-#define CONFIG_SIZE     ( 8 * sizeof(uint16_t) )
+#define CONFIG_SIZE     ( 8 * sizeof(quint16) )
 
 Pic16xx::Pic16xx(e2AppWinInfo *wininfo, BusIO *busp)
 	:       Device(wininfo, busp, 1 /*BANK_SIZE*/)
@@ -48,7 +48,7 @@ Pic16xx::~Pic16xx()
 {
 }
 
-int Pic16xx::CodeProtectAdjust(uint16_t &config, int read)
+int Pic16xx::CodeProtectAdjust(quint16 &config, int read)
 {
 	if (!read)
 	{
@@ -68,13 +68,13 @@ int Pic16xx::CodeProtectAdjust(uint16_t &config, int read)
 	return OK;
 }
 
-int Pic16xx::SecurityRead(uint32_t &bits)
+int Pic16xx::SecurityRead(quint32 &bits)
 {
 	int rv = GetBus()->ReadConfig(id_locations);
 
 	if (rv == OK)
 	{
-		uint16_t config = id_locations[7];
+		quint16 config = id_locations[7];
 
 		CodeProtectAdjust(config, 1);
 
@@ -84,9 +84,9 @@ int Pic16xx::SecurityRead(uint32_t &bits)
 	return rv;
 }
 
-int Pic16xx::SecurityWrite(uint32_t bits)
+int Pic16xx::SecurityWrite(quint32 bits)
 {
-	uint16_t config = (uint16_t)bits;
+	quint16 config = (quint16)bits;
 
 	CodeProtectAdjust(config, 0);
 
@@ -131,7 +131,7 @@ int Pic16xx::Read(int probe, int type)
 		{
 			// read the config locations
 			// this must be the LAST operation (to exit from config mode we have to clear Vpp)
-			uint32_t f;
+			quint32 f;
 			SecurityRead(f);
 			//      GetAWInfo()->SetFuseBits(f0);
 			GetAWInfo()->SetLockBits(f);
@@ -175,7 +175,7 @@ int Pic16xx::Write(int probe, int type)
 			{
 				// write the config locations
 				// this must be the LAST operation (to exit from config mode we have to clear Vpp)
-				uint32_t f;
+				quint32 f;
 				f = GetAWInfo()->GetLockBits();
 				SecurityWrite(f);
 			}
@@ -218,7 +218,7 @@ int Pic16xx::Verify(int type)
 
 		if (type & CONFIG_TYPE)
 		{
-			uint32_t f;
+			quint32 f;
 			SecurityRead(f);
 
 			if (GetAWInfo()->GetLockBits() == f)

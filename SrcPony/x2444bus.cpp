@@ -60,7 +60,7 @@ void X2444Bus::SendCmdAddr(int cmd, int addr)
 	}
 }
 
-long X2444Bus::Read(int addr, uint8_t *data, long length, int page_size)
+long X2444Bus::Read(int addr, quint8 *data, long length, int page_size)
 {
 	qDebug() << Q_FUNC_INFO << "(" << (hex) << addr << ", " << data << ", " << (dec) << length << ")";
 	ReadStart();
@@ -98,21 +98,21 @@ long X2444Bus::Read(int addr, uint8_t *data, long length, int page_size)
 
 		//The first bit after read command is "shorter"
 		// so we have to use a special function
-		uint16_t val = RecDataWordShort(organization, true);
+		quint16 val = RecDataWordShort(organization, true);
 
 		if (organization == ORG16)
 		{
 #ifdef  _BIG_ENDIAN_
-			*data++ = (uint8_t)(val >> 8);
-			*data++ = (uint8_t)(val & 0xFF);
+			*data++ = (quint8)(val >> 8);
+			*data++ = (quint8)(val & 0xFF);
 #else
-			*data++ = (uint8_t)(val & 0xFF);
-			*data++ = (uint8_t)(val >> 8);
+			*data++ = (quint8)(val & 0xFF);
+			*data++ = (quint8)(val >> 8);
 #endif
 		}
 		else
 		{
-			*data++ = (uint8_t)(val & 0xFF);
+			*data++ = (quint8)(val & 0xFF);
 		}
 
 		WaitUsec(1);
@@ -135,7 +135,7 @@ long X2444Bus::Read(int addr, uint8_t *data, long length, int page_size)
 	return len;
 }
 
-long X2444Bus::Write(int addr, uint8_t const *data, long length, int page_size)
+long X2444Bus::Write(int addr, quint8 const *data, long length, int page_size)
 {
 	long curaddr;
 
@@ -166,16 +166,16 @@ long X2444Bus::Write(int addr, uint8_t const *data, long length, int page_size)
 
 	for (curaddr = 0; curaddr < length; curaddr++)
 	{
-		uint16_t val;
+		quint16 val;
 
 		if (organization == ORG16)
 		{
 #ifdef  _BIG_ENDIAN_
-			val  = (uint16_t)(*data++) << 8;
-			val |= (uint16_t)(*data++);
+			val  = (quint16)(*data++) << 8;
+			val |= (quint16)(*data++);
 #else
-			val  = (uint16_t)(*data++);
-			val |= (uint16_t)(*data++) << 8;
+			val  = (quint16)(*data++);
+			val |= (quint16)(*data++) << 8;
 #endif
 		}
 		else

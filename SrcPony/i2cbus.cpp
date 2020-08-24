@@ -295,7 +295,7 @@ void I2CBus::SetDelay()
 	qDebug() << Q_FUNC_INFO << "=" << n;
 }
 
-long I2CBus::Read(int slave, uint8_t *data, long length, int page_size)
+long I2CBus::Read(int slave, quint8 *data, long length, int page_size)
 {
 	long len;
 
@@ -313,7 +313,7 @@ long I2CBus::Read(int slave, uint8_t *data, long length, int page_size)
 	return len;
 }
 
-long I2CBus::Write(int slave, uint8_t const *data, long length, int page_size)
+long I2CBus::Write(int slave, quint8 const *data, long length, int page_size)
 {
 	long len;
 
@@ -332,7 +332,7 @@ long I2CBus::Write(int slave, uint8_t const *data, long length, int page_size)
 	return len;
 }
 
-int I2CBus::Start(uint8_t slave)
+int I2CBus::Start(quint8 slave)
 {
 	int temp;
 
@@ -358,7 +358,7 @@ int I2CBus::Start(uint8_t slave)
  * trasmissione. In questo caso data deve puntare ad un buffer di (almeno)
  * un byte.
  */
-long I2CBus::StartRead(uint8_t slave, uint8_t *data, long length)
+long I2CBus::StartRead(quint8 slave, quint8 *data, long length)
 {
 	int temp;
 	long len = length;
@@ -389,7 +389,7 @@ long I2CBus::StartRead(uint8_t slave, uint8_t *data, long length)
 				goto fineR;
 			}
 
-			*data++ = (uint8_t)temp;
+			*data++ = (quint8)temp;
 			len--;
 		}
 	}
@@ -403,7 +403,7 @@ long I2CBus::StartRead(uint8_t slave, uint8_t *data, long length)
 
 	len--;
 
-	*data = (uint8_t)temp;
+	*data = (quint8)temp;
 	err_no = 0;
 
 fineR:
@@ -412,7 +412,7 @@ fineR:
 	return length - len;
 }
 
-long I2CBus::StartWrite(uint8_t slave, uint8_t const *data, long length)
+long I2CBus::StartWrite(quint8 slave, quint8 const *data, long length)
 {
 	int error;
 	long len = length;
@@ -471,7 +471,7 @@ int I2CBus::Reset(void)
 
 	SetDelay();
 
-	uint8_t c;
+	quint8 c;
 	Read(0x00, &c, 0);
 	setSCLSDA();
 	WaitMsec(100);			//a big delay to allow no-CMOS 2402 to work

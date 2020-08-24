@@ -51,7 +51,7 @@ class Pic168xx : public Pic16xx
 	}
 
 	int QueryType(quint32 &type);
-	int CodeProtectAdjust(uint16_t &config, int read = 0);
+	int CodeProtectAdjust(quint16 &config, int read = 0);
 
   private:
 

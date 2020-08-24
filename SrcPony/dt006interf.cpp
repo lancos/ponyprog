@@ -171,7 +171,7 @@ void Dt006Interface::SetClockData()
 	if (IsInstalled())
 	{
 		int control     = cmdWin->GetPolarity();
-		uint8_t cpreg = GetLastData();
+		quint8 cpreg = GetLastData();
 
 		if (control & CLOCKINV)
 		{
@@ -201,7 +201,7 @@ void Dt006Interface::ClearClockData()
 	if (IsInstalled())
 	{
 		int control = cmdWin->GetPolarity();
-		uint8_t cpreg = GetLastData();
+		quint8 cpreg = GetLastData();
 
 		if (control & CLOCKINV)
 		{

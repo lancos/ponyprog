@@ -177,9 +177,9 @@ void MpsseInterface::DeInitPins()
 	Flush();
 }
 
-int MpsseInterface::SetFrequency(uint32_t freq)
+int MpsseInterface::SetFrequency(quint32 freq)
 {
-	int32_t divisor, sysclock;
+	qint32 divisor, sysclock;
 
 	Q_ASSERT(freq > 0);
 
@@ -321,7 +321,7 @@ void MpsseInterface::SetDelay(int delay)
 {
 	if (delay >= 0)
 	{
-		uint32_t freq = 0xffffffff;	//maximum frequency
+		quint32 freq = 0xffffffff;	//maximum frequency
 
 		if (delay > 0)
 		{
@@ -418,7 +418,7 @@ int MpsseInterface::GetPins()
 	int ret = Flush();
 	if (ret == OK)
 	{
-		uint8_t buf[2];
+		quint8 buf[2];
 		int timeout = 10000;
 		do
 		{
@@ -443,7 +443,7 @@ int MpsseInterface::GetPins()
 	return ret;
 }
 
-int MpsseInterface::GetLowPinsMulti(int bufsiz, uint8_t *buf, int len)
+int MpsseInterface::GetLowPinsMulti(int bufsiz, quint8 *buf, int len)
 {
 	if (len > bufsiz)
 	{
@@ -486,7 +486,7 @@ int MpsseInterface::GetLowPinsMulti(int bufsiz, uint8_t *buf, int len)
 
 bool MpsseInterface::CheckDataLines(int len, int sda, int scl)
 {
-	uint8_t buf[512];
+	quint8 buf[512];
 	bool test = false;
 
 	Q_ASSERT(len > 0);
@@ -542,7 +542,7 @@ int MpsseInterface::xferBit(int &err, int b, int mode)
 	int cmd = MPSSE_BITMODE;
 	int len = 0;	//0 --> 1bit
 	int by = (b != 0) ? 0xff : 0;
-	uint8_t ret_byte = 0;
+	quint8 ret_byte = 0;
 
 	//We accept 0 --> default R+W, SPIMODE_WRONLY --> W, SPIMODE_RDONLY --> R, (SPIMODE_WRONLY|SPIMODE_RDONLY) --> Invalid
 	Q_ASSERT((mode & (xMODE_WRONLY | xMODE_RDONLY)) != (xMODE_WRONLY | xMODE_RDONLY));
@@ -627,11 +627,11 @@ int MpsseInterface::xferBit(int &err, int b, int mode)
 	return (ret_byte & 1);
 }
 
-uint8_t MpsseInterface::xferByte(int &err, uint8_t by, int mode, int bpw, bool lsb_first)
+quint8 MpsseInterface::xferByte(int &err, quint8 by, int mode, int bpw, bool lsb_first)
 {
 	int cmd = MPSSE_BITMODE;
 	int len = bpw - 1;	//0 --> 1bit, .. 7 --> 8bits
-	uint8_t ret_byte = 0;
+	quint8 ret_byte = 0;
 
 	if (lsb_first)
 	{

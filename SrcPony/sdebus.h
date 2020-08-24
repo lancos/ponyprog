@@ -36,8 +36,8 @@ class Sde2506Bus : public BusIO
 	Sde2506Bus(BusInterface *ptr = 0);
 	virtual ~Sde2506Bus();
 
-	long Read(int addr, uint8_t *data, long length, int page_size = 0);
-	long Write(int addr, uint8_t const *data, long length, int page_size = 0);
+	long Read(int addr, quint8 *data, long length, int page_size = 0);
+	long Write(int addr, quint8 const *data, long length, int page_size = 0);
 
 	int Reset();
 

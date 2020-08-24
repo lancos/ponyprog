@@ -168,7 +168,7 @@ class e2AppWinInfo // : public QObject
 		splitted = spl;
 	}
 
-	uint16_t GetCRC() const
+	quint16 GetCRC() const
 	{
 		return crc;
 	}
@@ -176,11 +176,11 @@ class e2AppWinInfo // : public QObject
 	{
 		crc = c;
 	}
-	uint16_t RecalcCRC();
+	quint16 RecalcCRC();
 
-	uint8_t *GetBufPtr() const
+	quint8 *GetBufPtr() const
 	{
-		return (uint8_t *)buffer;
+		return (quint8 *)buffer;
 	}
 	int GetBufSize() const
 	{
@@ -192,25 +192,25 @@ class e2AppWinInfo // : public QObject
 	void FillBuffer(int first_pos = 0, int ch = 0xFF, long len = -1);
 	void ClearBuffer(int type = ALL_TYPE);
 
-	int SecurityRead(uint32_t &bits);
-	int SecurityWrite(uint32_t bits, bool no_param = false);
-	int FusesRead(uint32_t &bits);
-	int FusesWrite(uint32_t bits, bool no_param = false);
-	int HighEnduranceRead(uint32_t &block_no);
-	int HighEnduranceWrite(uint32_t block_no, bool no_param = false);
+	int SecurityRead(quint32 &bits);
+	int SecurityWrite(quint32 bits, bool no_param = false);
+	int FusesRead(quint32 &bits);
+	int FusesWrite(quint32 bits, bool no_param = false);
+	int HighEnduranceRead(quint32 &block_no);
+	int HighEnduranceWrite(quint32 block_no, bool no_param = false);
 
 	int ReadOscCalibration(int addr = 0);
 
-	uint32_t GetLockBits() const
+	quint32 GetLockBits() const
 	{
 		return lock_bits;
 	}
-	uint32_t GetFuseBits() const
+	quint32 GetFuseBits() const
 	{
 		return fuse_bits;
 	}
-	void SetLockBits(uint32_t bits);
-	void SetFuseBits(uint32_t bits);
+	void SetLockBits(quint32 bits);
+	void SetFuseBits(quint32 bits);
 
 	bool IsFuseValid() const
 	{
@@ -322,7 +322,7 @@ class e2AppWinInfo // : public QObject
 
 	// EK 2017
 	// TODO convert to QByteArray or QBuffer?
-	uint8_t buffer[BUFFER_SIZE];    //device content buffer
+	quint8 buffer[BUFFER_SIZE];    //device content buffer
 	QString linebuf;//[LINEBUF_SIZE];     //print line buffer
 	bool buf_ok;                            //true if buffer is valid
 	bool buf_changed;                       //true if buffer changed/edited
@@ -338,11 +338,11 @@ class e2AppWinInfo // : public QObject
 	int splitted;                           //indica se la EEPROM e` divisa in due parti distinte (EEPROM - FLASH)
 	int roll_over;                          //indica se e`presente una features della eeprom
 
-	uint32_t fuse_bits;                     //device dependent bits
-	uint32_t lock_bits;                     //device dependent lock (security) bits
+	quint32 fuse_bits;                     //device dependent bits
+	quint32 lock_bits;                     //device dependent lock (security) bits
 	bool fuse_ok;
 
-	uint16_t crc;                                   //CRC del contenuto della eeprom
+	quint16 crc;                                   //CRC del contenuto della eeprom
 
 	QString eeprom_string;//[STRINGID_SIZE];      //eeprom string ID
 	QString eeprom_comment;//[COMMENT_SIZE];      //eeprom comment

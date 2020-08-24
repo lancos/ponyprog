@@ -52,7 +52,7 @@ class blockDialog : public QDialog, public cTranslator, public Ui::EditDialog
 
   private:
 	e2AppWinInfo *awip;
-	uint32_t lock, fuse;
+	quint32 lock, fuse;
 };
 
 #endif

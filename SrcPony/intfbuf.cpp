@@ -60,7 +60,7 @@ IntelFileBuf::~IntelFileBuf()
 }
 
 
-int IntelFileBuf::WriteRecord(QFile &fh, uint8_t *bptr, long curaddr, long recsize, int fmt)
+int IntelFileBuf::WriteRecord(QFile &fh, quint8 *bptr, long curaddr, long recsize, int fmt)
 {
 	int rval = 1;
 
@@ -181,7 +181,7 @@ int IntelFileBuf::Save(int savetype, long relocation_offset)
 
 	long dsize = FileBuf::GetBlockSize() * FileBuf::GetNoOfBlock();
 	long size = FileBuf::GetBufSize();
-	uint8_t *ptr = FileBuf::GetBufPtr();
+	quint8 *ptr = FileBuf::GetBufPtr();
 
 	//Remove FF's tail
 	while (ptr[size - 1] == 0xFF)
@@ -260,8 +260,8 @@ int IntelFileBuf::Load(int loadtype, long relocation_offset)
 	int rval = OK;
 	int okline_counter = 0;
 
-	uint8_t *endp = GetBufPtr() + GetBufSize();
-	uint8_t *dp = GetBufPtr();
+	quint8 *endp = GetBufPtr() + GetBufSize();
+	quint8 *dp = GetBufPtr();
 
 	if (loadtype == DATA_TYPE)
 	{
@@ -285,7 +285,7 @@ int IntelFileBuf::Load(int loadtype, long relocation_offset)
 		dp += relocation_offset;
 	}
 
-	uint32_t laddr = 0;
+	quint32 laddr = 0;
 
 	QFile fh(GetFileName());
 
@@ -317,7 +317,7 @@ int IntelFileBuf::Load(int loadtype, long relocation_offset)
 		}
 
 		//Byte Count
-		uint16_t bcount;
+		quint16 bcount;
 
 		if (!ScanHex(riga.mid(pos, 2), bcount))
 		{
@@ -329,10 +329,10 @@ int IntelFileBuf::Load(int loadtype, long relocation_offset)
 			pos += 2;
 		}
 
-		uint8_t checksum = (uint8_t)bcount;
+		quint8 checksum = (quint8)bcount;
 
 		//Address
-		uint16_t addr;
+		quint16 addr;
 
 		if (!ScanHex(riga.mid(pos, 4), addr))
 		{
@@ -344,15 +344,15 @@ int IntelFileBuf::Load(int loadtype, long relocation_offset)
 			pos += 4;
 		}
 
-		checksum += (uint8_t)(addr >> 8);
-		checksum += (uint8_t)addr;
+		checksum += (quint8)(addr >> 8);
+		checksum += (quint8)addr;
 
 		//affect only low 16 bits of address
 		laddr &= 0xFFFF0000;
 		laddr |= addr;
 
 		//Record Type
-		uint16_t rectype;
+		quint16 rectype;
 
 		if (!ScanHex(riga.mid(pos, 2), rectype))
 		{
@@ -364,10 +364,10 @@ int IntelFileBuf::Load(int loadtype, long relocation_offset)
 			pos += 2;
 		}
 
-		checksum += (uint8_t)rectype;
+		checksum += (quint8)rectype;
 
 		//Data Byte
-		uint16_t data;
+		quint16 data;
 
 		if (rectype == DATA_RECORD)
 		{
@@ -379,7 +379,7 @@ int IntelFileBuf::Load(int loadtype, long relocation_offset)
 			}
 
 			bool ok = true;
-			uint8_t *p;
+			quint8 *p;
 			unsigned int k;
 
 			for (k = 0, p = dp + laddr; k < bcount && ok; k++)
@@ -393,8 +393,8 @@ int IntelFileBuf::Load(int loadtype, long relocation_offset)
 					pos += 2;
 				}
 
-				checksum += (uint8_t)data;
-				*p++ = (uint8_t)data;
+				checksum += (quint8)data;
+				*p++ = (quint8)data;
 			}
 
 			if (!ok)        //salta alla riga successiva
@@ -415,7 +415,7 @@ int IntelFileBuf::Load(int loadtype, long relocation_offset)
 			else
 			{
 				//Address
-				uint16_t addr;
+				quint16 addr;
 
 				if (!ScanHex(riga.mid(pos, 4), addr))
 				{
@@ -427,10 +427,10 @@ int IntelFileBuf::Load(int loadtype, long relocation_offset)
 					pos += 4;
 				}
 
-				checksum += (uint8_t)(addr >> 8);
-				checksum += (uint8_t)addr;
+				checksum += (quint8)(addr >> 8);
+				checksum += (quint8)addr;
 
-				laddr = (uint32_t)addr << 4;
+				laddr = (quint32)addr << 4;
 			}
 		}
 		else if (rectype == LIN_ADDR_RECORD)
@@ -443,7 +443,7 @@ int IntelFileBuf::Load(int loadtype, long relocation_offset)
 			else
 			{
 				//Address
-				uint16_t addr;
+				quint16 addr;
 
 				if (!ScanHex(riga.mid(pos, 4), addr))
 				{
@@ -455,10 +455,10 @@ int IntelFileBuf::Load(int loadtype, long relocation_offset)
 					pos += 4;
 				}
 
-				checksum += (uint8_t)(addr >> 8);
-				checksum += (uint8_t)addr;
+				checksum += (quint8)(addr >> 8);
+				checksum += (quint8)addr;
 
-				laddr = (uint32_t)addr << 16;
+				laddr = (quint32)addr << 16;
 			}
 		}
 		/**     just ignored
@@ -477,7 +477,7 @@ int IntelFileBuf::Load(int loadtype, long relocation_offset)
 		        //      ScanHex(&s, 8);
 		                while (bcount--)
 		                {
-		                        data = (uint8_t)ScanHex(&s, 2);
+		                        data = (quint8)ScanHex(&s, 2);
 		                        checksum += data;
 		                }
 		        }
@@ -497,7 +497,7 @@ int IntelFileBuf::Load(int loadtype, long relocation_offset)
 					pos += 2;
 				}
 
-				checksum += (uint8_t)data;
+				checksum += (quint8)data;
 			}
 
 			if (!ok)
@@ -517,7 +517,7 @@ int IntelFileBuf::Load(int loadtype, long relocation_offset)
 			pos += 2;
 		}
 
-		if ((uint8_t)data != (uint8_t)(~checksum + 1))
+		if ((quint8)data != (quint8)(~checksum + 1))
 		{
 			rval = BADFILETYPE;
 			break;
@@ -565,10 +565,10 @@ int IntelFileBuf::Load(int loadtype, long relocation_offset)
 
 /*Passandogli un indirizzo di stringa, converte le prime <len> cifre di tale
 * stringa in Hesadecimali, incrementa il puntatore, e restituisce il numero.
-* Attenzione! Poiche` il numero restituito e` uint32_t (4Byte), il numero max
+* Attenzione! Poiche` il numero restituito e` quint32 (4Byte), il numero max
 * di <len> e` 8 (8 cifre esadecimali 0xABCDEF12).
 */
-bool IntelFileBuf::ScanHex(const QString &sp, uint32_t &result)
+bool IntelFileBuf::ScanHex(const QString &sp, quint32 &result)
 {
 	bool ok;
 	result = sp.toInt(&ok, 16);
@@ -600,16 +600,16 @@ bool IntelFileBuf::ScanHex(const QString &sp, uint32_t &result)
 	return 0;
 }
 
-bool IntelFileBuf::ScanHex(const QString &sp, uint16_t &result)
+bool IntelFileBuf::ScanHex(const QString &sp, quint16 &result)
 {
 	bool ok;
 	result = sp.toInt(&ok, 16);
 
 	return ok;
 #if 0
-	uint32_t res;
+	quint32 res;
 	int rval = ScanHex(sp, len, res);
-	result = (uint16_t)res;
+	result = (quint16)res;
 
 	return rval;
 #endif

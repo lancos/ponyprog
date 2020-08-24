@@ -65,8 +65,8 @@ class E24xx : public Device
 		return static_cast<I2CBus *>(Device::GetBus());
 	}
 
-	virtual int bank_out(uint8_t const *copy_buf, int bank_no, long size = -1, long idx = 0);
-	virtual int bank_in(uint8_t *copy_buf, int bank_no, long size = -1, long idx = 0);
+	virtual int bank_out(quint8 const *copy_buf, int bank_no, long size = -1, long idx = 0);
+	virtual int bank_in(quint8 *copy_buf, int bank_no, long size = -1, long idx = 0);
 
 	//-- Parte riguardante la EEPROM
 	int sequential_read;                    //1 --> legge un banco in una volta

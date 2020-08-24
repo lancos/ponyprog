@@ -35,17 +35,17 @@ class At89sBus : public SPIBus
 	At89sBus(BusInterface *ptr = 0);
 	//virtual ~At89sBus();
 
-	long Read(int addr, uint8_t *data, long length, int page_size = 0);
-	long Write(int addr, uint8_t const *data, long length, int page_size = 0);
+	long Read(int addr, quint8 *data, long length, int page_size = 0);
+	long Write(int addr, quint8 const *data, long length, int page_size = 0);
 
 	virtual int Reset();
 	virtual int Erase(int type = 0);
 
 	int ReadDeviceCode(int addr);
-	int WriteLockBits(uint32_t val, long model);
-	int WriteFuseBits(uint32_t val, long model);
-	int ReadLockBits(uint32_t &res, long model);
-	int ReadFuseBits(uint32_t &res, long model);
+	int WriteLockBits(quint32 val, long model);
+	int WriteFuseBits(quint32 val, long model);
+	int ReadLockBits(quint32 &res, long model);
+	int ReadFuseBits(quint32 &res, long model);
 	void SetDelay();
 
 	void SetPagePolling(bool prog, bool val)
@@ -71,33 +71,33 @@ class At89sBus : public SPIBus
   protected:
 
 	//Programming commands
-	const uint8_t EnableProg0, EnableProg1;
-	const uint8_t ChipErase0, ChipErase1, OldChipErase1;
-	const uint8_t ReadProgByteMem, OldReadProgMem;
-	const uint8_t WriteProgByteMem, OldWriteProgMem;
-	const uint8_t ReadProgPageMem;
-	const uint8_t WriteProgPageMem;
-	const uint8_t ReadDataByteMem, OldReadDataMem;
-	const uint8_t WriteDataByteMem, OldWriteDataMem;
-	const uint8_t ReadDataPageMem;
-	const uint8_t WriteDataPageMem;
-	const uint8_t ReadUserFuses0, ReadUserFuses1;
-	const uint8_t WriteUserFuses0, WriteUserFuses1;
-	const uint8_t ReadLockBits0, ReadLockBits1;
-	const uint8_t WriteLockBits0, WriteLockBits1, OldWriteLockBits1;
-	const uint8_t ReadSignatureByte;
+	const quint8 EnableProg0, EnableProg1;
+	const quint8 ChipErase0, ChipErase1, OldChipErase1;
+	const quint8 ReadProgByteMem, OldReadProgMem;
+	const quint8 WriteProgByteMem, OldWriteProgMem;
+	const quint8 ReadProgPageMem;
+	const quint8 WriteProgPageMem;
+	const quint8 ReadDataByteMem, OldReadDataMem;
+	const quint8 WriteDataByteMem, OldWriteDataMem;
+	const quint8 ReadDataPageMem;
+	const quint8 WriteDataPageMem;
+	const quint8 ReadUserFuses0, ReadUserFuses1;
+	const quint8 WriteUserFuses0, WriteUserFuses1;
+	const quint8 ReadLockBits0, ReadLockBits1;
+	const quint8 WriteLockBits0, WriteLockBits1, OldWriteLockBits1;
+	const quint8 ReadSignatureByte;
 
 	int ReadDataByte(long addr);
 	void WriteDataByte(long addr, int data);
 	int ReadProgByte(long addr);
 	void WriteProgByte(long addr, int data);
-	int WriteProgPage(long addr, uint8_t const *data, long page_size, long timeout = 5000);
-	int WriteDataPage(long addr, uint8_t const *data, long page_size, long timeout = 5000);
-	void ReadProgPage(long addr, uint8_t *data, long page_size, long timeout = 5000);
-	void ReadDataPage(long addr, uint8_t *data, long page_size, long timeout = 5000);
+	int WriteProgPage(long addr, quint8 const *data, long page_size, long timeout = 5000);
+	int WriteDataPage(long addr, quint8 const *data, long page_size, long timeout = 5000);
+	void ReadProgPage(long addr, quint8 *data, long page_size, long timeout = 5000);
+	void ReadDataPage(long addr, quint8 *data, long page_size, long timeout = 5000);
 
 	int WaitReadyAfterWrite(int type, long addr, int data, long timeout = 5000);
-	bool CheckBlankPage(uint8_t const *data, long length);
+	bool CheckBlankPage(quint8 const *data, long length);
 
   private:
 

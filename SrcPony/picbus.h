@@ -36,20 +36,20 @@ class PicBus : public BusIO
 	PicBus(BusInterface *ptr = 0);
 	//virtual ~PicBus();
 
-	long Read(int addr, uint8_t *data, long length, int page_size = 0);
-	long Write(int addr, uint8_t const *data, long length, int page_size = 0);
+	long Read(int addr, quint8 *data, long length, int page_size = 0);
+	long Write(int addr, quint8 const *data, long length, int page_size = 0);
 
 	int Erase(int type = ALL_TYPE);
 
 	int Reset();
 
-	long ReadConfig(uint16_t *data);
-	long WriteConfig(uint16_t *data);
+	long ReadConfig(quint16 *data);
+	long WriteConfig(quint16 *data);
 
 	void DisableCodeProtect();
 
-	int CompareSingleWord(uint16_t data1, uint16_t data2, uint16_t mask);
-	int CompareMultiWord(uint8_t *data1, uint8_t *data2, long length, int split);
+	int CompareSingleWord(quint16 data1, quint16 data2, quint16 mask);
+	int CompareMultiWord(quint8 *data1, quint8 *data2, long length, int split);
 
 	void SetDelay();
 
@@ -59,10 +59,10 @@ class PicBus : public BusIO
 	int WaitReadyAfterWrite(long timeout = 5000);
 
 	int SendCmdCode(int opcode);
-	int SendProgCode(uint16_t data);
-	uint16_t RecvProgCode();
-	int SendDataCode(uint16_t data);
-	uint16_t RecvDataCode();
+	int SendProgCode(quint16 data);
+	quint16 RecvProgCode();
+	int SendDataCode(quint16 data);
+	quint16 RecvDataCode();
 
 	void SetMCLR()
 	{
@@ -73,20 +73,20 @@ class PicBus : public BusIO
 		busI->SetControlLine(0);
 	}
 
-	const uint16_t DataMask;
-	const uint16_t ProgMask;
+	const quint16 DataMask;
+	const quint16 ProgMask;
 
 	//Command Opcode
-	const uint8_t ReadProgCode;
-	const uint8_t LoadProgCode;
-	const uint8_t ReadDataCode;
-	const uint8_t LoadDataCode;
-	const uint8_t LoadConfigCode;
-	const uint8_t IncAddressCode;
-	const uint8_t EraseProgMem;
-	const uint8_t EraseDataMem;
-	const uint8_t BeginEraseProgCode;
-	const uint8_t BeginProgOnlyCode;
+	const quint8 ReadProgCode;
+	const quint8 LoadProgCode;
+	const quint8 ReadDataCode;
+	const quint8 LoadDataCode;
+	const quint8 LoadConfigCode;
+	const quint8 IncAddressCode;
+	const quint8 EraseProgMem;
+	const quint8 EraseDataMem;
+	const quint8 BeginEraseProgCode;
+	const quint8 BeginProgOnlyCode;
 
   private:
 	int SendDataBit(int b);
