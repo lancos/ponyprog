@@ -4290,7 +4290,7 @@ int e2CmdWindow::SpecialBits(bool readonly)
 		//lock = awip->GetLockBits();
 		//fuse = awip->GetFuseBits();
 
-		long type = awip->GetEEPId(); // BuildE2PType(awip->GetEEPPriType(), awip->GetEEPSubType());
+		quint32 type = awip->GetEEPId(); // BuildE2PType(awip->GetEEPPriType(), awip->GetEEPSubType());
 
 		if (type != E2464)
 		{
@@ -4446,7 +4446,7 @@ int e2CmdWindow::CmdWriteLock()
 
 	QMessageBox note;
 	/**
-	        long type = BuildE2PType( awip->GetEEPPriType(), awip->GetEEPSubType() );
+	        quint32 type = BuildE2PType( awip->GetEEPPriType(), awip->GetEEPSubType() );
 	        if (type == E2464)              //implementazione per le Microchip 24C65
 	        {
 	                vReplyDialog rp(this);      // instantiate
@@ -4562,7 +4562,7 @@ int e2CmdWindow::CmdReadLock()
 	int rval;
 	int retry_flag = 1;
 
-	//      long type = BuildE2PType( awip->GetEEPPriType(), awip->GetEEPSubType() );
+	//      quint32 type = BuildE2PType( awip->GetEEPPriType(), awip->GetEEPSubType() );
 
 	while (retry_flag)
 	{
@@ -4630,7 +4630,7 @@ int e2CmdWindow::CmdReadSpecial()
 	int rval;
 	int retry_flag = 1;
 
-	long type = awip->GetEEPId();   // BuildE2PType( awip->GetEEPPriType(), awip->GetEEPSubType() );
+	quint32 type = awip->GetEEPId();   // BuildE2PType( awip->GetEEPPriType(), awip->GetEEPSubType() );
 
 	while (retry_flag)
 	{
@@ -4696,7 +4696,7 @@ int e2CmdWindow::CmdWriteSpecial()
 
 	QMessageBox note;
 
-	long type = awip->GetEEPId();   //BuildE2PType( awip->GetEEPPriType(), awip->GetEEPSubType() );
+	quint32 type = awip->GetEEPId();   //BuildE2PType( awip->GetEEPPriType(), awip->GetEEPSubType() );
 	/**
 	if (type == E2464)              //Microchip 24C65 high endurance block
 	{

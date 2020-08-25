@@ -427,7 +427,7 @@ int MotorolaSFileBuf::ParseRecord(char *lbufPC, quint8 *buf_startP, quint8 *buf_
 {
 	unsigned long addrL;
 	quint8 cksmB,				// checksum of addr, count, & data length
-			*bufPC = 0;			// Pointer into memory array
+		   *bufPC = 0;			// Pointer into memory array
 	unsigned int oheadN = 0,	// Number of overhead (addr + chksum) bytes
 				 tvalN;				// Temp for check checksum
 	int unknow_rec = 0;

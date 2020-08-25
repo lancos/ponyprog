@@ -161,6 +161,7 @@ quint32 FileBuf::GetEEpromType() const
 	return awi->GetEEPId();
 }
 
+#if 0
 quint32 FileBuf::GetEEpromPriType() const
 {
 	return awi->GetE2PPriType(awi->GetEEPId());
@@ -171,12 +172,14 @@ quint32 FileBuf::GetEEpromSubType() const
 	return awi->GetE2PSubType(awi->GetEEPId());
 }
 
+
 void FileBuf::SetEEpromType(quint32 pritype, quint32 subtype)
 {
 // 	extern long BuildE2PType(int pritype, int subtype);
 
 	awi->SetEEProm(awi->BuildE2PType(pritype, subtype));
 }
+#endif
 
 void FileBuf::SetEEpromType(quint32 id)
 {

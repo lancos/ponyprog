@@ -42,10 +42,10 @@ class At89sBus : public SPIBus
 	virtual int Erase(int type = 0);
 
 	int ReadDeviceCode(int addr);
-	int WriteLockBits(quint32 val, long model);
-	int WriteFuseBits(quint32 val, long model);
-	int ReadLockBits(quint32 &res, long model);
-	int ReadFuseBits(quint32 &res, long model);
+	int WriteLockBits(quint32 val, quint32 model);
+	int WriteFuseBits(quint32 val, quint32 model);
+	int ReadLockBits(quint32 &res, quint32 model);
+	int ReadFuseBits(quint32 &res, quint32 model);
 	void SetDelay();
 
 	void SetPagePolling(bool prog, bool val)

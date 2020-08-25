@@ -206,7 +206,7 @@ int At90sBus::Reset()
 	return success_flag ? 1 : 0;
 }
 
-int At90sBus::WriteLockBits(quint32 param, long model)
+int At90sBus::WriteLockBits(quint32 param, quint32 model)
 {
 	int val1, val2, val3, val4;
 	int val5, val6, val7, val8;
@@ -321,7 +321,7 @@ int At90sBus::WriteLockBits(quint32 param, long model)
 	return OK;
 }
 
-int At90sBus::WriteFuseBits(quint32 param, long model)
+int At90sBus::WriteFuseBits(quint32 param, quint32 model)
 {
 	int val1, val2, val3, val4;
 	int val5, val6, val7, val8;
@@ -482,7 +482,7 @@ int At90sBus::WriteFuseBits(quint32 param, long model)
 	return OK;
 }
 
-quint32 At90sBus::ReadFuseBits(long model)
+quint32 At90sBus::ReadFuseBits(quint32 model)
 {
 	quint32 retval = 0;
 	quint32 rv1, rv2, rv3;
@@ -614,7 +614,7 @@ quint32 At90sBus::ReadFuseBits(long model)
 	return retval;
 }
 
-quint32 At90sBus::ReadLockBits(long model)
+quint32 At90sBus::ReadLockBits(quint32 model)
 {
 	quint32 retval = 0;
 	int rv1, rv2;

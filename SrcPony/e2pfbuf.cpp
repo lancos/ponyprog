@@ -79,9 +79,6 @@ void e2pFileBuf::check_offsets()
 
 int e2pFileBuf::Load(int loadtype, long relocation_offset)
 {
-// 	extern int GetE2PSubType(unsigned long x);
-// 	extern int GetE2PPriType(unsigned long x);
-
 	QFile fh(FileBuf::GetFileName());
 	e2pHeader hdr;
 	int rval;

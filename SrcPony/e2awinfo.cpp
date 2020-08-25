@@ -374,10 +374,9 @@ bool e2AppWinInfo::readConfigFromXml(const QString &filename)
 				QString sgn = memInfo.attribute("signature", "0");
 
 				iE = new icElement;
-				bool cnv;
 
 				iE->name = mName;
-				iE->sign = sgn.toInt(&cnv, 16);
+				iE->sign = convertSize(sgn);
 				iE->chMap.prog_sz = convertSize(code_sz);
 				iE->chMap.data_sz = convertSize(dat_sz);
 				iE->chMap.wpg_sz = convertSize(wpg_sz);
@@ -559,10 +558,12 @@ chipBits *e2AppWinInfo::eepFindFuses(quint32 type)
 	return NULL;
 }
 
+#if 0
 quint32 e2AppWinInfo::BuildE2PType(quint32 pritype, quint32 subtype)
 {
 	return (((quint32)pritype & 0x7F) << 16) | (subtype & 0x7FFF);
 }
+#endif
 
 
 quint32 e2AppWinInfo::GetE2PSubType(quint32 type)

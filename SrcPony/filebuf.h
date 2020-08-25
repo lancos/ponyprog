@@ -61,9 +61,9 @@ class FileBuf
 	int GetNoOfBlock() const;
 	void SetNoOfBlock(int no_blk);
 	quint32 GetEEpromType() const;
-	quint32 GetEEpromPriType() const;
-	quint32 GetEEpromSubType() const;
-	void SetEEpromType(quint32 pritype, quint32 subtype);
+// 	quint32 GetEEpromPriType() const;
+// 	quint32 GetEEpromSubType() const;
+// 	void SetEEpromType(quint32 pritype, quint32 subtype);
 	void SetEEpromType(quint32 id);
 
 	QString GetStringID();

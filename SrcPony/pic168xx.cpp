@@ -107,7 +107,7 @@ int Pic168xx::Probe(int probe_size)
 
 	rv = QueryType(type);
 //	int pritype = GetE2PPriType(type);
-	quint32 subtype = GetAWInfo()->GetE2PSubType(type);
+// 	quint32 subtype = GetAWInfo()->GetE2PSubType(type);
 
 	if (probe_size)
 	{
@@ -128,7 +128,7 @@ int Pic168xx::Probe(int probe_size)
 		{
 			if (rv == OK)
 			{
-				if (GetAWInfo()->GetE2PSubType(GetAWInfo()->GetEEPId()) == subtype)
+				if (GetAWInfo()->GetEEPId() == type)
 				{
 					rv = GetSize();
 				}

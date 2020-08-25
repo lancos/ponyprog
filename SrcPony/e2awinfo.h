@@ -263,7 +263,7 @@ class e2AppWinInfo // : public QObject
 		return eep ? eep->GetDetectedSignatureStr() : "";
 	}
 
-	quint32 BuildE2PType(quint32 pritype, quint32 subtype = 0);
+// 	quint32 BuildE2PType(quint32 pritype, quint32 subtype = 0);
 	quint32 GetE2PSubType(quint32 type);
 	quint32 GetE2PPriType(quint32 type);
 

@@ -157,11 +157,11 @@ int At89sxx::Probe(int probe_size)
 		{
 			quint32 type;
 			rv = QueryType(type);
-			quint32 subtype = GetAWInfo()->GetE2PSubType(type);
+// 			quint32 subtype = GetAWInfo()->GetE2PSubType(type);
 
 			if (rv == OK)
 			{
-				if (GetAWInfo()->GetE2PSubType(GetAWInfo()->GetEEPId()) == subtype)
+				if (GetAWInfo()->GetEEPId() == type)
 				{
 					rv = GetSize();
 				}

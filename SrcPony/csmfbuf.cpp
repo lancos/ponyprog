@@ -44,9 +44,6 @@ csmFileBuf::csmFileBuf(e2AppWinInfo *wininfo)
 
 int csmFileBuf::Load(int loadtype, long relocation_offfset)
 {
-	extern int GetE2PSubType(unsigned long x);
-	extern int GetE2PPriType(unsigned long x);
-
 	(void)relocation_offfset;       //unused
 
 	QFile fh(FileBuf::GetFileName());

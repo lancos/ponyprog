@@ -106,24 +106,24 @@ class BusIO
 		(void)addr;
 		return OK;
 	}
-	virtual int WriteLockBits(quint32 val, long model = 0)
+	virtual int WriteLockBits(quint32 val, quint32 model = 0)
 	{
 		(void)val;
 		(void)model;
 		return OK;
 	}
-	virtual int WriteFuseBits(quint32 val, long model = 0)
+	virtual int WriteFuseBits(quint32 val, quint32 model = 0)
 	{
 		(void)val;
 		(void)model;
 		return OK;
 	}
-	virtual quint32 ReadLockBits(long model = 0)
+	virtual quint32 ReadLockBits(quint32 model = 0)
 	{
 		(void)model;
 		return 0;
 	}
-	virtual quint32 ReadFuseBits(long model = 0)
+	virtual quint32 ReadFuseBits(quint32 model = 0)
 	{
 		(void)model;
 		return 0;
