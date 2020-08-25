@@ -82,7 +82,7 @@
         </descr>
     </chip>
     <chip menu="PIC 16 micro" group="PIC168XX" id="0x0b">
-        <ic menu="PIC168XX Auto" def="PIC16800" code_sz="" data_sz="" />
+        <ic menu="PIC168XX Auto" def="PIC16800" code_sz="64768" data_sz="" /> <!-- AUTOSIZE_ID -->
         <ic menu="PIC16F84A" def="PIC1684A" signature="0x0560" code_sz="2k" data_sz="64" />
         <ic menu="PIC16F870" def="PIC16870" signature="0x0d00" code_sz="4k" data_sz="64" />
         <ic menu="PIC16F871" def="PIC16871" signature="0x0d20" code_sz="4k" data_sz="64" />
