@@ -327,16 +327,17 @@ struct icElement
 	quint16  sign;     // signature for detecting
 	quint16  reserv;
 	chipMap  chMap;    // memory structure
-	chipBits helper;   // for the popup help window
+	//chipBits helper;   // for the popup help window
 };
 
 
 struct groupElement
 {
-	QString menuName;     // for menu items
-	//QString defName;  // for defines
-	QVector<quint32> vId; // pre_types
-	QVector <icElement> vChip;
+	QString menuName;          // for menu items
+	//QString defName;         // for defines
+	QVector<quint32> vId;      // pre_types
+	QVector <icElement> vChip; // memory inforamtion
+	QVector <chipBits> helper; // help information
 };
 
 

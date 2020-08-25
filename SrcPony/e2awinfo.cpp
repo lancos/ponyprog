@@ -498,9 +498,9 @@ bool e2AppWinInfo::readConfigFromXml(const QString &filename)
 							}
 						}
 					}
-
-					iE->helper = bStruct;
 				}
+
+				grE->helper << bStruct;
 			}
 		}
 
@@ -545,11 +545,27 @@ chipBits *e2AppWinInfo::eepFindFuses(quint32 type)
 			continue;
 		}
 
+		QString name = "";
+
 		foreach (icElement i, g.vChip)
 		{
 			if (i.id == type)
 			{
-				chipBits *p = &i.helper;
+				name = i.name;
+			}
+		}
+
+		if (name == "")
+		{
+			return NULL;
+		}
+
+		foreach (chipBits c, g.helper)
+		{
+			int n = c.chNames.indexOf(name);
+			if (n >= 0)
+			{
+				chipBits *p = &c;
 				return p;
 			}
 		}
