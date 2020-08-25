@@ -72,10 +72,10 @@ struct chipMenuInfo
 struct menuToGroup
 {
 	QMenu *mnu;
-	QString title;
+	QString title;               // one title can have 1 and more group ids
 // 	QString filter;
 	QActionGroup *grp;
-	QVector<quint32> vId;
+	QVector<quint32> vId;        // vector of group ids
 	// vector of main type
 	QVector <chipMenuInfo> vChip;
 	//QVector <int> pre_type;

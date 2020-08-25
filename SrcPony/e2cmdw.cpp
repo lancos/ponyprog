@@ -938,13 +938,13 @@ void e2CmdWindow::createDeviceMenues()
 	// the loop about all structures
 	qDebug() << Q_FUNC_INFO << awip->groupList.count() << "entries";
 
-	for (int i = 0; i < awip->groupList.count(); i++)
+	foreach (groupElement g, awip->groupList)
 	{
 		menuToGroup *mTmp = new menuToGroup();
-		mTmp->title = awip->groupList.at(i).menuName;
-		mTmp->vId = awip->groupList.at(i).vId;
+		mTmp->title = g.menuName;
+		mTmp->vId = g.vId;
 
-		foreach (icElement iE, awip->groupList.at(i).vChip)
+		foreach (icElement iE, g.vChip)
 		{
 			chipMenuInfo cInfo = (chipMenuInfo)
 			{
@@ -1088,8 +1088,6 @@ void e2CmdWindow::onSelectChip(QAction *a)
 	QString t = ((QAction *)a->parent())->text(); // current type
 	QString st = a->text(); // current subtype
 
-	qDebug() << "onSelectChip" << t << st;
-
 	long new_id = selectTypeSubtype(t, st);
 
 	if (currentAct != NULL)
@@ -1137,7 +1135,6 @@ quint32 e2CmdWindow::selectTypeSubtype(const QString &tp, const QString &subtp)
 		{
 			if (deviceMenu.at(i).title == t_tmp)
 			{
-				// qDebug() << "gefunden" << deviceMenu.at(i).title;
 				currentMenu = (menuToGroup *)&deviceMenu.at(i);
 
 				break;
@@ -4855,6 +4852,7 @@ int e2CmdWindow::CmdSelectDevice(quint32 new_type, bool init)
 	first_line = 0;
 	//curIndex = 0;
 	Draw();
+
 	awip->RecalcCRC();
 	UpdateStatusBar();
 
@@ -5102,6 +5100,7 @@ void e2CmdWindow::onDevSubType(int st)
 
 void e2CmdWindow::UpdateMenues(menuToGroup &mnu, QAction &act)
 {
+	qDebug() << "UpdateMenues" << mnu.title << act.text();
 	if (currentMenu != &mnu || currentAct != &act) // main menu was changed
 	{
 		Q_CHECK_PTR(cbxEEPType);
@@ -5112,7 +5111,6 @@ void e2CmdWindow::UpdateMenues(menuToGroup &mnu, QAction &act)
 			currentAct->setChecked(false);
 		}
 
-		qDebug() << mnu.title << act.text();
 		selectTypeSubtype(mnu.title, act.text());
 
 		act.setChecked(true);
