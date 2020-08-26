@@ -282,7 +282,7 @@ class e2AppWinInfo // : public QObject
 
 	int GetEEPTypeWPageSize(quint32 type);
 
-	chipBits *eepFindFuses(quint32 type);
+	chipBits *eepGetFuses(quint32 type);
 
 	// this is the global list of information from xml files
 	QVector <groupElement> groupList;

@@ -942,7 +942,7 @@ void e2CmdWindow::createDeviceMenues()
 	{
 		menuToGroup *mTmp = new menuToGroup();
 		mTmp->title = g.menuName;
-		mTmp->vId = g.vId;
+		mTmp->vId = g.vId; // vector of group ids
 
 		foreach (icElement iE, g.vChip)
 		{

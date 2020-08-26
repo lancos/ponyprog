@@ -535,8 +535,9 @@ quint32 e2AppWinInfo::GetEEPTypeFromString(const QString &name)
 }
 
 
-chipBits *e2AppWinInfo::eepFindFuses(quint32 type)
+chipBits *e2AppWinInfo::eepGetFuses(quint32 type)
 {
+	chipBits *cb = NULL;
 	quint16 pri_type = ((type >> 16) & 0x07f);
 	foreach (groupElement g, groupList)
 	{
@@ -565,8 +566,9 @@ chipBits *e2AppWinInfo::eepFindFuses(quint32 type)
 			int n = c.chNames.indexOf(name);
 			if (n >= 0)
 			{
-				chipBits *p = &c;
-				return p;
+				cb = new chipBits;
+				*cb = c;
+				return cb;
 			}
 		}
 	}

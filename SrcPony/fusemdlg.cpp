@@ -53,6 +53,8 @@ fuseModalDialog::fuseModalDialog(e2CmdWindow *bw, e2AppWinInfo *p, bool readonly
 	fuseWidget = NULL;
 	lockWidget = NULL;
 
+	currentBitField = NULL;
+
 	cmdw = static_cast<e2CmdWindow *>(bw);
 
 	if (cmdw->getStyleSheet().length() > 0)
@@ -78,6 +80,16 @@ fuseModalDialog::fuseModalDialog(e2CmdWindow *bw, e2AppWinInfo *p, bool readonly
 fuseModalDialog::~fuseModalDialog()
 {
 	qDebug() << Q_FUNC_INFO;
+
+	if (currentBitField)
+	{
+		// TODO: to solve this currentBitField with class, not with structure
+		currentBitField->chNames.clear();
+		currentBitField->fuse.clear();
+		currentBitField->fuseDescr.clear();
+		currentBitField->lock.clear();
+		currentBitField->lockDescr.clear();
+	}
 }
 
 
@@ -172,9 +184,9 @@ void fuseModalDialog::initWidgets(const QString &msg, bool readonly)
 		pushWrite->setEnabled(true);
 	}
 
-	currentBitField = NULL;
+	currentBitField = awip->eepGetFuses(type);
 
-	if (awip->eepFindFuses(type) == NULL)
+	if (currentBitField == NULL)
 	{
 		return;
 	}
