@@ -43,7 +43,7 @@ SET(PONY_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/aboutmdlg.cpp
                  ${CMAKE_CURRENT_SOURCE_DIR}/at93cxx.cpp
                  ${CMAKE_CURRENT_SOURCE_DIR}/device.cpp
 #                  ${CMAKE_CURRENT_SOURCE_DIR}/e2cnv.cpp
-#                  ${CMAKE_CURRENT_SOURCE_DIR}/eeptypes.cpp
+                 ${CMAKE_CURRENT_SOURCE_DIR}/chipcollection.cpp
                  ${CMAKE_CURRENT_SOURCE_DIR}/imbus.cpp
                  ${CMAKE_CURRENT_SOURCE_DIR}/linuxsysfsint.cpp
 #                  ${CMAKE_CURRENT_SOURCE_DIR}/modaldlg_utilities.cpp
@@ -93,7 +93,7 @@ SET(PONY_NOMOC_HEADERS
                  ${CMAKE_CURRENT_SOURCE_DIR}/busio.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/dt006interf.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/e24xx.h
-                 ${CMAKE_CURRENT_SOURCE_DIR}/eeptypes.h
+                 ${CMAKE_CURRENT_SOURCE_DIR}/chipcollection.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/ispinterf.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/lpt_io_interf.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/mpsse_interf.h

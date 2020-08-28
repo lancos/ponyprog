@@ -66,12 +66,13 @@
 #include "motsfbuf.h"
 #include "csmfbuf.h"
 
-#include "eeptypes.h"
-
+#include "chipcollection.h"
 #include "e2phead.h"
 
 
 //At the moment the bigger device is ATmega2560 (256KiB + 4KiB)
+// EK 2020 is it enough?
+// should be removed ?
 #define BUFFER_SIZE (1024 * 260)
 
 
@@ -84,7 +85,7 @@
 class e2CmdWindow;
 
 
-class e2AppWinInfo // : public QObject
+class e2AppWinInfo : public cChipCollection
 {
   public:
 
@@ -123,7 +124,6 @@ class e2AppWinInfo // : public QObject
 	}
 
 //	void SetEEProm(int type = E24XX, int subtype = 0);
-	quint32 GetFirstFromPritype(quint32 id);
 	void SetEEProm(quint32 id = E2400);
 
 	void SetFileBuf(FileType type);
@@ -248,50 +248,18 @@ class e2AppWinInfo // : public QObject
 		clear_buffer_before_load = val;
 	}
 
-	QString GetEEPTypeString(quint32 type);
-
 	long GetDetectedType() const
 	{
 		return eep ? eep->GetDetectedType() : 0;
 	}
 	QString GetDetectedTypeStr()
 	{
-		return GetEEPTypeString(GetDetectedType());
+		return GetTypeString(GetDetectedType());
 	}
 	QString GetDetectedSignatureStr()
 	{
 		return eep ? eep->GetDetectedSignatureStr() : "";
 	}
-
-// 	quint32 BuildE2PType(quint32 pritype, quint32 subtype = 0);
-	quint32 GetE2PSubType(quint32 type);
-	quint32 GetE2PPriType(quint32 type);
-
-	chipMap GetChipMap(quint32 subtype);
-
-
-
-	int GetEEPTypeIndex(quint32 type);
-	QVector<icElement> GetEEPSubTypeVector(quint32 type);
-	int GetEEPTypeSize(quint32 type);
-	int GetEEPAddrSize(quint32 type);
-	int GetEEPTypeSplit(quint32 type);
-
-	quint32 GetEEPTypeFromSize(quint32 type, int size);
-	quint32 GetEEPTypeFromString(const QString &name);
-
-	int GetEEPTypeWPageSize(quint32 type);
-
-	chipBits *eepGetFuses(quint32 type);
-
-	// this is the global list of information from xml files
-	QVector <groupElement> groupList;
-
-  protected:
-//	e2CmdWindow* cmdWin;
-
-
-
 
   private:
 	int OpenBus();
@@ -303,8 +271,6 @@ class e2AppWinInfo // : public QObject
 	int LoadFile();
 
 	bool readXmlDir();
-	int convertSize(const QString &s);
-	bool readConfigFromXml(const QString &filename);
 
 	QString fname;                            //nome del file
 

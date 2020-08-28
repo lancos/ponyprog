@@ -27,7 +27,6 @@
 #include "types.h"
 #include "pic16xx.h"            // Header file
 #include "errcode.h"
-#include "eeptypes.h"
 
 #include "e2awinfo.h"
 

@@ -33,7 +33,6 @@
 
 #include "e2dlg.h"
 #include "e2cmdw.h"
-#include "eeptypes.h"
 #include "types.h"
 #include "i2cbus.h"
 #include "interfconv.h"

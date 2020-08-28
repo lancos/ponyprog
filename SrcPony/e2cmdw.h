@@ -36,8 +36,6 @@
 
 #include <QProgressBar>
 
-#include <QXmlReader>
-#include <QDomNode>
 
 #include <QCloseEvent>
 #include <QComboBox>
@@ -58,7 +56,6 @@
 #include "e2app.h"
 #include "e2awinfo.h"
 
-#include "eeptypes.h"
 #include "ui_mainwindow.h"
 #include "qhexedit.h"
 
@@ -402,12 +399,6 @@ class e2CmdWindow : public QMainWindow, public e2App, public Ui::MainWindow
 
 	// Info for the TextCanvas
 	int first_line;
-
-	// Index for checking type menu
-	//      int type_index;
-	//      int curIndex;
-
-	//      int exit_ok;
 
 	bool ignoreFlag;
 	bool abortFlag;          //True if we have to abort current op

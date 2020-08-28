@@ -33,7 +33,7 @@
 #include <QVector>
 #include <QComboBox>
 
-#include "eeptypes.h"
+#include "chipcollection.h"
 #include "ui_bitfield.h"
 
 

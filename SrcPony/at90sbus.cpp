@@ -27,7 +27,6 @@
 #include "types.h"
 #include "at90sbus.h"
 #include "errcode.h"
-#include "eeptypes.h"
 
 #include <QDebug>
 

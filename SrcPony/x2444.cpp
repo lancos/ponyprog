@@ -27,8 +27,6 @@
 #include "types.h"
 #include "x2444.h"              // Header file
 #include "errcode.h"
-#include "eeptypes.h"
-
 
 #include <QDebug>
 

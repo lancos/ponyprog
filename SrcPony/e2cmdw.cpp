@@ -58,7 +58,6 @@
 #include "progoption.h"
 #include "sernumdlg.h"
 #include "errcode.h"
-#include "eeptypes.h"
 #include "prefdialog.h"
 
 
@@ -936,15 +935,15 @@ int e2CmdWindow::OnError(int err_no, const QString &msgerr)
 void e2CmdWindow::createDeviceMenues()
 {
 	// the loop about all structures
-	qDebug() << Q_FUNC_INFO << awip->groupList.count() << "entries";
+	qDebug() << Q_FUNC_INFO << awip->icGroups.count() << "entries";
 
-	foreach (groupElement g, awip->groupList)
+	foreach (cGroupElement *g, awip->icGroups)
 	{
 		menuToGroup *mTmp = new menuToGroup();
-		mTmp->title = g.menuName;
-		mTmp->vId = g.vId; // vector of group ids
+		mTmp->title = g->menuName;
+		mTmp->vId = g->vId; // vector of group ids
 
-		foreach (icElement iE, g.vChip)
+		foreach (icElement iE, g->vChip)
 		{
 			chipMenuInfo cInfo = (chipMenuInfo)
 			{
@@ -2402,7 +2401,7 @@ int e2CmdWindow::CmdRead(int type)
 		{
 			QString sp;
 			//sp = GetEEPTypeString(awip->GetEEPPriType(), awip->GetEEPSubType());
-			sp = awip->GetEEPTypeString(awip->GetEEPId());
+			sp = awip->GetTypeString(awip->GetEEPId());
 			//qDebug() << "CmdRead" << awip->GetEEPPriType() << awip->GetEEPSubType() << sp;
 			UpdateStrFromStr(sp, "");
 			awip->RecalcCRC();
@@ -2539,7 +2538,7 @@ int e2CmdWindow::CmdWrite(int type, bool verify)
 						{
 							QString sp;
 							//sp = GetEEPTypeString(awip->GetEEPPriType(), awip->GetEEPSubType());
-							sp = awip->GetEEPTypeString(awip->GetEEPId());
+							sp = awip->GetTypeString(awip->GetEEPId());
 							//qDebug() << "CmdWrite" << awip->GetEEPPriType() << awip->GetEEPSubType() << sp;
 							UpdateStrFromStr(sp);
 						}
@@ -3181,7 +3180,7 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 			{
 				quint32 new_type;
 				QString nm = lst.at(1);
-				new_type = awip->GetEEPTypeFromString(nm);
+				new_type = awip->GetTypeFromString(nm);
 
 				if (new_type <= 0)
 				{
@@ -4085,7 +4084,7 @@ int e2CmdWindow::CmdGetInfo()
 
 	esize = tsize - fsize;
 
-	int pritype = awip->GetE2PPriType(awip->GetEEPId());
+	int pritype = awip->GetPriType(awip->GetEEPId());
 
 	if (pritype == E24XX || pritype == E24XX2 || pritype == E24XX5)
 	{
@@ -4160,7 +4159,7 @@ int e2CmdWindow::CmdDoubleSize()
 	{
 		// Double the size
 		//              long new_type = GetEEPTypeFromSize(awip->GetEEPPriType(), awip->GetNoOfBlock() * 2);
-		long new_type = awip->GetEEPTypeFromSize(awip->GetEEPId(), awip->GetNoOfBlock() * 2);
+		long new_type = awip->GetTypeFromSize(awip->GetEEPId(), awip->GetNoOfBlock() * 2);
 
 		if (new_type > 0)
 		{
@@ -4858,7 +4857,7 @@ int e2CmdWindow::CmdSelectDevice(quint32 new_type, bool init)
 
 	if (!init)
 	{
-		E2Profile::SetLastDevType(awip->GetEEPTypeString(new_type));
+		E2Profile::SetLastDevType(awip->GetTypeString(new_type));
 	}
 
 	return OK;
@@ -5127,7 +5126,7 @@ void e2CmdWindow::UpdateMenuType(quint32 new_type)
 		new_type = awip->GetEEPId();
 	}
 
-	quint32 new_pritype = awip->GetE2PPriType(new_type);
+	quint32 new_pritype = awip->GetPriType(new_type);
 
 	qDebug() << Q_FUNC_INFO << " (hex) type:" << (hex) << new_type << " prim:" << new_pritype << (dec);
 

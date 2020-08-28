@@ -165,7 +165,7 @@ void fuseModalDialog::initWidgets(const QString &msg, bool readonly)
 	fuseEnabled = true;
 	lockEnabled = true;
 
-	QString nm = awip->GetEEPTypeString(type);
+	QString nm = awip->GetTypeString(type);
 
 	chkHlp1->setText(translate(STR_FUSEDLGNOTECLR) + " (bit = 1)");
 	chkHlp1->setEnabled(false);
@@ -184,7 +184,7 @@ void fuseModalDialog::initWidgets(const QString &msg, bool readonly)
 		pushWrite->setEnabled(true);
 	}
 
-	currentBitField = awip->eepGetFuses(type);
+	currentBitField = awip->GetTypeFuses(type);
 
 	if (currentBitField == NULL)
 	{

@@ -28,8 +28,6 @@
 #include "types.h"
 #include "at89sxx.h"            // Header file
 #include "errcode.h"
-#include "eeptypes.h"
-
 #include "e2cmdw.h"
 
 #include <QDebug>

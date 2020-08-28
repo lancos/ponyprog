@@ -27,7 +27,6 @@
 #include "types.h"
 #include "pic125xx.h"           // Header file
 #include "errcode.h"
-#include "eeptypes.h"
 
 #include <QDebug>
 

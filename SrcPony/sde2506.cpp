@@ -27,7 +27,6 @@
 #include "types.h"
 #include "sde2506.h"            // Header file
 #include "errcode.h"
-#include "eeptypes.h"
 
 #include "e2awinfo.h"
 

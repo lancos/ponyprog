@@ -27,7 +27,6 @@
 #include "types.h"
 #include "pic168xx.h"           // Header file
 #include "errcode.h"
-#include "eeptypes.h"
 
 #include <QDebug>
 
@@ -75,25 +74,12 @@ int Pic168xx::QueryType(quint32 &type)
 
 		code &= 0x3fe0;         //Strip revision number
 
-		type = 0;
+		type = GetAWInfo()->GetSignatureType(PIC168XX, code);
 
-		quint16 pri_type = PIC168XX;
-		foreach (groupElement g, GetAWInfo()->groupList)
+		if (type != EID_INVALID)
 		{
-			if (g.vId.indexOf(pri_type) == -1)
-			{
-				continue;
-			}
-
-			foreach (icElement i, g.vChip)
-			{
-				if (i.sign == code)
-				{
-					type = i.id;
-					rv = OK;
-					return rv;
-				}
-			}
+			rv = OK;
+			return rv;
 		}
 	}
 
@@ -113,8 +99,8 @@ int Pic168xx::Probe(int probe_size)
 	{
 		if (rv == OK)
 		{
-			SetNoOfBank(GetAWInfo()->GetEEPTypeSize(type));
-			SetSplitted(GetAWInfo()->GetEEPTypeSplit(type));
+			SetNoOfBank(GetAWInfo()->GetTypeSize(type));
+			SetSplitted(GetAWInfo()->GetTypeSplit(type));
 			rv = GetSize();
 		}
 	}

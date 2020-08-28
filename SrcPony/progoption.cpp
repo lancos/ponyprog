@@ -30,7 +30,6 @@
 #include <QDebug>
 
 #include "e2profil.h"
-#include "eeptypes.h"
 #include "globals.h"
 
 progOptionDialog::progOptionDialog(QWidget *bw, long type, int &reload, int &reep, int &erase, int &flash, int &eeprom, int &lock, const QString title) :

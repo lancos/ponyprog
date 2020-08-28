@@ -26,7 +26,6 @@
 
 
 #include "errcode.h"
-#include "eeptypes.h"
 
 #include "e2cmdw.h"
 #include "e2profil.h"
@@ -56,9 +55,6 @@ e2AppWinInfo::e2AppWinInfo(e2CmdWindow *p, const QString &name, BusIO **busvptr)
 	crc(0)
 {
 	qDebug() << Q_FUNC_INFO;
-
-	// Constructor
-//	cmdWin = static_cast<e2CmdWindow*>(p);
 
 	fname = "";
 
@@ -109,7 +105,7 @@ e2AppWinInfo::e2AppWinInfo(e2CmdWindow *p, const QString &name, BusIO **busvptr)
 	ClearBuffer();                          //Clear the new buffer
 
 	QString nm = E2Profile::GetLastDevType();
-	quint32 type = GetEEPTypeFromString(nm);
+	quint32 type = GetTypeFromString(nm);
 	SetEEProm(type);
 
 	SetFileBuf(E2Profile::GetDefaultFileType());       //      SetFileBuf(E2P);
@@ -117,9 +113,6 @@ e2AppWinInfo::e2AppWinInfo(e2CmdWindow *p, const QString &name, BusIO **busvptr)
 	SetLoadAutoClearBuf(E2Profile::GetClearBufBeforeLoad());
 
 	// Test and initialize the hardware
-	// EK 2017
-	// TODO remove the app counter??
-	//      if (E2Profile::GetCounter() == 1)
 	{
 		int err;
 		//              QMessageBox::note(win);
@@ -250,7 +243,7 @@ bool e2AppWinInfo::readXmlDir()
 
 	foreach (const QString iL, xmlList)
 	{
-		if (readConfigFromXml(xmlDirName + iL) == false)
+		if (ReadConfigFromXml(xmlDirName + iL) == false)
 		{
 			// TODO Message
 			return false;
@@ -259,457 +252,6 @@ bool e2AppWinInfo::readXmlDir()
 
 	return true;
 }
-
-/**
- * convert string 1k, 2k ... to int
- */
-int e2AppWinInfo::convertSize(const QString &s)
-{
-	int res = 0;
-	bool cnv = true;
-
-	if (s.indexOf(QRegExp("[0-9]+k")) >= 0)
-	{
-		QString s_tmp = s;
-		s_tmp.remove("k");
-		res = s_tmp.toInt(&cnv);
-		res *= 1024;
-	}
-	else if (s.indexOf(QRegExp("0x[0-9a-fA-F]+")) >= 0)
-	{
-		res = s.toInt(&cnv, 16);
-	}
-	else
-	{
-		res = s.toInt(&cnv);
-	}
-
-	if (cnv == false)
-	{
-		res = -1;
-	}
-
-	return res;
-}
-
-
-bool e2AppWinInfo::readConfigFromXml(const QString &filename)
-{
-	QDomDocument doc;
-	QFile file(filename);
-	if (!file.open(QIODevice::ReadOnly) || !doc.setContent(&file))
-	{
-		return false;
-	}
-
-	bool err = false;
-	qDebug() << "read from config" << filename;
-
-	QDomNodeList ics = doc.elementsByTagName("chip");
-
-	for (int i = 0; i < ics.size(); i++)
-	{
-		QDomNode n = ics.item(i);
-
-		QString menuStr = n.attributes().namedItem("menu").nodeValue();
-		QString idStr = n.attributes().namedItem("id").nodeValue();
-
-		qDebug() << menuStr << idStr;
-		groupElement *grE = NULL;
-
-		int pre_nr = idStr.toInt(NULL, 16);
-
-		bool newGroupElem = false;
-
-		for (int gr_nr = 0; gr_nr < groupList.count(); gr_nr++)
-		{
-			if (menuStr == groupList.at(gr_nr).menuName)
-			{
-				grE = &groupList[gr_nr];
-				break;
-			}
-		}
-
-		if (grE == NULL)
-		{
-			grE = new groupElement;
-			grE->menuName = menuStr;
-			newGroupElem = true;
-		}
-
-		grE->vId.push_back(pre_nr);
-
-		QDomNodeList icList = n.childNodes();
-
-		icElement *iE = NULL;
-		int run_id = 0;
-
-		for (int j = 0; j < icList.size(); j++)
-		{
-			QDomElement memInfo = icList.at(j).toElement();
-
-			if (memInfo.isNull())
-			{
-				continue;
-			}
-
-			if (memInfo.nodeName() == "ic")
-			{
-				if (!memInfo.hasAttribute("menu"))
-				{
-					err = true;
-					qDebug() << "attribute 'menu' was not found";
-					break;
-				}
-
-				run_id++;
-
-				QString mName = memInfo.attribute("menu");
-				QString code_sz = memInfo.attribute("code_sz", "-1");
-				QString dat_sz = memInfo.attribute("data_sz", "-1");
-				QString adr_sz = memInfo.attribute("adr_sz", "-1");
-				QString wpg_sz = memInfo.attribute("wpg_sz", "-1");
-				QString boot_addr = memInfo.attribute("boot", "0");
-
-				QString sgn = memInfo.attribute("signature", "0");
-
-				iE = new icElement;
-
-				iE->name = mName;
-				iE->sign = convertSize(sgn);
-				iE->chMap.prog_sz = convertSize(code_sz);
-				iE->chMap.data_sz = convertSize(dat_sz);
-				iE->chMap.wpg_sz = convertSize(wpg_sz);
-				iE->chMap.adr_sz = convertSize(adr_sz);
-				iE->chMap.boot = convertSize(boot_addr);
-
-				iE->id = (pre_nr << 16) + run_id;
-
-				grE->vChip.push_back(*iE);
-			}
-
-			if (memInfo.nodeName() == "descr")
-			{
-				QDomElement helpInfo = memInfo.toElement();//.firstChildElement("descr");
-				run_id = 0;
-
-				QString names = helpInfo.attributes().namedItem("list").nodeValue();
-
-				QStringList nList = names.split(QRegExp(",\\s*"));
-
-				chipBits bStruct;
-
-				bStruct.chNames = nList;
-
-				//TODO check names
-
-				QDomNodeList icLock = memInfo.childNodes();
-
-				for (int k = 0; k < icLock.size(); k++)
-				{
-					QDomNode n = icLock.item(k);
-					if (n.isNull())
-					{
-						continue;
-					}
-
-					if (n.nodeName() == "lock")
-					{
-						QDomNodeList intNodes = n.childNodes();
-
-						for (int l = 0; l < intNodes.count(); l++)
-						{
-							if (intNodes.at(l).nodeName() == "bit")
-							{
-								QDomElement bitInfo = intNodes.at(l).toElement();
-
-								//children "bit" with attributes "offset", "name", "index" -> struct BitInfo
-								QString offset = bitInfo.attribute("offset");
-								QString name = bitInfo.attribute("name");
-								QString index = bitInfo.attribute("index");
-								QString description = bitInfo.attribute("text");
-
-								BitInfo *bhelp = new BitInfo;
-								bhelp->bit = offset.toInt();
-								bhelp->idx = index.toInt();
-								bhelp->ShortDescr = name;
-								bhelp->LongDescr = description;
-
-								bStruct.lock << *bhelp;
-							}
-
-							if (intNodes.at(l).nodeName() == "set")
-							{
-								QDomElement setInfo = intNodes.at(l).toElement();
-
-								//children "set" with attributes "code" "text" and optional "additional" -> struct MaskDescr
-								QString code = setInfo.attribute("code");
-								QString text = setInfo.attribute("text");
-								QString additional = setInfo.attribute("additional", "");
-
-								MaskDescr *mHelp = new MaskDescr;
-								mHelp->mask = code;
-								mHelp->LongDescr = text;
-								mHelp->ExtDescr = additional;
-
-								bStruct.lockDescr << *mHelp;
-							}
-						}
-					}
-
-					if (n.nodeName() == "fuse")
-					{
-						QDomNodeList intNodes = n.childNodes();
-
-						for (int l = 0; l < intNodes.count(); l++)
-						{
-							if (intNodes.at(l).nodeName() == "bit")
-							{
-								QDomElement bitInfo = intNodes.at(l).toElement();
-								//children "bit" with attributes "offset", "name", "index" -> struct BitInfo
-								QString offset = bitInfo.attribute("offset");
-								QString name = bitInfo.attribute("name");
-								QString index = bitInfo.attribute("index");
-								QString description = bitInfo.attribute("text");
-
-								BitInfo *bhelp = new BitInfo;
-								bhelp->bit = offset.toInt();
-								bhelp->idx = index.toInt();
-								bhelp->ShortDescr = name;
-								bhelp->LongDescr = description;
-
-								bStruct.fuse << *bhelp;
-							}
-
-							if (intNodes.at(l).nodeName() == "set")
-							{
-								QDomElement setInfo = intNodes.at(l).toElement();
-								//children "set" with attributes "code" "text" and optional "additional" -> struct MaskDescr
-								QString code = setInfo.attribute("code");
-								QString text = setInfo.attribute("text");
-								QString additional = setInfo.attribute("additional", "");
-
-								MaskDescr *mHelp = new MaskDescr;
-								mHelp->mask = code;
-								mHelp->LongDescr = text;
-								mHelp->ExtDescr = additional;
-
-								bStruct.fuseDescr << *mHelp;
-							}
-						}
-					}
-				}
-
-				grE->helper << bStruct;
-			}
-		}
-
-		if (newGroupElem)
-		{
-			groupList << *grE;
-		}
-	}
-
-	return !err;
-}
-
-
-/**
- * @brief search the name in vectors
- *
- */
-quint32 e2AppWinInfo::GetEEPTypeFromString(const QString &name)
-{
-	foreach (groupElement g, groupList)
-	{
-		foreach (icElement i, g.vChip)
-		{
-			if (i.name == name)
-			{
-				return i.id;
-			}
-		}
-	}
-
-	return EID_INVALID;
-}
-
-
-chipBits *e2AppWinInfo::eepGetFuses(quint32 type)
-{
-	chipBits *cb = NULL;
-	quint16 pri_type = ((type >> 16) & 0x07f);
-	foreach (groupElement g, groupList)
-	{
-		if (g.vId.indexOf(pri_type) == -1)
-		{
-			continue;
-		}
-
-		QString name = "";
-
-		foreach (icElement i, g.vChip)
-		{
-			if (i.id == type)
-			{
-				name = i.name;
-			}
-		}
-
-		if (name == "")
-		{
-			return NULL;
-		}
-
-		foreach (chipBits c, g.helper)
-		{
-			int n = c.chNames.indexOf(name);
-			if (n >= 0)
-			{
-				cb = new chipBits;
-				*cb = c;
-				return cb;
-			}
-		}
-	}
-
-	return NULL;
-}
-
-#if 0
-quint32 e2AppWinInfo::BuildE2PType(quint32 pritype, quint32 subtype)
-{
-	return (((quint32)pritype & 0x7F) << 16) | (subtype & 0x7FFF);
-}
-#endif
-
-
-quint32 e2AppWinInfo::GetE2PSubType(quint32 type)
-{
-	if (type == EID_INVALID)
-	{
-		return -1;
-	}
-	else
-	{
-		return (quint32)(type & 0x7FFF);
-	}
-}
-
-quint32 e2AppWinInfo::GetE2PPriType(quint32 type)
-{
-	//      qDebug() << "GetE2PPriType" << type << ((type >> 16) & 0x7F);
-	if (type == EID_INVALID)
-	{
-		return -1;
-	}
-	else
-	{
-		return (int)((type >> 16) & 0x7F);
-	}
-}
-
-
-chipMap e2AppWinInfo::GetChipMap(quint32 type)
-{
-	chipMap info = {};
-
-	foreach (groupElement g, groupList)
-	{
-		if (g.vId.indexOf((type >> 16) & 0x7f) == -1)
-		{
-			continue;
-		}
-		foreach (icElement iE, g.vChip)
-		{
-			// extract only subtype
-			if (iE.id == type)
-			{
-				info = iE.chMap;
-				break;
-			}
-		}
-	}
-
-	return info;
-}
-
-
-quint32 e2AppWinInfo::GetEEPTypeFromSize(quint32 type, int size)
-{
-	foreach (groupElement g, groupList)
-	{
-		if (g.vId.indexOf((type >> 16) & 0x7f) == -1)
-		{
-			continue;
-		}
-
-		foreach (icElement iE, g.vChip)
-		{
-			if ((iE.chMap.prog_sz + iE.chMap.data_sz) == size)
-			{
-				return iE.id;
-			}
-		}
-	}
-
-	return -1;
-}
-
-
-int e2AppWinInfo::GetEEPTypeSize(quint32 type)
-{
-	chipMap i = GetChipMap(type);
-
-	return (i.prog_sz + i.data_sz);
-}
-
-
-int e2AppWinInfo::GetEEPAddrSize(quint32 type)
-{
-	chipMap i = GetChipMap(type);
-
-	return i.adr_sz;
-}
-
-
-int e2AppWinInfo::GetEEPTypeSplit(quint32 type)
-{
-	chipMap i = GetChipMap(type);
-
-	return i.prog_sz;
-}
-
-
-int e2AppWinInfo::GetEEPTypeWPageSize(quint32 type)
-{
-	chipMap i = GetChipMap(type);
-
-	return i.wpg_sz;
-}
-
-
-QString e2AppWinInfo::GetEEPTypeString(quint32 type)
-{
-	foreach (groupElement g, groupList)
-	{
-		if (g.vId.indexOf((type >> 16) & 0x7f) == -1)
-		{
-			continue;
-		}
-
-		foreach (icElement i, g.vChip)
-		{
-			if (i.id == type)
-			{
-				return i.name;
-			}
-		}
-	}
-
-	return "";
-}
-
 
 
 bool e2AppWinInfo::SetFileName(const QString &name)
@@ -750,27 +292,6 @@ void e2AppWinInfo::Reset()
 	SleepBus();
 }
 
-quint32 e2AppWinInfo::GetFirstFromPritype(quint32 id)
-{
-	foreach (groupElement g, groupList)
-	{
-		if (g.vId.indexOf(id) == -1)
-		{
-			continue;
-		}
-
-		foreach (icElement iE, g.vChip)
-		{
-			if (((iE.id >> 16) & 0x7f) == id)
-			{
-				return iE.id;
-			}
-		}
-	}
-
-	return EID_INVALID;
-}
-
 void e2AppWinInfo::SetEEProm(quint32 id)
 {
 	if (id == 0)
@@ -781,8 +302,8 @@ void e2AppWinInfo::SetEEProm(quint32 id)
 	eep_id = id;
 
 	//eep_type, eep_subtype are local shadow variables of eep_id
-	quint32 eep_type = GetE2PPriType(id);
-	quint32 eep_subtype = GetE2PSubType(id);
+	quint32 eep_type = GetPriType(id);
+	quint32 eep_subtype = GetSubType(id);
 
 	qDebug() << "SetEEProm" << hex << eep_type << eep_subtype << dec;
 
@@ -797,12 +318,12 @@ void e2AppWinInfo::SetEEProm(quint32 id)
 	//Setting the device pointer to selected type
 	case E24XX:
 		eep = eep24xx;
-		if (eep_subtype == GetE2PSubType(E2401_A))
+		if (eep_subtype == GetSubType(E2401_A))
 		{
 			eep = eep24xx1;
 		}
 
-		if (eep_subtype == GetE2PSubType(E2401_B))
+		if (eep_subtype == GetSubType(E2401_B))
 		{
 			eep = eep2401;
 		}
@@ -826,7 +347,7 @@ void e2AppWinInfo::SetEEProm(quint32 id)
 
 		quint32 xtype = GetEEPId();
 
-		eep->SetProgPageSize(GetEEPTypeWPageSize(xtype), false);
+		eep->SetProgPageSize(GetTypeWPageSize(xtype), false);
 		At90sBus *b = static_cast<At90sBus *>(eep->GetBus());
 		b->SetFlashPagePolling((xtype != ATmega603) && (xtype != ATmega103));
 		b->SetOld1200Mode((xtype == AT90S1200));
@@ -841,10 +362,10 @@ void e2AppWinInfo::SetEEProm(quint32 id)
 		qDebug() << hex << xtype << dec;
 		if (E2Profile::GetAt89PageOp())
 		{
-			eep->SetProgPageSize(GetEEPTypeWPageSize(GetEEPId()), false);        //write prog page size
-			eep->SetProgPageSize(GetEEPTypeWPageSize(GetEEPId()), true);         //read prog page size
-			eep->SetDataPageSize(GetEEPTypeWPageSize(GetEEPId()) / 2, false);    //write data page size
-			eep->SetDataPageSize(GetEEPTypeWPageSize(GetEEPId()) / 2, true);     //read data page size
+			eep->SetProgPageSize(GetTypeWPageSize(GetEEPId()), false);        //write prog page size
+			eep->SetProgPageSize(GetTypeWPageSize(GetEEPId()), true);         //read prog page size
+			eep->SetDataPageSize(GetTypeWPageSize(GetEEPId()) / 2, false);    //write data page size
+			eep->SetDataPageSize(GetTypeWPageSize(GetEEPId()) / 2, true);     //read data page size
 		}
 
 		At89sBus *b = static_cast<At89sBus *>(eep->GetBus());
@@ -923,11 +444,11 @@ void e2AppWinInfo::SetEEProm(quint32 id)
 	}
 
 	fuse_ok = false;                //invalidate current fuse settings
-	SetSplittedInfo(GetEEPTypeSplit(id));
+	SetSplittedInfo(GetTypeSplit(id));
 
 	//Imposta la nuova dimensione della memoria in
 	// base al tipo di eeprom.
-	SetNoOfBlock(GetEEPTypeSize(id));
+	SetNoOfBlock(GetTypeSize(id));
 
 	//Imposta la dimensione del banco che dipende
 	// dal tipo di eeprom.
@@ -936,7 +457,7 @@ void e2AppWinInfo::SetEEProm(quint32 id)
 
 int e2AppWinInfo::Read(int type, int raise_power, int leave_on)
 {
-	int probe = !GetE2PSubType(eep_id);
+	int probe = !GetSubType(eep_id);
 	int rval = OK;
 
 	qDebug() << "e2AppWinInfo::Read(" << type << "," << raise_power << "," << leave_on << ") - IN";
@@ -1001,7 +522,7 @@ int e2AppWinInfo::Read(int type, int raise_power, int leave_on)
 
 int e2AppWinInfo::Write(int type, int raise_power, int leave_on)
 {
-	int probe = !GetE2PSubType(eep_id);
+	int probe = !GetSubType(eep_id);
 	int rval = OK;
 
 	qDebug() << "e2AppWinInfo::Write(" << type << "," << raise_power << "," << leave_on << ") - IN";
@@ -1130,8 +651,8 @@ int e2AppWinInfo::Load()
 
 		if (rval > 0)
 		{
-			if (GetE2PPriType(GetEEPId()) == PIC16XX ||
-					GetE2PPriType(GetEEPId()) == PIC168XX)
+			if (GetPriType(GetEEPId()) == PIC16XX ||
+					GetPriType(GetEEPId()) == PIC168XX)
 			{
 				//It seems a bit tricky...
 				//Relocate the DATA and CONFIG memory with PIC devices
@@ -1166,7 +687,7 @@ int e2AppWinInfo::Load()
 					SetLockBits(config);
 				}
 			}
-			else if (GetE2PPriType(GetEEPId()) == PIC125XX)
+			else if (GetPriType(GetEEPId()) == PIC125XX)
 			{
 				//Copy Config memory
 				if (GetSize() + 16 <= GetBufSize())
@@ -1237,8 +758,8 @@ int e2AppWinInfo::Save()
 	if (save_type == ALL_TYPE &&
 			(GetFileBuf() == INTEL || GetFileBuf() == MOTOS))
 	{
-		if (GetE2PPriType(GetEEPId()) == PIC16XX ||
-				GetE2PPriType(GetEEPId()) == PIC168XX)
+		if (GetPriType(GetEEPId()) == PIC16XX ||
+				GetPriType(GetEEPId()) == PIC168XX)
 		{
 			//It seems a bit tricky...
 			//Relocate the DATA and CONFIG memory with PIC devices
@@ -1298,7 +819,7 @@ int e2AppWinInfo::Save()
 				}
 			}
 		}
-		else if (GetE2PPriType(GetEEPId()) == PIC125XX)
+		else if (GetPriType(GetEEPId()) == PIC125XX)
 		{
 			//Set ALL overbound buffer to 0xFF
 			memset(GetBufPtr(), 0xFF, GetBufSize());

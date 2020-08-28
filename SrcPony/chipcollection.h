@@ -24,14 +24,17 @@
 //                                                                         //
 //=========================================================================//
 
-#ifndef _EEPTYPES_H
-#define _EEPTYPES_H
+#ifndef _CHIPCOLLECTION_H
+#define _CHIPCOLLECTION_H
 
 #include "globals.h"
 #include "defines.h"
 
 #include <QVector>
 #include <QString>
+#include <QDebug>
+#include <QXmlReader>
+#include <QDomNode>
 
 #define EID_INVALID     0
 
@@ -263,7 +266,6 @@
 #define E24XX1_B        0x13
 // Sub types
 #define E2401_B         0x130001
-**/
 
 #define NO_OF_EEPTYPE   0x13
 
@@ -271,18 +273,8 @@
 
 
 #define KB(x)   ((x) * 1024)
+**/
 
-
-// EK 2017
-// common structure for chips
-struct chipMap
-{
-	int  prog_sz;  // size of program data (code)
-	int  data_sz;  // size of memory data
-	int  wpg_sz;   // page size
-	int  adr_sz;   // dimensione dello spazio di indirizzamento in numero di banchi
-	int  boot;     // boot address
-};
 
 
 /**
@@ -294,7 +286,6 @@ struct BitInfo
 	quint16 idx;
 	QString ShortDescr; // first column
 	QString LongDescr;  // second column
-	//const QString ExtDescr;   // for additional infos
 };
 
 
@@ -326,13 +317,18 @@ struct icElement
 	quint32  id;       // groupid | subtype
 	quint16  sign;     // signature for detecting
 	quint16  reserv;
-	chipMap  chMap;    // memory structure
-	//chipBits helper;   // for the popup help window
+	// memory structure
+	qint32   prog_sz;  // size of program data (code)
+	qint32   data_sz;  // size of memory data
+	qint32   wpg_sz;   // page size
+	qint32   adr_sz;   // dimensione dello spazio di indirizzamento in numero di banchi
+	qint32   boot;     // boot address
 };
 
 
-struct groupElement
+class cGroupElement
 {
+  public:
 	QString menuName;          // for menu items
 	//QString defName;         // for defines
 	QVector<quint32> vId;      // pre_types
@@ -341,5 +337,42 @@ struct groupElement
 };
 
 
+class cChipCollection
+{
+  public:
+	// will be deprecated
+	quint32 GetSubType(quint32 type);
+	quint32 GetPriType(quint32 type);
+	cGroupElement *GetMenuGroupPointer(const QString &menuStr);
+	quint32 GetTypeFromSize(quint32 type, int size);
+	int GetTypeSize(quint32 type);
+	int GetAddrSize(quint32 type);
+	int GetTypeSplit(quint32 type);
+	int GetTypeWPageSize(quint32 type);
+	QString GetTypeString(quint32 type);
+	quint32 GetSignatureType(quint32 pri_type, quint16 sign);
+	quint32 GetFirstFromPritype(quint32 pritype);
 
-#endif
+	/**
+	 * @brief search chip name in vectors
+	 *
+	 */
+	quint32 GetTypeFromString(const QString &name);
+	bool ReadConfigFromXml(const QString &filename);
+	chipBits *GetTypeFuses(quint32 type);
+
+  private:
+	bool addGroup(cGroupElement *g);
+	icElement *getChipPointer(quint32 type);
+
+	/**
+	 * convert string 1k, 2k ... to int
+	 * convert hex numbers to int
+	 */
+	int convertSize(const QString &s);
+
+  public:
+	QVector <cGroupElement *> icGroups;
+};
+
+#endif // _CHIPCOLLECTION_H

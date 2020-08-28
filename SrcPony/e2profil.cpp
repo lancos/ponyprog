@@ -55,9 +55,6 @@ void E2Profile::SetBogoMips(int value)
 }
 
 
-#include "eeptypes.h"
-
-
 QString E2Profile::GetLastDevType()
 {
 	QString vrs = s->value("PonyProgVers", "pre").toString();

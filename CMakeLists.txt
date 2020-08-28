@@ -37,7 +37,7 @@ ENDIF()
 
 MESSAGE(STATUS "Qt version for compiling: " ${USE_QT_VERSION})
 
-OPTION (USE_DEBUGGER "Include in binary file debug information" ON)
+OPTION (USE_DEBUGGER "Include in binary file debug information" OFF)
 
 OPTION (USE_PROFILER "Include in binary file profiling information" OFF)
 

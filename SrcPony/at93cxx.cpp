@@ -27,8 +27,6 @@
 #include "types.h"
 #include "at93cxx.h"            // Header file
 #include "errcode.h"
-#include "eeptypes.h"
-
 
 #include <QDebug>
 

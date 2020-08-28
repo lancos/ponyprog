@@ -28,7 +28,6 @@
 #include "globals.h"
 #include "at90sxx.h"            // Header file
 #include "errcode.h"
-#include "eeptypes.h"
 
 #include <QDebug>
 
@@ -384,23 +383,18 @@ int At90sxx::QueryType(quint32 &type)
 // 		quint16 pri_type = AT90SXX; // ATtiny , ATmega
 		quint16 sign = (code[1] << 8) + code[2];
 
-		foreach (groupElement g, GetAWInfo()->groupList)
-		{
-			if ((g.vId.indexOf(AT90SXX) == -1) && (g.vId.indexOf(ATtiny) == -1) && (g.vId.indexOf(ATmega) == -1))
-			{
-				continue;
-			}
+		quint32 pri[] = {AT90SXX, ATtiny, ATmega, 0};
 
-			foreach (icElement i, g.vChip)
+		for (int i = 0; pri[i] != 0; i++)
+		{
+			type = GetAWInfo()->GetSignatureType(pri[i], sign);
+
+			if (type != EID_INVALID)
 			{
-				if (i.sign == sign)
-				{
-					type = i.id;
-					detected_type = type;
-					detected_signature.sprintf("%02X-%02X-%02X", code[0], code[1], code[2]);
-					rv = OK;
-					return rv;
-				}
+				detected_type = type;
+				detected_signature.sprintf("%02X-%02X-%02X", code[0], code[1], code[2]);
+				rv = OK;
+				return rv;
 			}
 		}
 	}

@@ -28,7 +28,6 @@
 #include "types.h"
 #include "at89sbus.h"
 #include "errcode.h"
-#include "eeptypes.h"
 #include "e2profil.h"
 #include "e2cmdw.h"
 

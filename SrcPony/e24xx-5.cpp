@@ -30,7 +30,6 @@
 #include "e2awinfo.h"
 #include "e24xx-5.h"            // Header file
 #include "errcode.h"
-#include "eeptypes.h"
 
 
 E24xx5::E24xx5(e2AppWinInfo *wininfo, BusIO *busp)

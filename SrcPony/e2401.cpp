@@ -29,7 +29,6 @@
 #include "e2awinfo.h"
 #include "e2401.h"              // Header file
 #include "errcode.h"
-#include "eeptypes.h"
 
 #include <QDebug>
 

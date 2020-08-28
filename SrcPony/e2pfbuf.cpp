@@ -33,7 +33,7 @@
 #include "errcode.h"
 
 #include "e2phead.h"
-#include "eeptypes.h"
+#include "defines.h"
 
 
 static char const *id_string = "E2P!Lanc";

@@ -31,7 +31,6 @@
 #include "e2cmdw.h"
 #include "at17xxx.h"            // Header file
 #include "errcode.h"
-#include "eeptypes.h"
 
 At17xxx::At17xxx(e2AppWinInfo *wininfo, BusIO *busp)
 	:       E24xx(wininfo, busp, 8, 1)
