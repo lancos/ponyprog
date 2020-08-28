@@ -98,6 +98,12 @@ SET(VERSION ${APP_VERSION})
 SET(APP_AUTHOR "Claudio Lanconelli")
 SET(APP_EMAIL "PonyProg2000@gmail.com")
 SET(APP_NAME "PonyProg")
+SET(AUTHORWEB "http://www.LancOS.com")
+SET(COPYRIGHTYEAR "1997-2020")
+
+SET(PORTERGQT "Eduard Kalinowski")
+SET(PORTERMAIL "eduard_kalinowski@yahoo.de")
+
 
 IF(WIN32)
   EXECUTE_PROCESS (
