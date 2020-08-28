@@ -148,7 +148,7 @@ SOURCES  += SrcPony/aboutmdlg.cpp \
             SrcPony/at89sxx.cpp \
             SrcPony/at93cxx.cpp \
             SrcPony/device.cpp \
-            SrcPony/eeptypes.cpp \
+            SrcPony/chipcollection.cpp \
             SrcPony/imbus.cpp \
             SrcPony/linuxsysfsint.cpp \
             SrcPony/pic12bus.cpp \
@@ -200,7 +200,7 @@ HEADERS  += SrcPony/e2app.h \
             SrcPony/dt006interf.h \
             SrcPony/e24xx.h \
             SrcPony/e2dlg.h \
-            SrcPony/eeptypes.h \
+            SrcPony/chipcollection.h \
             SrcPony/ispinterf.h \
             SrcPony/lpt_io_interf.h \
             SrcPony/pgminter.h \
