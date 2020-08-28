@@ -70,10 +70,6 @@ class e2AppWinInfo;
 //Global e2CmdWindow pointer
 e2CmdWindow *cmdWin;
 
-// EK 2017
-// TODO insert this into class
-QVector<menuToGroup> deviceMenu;
-
 
 void e2CmdWindow::About()
 {
