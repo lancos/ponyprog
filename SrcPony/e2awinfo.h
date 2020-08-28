@@ -123,8 +123,7 @@ class e2AppWinInfo : public cChipCollection
 		return hex_per_line;
 	}
 
-//	void SetEEProm(int type = E24XX, int subtype = 0);
-	void SetEEProm(quint32 id = E2400);
+	void SetId(quint32 id = E2400);
 
 	void SetFileBuf(FileType type);
 	FileType GetFileBuf() const;
@@ -142,7 +141,7 @@ class e2AppWinInfo : public cChipCollection
 	QString GetComment();
 	void SetComment(const QString &s);
 
-	quint32 GetEEPId() const
+	quint32 GetId() const
 	{
 		return eep_id;
 	}

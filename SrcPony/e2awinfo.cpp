@@ -106,7 +106,7 @@ e2AppWinInfo::e2AppWinInfo(e2CmdWindow *p, const QString &name, BusIO **busvptr)
 
 	QString nm = E2Profile::GetLastDevType();
 	quint32 type = GetTypeFromString(nm);
-	SetEEProm(type);
+	SetId(type);
 
 	SetFileBuf(E2Profile::GetDefaultFileType());       //      SetFileBuf(E2P);
 
@@ -292,7 +292,7 @@ void e2AppWinInfo::Reset()
 	SleepBus();
 }
 
-void e2AppWinInfo::SetEEProm(quint32 id)
+void e2AppWinInfo::SetId(quint32 id)
 {
 	if (id == 0)
 	{
@@ -345,7 +345,7 @@ void e2AppWinInfo::SetEEProm(quint32 id)
 	{
 		eep = eepAt90s;
 
-		quint32 xtype = GetEEPId();
+		quint32 xtype = GetId();
 
 		eep->SetProgPageSize(GetTypeWPageSize(xtype), false);
 		At90sBus *b = static_cast<At90sBus *>(eep->GetBus());
@@ -358,14 +358,14 @@ void e2AppWinInfo::SetEEProm(quint32 id)
 	{
 		eep = eepAt89s;
 
-		quint32 xtype = GetEEPId();
+		quint32 xtype = GetId();
 		qDebug() << hex << xtype << dec;
 		if (E2Profile::GetAt89PageOp())
 		{
-			eep->SetProgPageSize(GetTypeWPageSize(GetEEPId()), false);        //write prog page size
-			eep->SetProgPageSize(GetTypeWPageSize(GetEEPId()), true);         //read prog page size
-			eep->SetDataPageSize(GetTypeWPageSize(GetEEPId()) / 2, false);    //write data page size
-			eep->SetDataPageSize(GetTypeWPageSize(GetEEPId()) / 2, true);     //read data page size
+			eep->SetProgPageSize(GetTypeWPageSize(GetId()), false);        //write prog page size
+			eep->SetProgPageSize(GetTypeWPageSize(GetId()), true);         //read prog page size
+			eep->SetDataPageSize(GetTypeWPageSize(GetId()) / 2, false);    //write data page size
+			eep->SetDataPageSize(GetTypeWPageSize(GetId()) / 2, true);     //read data page size
 		}
 
 		At89sBus *b = static_cast<At89sBus *>(eep->GetBus());
@@ -427,7 +427,7 @@ void e2AppWinInfo::SetEEProm(quint32 id)
 		break;
 
 	case X24C44XX:
-		if (GetEEPId() == S24H30)
+		if (GetId() == S24H30)
 		{
 			eep = eep2430;
 		}
@@ -651,8 +651,8 @@ int e2AppWinInfo::Load()
 
 		if (rval > 0)
 		{
-			if (GetPriType(GetEEPId()) == PIC16XX ||
-					GetPriType(GetEEPId()) == PIC168XX)
+			if (GetPriType(GetId()) == PIC16XX ||
+					GetPriType(GetId()) == PIC168XX)
 			{
 				//It seems a bit tricky...
 				//Relocate the DATA and CONFIG memory with PIC devices
@@ -687,7 +687,7 @@ int e2AppWinInfo::Load()
 					SetLockBits(config);
 				}
 			}
-			else if (GetPriType(GetEEPId()) == PIC125XX)
+			else if (GetPriType(GetId()) == PIC125XX)
 			{
 				//Copy Config memory
 				if (GetSize() + 16 <= GetBufSize())
@@ -758,8 +758,8 @@ int e2AppWinInfo::Save()
 	if (save_type == ALL_TYPE &&
 			(GetFileBuf() == INTEL || GetFileBuf() == MOTOS))
 	{
-		if (GetPriType(GetEEPId()) == PIC16XX ||
-				GetPriType(GetEEPId()) == PIC168XX)
+		if (GetPriType(GetId()) == PIC16XX ||
+				GetPriType(GetId()) == PIC168XX)
 		{
 			//It seems a bit tricky...
 			//Relocate the DATA and CONFIG memory with PIC devices
@@ -777,9 +777,9 @@ int e2AppWinInfo::Save()
 				{
 					quint16 config = (quint16)GetLockBits();
 
-					if (GetEEPId() == PIC1683 ||
-							GetEEPId() == PIC1684 ||
-							GetEEPId() == PIC1684A)
+					if (GetId() == PIC1683 ||
+							GetId() == PIC1684 ||
+							GetId() == PIC1684A)
 					{
 						if (config & (1 << 4))
 						{
@@ -819,7 +819,7 @@ int e2AppWinInfo::Save()
 				}
 			}
 		}
-		else if (GetPriType(GetEEPId()) == PIC125XX)
+		else if (GetPriType(GetId()) == PIC125XX)
 		{
 			//Set ALL overbound buffer to 0xFF
 			memset(GetBufPtr(), 0xFF, GetBufSize());

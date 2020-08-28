@@ -57,7 +57,7 @@ void Device::SetAWInfo(e2AppWinInfo *wininfo)
 int Device::GetAddrSize() const
 {
 	//      return GetEEPAddrSize(awi->GetEEPPriType(), awi->GetEEPSubType());
-	return awi->GetAddrSize(awi->GetEEPId());
+	return awi->GetAddrSize(awi->GetId());
 }
 
 int Device::GetNoOfBank() const

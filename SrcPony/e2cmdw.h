@@ -155,7 +155,7 @@ class e2CmdWindow : public QMainWindow, public e2App, public Ui::MainWindow
 	{
 		if (awip)
 		{
-			return awip->GetEEPId();
+			return awip->GetId();
 		}
 		else
 		{

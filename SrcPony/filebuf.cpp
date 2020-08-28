@@ -158,18 +158,18 @@ void FileBuf::SetCRC(quint16 c)
 
 quint32 FileBuf::GetEEpromType() const
 {
-	return awi->GetEEPId();
+	return awi->GetId();
 }
 
 #if 0
 quint32 FileBuf::GetEEpromPriType() const
 {
-	return awi->GetE2PPriType(awi->GetEEPId());
+	return awi->GetE2PPriType(awi->GetId());
 }
 
 quint32 FileBuf::GetEEpromSubType() const
 {
-	return awi->GetE2PSubType(awi->GetEEPId());
+	return awi->GetE2PSubType(awi->GetId());
 }
 
 
@@ -183,7 +183,7 @@ void FileBuf::SetEEpromType(quint32 pritype, quint32 subtype)
 
 void FileBuf::SetEEpromType(quint32 id)
 {
-	awi->SetEEProm(id);
+	awi->SetId(id);
 }
 
 

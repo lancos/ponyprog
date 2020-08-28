@@ -51,7 +51,7 @@ int At90sxx::SecurityRead(quint32 &bits)
 
 	if (rv > 0)
 	{
-		bits = GetBus()->ReadLockBits(GetAWInfo()->GetEEPId());
+		bits = GetBus()->ReadLockBits(GetAWInfo()->GetId());
 		rv = OK;
 	}
 
@@ -64,7 +64,7 @@ int At90sxx::SecurityWrite(quint32 bits)
 
 	if (rv > 0)     //Try to write even with AutoXXX device setted
 	{
-		rv = GetBus()->WriteLockBits(bits, GetAWInfo()->GetEEPId());
+		rv = GetBus()->WriteLockBits(bits, GetAWInfo()->GetId());
 	}
 
 	return rv;
@@ -76,7 +76,7 @@ int At90sxx::FusesRead(quint32 &bits)
 
 	if (rv > 0)
 	{
-		bits = GetBus()->ReadFuseBits(GetAWInfo()->GetEEPId());
+		bits = GetBus()->ReadFuseBits(GetAWInfo()->GetId());
 		rv = OK;
 	}
 
@@ -89,7 +89,7 @@ int At90sxx::FusesWrite(quint32 bits)
 
 	if (rv > 0)
 	{
-		rv = GetBus()->WriteFuseBits(bits, GetAWInfo()->GetEEPId());
+		rv = GetBus()->WriteFuseBits(bits, GetAWInfo()->GetId());
 	}
 
 	return rv;
@@ -436,7 +436,7 @@ int At90sxx::Probe(int probe_size)
 
 		if (rv == OK)
 		{
-			if (GetAWInfo()->GetEEPId() == type)
+			if (GetAWInfo()->GetId() == type)
 			{
 				rv = GetSize();
 			}
@@ -495,7 +495,7 @@ int At90sxx::Read(int probe, int type)
 				if (type & CONFIG_TYPE)
 				{
 					// read the fuses
-					quint32 id = GetAWInfo()->GetEEPId();
+					quint32 id = GetAWInfo()->GetId();
 					quint32 f = GetBus()->ReadFuseBits(id);
 					GetAWInfo()->SetFuseBits(f);
 
@@ -540,7 +540,7 @@ int At90sxx::Write(int probe, int type)
 			{
 				if (type & CONFIG_TYPE)
 				{
-					quint32 id = GetAWInfo()->GetEEPId();
+					quint32 id = GetAWInfo()->GetId();
 					if (id == AT90S4433 || id == AT90S2333)
 					{
 						//write the locks
@@ -599,8 +599,8 @@ int At90sxx::Verify(int type)
 		if (type & CONFIG_TYPE)
 		{
 			// read the fuses & locks
-			quint32 f = GetBus()->ReadFuseBits(GetAWInfo()->GetEEPId());
-			quint32 l = GetBus()->ReadLockBits(GetAWInfo()->GetEEPId());
+			quint32 f = GetBus()->ReadFuseBits(GetAWInfo()->GetId());
+			quint32 l = GetBus()->ReadLockBits(GetAWInfo()->GetId());
 
 			if (GetAWInfo()->GetLockBits() == l && GetAWInfo()->GetFuseBits() == f)
 			{

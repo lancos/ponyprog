@@ -44,7 +44,7 @@ int At89sxx::SecurityRead(quint32 &bits)
 
 	if (rv > 0)
 	{
-		rv = GetBus()->ReadLockBits(bits, GetAWInfo()->GetEEPId());
+		rv = GetBus()->ReadLockBits(bits, GetAWInfo()->GetId());
 	}
 
 	return rv;
@@ -56,7 +56,7 @@ int At89sxx::SecurityWrite(quint32 bits)
 
 	if (rv > 0)
 	{
-		rv = GetBus()->WriteLockBits(bits, GetAWInfo()->GetEEPId());
+		rv = GetBus()->WriteLockBits(bits, GetAWInfo()->GetId());
 	}
 
 	return rv;
@@ -68,7 +68,7 @@ int At89sxx::FusesRead(quint32 &bits)
 
 	if (rv > 0)
 	{
-		rv = GetBus()->ReadFuseBits(bits, GetAWInfo()->GetEEPId());
+		rv = GetBus()->ReadFuseBits(bits, GetAWInfo()->GetId());
 	}
 
 	return rv;
@@ -80,7 +80,7 @@ int At89sxx::FusesWrite(quint32 bits)
 
 	if (rv > 0)
 	{
-		rv = GetBus()->WriteFuseBits(bits, GetAWInfo()->GetEEPId());
+		rv = GetBus()->WriteFuseBits(bits, GetAWInfo()->GetId());
 	}
 
 	return rv;
@@ -147,7 +147,7 @@ int At89sxx::Probe(int probe_size)
 	}
 	else
 	{
-		switch (GetAWInfo()->GetEEPId())
+		switch (GetAWInfo()->GetId())
 		{
 		case AT89S51:
 		case AT89S52:
@@ -159,7 +159,7 @@ int At89sxx::Probe(int probe_size)
 
 			if (rv == OK)
 			{
-				if (GetAWInfo()->GetEEPId() == type)
+				if (GetAWInfo()->GetId() == type)
 				{
 					rv = GetSize();
 				}
@@ -208,14 +208,14 @@ int At89sxx::Read(int probe, int type)
 				// read the fuses
 				quint32 f = 0;
 
-				if (GetBus()->ReadFuseBits(f, GetAWInfo()->GetEEPId()) == OK)
+				if (GetBus()->ReadFuseBits(f, GetAWInfo()->GetId()) == OK)
 				{
 					GetAWInfo()->SetFuseBits(f);
 				}
 
 				f = 0;
 
-				if (GetBus()->ReadLockBits(f, GetAWInfo()->GetEEPId()) == OK)
+				if (GetBus()->ReadLockBits(f, GetAWInfo()->GetId()) == OK)
 				{
 					GetAWInfo()->SetLockBits(f);
 				}
@@ -251,11 +251,11 @@ int At89sxx::Write(int probe, int type)
 			{
 				//write the fuses
 				quint32 f = GetAWInfo()->GetFuseBits();
-				GetBus()->WriteFuseBits(f, GetAWInfo()->GetEEPId());
+				GetBus()->WriteFuseBits(f, GetAWInfo()->GetId());
 
 				//write the locks
 				f = GetAWInfo()->GetLockBits();
-				GetBus()->WriteLockBits(f,  GetAWInfo()->GetEEPId());
+				GetBus()->WriteLockBits(f,  GetAWInfo()->GetId());
 			}
 		}
 	}
@@ -294,8 +294,8 @@ int At89sxx::Verify(int type)
 			int fret, lret;
 
 			// read the fuses & locks
-			fret = GetBus()->ReadFuseBits(fval, GetAWInfo()->GetEEPId());
-			lret = GetBus()->ReadLockBits(lval, GetAWInfo()->GetEEPId());
+			fret = GetBus()->ReadFuseBits(fval, GetAWInfo()->GetId());
+			lret = GetBus()->ReadLockBits(lval, GetAWInfo()->GetId());
 
 			if ((lret == NOTSUPPORTED || GetAWInfo()->GetLockBits() == lval)
 					&& (fret == NOTSUPPORTED || GetAWInfo()->GetFuseBits() == fval))

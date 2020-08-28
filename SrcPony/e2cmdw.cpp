@@ -1093,9 +1093,9 @@ void e2CmdWindow::onSelectChip(QAction *a)
 	currentAct = a;
 	currentAct->setChecked(true);
 
-	qDebug() << Q_FUNC_INFO << "Id: " << (hex) << awip->GetEEPId() << " NewId: " << new_id;
+	qDebug() << Q_FUNC_INFO << "Id: " << (hex) << awip->GetId() << " NewId: " << new_id;
 
-	if (awip->GetEEPId() != new_id)
+	if (awip->GetId() != new_id)
 	{
 		CmdSelectDevice(new_id);
 	}
@@ -2397,7 +2397,7 @@ int e2CmdWindow::CmdRead(int type)
 		{
 			QString sp;
 			//sp = GetEEPTypeString(awip->GetEEPPriType(), awip->GetEEPSubType());
-			sp = awip->GetTypeString(awip->GetEEPId());
+			sp = awip->GetTypeString(awip->GetId());
 			//qDebug() << "CmdRead" << awip->GetEEPPriType() << awip->GetEEPSubType() << sp;
 			UpdateStrFromStr(sp, "");
 			awip->RecalcCRC();
@@ -2534,7 +2534,7 @@ int e2CmdWindow::CmdWrite(int type, bool verify)
 						{
 							QString sp;
 							//sp = GetEEPTypeString(awip->GetEEPPriType(), awip->GetEEPSubType());
-							sp = awip->GetTypeString(awip->GetEEPId());
+							sp = awip->GetTypeString(awip->GetId());
 							//qDebug() << "CmdWrite" << awip->GetEEPPriType() << awip->GetEEPSubType() << sp;
 							UpdateStrFromStr(sp);
 						}
@@ -4080,7 +4080,7 @@ int e2CmdWindow::CmdGetInfo()
 
 	esize = tsize - fsize;
 
-	int pritype = awip->GetPriType(awip->GetEEPId());
+	int pritype = awip->GetPriType(awip->GetId());
 
 	if (pritype == E24XX || pritype == E24XX2 || pritype == E24XX5)
 	{
@@ -4155,7 +4155,7 @@ int e2CmdWindow::CmdDoubleSize()
 	{
 		// Double the size
 		//              long new_type = GetEEPTypeFromSize(awip->GetEEPPriType(), awip->GetNoOfBlock() * 2);
-		long new_type = awip->GetTypeFromSize(awip->GetEEPId(), awip->GetNoOfBlock() * 2);
+		long new_type = awip->GetTypeFromSize(awip->GetId(), awip->GetNoOfBlock() * 2);
 
 		if (new_type > 0)
 		{
@@ -4282,7 +4282,7 @@ int e2CmdWindow::SpecialBits(bool readonly)
 		//lock = awip->GetLockBits();
 		//fuse = awip->GetFuseBits();
 
-		quint32 type = awip->GetEEPId(); // BuildE2PType(awip->GetEEPPriType(), awip->GetEEPSubType());
+		quint32 type = awip->GetId(); // BuildE2PType(awip->GetEEPPriType(), awip->GetEEPSubType());
 
 		if (type != E2464)
 		{
@@ -4341,7 +4341,7 @@ int e2CmdWindow::ProgramOptions()
 	//      lock = awip->GetLockBits();
 	//      fuse = awip->GetFuseBits();
 
-	progOptionDialog prog(this, awip->GetEEPId(), // BuildE2PType(awip->GetEEPPriType(), awip->GetEEPSubType()),
+	progOptionDialog prog(this, awip->GetId(), // BuildE2PType(awip->GetEEPPriType(), awip->GetEEPSubType()),
 						  reload, reep, erase, flash, eeprom, lock);
 
 	if (prog.exec() == QDialog::Accepted)
@@ -4408,7 +4408,7 @@ int e2CmdWindow::CmdWriteSecurity()
 {
 	int result;
 
-	if (awip->GetEEPId() == AT90S4433 || awip->GetEEPId() == AT90S2333)
+	if (awip->GetId() == AT90S4433 || awip->GetId() == AT90S2333)
 	{
 		result = CmdWriteLock();
 
@@ -4622,7 +4622,7 @@ int e2CmdWindow::CmdReadSpecial()
 	int rval;
 	int retry_flag = 1;
 
-	quint32 type = awip->GetEEPId();   // BuildE2PType( awip->GetEEPPriType(), awip->GetEEPSubType() );
+	quint32 type = awip->GetId();   // BuildE2PType( awip->GetEEPPriType(), awip->GetEEPSubType() );
 
 	while (retry_flag)
 	{
@@ -4688,7 +4688,7 @@ int e2CmdWindow::CmdWriteSpecial()
 
 	QMessageBox note;
 
-	quint32 type = awip->GetEEPId();   //BuildE2PType( awip->GetEEPPriType(), awip->GetEEPSubType() );
+	quint32 type = awip->GetId();   //BuildE2PType( awip->GetEEPPriType(), awip->GetEEPSubType() );
 	/**
 	if (type == E2464)              //Microchip 24C65 high endurance block
 	{
@@ -4841,7 +4841,7 @@ int e2CmdWindow::CmdSelectDevice(quint32 new_type, bool init)
 {
 	qDebug() << "CmdSelectDevice" << hex << new_type << dec;
 
-	awip->SetEEProm(new_type);
+	awip->SetId(new_type);
 	UpdateMenuType(new_type);
 
 	first_line = 0;
@@ -5119,7 +5119,7 @@ void e2CmdWindow::UpdateMenuType(quint32 new_type)
 {
 	if (new_type == 0)
 	{
-		new_type = awip->GetEEPId();
+		new_type = awip->GetId();
 	}
 
 	quint32 new_pritype = awip->GetPriType(new_type);
@@ -5443,7 +5443,7 @@ int e2CmdWindow::OpenFile(const QString &file)
 		{
 			QString oldfname = awip->GetFileName();
 			awip->SetFileName(fileName);
-			long old_type = awip->GetEEPId();			//EEP type can be changed by E2P file load
+			long old_type = awip->GetId();			//EEP type can be changed by E2P file load
 
 			rval = awip->Load();
 
@@ -5466,9 +5466,9 @@ int e2CmdWindow::OpenFile(const QString &file)
 				UpdateStrFromBuf();
 
 				//UpdateChipType();
-				if (awip->GetEEPId() != old_type)
+				if (awip->GetId() != old_type)
 				{
-					UpdateMenuType(awip->GetEEPId());
+					UpdateMenuType(awip->GetId());
 				}
 
 				first_line = 0;

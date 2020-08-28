@@ -114,7 +114,7 @@ int Pic168xx::Probe(int probe_size)
 		{
 			if (rv == OK)
 			{
-				if (GetAWInfo()->GetEEPId() == type)
+				if (GetAWInfo()->GetId() == type)
 				{
 					rv = GetSize();
 				}
