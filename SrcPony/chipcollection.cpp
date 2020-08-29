@@ -208,6 +208,53 @@ quint32 cChipCollection::GetTypeFromString(const QString &name)
 }
 
 
+bool cChipCollection::parseNode(const QDomNode &nd, QVector<BitInfo> &b, QVector<MaskDescr> &d)
+{
+	QDomNodeList intNodes = nd.childNodes();
+
+	for (int l = 0; l < intNodes.count(); l++)
+	{
+		if (intNodes.at(l).nodeName() == "bit")
+		{
+			QDomElement bitInfo = intNodes.at(l).toElement();
+
+			//children "bit" with attributes "offset", "name", "index" -> struct BitInfo
+			QString offset = bitInfo.attribute("offset");
+			QString name = bitInfo.attribute("name");
+			QString index = bitInfo.attribute("index");
+			QString description = bitInfo.attribute("text");
+
+			BitInfo *bhelp = new BitInfo;
+			bhelp->bit = offset.toInt();
+			bhelp->idx = index.toInt();
+			bhelp->ShortDescr = name;
+			bhelp->LongDescr = description;
+
+			b << *bhelp;
+		}
+
+		if (intNodes.at(l).nodeName() == "set")
+		{
+			QDomElement setInfo = intNodes.at(l).toElement();
+
+			//children "set" with attributes "code" "text" and optional "additional" -> struct MaskDescr
+			QString code = setInfo.attribute("code");
+			QString text = setInfo.attribute("text");
+			QString additional = setInfo.attribute("additional", "");
+
+			MaskDescr *mHelp = new MaskDescr;
+			mHelp->mask = code;
+			mHelp->LongDescr = text;
+			mHelp->ExtDescr = additional;
+
+			d << *mHelp;
+		}
+	}
+
+	return true;
+}
+
+
 bool cChipCollection::ReadConfigFromXml(const QString &filename)
 {
 	QDomDocument doc;
@@ -321,88 +368,12 @@ bool cChipCollection::ReadConfigFromXml(const QString &filename)
 
 					if (n.nodeName() == "lock")
 					{
-						QDomNodeList intNodes = n.childNodes();
-
-						for (int l = 0; l < intNodes.count(); l++)
-						{
-							if (intNodes.at(l).nodeName() == "bit")
-							{
-								QDomElement bitInfo = intNodes.at(l).toElement();
-
-								//children "bit" with attributes "offset", "name", "index" -> struct BitInfo
-								QString offset = bitInfo.attribute("offset");
-								QString name = bitInfo.attribute("name");
-								QString index = bitInfo.attribute("index");
-								QString description = bitInfo.attribute("text");
-
-								BitInfo *bhelp = new BitInfo;
-								bhelp->bit = offset.toInt();
-								bhelp->idx = index.toInt();
-								bhelp->ShortDescr = name;
-								bhelp->LongDescr = description;
-
-								bStruct.lock << *bhelp;
-							}
-
-							if (intNodes.at(l).nodeName() == "set")
-							{
-								QDomElement setInfo = intNodes.at(l).toElement();
-
-								//children "set" with attributes "code" "text" and optional "additional" -> struct MaskDescr
-								QString code = setInfo.attribute("code");
-								QString text = setInfo.attribute("text");
-								QString additional = setInfo.attribute("additional", "");
-
-								MaskDescr *mHelp = new MaskDescr;
-								mHelp->mask = code;
-								mHelp->LongDescr = text;
-								mHelp->ExtDescr = additional;
-
-								bStruct.lockDescr << *mHelp;
-							}
-						}
+						parseNode(n, bStruct.lock, bStruct.lockDescr);
 					}
 
 					if (n.nodeName() == "fuse")
 					{
-						QDomNodeList intNodes = n.childNodes();
-
-						for (int l = 0; l < intNodes.count(); l++)
-						{
-							if (intNodes.at(l).nodeName() == "bit")
-							{
-								QDomElement bitInfo = intNodes.at(l).toElement();
-								//children "bit" with attributes "offset", "name", "index" -> struct BitInfo
-								QString offset = bitInfo.attribute("offset");
-								QString name = bitInfo.attribute("name");
-								QString index = bitInfo.attribute("index");
-								QString description = bitInfo.attribute("text");
-
-								BitInfo *bhelp = new BitInfo;
-								bhelp->bit = offset.toInt();
-								bhelp->idx = index.toInt();
-								bhelp->ShortDescr = name;
-								bhelp->LongDescr = description;
-
-								bStruct.fuse << *bhelp;
-							}
-
-							if (intNodes.at(l).nodeName() == "set")
-							{
-								QDomElement setInfo = intNodes.at(l).toElement();
-								//children "set" with attributes "code" "text" and optional "additional" -> struct MaskDescr
-								QString code = setInfo.attribute("code");
-								QString text = setInfo.attribute("text");
-								QString additional = setInfo.attribute("additional", "");
-
-								MaskDescr *mHelp = new MaskDescr;
-								mHelp->mask = code;
-								mHelp->LongDescr = text;
-								mHelp->ExtDescr = additional;
-
-								bStruct.fuseDescr << *mHelp;
-							}
-						}
+						parseNode(n, bStruct.fuse, bStruct.fuseDescr);
 					}
 				}
 
