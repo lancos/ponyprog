@@ -34,7 +34,7 @@ FOREACH(file ${files})
     STRING(REGEX REPLACE "\"" "" GR_ID "${GR_ID}")
 
     IF (NOT ${GR_NAME} STREQUAL "")
-      MESSAGE(STATUS "group ${GR_NAME} ${GR_ID}")
+      MESSAGE(STATUS "Generate defines for group ${GR_NAME} ${GR_ID}")
       FILE(APPEND ${DEFINES_NAME} "\n#define ${GR_NAME} ${GR_ID}\n")
       SET(CURR_GROUP_ID "${GR_ID}")
       SET(RUN_NR 0)

@@ -207,7 +207,10 @@ quint32 cChipCollection::GetTypeFromString(const QString &name)
 	return EID_INVALID;
 }
 
-
+/**
+ * part for parsing of fuse/lock text nodes
+ *
+ */
 bool cChipCollection::parseNode(const QDomNode &nd, QVector<BitInfo> &b, QVector<MaskDescr> &d)
 {
 	QDomNodeList intNodes = nd.childNodes();
@@ -468,8 +471,9 @@ icElement *cChipCollection::getChipPointer(quint32 type)
 
 
 /**
- * convert string 1k, 2k ... to int
- */
+* convert string 1k, 2k ... to int
+* convert hex numbers to int
+*/
 int cChipCollection::convertSize(const QString &s)
 {
 	int res = 0;

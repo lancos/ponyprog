@@ -366,10 +366,7 @@ class cChipCollection
 	icElement *getChipPointer(quint32 type);
 
 	bool parseNode(const QDomNode &nd, QVector<BitInfo> &b, QVector<MaskDescr> &d);
-	/**
-	 * convert string 1k, 2k ... to int
-	 * convert hex numbers to int
-	 */
+
 	int convertSize(const QString &s);
 
   public:

@@ -191,7 +191,7 @@ void Wait::WaitUsec(unsigned int usec)
 		{
 			gettimeofday(&t2, NULL);
 		}
-		while (timercmp(&t2, &t1, <));  // EK 2017 is it right???
+		while (timercmp(&t2, &t1, <));
 #endif
 	}
 	else
