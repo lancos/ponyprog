@@ -574,30 +574,6 @@ bool IntelFileBuf::ScanHex(const QString &sp, quint32 &result)
 	result = sp.toInt(&ok, 16);
 
 	return ok;
-
-#if 0
-	char cifra[20];
-	int j;
-
-	if (len > 8)
-	{
-		return -2;
-	}
-
-	for (j = 0; j < len && **sp; j++)
-	{
-		cifra[j] = *(*sp)++;
-
-		if (!isxdigit(cifra[j]))
-		{
-			return -1;
-		}
-	}
-
-	cifra[j] = '\0';
-	result = strtoul(cifra, NULL, 16);
-#endif
-	return 0;
 }
 
 bool IntelFileBuf::ScanHex(const QString &sp, quint16 &result)
@@ -606,11 +582,4 @@ bool IntelFileBuf::ScanHex(const QString &sp, quint16 &result)
 	result = sp.toInt(&ok, 16);
 
 	return ok;
-#if 0
-	quint32 res;
-	int rval = ScanHex(sp, len, res);
-	result = (quint16)res;
-
-	return rval;
-#endif
 }

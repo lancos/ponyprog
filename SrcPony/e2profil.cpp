@@ -950,39 +950,6 @@ void E2Profile::SetLogFileName(const QString &name)
 	}
 }
 
-#if 0
-QString E2Profile::GetLockDir()
-{
-	QString sp = s->value("ttyLockDir",  "/var/lock").toString();
-
-	return sp;
-}
-
-
-void E2Profile::SetLockDir(const QString &name)
-{
-	if (name.length())
-	{
-		s->setValue("ttyLockDir", name);
-	}
-}
-
-QString E2Profile::GetDevDir()
-{
-	QString sp = s->value("ttyDevDir", "/dev").toString();
-
-	return sp;
-}
-
-void E2Profile::SetDevDir(const QString &name)
-{
-	if (name.length())
-	{
-		s->setValue("ttyDevDir", name);
-	}
-}
-#endif
-
 #ifdef Q_OS_LINUX
 
 static QString retrieve_ttyS_name()

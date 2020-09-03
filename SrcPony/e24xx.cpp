@@ -253,27 +253,6 @@ int E24xx::bank_out(quint8 const *copy_buf, int bank, long size, long idx)
 	}
 
 	memcpy(buffer + 1, copy_buf, size);
-#if 0
-
-	for (j = 0; j < size; j++)
-	{
-		buffer[j] = j;
-
-		if (GetBus()->Write(eeprom_addr[bank], buffer + j, 2) != 2)
-		{
-			return GetBus()->Error();
-		}
-
-		for (k = timeout_loop; k > 0 && GetBus()->Read(eeprom_addr[bank], buffer, 1) != 1; k--)
-			;
-
-		if (k == 0)
-		{
-			return E2P_TIMEOUT;
-		}
-	}
-
-#else
 
 	for (j = 0; j < size; j += writepage_size)
 	{
@@ -294,8 +273,6 @@ int E24xx::bank_out(quint8 const *copy_buf, int bank, long size, long idx)
 			return E2P_TIMEOUT;
 		}
 	}
-
-#endif
 
 	return OK;
 }
@@ -361,34 +338,7 @@ int E24xx::BankRollOverDetect(int force)
 	{
 		quint8 index;
 		quint8 buf[CMP_LEN + 1], buf1[CMP_LEN], buf2[CMP_LEN];
-#if 0
-		//Lettura dal primo banco
-		index = 0;
 
-		if (GetBus()->StartWrite(eeprom_addr[0], &index, 1) != 1)
-		{
-			return GetBus()->Error();
-		}
-
-		if (GetBus()->Read(eeprom_addr[0], buf1, CMP_LEN) != CMP_LEN)
-		{
-			return GetBus()->Error();
-		}
-
-		//Lettura dal secondo banco
-		index = 0;
-
-		if (GetBus()->StartWrite(eeprom_addr[1], &index, 1) != 1)
-		{
-			return GetBus()->Error();
-		}
-
-		if (GetBus()->Read(eeprom_addr[1], buf2, CMP_LEN) != CMP_LEN)
-		{
-			return GetBus()->Error();
-		}
-
-#else
 		int error;
 
 		if ((error = bank_in(buf1, 0, CMP_LEN)))
@@ -401,34 +351,17 @@ int E24xx::BankRollOverDetect(int force)
 			return error;
 		}
 
-#endif
-
 		//Se i primi due banchi sono differenti e` possibile
 		//  determinare il bank-rollover
 		if (memcmp(buf1, buf2, CMP_LEN) != 0)
 		{
 			//lettura iniziando dalla fine del primo banco
 			index = GetBankSize() - 1;
-#if 0
-
-			if (GetBus()->StartWrite(eeprom_addr[0], &index, 1) != 1)
-			{
-				return GetBus()->Error();
-			}
-
-			if (GetBus()->Read(eeprom_addr[0], buf, CMP_LEN + 1) != CMP_LEN + 1)
-			{
-				return GetBus()->Error();
-			}
-
-#else
 
 			if ((error = bank_in(buf, 0, CMP_LEN + 1, GetBankSize() - 1)))
 			{
 				return error;
 			}
-
-#endif
 
 			rlv = (memcmp(buf + 1, buf1, CMP_LEN) == 0) ? 1 : 2;
 		}

@@ -32,7 +32,6 @@
 #include <QCoreApplication>
 
 #include "Translator.h"
-// #include "busio.h"
 
 //Include Bus Classes
 #include "i2cbus.h"
@@ -42,11 +41,8 @@
 #include "at250bus2.h"
 #include "picbus.h"
 #include "pic12bus.h"
-//#include "sxbus.h"
 #include "sdebus.h"
 #include "at89sbus.h"
-//#include "atmegabus.h"
-//#include "avr1200bus.h"
 #include "picbusnew.h"
 #include "imbus.h"
 #include "x2444bus.h"
@@ -57,7 +53,6 @@
 #include "easyi2c_interf.h"
 #include "ispinterf.h"
 #include "jdminter.h"
-//#include "jdmiointer.h"
 #include "dt006interf.h"
 #include "linuxsysfsint.h"
 #include "mpsse_interf.h"
@@ -79,21 +74,6 @@ class e2App : public cTranslator
 	e2App();
 	virtual ~e2App();
 
-	// Routines from vApp that are normally overridden
-
-	//      virtual vWindow* NewAppWin(vWindow* win, char* name, int w, int h,
-	//                                 vAppWinInfo* winInfo = 0);
-
-	// replace about signal - slots
-	//      virtual void AppCommand(vWindow* win, ItemVal id, ItemVal val, CmdType cType);
-
-	//      virtual void KeyIn(vWindow*, vKey, unsigned int);
-
-	// New routines for this particular app
-	//      int GetCounter() const
-	//      {
-	//              return winCounter;
-	//      }
 	int TestPort(int port = -1, bool open_only = false);
 	int OpenPort(int port = -1);
 	void SetInitialBus(BusIO *p)
@@ -182,13 +162,6 @@ class e2App : public cTranslator
 	void initSettings();
 	void LookForBogoMips(); //should get bogomips
 
-	// EK 2017
-	// we can fork the process
-	//      int winCounter;         //open windows (child) counter
-
-	//      int abortFlag;          //True if we have to abort current op
-	//      int ignoreFlag;         //True if we have to ignore probe errors (usually false)
-
 	HInterfaceType iType;   //current interface type
 
 	BusInterface *busIntp;  //pointer to current interface type
@@ -206,7 +179,6 @@ class e2App : public cTranslator
 	Dt006Interface dt006_apiI;
 	Dt006Interface dt006_ioI;
 	JdmInterface jdm_apiI;
-	//      JdmIOInterface jdm_ioI;
 	LinuxSysFsInterface linuxsysfs_ioI;
 	MpsseInterface jtagkeyI;
 	MpsseInterface ponyprog_ftI;
@@ -223,11 +195,8 @@ class e2App : public cTranslator
 	At250BigBus at250BigB;
 	PicBus picB;
 	Pic12Bus pic12B;
-	//SxBus sxB;
 	Sde2506Bus sdeB;
 	At89sBus at89sB;
-	//      AtMegaBus atMegaB;
-	//      Avr1200Bus at1200B;
 	PicBusNew picNewB;
 	IMBus imB;
 	X2444Bus x2444B;

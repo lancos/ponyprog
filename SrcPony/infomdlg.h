@@ -97,45 +97,6 @@ class notesModalDialog : public QDialog, public cTranslator, public Ui::NotesDia
 	QString *cm_ptr;
 };
 
-#if 0
-class editModalDialog : public QDialog, public cTranslator, public Ui::EditDialog
-{
-	Q_OBJECT
-  public:
-	editModalDialog(QWidget *bw, int curval = 0, const QString title = translate(STR_MSGEDITBUG));
-	virtual ~editModalDialog();             // Destructor
-	//      virtual int editAction(char* msg, int &retval);
-	int GetVal();
-
-  private slots:
-	void onOk();
-	void onEdit();
-
-  protected:
-
-  private:
-	int oldval;
-};
-
-
-class editModalDialog2 : public QDialog, public cTranslator, public Ui::EditDialog
-{
-	Q_OBJECT
-  public:
-	editModalDialog2(QWidget *bw, const QString curval = "", const QString title = translate(STR_MSGEDITBUG));
-	virtual ~editModalDialog2();            // Destructor
-	//      virtual int editAction(char* msg, char *text, int len);
-	QString GetVal();
-
-  private slots:
-	void onOk();
-
-  protected:
-
-  private:
-	QString val;
-};
-#endif
 
 #endif
 

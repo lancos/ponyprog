@@ -42,9 +42,6 @@ int main(int argc, char **argv)
 	app.setOrganizationName("PonyProg");
 	app.setWindowIcon(QIcon(":/icons/ponyprog-small.png"));
 
-	// Identify locale and load translation if available
-	//     QString locale = QLocale::system().name();
-
 	e2CmdWindow mainWin;
 
 	mainWin.show();
