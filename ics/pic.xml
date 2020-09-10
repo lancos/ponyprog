@@ -2,16 +2,46 @@
 <config type="PonyProg" version="3">
     <chip menu="PIC 12 micro" group="PIC125XX" id="0x0e">
         <!--ic menu="PIC125XX Auto" def="PIC12500" code_sz="1k" /-->
-        <ic menu="PIC12C508" def="PIC12508" code_sz="1k" />
-        <ic menu="PIC12C509" def="PIC12509" code_sz="2k" />
-        <ic menu="PIC12C508A" def="PIC12508A" code_sz="1k" />
-        <ic menu="PIC12C509A" def="PIC12509A" code_sz="2k" />
-        <ic menu="PIC12C518" def="PIC12E518" code_sz="1k" />
-        <ic menu="PIC12C519" def="PIC12E519" code_sz="2k" />
-        <ic menu="PIC12C671" def="PIC12671" code_sz="1k" />
-        <ic menu="PIC12C672" def="PIC12672" code_sz="2k" />
-        <ic menu="PIC12CE673" def="PIC12673" code_sz="1k" />
-        <ic menu="PIC12CE674" def="PIC12674" code_sz="2k" />
+        <ic menu="PIC12C508"
+            def="PIC12508"
+            code_sz="1k"
+        />
+        <ic menu="PIC12C509"
+            def="PIC12509"
+            code_sz="2k"
+        />
+        <ic menu="PIC12C508A"
+            def="PIC12508A"
+            code_sz="1k"
+        />
+        <ic menu="PIC12C509A"
+            def="PIC12509A"
+            code_sz="2k"
+        />
+        <ic menu="PIC12C518"
+            def="PIC12E518"
+            code_sz="1k"
+        />
+        <ic menu="PIC12C519"
+            def="PIC12E519"
+            code_sz="2k"
+        />
+        <ic menu="PIC12C671"
+            def="PIC12671"
+            code_sz="1k"
+        />
+        <ic menu="PIC12C672"
+            def="PIC12672"
+            code_sz="2k"
+        />
+        <ic menu="PIC12CE673"
+            def="PIC12673"
+            code_sz="1k"
+        />
+        <ic menu="PIC12CE674"
+            def="PIC12674"
+            code_sz="2k"
+        />
         <descr list="PIC12C508, PIC12C509, PIC12C508A, PIC12C509A, PIC12CE518, PIC12CE519" >
             <lock>
                 <bit offset="0" name="FOSC" index="0" />
@@ -82,21 +112,95 @@
         </descr>
     </chip>
     <chip menu="PIC 16 micro" group="PIC168XX" id="0x0b">
-        <ic menu="PIC168XX Auto" def="PIC16800" code_sz="64768" data_sz="" /> <!-- AUTOSIZE_ID -->
-        <ic menu="PIC16F84A" def="PIC1684A" signature="0x0560" code_sz="2k" data_sz="64" />
-        <ic menu="PIC16F870" def="PIC16870" signature="0x0d00" code_sz="4k" data_sz="64" />
-        <ic menu="PIC16F871" def="PIC16871" signature="0x0d20" code_sz="4k" data_sz="64" />
-        <ic menu="PIC16F872" def="PIC16872" signature="0x08e0" code_sz="4k" data_sz="64" />
-        <ic menu="PIC16F873" def="PIC16873" signature="0x0960" code_sz="8k" data_sz="128" />
-        <ic menu="PIC16F874" def="PIC16874" signature="0x0920" code_sz="8k" data_sz="128" />
-        <ic menu="PIC16F876" def="PIC16876" signature="0x09e0" code_sz="16k" data_sz="256" />
-        <ic menu="PIC16F877" def="PIC16877" signature="0x09a0" code_sz="16k" data_sz="256" />
-        <ic menu="PIC16F873A" def="PIC16873A" signature="0x0e40" code_sz="8k" data_sz="128" />
-        <ic menu="PIC16F874A" def="PIC16874A" signature="0x0e60" code_sz="8k" data_sz="128" />
-        <ic menu="PIC16F876A" def="PIC16876A" signature="0x0e00" code_sz="16k" data_sz="256" />
-        <ic menu="PIC16F877A" def="PIC16877A" signature="0x0e20" code_sz="16k" data_sz="256" />
-        <ic menu="PIC16F627" def="PIC16627" signature="0x07a0" code_sz="1k" data_sz="128" />
-        <ic menu="PIC16F628" def="PIC16628" signature="0x07c0" code_sz="2k" data_sz="128" />
+        <ic menu="PIC168XX Auto"
+            def="PIC16800"
+            code_sz="64768"
+            data_sz=""
+        /> <!-- AUTOSIZE_ID -->
+        <ic menu="PIC16F84A"
+            def="PIC1684A"
+            signature="0x0560"
+            code_sz="2k"
+            data_sz="64"
+        />
+        <ic menu="PIC16F870"
+            def="PIC16870"
+            signature="0x0d00"
+            code_sz="4k"
+            data_sz="64"
+        />
+        <ic menu="PIC16F871"
+            def="PIC16871"
+            signature="0x0d20"
+            code_sz="4k"
+            data_sz="64"
+        />
+        <ic menu="PIC16F872"
+            def="PIC16872"
+            signature="0x08e0"
+            code_sz="4k"
+            data_sz="64"
+        />
+        <ic menu="PIC16F873"
+            def="PIC16873"
+            signature="0x0960"
+            code_sz="8k"
+            data_sz="128"
+        />
+        <ic menu="PIC16F874"
+            def="PIC16874"
+            signature="0x0920"
+            code_sz="8k"
+            data_sz="128"
+        />
+        <ic menu="PIC16F876"
+            def="PIC16876"
+            signature="0x09e0"
+            code_sz="16k"
+            data_sz="256"
+        />
+        <ic menu="PIC16F877"
+            def="PIC16877"
+            signature="0x09a0"
+            code_sz="16k"
+            data_sz="256"
+        />
+        <ic menu="PIC16F873A"
+            def="PIC16873A"
+            signature="0x0e40"
+            code_sz="8k"
+            data_sz="128"
+        />
+        <ic menu="PIC16F874A"
+            def="PIC16874A"
+            signature="0x0e60"
+            code_sz="8k"
+            data_sz="128"
+        />
+        <ic menu="PIC16F876A"
+            def="PIC16876A"
+            signature="0x0e00"
+            code_sz="16k"
+            data_sz="256"
+        />
+        <ic menu="PIC16F877A"
+            def="PIC16877A"
+            signature="0x0e20"
+            code_sz="16k"
+            data_sz="256"
+        />
+        <ic menu="PIC16F627"
+            def="PIC16627"
+            signature="0x07a0"
+            code_sz="1k"
+            data_sz="128"
+        />
+        <ic menu="PIC16F628"
+            def="PIC16628"
+            signature="0x07c0"
+            code_sz="2k"
+            data_sz="128"
+        />
         <descr list="PIC16F84A" >
             <lock>
                 <bit offset="0" name="FOSC" index="0" />
