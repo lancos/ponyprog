@@ -179,16 +179,6 @@ e2CmdWindow::e2CmdWindow(QWidget *parent) :
 
 	// end of init from AppMain
 
-	// EK 2017
-	// TODO
-	// terminal modus ??
-	if (scriptMode)
-	{
-		returnValue = CmdRunScript();
-
-		exit(returnValue);  //Se AppMain ritorna un valore != 0 esce immediatamente
-	}
-
 	createFileList();
 	createScriptList();
 
@@ -295,6 +285,13 @@ e2CmdWindow::e2CmdWindow(QWidget *parent) :
 
 	E2Profile::readDialogSettings(this, false);
 	E2Profile::restoreSplitter(splitter);
+
+	if (scriptMode)
+	{
+		returnValue = CmdRunScript();
+
+		exit(returnValue);  //Se AppMain ritorna un valore != 0 esce immediatamente
+	}
 }
 
 e2CmdWindow::~e2CmdWindow()
