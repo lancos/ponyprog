@@ -318,12 +318,12 @@ void e2AppWinInfo::SetId(quint32 id)
 	//Setting the device pointer to selected type
 	case E24XX:
 		eep = eep24xx;
-		if (eep_subtype == GetSubType(E2401_A))
+		if (id == E2401_A)
 		{
 			eep = eep24xx1;
 		}
 
-		if (eep_subtype == GetSubType(E2401_B))
+		if (id == E2401_B)
 		{
 			eep = eep2401;
 		}
@@ -362,10 +362,10 @@ void e2AppWinInfo::SetId(quint32 id)
 		qDebug() << hex << xtype << dec;
 		if (E2Profile::GetAt89PageOp())
 		{
-			eep->SetProgPageSize(GetTypeWPageSize(GetId()), false);        //write prog page size
-			eep->SetProgPageSize(GetTypeWPageSize(GetId()), true);         //read prog page size
-			eep->SetDataPageSize(GetTypeWPageSize(GetId()) / 2, false);    //write data page size
-			eep->SetDataPageSize(GetTypeWPageSize(GetId()) / 2, true);     //read data page size
+			eep->SetProgPageSize(GetTypeWPageSize(xtype), false);        //write prog page size
+			eep->SetProgPageSize(GetTypeWPageSize(xtype), true);         //read prog page size
+			eep->SetDataPageSize(GetTypeWPageSize(xtype) / 2, false);    //write data page size
+			eep->SetDataPageSize(GetTypeWPageSize(xtype) / 2, true);     //read data page size
 		}
 
 		At89sBus *b = static_cast<At89sBus *>(eep->GetBus());
@@ -651,8 +651,9 @@ int e2AppWinInfo::Load()
 
 		if (rval > 0)
 		{
-			if (GetPriType(GetId()) == PIC16XX ||
-					GetPriType(GetId()) == PIC168XX)
+			quint32 pritype = GetPriType(GetId());
+			if (pritype == PIC16XX ||
+					pritype == PIC168XX)
 			{
 				//It seems a bit tricky...
 				//Relocate the DATA and CONFIG memory with PIC devices
@@ -687,7 +688,7 @@ int e2AppWinInfo::Load()
 					SetLockBits(config);
 				}
 			}
-			else if (GetPriType(GetId()) == PIC125XX)
+			else if (pritype == PIC125XX)
 			{
 				//Copy Config memory
 				if (GetSize() + 16 <= GetBufSize())
@@ -758,8 +759,9 @@ int e2AppWinInfo::Save()
 	if (save_type == ALL_TYPE &&
 			(GetFileBuf() == INTEL || GetFileBuf() == MOTOS))
 	{
-		if (GetPriType(GetId()) == PIC16XX ||
-				GetPriType(GetId()) == PIC168XX)
+		quint32 pritype = GetPriType(GetId());
+		if (pritype == PIC16XX ||
+				pritype == PIC168XX)
 		{
 			//It seems a bit tricky...
 			//Relocate the DATA and CONFIG memory with PIC devices
@@ -819,7 +821,7 @@ int e2AppWinInfo::Save()
 				}
 			}
 		}
-		else if (GetPriType(GetId()) == PIC125XX)
+		else if (pritype == PIC125XX)
 		{
 			//Set ALL overbound buffer to 0xFF
 			memset(GetBufPtr(), 0xFF, GetBufSize());

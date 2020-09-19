@@ -292,10 +292,7 @@ class e2AppWinInfo : public cChipCollection
 	bool buf_ok;                            //true if buffer is valid
 	bool buf_changed;                       //true if buffer changed/edited
 
-	quint32 eep_id;
-
 	//se zero viene usato GetNoOfBank(), serve per una forzatura manuale
-
 
 	int block_size;                         //dimensione del blocco (puo` essere anche 1, dipende dal tipo di eeprom)
 	int no_block;                           //numero dei blocchi che contiene l'eeprom, indica la dimensione
