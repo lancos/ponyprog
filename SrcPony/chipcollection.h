@@ -35,6 +35,8 @@
 #include <QDebug>
 #include <QXmlReader>
 #include <QDomNode>
+#include <QMenu>
+#include <QActionGroup>
 
 #define EID_INVALID     0
 
@@ -277,6 +279,27 @@
 
 
 
+struct chipMenuInfo
+{
+	QString name;
+	quint32 id;
+};
+
+struct menuToGroup
+{
+	QMenu *mnu;
+	QString title;               // one title can have 1 and more group ids
+// 	QString filter;
+	QActionGroup *grp;
+	QVector<quint32> vId;        // vector of group ids
+	// vector of main type
+	QVector <chipMenuInfo> vChip;
+	//QVector <int> pre_type;
+	// copy of chipInfo
+	//QVector<chipInfo> info;
+};
+
+
 /**
  * @brief BitInfo is the main structure for displaying in the QTreeWidget
  */
@@ -340,8 +363,15 @@ class cGroupElement
 class cChipCollection
 {
   public:
-	// will be deprecated
-	quint32 GetSubType(quint32 type);
+	cChipCollection()
+	{
+		eep_id = 0;
+		currentGroup = NULL;
+		currentIc = NULL;
+	}
+	quint32 GetCurrentId();
+	void SetCurrentId(quint32 id);
+	quint32 GetSubType(quint32 type);// will be deprecated
 	quint32 GetPriType(quint32 type);
 	cGroupElement *GetMenuGroupPointer(const QString &menuStr);
 	quint32 GetTypeFromSize(quint32 type, int size);
@@ -352,7 +382,7 @@ class cChipCollection
 	QString GetTypeString(quint32 type);
 	quint32 GetSignatureType(quint32 pri_type, quint16 sign);
 	quint32 GetFirstFromPritype(quint32 pritype);
-
+	QVector <menuToGroup> CreateDeviceMenues();
 	/**
 	 * @brief search chip name in vectors
 	 *
@@ -370,7 +400,14 @@ class cChipCollection
 	int convertSize(const QString &s);
 
   public:
+	quint32 eep_id;
+
+  private:
 	QVector <cGroupElement *> icGroups;
+	//quint32 currentId;
+
+	cGroupElement *currentGroup;
+	icElement *currentIc;
 };
 
 #endif // _CHIPCOLLECTION_H

@@ -60,26 +60,6 @@
 #include "qhexedit.h"
 
 
-struct chipMenuInfo
-{
-	QString name;
-	quint32 id;
-};
-
-struct menuToGroup
-{
-	QMenu *mnu;
-	QString title;               // one title can have 1 and more group ids
-// 	QString filter;
-	QActionGroup *grp;
-	QVector<quint32> vId;        // vector of group ids
-	// vector of main type
-	QVector <chipMenuInfo> vChip;
-	//QVector <int> pre_type;
-	// copy of chipInfo
-	//QVector<chipInfo> info;
-};
-
 
 typedef enum
 {

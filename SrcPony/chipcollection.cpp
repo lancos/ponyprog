@@ -208,6 +208,55 @@ quint32 cChipCollection::GetTypeFromString(const QString &name)
 }
 
 /**
+ * @brief funktion generates list of menu/submenue elements of main program
+ */
+QVector <menuToGroup> cChipCollection::CreateDeviceMenues()
+{
+	// the loop about all structures
+	qDebug() << Q_FUNC_INFO << icGroups.count() << "entries";
+
+	QVector <menuToGroup> m;
+
+	foreach (cGroupElement *g, icGroups)
+	{
+		menuToGroup *mTmp = new menuToGroup();
+		mTmp->title = g->menuName;
+		mTmp->vId = g->vId; // vector of group ids
+
+		foreach (icElement iE, g->vChip)
+		{
+			chipMenuInfo cInfo = (chipMenuInfo)
+			{
+				iE.name, iE.id
+			};
+
+			mTmp->vChip << cInfo;
+		}
+
+		m << *mTmp;
+	}
+
+	return m;
+}
+
+
+quint32 cChipCollection::GetCurrentId()
+{
+	return eep_id;
+}
+
+void cChipCollection::SetCurrentId(quint32 id)
+{
+	if (id == 0)
+	{
+		id = E2400;         //to avoid segV
+	}
+
+	eep_id = id;
+
+}
+
+/**
  * part for parsing of fuse/lock text nodes
  *
  */

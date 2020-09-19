@@ -931,24 +931,13 @@ int e2CmdWindow::OnError(int err_no, const QString &msgerr)
 void e2CmdWindow::createDeviceMenues()
 {
 	// the loop about all structures
-	qDebug() << Q_FUNC_INFO << awip->icGroups.count() << "entries";
+	deviceMenu = awip->CreateDeviceMenues();
 
-	foreach (cGroupElement *g, awip->icGroups)
+	qDebug() << Q_FUNC_INFO << deviceMenu.count() << "entries";
+
+	for (int i = 0; i < deviceMenu.count(); i++)
 	{
-		menuToGroup *mTmp = new menuToGroup();
-		mTmp->title = g->menuName;
-		mTmp->vId = g->vId; // vector of group ids
-
-		foreach (icElement iE, g->vChip)
-		{
-			chipMenuInfo cInfo = (chipMenuInfo)
-			{
-				iE.name, iE.id
-			};
-			mTmp->vChip << cInfo;
-		}
-
-		addMenuVector(mTmp);
+		addMenuVector(&deviceMenu[i]);
 	}
 }
 
@@ -973,7 +962,7 @@ void e2CmdWindow::addMenuVector(menuToGroup *vecMnu, const QString &filter)
 
 	connect(vecMnu->grp, SIGNAL(triggered(QAction *)), this, SLOT(onSelectChip(QAction *)));
 
-	deviceMenu << *vecMnu;
+// 	deviceMenu << *vecMnu;
 }
 
 
