@@ -81,7 +81,17 @@ quint32 cChipCollection::GetTypeFromSize(quint32 type, int size)
 
 		foreach (icElement iE, g->vChip)
 		{
-			if ((iE.prog_sz + iE.data_sz) == size)
+			int sz = 0;
+			if (iE.prog_sz > 0)
+			{
+				sz = iE.prog_sz;
+			}
+			if (iE.data_sz > 0)
+			{
+				sz += iE.data_sz;
+			}
+
+			if (sz == size)
 			{
 				return iE.id;
 			}
@@ -96,7 +106,18 @@ int cChipCollection::GetTypeSize(quint32 type)
 {
 	icElement *i = getChipPointer(type);
 
-	return (i->prog_sz + i->data_sz);
+	int sz = 0;
+	if (i->prog_sz > 0)
+	{
+		sz = i->prog_sz;
+	}
+
+	if (i->data_sz > 0)
+	{
+		sz += i->data_sz;
+	}
+
+	return sz;
 }
 
 
