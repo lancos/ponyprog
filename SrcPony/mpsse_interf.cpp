@@ -172,6 +172,9 @@ int MpsseInterface::InitPins()
 void MpsseInterface::DeInitPins()
 {
 	//ctx.set_bitmode(0, BITMODE_RESET);
+	int new_data = pin_enbus;
+	SendPins(new_data);	//set pins to ZERO
+	Flush();
 }
 
 int MpsseInterface::SetFrequency(uint32_t freq)
