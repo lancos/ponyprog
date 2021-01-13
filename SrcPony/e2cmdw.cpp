@@ -5798,6 +5798,16 @@ int e2CmdWindow::OpenFile(const QString &file)
 		{
 			filterIndex = (int)awip->GetFileBuf(); // ???
 			QString open_path = QDir::homePath();			//TODO: load from settings
+			QStringList l = E2Profile::GetLastFiles();
+			if (l.count() > 0)
+			{
+				QString fname = l.at(0);
+				int pos_and = l.at(0).lastIndexOf("?");
+				if (pos_and > 0)
+					fname = l.at(0).left(pos_and);
+
+				open_path = QFileInfo(fname).canonicalPath();	//Use open_path from last opened file
+			}
 
 			QString fltr = convertFilterListToString(filterInfo);
 
