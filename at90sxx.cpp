@@ -222,13 +222,15 @@ static IdType IdArray[] = {
 	{0x92, 0x08,	ATtiny461},
 	{0x93, 0x0D,	ATtiny861},
 
-	{0x92, 0x05,	ATmega48},      // ATmega48A
-	{0x92, 0x0A,	ATmega48},      // ATmega48PA
-	{0x93, 0x0A,	ATmega88},      // ATmega88A
-    {0x93, 0x0F,	ATmega88},      // ATmega88PA
-	{0x94, 0x06,	ATmega168},     // ATmega168A
-	{0x94, 0x0B,	ATmega168},     // ATmega168PA
-	{0x95, 0x14,    ATmega328},     // ATmega328
+	{0x92, 0x05,	ATmega48},
+	{0x92, 0x0A,	ATmega48},      // new ATmega48PA (RG 18.11.2013)
+	{0x93, 0x0A,	ATmega88},
+	{0x93, 0x0F,	ATmega88},      // new ATmega88PA (RG 18.11.2013)
+	{0x94, 0x0B,	ATmega168},     // new ATmega168PA (RG 28.09.2012)
+    {0x94, 0x06,	ATmega168},     // ATmega168A
+	{0x95, 0x0F,	ATmega328},     // new ATmega328P (RG 23.06.2012)
+	{0x95, 0x14,	ATmega328},     // new ATmega328 (RG 18.11.2013)
+	{0x95, 0x16,	ATmega328},     // ATmega328PB (RG 27.11.2020)
 	{0x95, 0x0F,	ATmega328},     // ATmega328P
 
 	{0x94, 0x0A,	ATmega164},
@@ -247,6 +249,8 @@ static IdType IdArray[] = {
 	{0x97, 0x03,	ATmega1280},
 	{0x97, 0x04,	ATmega1281},
     {0x97, 0x05,	ATmega1284},     // new ATmega1284P (RG 10.06.2017)
+    {0x97, 0x06,	ATmega1284},     // new ATmega1284 (RG 19.06.2017)
+
 	{0x98, 0x01,	ATmega2560},
 	{0x98, 0x02,	ATmega2561},
 

@@ -8,7 +8,7 @@
 		<Build>
 			<Target title="Debug">
 				<Option platforms="Windows;" />
-				<Option output="bin/Debug/ponyprog2000" prefix_auto="1" extension_auto="1" />
+				<Option output="bin/Debug/PonyProg2000" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Debug/" />
 				<Option type="0" />
 				<Option compiler="gcc" />
@@ -16,10 +16,17 @@
 					<Add option="-g" />
 					<Add option="-DvDEBUG" />
 				</Compiler>
+				<Linker>
+					<Add option="-lVdbg" />
+					<Add option="-linpoutx64" />
+					<Add option="-lmingw32" />
+					<Add option="-lwinmm" />
+					<Add option="-lcomctl32" />
+				</Linker>
 			</Target>
 			<Target title="Release">
 				<Option platforms="Windows;" />
-				<Option output="bin/Release/PonyProg" prefix_auto="1" extension_auto="1" />
+				<Option output="bin/Release/PonyProg2000" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Release/" />
 				<Option type="0" />
 				<Option compiler="gcc" />
@@ -28,6 +35,11 @@
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
+					<Add option="-lVrel" />
+					<Add option="-linpoutx64" />
+					<Add option="-lmingw32" />
+					<Add option="-lwinmm" />
+					<Add option="-lcomctl32" />
 				</Linker>
 			</Target>
 		</Build>
@@ -38,15 +50,11 @@
 			<Add directory="v/includew" />
 		</Compiler>
 		<Linker>
-			<Add option="-static-libgcc" />
 			<Add option="-static-libstdc++" />
-			<Add option="-lV" />
-			<Add option="-linpout32" />
-			<Add option="-lmingw32" />
-			<Add option="-lwinmm" />
-			<Add option="-lcomctl32" />
+			<Add option="-static-libgcc" />
 			<Add directory="." />
 			<Add directory="v/lib" />
+			<Add directory="InpOutLib/x64" />
 		</Linker>
 		<Unit filename="aboutmdlg.cpp" />
 		<Unit filename="aboutmdlg.h" />
@@ -139,6 +147,8 @@
 		<Unit filename="ispinterf.cpp" />
 		<Unit filename="ispinterf.h" />
 		<Unit filename="jdminter.h" />
+		<Unit filename="linuxsysfsint.cpp" />
+		<Unit filename="linuxsysfsint.h" />
 		<Unit filename="lpt_ext_interf.cpp" />
 		<Unit filename="lpt_ext_interf.h" />
 		<Unit filename="lpt_io_interf.cpp" />
@@ -204,10 +214,6 @@
 		<Unit filename="x2444bus.cpp" />
 		<Unit filename="x2444bus.h" />
 		<Extensions>
-			<code_completion />
-			<envvars />
-			<debugger />
-			<lib_finder disable_auto="1" />
 			<DoxyBlocks>
 				<comment_style block="0" line="0" />
 				<doxyfile_project />
@@ -217,6 +223,7 @@
 				<doxyfile_dot />
 				<general />
 			</DoxyBlocks>
+			<lib_finder disable_auto="1" />
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>

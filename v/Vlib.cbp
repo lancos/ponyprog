@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="Vlib" />
+		<Option platforms="Windows;" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option platforms="Windows;" />
+				<Option output="lib/Vdbg" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="" />
+				<Option object_output="objwin/Debug/" />
+				<Option type="2" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+					<Add option="-O0" />
+					<Add option="-DvDEBUG" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option platforms="Windows;" />
+				<Option output="lib/Vrel" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="" />
+				<Option object_output="objwin/Release/" />
+				<Option type="2" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-fpermissive -Wno-write-strings" />
+			<Add option="-D_WINDOWS" />
+			<Add directory="includew" />
+		</Compiler>
+		<Unit filename="srcwin/vapp.cpp" />
+		<Unit filename="srcwin/vawinfo.cpp" />
+		<Unit filename="srcwin/vbaseitm.cpp" />
+		<Unit filename="srcwin/vbasewin.cpp" />
+		<Unit filename="srcwin/vbglcnv.cpp" />
+		<Unit filename="srcwin/vboxlblc.cpp" />
+		<Unit filename="srcwin/vbrush.cpp" />
+		<Unit filename="srcwin/vbtncmd.cpp" />
+		<Unit filename="srcwin/vcanvas.cpp" />
+		<Unit filename="srcwin/vcbtncmd.cpp" />
+		<Unit filename="srcwin/vchkboxc.cpp" />
+		<Unit filename="srcwin/vclabelc.cpp" />
+		<Unit filename="srcwin/vcmd.cpp" />
+		<Unit filename="srcwin/vcmdpane.cpp" />
+		<Unit filename="srcwin/vcmdprnt.cpp" />
+		<Unit filename="srcwin/vcmdwin.cpp" />
+		<Unit filename="srcwin/vcolor.cpp" />
+		<Unit filename="srcwin/vcomboc.cpp" />
+		<Unit filename="srcwin/vcpdc.cpp" />
+		<Unit filename="srcwin/vdebug.cpp" />
+		<Unit filename="srcwin/vdialog.cpp" />
+		<Unit filename="srcwin/vfilesel.cpp" />
+		<Unit filename="srcwin/vfinddlg.cpp" />
+		<Unit filename="srcwin/vfont.cpp" />
+		<Unit filename="srcwin/vfontsel.cpp" />
+		<Unit filename="srcwin/vframec.cpp" />
+		<Unit filename="srcwin/vicon.cpp" />
+		<Unit filename="srcwin/vlabelc.cpp" />
+		<Unit filename="srcwin/vlistc.cpp" />
+		<Unit filename="srcwin/vmemdc.cpp" />
+		<Unit filename="srcwin/vmenu.cpp" />
+		<Unit filename="srcwin/vmodald.cpp" />
+		<Unit filename="srcwin/vnotice.cpp" />
+		<Unit filename="srcwin/vos.cpp" />
+		<Unit filename="srcwin/vpen.cpp" />
+		<Unit filename="srcwin/vpopmenu.cpp" />
+		<Unit filename="srcwin/vprogrsc.cpp" />
+		<Unit filename="srcwin/vradioc.cpp" />
+		<Unit filename="srcwin/vrepldlg.cpp" />
+		<Unit filename="srcwin/vreply.cpp" />
+		<Unit filename="srcwin/vsliderc.cpp" />
+		<Unit filename="srcwin/vslist.cpp" />
+		<Unit filename="srcwin/vspinc.cpp" />
+		<Unit filename="srcwin/vstartup.cpp" />
+		<Unit filename="srcwin/vtextc.cpp" />
+		<Unit filename="srcwin/vtextcnv.cpp" />
+		<Unit filename="srcwin/vtexted.cpp" />
+		<Unit filename="srcwin/vtextinc.cpp" />
+		<Unit filename="srcwin/vthislst.cpp" />
+		<Unit filename="srcwin/vtimer.cpp" />
+		<Unit filename="srcwin/vutil.cpp" />
+		<Unit filename="srcwin/vwindc.cpp" />
+		<Unit filename="srcwin/vwindow.cpp" />
+		<Unit filename="srcwin/vwinprdc.cpp" />
+		<Unit filename="srcwin/vwinprtr.cpp" />
+		<Unit filename="srcwin/vynreply.cpp" />
+		<Extensions>
+			<lib_finder disable_auto="1" />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
