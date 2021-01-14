@@ -2759,11 +2759,11 @@ int e2CmdWindow::CmdWrite(int type, bool verify)
 							if (rval > 0)
 							{
 								//e2Prg->UpdateDialog(0, translate(STR_MSGWRITINGFUSE));
-								rval = awip->Write(CONFIG_TYPE, false, true);
+								rval = awip->Write(CONFIG_TYPE, false, false);
 
 								if (rval > 0)
 								{
-									rval = awip->Verify(CONFIG_TYPE, false, false);
+									rval = awip->Verify(CONFIG_TYPE, true, false);
 								}
 							}
 						}
