@@ -455,8 +455,8 @@ QVector<ChipBits> fuseModalDialog::eep_bits =
 		{ AT90S2313, AT90S4414, AT90S8515, AT90S4434, AT90S8535 },
 		{
 			// fuse
-			{ 0, "FSTRT", "Short start-up time enabled", "" },
-			{ 5, "SPIEN", "Serial program downloading (SPI) enabled", "" }
+			//{ 0, "FSTRT", "Short start-up time enabled", "" },
+			//{ 5, "SPIEN", "Serial program downloading (SPI) enabled", "" }
 		},
 		{
 			// fuse mask description
