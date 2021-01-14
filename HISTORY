@@ -1,5 +1,15 @@
 Version history
 
+3.1.2	bug fix: AT90S4433 need a power cycle to verify fuse bits programmed
+		fix: AT90S2313 doesn't have any fuse bits readable from ISP
+		fix and refactor handling of edit notes (Id and comment)
+		Add new AVR IDs (commented new models still to add)
+		Use open_path from last opened file
+		fix Reset with mpsse interface, restore initial pin states on deinit()
+		fix run script from command line: moved CmdRunScript() at the end of constructor, it needs menu initialized to select a device from device name string
+		fix ATiny2313 Struct description (fuse bits)
+		update qhexedit with latest fixes and address hexcaps
+
 3.1.1   Bug fix: correct device selection by menu entries and load file. Translation fixes
 3.1.0   Add USB PonyProgFT interface, redesigned interface dialog, several fixes
 3.0.2   Default build to Qt5, smal fixes to build on non-X86 ARCHs
