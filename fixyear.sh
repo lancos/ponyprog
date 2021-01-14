@@ -2,7 +2,7 @@
 
 set -o errexit
 
-OLD_YEAR=2019
+OLD_YEAR=2020
 CURRENT_YEAR=`date +%Y`
 
 FILESC=`find -name "*.cpp" -type f`
