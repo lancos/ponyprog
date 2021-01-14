@@ -5792,7 +5792,9 @@ int e2CmdWindow::OpenFile(const QString &file)
 				QString fname = l.at(0);
 				int pos_and = l.at(0).lastIndexOf("?");
 				if (pos_and > 0)
+				{
 					fname = l.at(0).left(pos_and);
+				}
 
 				open_path = QFileInfo(fname).canonicalPath();	//Use open_path from last opened file
 			}
