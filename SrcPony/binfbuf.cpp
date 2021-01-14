@@ -107,8 +107,8 @@ int binFileBuf::Load(int loadtype, long relocation_offset)
 
 	fh.close();
 
-	//      SetStringID("");        //????
-	SetComment("");
+	//SetStringID("");        //????
+	//SetComment("");
 	SetRollOver(0);         //2 (che significa NO) ??
 	SetCRC(mcalc_crc(GetBufPtr(), GetBlockSize() * GetNoOfBlock()));
 

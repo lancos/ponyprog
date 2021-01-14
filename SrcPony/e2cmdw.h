@@ -331,7 +331,8 @@ class e2CmdWindow : public QMainWindow, public e2App, public Ui::MainWindow
 	int SaveFile(int force_select = 0);
 	int OpenFile(const QString &file = 0);
 	void UpdateStrFromBuf();
-	void UpdateStrFromStr(const QString &s1, const QString &s2 = 0);
+	void UpdateStrFromStr(const QString &s1, const QString &s2);
+	void UpdateStrFromStr(const QString &s1);
 	void UpdateStatusBar();
 
 	//      void UpdateChipType(int pritype = -1, int subtype = -1);

@@ -172,13 +172,8 @@ notesModalDialog::notesModalDialog(QWidget *bw, QString &id, QString &cm, const 
 	lblStrID->setText(translate(STR_MSGCHIPID));
 	lblCommnt->setText(translate(STR_MSGNOTE));
 
-	if (id.length() && cm.length())
-	{
-		id_txt = id;
-		txiStrID->setText(id_txt);
-		cmt_txt = cm;
-		txiCommnt->setText(cmt_txt);
-	}
+	txiStrID->setText(id);
+	txiCommnt->setText(cm);
 
 	pushOk->setText(translate(STR_BTNOK));
 	pushCancel->setText(translate(STR_BTNCANC));
@@ -196,11 +191,8 @@ notesModalDialog::~notesModalDialog()
 
 void notesModalDialog::onOk()
 {
-	cmt_txt = txiCommnt->text();
-	id_txt = txiStrID->text();
-
-	*id_ptr = id_txt;
-	*cm_ptr = cmt_txt;
+	*id_ptr = txiStrID->text();
+	*cm_ptr = txiCommnt->text();
 
 	accept();
 }

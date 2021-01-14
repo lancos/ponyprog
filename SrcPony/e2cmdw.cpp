@@ -4488,6 +4488,7 @@ int e2CmdWindow::CmdClearBuf(int type)
 	//awip->FillBuffer();
 	awip->ClearBuffer(type);
 	Draw();
+	UpdateStrFromBuf();
 	UpdateStatusBar();
 
 	return OK;
@@ -5645,36 +5646,23 @@ void e2CmdWindow::CbxMenuInit()
 
 void e2CmdWindow::UpdateStrFromBuf()
 {
-	QString s;
+	txtID->setText(awip->GetStringID());
+	txtComment->setText(awip->GetComment());
+}
 
-	s = awip->GetStringID();
-
-	if (s.length())
-	{
-		txtID->setText(s);
-	}
-
-	s = awip->GetComment();
-
-	if (s.length())
-	{
-		txtComment->setText(s);
-	}
+void e2CmdWindow::UpdateStrFromStr(const QString &s1)
+{
+	txtID->setText(s1);
+	awip->SetStringID(s1);
 }
 
 void e2CmdWindow::UpdateStrFromStr(const QString &s1, const QString &s2)
 {
-	if (s1.length())
-	{
-		txtID->setText(s1);
-		awip->SetStringID(s1);
-	}
+	txtID->setText(s1);
+	awip->SetStringID(s1);
 
-	if (s2.length())
-	{
-		txtComment->setText(s2);
-		awip->SetComment(s2);
-	}
+	txtComment->setText(s2);
+	awip->SetComment(s2);
 }
 
 

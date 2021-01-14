@@ -1054,14 +1054,7 @@ QString e2AppWinInfo::GetStringID()
 
 void e2AppWinInfo::SetStringID(const QString &s)
 {
-	if (s.length())
-	{
-		eeprom_string = s;
-	}
-	else
-	{
-		eeprom_string = "";
-	}
+	eeprom_string = s;
 }
 
 QString e2AppWinInfo::GetComment()
@@ -1071,14 +1064,7 @@ QString e2AppWinInfo::GetComment()
 
 void e2AppWinInfo::SetComment(const QString &s)
 {
-	if (s.length())
-	{
-		eeprom_comment = s;
-	}
-	else
-	{
-		eeprom_comment = "";
-	}
+	eeprom_comment = s;
 }
 
 void e2AppWinInfo::ClearBuffer(int type)
@@ -1086,6 +1072,8 @@ void e2AppWinInfo::ClearBuffer(int type)
 	if (type == ALL_TYPE)
 	{
 		memset(GetBufPtr(), 0xFF, GetBufSize());
+		SetStringID("");
+		SetComment("");
 		buf_ok = true;          //Validate buffer
 	}
 	else if (type == PROG_TYPE)

@@ -95,10 +95,6 @@ class notesModalDialog : public QDialog, public cTranslator, public Ui::NotesDia
   private:
 	QString *id_ptr;
 	QString *cm_ptr;
-
-	QString id_txt;
-	QString cmt_txt;
-
 };
 
 #if 0

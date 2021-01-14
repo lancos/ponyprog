@@ -552,8 +552,8 @@ int IntelFileBuf::Load(int loadtype, long relocation_offset)
 
 	if (rval == OK)
 	{
-		//      SetStringID("");        //????
-		SetComment("");
+		//SetStringID("");        //????
+		//SetComment("");
 		SetRollOver(0);         //2 (che significa NO) ??
 		//      SetCRC( mcalc_crc(GetBufPtr(), img_size) );
 

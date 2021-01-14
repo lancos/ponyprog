@@ -406,7 +406,7 @@ int MotorolaSFileBuf::Load(int loadtype, long relocation_offset)
 
 	if (rval == OK)
 	{
-		SetComment("");
+		//SetComment("");
 		SetRollOver(0);         //2 (that means NO) ??
 		//              SetCRC( mcalc_crc(GetBufPtr(), img_size) );
 
