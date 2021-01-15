@@ -1,0 +1,27 @@
+os: Visual Studio 2019
+
+environment:
+  global:
+    BITS: 32
+  matrix:
+    - CONFIGURATION: Release
+      COMPILER: MinGW
+      PLATFORM: i686
+
+build:
+  project: ponyprog.pro
+  parallel: true
+  verbosity: detailed
+
+install:
+  - appveyor DownloadFile "https://downloads.sourceforge.net/project/picusb/libftdi1-1.5_devkit_x86_x64_19July2020.zip?r=https%3A%2F%2Fsourceforge.net%2Fprojects%2Fpicusb%2Ffiles%2Flibftdi1-1.5_devkit_x86_x64_19July2020.zip%2Fdownload&ts=1610734075" -FileName "C:\libftdi.zip"
+  - 7z x -y "C:\libftdi.zip"
+  - if [%PLATFORM%]==[x86_64] set BITS=64
+  - if [%PLATFORM%]==[x86_64] set EXTRA_OPTS=--disable-32bit
+  - set QTDIR=C:\Qt\5.9.9\mingw53_32
+  - set PATH=%QTDIR%\bin;C:\Qt\Tools\mingw530_32\bin;%PATH%
+
+build_script:
+  - dir %QTDIR%
+  - qmake ponyprog.pro -spec win32-g++
+  - mingw32-make -j3
