@@ -13,9 +13,16 @@ build:
   parallel: true
   verbosity: detailed
 
+clone_script:
+  - cmd: >-
+      git clone -q --branch=%APPVEYOR_REPO_BRANCH% https://github.com/%APPVEYOR_REPO_NAME%.git %APPVEYOR_BUILD_FOLDER%
+      && cd %APPVEYOR_BUILD_FOLDER%
+      && git checkout -qf %APPVEYOR_REPO_COMMIT%
+      && git submodule update --init --recursive
+
 install:
-  - appveyor DownloadFile "https://downloads.sourceforge.net/project/picusb/libftdi1-1.5_devkit_x86_x64_19July2020.zip?r=https%3A%2F%2Fsourceforge.net%2Fprojects%2Fpicusb%2Ffiles%2Flibftdi1-1.5_devkit_x86_x64_19July2020.zip%2Fdownload&ts=1610734075" -FileName "C:\libftdi.zip"
-  - 7z x -y "C:\libftdi.zip"
+  - appveyor DownloadFile "https://downloads.sourceforge.net/project/picusb/libftdi1-1.4git_devkit_x86_x64_14June2018.zip?r=https%3A%2F%2Fsourceforge.net%2Fprojects%2Fpicusb%2Ffiles%2Flibftdi1-1.4git_devkit_x86_x64_14June2018.zip%2Fdownload&ts=1610734013" -FileName "C:\libftdi1-1.4git_devkit_x86_x64_14June2018.zip"
+  - 7z x -y "C:\libftdi1-1.4git_devkit_x86_x64_14June2018.zip" -o"C:\libftdi1-1.4git_devkit_x86_x64_14June2018"
   - if [%PLATFORM%]==[x86_64] set BITS=64
   - if [%PLATFORM%]==[x86_64] set EXTRA_OPTS=--disable-32bit
   - set QTDIR=C:\Qt\5.9.9\mingw53_32
