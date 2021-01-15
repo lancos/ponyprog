@@ -29,6 +29,6 @@ install:
   - set PATH=%QTDIR%\bin;C:\Qt\Tools\mingw530_32\bin;%PATH%
 
 build_script:
-  - dir %QTDIR%
+  - dir "C:\libftdi1-1.4git_devkit_x86_x64_14June2018"
   - qmake ponyprog.pro -spec win32-g++
-  - mingw32-make -j3
+  - mingw32-make -j4
