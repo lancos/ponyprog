@@ -30,5 +30,6 @@ install:
 
 build_script:
   - dir "C:\libftdi1-1.4git_devkit_x86_x64_14June2018"
-  - qmake ponyprog.pro -spec win32-g++
-  - mingw32-make -j4
+  - dir "C:\Libraries\boost_1_71_0"
+  - qmake ponyprog.pro -spec win32-g++ BOOSTPATH=C:/Libraries/boost_1_71_0 FTDIPATH=C:/libftdi1-1.4git_devkit_x86_x64_14June2018
+  - mingw32-make
