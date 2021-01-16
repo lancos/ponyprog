@@ -31,7 +31,7 @@ install:
 
 build_script:
   - echo %PATH%
-  - dir %INNOPATH%
+  - dir "%INNOPATH%"
   - dir "C:\libftdi1-1.4git_devkit_x86_x64_14June2018"
   - dir "C:\Libraries\boost_1_71_0"
   - qmake ponyprog.pro -spec win32-g++ BOOSTPATH=C:/Libraries/boost_1_71_0 FTDIPATH=C:/libftdi1-1.4git_devkit_x86_x64_14June2018
