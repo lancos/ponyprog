@@ -26,17 +26,17 @@ install:
   - if [%PLATFORM%]==[x86_64] set BITS=64
   - if [%PLATFORM%]==[x86_64] set EXTRA_OPTS=--disable-32bit
   - set QTDIR=C:\Qt\5.9.9\mingw53_32
-  - set PATH=%QTDIR%\bin;C:\Qt\Tools\mingw530_32\bin;%PATH%
+  - set PATH=%QTDIR%\bin;C:\Qt\Tools\mingw530_32\bin;%PATH%;C:\Program Files (x86)\Inno Setup 5
 
 build_script:
   - dir "C:\libftdi1-1.4git_devkit_x86_x64_14June2018"
   - dir "C:\Libraries\boost_1_71_0"
-  - qmake ponyprog.pro -spec win32-g++ BOOSTPATH=C:/Libraries/boost_1_71_0 FTDIPATH=C:/libftdi1-1.4git_devkit_x86_x64_14June2018 ISCC="C:\Program Files (x86)\Inno Setup 5\ISCC.exe"
+  - qmake ponyprog.pro -spec win32-g++ BOOSTPATH=C:/Libraries/boost_1_71_0 FTDIPATH=C:/libftdi1-1.4git_devkit_x86_x64_14June2018
   - mingw32-make -j2
   - mingw32-make win32setup
 
 after_build:
-  - 7z a ponyprog.zip build/ponyprog.exe
+  - 7z a ponyprog.zip distribution/innosetup/Output/PonyProg*.exe
 
 artifacts:
   - path: ponyprog.zip

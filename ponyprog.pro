@@ -359,7 +359,8 @@ win32 {
 
 #    isEmpty(QTDIR):QTDIR = "c:/Qt/Qt$$QT_VERSION/$$QT_VERSION/mingw530_32"
 #    isEmpty(MINGWDIR):MINGWDIR = "c:/Qt/Qt$$QT_VERSION/Tools/mingw530_32"
-    isEmpty(ISCC):ISCC = "c:\Program Files\Inno Setup 5\ISCC.exe"
+#    isEmpty(ISCC):ISCC = "c:\Program Files\Inno Setup 5\ISCC.exe"
+    isEmpty(ISCC):ISCC = ISCC.exe
 
 #    message(ponyprog: MINGWdir: \"$$MINGWDIR\")
     message(ponyprog: ISCCdir: \"$$ISCC\")
