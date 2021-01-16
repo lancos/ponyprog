@@ -370,7 +370,8 @@ win32 {
     win32setup.commands = $$ISCC /DAPPNAME=$$APP_NAME \
                        /DAPPVERSION=$$APP_VERSION \
                        /DAPPCOPYRIGHT=\"$$APP_COPYRIGHT\" \
-                       $$PWD\\distribution\\innosetup\\ponyprog.iss
+                       distribution\\innosetup\\ponyprog.iss
+                    #  $$PWD/distribution/innosetup/ponyprog.iss
 
     QMAKE_EXTRA_TARGETS += win32setup
 
