@@ -31,5 +31,13 @@ install:
 build_script:
   - dir "C:\libftdi1-1.4git_devkit_x86_x64_14June2018"
   - dir "C:\Libraries\boost_1_71_0"
-  - qmake ponyprog.pro -spec win32-g++ BOOSTPATH=C:/Libraries/boost_1_71_0 FTDIPATH=C:/libftdi1-1.4git_devkit_x86_x64_14June2018
-  - mingw32-make
+  - qmake ponyprog.pro -spec win32-g++ BOOSTPATH=C:/Libraries/boost_1_71_0 FTDIPATH=C:/libftdi1-1.4git_devkit_x86_x64_14June2018 ISCC="C:\Program Files (x86)\Inno Setup 5\ISCC.exe"
+  - mingw32-make -j2
+  - mingw32-make win32setup
+
+after_build:
+  - 7z a ponyprog.zip build/ponyprog.exe
+
+artifacts:
+  - path: ponyprog.zip
+    name: Ponyprog
