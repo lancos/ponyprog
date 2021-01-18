@@ -25,7 +25,8 @@ APP_NAME                      = "PonyProg"
 APP_LOW_NAME                  = "ponyprog"
 APP_LOW_H_NAME                = ".ponyprog"
 APP_AUTHOR                    = "Claudio Lanconelli"
-APP_COPYRIGHT                 = "(C) 1997-2021 $$APP_AUTHOR"
+APP_YEAR                      = "2021"
+#APP_COPYRIGHT                 = "(C) 1997-$$APP_YEAR $$APP_AUTHOR"
 APP_VERSION                   = "3.1.2"
 # APP_BUILD_DATE                = $$_DATE_
 APP_LONG_NAME                 = "$$APP_NAME $$APP_VERSION"
@@ -367,7 +368,7 @@ win32 {
 
     win32setup.depends  = install
     win32setup.target   = win32setup
-    win32setup.commands = echo \"$$ISCC /DAPPNAME=$$APP_NAME /DAPPVERSION=$$APP_VERSION distribution\\innosetup\\ponyprog.iss\" >ponyprog.bat
+    win32setup.commands = echo \"$$ISCC /DAPPNAME=$$APP_NAME /DAPPVERSION=$$APP_VERSION /APPYEAR=$$APP_YEAR distribution\\innosetup\\ponyprog.iss\" >ponyprog.bat
 
     QMAKE_EXTRA_TARGETS += win32setup
 
