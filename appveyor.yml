@@ -34,9 +34,12 @@ build_script:
   - dir "%INNOPATH%"
   - dir "C:\libftdi1-1.4git_devkit_x86_x64_14June2018"
   - dir "C:\Libraries\boost_1_67_0"
+  - ISCC /?
   - qmake ponyprog.pro -spec win32-g++ BOOSTPATH=C:/Libraries/boost_1_67_0 FTDIPATH=C:/libftdi1-1.4git_devkit_x86_x64_14June2018
   - mingw32-make -j2
   - mingw32-make win32setup
+  - type ponyprog.bat
+  - ponyprog.bat
 
 after_build:
   - 7z a ponyprog.zip distribution/innosetup/Output/PonyProg*.exe
