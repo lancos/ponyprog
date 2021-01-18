@@ -368,7 +368,7 @@ win32 {
 
     win32setup.depends  = install
     win32setup.target   = win32setup
-    win32setup.commands = echo \"$$ISCC /DAPPNAME=$$APP_NAME /DAPPVERSION=$$APP_VERSION /DAPPYEAR=$$APP_YEAR distribution\\innosetup\\ponyprog.iss\" >ponyprog.bat
+    win32setup.commands = echo \"$$ISCC /DAPPNAME=$$APP_NAME /DAPPVERSION=$$APP_VERSION /DAPPYEAR=$$APP_YEAR $$PWD\\distribution\\innosetup\\ponyprog.iss\" >ponyprog.bat
 
     QMAKE_EXTRA_TARGETS += win32setup
 
