@@ -15,6 +15,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Install needed packages
+      run: sudo apt install pkg-config libusb-1.0-0 libusb-1.0-0-dev libftdi1-2 libftdi1-dev libftdipp1-3 libftdipp1-dev
+
     - uses: actions/checkout@v2
 
     - name: Create Build Environment
