@@ -34,10 +34,10 @@
 #include "aboutmdlg.h"
 #include "e2profil.h"
 
-static const QString AUTHORWEB     = "http://www.LancOS.com";
-static const QString COPYRIGHTYEAR = "1997-2021";
-static const QString PORTERGQT     = "Eduard Kalinowski";
-static const QString PORTERMAIL    = "eduard_kalinowski@yahoo.de";
+static const QString AuthorWEB     = "http://www.LancOS.com";
+static const QString CopyrightYEAR = "1997-2021";
+static const QString PorterGQT     = "Eduard Kalinowski";
+static const QString PorterMAIL    = "eduard_kalinowski@yahoo.de";
 
 
 AboutModalDialog::AboutModalDialog(QWidget *bw, const QString title)
@@ -57,10 +57,10 @@ AboutModalDialog::AboutModalDialog(QWidget *bw, const QString title)
 	}
 
 	lblAbout0->setText(APP_NAME " - " + translate(STR_APPNAME_EXT)  + "<br>" + translate(STR_MSGVERSION) + "  " APP_VERSION "  " __DATE__);
-	QString t = "Copyright (C) " + COPYRIGHTYEAR + "  by  <a href=\"" APP_EMAIL "\">" APP_AUTHOR "</a><br><br>" +
-				"Porting to Qt4/Qt5 by <a href=\"" + PORTERMAIL + "\">" + PORTERGQT + "</a><br><br>" +
+	QString t = "Copyright (C) " + CopyrightYEAR + "  by  <a href=\"" APP_EMAIL "\">" APP_AUTHOR "</a><br><br>" +
+				"Porting to Qt4/Qt5 by <a href=\"" + PorterMAIL + "\">" + PorterGQT + "</a><br><br>" +
 				translate(STR_APPDOWNLOAD1) + " " APP_NAME " " + translate(STR_APPDOWNLOAD2) + "<br>" +
-				"<a href=\"" + AUTHORWEB + "\">" + AUTHORWEB + "</a>";
+				"<a href=\"" + AuthorWEB + "\">" + AuthorWEB + "</a>";
 
 	if (translate(MSG_TRANSLATORNAME).length() > 0)
 	{
