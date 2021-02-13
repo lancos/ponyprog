@@ -197,6 +197,9 @@ class E2Profile
 	static QString GetLogFileName();
 	static void SetLogFileName(const QString &name);
 
+	static QString GetXmlDir();
+	static void SetXmlDir(const QString &name);
+
 	static QString GetLangDir();
 	static void SetLangDir(const QString &name);
 

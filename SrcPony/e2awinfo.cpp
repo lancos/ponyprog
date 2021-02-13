@@ -58,7 +58,15 @@ e2AppWinInfo::e2AppWinInfo(e2CmdWindow *p, const QString &name, BusIO **busvptr)
 
 	fname = "";
 
-	readXmlDir();
+	if (!readXmlDir())
+	{
+		QMessageBox msgBox(QMessageBox::Critical, "Error", "Xml dir not found!\n\n"
+						   + E2Profile::GetXmlDir(), QMessageBox::Close);
+		msgBox.setStyleSheet(cmdWin->getStyleSheet());
+		msgBox.setButtonText(QMessageBox::Close, "Close");
+		msgBox.exec();
+		exit(1);
+	}
 
 	//qDebug() << "e2awinfo" << p << this;
 
@@ -182,7 +190,7 @@ e2AppWinInfo::~e2AppWinInfo()
 
 
 /**
- * @brief scan the directory with translations. language files are with .utf extentions
+ * @brief scan the directory with xml files
  *
  */
 bool e2AppWinInfo::readXmlDir()
@@ -203,16 +211,14 @@ bool e2AppWinInfo::readXmlDir()
 	}
 	path += "/ics";
 
-	if (path.length() == 0)
+	xmlDirName = E2Profile::GetXmlDir();
+	if (xmlDirName.length() == 0)
 	{
 		xmlDirName = qApp->applicationDirPath() + "/ics";
 	}
-	else
-	{
-		xmlDirName = path;
-	}
 
 	qDebug() << "readXmlDir path:" << path << ", Saved: " << xmlDirName;
+	qDebug() <<  Q_FUNC_INFO << " path:" << path << ", Saved: " << xmlDirName;
 
 #ifdef Q_OS_LINUX
 	dirsXml << xmlDirName << "/usr/share/ponyprog/ics" << "/usr/local/share/ponyprog/ics" << path;
@@ -229,6 +235,7 @@ bool e2AppWinInfo::readXmlDir()
 			xmlList = dir.entryList(QStringList("*.xml"));
 			if (xmlList.count() > 0)
 			{
+				E2Profile::SetXmlDir(entry);
 				xmlDirName = entry + "/";
 				found = true;
 				break;

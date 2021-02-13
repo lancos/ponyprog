@@ -907,6 +907,20 @@ void E2Profile::SetProgramOptions(long prog_option)
 }
 
 
+QString E2Profile::GetXmlDir()
+{
+	return s->value("XmlDir", "").toString();
+}
+
+void E2Profile::SetXmlDir(const QString &name)
+{
+	if (name.length())
+	{
+		s->setValue("XmlDir", name);
+	}
+}
+
+
 QString E2Profile::GetLangDir()
 {
 	return s->value("LangDir", "").toString();
