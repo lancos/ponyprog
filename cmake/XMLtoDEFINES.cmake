@@ -3,6 +3,25 @@
 # E.Kalinowski
 #
 
+function (NumberToHex number output)
+    set (chars "0123456789abcdef")
+    set (hex "")
+
+    foreach (i RANGE 7)
+        math (EXPR nibble "${number} & 15")
+        string (SUBSTRING "${chars}" "${nibble}" 1 nibble_hex)
+        string (APPEND hex "${nibble_hex}")
+
+        math (EXPR number "${number} >> 4")
+        if (number EQUAL 0) 
+            break()
+        endif()
+    endforeach ()
+
+    string (REGEX REPLACE "(.)(.)" "\\2\\1" hex "${hex}")
+    set ("${output}" "${hex}" PARENT_SCOPE)
+endfunction ()
+
 FILE(GLOB files "${CMAKE_CURRENT_SOURCE_DIR}/ics/*.xml")
 
 SET(DEFINES_NAME "${CMAKE_CURRENT_SOURCE_DIR}/SrcPony/defines.h")
@@ -45,10 +64,13 @@ FOREACH(file ${files})
     STRING(REGEX REPLACE "\"" "" DEF_NAME "${DEF_NAME}")
 
     IF (NOT ${DEF_NAME} STREQUAL "")
-      MATH(EXPR RUN_NR "${RUN_NR}+1" OUTPUT_FORMAT HEXADECIMAL)
-      #MESSAGE(STATUS "${DEF_NAME} ${RUN_NR}")
+      #MATH(EXPR RUN_NR "${RUN_NR}+1" OUTPUT_FORMAT HEXADECIMAL)
+      MATH(EXPR RUN_NR "${RUN_NR}+1")
+      NumberToHex(${RUN_NR}, TMP_NR)
+      
+      #MESSAGE(STATUS "${DEF_NAME} ${TMP_NR}")
 
-      STRING(REGEX REPLACE "0x" "" TMP_NR "${RUN_NR}")
+      STRING(REGEX REPLACE "0x" "" TMP_NR "${TMP_NR}")
 
       # correct length of hex number
       STRING(LENGTH "${TMP_NR}" STR_LEN)
@@ -57,7 +79,8 @@ FOREACH(file ${files})
       ELSE()
         SET(RUN_ID "00${TMP_NR}")
       ENDIF()
-
+      
+      #MESSAGE(STATUS "${DEF_NAME} ${RUN_ID}")
       #formatting with spaces
       STRING(LENGTH "${DEF_NAME}" NAME_LEN)
       SET(SPACES " ")
