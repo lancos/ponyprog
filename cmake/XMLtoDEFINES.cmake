@@ -66,9 +66,9 @@ FOREACH(file ${files})
     IF (NOT ${DEF_NAME} STREQUAL "")
       #MATH(EXPR RUN_NR "${RUN_NR}+1" OUTPUT_FORMAT HEXADECIMAL)
       MATH(EXPR RUN_NR "${RUN_NR}+1")
-      NumberToHex(${RUN_NR}, TMP_NR)
-      
-      #MESSAGE(STATUS "${DEF_NAME} ${TMP_NR}")
+      NumberToHex(${RUN_NR} TMP_NR)
+
+      #MESSAGE(STATUS "${DEF_NAME} ${TMP_NR} Hex")
 
       STRING(REGEX REPLACE "0x" "" TMP_NR "${TMP_NR}")
 
@@ -79,7 +79,7 @@ FOREACH(file ${files})
       ELSE()
         SET(RUN_ID "00${TMP_NR}")
       ENDIF()
-      
+
       #MESSAGE(STATUS "${DEF_NAME} ${RUN_ID}")
       #formatting with spaces
       STRING(LENGTH "${DEF_NAME}" NAME_LEN)
