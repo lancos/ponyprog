@@ -24,17 +24,23 @@
 //                                                                         //
 //=========================================================================//
 
-#ifndef _EEPTYPES_H
-#define _EEPTYPES_H
+#ifndef _CHIPCOLLECTION_H
+#define _CHIPCOLLECTION_H
 
 #include "globals.h"
+#include "defines.h"
 
 #include <QVector>
 #include <QString>
-// #include <QStringList>
+#include <QDebug>
+#include <QXmlReader>
+#include <QDomNode>
+#include <QMenu>
+#include <QActionGroup>
 
 #define EID_INVALID     0
 
+/**
 #define E24XX           0x01
 // Sub types
 #define E2400           0x010000
@@ -269,48 +275,139 @@
 
 
 #define KB(x)   ((x) * 1024)
+**/
 
 
-// EK 2017
-// common structure for chips
-struct chipInfo
+
+struct chipMenuInfo
 {
 	QString name;
-	long id;    // pretype | subtype
-	int  sz;    //dimensione in numero di banchi
-	int  splt;  // split
-	int  wpgsz; // page size
-	int  adrsz; //dimensione dello spazio di indirizzamento in numero di banchi
+	quint32 id;
+};
+
+struct menuToGroup
+{
+	QMenu *mnu;
+	QString title;               // one title can have 1 and more group ids
+// 	QString filter;
+	QActionGroup *grp;
+	QVector<quint32> vId;        // vector of group ids
+	// vector of main type
+	QVector <chipMenuInfo> vChip;
+	//QVector <int> pre_type;
+	// copy of chipInfo
+	//QVector<chipInfo> info;
 };
 
 
-// extern long BuildE2PType(int pritype, int subtype = 0);
-extern long BuildE2PType(unsigned long type);
-extern int GetE2PSubType(unsigned long type);
-extern int GetE2PPriType(unsigned long type);
-
-chipInfo GetChipInfo(QVector<chipInfo> &c, long subtype);
-
-// extern QString GetEEPTypeString(int pritype, int subtype);
-extern QString GetEEPTypeString(unsigned long type);
-
-extern int GetEEPTypeIndex(int type);
-// extern QStringList GetEEPSubTypeList(int type);
-extern QVector<chipInfo> GetEEPSubTypeVector(int type);
-extern int GetEEPSubTypeIndex(unsigned long type);
-// extern int GetEEPTypeSize(int pritype, int subtype);
-extern int GetEEPTypeSize(unsigned long type);
-// extern int GetEEPAddrSize(int pritype, int subtype);
-extern int GetEEPAddrSize(unsigned long type);
-// extern int GetEEPTypeSplit(int pritype, int subtype);
-extern int GetEEPTypeSplit(unsigned long type);
-
-// extern long GetEEPTypeFromSize(int pritype, int size);
-extern long GetEEPTypeFromSize(unsigned long type, int size);
-extern long GetEEPTypeFromString(const QString &name);
-
-// extern int GetEEPTypeWPageSize(int pritype, int subtype);
-extern int GetEEPTypeWPageSize(unsigned long type);
+/**
+ * @brief BitInfo is the main structure for displaying in the QTreeWidget
+ */
+struct BitInfo
+{
+	quint16 bit;        // bit number
+	quint16 idx;
+	QString ShortDescr; // first column
+	QString LongDescr;  // second column
+};
 
 
-#endif
+/**
+ * @brief MaskDescr is the structure for QComboBoxes with help information
+ */
+struct MaskDescr
+{
+	QString mask;      // in mask are coded name of mask and bits
+	QString LongDescr; //
+	QString ExtDescr;  // for additional infos
+};
+
+
+struct chipBits
+{
+	QStringList chNames; // chip names for same descriptions of chip bits
+	QVector<BitInfo> fuse;
+	QVector<MaskDescr> fuseDescr;
+	QVector<BitInfo> lock;
+	QVector<MaskDescr> lockDescr;
+};
+
+
+struct icElement
+{
+	QString  name;     // for menu items
+// 	QString  defName;  // for defines
+	quint32  id;       // groupid | subtype
+	quint16  sign;     // signature for detecting
+	quint16  reserv;
+	// memory structure
+	qint32   prog_sz;  // size of program data (code)
+	qint32   data_sz;  // size of memory data
+	qint32   wpg_sz;   // page size
+	qint32   adr_sz;   // dimensione dello spazio di indirizzamento in numero di banchi
+	qint32   boot;     // boot address
+};
+
+
+class cGroupElement
+{
+  public:
+	QString menuName;          // for menu items
+	//QString defName;         // for defines
+	QVector<quint32> vId;      // pre_types
+	QVector <icElement> vChip; // memory inforamtion
+	QVector <chipBits> helper; // help information
+};
+
+
+class cChipCollection
+{
+  public:
+	cChipCollection()
+	{
+		eep_id = 0;
+		currentGroup = NULL;
+		currentIc = NULL;
+	}
+	quint32 GetCurrentId();
+	void SetCurrentId(quint32 id);
+	quint32 GetSubType(quint32 type);// will be deprecated
+	quint32 GetPriType(quint32 type);
+	cGroupElement *GetMenuGroupPointer(const QString &menuStr);
+	quint32 GetTypeFromSize(quint32 type, int size);
+	int GetTypeSize(quint32 type);
+	int GetAddrSize(quint32 type);
+	int GetTypeSplit(quint32 type);
+	int GetTypeWPageSize(quint32 type);
+	QString GetTypeString(quint32 type);
+	quint32 GetSignatureType(quint32 pri_type, quint16 sign);
+	quint32 GetFirstFromPritype(quint32 pritype);
+	QVector <menuToGroup> CreateDeviceMenues();
+	/**
+	 * @brief search chip name in vectors
+	 *
+	 */
+	quint32 GetTypeFromString(const QString &name);
+	bool ReadConfigFromXml(const QString &filename);
+	chipBits *GetTypeFuses(quint32 type);
+
+  private:
+	bool addGroup(cGroupElement *g);
+	icElement *getChipPointer(quint32 type);
+
+	bool parseNode(const QDomNode &nd, QVector<BitInfo> &b, QVector<MaskDescr> &d);
+
+	int convertSize(const QString &s);
+
+  public:
+	quint32 eep_id;
+
+  private:
+	QVector <cGroupElement *> icGroups;
+	//quint32 currentId;
+
+	cGroupElement *currentGroup;
+	icElement *currentIc;
+};
+
+#endif // _CHIPCOLLECTION_H

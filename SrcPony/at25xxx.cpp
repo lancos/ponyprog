@@ -27,7 +27,6 @@
 #include "types.h"
 #include "at25xxx.h"            // Header file
 #include "errcode.h"
-#include "eeptypes.h"
 
 At25xxx::At25xxx(e2AppWinInfo *wininfo, BusIO *busp)
 	:       At250xx(wininfo, busp)

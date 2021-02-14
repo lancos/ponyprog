@@ -53,17 +53,17 @@
 #include <unistd.h>
 #include "ch341a.h"
 
-// int32_t bulkin_count; // set by the callback function
+// qint32 bulkin_count; // set by the callback function
 
 #define DEBUG_CH341 0
 
 struct sigaction saold;
 int force_stop = 0;
-uint32_t syncackpkt;  // synch / ack flag used by BULK OUT cb function
-uint16_t byteoffset;  // for read eeprom function
+quint32 syncackpkt;  // synch / ack flag used by BULK OUT cb function
+quint16 byteoffset;  // for read eeprom function
 
-int16_t ch341::read_completed = 0;
-int16_t ch341::write_completed = 0;
+qint16 ch341::read_completed = 0;
+qint16 ch341::write_completed = 0;
 
 
 /* SIGINT handler */
@@ -76,9 +76,9 @@ void sig_int(int signo)
  * ch341 requres LSB first, reverse the bit order before send and after receive
  * for more tricks, see https://graphics.stanford.edu/~seander/bithacks.html
  */
-inline uint8_t ReverseByte(uint8_t c)
+inline quint8 ReverseByte(quint8 c)
 {
-	uint8_t result = 0;
+	quint8 result = 0;
 
 	for (int i = 0; i < 8; ++i)
 	{
@@ -91,9 +91,9 @@ inline uint8_t ReverseByte(uint8_t c)
 }
 
 
-inline uint16_t ReverseWord(uint16_t c)
+inline quint16 ReverseWord(quint16 c)
 {
-	uint16_t result = 0;
+	quint16 result = 0;
 
 	for (int i = 0; i < 16; ++i)
 	{
@@ -196,7 +196,7 @@ void cbBulkIn(struct libusb_transfer *transfer)
 		{
 			for (int i = (bulkin_count == 0) ? 4 : 0; i < transfer->actual_length; ++i)
 			{
-				*((uint8_t *)transfer->user_data++) = ReverseByte(transfer->buffer[i]);
+				*((quint8 *)transfer->user_data++) = ReverseByte(transfer->buffer[i]);
 			}
 		}
 
@@ -246,7 +246,7 @@ void ch341::Close()
 	devHandle = 0;
 }
 #if 0
-void ch341::sendData(const uint8_t &data, size_t len)
+void ch341::sendData(const quint8 &data, size_t len)
 {
 	struct libusb_transfer *transfer = libusb_alloc_transfer(0);
 	unsigned char *buffer = new unsigned char[len];
@@ -365,22 +365,22 @@ void ch341::v_print(int mode, int len)   // mode: begin=0, progress = 1
 }
 
 
-int32_t ch341::GetStatusRx()
+qint32 ch341::GetStatusRx()
 {
 	return read_completed;
 }
 
 
-int32_t ch341::GetStatusTx()
+qint32 ch341::GetStatusTx()
 {
 	return write_completed;
 }
 
 
-int32_t ch341::Probe()
+qint32 ch341::Probe()
 {
-	int32_t ret;
-	uint8_t lcr = CH341_LCR_ENABLE_RX | CH341_LCR_ENABLE_TX | CH341_LCR_CS8;
+	qint32 ret;
+	quint8 lcr = CH341_LCR_ENABLE_RX | CH341_LCR_ENABLE_TX | CH341_LCR_CS8;
 
 	ret = libusb_control_transfer(devHandle, CTRL_OUT, CH341_REQ_WRITE_REG, CH341_REG_LCR, lcr, NULL, 0, timeout);
 	if (ret < 0)
@@ -401,9 +401,9 @@ int32_t ch341::Probe()
 #if 0
 
 /* Helper function for libusb_bulk_transfer, display error message with the caller name */
-int32_t ch341::Read(uint8_t *buf, size_t len)
+qint32 ch341::Read(quint8 *buf, size_t len)
 {
-	int32_t ret;
+	qint32 ret;
 	int transfered;
 	if (devHandle == NULL)
 	{
@@ -422,9 +422,9 @@ int32_t ch341::Read(uint8_t *buf, size_t len)
 }
 
 /* Helper function for libusb_bulk_transfer, display error message with the caller name */
-int32_t ch341::Write(uint8_t *buf, size_t len)
+qint32 ch341::Write(quint8 *buf, size_t len)
 {
-	int32_t ret;
+	qint32 ret;
 	int transfered;
 	if (devHandle == NULL)
 	{
@@ -445,7 +445,7 @@ int32_t ch341::Write(uint8_t *buf, size_t len)
 /**
  * @breif timeouts in milliseconds
  */
-int32_t ch341::SetTimeouts(int16_t t)
+qint32 ch341::SetTimeouts(qint16 t)
 {
 	if (t >= 50 && t <= 2000)
 	{
@@ -456,29 +456,29 @@ int32_t ch341::SetTimeouts(int16_t t)
 	return -1;
 }
 
-void ch341::SetParity(uint8_t p)
+void ch341::SetParity(quint8 p)
 {
 	parity = p;
 }
 
-void ch341::SetBits(uint8_t b)
+void ch341::SetBits(quint8 b)
 {
 	bits = b;
 }
 
-void ch341::SetStops(uint8_t s)
+void ch341::SetStops(quint8 s)
 {
 	stops = s;
 }
 
 
 // TODO
-void ch341::SetFlowControl(uint8_t f)
+void ch341::SetFlowControl(quint8 f)
 {
 	flow_control = f;
 
 	// check state
-	uint8_t r[LIBUSB_CONTROL_SETUP_SIZE];
+	quint8 r[LIBUSB_CONTROL_SETUP_SIZE];
 
 	int ret = libusb_control_transfer(devHandle, CTRL_IN, CH341_REQ_READ_REG, CH341_REG_STAT, 0, &r[0], 0, timeout);
 // to check buffer 0x9f, 0xee
@@ -527,9 +527,9 @@ void ch341::SetVerbose()
  * @brief configure DTR, RTS for device
  *
  */
-int32_t ch341::setHandshakeByte(void)
+qint32 ch341::setHandshakeByte(void)
 {
-// 		uint8_t r[CH341_INPUT_BUF_SIZE];
+// 		quint8 r[CH341_INPUT_BUF_SIZE];
 // 		int ret = libusb_control_transfer(devHandle, CTRL_IN, CH341_REQ_MODEM_CTRL, NULL, 0, &r[0], CH341_INPUT_BUF_SIZE, timeout);
 // 		if (ret < 0)
 // 		{
@@ -560,9 +560,9 @@ int32_t ch341::setHandshakeByte(void)
 	return 0;
 }
 
-int32_t ch341::getModemState(void)
+qint32 ch341::getModemState(void)
 {
-	uint8_t r[2];
+	quint8 r[2];
 
 	int ret = libusb_control_transfer(devHandle, CTRL_IN, CH341_REQ_READ_REG, CH341_REG_STAT, 0, &r[0], 2, timeout);
 	if (ret < 0)
@@ -571,18 +571,18 @@ int32_t ch341::getModemState(void)
 		return -1;
 	}
 
-	uint8_t st = ~r[0];  // invert
+	quint8 st = ~r[0];  // invert
 #if DEBUG_CH341
 	qDebug() << "get cts" << ((st & CH341_UART_CTS) ? 1 : 0) << "dsr" << ((st & CH341_UART_DSR) ? 1 : 0);
 #endif
-	return (int32_t)(st & CH341_BITS_MODEM_STAT);
+	return (qint32)(st & CH341_BITS_MODEM_STAT);
 }
 
 #if 0
-int ch341::setAsync(uint8_t data)
+int ch341::setAsync(quint8 data)
 {
 	int ret = 0;
-	uint8_t *buf = (uint8_t *)malloc(LIBUSB_CONTROL_SETUP_SIZE + 1);
+	quint8 *buf = (quint8 *)malloc(LIBUSB_CONTROL_SETUP_SIZE + 1);
 
 	if (!buf)
 	{
@@ -612,9 +612,9 @@ int ch341::setAsync(uint8_t data)
 
 void ch341::updateStatus()
 {
-	uint8_t stat[CH341_INPUT_BUF_SIZE];
-	uint8_t status;
-	uint8_t delta;
+	quint8 stat[CH341_INPUT_BUF_SIZE];
+	quint8 status;
+	quint8 delta;
 
 	int ret; //libusb_control_transfer(devHandle, CONTROL_REQUEST_TYPE_IN, CH341_REQ_READ_REG, CH341_REG_STAT, 0, &stat[0], CH341_INPUT_BUF_SIZE, timeout);
 	ret = libusb_control_transfer(devHandle, CTRL_IN, CH341_REQ_MODEM_CTRL, NULL, 0, &stat[0], CH341_INPUT_BUF_SIZE, timeout);
@@ -651,7 +651,7 @@ void ch341::updateStatus()
 #endif
 
 
-int32_t ch341::SetDTR(int32_t state)
+qint32 ch341::SetDTR(qint32 state)
 {
 #if DEBUG_CH341
 	qDebug() << "ch341::SetDTR(" << state << ") ";
@@ -664,12 +664,12 @@ int32_t ch341::SetDTR(int32_t state)
 	{
 		dtr = 0;
 	}
-	int32_t r = setHandshakeByte();
+	qint32 r = setHandshakeByte();
 
 	return r;
 }
 
-int32_t ch341::SetRTS(int32_t state)
+qint32 ch341::SetRTS(qint32 state)
 {
 #if DEBUG_CH341
 	qDebug() << "ch341::SetRTS(" << state << ") ";
@@ -682,14 +682,14 @@ int32_t ch341::SetRTS(int32_t state)
 	{
 		rts = 0;
 	}
-	int32_t r = setHandshakeByte();
+	qint32 r = setHandshakeByte();
 
 	return r;
 }
 
-int32_t ch341::GetDSR()
+qint32 ch341::GetDSR()
 {
-	int32_t r = getModemState();
+	qint32 r = getModemState();
 
 #if DEBUG_CH341
 	qDebug() << "ch341::GetDSR(" << ((r & CH341_UART_DSR) ? 1 : 0) << ") ";
@@ -697,9 +697,9 @@ int32_t ch341::GetDSR()
 	return (r & CH341_UART_DSR) ? 1 : 0;
 }
 
-int32_t ch341::GetCTS()
+qint32 ch341::GetCTS()
 {
-	int32_t r  = getModemState();
+	qint32 r  = getModemState();
 
 #if DEBUG_CH341
 	qDebug() << "ch341::GetCTS(" << ((r & CH341_UART_CTS) ? 1 : 0) << ") ";
@@ -707,7 +707,7 @@ int32_t ch341::GetCTS()
 	return (r & CH341_UART_CTS) ? 1 : 0;
 }
 
-int32_t ch341::SetRTSDTR(int st)
+qint32 ch341::SetRTSDTR(int st)
 {
 	quint8 control = 0;
 
@@ -753,18 +753,18 @@ int32_t ch341::SetRTSDTR(int st)
 		}
 	}
 #endif
-	int32_t r = setHandshakeByte();
+	qint32 r = setHandshakeByte();
 
 	return r;
 }
 
 
 // TODO to check this
-int32_t ch341::SetConfigLCR()
+qint32 ch341::SetConfigLCR()
 {
 	// TODO in case of same bits for all UART devices, to move this lcr into SerialInterface
 	// now set LCR
-	uint8_t lcr =  CH341_LCR_ENABLE_RX | CH341_LCR_ENABLE_TX;
+	quint8 lcr =  CH341_LCR_ENABLE_RX | CH341_LCR_ENABLE_TX;
 
 	// TODO check this
 	switch (parity)
@@ -818,7 +818,7 @@ int32_t ch341::SetConfigLCR()
 #if DEBUG_CH341
 	qDebug() << "ch341::SetConfigLCR(" << lcr << ") ";
 #endif
-	int32_t ret = libusb_control_transfer(devHandle, CTRL_OUT, CH341_REQ_WRITE_REG, CH341_REG_LCR, lcr, NULL, 0, timeout);
+	qint32 ret = libusb_control_transfer(devHandle, CTRL_OUT, CH341_REQ_WRITE_REG, CH341_REG_LCR, lcr, NULL, 0, timeout);
 	if (ret < 0)
 	{
 		qCritical("failed control transfer CH341_REQ_WRITE_REG, CH341_REG_LCR\n");
@@ -834,16 +834,16 @@ int32_t ch341::SetConfigLCR()
 }
 
 
-int32_t ch341::SetBreakControl(int32_t state)
+qint32 ch341::SetBreakControl(qint32 state)
 {
 
 #if DEBUG_CH341
 	qDebug() << "ch341::SetBreakControl(" << state << ") ";
 #endif
-	uint16_t reg_contents;
-	uint8_t break_reg[2] = {0, 0};
+	quint16 reg_contents;
+	quint8 break_reg[2] = {0, 0};
 
-	int32_t ret = libusb_control_transfer(devHandle, CTRL_IN, CH341_REQ_READ_REG, CH341_REG_BREAK, 0, (uint8_t *)&reg_contents, 2, timeout);
+	qint32 ret = libusb_control_transfer(devHandle, CTRL_IN, CH341_REQ_READ_REG, CH341_REG_BREAK, 0, (quint8 *)&reg_contents, 2, timeout);
 	if (ret < 0)
 	{
 		qCritical("failed control transfer CH341_REQ_READ_REG, CH341_REG_BREAK\n");
@@ -860,8 +860,8 @@ int32_t ch341::SetBreakControl(int32_t state)
 		break_reg[1] |= CH341_NBREAK_BITS_REG2;
 	}
 	// TODO is it right???
-	//reg_contents = ReverseWord((uint16_t)(break_reg[0] << 8) + break_reg[1]);
-	reg_contents = ((uint16_t)(break_reg[0] << 8) + break_reg[1]);
+	//reg_contents = ReverseWord((quint16)(break_reg[0] << 8) + break_reg[1]);
+	reg_contents = ((quint16)(break_reg[0] << 8) + break_reg[1]);
 
 	ret = libusb_control_transfer(devHandle, CTRL_OUT, CH341_REQ_WRITE_REG, CH341_REG_BREAK, reg_contents, NULL, 0, timeout);
 	if (ret < 0)
@@ -881,9 +881,9 @@ int32_t ch341::SetBreakControl(int32_t state)
  *        33600, 38400, 56000, 57600, 76800, 115200, 128000, 153600, 230400, 460800, 921600,
  *        1500000, 2000000 etc.
  */
-int32_t ch341::SetBaudRate(int32_t speed)
+qint32 ch341::SetBaudRate(qint32 speed)
 {
-	int32_t ret;
+	qint32 ret;
 	int dv_prescale;
 	int dv_div;
 	int dv_mod;
@@ -912,8 +912,8 @@ int32_t ch341::SetBaudRate(int32_t speed)
 			}
 			else
 			{
-				uint32_t div = d.dvr_base_clock / speed;
-				uint32_t rem = d.dvr_base_clock % speed;
+				quint32 div = d.dvr_base_clock / speed;
+				quint32 rem = d.dvr_base_clock % speed;
 				if (div == 0 || div >= 0xFF)
 				{
 					return -1;
@@ -923,16 +923,16 @@ int32_t ch341::SetBaudRate(int32_t speed)
 				{
 					div += 1;
 				}
-				dv_div = (uint8_t) - div;
+				dv_div = (quint8) - div;
 			}
 
-			uint32_t mod = (CH341_BPS_MOD_BASE / speed) + CH341_BPS_MOD_BASE_OFS;
+			quint32 mod = (CH341_BPS_MOD_BASE / speed) + CH341_BPS_MOD_BASE_OFS;
 			mod = mod + (mod / 2);
 
 			dv_mod = (mod + 0xFF) / 0x100;
 
 			// calculated, now send to device
-			qDebug() << "set baudrate" << speed << (hex) << (dv_div << 8) + (dv_prescale) << (uint16_t)(dv_mod) << (dec) ;
+			qDebug() << "set baudrate" << speed << (hex) << (dv_div << 8) + (dv_prescale) << (quint16)(dv_mod) << (dec) ;
 
 			ret = libusb_control_transfer(devHandle, CTRL_OUT, CH341_REQ_WRITE_REG, CH341_REG_BAUD1, (dv_div << 8) + (dv_prescale), NULL, 0, timeout);
 			if (ret < 0)
@@ -941,7 +941,7 @@ int32_t ch341::SetBaudRate(int32_t speed)
 				return ret;
 			}
 
-			ret = libusb_control_transfer(devHandle, CTRL_OUT, CH341_REQ_WRITE_REG, CH341_REG_BAUD2, (uint16_t)(dv_mod), NULL, 0, timeout);
+			ret = libusb_control_transfer(devHandle, CTRL_OUT, CH341_REQ_WRITE_REG, CH341_REG_BAUD2, (quint16)(dv_mod), NULL, 0, timeout);
 			if (ret < 0)
 			{
 				qCritical("failed control transfer CH341_REQ_WRITE_REG, CH341_REG_BAUD2\n");
@@ -964,13 +964,13 @@ int32_t ch341::SetBaudRate(int32_t speed)
 /**
  * @brief reset chip settings?
  */
-int32_t ch341::ResetChip()
+qint32 ch341::ResetChip()
 {
 	return libusb_control_transfer(devHandle, CTRL_OUT, CH341_REQ_SERIAL_INIT, CH341_RESET_VALUE, CH341_RESET_INDEX, NULL, 0, timeout);
 }
 
 
-int32_t ch341::ClearChip()
+qint32 ch341::ClearChip()
 {
 //     return libusb_control_transfer(devHandle, CTRL_OUT, CH341_REQ_SERIAL_INIT, 0, 0, NULL, 0, timeout);
 	return libusb_control_transfer(devHandle, CTRL_OUT, CH341_REQ_SERIAL_INIT, 0xc29c, 0xb2b9, NULL, 0, timeout);
@@ -980,15 +980,15 @@ int32_t ch341::ClearChip()
 /**
  * Open CH341A, find the device and set the default interface.
  */
-int32_t ch341::Open(uint16_t vid, uint16_t pid)
+qint32 ch341::Open(quint16 vid, quint16 pid)
 {
 	struct libusb_device *dev;
-	int32_t ret;
+	qint32 ret;
 	struct sigaction sa;
 
 	qDebug() << "ch341::Open(" << vid << pid << ") ";
 
-	uint8_t  desc[0x12];
+	quint8  desc[0x12];
 
 	if (devHandle != NULL)
 	{
@@ -1088,11 +1088,11 @@ int32_t ch341::Open(uint16_t vid, uint16_t pid)
 	return 0;
 }
 
-int32_t ch341::init(void)
+qint32 ch341::init(void)
 {
-	int32_t ret;
+	qint32 ret;
 
-	uint8_t buf[2];
+	quint8 buf[2];
 
 	/* expect two bytes 0x27 0x00 */
 	ret = libusb_control_transfer(devHandle, CTRL_IN, CH341_REQ_READ_VERSION, 0, 0, buf, 2, timeout);
@@ -1186,14 +1186,14 @@ void ch341::CloseHandle(void)
 	}
 }
 
-// void ch341::updateStatus(uint8_t *data, size_t l)
+// void ch341::updateStatus(quint8 *data, size_t l)
 // {
 // }
 
 /**
  * release libusb structure and ready to exit
  */
-int32_t ch341::Release(void)
+qint32 ch341::Release(void)
 {
 	if (devHandle == NULL)
 	{
@@ -1214,9 +1214,9 @@ int32_t ch341::Release(void)
 /**
  * Helper function for libusb_bulk_transfer, display error message with the caller name
  */
-int32_t ch341::usbTransfer(const char *func, uint8_t type, uint8_t *buf, int len)
+qint32 ch341::usbTransfer(const char *func, quint8 type, quint8 *buf, int len)
 {
-	int32_t ret;
+	qint32 ret;
 	int transfered;
 
 	if (devHandle == NULL)
@@ -1241,14 +1241,14 @@ int32_t ch341::usbTransfer(const char *func, uint8_t type, uint8_t *buf, int len
 // --------------------------------------------------------------------------
 // ch341writeEEPROM()
 //      write n bytes to 24c32/24c64 device (in packets of 32 bytes)
-int32_t ch341::writeEEPROM(uint8_t *buffer, uint32_t bytesum)
+qint32 ch341::writeEEPROM(quint8 *buffer, quint32 bytesum)
 {
 
-	uint8_t ch341outBuffer[EEPROM_WRITE_BUF_SZ], *outptr, *bufptr;
-	int32_t ret = 0, i;
-	uint16_t byteoffset = 0, bytes = bytesum;
-	uint8_t addrbytecount = 3;  // 24c32 and 24c64 (and other 24c??) use 3 bytes for addressing
-	int32_t actuallen = 0;
+	quint8 ch341outBuffer[EEPROM_WRITE_BUF_SZ], *outptr, *bufptr;
+	qint32 ret = 0, i;
+	quint16 byteoffset = 0, bytes = bytesum;
+	quint8 addrbytecount = 3;  // 24c32 and 24c64 (and other 24c??) use 3 bytes for addressing
+	qint32 actuallen = 0;
 
 	bufptr = buffer;
 
@@ -1259,8 +1259,8 @@ int32_t ch341::writeEEPROM(uint8_t *buffer, uint32_t bytesum)
 		*outptr++ = CH341_CMD_I2C_STM_STA;
 		*outptr++ = CH341_CMD_I2C_STM_OUT + addrbytecount + MIN(bytes, 25);
 		*outptr++ = 0xa0;                                   // EEPROM device address
-		*outptr++ = (uint8_t)(byteoffset >> 8 & 0xff);      // MSB (big-endian) byte address
-		*outptr++ = (uint8_t)(byteoffset & 0xff);           // LSB of 16-bit    byte address
+		*outptr++ = (quint8)(byteoffset >> 8 & 0xff);      // MSB (big-endian) byte address
+		*outptr++ = (quint8)(byteoffset & 0xff);           // LSB of 16-bit    byte address
 
 		memcpy(outptr, bufptr, MIN(bytes, 25));             // payload has two parts: 25 bytes & up to 7 more bytes
 
@@ -1327,12 +1327,12 @@ int32_t ch341::writeEEPROM(uint8_t *buffer, uint32_t bytesum)
 // --------------------------------------------------------------------------
 // ch341readEEPROM()
 //      read n bytes from device (in packets of 32 bytes)
-int32_t ch341::readEEPROM(uint8_t *buffer, uint32_t bytestoread)
+qint32 ch341::readEEPROM(quint8 *buffer, quint32 bytestoread)
 {
 
-	uint8_t ch341outBuffer[EEPROM_READ_BULKOUT_BUF_SZ];
-	uint8_t ch341inBuffer[IN_BUF_SZ];               // 0x100 bytes
-	int32_t ret = 0, readpktcount = 0;
+	quint8 ch341outBuffer[EEPROM_READ_BULKOUT_BUF_SZ];
+	quint8 ch341inBuffer[IN_BUF_SZ];               // 0x100 bytes
+	qint32 ret = 0, readpktcount = 0;
 	struct libusb_transfer *xferBulkIn, *xferBulkOut;
 	struct timeval tv = {0, 100};                   // our async polling interval
 
@@ -1411,8 +1411,8 @@ int32_t ch341::readEEPROM(uint8_t *buffer, uint32_t bytestoread)
 				readpktcount = 0;
 
 				memcpy(ch341outBuffer, CH341_EEPROM_READ_NEXT_CMD, CH341_EEPROM_READ_CMD_SZ);
-				ch341outBuffer[4] = (uint8_t)(byteoffset >> 8 & 0xff);      // MSB (big-endian) byte address
-				ch341outBuffer[5] = (uint8_t)(byteoffset & 0xff);           // LSB of 16-bit    byte address
+				ch341outBuffer[4] = (quint8)(byteoffset >> 8 & 0xff);      // MSB (big-endian) byte address
+				ch341outBuffer[5] = (quint8)(byteoffset & 0xff);           // LSB of 16-bit    byte address
 
 				libusb_fill_bulk_transfer(xferBulkOut, devHandle, BULK_WRITE_ENDPOINT, ch341outBuffer,
 										  EEPROM_READ_BULKOUT_BUF_SZ, cbBulkOut, NULL, timeout);
@@ -1440,9 +1440,9 @@ int32_t ch341::readEEPROM(uint8_t *buffer, uint32_t bytestoread)
  *              0 = Single
  *              1 = Double  CH341_STM_SPI_DBL
  */
-int32_t ch341::SetStream(uint32_t speed)
+qint32 ch341::SetStream(quint32 speed)
 {
-	uint8_t buf[3];
+	quint8 buf[3];
 
 	if (devHandle == NULL)
 	{
@@ -1462,7 +1462,7 @@ int32_t ch341::SetStream(uint32_t speed)
 /**
  * assert or deassert the chip-select pin of the spi device
  */
-void ch341::SpiChipSelect(uint8_t *ptr, bool selected)
+void ch341::SpiChipSelect(quint8 *ptr, bool selected)
 {
 	qDebug() << "ch341::SpiChipSelect()";
 
@@ -1480,10 +1480,10 @@ void ch341::SpiChipSelect(uint8_t *ptr, bool selected)
 /**
  * transfer len bytes of data to the spi device
  */
-int32_t ch341::SpiStream(uint8_t *out, uint8_t *in, uint32_t len)
+qint32 ch341::SpiStream(quint8 *out, quint8 *in, quint32 len)
 {
-	uint8_t *inBuf, *outBuf, *inPtr, *outPtr;
-	int32_t ret, packetLen;
+	quint8 *inBuf, *outBuf, *inPtr, *outPtr;
+	qint32 ret, packetLen;
 	bool done;
 	bool err = false;
 
@@ -1494,7 +1494,7 @@ int32_t ch341::SpiStream(uint8_t *out, uint8_t *in, uint32_t len)
 
 	qDebug() << "ch341::SpiStream()";
 
-	outBuf = new uint8_t[CH341_PACKET_LENGTH];
+	outBuf = new quint8[CH341_PACKET_LENGTH];
 
 	SpiChipSelect(outBuf, true);
 	ret = usbTransfer(__func__, BULK_WRITE_ENDPOINT, outBuf, 4);
@@ -1505,7 +1505,7 @@ int32_t ch341::SpiStream(uint8_t *out, uint8_t *in, uint32_t len)
 		return -1;
 	}
 
-	inBuf = new uint8_t[CH341_PACKET_LENGTH];
+	inBuf = new quint8[CH341_PACKET_LENGTH];
 
 	inPtr = in;
 
@@ -1579,11 +1579,11 @@ int32_t ch341::SpiStream(uint8_t *out, uint8_t *in, uint32_t len)
 /**
  * read the JEDEC ID of the SPI Flash
  */
-int32_t ch341::SpiCapacity(void)
+qint32 ch341::SpiCapacity(void)
 {
-	uint8_t *outBuf;
-	uint8_t *inBuf, *ptr, cap;
-	int32_t ret;
+	quint8 *outBuf;
+	quint8 *inBuf, *ptr, cap;
+	qint32 ret;
 
 	if (devHandle == NULL)
 	{
@@ -1592,7 +1592,7 @@ int32_t ch341::SpiCapacity(void)
 
 	qDebug() << "ch341::SpiCapacity()";
 
-	outBuf = new uint8_t[JEDEC_ID_LEN];
+	outBuf = new quint8[JEDEC_ID_LEN];
 	ptr = outBuf;
 	*ptr++ = 0x9F; // Read JEDEC ID
 
@@ -1601,7 +1601,7 @@ int32_t ch341::SpiCapacity(void)
 		*ptr++ = 0x00;
 	}
 
-	inBuf = new uint8_t[JEDEC_ID_LEN];
+	inBuf = new quint8[JEDEC_ID_LEN];
 
 	ret = SpiStream(outBuf, inBuf, JEDEC_ID_LEN);
 
@@ -1648,11 +1648,11 @@ int32_t ch341::SpiCapacity(void)
 /**
  * read status register
  */
-int32_t ch341::ReadStatus(void)
+qint32 ch341::ReadStatus(void)
 {
-	uint8_t out[2];
-	uint8_t in[2];
-	int32_t ret;
+	quint8 out[2];
+	quint8 in[2];
+	qint32 ret;
 
 	if (devHandle == NULL)
 	{
@@ -1675,11 +1675,11 @@ int32_t ch341::ReadStatus(void)
 /**
  * write status register
  */
-int32_t ch341::WriteStatus(uint8_t status)
+qint32 ch341::WriteStatus(quint8 status)
 {
-	uint8_t out[2];
-	uint8_t in[2];
-	int32_t ret;
+	quint8 out[2];
+	quint8 in[2];
+	qint32 ret;
 
 	if (devHandle == NULL)
 	{
@@ -1719,11 +1719,11 @@ int32_t ch341::WriteStatus(uint8_t status)
 /**
  * chip erase
  */
-int32_t ch341::EraseChip(void)
+qint32 ch341::EraseChip(void)
 {
-	uint8_t out[1];
-	uint8_t in[1];
-	int32_t ret;
+	quint8 out[1];
+	quint8 in[1];
+	qint32 ret;
 
 	if (devHandle == NULL)
 	{
@@ -1762,10 +1762,10 @@ int32_t ch341::EraseChip(void)
 /**
  * read the content of SPI device to buf, make sure the buf is big enough before call
  */
-int32_t ch341::SpiRead(uint8_t *buf, uint32_t add, uint32_t len)
+qint32 ch341::SpiRead(quint8 *buf, quint32 add, quint32 len)
 {
-	uint8_t *outBuf;
-	uint8_t *inBuf;
+	quint8 *outBuf;
+	quint8 *inBuf;
 
 	if (devHandle == NULL)
 	{
@@ -1776,16 +1776,16 @@ int32_t ch341::SpiRead(uint8_t *buf, uint32_t add, uint32_t len)
 
 	/* what subtracted is: 1. first cs package, 2. leading command for every other packages,
 	 * 3. second package contains read flash command and 3 bytes address */
-	const uint32_t max_payload = CH341_MAX_PACKET_LEN - CH341_PACKET_LENGTH - CH341_MAX_PACKETS + 1 - 4;
-	uint32_t tmp, pkg_len, pkg_count;
+	const quint32 max_payload = CH341_MAX_PACKET_LEN - CH341_PACKET_LENGTH - CH341_MAX_PACKETS + 1 - 4;
+	quint32 tmp, pkg_len, pkg_count;
 	struct libusb_transfer *xferBulkIn, *xferBulkOut;
-	uint32_t idx = 0;
-	int32_t ret;
-	int32_t old_counter;
+	quint32 idx = 0;
+	qint32 ret;
+	qint32 old_counter;
 	struct timeval tv = {0, 100};
 	v_print(0, len);  // verbose
 
-	outBuf = new uint8_t[CH341_MAX_PACKET_LEN];
+	outBuf = new quint8[CH341_MAX_PACKET_LEN];
 
 	memset(outBuf, 0xff, CH341_MAX_PACKET_LEN);
 
@@ -1794,7 +1794,7 @@ int32_t ch341::SpiRead(uint8_t *buf, uint32_t add, uint32_t len)
 		outBuf[i * CH341_PACKET_LENGTH] = CH341_CMD_SPI_STREAM;
 	}
 
-	inBuf = new uint8_t[CH341_PACKET_LENGTH];
+	inBuf = new quint8[CH341_PACKET_LENGTH];
 
 	memset(inBuf, 0x00, CH341_PACKET_LENGTH);
 	xferBulkIn  = libusb_alloc_transfer(0);
@@ -1904,15 +1904,15 @@ int32_t ch341::SpiRead(uint8_t *buf, uint32_t add, uint32_t len)
 /**
  * write buffer(*buf) to SPI flash
  */
-int32_t ch341::SpiWrite(uint8_t *buf, uint32_t add, uint32_t len)
+qint32 ch341::SpiWrite(quint8 *buf, quint32 add, quint32 len)
 {
-	uint8_t *outBuf;
-	uint8_t *inBuf;
-	uint32_t tmp, pkg_count;
+	quint8 *outBuf;
+	quint8 *inBuf;
+	quint32 tmp, pkg_count;
 	struct libusb_transfer *xferBulkIn, *xferBulkOut;
-	uint32_t idx = 0;
-	uint32_t ret;
-	int32_t old_counter;
+	quint32 idx = 0;
+	quint32 ret;
+	qint32 old_counter;
 	struct timeval tv = {0, 100};
 
 	v_print(0, len); // verbose
@@ -1924,13 +1924,13 @@ int32_t ch341::SpiWrite(uint8_t *buf, uint32_t add, uint32_t len)
 
 	qDebug() << "ch341::SpiWrite()";
 
-	outBuf = new uint8_t[WRITE_PAYLOAD_LENGTH];
+	outBuf = new quint8[WRITE_PAYLOAD_LENGTH];
 
 	memset(outBuf, 0xff, WRITE_PAYLOAD_LENGTH);
 	xferBulkIn  = libusb_alloc_transfer(0);
 	xferBulkOut = libusb_alloc_transfer(0);
 
-	inBuf = new uint8_t[CH341_PACKET_LENGTH];
+	inBuf = new quint8[CH341_PACKET_LENGTH];
 
 	qDebug("Write started!");
 

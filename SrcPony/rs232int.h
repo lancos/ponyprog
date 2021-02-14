@@ -55,8 +55,8 @@ class RS232Interface
 
 	void SerialFlushRx();
 	void SerialFlushTx();
-	long ReadSerial(uint8_t *buffer, long len);
-	long WriteSerial(uint8_t *buffer, long len);
+	long ReadSerial(quint8 *buffer, long len);
+	long WriteSerial(quint8 *buffer, long len);
 	int SetSerialParams(long speed = -1, int bits = -1, int parity = -1, int stops = -1, int flow_control = -1);
 	int SetSerialTimeouts(long init_read = -1, long while_read = -1);
 //	void SetSerialEventMask(long mask);

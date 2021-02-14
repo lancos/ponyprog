@@ -39,8 +39,8 @@ class MicroWireBus : public BusIO
 	MicroWireBus(BusInterface *ptr = nullptr);
 	virtual ~MicroWireBus();
 
-	//long Read(int addr, uint8_t *data, long length);
-	//long Write(int addr, uint8_t const *data, long length);
+	//long Read(int addr, quint8 *data, long length);
+	//long Write(int addr, quint8 const *data, long length);
 
 	int Reset();
 

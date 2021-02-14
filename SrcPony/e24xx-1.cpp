@@ -32,7 +32,6 @@
 #include "e2awinfo.h"
 #include "e24xx-1.h"            // Header file
 #include "errcode.h"
-#include "eeptypes.h"
 
 E24xx1::E24xx1(e2AppWinInfo *wininfo, BusIO *busp)
 	:       E24xx(wininfo, busp, 8, 128)            //Max 8 bank of 128 bytes

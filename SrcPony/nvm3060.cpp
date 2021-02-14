@@ -27,7 +27,6 @@
 #include "types.h"
 #include "nvm3060.h"            // Header file
 #include "errcode.h"
-#include "eeptypes.h"
 
 #include <QDebug>
 
@@ -36,12 +35,12 @@
 Nvm3060::Nvm3060(e2AppWinInfo *wininfo, BusIO *busp)
 	:       Device(wininfo, busp, 1 /*BANK_SIZE*/)
 {
-	qDebug() << "Nvm3060::Nvm3060()";
+	qDebug() << Q_FUNC_INFO;
 }
 
 Nvm3060::~Nvm3060()
 {
-	qDebug() <<  "Nvm3060::~Nvm3060()";
+	qDebug() << Q_FUNC_INFO;
 }
 
 // determina il numero di banchi (dimensione) dell'eeprom

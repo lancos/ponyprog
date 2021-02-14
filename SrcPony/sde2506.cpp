@@ -27,7 +27,6 @@
 #include "types.h"
 #include "sde2506.h"            // Header file
 #include "errcode.h"
-#include "eeptypes.h"
 
 #include "e2awinfo.h"
 
@@ -36,12 +35,12 @@
 Sde2506::Sde2506(e2AppWinInfo *wininfo, BusIO *busp)
 	:       Device(wininfo, busp, 1 /*BANK_SIZE*/)
 {
-	qDebug() << "Sde2506::Sde2506()";
+	qDebug() << Q_FUNC_INFO;
 }
 
 Sde2506::~Sde2506()
 {
-	qDebug() <<  "Sde2506::~Sde2506()";
+	qDebug() << Q_FUNC_INFO;
 }
 
 // determina il numero di banchi (dimensione) dell'eeprom

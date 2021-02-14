@@ -49,7 +49,7 @@ class MpsseCommandQueue
 		return cmdidx;
 	}
 
-	bool append(uint8_t dat)
+	bool append(quint8 dat)
 	{
 		if (cmdidx < sizeof(cmdbuf))
 		{
@@ -62,7 +62,7 @@ class MpsseCommandQueue
 		}
 	}
 
-	uint8_t *getBuffer()
+	quint8 *getBuffer()
 	{
 		return cmdbuf;
 	}
@@ -83,7 +83,7 @@ class MpsseCommandQueue
 	}
 
   private:
-	uint8_t cmdbuf[1024];
+	quint8 cmdbuf[1024];
 	unsigned int cmdidx;
 };
 
@@ -119,7 +119,7 @@ class MpsseInterface : public BusInterface
 	virtual int Flush();
 
 	virtual int xferBit(int &err, int b, int mode = 0);
-	virtual uint8_t xferByte(int &err, uint8_t by, int mode = 0, int bpw = 8, bool lsb_first = false);
+	virtual quint8 xferByte(int &err, quint8 by, int mode = 0, int bpw = 8, bool lsb_first = false);
 	virtual unsigned long xferWord(int &err, unsigned long word_out, int mode = 0, int bpw = 8, bool lsb_first = false);
 
 	virtual void SetDelay(int delay);
@@ -171,10 +171,10 @@ class MpsseInterface : public BusInterface
 	int InitPins();
 	void DeInitPins();
 
-	int SetFrequency(uint32_t freq);
+	int SetFrequency(quint32 freq);
 	int SendPins(int new_data, int new_directions = -1);
 	int GetPins();
-	int GetLowPinsMulti(int bufsiz, uint8_t *buf, int len);
+	int GetLowPinsMulti(int bufsiz, quint8 *buf, int len);
 
 	//utility to set/reset/toggle a pin
 	unsigned int OutDataMask(int old_val, int mask, int val)

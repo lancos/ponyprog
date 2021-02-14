@@ -44,9 +44,6 @@ csmFileBuf::csmFileBuf(e2AppWinInfo *wininfo)
 
 int csmFileBuf::Load(int loadtype, long relocation_offfset)
 {
-	extern int GetE2PSubType(unsigned long x);
-	extern int GetE2PPriType(unsigned long x);
-
 	(void)relocation_offfset;       //unused
 
 	QFile fh(FileBuf::GetFileName());
@@ -169,7 +166,7 @@ int csmFileBuf::Load(int loadtype, long relocation_offfset)
 				{
 					if (addr < FileBuf::GetBufSize())
 					{
-						FileBuf::GetBufPtr()[addr] = (uint8_t)value;
+						FileBuf::GetBufPtr()[addr] = (quint8)value;
 					}
 				}
 				else if (loadtype == PROG_TYPE)
@@ -183,7 +180,7 @@ int csmFileBuf::Load(int loadtype, long relocation_offfset)
 
 					if (addr < s)
 					{
-						FileBuf::GetBufPtr()[addr] = (uint8_t)value;
+						FileBuf::GetBufPtr()[addr] = (quint8)value;
 					}
 				}
 				else if (loadtype == DATA_TYPE)
@@ -197,7 +194,7 @@ int csmFileBuf::Load(int loadtype, long relocation_offfset)
 
 					if (addr < FileBuf::GetBufSize() - s)
 					{
-						FileBuf::GetBufPtr()[addr + s] = (uint8_t)value;
+						FileBuf::GetBufPtr()[addr + s] = (quint8)value;
 					}
 				}
 			}
@@ -241,7 +238,7 @@ int csmFileBuf::Save(int savetype, long relocation_offfset)
 	(void) relocation_offfset;              //unused
 
 	long size = FileBuf::GetBlockSize() * FileBuf::GetNoOfBlock();
-	uint8_t *ptr = FileBuf::GetBufPtr();
+	quint8 *ptr = FileBuf::GetBufPtr();
 
 	if (savetype == PROG_TYPE)
 	{

@@ -43,8 +43,8 @@ class E24xx5 : public E24xx
 
   protected:
 
-	//      int bank_out(uint8_t const *copy_buf, int bank_no, long size = -1);
-	//      int bank_in(uint8_t *copy_buf, int bank_no, long size = -1);
+	//      int bank_out(quint8 const *copy_buf, int bank_no, long size = -1);
+	//      int bank_in(quint8 *copy_buf, int bank_no, long size = -1);
 
   private:
 

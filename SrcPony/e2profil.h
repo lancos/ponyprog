@@ -103,8 +103,8 @@ class E2Profile
 	static int GetBogoMips();
 	static void SetBogoMips(int value);
 
-	static long GetLastDevType();
-	static void SetLastDevType(long devtype);
+	static QString GetLastDevType();
+	static void SetLastDevType(const QString &devtype);
 
 	static QString GetLastFile(int &data, int index = 0);
 	static void SetLastFile(const QString &name, int data = ALL_TYPE);
@@ -196,6 +196,9 @@ class E2Profile
 
 	static QString GetLogFileName();
 	static void SetLogFileName(const QString &name);
+
+	static QString GetXmlDir();
+	static void SetXmlDir(const QString &name);
 
 	static QString GetLangDir();
 	static void SetLangDir(const QString &name);

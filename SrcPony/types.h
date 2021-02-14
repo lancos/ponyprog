@@ -16,13 +16,13 @@
 #elif defined(_MSC_VER) // && _MSC_VER == 1200
 //MSVC doesn't define stdint.h
 
-typedef unsigned long uint32_t;
-typedef unsigned short uint16_t;
-typedef unsigned char uint8_t;
+typedef unsigned long quint32;
+typedef unsigned short quint16;
+typedef unsigned char quint8;
 
-typedef signed long int32_t;
-typedef signed short int16_t;
-typedef signed char int8_t;
+typedef signed long qint32;
+typedef signed short qint16;
+typedef signed char qint8;
 
 #endif
 

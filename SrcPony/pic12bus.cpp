@@ -216,15 +216,15 @@ int Pic12Bus::Reset(void)
 	return OK;
 }
 
-long Pic12Bus::ReadConfig(uint16_t &data)
+long Pic12Bus::ReadConfig(quint16 &data)
 {
 	//      Reset();
 
-	uint8_t *bp = (uint8_t *)&data;
+	quint8 *bp = (quint8 *)&data;
 
 	//Read Program Code
 	SendCmdCode(ReadProgCode);
-	uint16_t val = RecvProgCode();
+	quint16 val = RecvProgCode();
 
 	if (val == ProgMask)
 	{
@@ -232,11 +232,11 @@ long Pic12Bus::ReadConfig(uint16_t &data)
 	}
 
 #ifdef  _BIG_ENDIAN_
-	*bp++ = (uint8_t)(val >> 8);
-	*bp++ = (uint8_t)(val & 0xFF);
+	*bp++ = (quint8)(val >> 8);
+	*bp++ = (quint8)(val & 0xFF);
 #else
-	*bp++ = (uint8_t)(val & 0xFF);
-	*bp++ = (uint8_t)(val >> 8);
+	*bp++ = (quint8)(val & 0xFF);
+	*bp++ = (quint8)(val >> 8);
 #endif
 	IncAddress(1);
 
@@ -246,22 +246,22 @@ long Pic12Bus::ReadConfig(uint16_t &data)
 }
 
 
-long Pic12Bus::WriteConfig(uint16_t data)
+long Pic12Bus::WriteConfig(quint16 data)
 {
 	qDebug() << Q_FUNC_INFO << "(" << (hex) << data  << ") IN";
 
 	//      Reset();
 
-	uint8_t *bp = (uint8_t *)&data;
-	uint16_t val;
+	quint8 *bp = (quint8 *)&data;
+	quint16 val;
 
 	//Write Program code
 #ifdef  _BIG_ENDIAN_
-	val  = (uint16_t)(*bp++) << 8;
-	val |= (uint16_t)(*bp++);
+	val  = (quint16)(*bp++) << 8;
+	val |= (quint16)(*bp++);
 #else
-	val  = (uint16_t)(*bp++);
-	val |= (uint16_t)(*bp++) << 8;
+	val  = (quint16)(*bp++);
+	val |= (quint16)(*bp++) << 8;
 #endif
 	int k;
 
@@ -308,7 +308,7 @@ long Pic12Bus::BlankCheck(long length)
 	return (len == length);
 }
 
-long Pic12Bus::Read(int addr, uint8_t *data, long length, int page_size)
+long Pic12Bus::Read(int addr, quint8 *data, long length, int page_size)
 {
 	long len;
 
@@ -324,7 +324,7 @@ long Pic12Bus::Read(int addr, uint8_t *data, long length, int page_size)
 	{
 		//Read Program Code
 		SendCmdCode(ReadProgCode);
-		uint16_t val = RecvProgCode();
+		quint16 val = RecvProgCode();
 
 		if (val == ProgMask)
 		{
@@ -332,11 +332,11 @@ long Pic12Bus::Read(int addr, uint8_t *data, long length, int page_size)
 		}
 
 #ifdef  _BIG_ENDIAN_
-		*data++ = (uint8_t)(val >> 8);
-		*data++ = (uint8_t)(val & 0xFF);
+		*data++ = (quint8)(val >> 8);
+		*data++ = (quint8)(val & 0xFF);
 #else
-		*data++ = (uint8_t)(val & 0xFF);
-		*data++ = (uint8_t)(val >> 8);
+		*data++ = (quint8)(val & 0xFF);
+		*data++ = (quint8)(val >> 8);
 #endif
 		IncAddress(1);
 
@@ -355,7 +355,7 @@ long Pic12Bus::Read(int addr, uint8_t *data, long length, int page_size)
 	return len;
 }
 
-long Pic12Bus::Write(int addr, uint8_t const *data, long length, int page_size)
+long Pic12Bus::Write(int addr, quint8 const *data, long length, int page_size)
 {
 	long len;
 
@@ -370,15 +370,15 @@ long Pic12Bus::Write(int addr, uint8_t const *data, long length, int page_size)
 	//Program cycle
 	for (len = 0; len < length; len++)
 	{
-		uint16_t val;
+		quint16 val;
 
 		//Write Program code
 #ifdef  _BIG_ENDIAN_
-		val  = (uint16_t)(*data++) << 8;
-		val |= (uint16_t)(*data++);
+		val  = (quint16)(*data++) << 8;
+		val |= (quint16)(*data++);
 #else
-		val  = (uint16_t)(*data++);
-		val |= (uint16_t)(*data++) << 8;
+		val  = (quint16)(*data++);
+		val |= (quint16)(*data++) << 8;
 #endif
 		int rv = WriteProgWord(val, length - 1);
 
@@ -406,7 +406,7 @@ long Pic12Bus::Write(int addr, uint8_t const *data, long length, int page_size)
 	return len;
 }
 
-int Pic12Bus::WriteProgWord(uint16_t val, long rc_addr)
+int Pic12Bus::WriteProgWord(quint16 val, long rc_addr)
 {
 	int k;
 	int rval = OK;
@@ -518,7 +518,7 @@ void Pic12Bus::IncAddress(int n)
 	qDebug() << Q_FUNC_INFO << "() OUT ** cur_addr = " << current_address;
 }
 
-int Pic12Bus::ProgramPulse(uint16_t val, int verify, int width)
+int Pic12Bus::ProgramPulse(quint16 val, int verify, int width)
 {
 	int rval = OK;
 
@@ -545,12 +545,12 @@ int Pic12Bus::ProgramPulse(uint16_t val, int verify, int width)
 	return rval;
 }
 
-int Pic12Bus::CompareSingleWord(uint16_t data1, uint16_t data2, uint16_t mask)
+int Pic12Bus::CompareSingleWord(quint16 data1, quint16 data2, quint16 mask)
 {
 	return (data1 & mask) != (data2 & mask);
 }
 
-int Pic12Bus::CompareMultiWord(uint8_t *data1, uint8_t *data2, long length, int split)
+int Pic12Bus::CompareMultiWord(quint8 *data1, quint8 *data2, long length, int split)
 {
 	int retval = 0;
 
@@ -565,20 +565,20 @@ int Pic12Bus::CompareMultiWord(uint8_t *data1, uint8_t *data2, long length, int 
 
 		for (k = 0; k < length; k += 2)
 		{
-			uint16_t val1, val2;
+			quint16 val1, val2;
 
 #ifdef  _BIG_ENDIAN_
-			val1  = (uint16_t)(*data1++) << 8;
-			val1 |= (uint16_t)(*data1++);
+			val1  = (quint16)(*data1++) << 8;
+			val1 |= (quint16)(*data1++);
 
-			val2  = (uint16_t)(*data2++) << 8;
-			val2 |= (uint16_t)(*data2++);
+			val2  = (quint16)(*data2++) << 8;
+			val2 |= (quint16)(*data2++);
 #else
-			val1  = (uint16_t)(*data1++);
-			val1 |= (uint16_t)(*data1++) << 8;
+			val1  = (quint16)(*data1++);
+			val1 |= (quint16)(*data1++) << 8;
 
-			val2  = (uint16_t)(*data2++);
-			val2 |= (uint16_t)(*data2++) << 8;
+			val2  = (quint16)(*data2++);
+			val2 |= (quint16)(*data2++) << 8;
 #endif
 
 			if ((retval = CompareSingleWord(val1, val2, ProgMask)))

@@ -8,8 +8,8 @@ if [ ! -f "$CPPCHCK" ]; then
    exit 0
 fi
 
-COUNT=$(cat /proc/cpuinfo | grep 'model name' | sed -e 's/.*: //' | wc -l)
+COUNT=$(nproc)
 echo "number of detected CPUs =" $COUNT
 
 #cppcheck -j $COUNT --force --inline-suppr --enable=warning . 2>errors.txt
-cppcheck -j $COUNT --force --enable=style . 2>cppreport.txt
+cppcheck -j $COUNT --force --enable=warning . 2>cppreport.txt

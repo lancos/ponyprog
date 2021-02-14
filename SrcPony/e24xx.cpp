@@ -32,7 +32,6 @@
 #include "e2awinfo.h"
 #include "e24xx.h"              // Header file
 #include "errcode.h"
-#include "eeptypes.h"
 
 #include <QDebug>
 
@@ -66,7 +65,7 @@ E24xx::~E24xx()
 int E24xx::Probe(int probe_size)
 {
 	int addr, error, k;
-	uint8_t ch;
+	quint8 ch;
 
 	qDebug() << "E24xx::Probe(" << probe_size << ") - IN";
 
@@ -236,10 +235,10 @@ int E24xx::Verify(int type)
 
 // questa routine si aspetta che in ingresso i 256 bytes da programmare l'eeprom
 // siano memorizzati nel iicbuffer nelle locazioni da 1 (non da 0!) a 256
-int E24xx::bank_out(uint8_t const *copy_buf, int bank, long size, long idx)
+int E24xx::bank_out(quint8 const *copy_buf, int bank, long size, long idx)
 {
 	int k, j;
-	uint8_t buffer[MAX_BANK_SIZE + 1];
+	quint8 buffer[MAX_BANK_SIZE + 1];
 
 	if (size <= 0)
 	{
@@ -254,27 +253,6 @@ int E24xx::bank_out(uint8_t const *copy_buf, int bank, long size, long idx)
 	}
 
 	memcpy(buffer + 1, copy_buf, size);
-#if 0
-
-	for (j = 0; j < size; j++)
-	{
-		buffer[j] = j;
-
-		if (GetBus()->Write(eeprom_addr[bank], buffer + j, 2) != 2)
-		{
-			return GetBus()->Error();
-		}
-
-		for (k = timeout_loop; k > 0 && GetBus()->Read(eeprom_addr[bank], buffer, 1) != 1; k--)
-			;
-
-		if (k == 0)
-		{
-			return E2P_TIMEOUT;
-		}
-	}
-
-#else
 
 	for (j = 0; j < size; j += writepage_size)
 	{
@@ -296,14 +274,12 @@ int E24xx::bank_out(uint8_t const *copy_buf, int bank, long size, long idx)
 		}
 	}
 
-#endif
-
 	return OK;
 }
 
-int E24xx::bank_in(uint8_t *copy_buf, int bank, long size, long idx)
+int E24xx::bank_in(quint8 *copy_buf, int bank, long size, long idx)
 {
-	uint8_t ch;
+	quint8 ch;
 
 	if (copy_buf == 0)   // || bank >= GetNoOfBank())
 	{
@@ -315,7 +291,7 @@ int E24xx::bank_in(uint8_t *copy_buf, int bank, long size, long idx)
 		size = GetBankSize();
 	}
 
-	ch = (uint8_t)idx;
+	ch = (quint8)idx;
 
 	if (GetBus()->StartWrite(eeprom_addr[bank], &ch, 1) != 1)
 	{
@@ -335,7 +311,7 @@ int E24xx::bank_in(uint8_t *copy_buf, int bank, long size, long idx)
 
 		for (k = 0; k < size; k++)
 		{
-			ch = (uint8_t)(k + idx);
+			ch = (quint8)(k + idx);
 
 			if (GetBus()->StartWrite(eeprom_addr[bank], &ch, 1) != 1)
 			{
@@ -360,36 +336,9 @@ int E24xx::BankRollOverDetect(int force)
 
 	if (GetNoOfBank() > 1)
 	{
-		uint8_t index;
-		uint8_t buf[CMP_LEN + 1], buf1[CMP_LEN], buf2[CMP_LEN];
-#if 0
-		//Lettura dal primo banco
-		index = 0;
+		quint8 index;
+		quint8 buf[CMP_LEN + 1], buf1[CMP_LEN], buf2[CMP_LEN];
 
-		if (GetBus()->StartWrite(eeprom_addr[0], &index, 1) != 1)
-		{
-			return GetBus()->Error();
-		}
-
-		if (GetBus()->Read(eeprom_addr[0], buf1, CMP_LEN) != CMP_LEN)
-		{
-			return GetBus()->Error();
-		}
-
-		//Lettura dal secondo banco
-		index = 0;
-
-		if (GetBus()->StartWrite(eeprom_addr[1], &index, 1) != 1)
-		{
-			return GetBus()->Error();
-		}
-
-		if (GetBus()->Read(eeprom_addr[1], buf2, CMP_LEN) != CMP_LEN)
-		{
-			return GetBus()->Error();
-		}
-
-#else
 		int error;
 
 		if ((error = bank_in(buf1, 0, CMP_LEN)))
@@ -402,34 +351,17 @@ int E24xx::BankRollOverDetect(int force)
 			return error;
 		}
 
-#endif
-
 		//Se i primi due banchi sono differenti e` possibile
 		//  determinare il bank-rollover
 		if (memcmp(buf1, buf2, CMP_LEN) != 0)
 		{
 			//lettura iniziando dalla fine del primo banco
 			index = GetBankSize() - 1;
-#if 0
-
-			if (GetBus()->StartWrite(eeprom_addr[0], &index, 1) != 1)
-			{
-				return GetBus()->Error();
-			}
-
-			if (GetBus()->Read(eeprom_addr[0], buf, CMP_LEN + 1) != CMP_LEN + 1)
-			{
-				return GetBus()->Error();
-			}
-
-#else
 
 			if ((error = bank_in(buf, 0, CMP_LEN + 1, GetBankSize() - 1)))
 			{
 				return error;
 			}
-
-#endif
 
 			rlv = (memcmp(buf + 1, buf1, CMP_LEN) == 0) ? 1 : 2;
 		}

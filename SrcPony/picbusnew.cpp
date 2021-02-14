@@ -44,7 +44,7 @@ int PicBusNew::WaitReadyAfterWrite(long timeout)
 	return OK;
 }
 
-long PicBusNew::Write(int addr, uint8_t const *data, long length, int page_size)
+long PicBusNew::Write(int addr, quint8 const *data, long length, int page_size)
 {
 	long len;
 
@@ -57,13 +57,13 @@ long PicBusNew::Write(int addr, uint8_t const *data, long length, int page_size)
 
 	for (len = 0; len < length; len++)
 	{
-		uint16_t val;
+		quint16 val;
 
 		//Send command opcode
 		if (addr)
 		{
 			//Write Data code
-			val  = (uint16_t)(*data++);
+			val  = (quint16)(*data++);
 
 			if (CompareSingleWord(val, 0xffff, DataMask) != 0)
 			{
@@ -87,11 +87,11 @@ long PicBusNew::Write(int addr, uint8_t const *data, long length, int page_size)
 		else
 		{
 #ifdef  _BIG_ENDIAN_
-			val  = (uint16_t)(*data++) << 8;
-			val |= (uint16_t)(*data++);
+			val  = (quint16)(*data++) << 8;
+			val |= (quint16)(*data++);
 #else
-			val  = (uint16_t)(*data++);
-			val |= (uint16_t)(*data++) << 8;
+			val  = (quint16)(*data++);
+			val |= (quint16)(*data++) << 8;
 #endif
 
 			if (CompareSingleWord(val, 0xffff, ProgMask) != 0)

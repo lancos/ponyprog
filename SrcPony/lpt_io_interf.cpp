@@ -50,7 +50,7 @@ enum LptRegs
 
 LPTIOInterface::LPTIOInterface()
 {
-	qDebug() << "LPTIOInterface::LPTIOInterface()";
+	qDebug() << Q_FUNC_INFO;
 
 	last_ctrl = last_data = 0;
 	lpt_port = -1;
@@ -60,7 +60,7 @@ LPTIOInterface::LPTIOInterface()
 
 LPTIOInterface::~LPTIOInterface()
 {
-	qDebug() <<  "LPTIOInterface::~LPTIOInterface()";
+	qDebug() << Q_FUNC_INFO;
 
 	PortInterface::CloseParallel();
 }

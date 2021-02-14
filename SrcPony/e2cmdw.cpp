@@ -58,7 +58,6 @@
 #include "progoption.h"
 #include "sernumdlg.h"
 #include "errcode.h"
-#include "eeptypes.h"
 #include "prefdialog.h"
 
 
@@ -70,10 +69,6 @@ class e2AppWinInfo;
 
 //Global e2CmdWindow pointer
 e2CmdWindow *cmdWin;
-
-// EK 2017
-// TODO insert this into class
-QVector<menuToGroup> deviceMenu;
 
 
 void e2CmdWindow::About()
@@ -110,10 +105,6 @@ e2CmdWindow::e2CmdWindow(QWidget *parent) :
 	currentMenu = NULL;
 	currentAct = NULL;
 
-	// EK 2017
-	// TODO to remove this to E2Profile init?
-	//      QFont sysFont = qApp->font();
-	//      sysFont = sysFont;
 	// EK 2017
 	// to check this
 	fontSize = E2Profile::GetFontSize();	//sysFont.pointSize();
@@ -178,6 +169,12 @@ e2CmdWindow::e2CmdWindow(QWidget *parent) :
 	}
 
 	// end of init from AppMain
+	{
+		BusIO **b = GetBusVectorPtr();
+
+		awip = new e2AppWinInfo(this, "", b);
+		//              qDebug() << b << a;
+	}
 
 	createFileList();
 	createScriptList();
@@ -190,8 +187,6 @@ e2CmdWindow::e2CmdWindow(QWidget *parent) :
 
 	// combo boxes
 	CbxMenuInit();
-
-	//      UpdateMenuType(E2Profile::GetLastDevType());
 
 	// The Canvas
 	qbuf = new QBuffer(this);
@@ -237,10 +232,13 @@ e2CmdWindow::e2CmdWindow(QWidget *parent) :
 
 	//      if (!awip)
 	{
+#if 0
 		BusIO **b = GetBusVectorPtr();
 
 		awip = new e2AppWinInfo(this, "", b);
 		//              qDebug() << b << a;
+		readXmlDir();
+#endif
 		PostInit(); // removed from e2AppWinInfo
 	}
 
@@ -389,6 +387,7 @@ void e2CmdWindow::onSelectFile(QAction *a)
 	}
 }
 
+
 /**
  * @brief scan the directory with translations. language files are with .utf extentions
  *
@@ -417,7 +416,7 @@ bool e2CmdWindow::readLangDir()
 		lngDirName = qApp->applicationDirPath() + "/lang";
 	}
 
-	qDebug() << "readLangDir path:" << path << ", Saved: " << lngDirName;
+	qDebug() <<  Q_FUNC_INFO << "readLangDir path:" << path << ", Saved: " << lngDirName;
 
 #ifdef Q_OS_LINUX
 	dirsLang << lngDirName << "/usr/share/ponyprog/lang" << "/usr/local/share/ponyprog/lang" << path;
@@ -552,7 +551,7 @@ void e2CmdWindow::setLang(QAction *mnu)
 
 	if (getLangTable() == false)
 	{
-		qDebug() << "setLang" << false;
+		qDebug() << Q_FUNC_INFO << "setLang" << false;
 	}
 
 	disconnect(langGroup, SIGNAL(triggered(QAction *)), this, SLOT(setLang(QAction *)));
@@ -929,202 +928,17 @@ int e2CmdWindow::OnError(int err_no, const QString &msgerr)
  * @brief
  *
  */
-void e2CmdWindow::addI2C8Struct()
+void e2CmdWindow::createDeviceMenues()
 {
-	menuToGroup *mTmp = new menuToGroup();
+	// the loop about all structures
+	deviceMenu = awip->CreateDeviceMenues();
 
-	mTmp->title = "I2C Bus 8bit eeprom";
-	mTmp->pre_type << E24XX << E24XX1_A << E24XX1_B << E24XX5;
+	qDebug() << Q_FUNC_INFO << deviceMenu.count() << "entries";
 
-	addMenuVector(mTmp);
-}
-
-/**
- * @brief
- *
- */
-void e2CmdWindow::addI2C16Struct()
-{
-	menuToGroup *mTmp = new menuToGroup();
-
-	mTmp->title = "I2C Bus 16bit eeprom";
-	mTmp->pre_type << E24XX2;
-
-	addMenuVector(mTmp);
-}
-
-/**
- * @brief
- *
- */
-void e2CmdWindow::addI2CAT17Struct()
-{
-	menuToGroup *mTmp = new menuToGroup();
-
-	mTmp->title = "I2C Bus AT17 eeprom";
-	mTmp->pre_type << AT17XXX;
-
-	addMenuVector(mTmp);
-}
-
-
-/**
- * @brief
- *
- */
-void e2CmdWindow::addMW16Struct()
-{
-	menuToGroup *mTmp = new menuToGroup();
-
-	mTmp->title = "MicroWire16 eeprom";
-	mTmp->pre_type << E93X6;
-
-	addMenuVector(mTmp);
-}
-
-
-/**
- * @brief
- *
- */
-void e2CmdWindow::addMW8Struct()
-{
-	menuToGroup *mTmp = new menuToGroup();
-
-	mTmp->title = "MicroWire8 eeprom";
-	mTmp->pre_type << E93XX_8;
-
-	addMenuVector(mTmp);
-}
-
-
-/**
- * @brief
- *
- */
-void e2CmdWindow::addSPIStruct()
-{
-	menuToGroup *mTmp = new menuToGroup();
-
-	mTmp->title = "SPI eeprom";
-	mTmp->pre_type << E250XX << E25XXX;
-
-	addMenuVector(mTmp);
-}
-
-/**
- * @brief
- *
- */
-void e2CmdWindow::addAT90Struct()
-{
-	menuToGroup *mTmp = new menuToGroup();
-
-	mTmp->title = "AT90 micro";
-	mTmp->pre_type << AT90SXX;
-
-	addMenuVector(mTmp, "AT90");
-
-	mTmp = new menuToGroup();
-
-	mTmp->title = "ATmega micro";
-	mTmp->pre_type << AT90SXX;
-
-	addMenuVector(mTmp, "ATmega");
-
-	mTmp = new menuToGroup();
-
-	mTmp->title = "ATtiny micro";
-	mTmp->pre_type << AT90SXX;
-
-	addMenuVector(mTmp, "ATtiny");
-}
-
-
-/**
- * @brief
- *
- */
-void e2CmdWindow::addAT89Struct()
-{
-	menuToGroup *mTmp = new menuToGroup();
-
-	mTmp->title = "AT89S micro";
-	mTmp->pre_type << AT89SXX;
-
-	addMenuVector(mTmp);
-}
-
-
-/**
- * @brief
- *
- */
-void e2CmdWindow::addPIC16Struct()
-{
-	menuToGroup *mTmp = new menuToGroup();
-
-	mTmp->title = "PIC 16 micro";
-	mTmp->pre_type << PIC168XX << PIC16XX;
-
-	addMenuVector(mTmp);
-}
-
-
-/**
- * @brief
- *
- */
-void e2CmdWindow::addPIC12Struct()
-{
-	menuToGroup *mTmp = new menuToGroup();
-
-	mTmp->title = "PIC 12 micro";
-	mTmp->pre_type << PIC125XX;
-
-	addMenuVector(mTmp);
-}
-
-/**
- * @brief
- *
- */
-void e2CmdWindow::addIMBUSStruct()
-{
-	menuToGroup *mTmp = new menuToGroup();
-
-	mTmp->title = "ImBus eeprom";
-	mTmp->pre_type << ENVMXXX;
-
-	addMenuVector(mTmp);
-}
-
-/**
- * @brief
- *
- */
-void e2CmdWindow::addSDEStruct()
-{
-	menuToGroup *mTmp = new menuToGroup();
-
-	mTmp->title = "SDE2506 eeprom";
-	mTmp->pre_type << E2506XX;
-
-	addMenuVector(mTmp);
-}
-
-/**
- * @brief
- *
- */
-void e2CmdWindow::addX24CStruct()
-{
-	menuToGroup *mTmp = new menuToGroup();
-
-	mTmp->title = "X2444 eeprom";
-	mTmp->pre_type << X24C44XX;
-
-	addMenuVector(mTmp);
+	for (int i = 0; i < deviceMenu.count(); i++)
+	{
+		addMenuVector(&deviceMenu[i]);
+	}
 }
 
 
@@ -1132,108 +946,23 @@ void e2CmdWindow::addMenuVector(menuToGroup *vecMnu, const QString &filter)
 {
 	vecMnu->mnu = new QMenu(vecMnu->title);
 	vecMnu->grp = new QActionGroup(this);
-	vecMnu->filter = filter;
 
 	QAction *actionRecent = menuDevice->addMenu(vecMnu->mnu);
 
-	if (filter.length() == 0) // old method
+	// EK TODO to implement filter?
+	for (int i = 0; i < vecMnu->vChip.count(); i++)
 	{
-		for (int i = 0; i < vecMnu->pre_type.count(); i++)
-		{
-			vecMnu->info << GetEEPSubTypeVector(vecMnu->pre_type.at(i));
-		}
+		QString entry = vecMnu->vChip[i].name;
+		QAction *tmpAction = new QAction(entry, actionRecent);
+		tmpAction->setCheckable(true);
 
-		for (int i = 0; i < vecMnu->info.count(); i++)
-		{
-			QString entry = vecMnu->info[i].name;
-			QAction *tmpAction = new QAction(entry, actionRecent);
-			tmpAction->setCheckable(true);
-
-			vecMnu->mnu->addAction(tmpAction);
-			vecMnu->grp->addAction(tmpAction);
-		}
-	}
-	else // filter for splitting of ATtiny, ATmega, AT90
-	{
-		QVector<chipInfo> tmpInfo;
-		for (int i = 0; i < vecMnu->pre_type.count(); i++)
-		{
-			tmpInfo << GetEEPSubTypeVector(vecMnu->pre_type.at(i));
-		}
-
-		for (int i = 0; i < tmpInfo.count(); i++)
-		{
-			if (tmpInfo.at(i).name.indexOf(filter) == 0)
-			{
-				vecMnu->info << tmpInfo.at(i);
-			}
-		}
-
-		for (int i = 0; i < vecMnu->info.count(); i++)
-		{
-			if (vecMnu->info[i].name.indexOf(filter) == 0)
-			{
-				QString entry = vecMnu->info[i].name;
-				QAction *tmpAction = new QAction(entry, actionRecent);
-				tmpAction->setCheckable(true);
-
-				vecMnu->mnu->addAction(tmpAction);
-				vecMnu->grp->addAction(tmpAction);
-			}
-		}
+		vecMnu->mnu->addAction(tmpAction);
+		vecMnu->grp->addAction(tmpAction);
 	}
 
 	connect(vecMnu->grp, SIGNAL(triggered(QAction *)), this, SLOT(onSelectChip(QAction *)));
 
-	deviceMenu << *vecMnu;
-}
-
-/**
- * @brief
- *
- */
-void e2CmdWindow::createDeviceMenues()
-{
-	// to add into menu: menuDevice
-
-	// I2Cbus8: eep24xx_map, eep24xx1A_map, eep24xx1B_map, eep24xx5_map
-	addI2C8Struct();
-
-	// I2Cbus16: eep24xx2_map
-	addI2C16Struct();
-
-	// I2CbusAT17: eep17xxx_map
-	addI2CAT17Struct();
-
-	// MicroWire16: eep93x6_map
-	addMW16Struct();
-
-	// MicroWire8: eep93xx8_map
-	addMW8Struct();
-
-	// SPI eeprom: eep250xx_map, eep25xxx_map
-	addSPIStruct();
-
-	// AVR: eepAt90_map
-	addAT90Struct();
-
-	// AT89: eepAt89_map
-	addAT89Struct();
-
-	// PIC16: eepPic168xx_map, eepPic16_map
-	addPIC16Struct();
-
-	// PIC12: eepPic125_map
-	addPIC12Struct();
-
-	// ImBus: eepnvm3060_map
-	addIMBUSStruct();
-
-	// SDE: eep2506_map
-	addSDEStruct();
-
-	// X2444: eep2444_map
-	addX24CStruct();
+// 	deviceMenu << *vecMnu;
 }
 
 
@@ -1245,7 +974,7 @@ void e2CmdWindow::doProgress(const QString &text)
 {
 	if (e2Prg)
 	{
-		qDebug() << "e2Prg alread exist";
+		qDebug() << Q_FUNC_INFO << "e2Prg alread exist";
 		e2Prg->setLabelText(text);
 		e2Prg->reset();
 		//e2Prg->setValue(0);
@@ -1277,20 +1006,6 @@ void e2CmdWindow::doProgress(const QString &text)
 //	qDebug() << "progress dialog finished";
 //}
 
-#if 0
-int e2CmdWindow::findItemInMenuVector(const QString &n)
-{
-	for (int idx = 0; idx < deviceMenu.count(); idx++)
-	{
-		if (deviceMenu.at(idx).mnu->title() == n)
-		{
-			return idx;
-		}
-	}
-
-	return -1;
-}
-#endif
 
 /**
  * @brief slot for signal from action group
@@ -1316,16 +1031,16 @@ void e2CmdWindow::onSelectChip(QAction *a)
 	currentAct = a;
 	currentAct->setChecked(true);
 
-	qDebug() << Q_FUNC_INFO << "Id: " << (hex) << awip->GetEEPId() << " NewId: " << new_id;
+	qDebug() << Q_FUNC_INFO << "Id: " << (hex) << awip->GetId() << " NewId: " << new_id;
 
-	if (awip->GetEEPId() != new_id)
+	if (awip->GetId() != new_id)
 	{
 		CmdSelectDevice(new_id);
 	}
 }
 
 
-long e2CmdWindow::selectTypeSubtype(const QString &tp, const QString &subtp)
+quint32 e2CmdWindow::selectTypeSubtype(const QString &tp, const QString &subtp)
 {
 	QString t_tmp = tp;
 	t_tmp.remove(QChar('&'));
@@ -1333,7 +1048,7 @@ long e2CmdWindow::selectTypeSubtype(const QString &tp, const QString &subtp)
 	QString st_tmp = subtp;
 	st_tmp.remove(QChar('&'));
 
-	//qDebug() << Q_FUNC_INFO << " " << t_tmp << st_tmp << currentMenu->title;
+	qDebug() << Q_FUNC_INFO << " " << t_tmp << st_tmp;
 	//bool rebuildSubmenu = true;
 
 	if (currentMenu == NULL || currentMenu->title != t_tmp || cbxEEPSubType->count() == 0) // update the type combobox
@@ -1353,48 +1068,21 @@ long e2CmdWindow::selectTypeSubtype(const QString &tp, const QString &subtp)
 		{
 			if (deviceMenu.at(i).title == t_tmp)
 			{
-				// qDebug() << "gefunden" << deviceMenu.at(i).title;
 				currentMenu = (menuToGroup *)&deviceMenu.at(i);
 
 				break;
 			}
 		}
 
-		// rebuildSubmenu = true;
-//         }
-
-		// rebuild the subtype list
-//         if (cbxEEPSubType->count() == 0 || cbxEEPSubType-> != st_tmp)
-//         {
-//                 rebuildSubmenu = true;
-//         }
-//
-//         if (rebuildSubmenu == true)
-//         {
 		disconnect(cbxEEPSubType, SIGNAL(currentIndexChanged(int)), this, SLOT(onDevSubType(int)));
 
 		cbxEEPSubType->clear();
 
 		QStringList l;
 
-		// qDebug() << "filter" << currentMenu->title;
-		if (currentMenu->filter.length() > 0)
+		foreach (chipMenuInfo cInf, currentMenu->vChip)
 		{
-			// qDebug() << "filter" << currentMenu << currentMenu->filter;
-			foreach (chipInfo cInf, currentMenu->info)
-			{
-				if (cInf.name.indexOf(currentMenu->filter) == 0)
-				{
-					l << cInf.name;
-				}
-			}
-		}
-		else
-		{
-			foreach (chipInfo cInf, currentMenu->info)
-			{
-				l << cInf.name;
-			}
+			l << cInf.name;
 		}
 
 		if (l.count()) // refresh combobox list for subtype
@@ -1403,7 +1091,7 @@ long e2CmdWindow::selectTypeSubtype(const QString &tp, const QString &subtp)
 		}
 		else
 		{
-			qDebug() << "selectTypeSubtype, something is wrong with search" << currentMenu->title;
+			qDebug() << Q_FUNC_INFO << "selectTypeSubtype, something is wrong with search" << currentMenu->title;
 			return EID_INVALID;
 		}
 
@@ -1423,18 +1111,18 @@ long e2CmdWindow::selectTypeSubtype(const QString &tp, const QString &subtp)
 
 	if (currentMenu == NULL)
 	{
-		qDebug() << "selectTypeSubtype, something is wrong with data pointer";
+		qDebug() << Q_FUNC_INFO << "selectTypeSubtype, something is wrong with data pointer";
 		return EID_INVALID;
 	}
 
 	// search id
 	long new_id = EID_INVALID;
 
-	for (int i = 0; i < currentMenu->info.count(); i++)
+	for (int i = 0; i < currentMenu->vChip.count(); i++)
 	{
-		if (currentMenu->info.at(i).name == st_tmp)
+		if (currentMenu->vChip.at(i).name == st_tmp)
 		{
-			new_id = currentMenu->info.at(i).id;
+			new_id = currentMenu->vChip.at(i).id;
 		}
 	}
 
@@ -1968,7 +1656,7 @@ void e2CmdWindow::onVerify()
 	}
 	else
 	{
-		qDebug() << "onVerify() App not ready!!!";
+		qDebug() << Q_FUNC_INFO << "onVerify() App not ready!!!";
 	}
 }
 
@@ -1994,28 +1682,6 @@ void e2CmdWindow::onSelectScript(QAction *a)
 	}
 }
 
-#if 0
-void e2CmdWindow::onRunScript()
-{
-	if (IsAppReady())
-	{
-		QStringList lst = E2Profile::GetLastScripts();
-		if (lst.count() > 0)
-		{
-			QString sp = E2Profile::GetLastScripts().at(0);
-
-			if (sp.length() > 0)
-			{
-				script_name = sp;
-
-				SetAppBusy();
-				CmdRunScript();
-				SetAppReady();
-			}
-		}
-	}
-}
-#endif
 
 void e2CmdWindow::onLoadScript()
 {
@@ -2038,19 +1704,6 @@ void e2CmdWindow::onLoadScript()
 	}
 }
 
-#if 0
-void e2CmdWindow::onNew()
-{
-	if (IsAppReady())
-	{
-		// EK 2017
-		// this feature is deactivated now
-		// start new application
-		//              theApp->NewAppWin(0, "",
-		//                                theApp->DefaultWidth(), theApp->DefaultHeight(), 0);
-	}
-}
-#endif
 
 void e2CmdWindow::onReset()
 {
@@ -2177,24 +1830,6 @@ void e2CmdWindow::onSetSerialNumber()
 	if (IsAppReady())
 	{
 		CmdSetSerialNumber();
-	}
-}
-
-
-void e2CmdWindow::onSelectEEPType(int val)
-{
-	if (IsAppReady())
-	{
-		CmdSetDeviceType(val);
-	}
-}
-
-
-void e2CmdWindow::onEEPSubType(int val)
-{
-	if (IsAppReady())
-	{
-		CmdSetDeviceSubType(val);
 	}
 }
 
@@ -2647,7 +2282,7 @@ int e2CmdWindow::CmdRead(int type)
 		{
 			QString sp;
 			//sp = GetEEPTypeString(awip->GetEEPPriType(), awip->GetEEPSubType());
-			sp = GetEEPTypeString(awip->GetEEPId());
+			sp = awip->GetTypeString(awip->GetId());
 			//qDebug() << "CmdRead" << awip->GetEEPPriType() << awip->GetEEPSubType() << sp;
 			UpdateStrFromStr(sp, "");
 			awip->RecalcCRC();
@@ -2784,7 +2419,7 @@ int e2CmdWindow::CmdWrite(int type, bool verify)
 						{
 							QString sp;
 							//sp = GetEEPTypeString(awip->GetEEPPriType(), awip->GetEEPSubType());
-							sp = GetEEPTypeString(awip->GetEEPId());
+							sp = awip->GetTypeString(awip->GetId());
 							//qDebug() << "CmdWrite" << awip->GetEEPPriType() << awip->GetEEPSubType() << sp;
 							UpdateStrFromStr(sp);
 						}
@@ -2898,9 +2533,9 @@ int e2CmdWindow::CmdReadCalibration(int idx)
 					(loc + size <= awip->GetBufSize())
 			   )
 			{
-				uint8_t *bp = awip->GetBufPtr() + loc;
+				quint8 *bp = awip->GetBufPtr() + loc;
 
-				*bp = (uint8_t)rval;
+				*bp = (quint8)rval;
 
 				awip->RecalcCRC();
 				//awip->BufChanged();
@@ -3017,7 +2652,7 @@ int e2CmdWindow::CmdErase(int type)
 			//curIndex = 0;
 			//Draw();
 
-			qDebug() << "CmdWindow->Erase -- Error";
+			qDebug() << Q_FUNC_INFO << "CmdWindow->Erase -- Error";
 
 			result = rval;
 
@@ -3202,101 +2837,7 @@ int e2CmdWindow::CmdProgram()
 	return result;
 }
 
-#if 0
-//**
-// TODO to QString
-static char *mytokenizer(char *buf, char *&next)
-{
-	char *sp = buf;
-	char *spend = NULL;
 
-	if (sp == NULL)   // || next == NULL)
-	{
-		return NULL;
-	}
-
-	//ignore spaces, tabs, new-line, carriage return
-	while (*sp == ' ' || *sp == '\t' || *sp == '\n' || *sp == '\r')
-	{
-		sp++;
-	}
-
-	if (*sp == '\0')
-	{
-		return NULL;
-	}
-
-	if (*sp == '\"')
-	{
-		sp++;
-		spend = strchr(sp, '\"');
-
-		//Substitute string "\n" char with 0x0A 0x32
-		char *s1;
-
-		for (s1 = sp; s1 < spend; s1++)
-		{
-			if (s1[0] == '\\' && s1[1] == 'n')
-			{
-				s1[0] = '\n';
-				s1[1] = ' ';
-			}
-		}
-	}
-	else
-	{
-		char *s1, *s2;
-		s1 = strchr(sp, '\t');
-		s2 = strchr(sp, ' ');
-
-		if (s1 != NULL && s2 != NULL)
-		{
-			if (s1 < s2)
-			{
-				spend = s1;
-			}
-			else
-			{
-				spend = s2;
-			}
-		}
-		else if (s1 != NULL && s2 == NULL)
-		{
-			spend = s1;
-		}
-		else if (s2 != NULL && s1 == NULL)
-		{
-			spend = s2;
-		}
-		else
-		{
-			spend = strchr(sp, '\n');
-		}
-	}
-
-	if (spend != NULL)
-	{
-		*spend++ = '\0';
-
-		if (*spend == '\0')
-		{
-			next = NULL;
-		}
-		else
-		{
-			next = spend;
-		}
-	}
-	else
-	{
-		next = NULL;
-	}
-
-	return sp;
-}
-#endif
-
-// TODO to QString
 static QStringList myscantokenizer(char *buf)//, char *arg[], int arglen)
 {
 	QString ln = buf;
@@ -3309,34 +2850,8 @@ static QStringList myscantokenizer(char *buf)//, char *arg[], int arglen)
 	}
 
 	return l;
-
-#if 0
-	int k;
-	char *sp, *next;
-
-	if (arg == NULL)
-	{
-		return 0;
-	}
-
-	for (k = 0; k < arglen; k++)
-	{
-		arg[k] = NULL;
-	}
-
-	sp = buf;
-
-	for (k = 0; (sp = mytokenizer(sp, next)) != NULL && k < arglen; k++)
-	{
-		arg[k] = sp;
-		sp = next;
-	}
-
-	return k;
-#endif
 }
 
-// #define cmdbuf  arg[0]
 
 int e2CmdWindow::ScriptError(int line_number, int arg_index, const QString &s, const QString msg)
 {
@@ -3387,7 +2902,7 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 	}
 
 	QString fpath = QFileInfo(script_name).absolutePath();
-	qDebug() << "Set current path: " << fpath;
+	qDebug() << Q_FUNC_INFO << "Set current path: " << fpath;
 	QDir::setCurrent(fpath);
 
 	QFile fh(script_name);
@@ -3424,8 +2939,9 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 		{
 			if (n == 2)
 			{
-				long new_type;
-				new_type = GetEEPTypeFromString(lst.at(1));
+				quint32 new_type;
+				QString nm = lst.at(1);
+				new_type = awip->GetTypeFromString(nm);
 
 				if (new_type <= 0)
 				{
@@ -3997,7 +3513,7 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 				{
 					bool autoinc = E2Profile::GetSerialNumAutoInc();
 
-					if (n >= 7)
+					if (n >= 7) // <--- ???
 					{
 						autoinc = ("NO" == lst.at(6)) ? false : true;
 					}
@@ -4329,11 +3845,11 @@ int e2CmdWindow::CmdGetInfo()
 
 	esize = tsize - fsize;
 
-	int pritype = GetE2PPriType(awip->GetEEPId());
+	int pritype = awip->GetPriType(awip->GetId());
 
 	if (pritype == E24XX || pritype == E24XX2 || pritype == E24XX5)
 	{
-		//      uint32_t hblock, secbits;
+		//      quint32 hblock, secbits;
 		int rlv;
 
 		if (pritype != E24XX)
@@ -4404,7 +3920,7 @@ int e2CmdWindow::CmdDoubleSize()
 	{
 		// Double the size
 		//              long new_type = GetEEPTypeFromSize(awip->GetEEPPriType(), awip->GetNoOfBlock() * 2);
-		long new_type = GetEEPTypeFromSize(awip->GetEEPId(), awip->GetNoOfBlock() * 2);
+		long new_type = awip->GetTypeFromSize(awip->GetId(), awip->GetNoOfBlock() * 2);
 
 		if (new_type > 0)
 		{
@@ -4423,25 +3939,6 @@ int e2CmdWindow::CmdDoubleSize()
 	return OK;
 }
 
-int e2CmdWindow::CmdSetDeviceType(int val)
-{
-	long new_type = CbxIdToType(val, 0);
-	awip->SetEEProm(new_type);
-
-	qDebug() << "CmdSetDeviceType(" << val << "), type=" << (hex) << new_type << (dec);
-
-	return CmdSelectDevice(new_type);
-}
-
-int e2CmdWindow::CmdSetDeviceSubType(int val)
-{
-	int v1 = cbxEEPType->currentIndex();
-	long new_type = CbxIdToType(v1, val);
-
-	qDebug() << "CmdSetDeviceSubType(" << val << "), v1=" << v1 << ", type=" << (hex) << new_type << (dec);
-
-	return CmdSelectDevice(new_type);
-}
 
 int e2CmdWindow::CmdOpen(int type, const QString &fname, long relocation, int clear_buffer)
 {
@@ -4533,7 +4030,7 @@ int e2CmdWindow::CmdFillBuf()
 int e2CmdWindow::SpecialBits(bool readonly)
 {
 	//int rval;
-	//uint32_t lock, fuse;
+	//quint32 lock, fuse;
 
 	//If the current fuse settings is invalid try to read it from the device
 	if (!awip->IsFuseValid())
@@ -4550,7 +4047,7 @@ int e2CmdWindow::SpecialBits(bool readonly)
 		//lock = awip->GetLockBits();
 		//fuse = awip->GetFuseBits();
 
-		long type = awip->GetEEPId(); // BuildE2PType(awip->GetEEPPriType(), awip->GetEEPSubType());
+		quint32 type = awip->GetId(); // BuildE2PType(awip->GetEEPPriType(), awip->GetEEPSubType());
 
 		if (type != E2464)
 		{
@@ -4559,7 +4056,7 @@ int e2CmdWindow::SpecialBits(bool readonly)
 
 			if (res != QDialog::Rejected)
 			{
-				qDebug() << "fuse " << res;
+				qDebug() << Q_FUNC_INFO << "fuse " << res;
 
 				if (res == 2)   // read //e2Fuse.isRead() == true)
 				{
@@ -4609,7 +4106,7 @@ int e2CmdWindow::ProgramOptions()
 	//      lock = awip->GetLockBits();
 	//      fuse = awip->GetFuseBits();
 
-	progOptionDialog prog(this, awip->GetEEPId(), // BuildE2PType(awip->GetEEPPriType(), awip->GetEEPSubType()),
+	progOptionDialog prog(this, awip->GetId(), // BuildE2PType(awip->GetEEPPriType(), awip->GetEEPSubType()),
 						  reload, reep, erase, flash, eeprom, lock);
 
 	if (prog.exec() == QDialog::Accepted)
@@ -4676,7 +4173,7 @@ int e2CmdWindow::CmdWriteSecurity()
 {
 	int result;
 
-	if (awip->GetEEPId() == AT90S4433 || awip->GetEEPId() == AT90S2333)
+	if (awip->GetId() == AT90S4433 || awip->GetId() == AT90S2333)
 	{
 		result = CmdWriteLock();
 
@@ -4706,7 +4203,7 @@ int e2CmdWindow::CmdWriteLock()
 
 	QMessageBox note;
 	/**
-	        long type = BuildE2PType( awip->GetEEPPriType(), awip->GetEEPSubType() );
+	        quint32 type = BuildE2PType( awip->GetEEPPriType(), awip->GetEEPSubType() );
 	        if (type == E2464)              //implementazione per le Microchip 24C65
 	        {
 	                vReplyDialog rp(this);      // instantiate
@@ -4815,14 +4312,14 @@ int e2CmdWindow::CmdWriteLock()
 int e2CmdWindow::CmdReadLock()
 {
 	int result = OK;
-	uint32_t bits;
+	quint32 bits;
 
 	ClearIgnoreFlag();
 
 	int rval;
 	int retry_flag = 1;
 
-	//      long type = BuildE2PType( awip->GetEEPPriType(), awip->GetEEPSubType() );
+	//      quint32 type = BuildE2PType( awip->GetEEPPriType(), awip->GetEEPSubType() );
 
 	while (retry_flag)
 	{
@@ -4883,14 +4380,14 @@ int e2CmdWindow::CmdReadLock()
 int e2CmdWindow::CmdReadSpecial()
 {
 	int result = OK;
-	uint32_t bits;
+	quint32 bits;
 
 	ClearIgnoreFlag();
 
 	int rval;
 	int retry_flag = 1;
 
-	long type = awip->GetEEPId();   // BuildE2PType( awip->GetEEPPriType(), awip->GetEEPSubType() );
+	quint32 type = awip->GetId();   // BuildE2PType( awip->GetEEPPriType(), awip->GetEEPSubType() );
 
 	while (retry_flag)
 	{
@@ -4956,7 +4453,7 @@ int e2CmdWindow::CmdWriteSpecial()
 
 	QMessageBox note;
 
-	long type = awip->GetEEPId();   //BuildE2PType( awip->GetEEPPriType(), awip->GetEEPSubType() );
+	quint32 type = awip->GetId();   //BuildE2PType( awip->GetEEPPriType(), awip->GetEEPSubType() );
 	/**
 	if (type == E2464)              //Microchip 24C65 high endurance block
 	{
@@ -5105,20 +4602,23 @@ int e2CmdWindow::CmdEditNote()
 
 // EK 2017
 // new_type is the chip id
-int e2CmdWindow::CmdSelectDevice(long new_type, bool init)
+int e2CmdWindow::CmdSelectDevice(quint32 new_type, bool init)
 {
-	awip->SetEEProm(new_type);
+	qDebug() << Q_FUNC_INFO << "CmdSelectDevice" << hex << new_type << dec;
+
+	awip->SetId(new_type);
 	UpdateMenuType(new_type);
 
 	first_line = 0;
 	//curIndex = 0;
 	Draw();
+
 	awip->RecalcCRC();
 	UpdateStatusBar();
 
 	if (!init)
 	{
-		E2Profile::SetLastDevType(new_type);
+		E2Profile::SetLastDevType(awip->GetTypeString(new_type));
 	}
 
 	return OK;
@@ -5147,7 +4647,7 @@ int e2CmdWindow::CmdSetSerialNumber()
 {
 	long loc = 0;
 	int size = 1;
-	uint32_t val = 0;
+	quint32 val = 0;
 	bool memtype = false;
 
 	val = E2Profile::GetSerialNumVal();
@@ -5160,50 +4660,50 @@ int e2CmdWindow::CmdSetSerialNumber()
 
 	if ((size > 0 && size <= 4) && (loc + size <= awip->GetBufSize()))
 	{
-		uint8_t *bp = awip->GetBufPtr() + loc;
+		quint8 *bp = awip->GetBufPtr() + loc;
 
 		if (E2Profile::GetSerialNumFormat() == FMT_BIG_ENDIAN)
 		{
 			if (size > 3)
 			{
-				*bp++ = (uint8_t)((val >> 24) & 0xff);
+				*bp++ = (quint8)((val >> 24) & 0xff);
 			}
 
 			if (size > 2)
 			{
-				*bp++ = (uint8_t)((val >> 16) & 0xff);
+				*bp++ = (quint8)((val >> 16) & 0xff);
 			}
 
 			if (size > 1)
 			{
-				*bp++ = (uint8_t)((val >> 8) & 0xff);
+				*bp++ = (quint8)((val >> 8) & 0xff);
 			}
 
 			if (size > 0)
 			{
-				*bp++ = (uint8_t)(val & 0xff);
+				*bp++ = (quint8)(val & 0xff);
 			}
 		}
 		else
 		{
 			if (size > 0)
 			{
-				*bp++ = (uint8_t)(val & 0xff);
+				*bp++ = (quint8)(val & 0xff);
 			}
 
 			if (size > 1)
 			{
-				*bp++ = (uint8_t)((val >> 8) & 0xff);
+				*bp++ = (quint8)((val >> 8) & 0xff);
 			}
 
 			if (size > 2)
 			{
-				*bp++ = (uint8_t)((val >> 16) & 0xff);
+				*bp++ = (quint8)((val >> 16) & 0xff);
 			}
 
 			if (size > 3)
 			{
-				*bp++ = (uint8_t)((val >> 24) & 0xff);
+				*bp++ = (quint8)((val >> 24) & 0xff);
 			}
 		}
 
@@ -5252,65 +4752,6 @@ void e2CmdWindow::UpdateStatusBar()
 	}
 
 }
-
-
-/**
-void e2CmdWindow::SetChipSubType(int pritype, int subtype)
-{
-        long type = BuildE2PType(pritype, subtype);
-
-        //11 - indice pulsante all'interno della toolbar
-        //ATTENZIONE! cambia ogni volta che si sposta il gadget!
-
-        //Look for cbxEEPSubType item index
-        int index = -1;
-        int k;
-        for (k = 0; ToolBar[k].cmdType != C_EndOfList; k++)
-        {
-                if (ToolBar[k].cmdId == cbxEEPSubType)
-                {
-                        index = k;
-                        break;
-                }
-        }
-        if (index > -1)
-        {
-                ToolBar[index].itemList = (void*) GetEEPSubTypeList(pritype);
-                SetValue(cbxEEPSubType, 0, ChangeListPtr);
-        }
-
-        int j = GetEEPSubTypeIndex(type);
-        if (j > -1)             //-1 significa non trovato
-        {
-        //
-                if (awip && strlen(awip->GetStringID()) > 0)
-                {
-                        GetEEPSubTypeList(pritype)[j] = awip->GetStringID();
-                        SetValue(cbxEEPSubType, 0, ChangeList);
-                }
-        //
-                SetValue(cbxEEPSubType, j, Value);
-        }
-
-}
-**/
-
-/**
-void e2CmdWindow::UpdateChipType(int pritype, int subtype)
-{
-        if (pritype < 0)
-                pritype = awip->GetEEPPriType();
-        if (pritype == 0)
-                pritype = E24XX;
-        if (subtype < 0)
-                subtype = awip->GetEEPSubType();
-
-        SetValue(cbxEEPType, GetEEPTypeIndex(pritype), Value);
-        SetChipSubType(pritype, subtype);
-}
-**/
-
-// #define COMBOLIST_SIZE 128
 
 
 /**
@@ -5377,13 +4818,12 @@ void e2CmdWindow::createToolBarCbx()
  */
 void e2CmdWindow::onDevType(int t)
 {
-
 	// search id
 	long new_id = 0;
 
-	if (deviceMenu[t].info.count())
+	if (deviceMenu[t].vChip.count())
 	{
-		new_id = deviceMenu[t].info.at(0).id;
+		new_id = deviceMenu[t].vChip.at(0).id;
 		if (currentAct != NULL)
 		{
 			currentAct->setChecked(false);
@@ -5406,44 +4846,21 @@ void e2CmdWindow::onDevSubType(int st)
 	nm = nm.remove("&");
 	long new_id = 0;
 
-	for (int i = 0; i < deviceMenu[t].info.count(); i++)
+	for (int i = 0; i < deviceMenu[t].vChip.count(); i++)
 	{
-		if (deviceMenu[t].info.at(i).name == nm)
+		if (deviceMenu[t].vChip.at(i).name == nm)
 		{
-			new_id = deviceMenu[t].info.at(i).id;
+			new_id = deviceMenu[t].vChip.at(i).id;
 		}
 	}
 
 	CmdSelectDevice(new_id);
 }
 
-// not in using
-#if 0
-menuToGroup *e2CmdWindow::searchMenuInDeviceVector(int pre_type)
-{
-	menuToGroup *pM = NULL;
-
-	for (int i = 0; i < deviceMenu.count(); i++)
-	{
-		menuToGroup *mTmp = (menuToGroup *)&deviceMenu.at(i);
-
-		for (int t = 0; t < (*mTmp).pre_type.count(); t++)
-		{
-			if ((*mTmp).pre_type.at(t) == pre_type)
-			{
-				pM = mTmp;
-
-				return pM;
-			}
-		}
-	}
-
-	return NULL;
-}
-#endif
 
 void e2CmdWindow::UpdateMenues(menuToGroup &mnu, QAction &act)
 {
+	qDebug() << Q_FUNC_INFO << "UpdateMenues" << mnu.title << act.text();
 	if (currentMenu != &mnu || currentAct != &act) // main menu was changed
 	{
 		Q_CHECK_PTR(cbxEEPType);
@@ -5454,7 +4871,6 @@ void e2CmdWindow::UpdateMenues(menuToGroup &mnu, QAction &act)
 			currentAct->setChecked(false);
 		}
 
-// 		qDebug() << mnu.title << act.text();
 		selectTypeSubtype(mnu.title, act.text());
 
 		act.setChecked(true);
@@ -5464,48 +4880,35 @@ void e2CmdWindow::UpdateMenues(menuToGroup &mnu, QAction &act)
 }
 
 
-void e2CmdWindow::UpdateMenuType(long new_type)
+void e2CmdWindow::UpdateMenuType(quint32 new_type)
 {
 	if (new_type == 0)
 	{
-		new_type = awip->GetEEPId();
+		new_type = awip->GetId();
 	}
 
-	int new_pritype = GetE2PPriType(new_type);
+	quint32 new_pritype = awip->GetPriType(new_type);
 
-	qDebug() << Q_FUNC_INFO << " (hex) type:" << (hex) << new_type << " pri:" << new_pritype << (dec);
+	qDebug() << Q_FUNC_INFO << " (hex) type:" << (hex) << new_type << " prim:" << new_pritype << (dec);
 
 	menuToGroup *newMenu = NULL;
 	QAction *newAct = NULL;
 
 	foreach (menuToGroup m, deviceMenu)
 	{
-		for (int n = 0; n < m.pre_type.count(); n++)
+		if (m.vId.indexOf(new_pritype) == -1)
 		{
-			if (m.pre_type.at(n) != new_pritype)
+			continue;
+		}
+
+		for (int j = 0; j < m.vChip.count(); j++)
+		{
+			if (m.vChip.at(j).id == new_type)
 			{
-				continue;
-			}
+				newMenu = &m;
 
-			for (int j = 0; j < m.info.count(); j++)
-			{
-				if (m.info.at(j).id == new_type)
-				{
-					newMenu = &m;
+				newAct = m.grp->actions().at(j);
 
-					newAct = m.grp->actions().at(j);
-
-					break;
-				}
-
-				if (newAct != NULL)
-				{
-					break;
-				}
-			}
-
-			if (newAct != NULL)
-			{
 				break;
 			}
 		}
@@ -5566,13 +4969,13 @@ void e2CmdWindow::UpdateMenuType(long new_type)
  * @brief search the name in vectors
  *
  */
-long GetEEPTypeFromString(const QString &name)
+quint32 e2CmdWindow::GetEEPTypeFromMenu(const QString &name)
 {
 	QString n = name;
 	n = n.remove("&");
 	foreach (menuToGroup m, deviceMenu)
 	{
-		foreach (chipInfo c, m.info)
+		foreach (chipMenuInfo c, m.vChip)
 		{
 			if (QString::compare(c.name, n, Qt::CaseInsensitive) == 0)
 			{
@@ -5582,29 +4985,6 @@ long GetEEPTypeFromString(const QString &name)
 	}
 
 	return EID_INVALID;
-}
-
-
-// EK 2017
-// do not search, get directly ;)
-long e2CmdWindow::CbxIdToType(int idx1, int idx2)
-{
-	//      int k;
-	long rv = -1;
-
-	if (idx1 < 0 || idx1 >= deviceMenu.count())
-	{
-		return rv;
-	}
-
-	if (idx2 < 0 || idx2 >= deviceMenu[idx1].info.count())
-	{
-		return rv;
-	}
-
-	rv = deviceMenu.at(idx1).info.at(idx2).id;
-
-	return rv;
 }
 
 
@@ -5828,7 +5208,7 @@ int e2CmdWindow::OpenFile(const QString &file)
 		{
 			QString oldfname = awip->GetFileName();
 			awip->SetFileName(fileName);
-			long old_type = awip->GetEEPId();			//EEP type can be changed by E2P file load
+			long old_type = awip->GetId();			//EEP type can be changed by E2P file load
 
 			rval = awip->Load();
 
@@ -5851,9 +5231,9 @@ int e2CmdWindow::OpenFile(const QString &file)
 				UpdateStrFromBuf();
 
 				//UpdateChipType();
-				if (awip->GetEEPId() != old_type)
+				if (awip->GetId() != old_type)
 				{
-					UpdateMenuType(awip->GetEEPId());
+					UpdateMenuType(awip->GetId());
 				}
 
 				first_line = 0;
@@ -6381,7 +5761,11 @@ void e2CmdWindow::PostInit()
 	UpdateFileMenu();
 	UpdateScriptMenu();
 
-	CmdSelectDevice(E2Profile::GetLastDevType(), true);
+	quint32 tp = GetEEPTypeFromMenu(E2Profile::GetLastDevType());
+
+	qDebug() << Q_FUNC_INFO << "PostInit" << (hex) << tp << dec;
+
+	CmdSelectDevice(tp, true);
 
 	if (E2Profile::GetBogoMips() == 0)
 	{

@@ -9,6 +9,23 @@
 #define APP_AUTHOR  "@PONYPROG_AUTHOR@"
 #endif
 
+#ifndef AUTHORWEB
+#define AUTHORWEB "@AUTHORWEB@"
+#endif
+
+#ifndef COPYRIGHTYEAR
+#define COPYRIGHTYEAR "@COPYRIGHTYEAR@"
+#endif
+
+#ifndef PORTERGQT
+#define PORTERGQT "@PORTERGQT@"
+#endif
+
+#ifndef PORTERMAIL
+#define PORTERMAIL "@PORTERMAIL@"
+#endif
+
+
 #ifndef PROGRAM_DATE
 #define PROGRAM_DATE  "@BUILD_DATE@"
 #endif

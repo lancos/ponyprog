@@ -259,57 +259,57 @@ class ch341 : public QObject
 	ch341(QObject *parent = 0);
 	~ch341();
 
-	int32_t Open(uint16_t vid, uint16_t pid);
+	qint32 Open(quint16 vid, quint16 pid);
 	void    SetVerbose(void);
 	void    Close();
 #if 0
-	int32_t SetStream(uint32_t speed);
-	int32_t SpiCapacity(void);
-	int32_t SpiRead(uint8_t *buf, uint32_t add, uint32_t len);
-	int32_t ReadStatus(void);
-	int32_t WriteStatus(uint8_t status);
-	int32_t EraseChip(void);
-	int32_t SpiWrite(uint8_t *buf, uint32_t add, uint32_t len);
+	qint32 SetStream(quint32 speed);
+	qint32 SpiCapacity(void);
+	qint32 SpiRead(quint8 *buf, quint32 add, quint32 len);
+	qint32 ReadStatus(void);
+	qint32 WriteStatus(quint8 status);
+	qint32 EraseChip(void);
+	qint32 SpiWrite(quint8 *buf, quint32 add, quint32 len);
 #endif
 
-	int32_t Release(void);
+	qint32 Release(void);
 #if 0
-	int32_t readEEPROM(uint8_t *buffer, uint32_t bytestoread);
-	int32_t writeEEPROM(uint8_t *buffer, uint32_t bytesum);
+	qint32 readEEPROM(quint8 *buffer, quint32 bytestoread);
+	qint32 writeEEPROM(quint8 *buffer, quint32 bytesum);
 #endif
-	int32_t SetBaudRate(int32_t baudRate);
-	int32_t SetTimeouts(int16_t t);
-	int32_t SetBreakControl(int32_t state);
-	void    SetParity(uint8_t p);
-	void    SetBits(uint8_t b);
-	void    SetStops(uint8_t s);
-	void    SetFlowControl(uint8_t f);
-	int32_t SetDTR(int32_t dtr);
-	int32_t SetRTS(int32_t dtr);
-	int32_t GetDSR();
-	int32_t GetCTS();
-	int32_t SetRTSDTR(int state);
-	int32_t SetConfigLCR();
-	int32_t Probe();
-	int32_t ClearChip();
-	int32_t ResetChip();
+	qint32 SetBaudRate(qint32 baudRate);
+	qint32 SetTimeouts(qint16 t);
+	qint32 SetBreakControl(qint32 state);
+	void    SetParity(quint8 p);
+	void    SetBits(quint8 b);
+	void    SetStops(quint8 s);
+	void    SetFlowControl(quint8 f);
+	qint32 SetDTR(qint32 dtr);
+	qint32 SetRTS(qint32 dtr);
+	qint32 GetDSR();
+	qint32 GetCTS();
+	qint32 SetRTSDTR(int state);
+	qint32 SetConfigLCR();
+	qint32 Probe();
+	qint32 ClearChip();
+	qint32 ResetChip();
 
-// 	int32_t GetStatus();
-	int32_t GetStatusRx();
-	int32_t GetStatusTx();
-// 	int32_t Read(uint8_t *buf, size_t len);
-// 	int32_t Write(uint8_t *buf, size_t len);
+// 	qint32 GetStatus();
+	qint32 GetStatusRx();
+	qint32 GetStatusTx();
+// 	qint32 Read(quint8 *buf, size_t len);
+// 	qint32 Write(quint8 *buf, size_t len);
 
 	void    ReleaseInterface(void);
 	void    CloseHandle();
 
   signals:
-// 	void receivedData(uint8_t *data, size_t len);
+// 	void receivedData(quint8 *data, size_t len);
 	void breakChanged(bool set);
 
   public slots:
 // 	void onRecieiveData(quint8 *data, qint16 len);
-// 	void sendData(const uint8_t &data, size_t len);
+// 	void sendData(const quint8 &data, size_t len);
 	void triggerBreak(uint msecs);
 
   private slots:
@@ -317,16 +317,16 @@ class ch341 : public QObject
 
   public:
 	// for callback
-	static int16_t read_completed;
-	static int16_t write_completed;
+	static qint16 read_completed;
+	static qint16 write_completed;
 
 	struct libusb_device_handle *devHandle;
 //     struct libusb_transfer *ctrl_transfer;
 
   private:
-	int32_t getModemState(void);
-	int32_t setHandshakeByte(void);
-	int32_t init();
+	qint32 getModemState(void);
+	qint32 setHandshakeByte(void);
+	qint32 init();
 // 	void    updateStatus();
 	void    v_print(int mode, int len);
 //     void    allocTransfer();
@@ -334,60 +334,60 @@ class ch341 : public QObject
 
 // 	int setAsync(unsigned char data);
 #if 0
-	void    updateStatus(uint8_t *data, size_t l);
+	void    updateStatus(quint8 *data, size_t l);
 
-	void    SpiChipSelect(uint8_t *ptr, bool selected);
-	int32_t SpiStream(uint8_t *out, uint8_t *in, uint32_t len);
-	int32_t usbTransfer(const char *func, uint8_t type, uint8_t *buf, int len);
+	void    SpiChipSelect(quint8 *ptr, bool selected);
+	qint32 SpiStream(quint8 *out, quint8 *in, quint32 len);
+	qint32 usbTransfer(const char *func, quint8 type, quint8 *buf, int len);
 #endif
 
   private:
 	struct dv
 	{
-		uint8_t	dv_prescaler;
-		uint8_t	dv_div;
-		uint8_t	dv_mod;
+		quint8	dv_prescaler;
+		quint8	dv_div;
+		quint8	dv_mod;
 	};
 
 	struct uart_div
 	{
-		uint32_t dvr_high;
-		uint32_t dvr_low;
-		uint32_t dvr_base_clock;
+		quint32 dvr_high;
+		quint32 dvr_low;
+		quint32 dvr_base_clock;
 		struct dv dvr_divider;
 	};
 
 	// MODEM output lines
-	uint8_t dtr; // modem line
-	uint8_t rts; // modem line
+	quint8 dtr; // modem line
+	quint8 rts; // modem line
 
-	uint8_t rtsCtsEnabled;
-	uint8_t dtrDsrEnabled;
+	quint8 rtsCtsEnabled;
+	quint8 dtrDsrEnabled;
 
 	// UART settings
-	uint8_t parity;
-	uint8_t bits;
-	uint8_t stops;
-	uint8_t flow_control;
-	int32_t baudRate;
-	int16_t timeout;
+	quint8 parity;
+	quint8 bits;
+	quint8 stops;
+	quint8 flow_control;
+	qint32 baudRate;
+	qint16 timeout;
 
 //     struct libusb_transfer *ctrl_transfer;
 
-//     uint8_t ctrl_buf[LIBUSB_CONTROL_SETUP_SIZE];
+//     quint8 ctrl_buf[LIBUSB_CONTROL_SETUP_SIZE];
 
 	// MODEM input lines
-	uint8_t    ctsState;
-	uint8_t    dsrState;
-	uint8_t    dcdState;
-	uint8_t    ringState;
+	quint8    ctsState;
+	quint8    dsrState;
+	quint8    dcdState;
+	quint8    ringState;
 
-	uint8_t lcr; // line control register
-	uint8_t lsr; // line status register
-	uint8_t msr; // modem status register
-	uint8_t mcr; // modem control register
+	quint8 lcr; // line control register
+	quint8 lsr; // line status register
+	quint8 msr; // modem status register
+	quint8 mcr; // modem control register
 
-	uint8_t dev_vers;
+	quint8 dev_vers;
 
 	bool verbose;
 

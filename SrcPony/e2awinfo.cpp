@@ -26,7 +26,6 @@
 
 
 #include "errcode.h"
-#include "eeptypes.h"
 
 #include "e2cmdw.h"
 #include "e2profil.h"
@@ -55,12 +54,19 @@ e2AppWinInfo::e2AppWinInfo(e2CmdWindow *p, const QString &name, BusIO **busvptr)
 	fuse_ok(false),
 	crc(0)
 {
-	qDebug() << "e2AppWinInfo::e2AppWinInfo()";
-
-	// Constructor
-//	cmdWin = static_cast<e2CmdWindow*>(p);
+	qDebug() << Q_FUNC_INFO;
 
 	fname = "";
+
+	if (!readXmlDir())
+	{
+		QMessageBox msgBox(QMessageBox::Critical, "Error", "Xml dir not found!\n\n"
+						   + E2Profile::GetXmlDir(), QMessageBox::Close);
+		msgBox.setStyleSheet(cmdWin->getStyleSheet());
+		msgBox.setButtonText(QMessageBox::Close, "Close");
+		msgBox.exec();
+		exit(1);
+	}
 
 	//qDebug() << "e2awinfo" << p << this;
 
@@ -87,50 +93,6 @@ e2AppWinInfo::e2AppWinInfo(e2CmdWindow *p, const QString &name, BusIO **busvptr)
 	eep2444 = new X2444(this, busvptr[X2444B - 1]);
 	eep2430 = new X2444(this, busvptr[S2430B - 1]);
 
-
-	//AutoTag
-	//Initialize Device Pointers vector
-	//      eep24xx.SetAWInfo(this);
-	//      eep24xx.SetBus(busvptr[I2C - 1]);
-	//      eep2401.SetAWInfo(this);
-	//      eep2401.SetBus(busvptr[I2C - 1]);
-	//      eep24xx1.SetAWInfo(this);
-	//      eep24xx1.SetBus(busvptr[I2C - 1]);
-	//      eep24xx2.SetAWInfo(this);
-	//      eep24xx2.SetBus(busvptr[I2C - 1]);
-	//      eep24xx5.SetAWInfo(this);
-	//      eep24xx5.SetBus(busvptr[I2C - 1]);
-	//      eepAt90s.SetAWInfo(this);
-	//      eepAt90s.SetBus(busvptr[AT90S - 1]);
-	//      eepAt89s.SetAWInfo(this);
-	//      eepAt89s.SetBus(busvptr[AT89S - 1]);
-	//      eep93xx16.SetAWInfo(this);
-	//      eep93xx16.SetBus(busvptr[AT93C - 1]);
-	//      eep93xx8.SetAWInfo(this);
-	//      eep93xx8.SetBus(busvptr[AT93C - 1]);
-	//      eepPic16.SetAWInfo(this);
-	//      eepPic16.SetBus(busvptr[PICB - 1]);
-	//      eep250xx.SetAWInfo(this);
-	//      eep250xx.SetBus(busvptr[AT250 - 1]);
-	//      eep25xxx.SetAWInfo(this);
-	//      eep25xxx.SetBus(busvptr[AT250BIG - 1]);
-	//      eep2506.SetAWInfo(this);
-	//      eep2506.SetBus(busvptr[SDEB - 1]);
-	//      eepPic168xx.SetAWInfo(this);
-	//      eepPic168xx.SetBus(busvptr[PICNEWB - 1]);
-	//      eep3060.SetAWInfo(this);
-	//      eep3060.SetBus(busvptr[IMBUS - 1]);
-	//      eepPic125xx.SetAWInfo(this);
-	//      eepPic125xx.SetBus(busvptr[PIC12B - 1]);
-	//      eep17xxx.SetAWInfo(this);
-	//      eep17xxx.SetBus(busvptr[I2C - 1]);
-	//      eep2444.SetAWInfo(this);
-	//      eep2444.SetBus(busvptr[X2444B - 1]);
-	//      eep2444.DefaultBankSize();
-	//      eep2430.SetAWInfo(this);
-	//      eep2430.SetBus(busvptr[S2430B - 1]);
-	//      eep2430.DefaultBankSize();
-
 	SetFileName(name);
 
 	//Initialize File Formats vector
@@ -150,15 +112,15 @@ e2AppWinInfo::e2AppWinInfo(e2CmdWindow *p, const QString &name, BusIO **busvptr)
 
 	ClearBuffer();                          //Clear the new buffer
 
-	SetEEProm(E2Profile::GetLastDevType());
+	QString nm = E2Profile::GetLastDevType();
+	quint32 type = GetTypeFromString(nm);
+	SetId(type);
+
 	SetFileBuf(E2Profile::GetDefaultFileType());       //      SetFileBuf(E2P);
 
 	SetLoadAutoClearBuf(E2Profile::GetClearBufBeforeLoad());
 
 	// Test and initialize the hardware
-	// EK 2017
-	// TODO remove the app counter??
-	//      if (E2Profile::GetCounter() == 1)
 	{
 		int err;
 		//              QMessageBox::note(win);
@@ -214,27 +176,88 @@ e2AppWinInfo::e2AppWinInfo(e2CmdWindow *p, const QString &name, BusIO **busvptr)
 			cmdWin->ClosePort();
 		}
 	}
-#if 0
-	else if (GetFileName().length())
-	{
-		if (Load() <= 0)
-		{
-			SetFileName("");
-		}
-	}
-
-#endif
-	//      cmdWin->PostInit();
-
 }
 
 
 e2AppWinInfo::~e2AppWinInfo()
 {
-	qDebug() << "e2AppWinInfo::~e2AppWinInfo()";
+	qDebug() << Q_FUNC_INFO;
 
 	// Destructor
 	fname = "";
+}
+
+
+
+/**
+ * @brief scan the directory with xml files
+ *
+ */
+bool e2AppWinInfo::readXmlDir()
+{
+	bool found = false;
+	QString xmlDirName;
+	QStringList dirsXml;
+	QDir dir;
+	QStringList xmlList;
+	// EK 2020
+	// this for linux
+	QString path = QDir::currentPath();
+	QString bdir = "/build";
+	if (path.endsWith(bdir))
+	{
+		int pos = path.lastIndexOf(bdir);
+		path.remove(pos, bdir.length());
+	}
+	path += "/ics";
+
+	xmlDirName = E2Profile::GetXmlDir();
+	if (xmlDirName.length() == 0)
+	{
+		xmlDirName = qApp->applicationDirPath() + "/ics";
+	}
+
+	qDebug() << "readXmlDir path:" << path << ", Saved: " << xmlDirName;
+	qDebug() <<  Q_FUNC_INFO << " path:" << path << ", Saved: " << xmlDirName;
+
+#ifdef Q_OS_LINUX
+	dirsXml << xmlDirName << "/usr/share/ponyprog/ics" << "/usr/local/share/ponyprog/ics" << path;
+#else
+	dirsXml << xmlDirName << path;
+#endif
+
+	foreach (const QString entry, dirsXml)
+	{
+		dir = QDir(entry);
+
+		if (dir.exists() == true)
+		{
+			xmlList = dir.entryList(QStringList("*.xml"));
+			if (xmlList.count() > 0)
+			{
+				E2Profile::SetXmlDir(entry);
+				xmlDirName = entry + "/";
+				found = true;
+				break;
+			}
+		}
+	}
+
+	if (found == false)
+	{
+		return false;
+	}
+
+	foreach (const QString iL, xmlList)
+	{
+		if (ReadConfigFromXml(xmlDirName + iL) == false)
+		{
+			// TODO Message
+			return false;
+		}
+	}
+
+	return true;
 }
 
 
@@ -276,13 +299,8 @@ void e2AppWinInfo::Reset()
 	SleepBus();
 }
 
-
-void e2AppWinInfo::SetEEProm(unsigned long id)
+void e2AppWinInfo::SetId(quint32 id)
 {
-	//      extern long BuildE2PType(int x, int y = 0);
-	extern int GetE2PSubType(unsigned long x);
-	extern int GetE2PPriType(unsigned long x);
-
 	if (id == 0)
 	{
 		id = E2400;         //to avoid segV
@@ -291,11 +309,15 @@ void e2AppWinInfo::SetEEProm(unsigned long id)
 	eep_id = id;
 
 	//eep_type, eep_subtype are local shadow variables of eep_id
-	int eep_type = GetE2PPriType(id);
-	int eep_subtype = GetE2PSubType(id);
+	quint32 eep_type = GetPriType(id);
+	quint32 eep_subtype = GetSubType(id);
 
-//	int eep_type = type;
-//	int eep_subtype = subtype;                  //0 indica di usare GetNoOfBlock()
+	qDebug() << "SetEEProm" << hex << eep_type << eep_subtype << dec;
+
+	if (eep_subtype == 0)
+	{
+		eep_subtype = GetFirstFromPritype(eep_type);
+	}
 
 	switch (eep_type)
 	{
@@ -303,38 +325,19 @@ void e2AppWinInfo::SetEEProm(unsigned long id)
 	//Setting the device pointer to selected type
 	case E24XX:
 		eep = eep24xx;
-		break;
-
-	case E24XX1_A:
-		eep = eep24xx1;
-
-		if (eep_subtype == 0)
+		if (id == E2401_A)
 		{
-			//no autodetect: set a reasonable default
-			eep_subtype = GetE2PSubType(E2401_A);
+			eep = eep24xx1;
 		}
 
-		break;
-
-	case E24XX1_B:
-		eep = eep2401;
-
-		if (eep_subtype == 0)
+		if (id == E2401_B)
 		{
-			//no autodetect: set a reasonable default
-			eep_subtype = GetE2PSubType(E2401_B);
+			eep = eep2401;
 		}
-
 		break;
 
 	case E24XX2:
 		eep = eep24xx2;
-
-		if (eep_subtype == 0)
-		{
-			//no autodetect: set a reasonable default
-			eep_subtype = GetE2PSubType(E2432);
-		}
 
 		eep->DefaultBankSize();
 		break;
@@ -344,17 +347,14 @@ void e2AppWinInfo::SetEEProm(unsigned long id)
 		break;
 
 	case AT90SXX:
+	case ATtiny:
+	case ATmega:
 	{
 		eep = eepAt90s;
 
-		if (eep_subtype == 0)
-		{
-			//no autodetect: set a reasonable default
-			eep_subtype = GetE2PSubType(AT90S1200);
-		}
+		quint32 xtype = GetId();
 
-		long xtype = GetEEPId();
-		eep->SetProgPageSize(GetEEPTypeWPageSize(xtype), false);
+		eep->SetProgPageSize(GetTypeWPageSize(xtype), false);
 		At90sBus *b = static_cast<At90sBus *>(eep->GetBus());
 		b->SetFlashPagePolling((xtype != ATmega603) && (xtype != ATmega103));
 		b->SetOld1200Mode((xtype == AT90S1200));
@@ -365,20 +365,14 @@ void e2AppWinInfo::SetEEProm(unsigned long id)
 	{
 		eep = eepAt89s;
 
-		if (eep_subtype == 0)
-		{
-			//no autodetect: set a reasonable default
-			eep_subtype = GetE2PSubType(AT89S8252);
-		}
-
-		long xtype = GetEEPId();
-
+		quint32 xtype = GetId();
+		qDebug() << hex << xtype << dec;
 		if (E2Profile::GetAt89PageOp())
 		{
-			eep->SetProgPageSize(GetEEPTypeWPageSize(GetEEPId()), false);        //write prog page size
-			eep->SetProgPageSize(GetEEPTypeWPageSize(GetEEPId()), true);         //read prog page size
-			eep->SetDataPageSize(GetEEPTypeWPageSize(GetEEPId()) / 2, false);    //write data page size
-			eep->SetDataPageSize(GetEEPTypeWPageSize(GetEEPId()) / 2, true);     //read data page size
+			eep->SetProgPageSize(GetTypeWPageSize(xtype), false);        //write prog page size
+			eep->SetProgPageSize(GetTypeWPageSize(xtype), true);         //read prog page size
+			eep->SetDataPageSize(GetTypeWPageSize(xtype) / 2, false);    //write data page size
+			eep->SetDataPageSize(GetTypeWPageSize(xtype) / 2, true);     //read data page size
 		}
 
 		At89sBus *b = static_cast<At89sBus *>(eep->GetBus());
@@ -392,119 +386,55 @@ void e2AppWinInfo::SetEEProm(unsigned long id)
 	case E93X6:
 		eep = eep93xx16;
 
-		if (eep_subtype == 0)
-		{
-			//no autodetect: set a reasonable default
-			eep_subtype = GetE2PSubType(E9306);
-		}
-
 		break;
 
 	case E93XX_8:
 		eep = eep93xx8;
-
-		if (eep_subtype == 0)
-		{
-			//no autodetect: set a reasonable default
-			eep_subtype = GetE2PSubType(E9306_8);
-		}
 
 		break;
 
 	case PIC16XX:
 		eep = eepPic16;
 
-		if (eep_subtype == 0)
-		{
-			//no autodetect: set a reasonable default
-			eep_subtype = GetE2PSubType(PIC1684);
-		}
-
 		break;
 
 	case PIC168XX:
 		eep = eepPic168xx;
-		//      if (eep_subtype == 0)
-		//      {
-		//              eep_subtype = GetE2PSubType(PIC1684A);
-		//      }
+
 		break;
 
 	case PIC125XX:
 		eep = eepPic125xx;
-
-		if (eep_subtype == 0)
-		{
-			//no autodetect: set a reasonable default
-			eep_subtype = GetE2PSubType(PIC12508);
-		}
 
 		break;
 
 	case E250XX:
 		eep = eep250xx;
 
-		if (eep_subtype == 0)
-		{
-			//no autodetect: set a reasonable default
-			eep_subtype = GetE2PSubType(E25010);
-		}
-
 		break;
 
 	case E25XXX:
 		eep = eep25xxx;
 
-		if (eep_subtype == 0)
-		{
-			//no autodetect: set a reasonable default
-			eep_subtype = GetE2PSubType(E25080);
-		}
-
-		//eep->SetBus(GetBusVectorPtr()[AT250BIG-1]);
 		break;
 
 	case E2506XX:
 		eep = eep2506;
-
-		if (eep_subtype == 0)
-		{
-			//no autodetect: set a reasonable default
-			eep_subtype = GetE2PSubType(E2506);
-		}
 
 		break;
 
 	case ENVMXXX:
 		eep = eep3060;
 
-		if (eep_subtype == 0)
-		{
-			//no autodetect: set a reasonable default
-			eep_subtype = GetE2PSubType(ENVM3060);
-		}
-
 		break;
 
 	case AT17XXX:
 		eep = eep17xxx;
 
-		if (eep_subtype == 0)
-		{
-			//no autodetect: set a reasonable default
-			eep_subtype = GetE2PSubType(AT1765);
-		}
-
 		break;
 
 	case X24C44XX:
-		if (eep_subtype == 0)
-		{
-			//no autodetect: set a reasonable default
-			eep_subtype = GetE2PSubType(S24H30);
-		}
-
-		if (GetEEPId() == S24H30)
+		if (GetId() == S24H30)
 		{
 			eep = eep2430;
 		}
@@ -521,11 +451,11 @@ void e2AppWinInfo::SetEEProm(unsigned long id)
 	}
 
 	fuse_ok = false;                //invalidate current fuse settings
-	SetSplittedInfo(GetEEPTypeSplit(id));
+	SetSplittedInfo(GetTypeSplit(id));
 
 	//Imposta la nuova dimensione della memoria in
 	// base al tipo di eeprom.
-	SetNoOfBlock(GetEEPTypeSize(id));
+	SetNoOfBlock(GetTypeSize(id));
 
 	//Imposta la dimensione del banco che dipende
 	// dal tipo di eeprom.
@@ -534,7 +464,7 @@ void e2AppWinInfo::SetEEProm(unsigned long id)
 
 int e2AppWinInfo::Read(int type, int raise_power, int leave_on)
 {
-	int probe = !GetE2PSubType(eep_id);
+	int probe = !GetSubType(eep_id);
 	int rval = OK;
 
 	qDebug() << "e2AppWinInfo::Read(" << type << "," << raise_power << "," << leave_on << ") - IN";
@@ -599,7 +529,7 @@ int e2AppWinInfo::Read(int type, int raise_power, int leave_on)
 
 int e2AppWinInfo::Write(int type, int raise_power, int leave_on)
 {
-	int probe = !GetE2PSubType(eep_id);
+	int probe = !GetSubType(eep_id);
 	int rval = OK;
 
 	qDebug() << "e2AppWinInfo::Write(" << type << "," << raise_power << "," << leave_on << ") - IN";
@@ -728,8 +658,9 @@ int e2AppWinInfo::Load()
 
 		if (rval > 0)
 		{
-			if (GetE2PPriType(GetEEPId()) == PIC16XX ||
-					GetE2PPriType(GetEEPId()) == PIC168XX)
+			quint32 pritype = GetPriType(GetId());
+			if (pritype == PIC16XX ||
+					pritype == PIC168XX)
 			{
 				//It seems a bit tricky...
 				//Relocate the DATA and CONFIG memory with PIC devices
@@ -747,24 +678,24 @@ int e2AppWinInfo::Load()
 
 					//Now copy data memory (copy only low byte every word)
 					int k;
-					uint8_t *dst = GetBufPtr() + GetSplittedInfo();
-					uint16_t *src = (uint16_t *)GetBufPtr() + 0x2100;
+					quint8 *dst = GetBufPtr() + GetSplittedInfo();
+					quint16 *src = (quint16 *)GetBufPtr() + 0x2100;
 
 					for (k = 0; k < GetSize() - GetSplittedInfo(); k++)
 					{
-						*dst++ = (uint8_t)(*src++ & 0xff);
+						*dst++ = (quint8)(*src++ & 0xff);
 					}
 
 					//memcpy(GetBufPtr()+GetSplittedInfo()+16, GetBufPtr() + (0x2100 * 2), GetSize() - (GetSplittedInfo() + 16) );
 
 					//Set fuse bits so the dialog shows the correct values
-					uint8_t *ptr = GetBufPtr() + GetSize() + 14;
-					uint16_t config = ptr[0] + ((uint16_t)ptr[1] << 8);             //little endian buffer
+					quint8 *ptr = GetBufPtr() + GetSize() + 14;
+					quint16 config = ptr[0] + ((quint16)ptr[1] << 8);             //little endian buffer
 					config = ~config & 0x3fff;              //      CodeProtectAdjust(config, 1);
 					SetLockBits(config);
 				}
 			}
-			else if (GetE2PPriType(GetEEPId()) == PIC125XX)
+			else if (pritype == PIC125XX)
 			{
 				//Copy Config memory
 				if (GetSize() + 16 <= GetBufSize())
@@ -773,8 +704,8 @@ int e2AppWinInfo::Load()
 				}
 
 				//Set fuse bits so the dialog shows the correct values
-				uint8_t *ptr = GetBufPtr() + GetSize() + 14;
-				uint16_t config = ptr[0] + ((uint16_t)ptr[1] << 8);             //little endian buffer
+				quint8 *ptr = GetBufPtr() + GetSize() + 14;
+				quint16 config = ptr[0] + ((quint16)ptr[1] << 8);             //little endian buffer
 				SetLockBits(~config & 0x0fff);
 			}
 		}
@@ -822,7 +753,7 @@ int e2AppWinInfo::Save()
 {
 	int rval;
 
-	uint8_t *localbuf = new uint8_t[GetBufSize()];
+	quint8 *localbuf = new quint8[GetBufSize()];
 
 	//save buffer
 	memcpy(localbuf, GetBufPtr(), GetBufSize());
@@ -835,8 +766,9 @@ int e2AppWinInfo::Save()
 	if (save_type == ALL_TYPE &&
 			(GetFileBuf() == INTEL || GetFileBuf() == MOTOS))
 	{
-		if (GetE2PPriType(GetEEPId()) == PIC16XX ||
-				GetE2PPriType(GetEEPId()) == PIC168XX)
+		quint32 pritype = GetPriType(GetId());
+		if (pritype == PIC16XX ||
+				pritype == PIC168XX)
 		{
 			//It seems a bit tricky...
 			//Relocate the DATA and CONFIG memory with PIC devices
@@ -852,11 +784,11 @@ int e2AppWinInfo::Save()
 				//Set fuse bits so the dialog shows the correct values
 				if (0x2000 * 2 + 16 <= GetBufSize())
 				{
-					uint16_t config = (uint16_t)GetLockBits();
+					quint16 config = (quint16)GetLockBits();
 
-					if (GetEEPId() == PIC1683 ||
-							GetEEPId() == PIC1684 ||
-							GetEEPId() == PIC1684A)
+					if (GetId() == PIC1683 ||
+							GetId() == PIC1684 ||
+							GetId() == PIC1684A)
 					{
 						if (config & (1 << 4))
 						{
@@ -870,9 +802,9 @@ int e2AppWinInfo::Save()
 
 					config = ~config & 0x3fff;              //      CodeProtectAdjust(config, 0);
 
-					uint8_t *ptr = GetBufPtr() + (0x2000 * 2) + 14;
-					ptr[0] = (uint8_t)(config & 0xFF);                      //little endian buffer
-					ptr[1] = (uint8_t)(config >> 8);
+					quint8 *ptr = GetBufPtr() + (0x2000 * 2) + 14;
+					ptr[0] = (quint8)(config & 0xFF);                      //little endian buffer
+					ptr[1] = (quint8)(config >> 8);
 				}
 
 				//Copy prog memory
@@ -886,8 +818,8 @@ int e2AppWinInfo::Save()
 				{
 					//copy only low byte every word
 					int k;
-					uint8_t *src = localbuf + GetSplittedInfo();
-					uint16_t *dst = (uint16_t *)GetBufPtr() + 0x2100;
+					quint8 *src = localbuf + GetSplittedInfo();
+					quint16 *dst = (quint16 *)GetBufPtr() + 0x2100;
 
 					for (k = 0; k < GetSize() - GetSplittedInfo(); k++)
 					{
@@ -896,7 +828,7 @@ int e2AppWinInfo::Save()
 				}
 			}
 		}
-		else if (GetE2PPriType(GetEEPId()) == PIC125XX)
+		else if (pritype == PIC125XX)
 		{
 			//Set ALL overbound buffer to 0xFF
 			memset(GetBufPtr(), 0xFF, GetBufSize());
@@ -910,13 +842,13 @@ int e2AppWinInfo::Save()
 			//Set fuse bits so the dialog shows the correct values
 			if (0xFFF * 2 + 2 <= GetBufSize())
 			{
-				uint16_t config = (uint16_t)GetLockBits();
+				quint16 config = (quint16)GetLockBits();
 
 				config = ~config & 0x0fff;              //      CodeProtectAdjust(config, 0);
 
-				uint8_t *ptr = GetBufPtr() + (0xFFF * 2);
-				ptr[0] = (uint8_t)(config & 0xFF);                      //little endian buffer
-				ptr[1] = (uint8_t)(config >> 8);
+				quint8 *ptr = GetBufPtr() + (0xFFF * 2);
+				ptr[0] = (quint8)(config & 0xFF);                      //little endian buffer
+				ptr[1] = (quint8)(config >> 8);
 			}
 		}
 	}
@@ -999,12 +931,12 @@ int e2AppWinInfo::SetSaveType(int val)
 	return rval;
 }
 
-void e2AppWinInfo::SetLockBits(uint32_t bits)
+void e2AppWinInfo::SetLockBits(quint32 bits)
 {
 	lock_bits = bits;
 }
 
-void e2AppWinInfo::SetFuseBits(uint32_t bits)
+void e2AppWinInfo::SetFuseBits(quint32 bits)
 {
 	fuse_bits = bits;
 	fuse_ok = true;
@@ -1146,7 +1078,7 @@ void e2AppWinInfo::SwapBytes()
 
 	for (k = 0; k < size; k += 2)
 	{
-		uint8_t tmp = buffer[k];
+		quint8 tmp = buffer[k];
 		buffer[k] = buffer[k + 1];
 		buffer[k + 1] = tmp;
 	}
@@ -1189,7 +1121,7 @@ void e2AppWinInfo::DoubleSize()
 	BufChanged();
 }
 
-int e2AppWinInfo::SecurityRead(uint32_t &bits)
+int e2AppWinInfo::SecurityRead(quint32 &bits)
 {
 	int rv;
 
@@ -1207,7 +1139,7 @@ int e2AppWinInfo::SecurityRead(uint32_t &bits)
 	return rv;
 }
 
-int e2AppWinInfo::SecurityWrite(uint32_t bits, bool no_param)
+int e2AppWinInfo::SecurityWrite(quint32 bits, bool no_param)
 {
 	int rv;
 
@@ -1227,7 +1159,7 @@ int e2AppWinInfo::SecurityWrite(uint32_t bits, bool no_param)
 // in place of Fuse bits.
 // Use the same variable because there is no room for
 // both in the e2p header.
-int e2AppWinInfo::HighEnduranceRead(uint32_t &block_no)
+int e2AppWinInfo::HighEnduranceRead(quint32 &block_no)
 {
 	int rv;
 
@@ -1243,7 +1175,7 @@ int e2AppWinInfo::HighEnduranceRead(uint32_t &block_no)
 	return rv;
 }
 
-int e2AppWinInfo::HighEnduranceWrite(uint32_t block_no, bool no_param)
+int e2AppWinInfo::HighEnduranceWrite(quint32 block_no, bool no_param)
 {
 	int rv;
 
@@ -1258,7 +1190,7 @@ int e2AppWinInfo::HighEnduranceWrite(uint32_t block_no, bool no_param)
 
 	if (rv == OK)
 	{
-		uint32_t block2;
+		quint32 block2;
 
 		OpenBus();
 		rv = eep->HighEnduranceRead(block2);
@@ -1273,7 +1205,7 @@ int e2AppWinInfo::HighEnduranceWrite(uint32_t block_no, bool no_param)
 	return rv;
 }
 
-int e2AppWinInfo::FusesRead(uint32_t &bits)
+int e2AppWinInfo::FusesRead(quint32 &bits)
 {
 	int rv;
 
@@ -1289,7 +1221,7 @@ int e2AppWinInfo::FusesRead(uint32_t &bits)
 	return rv;
 }
 
-int e2AppWinInfo::FusesWrite(uint32_t bits, bool no_param)
+int e2AppWinInfo::FusesWrite(quint32 bits, bool no_param)
 {
 	int rv;
 
@@ -1306,7 +1238,7 @@ int e2AppWinInfo::FusesWrite(uint32_t bits, bool no_param)
 	the read op doesn't work with every device
 	        if (rv == OK)
 	        {
-	                uint32_t bits2;
+	                quint32 bits2;
 
 	                OpenBus();
 	                rv = eep->FusesRead(bits2);
@@ -1332,9 +1264,9 @@ int e2AppWinInfo::ReadOscCalibration(int addr)
 
 #include "crc.h"
 
-uint16_t e2AppWinInfo::RecalcCRC()
+quint16 e2AppWinInfo::RecalcCRC()
 {
-	uint16_t crc_val = mcalc_crc(GetBufPtr(), GetSize());
+	quint16 crc_val = mcalc_crc(GetBufPtr(), GetSize());
 	SetCRC(crc_val);
 	return crc_val;
 }

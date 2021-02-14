@@ -36,7 +36,7 @@ class e2CmdWindow;
 SIProgInterface::SIProgInterface()
 	: RS232Interface()
 {
-	//qDebug() << "SIProgInterface::SIProgInterface()";
+	//qDebug() << Q_FUNC_INFO;
 
 	//DeInstall();
 	//old_portno = GetInstalled();

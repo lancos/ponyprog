@@ -64,32 +64,32 @@ class Device
 		return 4;        //4 means no need to know Bank Rollover for this device
 	}
 
-	virtual int SecurityRead(uint32_t &bits)
+	virtual int SecurityRead(quint32 &bits)
 	{
 		bits = 0;
 		return 0;
 	}
-	virtual int SecurityWrite(uint32_t bits)
+	virtual int SecurityWrite(quint32 bits)
 	{
 		(void)bits;
 		return 0;
 	}
-	virtual int FusesRead(uint32_t &bits)
+	virtual int FusesRead(quint32 &bits)
 	{
 		bits = 0;
 		return 0;
 	}
-	virtual int FusesWrite(uint32_t bits)
+	virtual int FusesWrite(quint32 bits)
 	{
 		(void)bits;
 		return 0;
 	}
-	virtual int HighEnduranceRead(uint32_t &block_no)
+	virtual int HighEnduranceRead(quint32 &block_no)
 	{
 		(void)block_no;
 		return 0;
 	}
-	virtual int HighEnduranceWrite(uint32_t block_no)
+	virtual int HighEnduranceWrite(quint32 block_no)
 	{
 		(void)block_no;
 		return 0;
@@ -143,7 +143,7 @@ class Device
 			bank_size = size;
 		}
 	}
-	uint8_t *GetBufPtr() const;
+	quint8 *GetBufPtr() const;
 	int GetBufSize() const;
 	void SetSplitted(int split);
 	int GetSplitted() const;

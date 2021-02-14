@@ -47,7 +47,7 @@
 
 RS232Interface::RS232Interface()
 {
-	qDebug() << "RS232Interface::RS232Interface()";
+	qDebug() << Q_FUNC_INFO;
 
 	//      profile = prof;
 
@@ -73,12 +73,12 @@ RS232Interface::RS232Interface()
 	//By default com_no == 0, so don't open any serial port if the constructor is called with zero paramameters
 //	OpenSerial(com_no);
 
-	qDebug() << "RS232Interface::RS232Interface() O";
+// 	qDebug() << "RS232Interface::RS232Interface() O";
 }
 
 RS232Interface::~RS232Interface()
 {
-	qDebug() << "RS232Interface::~RS232Interface()";
+	qDebug() << Q_FUNC_INFO;
 
 	CloseSerial();
 }
@@ -291,7 +291,7 @@ int RS232Interface::SetSerialBreak(int state)
 
 #elif defined(Q_OS_LINUX)
 
-#if defined(TIOCSBRK) && defined(TIOCCBRK) //check if available for compilation 
+#if defined(TIOCSBRK) && defined(TIOCCBRK) //check if available for compilation
 
 	if (state)
 	{
@@ -383,7 +383,7 @@ void RS232Interface::WaitForTxEmpty()
 #endif
 }
 
-long RS232Interface::ReadSerial(uint8_t *buffer, long len)
+long RS232Interface::ReadSerial(quint8 *buffer, long len)
 {
 	long retval = E2ERR_OPENFAILED;
 
@@ -404,7 +404,7 @@ long RS232Interface::ReadSerial(uint8_t *buffer, long len)
 	if (fd != INVALID_HANDLE_VALUE)
 	{
 		long nread, nleft;
-		uint8_t *ptr;
+		quint8 *ptr;
 
 		nleft = len;
 		ptr = buffer;
@@ -463,7 +463,7 @@ long RS232Interface::ReadSerial(uint8_t *buffer, long len)
 	return retval;
 }
 
-long RS232Interface::WriteSerial(uint8_t *buffer, long len)
+long RS232Interface::WriteSerial(quint8 *buffer, long len)
 {
 	long retval = E2ERR_OPENFAILED;
 
@@ -484,7 +484,7 @@ long RS232Interface::WriteSerial(uint8_t *buffer, long len)
 	if (fd != INVALID_HANDLE_VALUE)
 	{
 		long nleft;
-		uint8_t *ptr;
+		quint8 *ptr;
 
 		ptr = buffer;
 		nleft = len;

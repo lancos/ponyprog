@@ -28,7 +28,6 @@
 #include "globals.h"
 #include "at90sxx.h"            // Header file
 #include "errcode.h"
-#include "eeptypes.h"
 
 #include <QDebug>
 
@@ -38,59 +37,59 @@
 At90sxx::At90sxx(e2AppWinInfo *wininfo, BusIO *busp)
 	:       Device(wininfo, busp, 1 /*BANK_SIZE*/)
 {
-	qDebug() << "At90sxx::At90sxx()";
+	qDebug() << Q_FUNC_INFO;
 }
 
 At90sxx::~At90sxx()
 {
-	qDebug() << "At90sxx::~At90sxx()";
+	qDebug() << Q_FUNC_INFO;
 }
 
-int At90sxx::SecurityRead(uint32_t &bits)
+int At90sxx::SecurityRead(quint32 &bits)
 {
 	int rv = Probe();               //No size probe needed, just probe for presence
 
 	if (rv > 0)
 	{
-		bits = GetBus()->ReadLockBits(GetAWInfo()->GetEEPId());
+		bits = GetBus()->ReadLockBits(GetAWInfo()->GetId());
 		rv = OK;
 	}
 
 	return rv;
 }
 
-int At90sxx::SecurityWrite(uint32_t bits)
+int At90sxx::SecurityWrite(quint32 bits)
 {
 	int rv = Probe();               //No size probe needed, just probe for presence
 
 	if (rv > 0)     //Try to write even with AutoXXX device setted
 	{
-		rv = GetBus()->WriteLockBits(bits, GetAWInfo()->GetEEPId());
+		rv = GetBus()->WriteLockBits(bits, GetAWInfo()->GetId());
 	}
 
 	return rv;
 }
 
-int At90sxx::FusesRead(uint32_t &bits)
+int At90sxx::FusesRead(quint32 &bits)
 {
 	int rv = Probe();               //No size probe needed, just probe for presence
 
 	if (rv > 0)
 	{
-		bits = GetBus()->ReadFuseBits(GetAWInfo()->GetEEPId());
+		bits = GetBus()->ReadFuseBits(GetAWInfo()->GetId());
 		rv = OK;
 	}
 
 	return rv;
 }
 
-int At90sxx::FusesWrite(uint32_t bits)
+int At90sxx::FusesWrite(quint32 bits)
 {
 	int rv = Probe();               //No size probe needed, just probe for presence
 
 	if (rv > 0)
 	{
-		rv = GetBus()->WriteFuseBits(bits, GetAWInfo()->GetEEPId());
+		rv = GetBus()->WriteFuseBits(bits, GetAWInfo()->GetId());
 	}
 
 	return rv;
@@ -152,6 +151,7 @@ int At90sxx::FusesWrite(uint32_t bits)
  * 0x91         0x07            ATtiny28 (2K)
  **/
 
+/**
 typedef struct
 {
 	int code1;
@@ -355,10 +355,11 @@ static IdType IdArray[] =
 
 	{0x00, 0x00,    AT90S0000}
 };
+**/
 
-int At90sxx::QueryType(long &type)
+int At90sxx::QueryType(quint32 &type)
 {
-	int rv;
+	int rv = DEVICE_UNKNOWN;
 
 	int code[3];
 
@@ -379,26 +380,23 @@ int At90sxx::QueryType(long &type)
 	}
 	else if (code[0] == 0x1E)
 	{
-		int k;
+// 		quint16 pri_type = AT90SXX; // ATtiny , ATmega
+		quint16 sign = (code[1] << 8) + code[2];
 
-		for (k = 0; IdArray[k].code1 != 0x00; k++)
+		quint32 pri[] = {AT90SXX, ATtiny, ATmega, 0};
+
+		for (int i = 0; pri[i] != 0; i++)
 		{
-			if (IdArray[k].code1 == code[1] && IdArray[k].code2 == code[2])
+			type = GetAWInfo()->GetSignatureType(pri[i], sign);
+
+			if (type != EID_INVALID)
 			{
-				type = IdArray[k].type;
-				break;
+				detected_type = type;
+				detected_signature.sprintf("%02X-%02X-%02X", code[0], code[1], code[2]);
+				rv = OK;
+				return rv;
 			}
 		}
-
-		if (type)
-		{
-			detected_type = type;
-		}
-
-		detected_signature.sprintf("%02X-%02X-%02X", code[0], code[1], code[2]);
-		//snprintf(detected_signature, MAXMSG, "%02X-%02X-%02X", code[0], code[1], code[2]);
-
-		rv = type ? OK : DEVICE_UNKNOWN;
 	}
 	else
 	{
@@ -432,13 +430,13 @@ int At90sxx::Probe(int probe_size)
 	}
 	else
 	{
-		long type;
+		quint32 type;
 		rv = QueryType(type);
-		int subtype = GetE2PSubType(type);
+// 		quint32 subtype = GetAWInfo()->GetE2PSubType(type);
 
 		if (rv == OK)
 		{
-			if (GetE2PSubType(GetAWInfo()->GetEEPId()) == subtype)
+			if (GetAWInfo()->GetId() == type)
 			{
 				rv = GetSize();
 			}
@@ -497,10 +495,11 @@ int At90sxx::Read(int probe, int type)
 				if (type & CONFIG_TYPE)
 				{
 					// read the fuses
-					uint32_t f = GetBus()->ReadFuseBits(GetAWInfo()->GetEEPId());
+					quint32 id = GetAWInfo()->GetId();
+					quint32 f = GetBus()->ReadFuseBits(id);
 					GetAWInfo()->SetFuseBits(f);
 
-					f = GetBus()->ReadLockBits(GetAWInfo()->GetEEPId());
+					f = GetBus()->ReadLockBits(id);
 					GetAWInfo()->SetLockBits(f);
 				}
 			}
@@ -541,27 +540,28 @@ int At90sxx::Write(int probe, int type)
 			{
 				if (type & CONFIG_TYPE)
 				{
-					if (GetAWInfo()->GetEEPId() == AT90S4433 || GetAWInfo()->GetEEPId() == AT90S2333)
+					quint32 id = GetAWInfo()->GetId();
+					if (id == AT90S4433 || id == AT90S2333)
 					{
 						//write the locks
-						uint32_t f = GetAWInfo()->GetLockBits();
-						GetBus()->WriteLockBits(f, GetAWInfo()->GetEEPId());
+						quint32 f = GetAWInfo()->GetLockBits();
+						GetBus()->WriteLockBits(f, id);
 
 						GetBus()->WaitMsec(100);
 
 						//write the fuses
 						f = GetAWInfo()->GetFuseBits();
-						GetBus()->WriteFuseBits(f, GetAWInfo()->GetEEPId());
+						GetBus()->WriteFuseBits(f, id);
 					}
 					else
 					{
 						//write the fuses
-						uint32_t f = GetAWInfo()->GetFuseBits();
-						GetBus()->WriteFuseBits(f, GetAWInfo()->GetEEPId());
+						quint32 f = GetAWInfo()->GetFuseBits();
+						GetBus()->WriteFuseBits(f, id);
 
 						//write the locks
 						f = GetAWInfo()->GetLockBits();
-						GetBus()->WriteLockBits(f, GetAWInfo()->GetEEPId());
+						GetBus()->WriteLockBits(f, id);
 					}
 				}
 			}
@@ -599,8 +599,8 @@ int At90sxx::Verify(int type)
 		if (type & CONFIG_TYPE)
 		{
 			// read the fuses & locks
-			uint32_t f = GetBus()->ReadFuseBits(GetAWInfo()->GetEEPId());
-			uint32_t l = GetBus()->ReadLockBits(GetAWInfo()->GetEEPId());
+			quint32 f = GetBus()->ReadFuseBits(GetAWInfo()->GetId());
+			quint32 l = GetBus()->ReadLockBits(GetAWInfo()->GetId());
 
 			if (GetAWInfo()->GetLockBits() == l && GetAWInfo()->GetFuseBits() == f)
 			{

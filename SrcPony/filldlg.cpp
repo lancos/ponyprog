@@ -48,7 +48,7 @@ FillDialog::FillDialog(QWidget *bw, long &cfrom, long &cto, int &cval, long max_
 		setStyleSheet(cmdw->getStyleSheet());
 	}
 
-	qDebug() << "FillDialog::FillDialog()";
+	qDebug() << Q_FUNC_INFO;
 
 	pFrom = &cfrom;
 	pTo = &cto;
@@ -84,7 +84,7 @@ FillDialog::FillDialog(QWidget *bw, long &cfrom, long &cto, int &cval, long max_
 
 FillDialog::~FillDialog()
 {
-	qDebug() << "FillDialog::~FillDialog()";
+	qDebug() << Q_FUNC_INFO;
 }
 
 

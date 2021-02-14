@@ -55,10 +55,7 @@ void E2Profile::SetBogoMips(int value)
 }
 
 
-#include "eeptypes.h"
-
-
-long E2Profile::GetLastDevType()
+QString E2Profile::GetLastDevType()
 {
 	QString vrs = s->value("PonyProgVers", "pre").toString();
 
@@ -69,20 +66,21 @@ long E2Profile::GetLastDevType()
 		sp = "24XX Auto";
 	}
 
-	if (sp.length())
+	if (sp.length() == 0)
 	{
-		return GetEEPTypeFromString(sp);
+		sp = "24XX Auto";
+		//return GetEEPTypeFromString(sp);
 	}
-	else
-	{
-		return E2400;        //Default device type
-	}
+// 	else
+// 	{
+// 		return E2400;        //Default device type
+// 	}
+	return sp;
 }
 
-void E2Profile::SetLastDevType(long devtype)
+void E2Profile::SetLastDevType(const QString &name)
 {
-	QString sp = GetEEPTypeString(devtype);
-
+	QString sp = name;
 	s->setValue("PonyProgVers", APP_VERSION);
 
 	if (sp.length())
@@ -909,6 +907,20 @@ void E2Profile::SetProgramOptions(long prog_option)
 }
 
 
+QString E2Profile::GetXmlDir()
+{
+	return s->value("XmlDir", "").toString();
+}
+
+void E2Profile::SetXmlDir(const QString &name)
+{
+	if (name.length())
+	{
+		s->setValue("XmlDir", name);
+	}
+}
+
+
 QString E2Profile::GetLangDir()
 {
 	return s->value("LangDir", "").toString();
@@ -951,39 +963,6 @@ void E2Profile::SetLogFileName(const QString &name)
 		s->setValue("LogFileName", name);
 	}
 }
-
-#if 0
-QString E2Profile::GetLockDir()
-{
-	QString sp = s->value("ttyLockDir",  "/var/lock").toString();
-
-	return sp;
-}
-
-
-void E2Profile::SetLockDir(const QString &name)
-{
-	if (name.length())
-	{
-		s->setValue("ttyLockDir", name);
-	}
-}
-
-QString E2Profile::GetDevDir()
-{
-	QString sp = s->value("ttyDevDir", "/dev").toString();
-
-	return sp;
-}
-
-void E2Profile::SetDevDir(const QString &name)
-{
-	if (name.length())
-	{
-		s->setValue("ttyDevDir", name);
-	}
-}
-#endif
 
 #ifdef Q_OS_LINUX
 

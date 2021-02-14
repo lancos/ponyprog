@@ -44,7 +44,7 @@
 typedef struct
 {
 	int     LPPort;           //Port can be 1-3
-	uint8_t LPByte;           //Data can be any value between 00 and FFh
+	quint8 LPByte;           //Data can be any value between 00 and FFh
 } LPTCONDATA;
 
 class LPTInterface
@@ -78,7 +78,7 @@ class LPTInterface
 	int hLpt;
 #endif
 	LPTCONDATA lpt_control;
-	uint8_t last_ctrl, last_data;
+	quint8 last_ctrl, last_data;
 };
 
 #endif

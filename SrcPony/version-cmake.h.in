@@ -9,6 +9,23 @@
 #define APP_AUTHOR  "${APP_AUTHOR}"
 #endif
 
+#ifndef AUTHORWEB
+#define AUTHORWEB "${AUTHORWEB}"
+#endif
+
+#ifndef COPYRIGHTYEAR
+#define COPYRIGHTYEAR "${COPYRIGHTYEAR}"
+#endif
+
+#ifndef PORTERGQT
+#define PORTERGQT "${PORTERGQT}"
+#endif
+
+#ifndef PORTERMAIL
+#define PORTERMAIL "${PORTERMAIL}"
+#endif
+
+
 #ifndef PROGRAM_DATE
 #define PROGRAM_DATE  "${APP_BUILD_DATE}"
 #endif
@@ -20,6 +37,8 @@
 #ifndef APP_EMAIL
 #define APP_EMAIL  "${APP_EMAIL}"
 #endif
+
+
 
 #define USE_QT_VERSION  ${USE_QT_VERSION}
 

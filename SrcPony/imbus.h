@@ -35,8 +35,8 @@ class IMBus : public BusIO
 	IMBus(BusInterface *ptr = 0);
 	virtual ~IMBus();
 
-	long Read(int addr, uint8_t *data, long length, int page_size = 0);
-	long Write(int addr, uint8_t const *data, long length, int page_size = 0);
+	long Read(int addr, quint8 *data, long length, int page_size = 0);
+	long Write(int addr, quint8 const *data, long length, int page_size = 0);
 
 	int Reset();
 

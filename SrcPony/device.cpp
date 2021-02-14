@@ -57,7 +57,7 @@ void Device::SetAWInfo(e2AppWinInfo *wininfo)
 int Device::GetAddrSize() const
 {
 	//      return GetEEPAddrSize(awi->GetEEPPriType(), awi->GetEEPSubType());
-	return GetEEPAddrSize(awi->GetEEPId());
+	return awi->GetAddrSize(awi->GetId());
 }
 
 int Device::GetNoOfBank() const
@@ -74,9 +74,9 @@ void Device::SetNoOfBank(int no)
 	}
 }
 
-uint8_t *Device::GetBufPtr() const
+quint8 *Device::GetBufPtr() const
 {
-	return (uint8_t *)awi->GetBufPtr();
+	return (quint8 *)awi->GetBufPtr();
 }
 
 int Device::GetBufSize() const

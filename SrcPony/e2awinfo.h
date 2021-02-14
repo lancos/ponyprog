@@ -66,12 +66,13 @@
 #include "motsfbuf.h"
 #include "csmfbuf.h"
 
-#include "eeptypes.h"
-
+#include "chipcollection.h"
 #include "e2phead.h"
 
 
 //At the moment the bigger device is ATmega2560 (256KiB + 4KiB)
+// EK 2020 is it enough?
+// should be removed ?
 #define BUFFER_SIZE (1024 * 260)
 
 
@@ -84,7 +85,7 @@
 class e2CmdWindow;
 
 
-class e2AppWinInfo // : public QObject
+class e2AppWinInfo : public cChipCollection
 {
   public:
 
@@ -122,8 +123,7 @@ class e2AppWinInfo // : public QObject
 		return hex_per_line;
 	}
 
-//	void SetEEProm(int type = E24XX, int subtype = 0);
-	void SetEEProm(unsigned long id = E2400);
+	void SetId(quint32 id = E2400);
 
 	void SetFileBuf(FileType type);
 	FileType GetFileBuf() const;
@@ -141,27 +141,11 @@ class e2AppWinInfo // : public QObject
 	QString GetComment();
 	void SetComment(const QString &s);
 
-	int GetEEPId() const
+	quint32 GetId() const
 	{
 		return eep_id;
 	}
 
-#if 0
-	int GetEEPPriType() const
-	{
-		return eep_type;
-	}
-	int GetEEPSubType() const
-	{
-		return eep_subtype ? eep_subtype : GetE2PSubType(GetEEPTypeFromSize(eep_type, GetNoOfBlock()));
-	} //GetNoOfBlock(); }
-
-	int GetEEPType() const
-	{
-		return BuildE2PType(eep_type, eep_subtype);
-	}
-#endif
-//	void SetEEPTypeId(unsigned long e2type_id);
 	int GetBankRollOver() const
 	{
 		return roll_over;
@@ -183,7 +167,7 @@ class e2AppWinInfo // : public QObject
 		splitted = spl;
 	}
 
-	uint16_t GetCRC() const
+	quint16 GetCRC() const
 	{
 		return crc;
 	}
@@ -191,11 +175,11 @@ class e2AppWinInfo // : public QObject
 	{
 		crc = c;
 	}
-	uint16_t RecalcCRC();
+	quint16 RecalcCRC();
 
-	uint8_t *GetBufPtr() const
+	quint8 *GetBufPtr() const
 	{
-		return (uint8_t *)buffer;
+		return (quint8 *)buffer;
 	}
 	int GetBufSize() const
 	{
@@ -207,25 +191,25 @@ class e2AppWinInfo // : public QObject
 	void FillBuffer(int first_pos = 0, int ch = 0xFF, long len = -1);
 	void ClearBuffer(int type = ALL_TYPE);
 
-	int SecurityRead(uint32_t &bits);
-	int SecurityWrite(uint32_t bits, bool no_param = false);
-	int FusesRead(uint32_t &bits);
-	int FusesWrite(uint32_t bits, bool no_param = false);
-	int HighEnduranceRead(uint32_t &block_no);
-	int HighEnduranceWrite(uint32_t block_no, bool no_param = false);
+	int SecurityRead(quint32 &bits);
+	int SecurityWrite(quint32 bits, bool no_param = false);
+	int FusesRead(quint32 &bits);
+	int FusesWrite(quint32 bits, bool no_param = false);
+	int HighEnduranceRead(quint32 &block_no);
+	int HighEnduranceWrite(quint32 block_no, bool no_param = false);
 
 	int ReadOscCalibration(int addr = 0);
 
-	uint32_t GetLockBits() const
+	quint32 GetLockBits() const
 	{
 		return lock_bits;
 	}
-	uint32_t GetFuseBits() const
+	quint32 GetFuseBits() const
 	{
 		return fuse_bits;
 	}
-	void SetLockBits(uint32_t bits);
-	void SetFuseBits(uint32_t bits);
+	void SetLockBits(quint32 bits);
+	void SetFuseBits(quint32 bits);
 
 	bool IsFuseValid() const
 	{
@@ -262,21 +246,19 @@ class e2AppWinInfo // : public QObject
 	{
 		clear_buffer_before_load = val;
 	}
+
 	long GetDetectedType() const
 	{
 		return eep ? eep->GetDetectedType() : 0;
 	}
-	QString GetDetectedTypeStr() const
+	QString GetDetectedTypeStr()
 	{
-		return GetEEPTypeString(GetDetectedType());
+		return GetTypeString(GetDetectedType());
 	}
-	QString GetDetectedSignatureStr() const
+	QString GetDetectedSignatureStr()
 	{
 		return eep ? eep->GetDetectedSignatureStr() : "";
 	}
-
-  protected:
-//	e2CmdWindow* cmdWin;
 
   private:
 	int OpenBus();
@@ -286,6 +268,8 @@ class e2AppWinInfo // : public QObject
 		block_size = blk;
 	}
 	int LoadFile();
+
+	bool readXmlDir();
 
 	QString fname;                            //nome del file
 
@@ -303,16 +287,12 @@ class e2AppWinInfo // : public QObject
 
 	// EK 2017
 	// TODO convert to QByteArray or QBuffer?
-	uint8_t buffer[BUFFER_SIZE];    //device content buffer
+	quint8 buffer[BUFFER_SIZE];    //device content buffer
 	QString linebuf;//[LINEBUF_SIZE];     //print line buffer
 	bool buf_ok;                            //true if buffer is valid
 	bool buf_changed;                       //true if buffer changed/edited
 
-	unsigned long eep_id;
-	//      int eep_type;                           //indica il tipo di chip di eeprom
-	//      int eep_subtype;                        //sottotipo (in pratica il numero di banchi)
 	//se zero viene usato GetNoOfBank(), serve per una forzatura manuale
-
 
 	int block_size;                         //dimensione del blocco (puo` essere anche 1, dipende dal tipo di eeprom)
 	int no_block;                           //numero dei blocchi che contiene l'eeprom, indica la dimensione
@@ -320,11 +300,11 @@ class e2AppWinInfo // : public QObject
 	int splitted;                           //indica se la EEPROM e` divisa in due parti distinte (EEPROM - FLASH)
 	int roll_over;                          //indica se e`presente una features della eeprom
 
-	uint32_t fuse_bits;                     //device dependent bits
-	uint32_t lock_bits;                     //device dependent lock (security) bits
+	quint32 fuse_bits;                     //device dependent bits
+	quint32 lock_bits;                     //device dependent lock (security) bits
 	bool fuse_ok;
 
-	uint16_t crc;                                   //CRC del contenuto della eeprom
+	quint16 crc;                                   //CRC del contenuto della eeprom
 
 	QString eeprom_string;//[STRINGID_SIZE];      //eeprom string ID
 	QString eeprom_comment;//[COMMENT_SIZE];      //eeprom comment

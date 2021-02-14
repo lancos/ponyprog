@@ -27,8 +27,6 @@
 #include "types.h"
 #include "at93cxx.h"            // Header file
 #include "errcode.h"
-#include "eeptypes.h"
-
 
 #include <QDebug>
 
@@ -37,12 +35,12 @@
 At93cxx::At93cxx(e2AppWinInfo *wininfo, BusIO *busp)
 	:       Device(wininfo, busp, BANK_SIZE)
 {
-	qDebug() << "At93cxx::At93cxx()";
+	qDebug() << Q_FUNC_INFO;
 }
 
 At93cxx::~At93cxx()
 {
-	qDebug() << "At93cxx::~At93cxx()";
+	qDebug() << Q_FUNC_INFO;
 }
 
 int At93cxx::Read(int probe, int type)

@@ -33,7 +33,7 @@
 #include "errcode.h"
 
 #include "e2phead.h"
-#include "eeptypes.h"
+#include "defines.h"
 
 
 static char const *id_string = "E2P!Lanc";
@@ -79,9 +79,6 @@ void e2pFileBuf::check_offsets()
 
 int e2pFileBuf::Load(int loadtype, long relocation_offset)
 {
-	extern int GetE2PSubType(unsigned long x);
-	extern int GetE2PPriType(unsigned long x);
-
 	QFile fh(FileBuf::GetFileName());
 	e2pHeader hdr;
 	int rval;
@@ -108,21 +105,23 @@ int e2pFileBuf::Load(int loadtype, long relocation_offset)
 			//                      fread(FileBuf::GetBufPtr(), hdr.e2pSize, 1, fh) )
 		{
 			SetEEpromType(hdr.e2pType);  //set eeprom device type (and block size too)
+
+			quint32 pri_type = ((hdr.e2pType >> 16) & 0xff);
 			//FileBuf::SetNoOfBlock( hdr.e2pSize / FileBuf::GetBlockSize() );
 
 			if (hdr.fversion > 0)
 			{
-				SetLockBits(((uint32_t)hdr.e2pExtLockBits << 8) | hdr.e2pLockBits);
-				SetFuseBits(((uint32_t)hdr.e2pExtFuseBits << 8) | hdr.e2pFuseBits);
+				SetLockBits(((quint32)hdr.e2pExtLockBits << 8) | hdr.e2pLockBits);
+				SetFuseBits(((quint32)hdr.e2pExtFuseBits << 8) | hdr.e2pFuseBits);
 			}
 			else
 			{
 				//Old file version
-				if (GetE2PPriType(hdr.e2pType) == PIC16XX ||
-						GetE2PPriType(hdr.e2pType) == PIC168XX ||
-						GetE2PPriType(hdr.e2pType) == PIC125XX)
+				if (pri_type == PIC16XX ||
+						pri_type == PIC168XX ||
+						pri_type == PIC125XX)
 				{
-					SetLockBits(((uint32_t)hdr.e2pLockBits << 8) | hdr.e2pFuseBits);
+					SetLockBits(((quint32)hdr.e2pLockBits << 8) | hdr.e2pFuseBits);
 				}
 				else
 				{
@@ -134,7 +133,7 @@ int e2pFileBuf::Load(int loadtype, long relocation_offset)
 
 			if (hdr.fversion > 1)
 			{
-				SetSplitted(((uint32_t)hdr.split_size_High << 16) | hdr.split_size_Low);
+				SetSplitted(((quint32)hdr.split_size_High << 16) | hdr.split_size_Low);
 			}
 			else
 			{
@@ -263,17 +262,17 @@ int e2pFileBuf::Save(int savetype, long relocation_offset)
 
 	hdr.fversion = E2P_FVERSION;
 
-	hdr.e2pLockBits = (uint8_t)(GetLockBits() & 0xFF);
-	hdr.e2pExtLockBits = (uint16_t)(GetLockBits() >> 8);
-	hdr.e2pFuseBits = (uint8_t)(GetFuseBits() & 0xFF);
-	hdr.e2pExtFuseBits = (uint16_t)(GetFuseBits() >> 8);
+	hdr.e2pLockBits = (quint8)(GetLockBits() & 0xFF);
+	hdr.e2pExtLockBits = (quint16)(GetLockBits() >> 8);
+	hdr.e2pFuseBits = (quint8)(GetFuseBits() & 0xFF);
+	hdr.e2pExtFuseBits = (quint16)(GetFuseBits() >> 8);
 
 	hdr.e2pType = GetEEpromType();
 	strncpy(hdr.e2pStringID, GetStringID().toLatin1().constData(), 28);
 	strncpy(hdr.e2pComment, GetComment().toLatin1().constData(), 85);
 	hdr.flags = GetRollOver() & 7;
-	hdr.split_size_Low = (uint16_t)GetSplitted();
-	hdr.split_size_High = (uint16_t)(GetSplitted() >> 16);
+	hdr.split_size_Low = (quint16)GetSplitted();
+	hdr.split_size_High = (quint16)(GetSplitted() >> 16);
 	hdr.e2pCrc = mcalc_crc(localbuf, hdr.e2pSize);
 	hdr.headCrc = mcalc_crc(&hdr, sizeof(hdr) - sizeof(hdr.headCrc));
 
