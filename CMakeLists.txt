@@ -190,15 +190,17 @@ ELSE()
     ENDIF(NOT Qt5Multimedia_FOUND)
 ENDIF()
 
-#set ( FTDIPP ON )
-FIND_PACKAGE ( LibFTDI1 NO_MODULE REQUIRED )
+IF (NOT WIN32)
+    #set ( FTDIPP ON )
+    FIND_PACKAGE ( LibFTDI1 NO_MODULE REQUIRED )
 
-IF(NOT LibFTDI1_FOUND)
-    MESSAGE(FATAL_ERROR "LibFTDI1 files are not found. "
-    "LibFTDI1 and LibFTDIPP1 development packages are to install.")
-ENDIF(NOT LibFTDI1_FOUND)
+    IF(NOT LibFTDI1_FOUND)
+        MESSAGE(FATAL_ERROR "LibFTDI1 files are not found. "
+        "LibFTDI1 and LibFTDIPP1 development packages are to install.")
+    ENDIF(NOT LibFTDI1_FOUND)
 
-INCLUDE ( ${LIBFTDI_USE_FILE} )
+    INCLUDE ( ${LIBFTDI_USE_FILE} )
+ENDIF()
 
 # for this feature install debhelper or
 SET(PONYPROG_CPACK_PACKAGE_SHLIBDEPS ON)
