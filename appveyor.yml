@@ -22,6 +22,7 @@ clone_script:
 
 install:
   - appveyor DownloadFile "https://downloads.sourceforge.net/project/picusb/libftdi1-1.4git_devkit_x86_x64_14June2018.zip?r=https%3A%2F%2Fsourceforge.net%2Fprojects%2Fpicusb%2Ffiles%2Flibftdi1-1.4git_devkit_x86_x64_14June2018.zip%2Fdownload&ts=1610734013" -FileName "C:\libftdi1-1.4git_devkit_x86_x64_14June2018.zip"
+  #- appveyor DownloadFile "https://downloads.sourceforge.net/project/picusb/libftdi1-1.5_devkit_x86_x64_19July2020.zip?r=https%3A%2F%2Fsourceforge.net%2Fprojects%2Fpicusb%2Ffiles%2Flibftdi1-1.5_devkit_x86_x64_19July2020.zip%2Fdownload&ts=1613518002" -FileName "C:\libftdi1-1.5_devkit_x86_x64_19July2020.zip"
   - 7z x -y "C:\libftdi1-1.4git_devkit_x86_x64_14June2018.zip" -o"C:\"
   - if [%PLATFORM%]==[x86_64] set BITS=64
   - if [%PLATFORM%]==[x86_64] set EXTRA_OPTS=--disable-32bit
@@ -36,6 +37,7 @@ build_script:
   - dir "C:\Libraries\boost_1_67_0"
   - cmake -E make_directory build
   - cd build && cmake -G "MinGW Makefiles" -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="c++" -DCMAKE_MAKE_PROGRAM="mingw32-make" -DUSE_DEBUGGER=OFF -DUSE_QT5=ON -DCMAKE_PREFIX_PATH="C:/libftdi1-1.4git_devkit_x86_x64_14June2018" -DLIBUSB_SKIP_VERSION_CHECK=ON ..
+  - cmake --build . --target all
   - cd .. && qmake ponyprog.pro -spec win32-g++ BOOSTPATH=C:/Libraries/boost_1_67_0 FTDIPATH=C:/libftdi1-1.4git_devkit_x86_x64_14June2018
   - mingw32-make -j2
   - mingw32-make win32setup
