@@ -1,18 +1,31 @@
 language: cpp
 compiler: gcc
-dist: xenial
+dist: bionic
+
+arch:
+  - amd64
+  - arm64
 
 addons:
   apt:
     packages:
-      - g++-5
+      - g++-8
+      - cmake
+      - qt5-default
+      - qtbase5-dev
+      - qttools5-dev
+      - qtmultimedia5-dev
       - pkg-config
       - libusb-1.0-0
       - libusb-1.0-0-dev
       - libftdi1-2
       - libftdi1-dev
-      - libftdipp1-2v5
+      - libftdipp1-3
       - libftdipp1-dev
+
+env:
+  - CXX=g++-7
+  - CXX=g++-8
 
 #before_install:
 #- gcc -v
@@ -22,6 +35,11 @@ addons:
 #- sudo apt-get install -qq g++-5 libftdi1-2 libftdi1-dev libftdipp1-2 libftdipp1-dev
 
 script:
-- qmake ponyprog.pro -r -spec linux-g++-64 CONFIG+=debug QMAKE_CXX=g++-5 QMAKE_LINK=g++-5
-- make
+- ${CXX} --version
+- cmake -E make_directory build
+- cd build
+- cmake .. -DUSE_DEBUGGER=ON -DUSE_QT5=ON
+- cmake --build .
+#- qmake ponyprog.pro -r -spec linux-g++-64 CONFIG+=debug QMAKE_CXX=g++ QMAKE_LINK=g++
+#- make
 
