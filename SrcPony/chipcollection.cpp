@@ -300,7 +300,7 @@ bool cChipCollection::parseNode(const QDomNode &nd, QVector<BitInfo> &b, QVector
 			BitInfo *bhelp = new BitInfo;
 			bhelp->bit = offset.toInt();
 			bhelp->idx = index.toInt();
-			bhelp->ShortDescr = name;
+			bhelp->ShortDescr = name + index;
 			bhelp->LongDescr = description;
 
 			b << *bhelp;
