@@ -338,13 +338,14 @@ struct icElement
 	QString  name;     // for menu items
 // 	QString  defName;  // for defines
 	quint32  id;       // groupid | subtype
-	quint16  sign;     // signature for detecting
+	QVector<quint16>  sign;     // signature list for detecting
 	quint16  reserv;
 	// memory structure
 	qint32   prog_sz;  // size of program data (code)
 	qint32   data_sz;  // size of memory data
 	qint32   wpg_sz;   // page size
 	qint32   adr_sz;   // dimensione dello spazio di indirizzamento in numero di banchi
+	qint32   rpg_sz;
 	qint32   boot;     // boot address
 };
 
@@ -395,7 +396,7 @@ class cChipCollection
 	bool addGroup(cGroupElement *g);
 	icElement *getChipPointer(quint32 type);
 
-	bool parseNode(const QDomNode &nd, QVector<BitInfo> &b, QVector<MaskDescr> &d);
+	bool parseDescrNode(const QDomNode &nd, QVector<BitInfo> &b, QVector<MaskDescr> &d);
 
 	int convertSize(const QString &s);
 
