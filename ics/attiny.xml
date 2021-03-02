@@ -1,0 +1,688 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config type="PonyProg" version="3">
+    <chip menu="ATtiny micro" group="ATtiny" id="0x03">
+        <!--ic menu="ATtiny Auto" def="ATtinyXX" /-->
+        <!--ic menu="ATtiny10" def="ATtiny10" signature="0x9003" code_sz="1k" /-->
+        <!--ic menu="ATtiny11" def="ATtiny11" signature="0x9004" code_sz="1k" /-->
+        <ic menu="ATtiny12"
+            def="ATtiny12"
+            signature="0x9005">
+            <size code="1k" data="64" />
+            <fuse mask="" write_cmd="" read_cmd="" />
+            <lock mask="" write_cmd="" read_cmd="" />
+        </ic>
+        <ic menu="ATtiny13"
+            def="ATtiny13"
+            signature="0x9007">
+            <size code="1k" data="64" />
+            wpg_sz="32" >
+            <fuse mask="" write_cmd="" read_cmd="" />
+            <lock mask="" write_cmd="" read_cmd="" />
+        </ic>
+        <ic menu="ATtiny15"
+            def="ATtiny15"
+            signature="0x9006">
+            <size code="1k" data="64" />
+            <fuse mask="" write_cmd="" read_cmd="" />
+            <lock mask="" write_cmd="" read_cmd="" />
+        </ic>
+        <ic menu="ATtiny22"
+            def="ATtiny22"
+            signature="0x9106">
+            <size code="2k" data="128" />
+            <fuse mask="" write_cmd="" read_cmd="" />
+            <lock mask="" write_cmd="" read_cmd="" />
+        </ic>
+        <ic menu="ATtiny26"
+            def="ATtiny26"
+            signature="0x9109">
+            <size code="2k" data="128" wpg="32" />
+            <fuse mask="" write_cmd="" read_cmd="" />
+            <lock mask="" write_cmd="" read_cmd="" />
+        </ic>
+        <!--ic menu="ATtiny28" def="ATtiny28" signature="0x9109" code_sz="2k" data_sz="128" wpg_sz="32" /-->
+        <ic menu="ATtiny2313"
+            def="ATtiny2313"
+            signature="0x910a">
+            <size code="2k" data="128" wpg="32" />
+            <fuse mask="" write_cmd="" read_cmd="" />
+            <lock mask="" write_cmd="" read_cmd="" />
+        </ic>
+        <ic menu="ATtiny4313"
+            def="ATtiny4313"
+            signature="0x920d">
+            <size code="4k" data="256" wpg="64" />
+            <fuse mask="" write_cmd="" read_cmd="" />
+            <lock mask="" write_cmd="" read_cmd="" />
+        </ic>
+        <ic menu="ATtiny24"
+            def="ATtiny24"
+            signature="0x9108">
+            <size code="2k" data="128" wpg="32" />
+            <fuse mask="" write_cmd="" read_cmd="" />
+            <lock mask="" write_cmd="" read_cmd="" />
+        </ic>
+        <ic menu="ATtiny44"
+            def="ATtiny44"
+            signature="0x9207">
+            <size code="4k" data="256" wpg="64" />
+            <fuse mask="" write_cmd="" read_cmd="" />
+            <lock mask="" write_cmd="" read_cmd="" />
+        </ic>
+        <ic menu="ATtiny84"
+            def="ATtiny84"
+            signature="0x930c">
+            <size code="8k" data="512" wpg="64" />
+            <fuse mask="" write_cmd="" read_cmd="" />
+            <lock mask="" write_cmd="" read_cmd="" />
+        </ic>
+        <ic menu="ATtiny25"
+            def="ATtiny25"
+            signature="0x9108">
+            <size code="2k" data="128" wpg="32" />
+            <fuse mask="" write_cmd="" read_cmd="" />
+            <lock mask="" write_cmd="" read_cmd="" />
+        </ic>
+        <ic menu="ATtiny45"
+            def="ATtiny45"
+            signature="0x9206">
+            <size code="4k" data="256" wpg="64" />
+            <fuse mask="" write_cmd="" read_cmd="" />
+            <lock mask="" write_cmd="" read_cmd="" />
+        </ic>
+        <ic menu="ATtiny85"
+            def="ATtiny85"
+            signature="0x930b">
+            <size code="8k" data="512" wpg="64" />
+            <fuse mask="" write_cmd="" read_cmd="" />
+            <lock mask="" write_cmd="" read_cmd="" />
+        </ic>
+        <ic menu="ATtiny261"
+            def="ATtiny261"
+            signature="0x910c">
+            <size code="2k" data="128" wpg="32" />
+            <fuse mask="" write_cmd="" read_cmd="" />
+            <lock mask="" write_cmd="" read_cmd="" />
+        </ic>
+        <ic menu="ATtiny461"
+            def="ATtiny461"
+            signature="0x9208">
+            <size code="4k" data="256" wpg="64" />
+            <fuse mask="" write_cmd="" read_cmd="" />
+            <lock mask="" write_cmd="" read_cmd="" />
+        </ic>
+        <ic menu="ATtiny861"
+            def="ATtiny861"
+            signature="0x930d">
+            <size code="8k" data="512" wpg="64" />
+            <fuse mask="" write_cmd="" read_cmd="" />
+            <lock mask="" write_cmd="" read_cmd="" />
+        </ic>
+        <descr list="ATtiny12"><!-- ATtiny10, ATtiny11 ATtiny28 are not here -->
+            <fuse>
+                <bit offset="0" name="CKSEL" index="0" />
+                <bit offset="1" name="CKSEL" index="1" />
+                <bit offset="2" name="CKSEL" index="2" />
+                <bit offset="3" name="CKSEL" index="3" />
+                <bit offset="4" name="RSTDISBL" text="External reset function of PB5 disabled" />
+                <bit offset="5" name="SPIEN" text="Serial program downloading (SPI) enabled" />
+                <bit offset="6" name="BODEN" text="Brown-out detection enabled" />
+                <bit offset="7" name="/BODLEVEL" text="NOT Brown-out detection level at VCC=1.8 V" />
+
+                <!-- fuse mask description -->
+                <set code="CKSEL=0000" text="External Clock" />
+                <set code="CKSEL=0001" text="External Clock" />
+                <set code="CKSEL=0010" text="Internal RC Ocsillator" />
+                <set code="CKSEL=0011" text="Internal RC Ocsillator" />
+                <set code="CKSEL=0100" text="Internal RC Ocsillator" />
+                <set code="CKSEL=0101" text="External RC Ocsillator" />
+                <set code="CKSEL=0110" text="External RC Ocsillator" />
+                <set code="CKSEL=0111" text="External RC Ocsillator" />
+                <set code="CKSEL=1000" text="External Low-Frequency Crystal" />
+                <set code="CKSEL=1001" text="External Low-Frequency Crystal" />
+                <set code="CKSEL=1010" text="External Crystal / Ceramic Resonator" />
+                <set code="CKSEL=1011" text="External Crystal / Ceramic Resonator" />
+                <set code="CKSEL=1100" text="External Crystal / Ceramic Resonator" />
+                <set code="CKSEL=1101" text="External Crystal / Ceramic Resonator" />
+                <set code="CKSEL=1110" text="External Crystal / Ceramic Resonator" />
+                <set code="CKSEL=1111" text="External Crystal / Ceramic Resonator" />
+            </fuse>
+            <lock>
+                <bit offset="1" name="Lock" index="0" />
+                <bit offset="2" name="Lock" index="1" />
+
+                <!-- lock mask description -->
+                <set code="Lock=11" text="Mode 1: No memory lock features enabled" />
+                <set code="Lock=10" text="Mode 2: Further programming disabled" />
+                <set code="Lock=00" text="Mode 3: Further programming and verification disabled" />
+            </lock>
+        </descr>
+        <descr list="ATtiny13">
+            <fuse>
+                <bit offset="0" name="CKSEL" index="0" />
+                <bit offset="1" name="CKSEL" index="1" />
+                <bit offset="2" name="SUT" index="0" />
+                <bit offset="3" name="SUT" index="1" />
+                <bit offset="4" name="CKDIV8" text="Divide clock by 8 internally" />
+                <bit offset="5" name="WDTON" text="Watch-dog Timer always on" />
+                <bit offset="6" name="EESAVE" text="Preserve EEPROM memory through the Chip Erase cycle" />
+                <bit offset="7" name="SPIEN" text="Serial program downloading (SPI) enabled" />
+                <bit offset="8" name="RSTDISBL" text="Reset Disabled (Enable PB5 as i/o pin)" />
+                <bit offset="9" name="BODLEVEL" index="0" />
+                <bit offset="10" name="BODLEVEL" index="1" />
+                <bit offset="11" name="DWEN" text="Debug Wire enable" />
+                <bit offset="12" name="SELFPRGEN" text="Self Programming enable" />
+
+                <!-- fuse mask description -->
+                <set code="CKSEL=00 SUT=00" text="Ext. Clock; Start-up time: 14 CK + 0 ms" />
+                <set code="CKSEL=00 SUT=01" text="Ext. Clock; Start-up time: 14 CK + 4 ms" />
+                <set code="CKSEL=00 SUT=10" text="Ext. Clock; Start-up time: 14 CK + 64 ms" />
+                <set code="CKSEL=11 SUT=00" text="Int. RC Osc. 128 kHz; Start-up time: 14 CK + 0 ms" />
+                <set code="CKSEL=11 SUT=01" text="Int. RC Osc. 128 kHz; Start-up time: 14 CK + 4 ms" />
+                <set code="CKSEL=11 SUT=10" text="Int. RC Osc. 128 kHz; Start-up time: 14 CK + 64 ms" />
+                <set code="CKSEL=01 SUT=00" text="Int. RC Osc. 4.8 MHz; Start-up time: 14 CK + 0 ms" />
+                <set code="CKSEL=01 SUT=01" text="Int. RC Osc. 4.8 MHz; Start-up time: 14 CK + 4 ms" />
+                <set code="CKSEL=01 SUT=10" text="Int. RC Osc. 4.8 MHz; Start-up time: 14 CK + 64 ms" />
+                <set code="CKSEL=10 SUT=00" text="Int. RC Osc. 9.6 MHz; Start-up time: 14 CK + 0 ms" />
+                <set code="CKSEL=10 SUT=01" text="Int. RC Osc. 9.6 MHz; Start-up time: 14 CK + 4 ms" />
+                <set code="CKSEL=10 SUT=10" text="Int. RC Osc. 9.6 MHz; Start-up time: 14 CK + 64 ms" />
+
+                <set code="BODLEVEL=11" text="Brown-out detection disabled" />
+                <set code="BODLEVEL=10" text="Brown-out detection level at VCC=1.8 V" />
+                <set code="BODLEVEL=01" text="Brown-out detection level at VCC=2.7 V" />
+                <set code="BODLEVEL=00" text="Brown-out detection level at VCC=4.3 V" />
+            </fuse>
+            <lock>
+                <bit offset="0" name="Lock" index="0" />
+                <bit offset="1" name="Lock" index="1" />
+
+                <!-- lock mask description -->
+                <set code="Lock=11" text="Mode 1: No memory lock features enabled" />
+                <set code="Lock=10" text="Mode 2: Further programming disabled" />
+                <set code="Lock=00" text="Mode 3: Further programming and verification disabled" />
+            </lock>
+        </descr>
+        <descr list="ATtiny15">
+            <fuse>
+                <bit offset="0" name="CKSEL" index="0" />
+                <bit offset="1" name="CKSEL" index="1" />
+                <bit offset="4" name="RSTDISBL" text="External reset function of PB5 disabled" />
+                <bit offset="5" name="SPIEN" text="Serial program downloading (SPI) enabled" />
+                <bit offset="6" name="BODEN" text="Brown-out detection enabled" />
+                <bit offset="7" name="/BODLEVEL" text="NOT Brown-out detection level at VCC=2.7 V" />
+
+                <!-- fuse mask description -->
+                <set code="CKSEL=00" text="Slowly rising power" />
+                <set code="CKSEL=01" text="Slowly rising power" />
+                <set code="CKSEL=10" text="Quickly rising power" />
+                <set code="CKSEL=11" text="Very quickly rising power" />
+            </fuse>
+            <lock>
+                <bit offset="1" name="Lock" index="0" />
+                <bit offset="2" name="Lock" index="1" />
+
+                <!-- lock mask description -->
+                <set code="Lock=11" text="Mode 1: No memory lock features enabled" />
+                <set code="Lock=10" text="Mode 2: Further programming disabled" />
+                <set code="Lock=00" text="Mode 3: Further programming and verification disabled" />
+            </lock>
+        </descr>
+        <descr list="ATtiny22">
+            <fuse>
+                <bit offset="0" name="/FB0" text="NOT External clock disabled" /> <!-- NOT enabled -->
+                <bit offset="5" name="SPIEN" text="Serial program downloading (SPI) enabled" />
+            </fuse>
+            <lock>
+                <bit offset="1" name="Lock" index="0" />
+                <bit offset="2" name="Lock" index="1" />
+
+                <!-- lock mask description -->
+                <set code="Lock=11" text="Mode 1: No memory lock features enabled" />
+                <set code="Lock=10" text="Mode 2: Further programming disabled" />
+                <set code="Lock=00" text="Mode 3: Further programming and verification disabled" />
+            </lock>
+        </descr>
+        <descr list="ATtiny26" >
+            <fuse>
+                <bit offset="0" name="CKSEL" index="0" />
+                <bit offset="1" name="CKSEL" index="1" />
+                <bit offset="2" name="CKSEL" index="2" />
+                <bit offset="3" name="CKSEL" index="3" />
+                <bit offset="4" name="SUT" index="0" />
+                <bit offset="5" name="SUT" index="1" />
+                <bit offset="6" name="CKOPT" text="CKOPT fuse (operation dependent of CKSEL fuses)" />
+                <bit offset="7" name="PLLCK" index="0" />
+                <bit offset="8" name="BODEN" text="Brown-out detection enabled" />
+                <bit offset="9" name="/BODLEVEL" text="NOT Brown-out detection level at VCC=2.7 V" />
+                <bit offset="10" name="EESAVE" text="Preserve EEPROM memory through the Chip Erase cycle" />
+                <bit offset="11" name="SPIEN" text="Serial program downloading (SPI) enabled" />
+                <bit offset="12" name="RSTDISBL" text="Reset Disabled (Enable PB7 as i/o pin)" />
+
+                <!-- fuse mask description -->
+                <set code="CKSEL=0000 SUT=00 PLLCK=1" text="Ext. Clock; Start-up time: 6 CK + 0 ms" />
+                <set code="CKSEL=0000 SUT=01 PLLCK=1" text="Ext. Clock; Start-up time: 6 CK + 4 ms" />
+                <set code="CKSEL=0000 SUT=10 PLLCK=1" text="Ext. Clock; Start-up time: 6 CK + 64 ms" />
+                <set code="CKSEL=1111 SUT=01 PLLCK=1" text="Ext. Crystal/Resonator High Freq.; Start-up time: 16K CK + 0 ms" />
+                <set code="CKSEL=1111 SUT=10 PLLCK=1" text="Ext. Crystal/Resonator High Freq.; Start-up time: 16K CK + 4 ms" />
+                <set code="CKSEL=1111 SUT=11 PLLCK=1" text="Ext. Crystal/Resonator High Freq.; Start-up time: 16K CK + 64 ms" />
+                <set code="CKSEL=1110 SUT=10 PLLCK=1" text="Ext. Crystal/Resonator High Freq.; Start-up time: 1K CK + 0 ms" />
+                <set code="CKSEL=1110 SUT=11 PLLCK=1" text="Ext. Crystal/Resonator High Freq.; Start-up time: 1K CK + 4 ms" />
+                <set code="CKSEL=1111 SUT=00 PLLCK=1" text="Ext. Crystal/Resonator High Freq.; Start-up time: 1K CK + 64 ms" />
+                <set code="CKSEL=1110 SUT=00 PLLCK=1" text="Ext. Crystal/Resonator High Freq.; Start-up time: 258 CK + 4 ms" />
+                <set code="CKSEL=1110 SUT=01 PLLCK=1" text="Ext. Crystal/Resonator High Freq.; Start-up time: 258 CK + 64 ms" />
+                <set code="CKSEL=1011 SUT=01 PLLCK=1" text="Ext. Crystal/Resonator Low Freq.; Start-up time: 16K CK + 0 ms" />
+                <set code="CKSEL=1011 SUT=10 PLLCK=1" text="Ext. Crystal/Resonator Low Freq.; Start-up time: 16K CK + 4 ms" />
+                <set code="CKSEL=1011 SUT=11 PLLCK=1" text="Ext. Crystal/Resonator Low Freq.; Start-up time: 16K CK + 64 ms" />
+                <set code="CKSEL=1010 SUT=10 PLLCK=1" text="Ext. Crystal/Resonator Low Freq.; Start-up time: 1K CK + 0 ms" />
+                <set code="CKSEL=1010 SUT=11 PLLCK=1" text="Ext. Crystal/Resonator Low Freq.; Start-up time: 1K CK + 4 ms" />
+                <set code="CKSEL=1011 SUT=00 PLLCK=1" text="Ext. Crystal/Resonator Low Freq.; Start-up time: 1K CK + 64 ms" />
+                <set code="CKSEL=1010 SUT=00 PLLCK=1" text="Ext. Crystal/Resonator Low Freq.; Start-up time: 258 CK + 4 ms" />
+                <set code="CKSEL=1010 SUT=01 PLLCK=1" text="Ext. Crystal/Resonator Low Freq.; Start-up time: 258 CK + 64 ms" />
+                <set code="CKSEL=1101 SUT=01 PLLCK=1" text="Ext. Crystal/Resonator Medium Freq.; Start-up time: 16K CK + 0 ms" />
+                <set code="CKSEL=1101 SUT=10 PLLCK=1" text="Ext. Crystal/Resonator Medium Freq.; Start-up time: 16K CK + 4 ms" />
+                <set code="CKSEL=1101 SUT=11 PLLCK=1" text="Ext. Crystal/Resonator Medium Freq.; Start-up time: 16K CK + 64 ms" />
+                <set code="CKSEL=1100 SUT=10 PLLCK=1" text="Ext. Crystal/Resonator Medium Freq.; Start-up time: 1K CK + 0 ms" />
+                <set code="CKSEL=1100 SUT=11 PLLCK=1" text="Ext. Crystal/Resonator Medium Freq.; Start-up time: 1K CK + 4 ms" />
+                <set code="CKSEL=1101 SUT=00 PLLCK=1" text="Ext. Crystal/Resonator Medium Freq.; Start-up time: 1K CK + 64 ms" />
+                <set code="CKSEL=1100 SUT=00 PLLCK=1" text="Ext. Crystal/Resonator Medium Freq.; Start-up time: 258 CK + 4 ms" />
+                <set code="CKSEL=1100 SUT=01 PLLCK=1" text="Ext. Crystal/Resonator Medium Freq.; Start-up time: 258 CK + 64 ms" />
+                <set code="CKSEL=1001 SUT=00 PLLCK=1" text="Ext. Low-Freq. Crystal; Start-up time: 1K CK + 4 ms" />
+                <set code="CKSEL=1001 SUT=01 PLLCK=1" text="Ext. Low-Freq. Crystal; Start-up time: 1K CK + 64 ms" />
+                <set code="CKSEL=1001 SUT=10 PLLCK=1" text="Ext. Low-Freq. Crystal; Start-up time: 32K CK + 64 ms" />
+                <set code="CKSEL=0101 SUT=00 PLLCK=1" text="Ext. RC Osc. - 0.9 MHz; Start-up time: 18 CK + 0 ms" />
+                <set code="CKSEL=0101 SUT=01 PLLCK=1" text="Ext. RC Osc. - 0.9 MHz; Start-up time: 18 CK + 4 ms" />
+                <set code="CKSEL=0101 SUT=10 PLLCK=1" text="Ext. RC Osc. - 0.9 MHz; Start-up time: 18 CK + 64 ms" />
+                <set code="CKSEL=0101 SUT=11 PLLCK=1" text="Ext. RC Osc. - 0.9 MHz; Start-up time: 6 CK + 4 ms" />
+                <set code="CKSEL=0110 SUT=00 PLLCK=1" text="Ext. RC Osc. 0.9 MHz - 3.0 MHz; Start-up time: 18 CK + 0 ms" />
+                <set code="CKSEL=0110 SUT=01 PLLCK=1" text="Ext. RC Osc. 0.9 MHz - 3.0 MHz; Start-up time: 18 CK + 4 ms" />
+                <set code="CKSEL=0110 SUT=10 PLLCK=1" text="Ext. RC Osc. 0.9 MHz - 3.0 MHz; Start-up time: 18 CK + 64 ms" />
+                <set code="CKSEL=0110 SUT=11 PLLCK=1" text="Ext. RC Osc. 0.9 MHz - 3.0 MHz; Start-up time: 6 CK + 4 ms" />
+                <set code="CKSEL=0111 SUT=00 PLLCK=1" text="Ext. RC Osc. 3.0 MHz - 8.0 MHz; Start-up time: 18 CK + 0 ms" />
+                <set code="CKSEL=0111 SUT=01 PLLCK=1" text="Ext. RC Osc. 3.0 MHz - 8.0 MHz; Start-up time: 18 CK + 4 ms" />
+                <set code="CKSEL=0111 SUT=10 PLLCK=1" text="Ext. RC Osc. 3.0 MHz - 8.0 MHz; Start-up time: 18 CK + 64 ms" />
+                <set code="CKSEL=0111 SUT=11 PLLCK=1" text="Ext. RC Osc. 3.0 MHz - 8.0 MHz; Start-up time: 6 CK + 4 ms" />
+                <set code="CKSEL=1000 SUT=00 PLLCK=1" text="Ext. RC Osc. 8.0 MHz - 12.0 MHz; Start-up time: 18 CK + 0 ms" />
+                <set code="CKSEL=1000 SUT=01 PLLCK=1" text="Ext. RC Osc. 8.0 MHz - 12.0 MHz; Start-up time: 18 CK + 4 ms" />
+                <set code="CKSEL=1000 SUT=10 PLLCK=1" text="Ext. RC Osc. 8.0 MHz - 12.0 MHz; Start-up time: 18 CK + 64 ms" />
+                <set code="CKSEL=1000 SUT=11 PLLCK=1" text="Ext. RC Osc. 8.0 MHz - 12.0 MHz; Start-up time: 6 CK + 4 ms" />
+                <set code="CKSEL=0001 SUT=00 PLLCK=1" text="Int. RC Osc. 1 MHz; Start-up time: 6 CK + 0 ms" />
+                <set code="CKSEL=0001 SUT=01 PLLCK=1" text="Int. RC Osc. 1 MHz; Start-up time: 6 CK + 4 ms" />
+                <set code="CKSEL=0001 SUT=10 PLLCK=1" text="Int. RC Osc. 1 MHz; Start-up time: 6 CK + 64 ms" />
+                <set code="CKSEL=0010 SUT=00 PLLCK=1" text="Int. RC Osc. 2 MHz; Start-up time: 6 CK + 0 ms" />
+                <set code="CKSEL=0010 SUT=01 PLLCK=1" text="Int. RC Osc. 2 MHz; Start-up time: 6 CK + 4 ms" />
+                <set code="CKSEL=0010 SUT=10 PLLCK=1" text="Int. RC Osc. 2 MHz; Start-up time: 6 CK + 64 ms" />
+                <set code="CKSEL=0011 SUT=00 PLLCK=1" text="Int. RC Osc. 4 MHz; Start-up time: 6 CK + 0 ms" />
+                <set code="CKSEL=0011 SUT=01 PLLCK=1" text="Int. RC Osc. 4 MHz; Start-up time: 6 CK + 4 ms" />
+                <set code="CKSEL=0011 SUT=10 PLLCK=1" text="Int. RC Osc. 4 MHz; Start-up time: 6 CK + 64 ms" />
+                <set code="CKSEL=0100 SUT=00 PLLCK=1" text="Int. RC Osc. 8 MHz; Start-up time: 6 CK + 0 ms" />
+                <set code="CKSEL=0100 SUT=01 PLLCK=1" text="Int. RC Osc. 8 MHz; Start-up time: 6 CK + 4 ms" />
+                <set code="CKSEL=0100 SUT=10 PLLCK=1" text="Int. RC Osc. 8 MHz; Start-up time: 6 CK + 64 ms" />
+                <set code="CKSEL=0001 SUT=11 PLLCK=0" text="PLL Clock; Start-up time: 16K CK + 64 ms" />
+                <set code="CKSEL=0001 SUT=00 PLLCK=0" text="PLL Clock; Start-up time: 1K CK + 0 ms" />
+                <set code="CKSEL=0001 SUT=01 PLLCK=0" text="PLL Clock; Start-up time: 1K CK + 4 ms" />
+                <set code="CKSEL=0001 SUT=10 PLLCK=0" text="PLL Clock; Start-up time: 1K CK + 64 ms" />
+            </fuse>
+            <lock>
+                <bit offset="0" name="Lock" index="0" />
+                <bit offset="1" name="Lock" index="1" />
+
+                <!-- lock mask description -->
+                <set code="Lock=11" text="Mode 1: No memory lock features enabled" />
+                <set code="Lock=10" text="Mode 2: Further programming disabled" />
+                <set code="Lock=00" text="Mode 3: Further programming and verification disabled" />
+            </lock>
+        </descr>
+
+        <descr list="ATtiny2313, ATtiny4313"> <!-- ATtiny4313 new 16.09.2015 @RG, EK : possible diff descriptions for bit combinations -->
+            <fuse>
+                <bit offset="0" name="CKSEL" index="0" />
+                <bit offset="1" name="CKSEL" index="1" />
+                <bit offset="2" name="CKSEL" index="2" />
+                <bit offset="3" name="CKSEL" index="3" />
+                <bit offset="4" name="SUT" index="0" />
+                <bit offset="5" name="SUT" index="1" />
+                <bit offset="6" name="CKOUT" text="Clock output on PORTD2" />
+                <bit offset="7" name="CKDIV8" text="Divide clock by 8 internally" />
+                <bit offset="8" name="RSTDISBL" text="Reset Disabled (Enable PA2 as i/o pin)" />
+                <bit offset="9" name="BODLEVEL" index="0" />
+                <bit offset="10" name="BODLEVEL" index="1" />
+                <bit offset="11" name="BODLEVEL" index="2" />
+                <bit offset="12" name="WDTON" text="Watch-dog Timer always on" />
+                <bit offset="13" name="SPIEN" text="Serial program downloading (SPI) enabled" />
+                <bit offset="14" name="EESAVE" text="Preserve EEPROM memory through the Chip Erase cycle" />
+                <bit offset="15" name="DWEN" text="Debug Wire enable" />
+                <bit offset="16" name="SELFPRGEN" text="Self programming enable" />
+
+                <!-- fuse mask description -->
+                <set code="CKSEL=0000 SUT=00" text="Ext. Clock; Start-up time: 14 CK + 0 ms" />
+                <set code="CKSEL=0000 SUT=01" text="Ext. Clock; Start-up time: 14 CK + 4.1 ms" />
+                <set code="CKSEL=0000 SUT=10" text="Ext. Clock; Start-up time: 14 CK + 65 ms" />
+                <set code="CKSEL=1000 SUT=10" text="Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time: 14 CK + 0 ms" />
+                <set code="CKSEL=1001 SUT=01" text="Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time: 14 CK + 0 ms" />
+                <set code="CKSEL=1000 SUT=00" text="Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time: 14 CK + 4.1 ms" />
+                <set code="CKSEL=1000 SUT=11" text="Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time: 14 CK + 4.1 ms" />
+                <set code="CKSEL=1001 SUT=10" text="Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time: 14 CK + 4.1 ms" />
+                <set code="CKSEL=1000 SUT=01" text="Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time: 14 CK + 65 ms" />
+                <set code="CKSEL=1001 SUT=00" text="Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time: 14 CK + 65 ms" />
+                <set code="CKSEL=1001 SUT=11" text="Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time: 14 CK + 65 ms" />
+                <set code="CKSEL=1010 SUT=10" text="Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time: 14 CK + 0 ms" />
+                <set code="CKSEL=1011 SUT=01" text="Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time: 14 CK + 0 ms" />
+                <set code="CKSEL=1010 SUT=00" text="Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time: 14 CK + 4.1 ms" />
+                <set code="CKSEL=1010 SUT=11" text="Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time: 14 CK + 4.1 ms" />
+                <set code="CKSEL=1011 SUT=10" text="Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time: 14 CK + 4.1 ms" />
+                <set code="CKSEL=1010 SUT=01" text="Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time: 14 CK + 65 ms" />
+                <set code="CKSEL=1011 SUT=00" text="Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time: 14 CK + 65 ms" />
+                <set code="CKSEL=1011 SUT=11" text="Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time: 14 CK + 65 ms" />
+                <set code="CKSEL=1100 SUT=10" text="Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time: 14 CK + 0 ms" />
+                <set code="CKSEL=1101 SUT=01" text="Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time: 14 CK + 0 ms" />
+                <set code="CKSEL=1100 SUT=00" text="Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time: 14 CK + 4.1 ms" />
+                <set code="CKSEL=1100 SUT=11" text="Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time: 14 CK + 4.1 ms" />
+                <set code="CKSEL=1101 SUT=10" text="Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time: 14 CK + 4.1 ms" />
+                <set code="CKSEL=1100 SUT=01" text="Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time: 14 CK + 65 ms" />
+                <set code="CKSEL=1101 SUT=00" text="Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time: 14 CK + 65 ms" />
+                <set code="CKSEL=1101 SUT=11" text="Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time: 14 CK + 65 ms" />
+                <set code="CKSEL=1110 SUT=10" text="Ext. Crystal Osc.; Frequency 8.0- MHz; Start-up time: 14 CK + 0 ms" />
+                <set code="CKSEL=1111 SUT=01" text="Ext. Crystal Osc.; Frequency 8.0- MHz; Start-up time: 14 CK + 0 ms" />
+                <set code="CKSEL=1110 SUT=00" text="Ext. Crystal Osc.; Frequency 8.0- MHz; Start-up time: 14 CK + 4.1 ms" />
+                <set code="CKSEL=1110 SUT=11" text="Ext. Crystal Osc.; Frequency 8.0- MHz; Start-up time: 14 CK + 4.1 ms" />
+                <set code="CKSEL=1111 SUT=10" text="Ext. Crystal Osc.; Frequency 8.0- MHz; Start-up time: 14 CK + 4.1 ms" />
+                <set code="CKSEL=1110 SUT=01" text="Ext. Crystal Osc.; Frequency 8.0- MHz; Start-up time: 14 CK + 65 ms" />
+                <set code="CKSEL=1111 SUT=00" text="Ext. Crystal Osc.; Frequency 8.0- MHz; Start-up time: 14 CK + 65 ms" />
+                <set code="CKSEL=1111 SUT=11" text="Ext. Crystal Osc.; Frequency 8.0- MHz; Start-up time: 14 CK + 65 ms" />
+                <set code="CKSEL=0110 SUT=00" text="Int. RC Osc. 128 kHz; Start-up time: 14 CK + 0 ms" />
+                <set code="CKSEL=0110 SUT=01" text="Int. RC Osc. 128 kHz; Start-up time: 14 CK + 4 ms" />
+                <set code="CKSEL=0110 SUT=10" text="Int. RC Osc. 128 kHz; Start-up time: 14 CK + 64 ms" />
+                <set code="CKSEL=0010 SUT=00" text="Int. RC Osc. 4 MHz; Start-up time: 14 CK + 0 ms" />
+                <set code="CKSEL=0010 SUT=01" text="Int. RC Osc. 4 MHz; Start-up time: 14 CK + 4.1 ms" />
+                <set code="CKSEL=0010 SUT=10" text="Int. RC Osc. 4 MHz; Start-up time: 14 CK + 65 ms" />
+                <set code="CKSEL=0100 SUT=00" text="Int. RC Osc. 8 MHz; Start-up time: 14 CK + 0 ms" />
+                <set code="CKSEL=0100 SUT=01" text="Int. RC Osc. 8 MHz; Start-up time: 14 CK + 4.1 ms" />
+                <set code="CKSEL=0100 SUT=10" text="Int. RC Osc. 8 MHz; Start-up time: 14 CK + 65 ms" />
+
+                <set code="BODLEVEL=111" text="Brown-out detection disabled" />
+                <set code="BODLEVEL=110" text="Brown-out detection level at VCC=1.8 V" />
+                <set code="BODLEVEL=101" text="Brown-out detection level at VCC=2.7 V" />
+                <set code="BODLEVEL=100" text="Brown-out detection level at VCC=4.3 V" />
+            </fuse>
+            <lock>
+                <bit offset="0" name="Lock" index="0" />
+                <bit offset="1" name="Lock" index="1" />
+
+                <!-- lock mask description -->
+                <set code="Lock=11" text="Mode 1: No memory lock features enabled" />
+                <set code="Lock=10" text="Mode 2: Further programming disabled" />
+                <set code="Lock=00" text="Mode 3: Further programming and verification disabled" />
+            </lock>
+        </descr>
+        <descr list="ATtiny24,ATtiny44,ATtiny84"> <!-- new 08.01.2015 @RG, EK : possible diff descriptions for bit combinations -->
+            <fuse>
+                <bit offset="0" name="CKSEL" index="0" />
+                <bit offset="1" name="CKSEL" index="1" />
+                <bit offset="2" name="CKSEL" index="2" />
+                <bit offset="3" name="CKSEL" index="3" />
+                <bit offset="4" name="SUT" index="0" />
+                <bit offset="5" name="SUT" index="1" />
+                <bit offset="6" name="CKOUT" text="Clock output on PORTB2" />
+                <bit offset="7" name="CKDIV8" text="Divide clock by 8 internally" />
+                <bit offset="8" name="BODLEVEL" index="0" />
+                <bit offset="9" name="BODLEVEL" index="1" />
+                <bit offset="10" name="BODLEVEL" index="2" />
+                <bit offset="11" name="EESAVE" text="Preserve EEPROM memory through the Chip Erase cycle" />
+                <bit offset="12" name="WDTON" text="Watch-dog Timer always on" />
+                <bit offset="13" name="SPIEN" text="Serial program downloading (SPI) enabled" />
+                <bit offset="14" name="DWEN" text="Debug Wire enable" />
+                <bit offset="15" name="RSTDISBL" text="Reset Disabled (Enable PB5 as i/o pin)" />
+                <bit offset="16" name="SELFPRGEN" text="Self Programming enable" />
+
+                <!-- fuse mask description -->
+                <set code="CKSEL=0000 SUT=00" text="Ext. Clock; Start-up time PWRDWN/RESET: 6 CK/14 CK + 0 ms" />
+                <set code="CKSEL=0000 SUT=01" text="Ext. Clock; Start-up time PWRDWN/RESET: 6 CK/14 CK + 4.1 ms" />
+                <set code="CKSEL=0000 SUT=10" text="Ext. Clock; Start-up time PWRDWN/RESET: 6 CK/14 CK + 65 ms" />
+                <set code="CKSEL=1001 SUT=01" text="Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 0 ms" />
+                <set code="CKSEL=1001 SUT=10" text="Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 4.1 ms" />
+                <set code="CKSEL=1001 SUT=11" text="Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 65 ms" />
+                <set code="CKSEL=1000 SUT=10" text="Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 0 ms" />
+                <set code="CKSEL=1000 SUT=11" text="Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 4.1 ms" />
+                <set code="CKSEL=1001 SUT=00" text="Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 65 ms" />
+                <set code="CKSEL=1000 SUT=00" text="Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time PWRDWN/RESET: 258 CK/14 CK + 4.1 ms" />
+                <set code="CKSEL=1000 SUT=01" text="Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time PWRDWN/RESET: 258 CK/14 CK + 65 ms" />
+                <set code="CKSEL=1011 SUT=01" text="Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 0 ms" />
+                <set code="CKSEL=1011 SUT=10" text="Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 4.1 ms" />
+                <set code="CKSEL=1011 SUT=11" text="Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 65 ms" />
+                <set code="CKSEL=1010 SUT=10" text="Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 0 ms" />
+                <set code="CKSEL=1010 SUT=11" text="Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 4.1 ms" />
+                <set code="CKSEL=1011 SUT=00" text="Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 65 ms" />
+                <set code="CKSEL=1010 SUT=00" text="Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time PWRDWN/RESET: 258 CK/14 CK + 4.1 ms" />
+                <set code="CKSEL=1010 SUT=01" text="Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time PWRDWN/RESET: 258 CK/14 CK + 65 ms" />
+                <set code="CKSEL=1101 SUT=01" text="Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 0 ms" />
+                <set code="CKSEL=1101 SUT=10" text="Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 4.1 ms" />
+                <set code="CKSEL=1101 SUT=11" text="Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 65 ms" />
+                <set code="CKSEL=1100 SUT=10" text="Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 0 ms" />
+                <set code="CKSEL=1100 SUT=11" text="Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 4.1 ms" />
+                <set code="CKSEL=1101 SUT=00" text="Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 65 ms" />
+                <set code="CKSEL=1100 SUT=00" text="Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time PWRDWN/RESET: 258 CK/14 CK + 4.1 ms" />
+                <set code="CKSEL=1100 SUT=01" text="Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time PWRDWN/RESET: 258 CK/14 CK + 65 ms" />
+                <set code="CKSEL=1111 SUT=01" text="Ext. Crystal Osc.; Frequency 8.0- MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 0 ms" />
+                <set code="CKSEL=1111 SUT=10" text="Ext. Crystal Osc.; Frequency 8.0- MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 4.1 ms" />
+                <set code="CKSEL=1111 SUT=11" text="Ext. Crystal Osc.; Frequency 8.0- MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 65 ms" />
+                <set code="CKSEL=1110 SUT=10" text="Ext. Crystal Osc.; Frequency 8.0- MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 0 ms" />
+                <set code="CKSEL=1110 SUT=11" text="Ext. Crystal Osc.; Frequency 8.0- MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 4.1 ms" />
+                <set code="CKSEL=1111 SUT=00" text="Ext. Crystal Osc.; Frequency 8.0- MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 65 ms" />
+                <set code="CKSEL=1110 SUT=00" text="Ext. Crystal Osc.; Frequency 8.0- MHz; Start-up time PWRDWN/RESET: 258 CK/14 CK + 4.1 ms" />
+                <set code="CKSEL=1110 SUT=01" text="Ext. Crystal Osc.; Frequency 8.0- MHz; Start-up time PWRDWN/RESET: 258 CK/14 CK + 65 ms" />
+                <set code="CKSEL=0110 SUT=00" text="Ext. Low-Freq. Crystal; Start-up time PWRDWN/RESET: 1K CK/14 CK + 0 ms" />
+                <set code="CKSEL=0110 SUT=01" text="Ext. Low-Freq. Crystal; Start-up time PWRDWN/RESET: 1K CK/14 CK + 4 ms" />
+                <set code="CKSEL=0110 SUT=10" text="Ext. Low-Freq. Crystal; Start-up time PWRDWN/RESET: 32K CK/14 CK + 64 ms" />
+                <set code="CKSEL=0010 SUT=00" text="Int. RC Osc. 8 MHz; Start-up time PWRDWN/RESET: 6 CK/14 CK + 0 ms" />
+                <set code="CKSEL=0010 SUT=01" text="Int. RC Osc. 8 MHz; Start-up time PWRDWN/RESET: 6 CK/14 CK + 4 ms" />
+                <set code="CKSEL=0010 SUT=10" text="Int. RC Osc. 8 MHz; Start-up time PWRDWN/RESET: 6 CK/14 CK + 64 ms" />
+                <set code="CKSEL=0001 SUT=01" text="PLL Clock; Start-up time PWRDWN/RESET: 16K CK/14 CK + 4 ms" />
+                <set code="CKSEL=0001 SUT=11" text="PLL Clock; Start-up time PWRDWN/RESET: 16K CK/14 CK + 64 ms" />
+                <set code="CKSEL=0001 SUT=00" text="PLL Clock; Start-up time PWRDWN/RESET: 1K CK/14 CK + 4 ms" />
+                <set code="CKSEL=0001 SUT=10" text="PLL Clock; Start-up time PWRDWN/RESET: 1K CK/14 CK + 64 ms" />
+                <set code="CKSEL=0100 SUT=00" text="WD. Osc. 128 kHz; Start-up time PWRDWN/RESET: 6 CK/14 CK + 0 ms" />
+                <set code="CKSEL=0100 SUT=01" text="WD. Osc. 128 kHz; Start-up time PWRDWN/RESET: 6 CK/14 CK + 4 ms" />
+                <set code="CKSEL=0100 SUT=10" text="WD. Osc. 128 kHz; Start-up time PWRDWN/RESET: 6 CK/14 CK + 64 ms" />
+
+                <set code="BODLEVEL=111" text="Brown-out detection disabled" />
+                <set code="BODLEVEL=110" text="Brown-out detection level at VCC=1.8 V" />
+                <set code="BODLEVEL=001" text="Brown-out detection level at VCC=1.9 V" />
+                <set code="BODLEVEL=000" text="Brown-out detection level at VCC=2.0 V" />
+                <set code="BODLEVEL=010" text="Brown-out detection level at VCC=2.2 V" />
+                <set code="BODLEVEL=011" text="Brown-out detection level at VCC=2.3 V" />
+                <set code="BODLEVEL=101" text="Brown-out detection level at VCC=2.7 V" />
+                <set code="BODLEVEL=100" text="Brown-out detection level at VCC=4.3 V" />
+            </fuse>
+            <lock>
+                <bit offset="0" name="Lock" index="0" />
+                <bit offset="1" name="Lock" index="1" />
+
+                <!-- lock mask description -->
+                <set code="Lock=11" text="Mode 1: No memory lock features enabled" />
+                <set code="Lock=10" text="Mode 2: Further programming disabled" />
+                <set code="Lock=00" text="Mode 3: Further programming and verification disabled" />
+            </lock>
+        </descr>
+
+        <descr list="ATtiny25,ATtiny45,ATtiny85">
+            <fuse>
+                <bit offset="0" name="CKSEL" index="0" />
+                <bit offset="1" name="CKSEL" index="1" />
+                <bit offset="2" name="CKSEL" index="2" />
+                <bit offset="3" name="CKSEL" index="3" />
+                <bit offset="4" name="SUT" index="0" />
+                <bit offset="5" name="SUT" index="1" />
+                <bit offset="6" name="CKOUT" text="Clock output on PORTB4" />
+                <bit offset="7" name="CKDIV8" text="Divide clock by 8 internally" />
+                <bit offset="8" name="BODLEVEL" index="0" />
+                <bit offset="9" name="BODLEVEL" index="1" />
+                <bit offset="10" name="BODLEVEL" index="2" />
+                <bit offset="11" name="EESAVE" text="Preserve EEPROM memory through the Chip Erase cycle" />
+                <bit offset="12" name="WDTON" text="Watch-dog Timer always on" />
+                <bit offset="13" name="SPIEN" text="Serial program downloading (SPI) enabled" />
+                <bit offset="14" name="DWEN" text="Debug Wire enable" />
+                <bit offset="15" name="RSTDISBL" text="Reset Disabled (Enable PB5 as i/o pin)" />
+                <bit offset="16" name="SELFPRGEN" text="Self Programming enable" />
+
+                <!-- fuse mask description -->
+                <set code="CKSEL=0011 SUT=11" text="ATtiny15 Comp: Int. RC Osc. 6.4 MHz; Start-up time PWRDWN/RESET: 1 CK/14 CK + 0 ms" />
+                <set code="CKSEL=0011 SUT=10" text="ATtiny15 Comp: Int. RC Osc. 6.4 MHz; Start-up time PWRDWN/RESET: 6 CK/14 CK + 4 ms" />
+                <set code="CKSEL=0011 SUT=00" text="ATtiny15 Comp: Int. RC Osc. 6.4 MHz; Start-up time PWRDWN/RESET: 6 CK/14 CK + 64 ms" />
+                <set code="CKSEL=0011 SUT=01" text="ATtiny15 Comp: Int. RC Osc. 6.4 MHz; Start-up time PWRDWN/RESET: 6 CK/14 CK + 64 ms" />
+                <set code="CKSEL=0000 SUT=00" text="Ext. Clock; Start-up time PWRDWN/RESET: 6 CK/14 CK + 0 ms" />
+                <set code="CKSEL=0000 SUT=01" text="Ext. Clock; Start-up time PWRDWN/RESET: 6 CK/14 CK + 4.1 ms" />
+                <set code="CKSEL=0000 SUT=10" text="Ext. Clock; Start-up time PWRDWN/RESET: 6 CK/14 CK + 65 ms" />
+                <set code="CKSEL=1001 SUT=01" text="Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 0 ms" />
+                <set code="CKSEL=1001 SUT=10" text="Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 4.1 ms" />
+                <set code="CKSEL=1001 SUT=11" text="Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 65 ms" />
+                <set code="CKSEL=1000 SUT=10" text="Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 0 ms" />
+                <set code="CKSEL=1000 SUT=11" text="Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 4.1 ms" />
+                <set code="CKSEL=1001 SUT=00" text="Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 65 ms" />
+                <set code="CKSEL=1000 SUT=00" text="Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time PWRDWN/RESET: 258 CK/14 CK + 4.1 ms" />
+                <set code="CKSEL=1000 SUT=01" text="Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time PWRDWN/RESET: 258 CK/14 CK + 65 ms" />
+                <set code="CKSEL=1011 SUT=01" text="Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 0 ms" />
+                <set code="CKSEL=1011 SUT=10" text="Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 4.1 ms" />
+                <set code="CKSEL=1011 SUT=11" text="Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 65 ms" />
+                <set code="CKSEL=1010 SUT=10" text="Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 0 ms" />
+                <set code="CKSEL=1010 SUT=11" text="Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 4.1 ms" />
+                <set code="CKSEL=1011 SUT=00" text="Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 65 ms" />
+                <set code="CKSEL=1010 SUT=00" text="Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time PWRDWN/RESET: 258 CK/14 CK + 4.1 ms" />
+                <set code="CKSEL=1010 SUT=01" text="Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time PWRDWN/RESET: 258 CK/14 CK + 65 ms" />
+                <set code="CKSEL=1101 SUT=01" text="Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 0 ms" />
+                <set code="CKSEL=1101 SUT=10" text="Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 4.1 ms" />
+                <set code="CKSEL=1101 SUT=11" text="Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 65 ms" />
+                <set code="CKSEL=1100 SUT=10" text="Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 0 ms" />
+                <set code="CKSEL=1100 SUT=11" text="Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 4.1 ms" />
+                <set code="CKSEL=1101 SUT=00" text="Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 65 ms" />
+                <set code="CKSEL=1100 SUT=00" text="Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time PWRDWN/RESET: 258 CK/14 CK + 4.1 ms" />
+                <set code="CKSEL=1100 SUT=01" text="Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time PWRDWN/RESET: 258 CK/14 CK + 65 ms" />
+                <set code="CKSEL=1111 SUT=01" text="Ext. Crystal Osc.; Frequency 8.0- MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 0 ms" />
+                <set code="CKSEL=1111 SUT=10" text="Ext. Crystal Osc.; Frequency 8.0- MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 4.1 ms" />
+                <set code="CKSEL=1111 SUT=11" text="Ext. Crystal Osc.; Frequency 8.0- MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 65 ms" />
+                <set code="CKSEL=1110 SUT=10" text="Ext. Crystal Osc.; Frequency 8.0- MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 0 ms" />
+                <set code="CKSEL=1110 SUT=11" text="Ext. Crystal Osc.; Frequency 8.0- MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 4.1 ms" />
+                <set code="CKSEL=1111 SUT=00" text="Ext. Crystal Osc.; Frequency 8.0- MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 65 ms" />
+                <set code="CKSEL=1110 SUT=00" text="Ext. Crystal Osc.; Frequency 8.0- MHz; Start-up time PWRDWN/RESET: 258 CK/14 CK + 4.1 ms" />
+                <set code="CKSEL=1110 SUT=01" text="Ext. Crystal Osc.; Frequency 8.0- MHz; Start-up time PWRDWN/RESET: 258 CK/14 CK + 65 ms" />
+                <set code="CKSEL=0110 SUT=00" text="Ext. Low-Freq. Crystal; Start-up time PWRDWN/RESET: 1K CK/14 CK + 0 ms" />
+                <set code="CKSEL=0110 SUT=01" text="Ext. Low-Freq. Crystal; Start-up time PWRDWN/RESET: 1K CK/14 CK + 4 ms" />
+                <set code="CKSEL=0110 SUT=10" text="Ext. Low-Freq. Crystal; Start-up time PWRDWN/RESET: 32K CK/14 CK + 64 ms" />
+                <set code="CKSEL=0010 SUT=00" text="Int. RC Osc. 8 MHz; Start-up time PWRDWN/RESET: 6 CK/14 CK + 0 ms" />
+                <set code="CKSEL=0010 SUT=01" text="Int. RC Osc. 8 MHz; Start-up time PWRDWN/RESET: 6 CK/14 CK + 4 ms" />
+                <set code="CKSEL=0010 SUT=10" text="Int. RC Osc. 8 MHz; Start-up time PWRDWN/RESET: 6 CK/14 CK + 64 ms" />
+                <set code="CKSEL=0001 SUT=01" text="PLL Clock; Start-up time PWRDWN/RESET: 16K CK/14 CK + 4 ms" />
+                <set code="CKSEL=0001 SUT=11" text="PLL Clock; Start-up time PWRDWN/RESET: 16K CK/14 CK + 64 ms" />
+                <set code="CKSEL=0001 SUT=00" text="PLL Clock; Start-up time PWRDWN/RESET: 1K CK/14 CK + 4 ms" />
+                <set code="CKSEL=0001 SUT=10" text="PLL Clock; Start-up time PWRDWN/RESET: 1K CK/14 CK + 64 ms" />
+                <set code="CKSEL=0100 SUT=00" text="WD. Osc. 128 kHz; Start-up time PWRDWN/RESET: 6 CK/14 CK + 0 ms" />
+                <set code="CKSEL=0100 SUT=01" text="WD. Osc. 128 kHz; Start-up time PWRDWN/RESET: 6 CK/14 CK + 4 ms" />
+                <set code="CKSEL=0100 SUT=10" text="WD. Osc. 128 kHz; Start-up time PWRDWN/RESET: 6 CK/14 CK + 64 ms" />
+
+                <set code="BODLEVEL=111" text="Brown-out detection disabled" />
+                <set code="BODLEVEL=110" text="Brown-out detection level at VCC=1.8 V" />
+                <set code="BODLEVEL=101" text="Brown-out detection level at VCC=2.7 V" />
+                <set code="BODLEVEL=100" text="Brown-out detection level at VCC=4.3 V" />
+            </fuse>
+            <lock>
+                <bit offset="0" name="Lock" index="0" />
+                <bit offset="1" name="Lock" index="1" />
+
+                <!-- lock mask description -->
+                <set code="Lock=11" text="Mode 1: No memory lock features enabled" />
+                <set code="Lock=10" text="Mode 2: Further programming disabled" />
+                <set code="Lock=00" text="Mode 3: Further programming and verification disabled" />
+            </lock>
+        </descr>
+
+        <descr list="ATtiny261, ATtiny461, ATtiny861">
+            <fuse>
+                <bit offset="0" name="CKSEL" index="0" />
+                <bit offset="1" name="CKSEL" index="1" />
+                <bit offset="2" name="CKSEL" index="2" />
+                <bit offset="3" name="CKSEL" index="3" />
+                <bit offset="4" name="SUT" index="0" />
+                <bit offset="5" name="SUT" index="1" />
+                <bit offset="6" name="CKOUT" text="Clock output on PORTB5" />
+                <bit offset="7" name="CKDIV8" text="Divide clock by 8 internally" />
+                <bit offset="8" name="BODLEVEL" index="0" />
+                <bit offset="9" name="BODLEVEL" index="1" />
+                <bit offset="10" name="BODLEVEL" index="2" />
+                <bit offset="11" name="EESAVE" text="Preserve EEPROM memory through the Chip Erase cycle" />
+                <bit offset="12" name="WDTON" text="Watch-dog Timer always on" />
+                <bit offset="13" name="SPIEN" text="Serial program downloading (SPI) enabled" />
+                <bit offset="14" name="DWEN" text="Debug Wire enable" />
+                <bit offset="15" name="RSTDISBL" text="Reset Disabled (Enable PB7 as i/o pin)" />
+                <bit offset="16" name="SELFPRGEN" text="Self Programming enable" />
+
+                <!-- fuse mask description -->
+                <set code="CKSEL=1000 SUT=10" text="Ext. Ceramic Res.; Frequency 0.4-0.9 MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 0 ms" />
+                <set code="CKSEL=1000 SUT=11" text="Ext. Ceramic Res.; Frequency 0.4-0.9 MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 4.1 ms" />
+                <set code="CKSEL=1001 SUT=00" text="Ext. Ceramic Res.; Frequency 0.4-0.9 MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 65 ms" />
+                <set code="CKSEL=1000 SUT=00" text="Ext. Ceramic Res.; Frequency 0.4-0.9 MHz; Start-up time PWRDWN/RESET: 258 CK/14 CK + 4.1 ms" />
+                <set code="CKSEL=1000 SUT=01" text="Ext. Ceramic Res.; Frequency 0.4-0.9 MHz; Start-up time PWRDWN/RESET: 258 CK/14 CK + 65 ms" />
+                <set code="CKSEL=1010 SUT=10" text="Ext. Ceramic Res.; Frequency 0.9-3.0 MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 0 ms" />
+                <set code="CKSEL=1010 SUT=11" text="Ext. Ceramic Res.; Frequency 0.9-3.0 MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 4.1 ms" />
+                <set code="CKSEL=1011 SUT=00" text="Ext. Ceramic Res.; Frequency 0.9-3.0 MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 65 ms" />
+                <set code="CKSEL=1010 SUT=00" text="Ext. Ceramic Res.; Frequency 0.9-3.0 MHz; Start-up time PWRDWN/RESET: 258 CK/14 CK + 4.1 ms" />
+                <set code="CKSEL=1010 SUT=01" text="Ext. Ceramic Res.; Frequency 0.9-3.0 MHz; Start-up time PWRDWN/RESET: 258 CK/14 CK + 65 ms" />
+                <set code="CKSEL=1100 SUT=10" text="Ext. Ceramic Res.; Frequency 3.0-8.0 MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 0 ms" />
+                <set code="CKSEL=1100 SUT=11" text="Ext. Ceramic Res.; Frequency 3.0-8.0 MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 4.1 ms" />
+                <set code="CKSEL=1101 SUT=00" text="Ext. Ceramic Res.; Frequency 3.0-8.0 MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 65 ms" />
+                <set code="CKSEL=1100 SUT=00" text="Ext. Ceramic Res.; Frequency 3.0-8.0 MHz; Start-up time PWRDWN/RESET: 258 CK/14 CK + 4.1 ms" />
+                <set code="CKSEL=1100 SUT=01" text="Ext. Ceramic Res.; Frequency 3.0-8.0 MHz; Start-up time PWRDWN/RESET: 258 CK/14 CK + 65 ms" />
+                <set code="CKSEL=1110 SUT=10" text="Ext. Ceramic Res.; Frequency 8.0- MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 0 ms" />
+                <set code="CKSEL=1110 SUT=11" text="Ext. Ceramic Res.; Frequency 8.0- MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 4.1 ms" />
+                <set code="CKSEL=1111 SUT=00" text="Ext. Ceramic Res.; Frequency 8.0- MHz; Start-up time PWRDWN/RESET: 1K CK /14 CK + 65 ms" />
+                <set code="CKSEL=1110 SUT=00" text="Ext. Ceramic Res.; Frequency 8.0- MHz; Start-up time PWRDWN/RESET: 258 CK/14 CK + 4.1 ms" />
+                <set code="CKSEL=1110 SUT=01" text="Ext. Ceramic Res.; Frequency 8.0- MHz; Start-up time PWRDWN/RESET: 258 CK/14 CK + 65 ms" />
+                <set code="CKSEL=0000 SUT=00" text="Ext. Clock; Start-up time PWRDWN/RESET: 6 CK/14 CK + 0 ms" />
+                <set code="CKSEL=0000 SUT=01" text="Ext. Clock; Start-up time PWRDWN/RESET: 6 CK/14 CK + 4 ms" />
+                <set code="CKSEL=0000 SUT=10" text="Ext. Clock; Start-up time PWRDWN/RESET: 6 CK/14 CK + 64 ms" />
+                <set code="CKSEL=1001 SUT=01" text="Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 0 ms" />
+                <set code="CKSEL=1001 SUT=10" text="Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 4.1 ms" />
+                <set code="CKSEL=1001 SUT=11" text="Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 65 ms" />
+                <set code="CKSEL=1011 SUT=01" text="Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 0 ms" />
+                <set code="CKSEL=1011 SUT=10" text="Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 4.1 ms" />
+                <set code="CKSEL=1011 SUT=11" text="Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 65 ms" />
+                <set code="CKSEL=1101 SUT=01" text="Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 0 ms" />
+                <set code="CKSEL=1101 SUT=10" text="Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 4.1 ms" />
+                <set code="CKSEL=1101 SUT=11" text="Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 65 ms" />
+                <set code="CKSEL=1111 SUT=01" text="Ext. Crystal Osc.; Frequency 8.0- MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 0 ms" />
+                <set code="CKSEL=1111 SUT=10" text="Ext. Crystal Osc.; Frequency 8.0- MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 4.1 ms" />
+                <set code="CKSEL=1111 SUT=11" text="Ext. Crystal Osc.; Frequency 8.0- MHz; Start-up time PWRDWN/RESET: 16K CK/14 CK + 65 ms" />
+                <set code="CKSEL=0100 SUT=01" text="Ext. Low-Freq. Crystal; Start-up time PWRDWN/RESET: 1 CK + 64 ms" />
+                <set code="CKSEL=0100 SUT=00" text="Ext. Low-Freq. Crystal; Start-up time PWRDWN/RESET: 1 CK 4 ms" />
+                <set code="CKSEL=0100 SUT=10" text="Ext. Low-Freq. Crystal; Start-up time PWRDWN/RESET: 32 CK + 64 ms" />
+                <set code="CKSEL=0010 SUT=00" text="Int. RC Osc. 8 MHz; Start-up time PWRDWN/RESET: 6 CK/14 CK + 0 ms" />
+                <set code="CKSEL=0010 SUT=01" text="Int. RC Osc. 8 MHz; Start-up time PWRDWN/RESET: 6 CK/14 CK + 4 ms" />
+                <set code="CKSEL=0010 SUT=10" text="Int. RC Osc. 8 MHz; Start-up time PWRDWN/RESET: 6 CK/14 CK + 64 ms" />
+                <set code="CKSEL=0001 SUT=11" text="PLL Clock; Start-up time PWRDWN/RESET: 16K CK/14 CK + 68 ms" />
+                <set code="CKSEL=0001 SUT=01" text="PLL Clock; Start-up time PWRDWN/RESET: 16K CK/14 CK + 8 ms" />
+                <set code="CKSEL=0001 SUT=10" text="PLL Clock; Start-up time PWRDWN/RESET: 1K CK/14 CK + 68 ms" />
+                <set code="CKSEL=0001 SUT=00" text="PLL Clock; Start-up time PWRDWN/RESET: 1K CK/14 CK + 8 ms" />
+                <set code="CKSEL=0011 SUT=00" text="WD. Osc. 128 kHz; Start-up time PWRDWN/RESET: 6 CK/14 CK + 0 ms" />
+                <set code="CKSEL=0011 SUT=01" text="WD. Osc. 128 kHz; Start-up time PWRDWN/RESET: 6 CK/14 CK + 4 ms" />
+                <set code="CKSEL=0011 SUT=10" text="WD. Osc. 128 kHz; Start-up time PWRDWN/RESET: 6 CK/14 CK + 64 ms" />
+
+                <!-- brown out -->
+                <set code="BODLEVEL=111" text="Brown-out detection disabled" />
+                <set code="BODLEVEL=110" text="Brown-out detection level at VCC=1.8 V" />
+                <set code="BODLEVEL=001" text="Brown-out detection level at VCC=1.9 V" />
+                <set code="BODLEVEL=000" text="Brown-out detection level at VCC=2.0 V" />
+                <set code="BODLEVEL=010" text="Brown-out detection level at VCC=2.2 V" />
+                <set code="BODLEVEL=011" text="Brown-out detection level at VCC=2.3 V" />
+                <set code="BODLEVEL=101" text="Brown-out detection level at VCC=2.7 V" />
+                <set code="BODLEVEL=100" text="Brown-out detection level at VCC=4.3 V" />
+            </fuse>
+            <lock>
+                <bit offset="0" name="Lock" index="0" />
+                <bit offset="1" name="Lock" index="1" />
+
+                <!-- lock mask description -->
+                <set code="Lock=11" text="Mode 1: No memory lock features enabled" />
+                <set code="Lock=10" text="Mode 2: Further programming disabled" />
+                <set code="Lock=00" text="Mode 3: Further programming and verification disabled" />
+            </lock>
+        </descr>
+    </chip>
+</config>
