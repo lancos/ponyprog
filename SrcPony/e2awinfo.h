@@ -269,7 +269,7 @@ class e2AppWinInfo : public cChipCollection
 	}
 	int LoadFile();
 
-	bool readXmlDir();
+	QString readXmlDir();
 
 	QString fname;                            //nome del file
 
