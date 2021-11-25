@@ -65,10 +65,15 @@ CODECFORSRC = UTF-8
 
 exists(.git) {
   APP_REVISION = $$system(git rev-parse --short HEAD)
+  APP_BRANCH = $$system(git describe --all)
 }
 
 isEmpty(APP_REVISION) {
   APP_REVISION = ""
+}
+
+isEmpty(APP_BRANCH) {
+  APP_BRANCH = ""
 }
 
 
@@ -77,6 +82,7 @@ message(ponyprog: Detected Qt version: \"$$QT_VERSION\")
 message(ponyprog: Build destination directory: \"$$DESTDIR\")
 message(ponyprog: Prefix directory: \"$$PREFIX\")
 message(ponyprog: Build revision: \"$$APP_REVISION\")
+message(ponyprog: Build branch: \"$$APP_BRANCH\")
 #message(ponyprog: lrelease executable name: \"$$LRELEASE_EXECUTABLE\")
 
 # to add automatically in the source code
