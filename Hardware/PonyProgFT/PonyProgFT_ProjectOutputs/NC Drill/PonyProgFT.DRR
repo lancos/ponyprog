@@ -1,0 +1,20 @@
+----------------------------------------------------------------------------------------------------------------------------------
+NCDrill File Report For: PonyProgFT.PcbDoc   11/05/2019  00:42:53
+----------------------------------------------------------------------------------------------------------------------------------
+
+Layer Pair : L1_Top to L4_Bottom
+ASCII RoundHoles File : PonyProgFT.TXT
+
+Tool       Hole Size               Hole Tolerance               Hole Type       Hole Count   Plated         Tool Travel
+----------------------------------------------------------------------------------------------------------------------------------
+T1      0.3mm (12mil)                                             Round             119       PTH        438.39mm (17.26inch)
+T2      0.5mm (20mil)                                             Round             3         PTH        33.18mm (1.31inch)
+T3      0.9mm (35mil)                                             Round             10        PTH        22.86mm (0.90inch)
+T4      1mm (39mil)                                               Round             5         PTH        16.81mm (0.66inch)
+T5      1.1mm (43mil)                                             Round             16        PTH        46.72mm (1.84inch)
+T6      1.6mm (63mil)                                             Round             2         NPTH       9.60mm (0.38inch)
+T7      2.6mm (102mil)                                            Round             3         NPTH       89.00mm (3.50inch)
+----------------------------------------------------------------------------------------------------------------------------------
+Totals                                                                              158
+
+Total Processing Time (hh:mm:ss) : 00:00:00
