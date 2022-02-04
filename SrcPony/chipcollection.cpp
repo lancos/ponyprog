@@ -221,7 +221,7 @@ quint32 cChipCollection::GetTypeFromString(const QString &name)
 	{
 		foreach (icElement i, g->vChip)
 		{
-			if (i.name == name)
+			if (name.compare(i.name, Qt::CaseInsensitive))
 			{
 				return i.id;
 			}
