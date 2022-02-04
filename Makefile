@@ -23,7 +23,7 @@ include $(CONFIG)
 
 Bin = ./bin
 
-CFLAGS	+= -D_LINUX_ -Wall -fpermissive -Wno-deprecated -Wno-write-strings
+CFLAGS	+= -D_LINUX_ -fpermissive -Wno-deprecated -Wno-write-strings -Wno-narrowing
 
 #xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 

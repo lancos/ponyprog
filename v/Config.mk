@@ -35,10 +35,10 @@ INSTALL_PREFIX = /usr/local
 #---------------------------------------------------------------------
 # Tools used in the makefile execution
 #---------------------------------------------------------------------
-CC	=	gcc
-CXX	=	g++
-#CC	=	gcc-4.1
-#CXX	=	g++-4.1
+#CC	=	gcc
+#CXX	=	g++
+CC	=	gcc-7
+CXX	=	g++-7
 
 #---------------------------------------------------------------------
 # VPATH for dependencies on header files
