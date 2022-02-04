@@ -153,7 +153,8 @@ class BusInterface
 
 		if (len > 0)
 		{
-			do {
+			do
+			{
 				if (sda == 0 && scl == 0)
 				{
 					test = IsClockDataDOWN();
@@ -186,7 +187,8 @@ class BusInterface
 
 					test = (test_sda && test_scl);
 				}
-			} while (test && --len > 0);
+			}
+			while (test && --len > 0);
 		}
 
 		return test;

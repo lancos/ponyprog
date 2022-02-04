@@ -58,10 +58,10 @@ e2AppWinInfo::e2AppWinInfo(e2CmdWindow *p, const QString &name, BusIO **busvptr)
 
 	fname = "";
 
-	if (!readXmlDir())
+	QString resXml = readXmlDir();
+	if (resXml != "")
 	{
-		QMessageBox msgBox(QMessageBox::Critical, "Error", "Xml dir not found!\n\n"
-						   + E2Profile::GetXmlDir(), QMessageBox::Close);
+		QMessageBox msgBox(QMessageBox::Critical, "Error", resXml, QMessageBox::Close);
 		msgBox.setStyleSheet(cmdWin->getStyleSheet());
 		msgBox.setButtonText(QMessageBox::Close, "Close");
 		msgBox.exec();
@@ -193,7 +193,7 @@ e2AppWinInfo::~e2AppWinInfo()
  * @brief scan the directory with xml files
  *
  */
-bool e2AppWinInfo::readXmlDir()
+QString e2AppWinInfo::readXmlDir()
 {
 	bool found = false;
 	QString xmlDirName;
@@ -209,19 +209,19 @@ bool e2AppWinInfo::readXmlDir()
 		int pos = path.lastIndexOf(bdir);
 		path.remove(pos, bdir.length());
 	}
-	path += "/ics";
+	path += "/ics/";
 
 	xmlDirName = E2Profile::GetXmlDir();
 	if (xmlDirName.length() == 0)
 	{
-		xmlDirName = qApp->applicationDirPath() + "/ics";
+		xmlDirName = qApp->applicationDirPath() + "/ics/";
 	}
 
 	qDebug() << "readXmlDir path:" << path << ", Saved: " << xmlDirName;
 	qDebug() <<  Q_FUNC_INFO << " path:" << path << ", Saved: " << xmlDirName;
 
 #ifdef Q_OS_LINUX
-	dirsXml << xmlDirName << "/usr/share/ponyprog/ics" << "/usr/local/share/ponyprog/ics" << path;
+	dirsXml << xmlDirName << "/usr/share/ponyprog/ics/" << "/usr/local/share/ponyprog/ics/" << path;
 #else
 	dirsXml << xmlDirName << path;
 #endif
@@ -245,19 +245,18 @@ bool e2AppWinInfo::readXmlDir()
 
 	if (found == false)
 	{
-		return false;
+		return ("Xml dir not found!\n\n" + E2Profile::GetXmlDir());
 	}
 
 	foreach (const QString iL, xmlList)
 	{
 		if (ReadConfigFromXml(xmlDirName + iL) == false)
 		{
-			// TODO Message
-			return false;
+			return ("Parse Error in file:\n\n" + xmlDirName + iL + " !");
 		}
 	}
 
-	return true;
+	return "";
 }
 
 

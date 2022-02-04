@@ -177,9 +177,12 @@ quint32 cChipCollection::GetSignatureType(quint32 pri_type, quint16 sign)
 
 		foreach (icElement i, g->vChip)
 		{
-			if (i.sign == sign)
+			foreach (quint16 s, i.sign)
 			{
-				return i.id;
+				if (s == sign)
+				{
+					return i.id;
+				}
 			}
 		}
 	}
@@ -281,7 +284,7 @@ void cChipCollection::SetCurrentId(quint32 id)
  * part for parsing of fuse/lock text nodes
  *
  */
-bool cChipCollection::parseNode(const QDomNode &nd, QVector<BitInfo> &b, QVector<MaskDescr> &d)
+bool cChipCollection::parseDescrNode(const QDomNode &nd, QVector<BitInfo> &b, QVector<MaskDescr> &d)
 {
 	QDomNodeList intNodes = nd.childNodes();
 
@@ -391,22 +394,75 @@ bool cChipCollection::ReadConfigFromXml(const QString &filename)
 				run_id++;
 
 				QString mName = memInfo.attribute("menu");
-				QString code_sz = memInfo.attribute("code_sz", "-1");
-				QString dat_sz = memInfo.attribute("data_sz", "-1");
-				QString adr_sz = memInfo.attribute("adr_sz", "-1");
-				QString wpg_sz = memInfo.attribute("wpg_sz", "-1");
 				QString boot_addr = memInfo.attribute("boot", "0");
+				QString sgn = memInfo.attribute("signature", "");
+				QStringList sgn_list = sgn.split(",");
+				QString code_sz = "-1";
+				QString dat_sz = "-1";
+				QString adr_sz = "-1";
+				QString wpg_sz = "-1";
+				QString rpg_sz = "-1";
+				QString fuse_mask = "-1";
+				QString fuse_rcmd = "-1";
+				QString fuse_wcmd = "-1";
+				QString lock_mask = "-1";
+				QString lock_rcmd = "-1";
+				QString lock_wcmd = "-1";
 
-				QString sgn = memInfo.attribute("signature", "0");
+				qDebug() << mName;
+
+				QDomNodeList chip_nodes = memInfo.childNodes();
+
+				for (int k = 0; k < chip_nodes.size(); k++)
+				{
+					QDomNode n_chip = chip_nodes.item(k);
+					if (n_chip.isNull())
+					{
+						continue;
+					}
+
+					qDebug() << n_chip.nodeName();
+
+					if (n_chip.nodeName() == "size")
+					{
+						code_sz = n_chip.attributes().namedItem("code").nodeValue();
+						dat_sz = n_chip.attributes().namedItem("data").nodeValue();
+						adr_sz = n_chip.attributes().namedItem("adr").nodeValue();
+						wpg_sz = n_chip.attributes().namedItem("wpg").nodeValue();
+						rpg_sz = n_chip.attributes().namedItem("rpg").nodeValue();
+					}
+
+					if (n_chip.nodeName() == "fuse")
+					{
+						fuse_mask = n_chip.attributes().namedItem("mask").nodeValue();
+						fuse_wcmd = n_chip.attributes().namedItem("write_cmd").nodeValue();
+						fuse_rcmd = n_chip.attributes().namedItem("read_cmd").nodeValue();
+					}
+
+					if (n_chip.nodeName() == "lock")
+					{
+						lock_mask = n_chip.attributes().namedItem("mask").nodeValue();
+						lock_wcmd = n_chip.attributes().namedItem("write_cmd").nodeValue();
+						lock_rcmd = n_chip.attributes().namedItem("read_cmd").nodeValue();
+					}
+				}
 
 				iE = new icElement;
 
 				iE->name = mName;
-				iE->sign = convertSize(sgn);
+				if (sgn != "")
+				{
+					foreach (QString s, sgn_list)
+					{
+						iE->sign << convertSize(s);
+					}
+				}
+
 				iE->prog_sz = convertSize(code_sz);
 				iE->data_sz = convertSize(dat_sz);
 				iE->wpg_sz = convertSize(wpg_sz);
 				iE->adr_sz = convertSize(adr_sz);
+				iE->rpg_sz = convertSize(rpg_sz);
 				iE->boot = convertSize(boot_addr);
 
 				iE->id = (pre_nr << 16) + run_id;
@@ -420,6 +476,8 @@ bool cChipCollection::ReadConfigFromXml(const QString &filename)
 				run_id = 0;
 
 				QString names = helpInfo.attributes().namedItem("list").nodeValue();
+
+				qDebug() << names;
 
 				QStringList nList = names.split(QRegExp(",\\s*"));
 
@@ -441,12 +499,12 @@ bool cChipCollection::ReadConfigFromXml(const QString &filename)
 
 					if (n.nodeName() == "lock")
 					{
-						parseNode(n, bStruct.lock, bStruct.lockDescr);
+						parseDescrNode(n, bStruct.lock, bStruct.lockDescr);
 					}
 
 					if (n.nodeName() == "fuse")
 					{
-						parseNode(n, bStruct.fuse, bStruct.fuseDescr);
+						parseDescrNode(n, bStruct.fuse, bStruct.fuseDescr);
 					}
 				}
 
@@ -460,6 +518,8 @@ bool cChipCollection::ReadConfigFromXml(const QString &filename)
 			addGroup(grE);
 		}
 	}
+
+	file.close();
 
 	return !err;
 }

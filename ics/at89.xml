@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config type="PonyProg" version="3">
+    <chip menu="AT89S micro" group="AT89SXX" id="0x0a">
+        <ic menu="AT89S51"
+            def="AT89S51" >
+            <size code="4k" wpg="256" />
+            <fuse mask="" write_cmd="" read_cmd="" />
+            <lock mask="0x1c" write_cmd="" read_cmd="0x240000" />
+        </ic>
+        <ic menu="AT89S52"
+            def="AT89S52" >
+            <size code="4k" wpg="256" />
+            <fuse mask="" write_cmd="" read_cmd="" />
+            <lock mask="0x1c" write_cmd="" read_cmd="0x240000" />
+        </ic>
+        <ic menu="AT89S53"
+            def="AT89S53" >
+            <size code="12k" />
+            <fuse mask="" write_cmd="" read_cmd="" />
+            <lock mask="" write_cmd="" read_cmd="" />
+        </ic>
+        <ic menu="AT89S8252"
+            def="AT89S8252" >
+            <size code="8k" data="2k" />
+            <fuse mask="" write_cmd="" read_cmd="" />
+            <lock mask="" write_cmd="0xac07" read_cmd="" />
+        </ic>
+        <ic menu="AT89S8253"
+            def="AT89S8253">
+            <size code="12k" data="2k" wpg="64" adr="1" />
+            <fuse mask="0x07" write_cmd="0xac10" read_cmd="0x210000" />
+            <lock mask="0x07" write_cmd="0xace0" read_cmd="0x240000" />
+        </ic>
+        <descr list="AT89S8252,AT89S53">
+            <lock>
+                <bit offset="5" name="LB" index="0" />
+                <bit offset="6" name="LB" index="1" />
+                <bit offset="7" name="LB" index="2" />
+                <!-- lock sets description -->
+                <set code="LB=000" text="Mode 1: No memory lock features enabled" />
+                <set code="LB=001" text="Mode 2: MOVC disabled" />
+                <set code="LB=011" text="Mode 3: Verify disabled" />
+                <set code="LB=111" text="Mode 4: External execution disabled" />
+            </lock>
+        </descr>
+        <descr list="AT89S8253">
+            <fuse>
+                <bit offset="0" name="ClkSel" />
+                <bit offset="1" name="UserRow" />
+                <bit offset="2" name="x2Mode" />
+                <bit offset="3" name="SerProg"  />
+            </fuse>
+            <lock>
+                <bit offset="0" name="LB" index="0" />
+                <bit offset="1" name="LB" index="1" />
+                <bit offset="2" name="LB" index="2" />
+                <!-- lock sets description -->
+                <set code="LB=000" text="Mode 1: No memory lock features enabled" />
+                <set code="LB=001" text="Mode 2: MOVC disabled" />
+                <set code="LB=011" text="Mode 3: Verify disabled" />
+                <set code="LB=111" text="Mode 4: External execution disabled" />
+            </lock>
+        </descr>
+        <descr list="AT89S51,AT89S52">
+            <lock>
+                <bit offset="2" name="LB" index="0" />
+                <bit offset="3" name="LB" index="1" />
+                <bit offset="4" name="LB" index="2" />
+                <!-- lock sets description -->
+                <set code="LB=000" text="Mode 1: No memory lock features enabled" />
+                <set code="LB=001" text="Mode 2: MOVC disabled" />
+                <set code="LB=011" text="Mode 3: Verify disabled" />
+                <set code="LB=111" text="Mode 4: External execution disabled" />
+            </lock>
+        </descr>
+    </chip>
+</config>

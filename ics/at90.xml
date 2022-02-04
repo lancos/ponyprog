@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config type="PonyProg" version="3">
+    <chip menu="AT90 micro" group="AT90SXX" id="0x11">
+        <!-- offset information (boot) needs for BOOTSZ group, see 'Boot start address' -->
+        <!--ic menu="AT90 Auto" def="AT90S0000" /-->
+        <ic menu="AT90CAN32"
+            def="AT90CAN32"
+            signature="0x9581"
+            boot="0x3000" >
+            <size code="32k" data="1k" wpg="128" />
+            <fuse mask="" write_cmd="" read_cmd="" />
+            <lock mask="" write_cmd="" read_cmd="" />
+        </ic>
+        <ic menu="AT90CAN64"
+            def="AT90CAN64"
+            signature="0x9681"
+            boot="0x7000" >
+            <size code="64k" data="2k" wpg="256" />
+            <fuse mask="" write_cmd="" read_cmd="" />
+            <lock mask="" write_cmd="" read_cmd="" />
+        </ic>
+        <ic menu="AT90CAN128"
+            def="AT90CAN128"
+            signature="0x9781"
+            boot="0xF000" >
+            <size code="128k" data="4k" wpg="256" />
+            <fuse mask="" write_cmd="" read_cmd="" />
+            <lock mask="" write_cmd="" read_cmd="" />
+        </ic>
+        <ic menu="AT90S1200"
+            def="AT90S1200"
+            signature="0x9001" >
+            <size code="1k" data="64" />
+            <fuse mask="" write_cmd="" read_cmd="" />
+            <lock mask="0x06" write_cmd="0xac" read_cmd="" />
+        </ic>
+        <ic menu="AT90S2313"
+            def="AT90S2313"
+            signature="0x9101">
+            <size code="2k" data="128" />
+            <fuse mask="" write_cmd="" read_cmd="" />
+            <lock mask="" write_cmd="" read_cmd="" />
+        </ic>
+        <ic menu="AT90S4414"
+            def="AT90S4414"
+            signature="0x9201">
+            <size code="4k" data="256" />
+            <fuse mask="" write_cmd="" read_cmd="" />
+            <lock mask="" write_cmd="" read_cmd="" />
+        </ic>
+        <ic menu="AT90S8515"
+            def="AT90S8515"
+            signature="0x9301">
+            <size code="8k" data="512" />
+            <fuse mask="" write_cmd="" read_cmd="" />
+            <lock mask="" write_cmd="" read_cmd="" />
+        </ic>
+        <ic menu="AT90S4434"
+            def="AT90S4434"
+            signature="0x9202">
+            <size code="4k" data="256" />
+            <fuse mask="" write_cmd="" read_cmd="" />
+            <lock mask="" write_cmd="" read_cmd="" />
+        </ic>
+        <ic menu="AT90S8535"
+            def="AT90S8535"
+            signature="0x9303">
+            <size code="8k" data="512" />
+            <fuse mask="" write_cmd="" read_cmd="" />
+            <lock mask="" write_cmd="" read_cmd="" />
+        </ic>
+        <ic menu="AT90S2333"
+            def="AT90S2333"
+            signature="0x9105">
+            <size code="2k" data="128" />
+            <fuse mask="" write_cmd="" read_cmd="" />
+            <lock mask="" write_cmd="" read_cmd="" />
+        </ic>
+        <ic menu="AT90S4433"
+            def="AT90S4433"
+            signature="0x9203" >
+            <size code="4k" data="256" />
+            <fuse mask="" write_cmd="" read_cmd="" />
+            <lock mask="" write_cmd="" read_cmd="" />
+        </ic>
+        <ic menu="AT90S2323"
+            def="AT90S2323"
+            signature="0x9102">
+            <size code="2k" data="128" />
+            <fuse mask="" write_cmd="" read_cmd="" />
+            <lock mask="" write_cmd="" read_cmd="" />
+        </ic>
+        <ic menu="AT90S8534"
+            def="AT90S8534"
+            signature="0x9304" >
+            <size code="8k" data="512" />
+            <fuse mask="" write_cmd="" read_cmd="" />
+            <lock mask="" write_cmd="" read_cmd="" />
+        </ic>
+        <ic menu="AT90S2343"
+            def="AT90S2343"
+            signature="0x9103">
+            <size code="2k" data="128" />
+            <fuse mask="" write_cmd="" read_cmd="" />
+            <lock mask="" write_cmd="" read_cmd="" />
+        </ic>
+
+        <!-- end of offset info -->
+        <descr list="AT90CAN32,AT90CAN64,AT90CAN128">
+            <fuse>
+                <bit offset="0" name="CKSEL" index="0" />
+                <bit offset="1" name="CKSEL" index="1" />
+                <bit offset="2" name="CKSEL" index="2" />
+                <bit offset="3" name="CKSEL" index="3" />
+                <bit offset="4" name="SUT" index="0" />
+                <bit offset="5" name="SUT" index="1" />
+                <bit offset="6" name="CKOUT" text="Clock output on PORTC7" />
+                <bit offset="7" name="CKDIV8" text="Divide clock by 8 internally" />
+                <!-- byte high -->
+                <bit offset="8" name="BOOTRST" text="Boot Reset vector Enabled (default address=$0000)" />
+                <bit offset="9" name="BOOTSZ" index="0" />
+                <bit offset="10" name="BOOTSZ" index="1" />
+                <bit offset="11" name="EESAVE" text="Preserve EEPROM memory through the Chip Erase cycle" />
+                <bit offset="12" name="WDTON" text="Watchdog timer always on" />
+                <bit offset="13" name="SPIEN" text="Serial program downloading (SPI) enabled" />
+                <bit offset="14" name="JTAGEN" text="JTAG Interface Enabled" />
+                <bit offset="15" name="OCDEN" text="On-Chip Debug Enabled" />
+                <!-- byte ext -->
+                <bit offset="16" name="TA0SEL" text="Reserved for factory tests" />
+                <bit offset="17" name="BODLEVEL" index="0" />
+                <bit offset="18" name="BODLEVEL" index="1" />
+                <bit offset="19" name="BODLEVEL" index="2" />
+
+                <!-- fuse sets description -->
+                <set code="CKSEL=0000 SUT=00" text="Ext. Clock; Start-up time: 6 CK + 0 ms" />
+                <set code="CKSEL=0000 SUT=01" text="Ext. Clock; Start-up time: 6 CK + 4.1 ms" />
+                <set code="CKSEL=0000 SUT=10" text="Ext. Clock; Start-up time: 6 CK + 65 ms" />
+                <set code="CKSEL=1000 SUT=10" text="Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time: 1K CK + 0 ms" />
+                <set code="CKSEL=1000 SUT=11" text="Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time: 1K CK + 4.1 ms" />
+                <set code="CKSEL=1001 SUT=00" text="Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time: 1K CK + 65 ms" />
+                <set code="CKSEL=1000 SUT=00" text="Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time: 258 CK + 4.1 ms" />
+                <set code="CKSEL=1000 SUT=01" text="Ext. Crystal Osc.; Frequency 0.4-0.9 MHz; Start-up time: 258 CK + 65 ms" />
+                <set code="CKSEL=1010 SUT=10" text="Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time: 1K CK + 0 ms" />
+                <set code="CKSEL=1010 SUT=11" text="Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time: 1K CK + 4.1 ms" />
+                <set code="CKSEL=1011 SUT=00" text="Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time: 1K CK + 65 ms" />
+                <set code="CKSEL=1010 SUT=00" text="Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time: 258 CK + 4.1 ms" />
+                <set code="CKSEL=1010 SUT=01" text="Ext. Crystal Osc.; Frequency 0.9-3.0 MHz; Start-up time: 258 CK + 65 ms" />
+                <set code="CKSEL=1100 SUT=10" text="Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time: 1K CK + 0 ms" />
+                <set code="CKSEL=1100 SUT=11" text="Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time: 1K CK + 4.1 ms" />
+                <set code="CKSEL=1101 SUT=00" text="Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time: 1K CK + 65 ms" />
+                <set code="CKSEL=1100 SUT=00" text="Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time: 258 CK + 4.1 ms" />
+                <set code="CKSEL=1100 SUT=01" text="Ext. Crystal Osc.; Frequency 3.0-8.0 MHz; Start-up time: 258 CK + 65 ms" />
+                <set code="CKSEL=1110 SUT=10" text="Ext. Crystal Osc.; Frequency 8.0-16.0 MHz; Start-up time: 1K CK + 0 ms" />
+                <set code="CKSEL=1110 SUT=11" text="Ext. Crystal Osc.; Frequency 8.0-16.0 MHz; Start-up time: 1K CK + 4.1 ms" />
+                <set code="CKSEL=1111 SUT=00" text="Ext. Crystal Osc.; Frequency 8.0-16.0 MHz; Start-up time: 1K CK + 65 ms" />
+                <set code="CKSEL=1110 SUT=00" text="Ext. Crystal Osc.; Frequency 8.0-16.0 MHz; Start-up time: 258 CK + 4.1 ms" />
+                <set code="CKSEL=1110 SUT=01" text="Ext. Crystal Osc.; Frequency 8.0-16.0 MHz; Start-up time: 258 CK + 65 ms" />
+                <set code="CKSEL=0100 SUT=00" text="Ext. Low-Freq. Crystal; Start-up time: 1K CK + 0 ms" />
+                <set code="CKSEL=0110 SUT=00" text="Ext. Low-Freq. Crystal; Start-up time: 1K CK + 0 ms; Int. Cap." />
+                <set code="CKSEL=0100 SUT=01" text="Ext. Low-Freq. Crystal; Start-up time: 1K CK + 4.1 ms" />
+                <set code="CKSEL=0110 SUT=01" text="Ext. Low-Freq. Crystal; Start-up time: 1K CK + 4.1 ms; Int. Cap." />
+                <set code="CKSEL=0100 SUT=10" text="Ext. Low-Freq. Crystal; Start-up time: 1K CK + 65 ms" />
+                <set code="CKSEL=0110 SUT=10" text="Ext. Low-Freq. Crystal; Start-up time: 1K CK + 65 ms; Int. Cap." />
+                <set code="CKSEL=0101 SUT=00" text="Ext. Low-Freq. Crystal; Start-up time: 32K CK + 0 ms" />
+                <set code="CKSEL=0111 SUT=00" text="Ext. Low-Freq. Crystal; Start-up time: 32K CK + 0 ms; Int. Cap." />
+                <set code="CKSEL=0101 SUT=01" text="Ext. Low-Freq. Crystal; Start-up time: 32K CK + 4.1 ms" />
+                <set code="CKSEL=0111 SUT=01" text="Ext. Low-Freq. Crystal; Start-up time: 32K CK + 4.1 ms; Int. Cap." />
+                <set code="CKSEL=0101 SUT=10" text="Ext. Low-Freq. Crystal; Start-up time: 32K CK + 65 ms" />
+                <set code="CKSEL=0111 SUT=10" text="Ext. Low-Freq. Crystal; Start-up time: 32K CK + 65 ms; Int. Cap." />
+                <set code="CKSEL=0010 SUT=00" text="Int. RC Osc.; Start-up time: 6 CK + 0 ms" />
+                <set code="CKSEL=0010 SUT=01" text="Int. RC Osc.; Start-up time: 6 CK + 4.1 ms" />
+                <set code="CKSEL=0010 SUT=10" text="Int. RC Osc.; Start-up time: 6 CK + 65 ms" />
+
+                <!-- Boot start address will be added to chip offset -->
+                <!--chip="AT90CAN32: $3C00, AT90CAN64: $7C00, AT90CAN128: $FC00" -->
+                <set code="BOOTSZ=10" text="Boot Flash section size=1024 words Boot start address=$nC00" />
+                <!--chip="AT90CAN32: $3800, AT90CAN64: $7800, AT90CAN128: $F800" -->
+                <set code="BOOTSZ=01" text="Boot Flash section size=2048 words Boot start address=$n800" />
+                <!--chip="AT90CAN32: $3000, AT90CAN64: $7000, AT90CAN128: $F000" -->
+                <set code="BOOTSZ=00" text="Boot Flash section size=4096 words Boot start address=$n000" />
+                <!--chip="AT90CAN32: $3E00, AT90CAN64: $7E00, AT90CAN128: $FE00" -->
+                <set code="BOOTSZ=11" text="Boot Flash section size=512 words Boot start address=$nE00" />
+
+                <set code="BODLEVEL=111" text="Brown-out detection disabled" />
+                <set code="BODLEVEL=000" text="Brown-out detection level at VCC=2.5 V" />
+                <set code="BODLEVEL=001" text="Brown-out detection level at VCC=2.6 V" />
+                <set code="BODLEVEL=010" text="Brown-out detection level at VCC=2.7 V" />
+                <set code="BODLEVEL=011" text="Brown-out detection level at VCC=3.8 V" />
+                <set code="BODLEVEL=100" text="Brown-out detection level at VCC=3.9 V" />
+                <set code="BODLEVEL=101" text="Brown-out detection level at VCC=4.0 V" />
+                <set code="BODLEVEL=110" text="Brown-out detection level at VCC=4.1 V" />
+            </fuse>
+            <lock>
+                <bit offset="0" name="Lock" index="0" />
+                <bit offset="1" name="Lock" index="1" />
+                <bit offset="2" name="BootLock" index="0" />
+                <bit offset="3" name="BootLock" index="1" />
+                <bit offset="4" name="BootLoad" index="0" />
+                <bit offset="5" name="BootLoad" index="1" />
+
+                <!-- lock sets description -->
+                <set code="Lock=11" text="Mode 1: No memory lock features enabled" />
+                <set code="Lock=10" text="Mode 2: Further programming disabled" />
+                <set code="Lock=00" text="Mode 3: Further programming and verification disabled" />
+
+                <set code="BootLock=11" text="Application Protection Mode 1: No lock on SPM and LPM in Application Section" />
+                <set code="BootLock=10" text="Application Protection Mode 2: SPM prohibited in Application Section" />
+                <set code="BootLock=00" text="Application Protection Mode 3: LPM and SPM prohibited in Application Section" />
+                <set code="BootLock=01" text="Application Protection Mode 4: LPM prohibited in Application Section" />
+
+                <set code="BootLoad=11" text="Boot Loader Protection Mode 1: No lock on SPM and LPM in Boot Loader Section" />
+                <set code="BootLoad=10" text="Boot Loader Protection Mode 2: SPM prohibited in Boot Loader Section" />
+                <set code="BootLoad=00" text="Boot Loader Protection Mode 3: LPM and SPM prohibited in Boot Loader Section" />
+                <set code="BootLoad=01" text="Boot Loader Protection Mode 4: LPM prohibited in Boot Loader Section" />
+            </lock>
+        </descr>
+        <descr list="AT90S1200">
+            <fuse>
+                <bit offset="0" name="/FB0" text="NOT External clock enabled" />
+                <bit offset="5" name="SPIEN" text="Serial program downloading (SPI) enabled" />
+            </fuse>
+            <lock>
+                <bit offset="1" name="LB" index="0" />
+                <bit offset="2" name="LB" index="1" />
+                <!-- lock sets description -->
+                <set code="LB=11" text="Mode 1: No memory lock features enabled" />
+                <set code="LB=10" text="Mode 2: Further programming disabled" />
+                <set code="LB=00" text="Mode 3: Further programming and verification disabled" />
+            </lock>
+        </descr>
+        <descr list="AT90S2313,AT90S4414,AT90S8515,AT90S4434,AT90S8535">
+            <fuse>
+                <bit offset="0" name="FSTRT" text="Short start-up time enabled" />
+                <bit offset="5" name="SPIEN" text="Serial program downloading (SPI) enabled" />
+            </fuse>
+            <lock>
+                <bit offset="1" name="Lock" index="0" />
+                <bit offset="2" name="Lock" index="1" />
+                <!-- lock sets description -->
+                <set code="Lock=11" text="Mode 1: No memory lock features enabled" />
+                <set code="Lock=10" text="Mode 2: Further programming disabled" />
+                <set code="Lock=00" text="Mode 3: Further programming and verification disabled" />
+            </lock>
+        </descr>
+        <descr list="AT90S2333,AT90S4433" >
+            <fuse>
+                <bit offset="0" name="CKSEL" index="0" />
+                <bit offset="1" name="CKSEL" index="1" />
+                <bit offset="2" name="CKSEL" index="2" />
+                <bit offset="3" name="BODEN" text="Brown-out detection enabled" />
+                <bit offset="4" name="/BODLEVEL" text="NOT Brown-out detection level at VCC=2.7V" />
+                <bit offset="5" name="SPIEN" text="Serial program downloading (SPI) enabled" />
+                <!-- fuse sets description -->
+                <set code="CKSEL=101" text="Ceramic Resonator" />
+                <set code="CKSEL=111" text="Ceramic Resonator; BOD Enabled or power-on reset" />
+                <set code="CKSEL=110" text="Ceramic Resonator; fast rising power" />
+                <set code="CKSEL=100" text="Crystal Oscillator; BOD Enabled or power-on reset" />
+                <set code="CKSEL=010" text="Crystal Oscillator; default value" />
+                <set code="CKSEL=011" text="Crystal Oscillator; fast rising power" />
+                <set code="CKSEL=001" text="External Clock; BOD Enabled or power-on reset" />
+                <set code="CKSEL=000" text="External Clock; slowly rising power" />
+            </fuse>
+            <lock>
+                <bit offset="1" name="Lock" index="0" />
+                <bit offset="2" name="Lock" index="1" />
+                <!-- lock sets description -->
+                <set code="Lock=11" text="Mode 1: No memory lock features enabled" />
+                <set code="Lock=10" text="Mode 2: Further programming disabled" />
+                <set code="Lock=00" text="Mode 3: Further programming and verification disabled" />
+            </lock>
+        </descr>
+        <descr list="AT90S2323,AT90S8534">
+            <fuse>
+                <bit offset="0" name="FSTRT" text="Short start-up time enabled" />
+                <bit offset="5" name="SPIEN" text="Serial program downloading (SPI) enabled" />
+            </fuse>
+            <lock>
+                <bit offset="1" name="Lock" index="0" />
+                <bit offset="2" name="Lock" index="1" />
+                <!-- lock sets description -->
+                <set code="Lock=11" text="Mode 1: No memory lock features enabled" />
+                <set code="Lock=10" text="Mode 2: Further programming disabled" />
+                <set code="Lock=00" text="Mode 3: Further programming and verification disabled" />
+            </lock>
+        </descr>
+        <descr list="AT90S2343" >
+            <fuse>
+                <bit offset="0" name="/FB0" text="NOT External clock enabled" /> <!-- enabled but invert -->
+                <bit offset="5" name="SPIEN" text="Serial program downloading (SPI) enabled" />
+            </fuse>
+            <lock>
+                <bit offset="1" name="Lock" index="0" />
+                <bit offset="2" name="Lock" index="1" />
+                <!-- lock sets description -->
+                <set code="Lock=11" text="Mode 1: No memory lock features enabled" />
+                <set code="Lock=10" text="Mode 2: Further programming disabled" />
+                <set code="Lock=00" text="Mode 3: Further programming and verification disabled" />
+            </lock>
+        </descr>
+    </chip>
+</config>
