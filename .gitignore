@@ -2,3 +2,5 @@
 dep.file
 .dep
 .directory
+bin
+obj
