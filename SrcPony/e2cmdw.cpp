@@ -3555,6 +3555,22 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 						result = ScriptError(linecounter, 2, lst.at(2));
 					}
 				}
+				else
+				{	//if not specified try to get file type from filename extension
+					QString s = lst.at(1);
+					if (s.endsWith(".e2p", Qt::CaseInsensitive))
+					{
+						awip->SetFileBuf(E2P);
+					}
+					else if (s.endsWith(".bin", Qt::CaseInsensitive))
+					{
+						awip->SetFileBuf(BIN);
+					}
+					else if (s.endsWith(".hex", Qt::CaseInsensitive))
+					{
+						awip->SetFileBuf(INTEL);
+					}
+				}
 
 				if (result == OK && !test_mode)
 				{
@@ -3615,6 +3631,22 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 						result = ScriptError(linecounter, 2, lst.at(2));
 					}
 				}
+				else
+				{	//if not specified try to get file type from filename extension
+					QString s = lst.at(1);
+					if (s.endsWith(".e2p", Qt::CaseInsensitive))
+					{
+						awip->SetFileBuf(E2P);
+					}
+					else if (s.endsWith(".bin", Qt::CaseInsensitive))
+					{
+						awip->SetFileBuf(BIN);
+					}
+					else if (s.endsWith(".hex", Qt::CaseInsensitive))
+					{
+						awip->SetFileBuf(INTEL);
+					}
+				}
 
 				if (result == OK && !test_mode)
 				{
@@ -3673,6 +3705,22 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 					else
 					{
 						result = ScriptError(linecounter, 2, lst.at(2));
+					}
+				}
+				else
+				{	//if not specified try to get file type from filename extension
+					QString s = lst.at(1);
+					if (s.endsWith(".e2p", Qt::CaseInsensitive))
+					{
+						awip->SetFileBuf(E2P);
+					}
+					else if (s.endsWith(".bin", Qt::CaseInsensitive))
+					{
+						awip->SetFileBuf(BIN);
+					}
+					else if (s.endsWith(".hex", Qt::CaseInsensitive))
+					{
+						awip->SetFileBuf(INTEL);
 					}
 				}
 
@@ -5915,6 +5963,10 @@ int e2CmdWindow::SaveFile(int force_select)
 			note.setButtonText(QMessageBox::Close, translate(STR_CLOSE));
 			note.exec();
 		}
+		else
+		{
+			SetTitle();
+		}
 	}
 	else if (verbose == verboseNo)
 	{
@@ -5938,13 +5990,14 @@ int e2CmdWindow::SaveFile(int force_select)
 			s = translate(STR_MSGFILESAVEAS);
 		}
 
-		filterIndex = (int)awip->GetFileBuf(); // ???
+		filterIndex = (int)awip->GetFileBuf(); // get current buffer file type to select current filter
 
 		QString fltr = convertFilterListToString(filterInfo);
 		QString sFilter = filterInfo.at(filterIndex);
 		//fn = awip->GetFileName();	//should be the filename proposed by the dialog by default
-		QString fn = QFileDialog::getSaveFileName(this, s, QDir::homePath(), fltr, &sFilter);
-
+		QString fn = QFileDialog::getSaveFileName(this, s,
+												awip->GetFileName().length() ? awip->GetFileName() : QDir::homePath(),
+												fltr, &sFilter);
 		if (fn.length())
 		{
 			//Save the old name in case some error occurs, so it can restore it
@@ -5953,7 +6006,7 @@ int e2CmdWindow::SaveFile(int force_select)
 			if (fidx > -1)
 			{
 				filterIndex = fidx;
-				awip->SetFileBuf((enum FileType)filterIndex);   //????? Ci vorrebbe un controllo separato dall'estensione sul tipo di file (combobox)
+				awip->SetFileBuf((enum FileType)filterIndex);   //TODO: Ci vorrebbe un controllo separato dall'estensione sul tipo di file (combobox)
 			}
 			E2Profile::SetDefaultFileType(awip->GetFileBuf());
 			AddExtension(fn);
@@ -5975,8 +6028,7 @@ int e2CmdWindow::SaveFile(int force_select)
 			}
 			else
 			{
-				//Tutto OK, imposta il nuovo titolo
-				setWindowTitle(fn);
+				SetTitle();
 			}
 		}
 	}
