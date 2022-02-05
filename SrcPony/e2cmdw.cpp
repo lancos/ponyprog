@@ -417,7 +417,7 @@ bool e2CmdWindow::readLangDir()
 		lngDirName = qApp->applicationDirPath() + "/lang";
 	}
 
-	qDebug() << "readLangDir path:" << path << ", Saved: " << lngDirName;
+	qDebug() <<  Q_FUNC_INFO << "readLangDir path:" << path << ", Saved: " << lngDirName;
 
 #ifdef Q_OS_LINUX
 	dirsLang << lngDirName << "/usr/share/ponyprog/lang" << "/usr/local/share/ponyprog/lang" << path;
@@ -552,7 +552,7 @@ void e2CmdWindow::setLang(QAction *mnu)
 
 	if (getLangTable() == false)
 	{
-		qDebug() << "setLang" << false;
+		qDebug() << Q_FUNC_INFO << "setLang" << false;
 	}
 
 	disconnect(langGroup, SIGNAL(triggered(QAction *)), this, SLOT(setLang(QAction *)));
@@ -1245,7 +1245,7 @@ void e2CmdWindow::doProgress(const QString &text)
 {
 	if (e2Prg)
 	{
-		qDebug() << "e2Prg alread exist";
+		qDebug() << Q_FUNC_INFO << "e2Prg alread exist";
 		e2Prg->setLabelText(text);
 		e2Prg->reset();
 		//e2Prg->setValue(0);
@@ -1403,7 +1403,7 @@ long e2CmdWindow::selectTypeSubtype(const QString &tp, const QString &subtp)
 		}
 		else
 		{
-			qDebug() << "selectTypeSubtype, something is wrong with search" << currentMenu->title;
+			qDebug() << Q_FUNC_INFO << "selectTypeSubtype, something is wrong with search" << currentMenu->title;
 			return EID_INVALID;
 		}
 
@@ -1423,7 +1423,7 @@ long e2CmdWindow::selectTypeSubtype(const QString &tp, const QString &subtp)
 
 	if (currentMenu == NULL)
 	{
-		qDebug() << "selectTypeSubtype, something is wrong with data pointer";
+		qDebug() << Q_FUNC_INFO << "selectTypeSubtype, something is wrong with data pointer";
 		return EID_INVALID;
 	}
 
@@ -3202,29 +3202,19 @@ int e2CmdWindow::CmdProgram()
 	return result;
 }
 
-#if 0
-//**
-// TODO to QString
-static char *mytokenizer(char *buf, char *&next)
+static char *mytokenizer(char *buf, char * &next)
 {
 	char *sp = buf;
 	char *spend = NULL;
 
-	if (sp == NULL)   // || next == NULL)
-	{
+	if (sp == NULL)	// || next == NULL)
 		return NULL;
-	}
 
 	//ignore spaces, tabs, new-line, carriage return
 	while (*sp == ' ' || *sp == '\t' || *sp == '\n' || *sp == '\r')
-	{
 		sp++;
-	}
-
 	if (*sp == '\0')
-	{
 		return NULL;
-	}
 
 	if (*sp == '\"')
 	{
@@ -3248,23 +3238,20 @@ static char *mytokenizer(char *buf, char *&next)
 		char *s1, *s2;
 		s1 = strchr(sp, '\t');
 		s2 = strchr(sp, ' ');
-
 		if (s1 != NULL && s2 != NULL)
 		{
 			if (s1 < s2)
-			{
 				spend = s1;
-			}
 			else
-			{
 				spend = s2;
-			}
 		}
-		else if (s1 != NULL && s2 == NULL)
+		else
+		if (s1 != NULL && s2 == NULL)
 		{
 			spend = s1;
 		}
-		else if (s2 != NULL && s1 == NULL)
+		else
+		if (s2 != NULL && s1 == NULL)
 		{
 			spend = s2;
 		}
@@ -3277,63 +3264,28 @@ static char *mytokenizer(char *buf, char *&next)
 	if (spend != NULL)
 	{
 		*spend++ = '\0';
-
 		if (*spend == '\0')
-		{
 			next = NULL;
-		}
 		else
-		{
 			next = spend;
-		}
 	}
 	else
-	{
 		next = NULL;
-	}
 
 	return sp;
 }
-#endif
 
-// TODO to QString
 static QStringList myscantokenizer(char *buf)//, char *arg[], int arglen)
 {
-	QString ln = buf;
-	ln = ln.simplified();
 	QStringList l;
-
-	if (ln.size() > 0)
-	{
-		l = ln.split(" ");
-	}
-
-	return l;
-
-#if 0
-	int k;
 	char *sp, *next;
-
-	if (arg == NULL)
-	{
-		return 0;
-	}
-
-	for (k = 0; k < arglen; k++)
-	{
-		arg[k] = NULL;
-	}
-
 	sp = buf;
-
-	for (k = 0; (sp = mytokenizer(sp, next)) != NULL && k < arglen; k++)
+	while ((sp = mytokenizer(sp, next)) != NULL)
 	{
-		arg[k] = sp;
+		l.append(QString(sp));
 		sp = next;
 	}
-
-	return k;
-#endif
+	return l;
 }
 
 // #define cmdbuf  arg[0]
@@ -3387,8 +3339,8 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 	}
 
 	QString fpath = QFileInfo(script_name).absolutePath();
-	qDebug() << "Set current path: " << fpath;
-	QDir::setCurrent(fpath);
+	qDebug() << Q_FUNC_INFO << "Script path: " << fpath;
+	//QDir::setCurrent(fpath);
 
 	QFile fh(script_name);
 
@@ -3461,15 +3413,21 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 					}
 				}
 
-				if (ok && !QFile::exists(lst.at(1)))
+				QString fname;
+				if (QFileInfo(lst.at(1)).isRelative())
+					fname = fpath + "/" + lst.at(1);
+				else
+					fname = lst.at(1);
+
+				if (ok && !QFile::exists(fname))
 				{
 					ok = false;
-					result = ScriptError(linecounter, 1, lst.at(1), translate(STR_MSGFILENOTFOUND));
+					result = ScriptError(linecounter, 1, fname, translate(STR_MSGFILENOTFOUND));
 				}
 
 				if (ok && !test_mode)
 				{
-					result = CmdOpen(ALL_TYPE, lst.at(1), reloc_off, 0);        //Don't clear buffer before load on script
+					result = CmdOpen(ALL_TYPE, fname, reloc_off, 0);        //Don't clear buffer before load on script
 				}
 			}
 			else if (n == 1)
@@ -3497,15 +3455,21 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 					}
 				}
 
-				if (ok && !QFile::exists(lst.at(1)))
+				QString fname;
+				if (QFileInfo(lst.at(1)).isRelative())
+					fname = fpath + "/" + lst.at(1);
+				else
+					fname = lst.at(1);
+
+				if (ok && !QFile::exists(fname))
 				{
 					ok = false;
-					result = ScriptError(linecounter, 1, lst.at(1), translate(STR_MSGFILENOTFOUND));
+					result = ScriptError(linecounter, 1, fname, translate(STR_MSGFILENOTFOUND));
 				}
 
 				if (ok && !test_mode)
 				{
-					result = CmdOpen(PROG_TYPE, lst.at(1), reloc_off, 0);        //Don't clear buffer before load on script
+					result = CmdOpen(PROG_TYPE, fname, reloc_off, 0);        //Don't clear buffer before load on script
 				}
 			}
 			else if (n == 1)
@@ -3533,15 +3497,21 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 					}
 				}
 
-				if (ok && !QFile::exists(lst.at(1)))
+				QString fname;
+				if (QFileInfo(lst.at(1)).isRelative())
+					fname = fpath + "/" + lst.at(1);
+				else
+					fname = lst.at(1);
+
+				if (ok && !QFile::exists(fname))
 				{
 					ok = false;
-					result = ScriptError(linecounter, 1, lst.at(1), translate(STR_MSGFILENOTFOUND));
+					result = ScriptError(linecounter, 1, fname, translate(STR_MSGFILENOTFOUND));
 				}
 
 				if (ok && !test_mode)
 				{
-					result = CmdOpen(DATA_TYPE, lst.at(1), reloc_off, 0);        //Don't clear buffer before load on script
+					result = CmdOpen(DATA_TYPE, fname, reloc_off, 0);        //Don't clear buffer before load on script
 				}
 			}
 			else if (n == 1)
@@ -3594,7 +3564,13 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 					}
 					else
 					{
-						result = CmdSave(ALL_TYPE, lst.at(1).toLatin1());
+						QString fname;
+						if (QFileInfo(lst.at(1)).isRelative())
+							fname = fpath + "/" + lst.at(1);
+						else
+							fname = lst.at(1);
+
+						result = CmdSave(ALL_TYPE, fname);
 					}
 				}
 			}
@@ -3648,7 +3624,13 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 					}
 					else
 					{
-						result = CmdSave(PROG_TYPE, lst.at(1).toLatin1().constData());
+						QString fname;
+						if (QFileInfo(lst.at(1)).isRelative())
+							fname = fpath + "/" + lst.at(1);
+						else
+							fname = lst.at(1);
+
+						result = CmdSave(PROG_TYPE, fname);
 					}
 				}
 			}
@@ -3702,7 +3684,13 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 					}
 					else
 					{
-						result = CmdSave(DATA_TYPE, lst.at(1).toLatin1());
+						QString fname;
+						if (QFileInfo(lst.at(1)).isRelative())
+							fname = fpath + "/" + lst.at(1);
+						else
+							fname = lst.at(1);
+
+						result = CmdSave(DATA_TYPE, fname);
 					}
 				}
 			}
@@ -4199,30 +4187,26 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 					if (!test_mode)
 					{
 						//Warning! security risk!
-#if 0
-						vOS os;
-						result = os.vRunProcess(lst.at(1), 0, 0, /*Wait*/ 1, /*minimize*/ 0);
-
-						if (result == 99)
-						{
-							result = ScriptError(linecounter, 1, lst.at(1), translate(STR_MSGFILENOTFOUND));
-						}
-#else
 						QStringList alst = lst;
 						alst.removeFirst();
 						alst.removeFirst();
 
+						QString fname;
+						if (QFileInfo(lst.at(1)).isRelative())
+							fname = fpath + "/" + lst.at(1);
+						else
+							fname = lst.at(1);
+
 						QProcess process;
-						process.start(lst.at(1), alst);
+						process.start(fname, alst);
 						if (!process.waitForStarted(500))
 						{
-							result = ScriptError(linecounter, 1, lst.at(1), translate(STR_MSGFILENOTFOUND));
+							result = ScriptError(linecounter, 1, fname, translate(STR_MSGFILENOTFOUND));
 						}
 						else
 						{
 							process.waitForFinished(1000);
 						}
-#endif
 					}
 				}
 				else     //Argument missing
@@ -4559,7 +4543,7 @@ int e2CmdWindow::SpecialBits(bool readonly)
 
 			if (res != QDialog::Rejected)
 			{
-				qDebug() << "fuse " << res;
+				qDebug() << Q_FUNC_INFO << "fuse " << res;
 
 				if (res == 2)   // read //e2Fuse.isRead() == true)
 				{
@@ -5377,7 +5361,6 @@ void e2CmdWindow::createToolBarCbx()
  */
 void e2CmdWindow::onDevType(int t)
 {
-
 	// search id
 	long new_id = 0;
 
@@ -5444,6 +5427,8 @@ menuToGroup *e2CmdWindow::searchMenuInDeviceVector(int pre_type)
 
 void e2CmdWindow::UpdateMenues(menuToGroup &mnu, QAction &act)
 {
+	qDebug() << Q_FUNC_INFO << " " << mnu.title << act.text();
+
 	if (currentMenu != &mnu || currentAct != &act) // main menu was changed
 	{
 		Q_CHECK_PTR(cbxEEPType);
@@ -5454,7 +5439,6 @@ void e2CmdWindow::UpdateMenues(menuToGroup &mnu, QAction &act)
 			currentAct->setChecked(false);
 		}
 
-// 		qDebug() << mnu.title << act.text();
 		selectTypeSubtype(mnu.title, act.text());
 
 		act.setChecked(true);
