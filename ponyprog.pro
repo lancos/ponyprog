@@ -65,7 +65,7 @@ CODECFORSRC = UTF-8
 
 exists(.git) {
   APP_REVISION = $$system(git rev-parse --short HEAD)
-  APP_BRANCH = $$system(git describe --all)
+  APP_BRANCH = $$system(git rev-parse --abbrev-ref HEAD)
 }
 
 isEmpty(APP_REVISION) {

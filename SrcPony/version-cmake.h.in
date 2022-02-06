@@ -2,23 +2,35 @@
 #define PONYPROGVERSION_H
 
 #ifndef APP_VERSION
-#define APP_VERSION  "${APP_VERSION}"
+#define APP_VERSION "${APP_VERSION}"
+#endif
+
+#ifndef APP_REVISION
+#define APP_REVISION "${APP_REVISION}"
+#endif
+
+#ifndef APP_BRANCH
+#define APP_BRANCH "${APP_BRANCH}"
 #endif
 
 #ifndef APP_AUTHOR
-#define APP_AUTHOR  "${APP_AUTHOR}"
+#define APP_AUTHOR "${APP_AUTHOR}"
 #endif
 
 #ifndef PROGRAM_DATE
-#define PROGRAM_DATE  "${APP_BUILD_DATE}"
+#define PROGRAM_DATE "${APP_BUILD_DATE}"
 #endif
 
 #ifndef APP_NAME
-#define APP_NAME  "${APP_NAME}"
+#define APP_NAME "${APP_NAME}"
+#endif
+
+#ifndef APP_YEAR
+#define APP_YEAR "${APP_YEAR}"
 #endif
 
 #ifndef APP_EMAIL
-#define APP_EMAIL  "${APP_EMAIL}"
+#define APP_EMAIL "${APP_EMAIL}"
 #endif
 
 #define USE_QT_VERSION  ${USE_QT_VERSION}

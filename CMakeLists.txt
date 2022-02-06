@@ -90,7 +90,7 @@ ENDIF()
 
 # Set the PonyProg version
 # this for generating of version file from HISTORY file
-# the idea is to descript all changes in this file, the ne changes are in the top of file
+# the idea is to descript all changes in this file, last changes with version are in the top of file
 FILE(READ "HISTORY" DESCRIBE_STRING)
 STRING(REGEX MATCH "([0-9]+\\.[0-9]+\\.[0-9]+)" APP_VERSION "${DESCRIBE_STRING}" )
 
@@ -116,7 +116,7 @@ IF(WIN32)
     OUTPUT_STRIP_TRAILING_WHITESPACE)
 ELSE()
   EXECUTE_PROCESS (
-    COMMAND date +"%d.%m.%Y"
+    COMMAND date +"%d-%m-%Y"
     OUTPUT_VARIABLE APP_BUILD_DATE
     OUTPUT_STRIP_TRAILING_WHITESPACE)
     STRING(REGEX REPLACE "\"" "" APP_BUILD_DATE ${APP_BUILD_DATE})
@@ -127,7 +127,7 @@ MESSAGE(STATUS "Version build date: ${APP_BUILD_DATE}")
 #
 SET(PONYPROG_PACKAGE ponyprog)
 SET(PONYPROG_HOST ${CMAKE_SYSTEM} ${CMAKE_SYSTEM_PROCESSOR})
-SET(PONYPROG_COPYRIGHT "Copyright (c) 1997-${APP_YEAR} ${APP_AUTHOR}, All Rights Reserved.")
+#SET(PONYPROG_COPYRIGHT "Copyright (c) 1997-${APP_YEAR} ${APP_AUTHOR}, All Rights Reserved.")
 SET(PONYPROG_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX})
 
 # Setup high-level build options
