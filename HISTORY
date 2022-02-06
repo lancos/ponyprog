@@ -1,5 +1,12 @@
 Version history
 
+3.1.3	avoid to manually add extension on file save because the dialog has a check for this purpose
+		fixed script file type by filename extension
+		fixed regression on the script filename handling (name with quotation mark and filename with spaces)
+		fixed filename relative to script directory
+		add hardware CAD files
+		build system: create appveyor.yml and cmake.yml, update travis with bionic, arm arch and cmake
+
 3.1.2	bug fix: AT90S4433 need a power cycle to verify fuse bits programmed
 		fix: AT90S2313 doesn't have any fuse bits readable from ISP
 		fix and refactor handling of edit notes (Id and comment)
