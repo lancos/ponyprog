@@ -2464,7 +2464,7 @@ int e2CmdWindow::CmdReload()
 		// case of LastFile is ALL_TYPE there's no need to reload even
 		// PrevFile
 		if (sp2.length() && QFile::exists(sp2) && dt1 != ALL_TYPE &&
-				CmpExtension(sp2.toLower(), ".e2p") != 0)
+				CmpExtension(sp2.toLower(), "e2p"))
 		{
 			awip->SetLoadType(dt2);
 			awip->SetLoadAutoClearBuf(E2Profile::GetClearBufBeforeLoad());
@@ -5774,19 +5774,27 @@ static QStringList filterInfo = QStringList({ "E2P files (*.e2p)", "Intel hex fi
 
 static int filterIndex = 0;
 
+/**
 static void AddExtension(QString &name)
 {
+#if 0
 	int p = name.lastIndexOf('.');  //look for extension
 
 	if (p < 0 || (name.mid(p) != filter.at(filterIndex).mid(1)))
+#else
+	QFileInfo f(name);
+	if (f.suffix().isEmpty() || f.suffix() != filter.at(filterIndex).mid(2))
+#endif
 	{
 		//if not found append extension
 		name += filter.at(filterIndex).mid(1);
 	}
 }
+**/
 
 static bool CmpExtension(const QString &name, const QString &ext)
 {
+#if 0
 	if ((name.length() > 0) && (ext.length() > 0))
 	{
 		int pos = name.lastIndexOf('.');    //look for extension
@@ -5801,6 +5809,10 @@ static bool CmpExtension(const QString &name, const QString &ext)
 	}
 
 	return false;
+#else
+	QFileInfo f(name);
+	return (!f.suffix().isEmpty() && f.suffix() == ext);
+#endif
 }
 
 int e2CmdWindow::OpenFile(const QString &file)
@@ -6009,7 +6021,7 @@ int e2CmdWindow::SaveFile(int force_select)
 				awip->SetFileBuf((enum FileType)filterIndex);   //TODO: Ci vorrebbe un controllo separato dall'estensione sul tipo di file (combobox)
 			}
 			E2Profile::SetDefaultFileType(awip->GetFileBuf());
-			AddExtension(fn);
+			//AddExtension(fn);		//The dialog already has a check to automatically add extension if needed
 			awip->SetFileName(fn);
 
 			if ((err = awip->Save()) <= 0)
