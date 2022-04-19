@@ -43,12 +43,12 @@ static int LIBUSB_CALL hotplug_callback(struct libusb_context *ctx, struct libus
 	if (LIBUSB_HOTPLUG_EVENT_DEVICE_ARRIVED == event)
 	{
 		w->hotplug_notify(true, desc.idVendor, desc.idProduct);
-		qDebug() << "Connected VID:PID " << (hex) << desc.idVendor << " - " << desc.idProduct;
+		qDebug() << "Connected VID:PID " << (Qt::hex) << desc.idVendor << " - " << desc.idProduct;
 	}
 	else if (LIBUSB_HOTPLUG_EVENT_DEVICE_LEFT == event)
 	{
 		w->hotplug_notify(false, desc.idVendor, desc.idProduct);
-		qDebug() << "Disconnected VID:PID " << (hex) << desc.idVendor << " - " << desc.idProduct;
+		qDebug() << "Disconnected VID:PID " << (Qt::hex) << desc.idVendor << " - " << desc.idProduct;
 	}
 
 	return 0;

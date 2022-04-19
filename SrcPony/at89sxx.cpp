@@ -96,7 +96,7 @@ int At89sxx::QueryType(long &type)
 	code[0] = GetBus()->ReadDeviceCode(0x30);
 	code[1] = GetBus()->ReadDeviceCode(0x31);
 
-	qDebug() << "At89sxx::ParseID(30) *** " << (hex) << code[0] << " - " << code[1] << (dec);
+	qDebug() << "At89sxx::ParseID(30) *** " << (Qt::hex) << code[0] << " - " << code[1] << (Qt::dec);
 
 	type = 0;
 
@@ -116,7 +116,7 @@ int At89sxx::QueryType(long &type)
 		code[1] = GetBus()->ReadDeviceCode(0x100);
 		code[2] = GetBus()->ReadDeviceCode(0x200);
 
-		qDebug() << "At89sxx::ParseID(100) *** " << (hex) << code[0] << " - " << code[1] << " - " <<  code[2] << (dec);
+		qDebug() << "At89sxx::ParseID(100) *** " << (Qt::hex) << code[0] << " - " << code[1] << " - " <<  code[2] << (Qt::dec);
 
 		if (code[0] == 0x1E && code[1] == 0x51 && code[2] == 0x06)
 		{

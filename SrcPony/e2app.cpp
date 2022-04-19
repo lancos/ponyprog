@@ -196,7 +196,7 @@ int e2App::OpenPort(int port)
 //=====================>>> e2App::ClosePort <<<==============================
 void e2App::ClosePort()
 {
-	qDebug() << Q_FUNC_INFO << " iniBus=" << (hex) << iniBus << (dec);
+	qDebug() << Q_FUNC_INFO << " iniBus=" << (Qt::hex) << iniBus << (Qt::dec);
 	iniBus->Close();
 }
 
@@ -217,7 +217,7 @@ int e2App::TestPort(int port, bool open_only)
 //=====================>>> e2App::OpenBus <<<==============================
 int e2App::OpenBus(BusIO *p)
 {
-	qDebug() << Q_FUNC_INFO << "(" << (hex) << p << (dec) << ")";
+	qDebug() << Q_FUNC_INFO << "(" << (Qt::hex) << p << (Qt::dec) << ")";
 
 	iniBus->Close();
 
@@ -250,7 +250,7 @@ int e2App::OpenBus(BusIO *p)
 //=====================>>> e2App::SleepBus <<<==============================
 void e2App::SleepBus()
 {
-	qDebug() << Q_FUNC_INFO << " iniBus=" << (hex) << iniBus << (dec);
+	qDebug() << Q_FUNC_INFO << " iniBus=" << (Qt::hex) << iniBus << (Qt::dec);
 
 	busIntp->WaitMsec(5);		// 08/04/98 -- power hold time
 	busIntp->SetPower(false);

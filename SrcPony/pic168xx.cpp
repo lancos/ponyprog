@@ -100,7 +100,7 @@ int Pic168xx::QueryType(long &type)
 	{
 		int code = id_locations[6];
 
-		qDebug() << "Pic168xx::ParseID() *** " << (hex) << code << (dec);
+		qDebug() << "Pic168xx::ParseID() *** " << (Qt::hex) << code << (Qt::dec);
 
 		code &= 0x3fe0;         //Strip revision number
 
