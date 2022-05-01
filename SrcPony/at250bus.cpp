@@ -137,7 +137,7 @@ int At250Bus::Reset(void)
 
 long At250Bus::Read(int addr, uint8_t *data, long length, int page_size)
 {
-	qDebug() << Q_FUNC_INFO << "(" << (hex) << addr << ", " << data << ", " << (dec) << length << ")";
+	qDebug() << Q_FUNC_INFO << "(" << (Qt::hex) << addr << ", " << data << ", " << (Qt::dec) << length << ")";
 
 	long len;
 

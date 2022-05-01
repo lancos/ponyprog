@@ -287,7 +287,7 @@ int csmFileBuf::Save(int savetype, long relocation_offfset)
 			for (addr = 0; addr < size; addr++)
 			{
 				int value = ptr[addr];
-				out << (hex) << addr << " " << value << "\n";
+				out << (Qt::hex) << addr << " " << value << "\n";
 			}
 
 			fh.close();

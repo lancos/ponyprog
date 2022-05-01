@@ -47,7 +47,7 @@ int PortInterface::IOperm(int a, int b, int c)
 {
 	int retval = -1;
 
-	qDebug() << "PortInterface::IOPerm(" << (hex) << a << ", " << b << ", " << c << (dec) << ")";
+	qDebug() << "PortInterface::IOPerm(" << (Qt::hex) << a << ", " << b << ", " << c << (Qt::dec) << ")";
 
 	if (a + b <= 0x400)     //access to other ports needs iopl(3)
 	{
@@ -180,7 +180,7 @@ PortInterface::~PortInterface()
 
 int PortInterface::InPort(int nport) const
 {
-	qDebug() << "PortInterface::OutPort() ** " << (hex) << first_port << ", " <<  nport << (dec);
+	qDebug() << "PortInterface::OutPort() ** " << (Qt::hex) << first_port << ", " <<  nport << (Qt::dec);
 
 #ifdef Q_OS_WIN32
 	if (gfpInp32 == NULL)
@@ -212,7 +212,7 @@ int PortInterface::InPort(int nport) const
 
 int PortInterface::OutPort(int val, int nport)
 {
-	qDebug() << "PortInterface::OutPort() ** " << (hex) << first_port << ", " << last_port << (dec);
+	qDebug() << "PortInterface::OutPort() ** " << (Qt::hex) << first_port << ", " << last_port << (Qt::dec);
 
 #ifdef Q_OS_WIN32
 	if (gfpOut32 == NULL)
@@ -240,7 +240,7 @@ int PortInterface::OutPort(int val, int nport)
 		cpwreg = val;
 	}
 
-	qDebug() << "PortInterface::outb(" << (hex) << val << ", " << nport << (dec) << ")";
+	qDebug() << "PortInterface::outb(" << (Qt::hex) << val << ", " << nport << (Qt::dec) << ")";
 #ifdef Q_OS_WIN32
 	gfpOut32(nport, val);
 #else
@@ -278,7 +278,7 @@ int PortInterface::OutPortMask(int mask, int val)
 		cpwreg ^= mask;
 	}
 
-	qDebug() << "PortInterface::outb(" << (hex) << cpwreg << ", " << (dec) << write_port << ")";
+	qDebug() << "PortInterface::outb(" << (Qt::hex) << cpwreg << ", " << (Qt::dec) << write_port << ")";
 
 #ifdef Q_OS_WIN32
 	gfpOut32(write_port, cpwreg);
@@ -290,7 +290,7 @@ int PortInterface::OutPortMask(int mask, int val)
 
 int PortInterface::OpenPort(const base_len *ports)
 {
-	qDebug() << "PortInterface::OpenPort(" << (hex) << ports->base << (dec) << ", " << ports->len << ") I";
+	qDebug() << "PortInterface::OpenPort(" << (Qt::hex) << ports->base << (Qt::dec) << ", " << ports->len << ") I";
 
 	int ret_val = E2ERR_OPENFAILED;
 
@@ -679,7 +679,7 @@ static int DetectPortsNT(const QString &ServiceName, const QString &PortFormat, 
 
 	QTextStream out(&fh);
 
-	out << "Enter DetectPortsNT(" << ServiceName << ", " << PortFormat << ", " << (hex) << ports << (dec) << ", " << nports << ")\n";
+	out << "Enter DetectPortsNT(" << ServiceName << ", " << PortFormat << ", " << (Qt::hex) << ports << (Qt::dec) << ", " << nports << ")\n";
 
 	if (ports != 0)
 	{
@@ -763,7 +763,7 @@ static int DetectPortsNT(const QString &ServiceName, const QString &PortFormat, 
 													&& !p[3]                                                        // no high DWORD part
 													&& p[4] >= 8 && p[4] < 16)              // length limited to 16
 											{
-												out << strbuf2 << (dec) << " [0]=" << p[0] << ", [1]=" << p[1] << ", [2]=" << (hex) << p[2] << "h, [3]=" << p[3] << "h, [4]=" << (dec) << p[4] << "\n";
+												out << strbuf2 << (Qt::dec) << " [0]=" << p[0] << ", [1]=" << p[1] << ", [2]=" << (Qt::hex) << p[2] << "h, [3]=" << p[3] << "h, [4]=" << (Qt::dec) << p[4] << "\n";
 
 												if (ports != 0)
 												{

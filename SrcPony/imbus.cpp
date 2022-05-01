@@ -296,7 +296,7 @@ int IMBus::Reset(void)
 
 long IMBus::Read(int addr, uint8_t *data, long length, int page_size)
 {
-	qDebug() << "IMBus::Read(" << (hex) << addr << ", " << data << ", " << (dec) <<  length << ")";
+	qDebug() << "IMBus::Read(" << (Qt::hex) << addr << ", " << data << ", " << (Qt::dec) <<  length << ")";
 
 	ReadStart();
 	long len;

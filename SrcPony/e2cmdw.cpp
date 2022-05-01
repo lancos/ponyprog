@@ -1316,7 +1316,7 @@ void e2CmdWindow::onSelectChip(QAction *a)
 	currentAct = a;
 	currentAct->setChecked(true);
 
-	qDebug() << Q_FUNC_INFO << "Id: " << (hex) << awip->GetEEPId() << " NewId: " << new_id;
+	qDebug() << Q_FUNC_INFO << "Id: " << (Qt::hex) << awip->GetEEPId() << " NewId: " << new_id;
 
 	if (awip->GetEEPId() != new_id)
 	{
@@ -4460,7 +4460,7 @@ int e2CmdWindow::CmdSetDeviceType(int val)
 	long new_type = CbxIdToType(val, 0);
 	awip->SetEEProm(new_type);
 
-	qDebug() << "CmdSetDeviceType(" << val << "), type=" << (hex) << new_type << (dec);
+	qDebug() << "CmdSetDeviceType(" << val << "), type=" << (Qt::hex) << new_type << (Qt::dec);
 
 	return CmdSelectDevice(new_type);
 }
@@ -4470,7 +4470,7 @@ int e2CmdWindow::CmdSetDeviceSubType(int val)
 	int v1 = cbxEEPType->currentIndex();
 	long new_type = CbxIdToType(v1, val);
 
-	qDebug() << "CmdSetDeviceSubType(" << val << "), v1=" << v1 << ", type=" << (hex) << new_type << (dec);
+	qDebug() << "CmdSetDeviceSubType(" << val << "), v1=" << v1 << ", type=" << (Qt::hex) << new_type << (Qt::dec);
 
 	return CmdSelectDevice(new_type);
 }
@@ -5505,7 +5505,7 @@ void e2CmdWindow::UpdateMenuType(long new_type)
 
 	int new_pritype = GetE2PPriType(new_type);
 
-	qDebug() << Q_FUNC_INFO << " (hex) type:" << (hex) << new_type << " pri:" << new_pritype << (dec);
+	qDebug() << Q_FUNC_INFO << " (Qt::hex) type:" << (Qt::hex) << new_type << " pri:" << new_pritype << (Qt::dec);
 
 	menuToGroup *newMenu = NULL;
 	QAction *newAct = NULL;

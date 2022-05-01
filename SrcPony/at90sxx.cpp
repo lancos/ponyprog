@@ -366,7 +366,7 @@ int At90sxx::QueryType(long &type)
 	code[1] = GetBus()->ReadDeviceCode(1);
 	code[2] = GetBus()->ReadDeviceCode(2);
 
-	qDebug() << "At90sxx::ParseID() *** " << (hex) << code[0] << " - " << code[1] << " - " << code[2] << (dec);
+	qDebug() << "At90sxx::ParseID() *** " << (Qt::hex) << code[0] << " - " << code[1] << " - " << code[2] << (Qt::dec);
 
 	detected_type = type = 0;
 	detected_signature = "";

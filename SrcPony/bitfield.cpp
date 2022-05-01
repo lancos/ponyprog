@@ -309,7 +309,7 @@ void BitFieldWidget::setMaskBits(const QString &cMask)
 	// at begin of string only
 	mskName = "^" + mskName + "\\d+";
 
-	qDebug() << cMask <<  "converted to" << mskName << (bin) << localField << (dec);
+	qDebug() << cMask <<  "converted to" << mskName << (bin) << localField << (Qt::dec);
 
 	// search in QTreeWidget the names
 	for (idx = 0; idx < treeWidget->topLevelItemCount(); idx++)
