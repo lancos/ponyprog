@@ -31,6 +31,8 @@
 #include <QDebug>
 #include <QComboBox>
 
+#include "version.h"
+
 #include "e2dlg.h"
 #include "e2cmdw.h"
 #include "types.h"
@@ -445,7 +447,12 @@ void e2Dialog::setWidgetsText()
 		QString s = i;
 		if (s.startsWith(devname))
 		{
+#if USE_QT_VERSION == 6
+			int n = s.mid(devname.length()).toInt();
+#else
 			int n = s.midRef(devname.length()).toString().toInt();
+#endif
+
 #ifdef Q_OS_WIN32
 			n--;
 #endif
@@ -474,7 +481,12 @@ void e2Dialog::setWidgetsText()
 		QString s = i;
 		if (s.startsWith(devname))
 		{
+#if USE_QT_VERSION == 6
+			int n = s.mid(devname.length()).toInt();
+#else
 			int n = s.midRef(devname.length()).toString().toInt();
+#endif
+
 #ifdef Q_OS_WIN32
 			n--;
 #endif

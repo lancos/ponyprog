@@ -33,7 +33,6 @@
 #include <QVector>
 #include <QString>
 #include <QDebug>
-#include <QXmlReader>
 #include <QDomNode>
 #include <QMenu>
 #include <QActionGroup>

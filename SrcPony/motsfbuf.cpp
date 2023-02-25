@@ -140,7 +140,7 @@ int MotorolaSFileBuf::WriteRecord(QTextStream &outs, quint8 *bptr, long curaddr,
 	if (rval)
 	{
 		int checksum = 0;
-
+#if USE_QT_VERSION == 4
 		//type field
 		outs << QString().sprintf("S%c", fmt);
 
@@ -178,6 +178,45 @@ int MotorolaSFileBuf::WriteRecord(QTextStream &outs, quint8 *bptr, long curaddr,
 		}
 
 		outs << QString().sprintf("%02X\n", ~checksum & 0xFF);
+#else
+		//type field
+		outs << QString().asprintf("S%c", fmt);
+
+		//len field
+		outs << QString().asprintf("%02X", len & 0xFF);
+		checksum += len & 0xFF;
+
+		//addr field
+		if (fmt == DATA_RECORD24 || fmt == END_RECORD24)
+		{
+			outs << QString().asprintf("%06lX", curaddr & 0xFFFFFF);
+			checksum += (curaddr >> 16) & 0xFF;
+			checksum += (curaddr >> 8) & 0xFF;
+			checksum += curaddr & 0xFF;
+		}
+		else if (fmt == DATA_RECORD32 || fmt == END_RECORD32)
+		{
+			outs << QString().asprintf("%08lX", curaddr);
+			checksum += (curaddr >> 24) & 0xFF;
+			checksum += (curaddr >> 16) & 0xFF;
+			checksum += (curaddr >> 8) & 0xFF;
+			checksum += curaddr & 0xFF;
+		}
+		else        //all other have a 16 bit address field
+		{
+			outs << QString().asprintf("%04lX", curaddr & 0xFFFF);
+			checksum += (curaddr >> 8) & 0xFF;
+			checksum += curaddr & 0xFF;
+		}
+
+		for (j = 0; j < recsize; j++)
+		{
+			outs << QString().asprintf("%02X", bptr[curaddr + j]);
+			checksum += bptr[curaddr + j];
+		}
+
+		outs << QString().asprintf("%02X\n", ~checksum & 0xFF);
+#endif
 	}
 
 	return rval;

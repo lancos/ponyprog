@@ -114,7 +114,7 @@ long At93cBus::Read(int addr, quint8 *data, long length, int page_size)
 {
 	(void)page_size;
 
-	qDebug() << "At93cBus::Read(" << (hex) << addr << ", " << data << ", " << (dec) << length;
+	qDebug() << "At93cBus::Read(" << (Qt::hex) << addr << ", " << data << ", " << (Qt::dec) << length;
 
 	ReadStart();
 

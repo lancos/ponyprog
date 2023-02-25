@@ -311,7 +311,7 @@ void e2AppWinInfo::SetId(quint32 id)
 	quint32 eep_type = GetPriType(id);
 	quint32 eep_subtype = GetSubType(id);
 
-	qDebug() << "SetEEProm" << hex << eep_type << eep_subtype << dec;
+	qDebug() << "SetEEProm" << (Qt::hex) << eep_type << eep_subtype << (Qt::dec);
 
 	if (eep_subtype == 0)
 	{
@@ -365,7 +365,7 @@ void e2AppWinInfo::SetId(quint32 id)
 		eep = eepAt89s;
 
 		quint32 xtype = GetId();
-		qDebug() << hex << xtype << dec;
+		qDebug() << (Qt::hex) << xtype << (Qt::dec);
 		if (E2Profile::GetAt89PageOp())
 		{
 			eep->SetProgPageSize(GetTypeWPageSize(xtype), false);        //write prog page size
@@ -1299,7 +1299,7 @@ QString e2AppWinInfo::Dump(int line, int type)
 			}
 
 			tmpbuf[hex_per_line] = 0;
-
+#if USE_QT_VERSION == 4
 			linebuf.sprintf("  %06lX) %02X %02X %02X %02X %02X %02X %02X %02X - %02X %02X %02X %02X %02X %02X %02X %02X    %s\n",
 							//                      snprintf(linebuf, LINEBUF_SIZE, "  %06lX) %02X %02X %02X %02X %02X %02X %02X %02X - %02X %02X %02X %02X %02X %02X %02X %02X    %s\n",
 							idx,
@@ -1323,14 +1323,44 @@ QString e2AppWinInfo::Dump(int line, int type)
 
 							tmpbuf
 						   );
+#else
+			linebuf.asprintf("  %06lX) %02X %02X %02X %02X %02X %02X %02X %02X - %02X %02X %02X %02X %02X %02X %02X %02X    %s\n",
+							 //                      snprintf(linebuf, LINEBUF_SIZE, "  %06lX) %02X %02X %02X %02X %02X %02X %02X %02X - %02X %02X %02X %02X %02X %02X %02X %02X    %s\n",
+							 idx,
+							 buffer[idx + 0],
+							 buffer[idx + 1],
+							 buffer[idx + 2],
+							 buffer[idx + 3],
+							 buffer[idx + 4],
+							 buffer[idx + 5],
+							 buffer[idx + 6],
+							 buffer[idx + 7],
+
+							 buffer[idx + 8],
+							 buffer[idx + 9],
+							 buffer[idx + 10],
+							 buffer[idx + 11],
+							 buffer[idx + 12],
+							 buffer[idx + 13],
+							 buffer[idx + 14],
+							 buffer[idx + 15],
+
+							 tmpbuf
+							);
+#endif
 		}
 		else if (type == 1)
 		{
+#if USE_QT_VERSION == 4
 			linebuf.sprintf("  %06lX)",     idx);
+#else
+			linebuf.asprintf("  %06lX)",     idx);
+#endif
 			//                      snprintf(linebuf, LINEBUF_SIZE, "  %06lX)",     idx);
 		}
 		else if (type == 2)
 		{
+#if USE_QT_VERSION == 4
 			linebuf.sprintf(" %02X %02X %02X %02X %02X %02X %02X %02X - %02X %02X %02X %02X %02X %02X %02X %02X  ",
 							//                      snprintf(linebuf, LINEBUF_SIZE, " %02X %02X %02X %02X %02X %02X %02X %02X - %02X %02X %02X %02X %02X %02X %02X %02X  ",
 							buffer[idx + 0],
@@ -1351,6 +1381,28 @@ QString e2AppWinInfo::Dump(int line, int type)
 							buffer[idx + 14],
 							buffer[idx + 15]
 						   );
+#else
+			linebuf.asprintf(" %02X %02X %02X %02X %02X %02X %02X %02X - %02X %02X %02X %02X %02X %02X %02X %02X  ",
+							 //                      snprintf(linebuf, LINEBUF_SIZE, " %02X %02X %02X %02X %02X %02X %02X %02X - %02X %02X %02X %02X %02X %02X %02X %02X  ",
+							 buffer[idx + 0],
+							 buffer[idx + 1],
+							 buffer[idx + 2],
+							 buffer[idx + 3],
+							 buffer[idx + 4],
+							 buffer[idx + 5],
+							 buffer[idx + 6],
+							 buffer[idx + 7],
+
+							 buffer[idx + 8],
+							 buffer[idx + 9],
+							 buffer[idx + 10],
+							 buffer[idx + 11],
+							 buffer[idx + 12],
+							 buffer[idx + 13],
+							 buffer[idx + 14],
+							 buffer[idx + 15]
+							);
+#endif
 		}
 		else
 		{
@@ -1362,8 +1414,11 @@ QString e2AppWinInfo::Dump(int line, int type)
 			}
 
 			tmpbuf[hex_per_line] = 0;
-
+#if USE_QT_VERSION == 4
 			linebuf.sprintf("  %s\n", tmpbuf);
+#else
+			linebuf.asprintf("  %s\n", tmpbuf);
+#endif
 			//                      snprintf(linebuf, LINEBUF_SIZE, "  %s\n", tmpbuf);
 		}
 

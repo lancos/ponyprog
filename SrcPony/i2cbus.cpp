@@ -299,7 +299,7 @@ long I2CBus::Read(int slave, quint8 *data, long length, int page_size)
 {
 	long len;
 
-	//qDebug() << Q_FUNC_INFO << "(" << (hex) << slave << "," << (void *)data << "," << (dec) << length << ") - IN";
+	//qDebug() << Q_FUNC_INFO << "(" << (Qt::hex) << slave << "," << (void *)data << "," << (Qt::dec) << length << ") - IN";
 	len = StartRead(slave, data, length);
 
 	if (len == length)
@@ -317,7 +317,7 @@ long I2CBus::Write(int slave, quint8 const *data, long length, int page_size)
 {
 	long len;
 
-	//qDebug() << Q_FUNC_INFO << "(" << (hex) << slave << "," << data << "," << (dec) << length << ") - IN";
+	//qDebug() << Q_FUNC_INFO << "(" << (Qt::hex) << slave << "," << data << "," << (Qt::dec) << length << ") - IN";
 
 	len = StartWrite(slave, data, length);
 
@@ -363,7 +363,7 @@ long I2CBus::StartRead(quint8 slave, quint8 *data, long length)
 	int temp;
 	long len = length;
 
-	//qDebug() << Q_FUNC_INFO << "(" << (hex) << slave << "," << data << "," << (dec) << length << ") - IN";
+	//qDebug() << Q_FUNC_INFO << "(" << (Qt::hex) << slave << "," << data << "," << (Qt::dec) << length << ") - IN";
 
 	if (len > 0)
 	{
@@ -417,7 +417,7 @@ long I2CBus::StartWrite(quint8 slave, quint8 const *data, long length)
 	int error;
 	long len = length;
 
-	//qDebug() << Q_FUNC_INFO << "(" << (hex) << slave << "," << data << "," << (dec) << length << ") - IN";
+	//qDebug() << Q_FUNC_INFO << "(" << (Qt::hex) << slave << "," << data << "," << (Qt::dec) << length << ") - IN";
 
 	if (len == 0)
 	{
@@ -483,7 +483,7 @@ int I2CBus::Reset(void)
 
 void I2CBus::Close(void)
 {
-	qDebug() << Q_FUNC_INFO << "busI=" << (hex) << busI << (dec);
+	qDebug() << Q_FUNC_INFO << "busI=" << (Qt::hex) << busI << (Qt::dec);
 
 	setSCLSDA();
 	BusIO::Close();

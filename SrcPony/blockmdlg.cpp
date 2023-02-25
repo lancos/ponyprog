@@ -55,11 +55,15 @@ blockDialog::blockDialog(e2CmdWindow *bw, e2AppWinInfo *p, bool readonly, const 
 	lblFrom->setText(translate(STR_MSGFIRSTBLK));
 	lblTo->setText(translate(STR_MSGNUMBLOCK));
 	lblVal->setText(translate(STR_MSGHIGHENDBLK));
-
+#if USE_QT_VERSION == 4
 	QString str1 = QString().sprintf("%d", (int)((lock >> 4) & 0x0F));
 	QString str2 = QString().sprintf("%d", (int)(lock & 0x0F));
 	QString str3 = QString().sprintf("%d", (int)(fuse & 0x0F));
-
+#else
+	QString str1 = QString().asprintf("%d", (int)((lock >> 4) & 0x0F));
+	QString str2 = QString().asprintf("%d", (int)(lock & 0x0F));
+	QString str3 = QString().asprintf("%d", (int)(fuse & 0x0F));
+#endif
 	txiFrom->setText(str1);
 	txiTo->setText(str2);
 	txiVal->setText(str3);

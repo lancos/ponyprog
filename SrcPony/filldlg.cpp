@@ -68,6 +68,7 @@ FillDialog::FillDialog(QWidget *bw, long &cfrom, long &cto, int &cval, long max_
 
 	//TODO: should get strings from E2Profile settings, not local variables
 	QString str;
+#if USE_QT_VERSION == 4
 	str = QString().sprintf("0x%04lX", mFrom);
 	txiFrom->setText(str);
 
@@ -76,6 +77,16 @@ FillDialog::FillDialog(QWidget *bw, long &cfrom, long &cto, int &cval, long max_
 
 	str = QString().sprintf("0x%02X", mVal);
 	txiVal->setText(str);
+#else
+	str = QString().asprintf("0x%04lX", mFrom);
+	txiFrom->setText(str);
+
+	str = QString().asprintf("0x%04lX", mTo);
+	txiTo->setText(str);
+
+	str = QString().asprintf("0x%02X", mVal);
+	txiVal->setText(str);
+#endif
 
 	connect(pushOk, SIGNAL(clicked()), this, SLOT(onOk()));
 	connect(pushCancel, SIGNAL(clicked()), this, SLOT(reject()));

@@ -367,7 +367,7 @@ int At90sxx::QueryType(quint32 &type)
 	code[1] = GetBus()->ReadDeviceCode(1);
 	code[2] = GetBus()->ReadDeviceCode(2);
 
-	qDebug() << "At90sxx::ParseID() *** " << (hex) << code[0] << " - " << code[1] << " - " << code[2] << (dec);
+	qDebug() << "At90sxx::ParseID() *** " << (Qt::hex) << code[0] << " - " << code[1] << " - " << code[2] << (Qt::dec);
 
 	detected_type = type = 0;
 	detected_signature = "";
@@ -392,7 +392,11 @@ int At90sxx::QueryType(quint32 &type)
 			if (type != EID_INVALID)
 			{
 				detected_type = type;
+#if USE_QT_VERSION == 4
 				detected_signature.sprintf("%02X-%02X-%02X", code[0], code[1], code[2]);
+#else
+				detected_signature.asprintf("%02X-%02X-%02X", code[0], code[1], code[2]);
+#endif
 				rv = OK;
 				return rv;
 			}

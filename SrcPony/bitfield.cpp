@@ -29,6 +29,7 @@
 #include <QString>
 #include <QMessageBox>
 
+#include "version.h"
 #include "bitfield.h"
 
 
@@ -74,7 +75,11 @@ void BitFieldWidget::initWidget()
 			int bitOffset = vecInfo->at(i).bit;
 			lastBit = bitOffset;
 			QString sDes = vecInfo->at(i).ShortDescr;
+#if USE_QT_VERSION == 4
 			itm->setText(0, QString().sprintf("Bit %d, ", bitOffset) + sDes);
+#else
+			itm->setText(0, QString().asprintf("Bit %d, ", bitOffset) + sDes);
+#endif
 			if (vecInfo->at(i).LongDescr.length() > 0)
 			{
 				itm->setText(1, vecInfo->at(i).LongDescr);
@@ -145,7 +150,11 @@ void BitFieldWidget::createComboLists()
 		// two loops are not optimal!
 		foreach (MaskDescr mdes, *vecDescr)
 		{
+#if USE_QT_VERSION == 6
+			if (mdes.mask.indexOf(QRegularExpression(currentMask)) >= 0)
+#else
 			if (mdes.mask.indexOf(QRegExp(currentMask)) >= 0)
+#endif
 			{
 				int posBeg = mdes.LongDescr.indexOf("=$n");
 				if (posBeg > 0)
@@ -194,14 +203,27 @@ void BitFieldWidget::scanMasks()
 	foreach (MaskDescr mdes, *vecDescr)
 	{
 		QString cMask = mdes.mask;
+#if USE_QT_VERSION == 6
+		cMask.replace(QRegularExpression("\\d+"), "\\d+");
+#else
 		cMask.replace(QRegExp("\\d+"), "\\d+");
+#endif
 		// at string begin only
 		cMask = "^" + cMask;
 		if (maskList.indexOf(cMask) == -1)
 		{
 			maskList << cMask;
 			int numBits = 0;
+
+#if USE_QT_VERSION == 6
+			QRegularExpression rx("(\\d+)");
+			for (const QRegularExpressionMatch &match : rx.globalMatch(mdes.mask))
+			{
+				numBits += match.captured(1).length();
+			}
+#else
 			QRegExp rx("(\\d+)");
+
 			int pos = 0;
 			while ((pos = rx.indexIn(mdes.mask, pos)) != -1)
 			{
@@ -210,7 +232,7 @@ void BitFieldWidget::scanMasks()
 
 				pos += rx.matchedLength();
 			}
-
+#endif
 			qDebug() << mdes.mask << "bits" << numBits;
 			maskBitSum << numBits;
 		}
@@ -309,7 +331,7 @@ void BitFieldWidget::setMaskBits(const QString &cMask)
 	// at begin of string only
 	mskName = "^" + mskName + "\\d+";
 
-	qDebug() << cMask <<  "converted to" << mskName << (bin) << localField << (dec);
+	qDebug() << cMask <<  "converted to" << mskName << (Qt::bin) << localField << (Qt::dec);
 
 	// search in QTreeWidget the names
 	for (idx = 0; idx < treeWidget->topLevelItemCount(); idx++)
@@ -322,7 +344,11 @@ void BitFieldWidget::setMaskBits(const QString &cMask)
 			QString nm = t.mid(pos + 2);
 
 			// first element found
+#if USE_QT_VERSION == 6
+			if (nm.indexOf(QRegularExpression(mskName)) == 0)
+#else
 			if (nm.indexOf(QRegExp(mskName)) == 0)
+#endif
 			{
 				break;
 			}
@@ -363,7 +389,11 @@ void BitFieldWidget::setMaskBits(const QString &cMask)
 		if (pos > 0)
 		{
 			QString nm = t.mid(pos + 2);
+#if USE_QT_VERSION == 6
+			if (nm.indexOf(QRegularExpression(mskName)) < 0)
+#else
 			if (nm.indexOf(QRegExp(mskName)) < 0)
+#endif
 			{
 				break;
 			}
@@ -435,7 +465,11 @@ void BitFieldWidget::onBitClicked(QTreeWidgetItem *itm, int col)
 		{
 			QString msplt = mSplitted.at(r);
 			msplt.remove("=");
+#if USE_QT_VERSION == 6
+			if (fuseName.indexOf(QRegularExpression(msplt)) >= 0)
+#else
 			if (fuseName.indexOf(QRegExp(msplt)) >= 0)
+#endif
 			{
 				idxCombo = i;
 				qDebug() << "found " << msplt << i;
@@ -477,8 +511,11 @@ void BitFieldWidget::onBitClicked(QTreeWidgetItem *itm, int col)
 			}
 
 			t = t.mid(pos + 2);
-
+#if USE_QT_VERSION == 6
+			if (t.indexOf(QRegularExpression(msplt)) >= 0)
+#else
 			if (t.indexOf(QRegExp(msplt)) >= 0)
+#endif
 			{
 				if (treeWidget->topLevelItem(iTree)->checkState(0) == Qt::Checked)
 				{
@@ -505,7 +542,11 @@ void BitFieldWidget::onBitClicked(QTreeWidgetItem *itm, int col)
 		int i;
 		for (i = 0; i < vecDescr->count(); i++)
 		{
+#if USE_QT_VERSION == 6
+			if (vecDescr->at(i).mask.indexOf(QRegularExpression(completeMask)) == 0)
+#else
 			if (vecDescr->at(i).mask.indexOf(QRegExp(completeMask)) == 0)
+#endif
 			{
 				QString comboText = vecDescr->at(i).LongDescr;
 				int c = lstComboBoxes.at(idxCombo)->findText(comboText);

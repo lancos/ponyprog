@@ -103,7 +103,7 @@ void PonyIOInterface::SetControlLine(int res)
 			res = !res;
 		}
 
-		qDebug() << "PonyIOInterface::SetControlLine() " << (hex) << lcrOfst  << (dec);
+		qDebug() << "PonyIOInterface::SetControlLine() " << (Qt::hex) << lcrOfst  << (Qt::dec);
 
 #ifdef Q_OS_WIN32
 		if (res)

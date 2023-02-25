@@ -554,7 +554,11 @@ int RS232Interface::SetSerialParams(long speed, int bits, int parity, int stops,
 
 		if (GetCommState(hCom, &com_dcb))
 		{
+#if USE_QT_VERSION == 4
 			dcb_str.sprintf("baud=%ld parity=%c data=%d stop=%d", actual_speed, actual_parity, actual_bits, actual_stops);
+#else
+			dcb_str.asprintf("baud=%ld parity=%c data=%d stop=%d", actual_speed, actual_parity, actual_bits, actual_stops);
+#endif
 // 			dcb_str[255] = '\0';
 
 			if (BuildCommDCB((LPCWSTR)dcb_str.utf16(), &com_dcb))

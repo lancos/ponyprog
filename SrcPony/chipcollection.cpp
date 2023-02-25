@@ -24,6 +24,7 @@
 //                                                                         //
 //=========================================================================//
 
+#include "version.h"
 
 #include "chipcollection.h"
 
@@ -33,7 +34,14 @@
 #include <QVector>
 #include <QString>
 #include <QDebug>
+#include <QFile>
+#if USE_QT_VERSION == 6
+#include <QRegularExpression>
+#include <QXmlStreamReader>
+#else
+#include <QRegExp>
 #include <QXmlReader>
+#endif
 #include <QDomNode>
 
 
@@ -397,11 +405,11 @@ bool cChipCollection::ReadConfigFromXml(const QString &filename)
 				QString boot_addr = memInfo.attribute("boot", "0");
 				QString sgn = memInfo.attribute("signature", "");
 				QStringList sgn_list = sgn.split(",");
-				QString code_sz = "-1";
-				QString dat_sz = "-1";
-				QString adr_sz = "-1";
-				QString wpg_sz = "-1";
-				QString rpg_sz = "-1";
+				QString code_sz = "0";
+				QString dat_sz = "0";
+				QString adr_sz = "0";
+				QString wpg_sz = "0";
+				QString rpg_sz = "0";
 				QString fuse_mask = "-1";
 				QString fuse_rcmd = "-1";
 				QString fuse_wcmd = "-1";
@@ -478,8 +486,11 @@ bool cChipCollection::ReadConfigFromXml(const QString &filename)
 				QString names = helpInfo.attributes().namedItem("list").nodeValue();
 
 				qDebug() << names;
-
+#if USE_QT_VERSION == 6
+				QStringList nList = names.split(QRegularExpression(",\\s*"));
+#else
 				QStringList nList = names.split(QRegExp(",\\s*"));
+#endif
 
 				chipBits bStruct;
 
@@ -609,15 +620,24 @@ int cChipCollection::convertSize(const QString &s)
 	int res = 0;
 	bool cnv = true;
 
+#if USE_QT_VERSION == 6
+	if (s.indexOf(QRegularExpression("[0-9]+k")) >= 0)
+#else
 	if (s.indexOf(QRegExp("[0-9]+k")) >= 0)
+#endif
 	{
 		QString s_tmp = s;
 		s_tmp.remove("k");
 		res = s_tmp.toInt(&cnv);
 		res *= 1024;
 	}
+#if USE_QT_VERSION == 6
+	else if (s.indexOf(QRegularExpression("0x[0-9a-fA-F]+")) >= 0)
+	{
+#else
 	else if (s.indexOf(QRegExp("0x[0-9a-fA-F]+")) >= 0)
 	{
+#endif
 		res = s.toInt(&cnv, 16);
 	}
 	else

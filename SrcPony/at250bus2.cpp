@@ -36,12 +36,12 @@
 At250BigBus::At250BigBus(BusInterface *ptr)
 	: At250Bus(ptr)
 {
-	qDebug() << Q_FUNC_INFO << "(" << (hex) << ptr << (dec) <<  ")";
+	qDebug() << Q_FUNC_INFO << "(" << (Qt::hex) << ptr << (Qt::dec) <<  ")";
 }
 
 long At250BigBus::Read(int addr, quint8 *data, long length, int page_size)
 {
-	qDebug() << Q_FUNC_INFO << "(" << (hex) << addr << ", " << data << ", " << (dec) << length << ")";
+	qDebug() << Q_FUNC_INFO << "(" << (Qt::hex) << addr << ", " << data << ", " << (Qt::dec) << length << ")";
 	ReadStart();
 
 	long len;

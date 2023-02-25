@@ -93,7 +93,7 @@ int IntelFileBuf::WriteRecord(QFile &fh, quint8 *bptr, long curaddr, long recsiz
 		QTextStream out(&fh);
 
 		out << ":";
-
+#if USE_QT_VERSION == 4
 		//byte count
 		out << QString().sprintf("%02X", len & 0xFF);
 		checksum += len & 0xFF;
@@ -114,6 +114,28 @@ int IntelFileBuf::WriteRecord(QFile &fh, quint8 *bptr, long curaddr, long recsiz
 		}
 
 		out << QString().sprintf("%02X\n", (~checksum + 1) & 0xFF);
+#else
+		//byte count
+		out << QString().asprintf("%02X", len & 0xFF);
+		checksum += len & 0xFF;
+
+		//addr field
+		out << QString().asprintf("%04lX", curaddr & 0xFFFF);
+		checksum += (curaddr >> 8) & 0xFF;
+		checksum += curaddr & 0xFF;
+
+		//record type
+		out << QString().asprintf("%02X", fmt & 0xFF);
+		checksum += fmt & 0xFF;
+
+		for (j = 0; j < recsize; j++)
+		{
+			out << QString().asprintf("%02X", bptr[curaddr + j]);
+			checksum += bptr[curaddr + j];
+		}
+
+		out << QString().asprintf("%02X\n", (~checksum + 1) & 0xFF);
+#endif
 	}
 
 	return rval;
@@ -128,7 +150,7 @@ int IntelFileBuf::WriteAddressRecord(QFile &fh, long curaddr, bool linear_addres
 
 	int checksum = 0;
 	int len = 2;
-
+#if USE_QT_VERSION == 4
 	//byte count
 	out << QString().sprintf("%02X", len & 0xFF);
 	checksum += len & 0xFF;
@@ -160,6 +182,40 @@ int IntelFileBuf::WriteAddressRecord(QFile &fh, long curaddr, bool linear_addres
 	checksum += curaddr & 0xFF;
 
 	out << QString().sprintf("%02X\n", (~checksum + 1) & 0xFF);
+#else
+	//byte count
+	out << QString().asprintf("%02X", len & 0xFF);
+	checksum += len & 0xFF;
+
+	//addr field
+	out << QString().asprintf("%04X", 0);
+
+	if (linear_address)
+	{
+		//record type
+		out << QString().asprintf("%02X", LIN_ADDR_RECORD & 0xFF);
+		checksum += LIN_ADDR_RECORD & 0xFF;
+
+		//adjust extended linear address
+		curaddr >>= 16;
+	}
+	else
+	{
+		//record type
+		out << QString().asprintf("%02X", SEG_ADDR_RECORD & 0xFF);
+		checksum += SEG_ADDR_RECORD & 0xFF;
+
+		//adjust extended segmented address
+		curaddr >>= 4;
+	}
+
+	out << QString().asprintf("%04lX", curaddr & 0xFFFF);
+	checksum += (curaddr >> 8) & 0xFF;
+	checksum += curaddr & 0xFF;
+
+	out << QString().asprintf("%02X\n", (~checksum + 1) & 0xFF);
+#endif
+
 
 	return rval;
 }

@@ -37,7 +37,6 @@
 #include <QAbstractTextDocumentLayout>
 #include <QIODevice>
 #include <QBuffer>
-#include <QSound>
 #include <QTextDocument>
 #include <QProcess>
 #include <QDebug>
@@ -47,6 +46,13 @@
 #include "qhexedit.h"
 
 #include "version.h"
+
+#if USE_QT_VERSION == 6
+#include <QSoundEffect>
+#else
+#include <QSound>
+#endif
+
 #include "e2profil.h"
 #include "e2dlg.h"
 #include "e2cmdw.h"             // our header
@@ -108,13 +114,19 @@ e2CmdWindow::e2CmdWindow(QWidget *parent) :
 	// EK 2017
 	// to check this
 	fontSize = E2Profile::GetFontSize();	//sysFont.pointSize();
-
+#if USE_QT_VERSION == 4
 	programStyleSheet = QString().sprintf("font-size: %dpt", fontSize);
-
+#else
+	programStyleSheet = QString().asprintf("font-size: %dpt", fontSize);
+#endif
 	if (fontSize == -1)
 	{
 		fontSize = sysFont.pixelSize();
+#if USE_QT_VERSION == 4
 		programStyleSheet = QString().sprintf("font-size: %dpx", fontSize);
+#else
+		programStyleSheet = QString().asprintf("font-size: %dpx", fontSize);
+#endif
 	}
 
 	if (programStyleSheet.length() > 0)
@@ -470,7 +482,11 @@ bool e2CmdWindow::readLangDir()
 		if (fLang.open(QIODevice::ReadOnly))        //load
 		{
 			QTextStream stream(&fLang);
+#if USE_QT_VERSION == 6
+			stream.setEncoding(QStringConverter::Utf8);
+#else
 			stream.setCodec("UTF-8");
+#endif
 
 			int lines = 0;
 
@@ -1031,7 +1047,7 @@ void e2CmdWindow::onSelectChip(QAction *a)
 	currentAct = a;
 	currentAct->setChecked(true);
 
-	qDebug() << Q_FUNC_INFO << "Id: " << (hex) << awip->GetId() << " NewId: " << new_id;
+	qDebug() << Q_FUNC_INFO << "Id: " << (Qt::hex) << awip->GetId() << " NewId: " << new_id;
 
 	if (awip->GetId() != new_id)
 	{
@@ -1152,11 +1168,19 @@ void e2CmdWindow::selectFontSize(QAction *mnu)
 	// for lang menu and for fontsize menu
 	if (sz == -1)
 	{
+#if USE_QT_VERSION == 4
 		programStyleSheet = QString().sprintf("font-size: %dpx", fontSize);
+#else
+		programStyleSheet = QString().asprintf("font-size: %dpx", fontSize);
+#endif
 	}
 	else
 	{
+#if USE_QT_VERSION == 4
 		programStyleSheet = QString().sprintf("font-size: %dpt", fontSize);
+#else
+		programStyleSheet = QString().asprintf("font-size: %dpt", fontSize);
+#endif
 	}
 
 	E2Profile::SetFontSize(fontSize);
@@ -2157,7 +2181,13 @@ int e2CmdWindow::PlaySoundMsg(bool val)
 {
 	if (val)
 	{
+#if USE_QT_VERSION == 6
+		QSoundEffect snd;
+		snd.setSource(GetOkSound());
+		snd.play();
+#else
 		QSound::play(GetOkSound());
+#endif
 	}
 
 	return OK;
@@ -2547,7 +2577,11 @@ int e2CmdWindow::CmdReadCalibration(int idx)
 				if (verbose == verboseAll)
 				{
 					QString str;
+#if USE_QT_VERSION == 4
 					str = translate(STR_MSGREADCALIBOK) + QString().sprintf(": 0x%02X (%d)", rval, rval);
+#else
+					str = translate(STR_MSGREADCALIBOK) + QString().asprintf(": 0x%02X (%d)", rval, rval);
+#endif
 
 					QMessageBox note(QMessageBox::Information, "Calibration", str, QMessageBox::Ok);
 					note.setStyleSheet(programStyleSheet);
@@ -2825,7 +2859,11 @@ int e2CmdWindow::CmdProgram()
 		if (verbose != verboseNo)
 		{
 			QString str;
+#if USE_QT_VERSION == 4
 			str = translate(STR_MSGPROGRAMFAIL) + QString().sprintf(" (%d)", result);
+#else
+			str = translate(STR_MSGPROGRAMFAIL) + QString().asprintf(" (%d)", result);
+#endif
 
 			QMessageBox note(QMessageBox::Critical, "Program", str, QMessageBox::Close);
 			note.setStyleSheet(programStyleSheet);
@@ -3817,8 +3855,11 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 		if (verbose != verboseNo)
 		{
 			QString str;
+#if USE_QT_VERSION == 4
 			str = translate(STR_MSGPROGRAMFAIL) + QString().sprintf(" (%d)", result);
-
+#else
+			str = translate(STR_MSGPROGRAMFAIL) + QString().asprintf(" (%d)", result);
+#endif
 			QMessageBox note(QMessageBox::Critical, "Script information", str, QMessageBox::Close);
 			note.setStyleSheet(programStyleSheet);
 			note.setButtonText(QMessageBox::Close, translate(STR_CLOSE));
@@ -4604,7 +4645,7 @@ int e2CmdWindow::CmdEditNote()
 // new_type is the chip id
 int e2CmdWindow::CmdSelectDevice(quint32 new_type, bool init)
 {
-	qDebug() << Q_FUNC_INFO << "CmdSelectDevice" << hex << new_type << dec;
+	qDebug() << Q_FUNC_INFO << "CmdSelectDevice" << Qt::hex << new_type << Qt::dec;
 
 	awip->SetId(new_type);
 	UpdateMenuType(new_type);
@@ -4746,7 +4787,11 @@ void e2CmdWindow::UpdateStatusBar()
 	if (awip)
 	{
 		QString buf;
+#if USE_QT_VERSION == 4
 		buf.sprintf(STATUSBAR_PRINT, GetDevSize(), awip->GetCRC(), awip->IsBufChanged() ? '*' : ' ');
+#else
+		buf.asprintf(STATUSBAR_PRINT, GetDevSize(), awip->GetCRC(), awip->IsBufChanged() ? '*' : ' ');
+#endif
 		lblEEPInfo->setText(buf);
 		lblStringID->setText(awip->GetStringID());
 	}
@@ -4889,7 +4934,7 @@ void e2CmdWindow::UpdateMenuType(quint32 new_type)
 
 	quint32 new_pritype = awip->GetPriType(new_type);
 
-	qDebug() << Q_FUNC_INFO << " (hex) type:" << (hex) << new_type << " prim:" << new_pritype << (dec);
+	qDebug() << Q_FUNC_INFO << " (Qt::hex) type:" << (Qt::hex) << new_type << " prim:" << new_pritype << (Qt::dec);
 
 	menuToGroup *newMenu = NULL;
 	QAction *newAct = NULL;
@@ -5763,7 +5808,7 @@ void e2CmdWindow::PostInit()
 
 	quint32 tp = GetEEPTypeFromMenu(E2Profile::GetLastDevType());
 
-	qDebug() << Q_FUNC_INFO << "PostInit" << (hex) << tp << dec;
+	qDebug() << Q_FUNC_INFO << "PostInit" << (Qt::hex) << tp << (Qt::dec);
 
 	CmdSelectDevice(tp, true);
 
@@ -5817,7 +5862,11 @@ void e2CmdWindow::Print()
 			t << QString("File: " + GetFileName());
 			t << QString("Device: " + awip->GetStringID());
 			t << QString("Note: " + awip->GetComment());
+#if USE_QT_VERSION == 4
 			t << QString().sprintf("Size  : %ld Bytes    CRC: %04X", GetDevSize(), awip->GetCRC());
+#else
+			t << QString().asprintf("Size  : %ld Bytes    CRC: %04X", GetDevSize(), awip->GetCRC());
+#endif
 
 			for (; k < no_line && curRow < 66; k++)
 			{
@@ -5837,7 +5886,8 @@ void e2CmdWindow::Print()
 
 			doc.documentLayout()->setPaintDevice(&printer);
 
-			doc.setPageSize(printer.pageRect().size()); // This is necessary if you want to hide the page number
+			// TODO ??
+// 			doc.setPageSize(printer.pageRect().size()); // This is necessary if you want to hide the page number
 			doc.setHtml(str);
 			doc.print(&printer);
 		}

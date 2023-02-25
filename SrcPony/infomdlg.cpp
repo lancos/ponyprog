@@ -67,11 +67,19 @@ e24xx_infoModalDialog::e24xx_infoModalDialog(QWidget *bw, int rlv, quint16 crc, 
 	lblVal->setText(translate(STR_MSGFLASHSIZE)); // flash size label
 
 	QString str;
+#if USE_QT_VERSION == 4
 	str = QString().sprintf("%04Xh", crc);
+#else
+	str = QString().asprintf("%04Xh", crc);
+#endif
 	txiTo->setText(str);
 	txiTo->setReadOnly(true);
 
+#if USE_QT_VERSION == 4
 	str = QString().sprintf("%ld Byte", size);
+#else
+	str = QString().asprintf("%ld Byte", size);
+#endif
 	txiVal->setText(str);
 	txiVal->setReadOnly(true);
 
@@ -118,6 +126,7 @@ other_infoModalDialog::other_infoModalDialog(QWidget *bw, long fsize, long esize
 	lblTo->setText(translate(STR_MSGEEPSIZE)); // size label
 	lblVal->setText(translate(STR_MSGFLASHSIZE)); // flash size label
 
+#if USE_QT_VERSION == 4
 	str = QString().sprintf("%04Xh", crc);
 	txiFrom->setText(str);
 	txiFrom->setReadOnly(true);
@@ -129,7 +138,19 @@ other_infoModalDialog::other_infoModalDialog(QWidget *bw, long fsize, long esize
 	str = QString().sprintf("%ld Byte", esize);
 	txiVal->setText(str);
 	txiVal->setReadOnly(true);
+#else
+	str = QString().asprintf("%04Xh", crc);
+	txiFrom->setText(str);
+	txiFrom->setReadOnly(true);
 
+	str = QString().asprintf("%ld Byte", fsize);
+	txiTo->setText(str);
+	txiTo->setReadOnly(true);
+
+	str = QString().asprintf("%ld Byte", esize);
+	txiVal->setText(str);
+	txiVal->setReadOnly(true);
+#endif
 	pushOk->setText(translate(STR_BTNCLOSE));
 	pushCancel->setHidden(true);
 

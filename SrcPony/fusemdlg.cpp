@@ -226,6 +226,7 @@ void fuseModalDialog::initWidgets(const QString &msg, bool readonly)
 void fuseModalDialog::displayBitFields()
 {
 	QString s;
+#if USE_QT_VERSION == 4
 	if (fuseEnabled == true)
 	{
 		s = QString().sprintf("Fuse: 0x%08X  ", fuseBits);
@@ -234,6 +235,16 @@ void fuseModalDialog::displayBitFields()
 	{
 		s +=  QString().sprintf("Lock: 0x%08X", lockBits);
 	}
+#else
+	if (fuseEnabled == true)
+	{
+		s = QString().asprintf("Fuse: 0x%08X  ", fuseBits);
+	}
+	if (lockEnabled == true)
+	{
+		s +=  QString().asprintf("Lock: 0x%08X", lockBits);
+	}
+#endif
 	labelFuseLock->setText(s);
 }
 

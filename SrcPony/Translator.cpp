@@ -31,6 +31,7 @@
 #include <QtCore>
 
 // #include "MainWindow.h"
+#include "version.h"
 #include "Translator.h"
 
 
@@ -561,8 +562,11 @@ bool cTranslator::loadTranslation(const QString fname)
 	}
 
 	QTextStream stream(&langFile);
+#if USE_QT_VERSION == 6
+	stream.setEncoding(QStringConverter::Utf8);
+#else
 	stream.setCodec("UTF-8");
-
+#endif
 	QString llEng = stream.readLine();
 
 	if (llEng.length() > 0)
@@ -591,7 +595,11 @@ bool cTranslator::loadTranslation(const QString fname)
 		if (llEng == "LANGUAGE_CHARSET")
 		{
 			llEng = stream.readLine();
+#if USE_QT_VERSION == 6
+			stream.setEncoding(QStringConverter::Latin1);
+#else
 			stream.setCodec(llEng.toLatin1());
+#endif
 			continue;
 		}
 
@@ -608,8 +616,11 @@ bool cTranslator::loadTranslation(const QString fname)
 		{
 			llEng = tmpText;
 		}
-
+#if USE_QT_VERSION == 6
+		if (llEng.indexOf(QRegularExpression("t[0-9]+=")) == 0)
+#else
 		if (llEng.indexOf(QRegExp("t[0-9]+=")) == 0)
+#endif
 		{
 			QString str;
 			int pos = llEng.indexOf("=");

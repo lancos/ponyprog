@@ -59,11 +59,15 @@ SerNumDialog::SerNumDialog(QWidget *bw, const QString title) :
 	{
 		size = 4;
 	}
-
+#if USE_QT_VERSION == 4
 	txiLoc->setText(QString().sprintf("0x%04lX", loc));
 	txiLen->setText(QString().sprintf("%d", size));
 	txiVal->setText(QString().sprintf("%lu", val));
-
+#else
+	txiLoc->setText(QString().asprintf("0x%04lX", loc));
+	txiLen->setText(QString().asprintf("%d", size));
+	txiVal->setText(QString().asprintf("%lu", val));
+#endif
 	chkMemOffset->setChecked(memtype);
 	chkAutoInc->setChecked(autoinc);
 
@@ -203,10 +207,13 @@ OscCalibDialog::OscCalibDialog(QWidget *bw, e2AppWinInfo *aw, const QString titl
 	chkEnabled->setText(translate(STR_CALIBRENABLED));
 
 	loc = (loc < 0) ? 0 : loc;
-
+#if USE_QT_VERSION == 4
 	txiLoc->setText(QString().sprintf("0x%04lX", loc));
 	txiVal->setText(QString().sprintf("%d", val));
-
+#else
+	txiLoc->setText(QString().asprintf("0x%04lX", loc));
+	txiVal->setText(QString().asprintf("%d", val));
+#endif
 	chkMemOffset->setChecked(memtype);
 	chkEnabled->setChecked(enabled);
 
@@ -272,7 +279,11 @@ void OscCalibDialog::onRead()
 	int val = awip->ReadOscCalibration();
 	if (val >= 0)
 	{
+#if USE_QT_VERSION == 4
 		txiVal->setText(QString().sprintf("0x%02X", val));
+#else
+		txiVal->setText(QString().asprintf("0x%02X", val));
+#endif
 	}
 	else
 	{

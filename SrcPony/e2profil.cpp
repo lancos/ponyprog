@@ -209,7 +209,12 @@ QStringList E2Profile::GetLastFiles()
 
 	for (int i = 0; i < 8; i++)
 	{
-		QString sp = s->value(QString().sprintf("LastFile%d", i), "").toString();
+		QString sp;
+#if USE_QT_VERSION == 4
+		sp = s->value(QString().sprintf("LastFile%d", i), "").toString();
+#else
+		sp = s->value(QString().asprintf("LastFile%d", i), "").toString();
+#endif
 		if (sp.length() == 0)
 		{
 			break;
@@ -226,7 +231,11 @@ void E2Profile::SetLastFiles(const QStringList &l)
 
 	foreach (QString t, l)
 	{
+#if USE_QT_VERSION == 4
 		s->setValue(QString().sprintf("LastFile%d", i), t);
+#else
+		s->setValue(QString().asprintf("LastFile%d", i), t);
+#endif
 		i++;
 	}
 //	for (; i < 8; i++)
@@ -241,7 +250,12 @@ QStringList E2Profile::GetLastScripts()
 
 	for (int i = 0; i < 8; i++)
 	{
-		QString sp = s->value(QString().sprintf("LastScript%d", i), "").toString();
+		QString sp;
+#if USE_QT_VERSION == 4
+		sp = s->value(QString().sprintf("LastScript%d", i), "").toString();
+#else
+		sp = s->value(QString().asprintf("LastScript%d", i), "").toString();
+#endif
 		res << sp;
 	}
 
@@ -254,12 +268,20 @@ void E2Profile::SetLastScripts(const QStringList &l)
 
 	foreach (QString t, l)
 	{
+#if USE_QT_VERSION == 4
 		s->setValue(QString().sprintf("LastScript%d", i), t);
+#else
+		s->setValue(QString().asprintf("LastScript%d", i), t);
+#endif
 		i++;
 	}
 	for (; i < 8; i++)
 	{
+#if USE_QT_VERSION == 4
 		s->setValue(QString().sprintf("LastFile%d", i), "");
+#else
+		s->setValue(QString().asprintf("LastFile%d", i), "");
+#endif
 	}
 }
 
@@ -327,7 +349,11 @@ void E2Profile::SetI2CBaseAddr(int base_addr)
 {
 	if (base_addr >= 0x00 && base_addr < 0x100)
 	{
+#if USE_QT_VERSION == 4
 		s->setValue("I2CBaseAddress", QString().sprintf("0x%X", base_addr));
+#else
+		s->setValue("I2CBaseAddress", QString().asprintf("0x%X", base_addr));
+#endif
 	}
 }
 
@@ -524,6 +550,88 @@ void E2Profile::SetIMBusSpeed(int speed)
 	s->setValue("BusSpeed/IMBusSpeed", getSpeedName(speed));
 }
 
+#if USE_QT_VERSION == 6
+void E2Profile::GetPrinterSettings(QPrinter &p)
+{
+	s->beginGroup("Printer");
+
+	p.setPrinterName(s->value("PrinterName").toString());
+	p.setCollateCopies(s->value("Copies", false).toBool());
+	p.setColorMode(QPrinter::ColorMode(s->value("ColorMode").toInt()));
+	p.setCopyCount(s->value("CopyCount", 1).toInt());
+	p.setCreator(s->value("Creator", "").toString());
+	p.setDocName(s->value("DocName",  "ponyprog.pdf").toString());
+	p.setDuplex(QPrinter::DuplexMode(s->value("Duplex").toInt()));
+	p.setFontEmbeddingEnabled(s->value("FontEmb", false).toBool());
+	p.setFullPage(s->value("FullPage", false).toBool());
+
+	p.setOutputFileName(s->value("OutputName", "").toString());
+	p.setOutputFormat(QPrinter::OutputFormat(s->value("OutputFormat", QPrinter::PdfFormat).toInt()));
+	p.setPageOrder(QPrinter::PageOrder(s->value("PageOrder").toInt()));
+
+	p.setPaperSource(QPrinter::PaperSource(s->value("PaperSource").toInt()));
+	p.setPrintProgram(s->value("PrintProg", "").toString());
+	p.setPrintRange(QPrinter::PrintRange(s->value("PrintRange").toInt()));
+	p.setResolution(s->value("Resolution", 96).toInt());
+
+	QPageLayout pg_lout;
+	pg_lout.setPageSize(QPageSize((QPageSize::PageSizeId)(s->value("PageSize", QPageSize::A4)).toInt()));
+	pg_lout.setOrientation(((s->value("Orientation", QPageLayout::Portrait).toInt() == 0) ? QPageLayout::Portrait : QPageLayout::Landscape));
+	pg_lout.setUnits(QPageLayout::Millimeter);
+
+	qreal left, top, right, bottom;
+	left = (s->value("LeftMargin", 15).toFloat());
+	top = (s->value("TopMargin", 15).toFloat());
+	right = (s->value("RightMargin", 15).toFloat());
+	bottom = (s->value("BottomMargin", 15).toFloat());
+
+	pg_lout.setMargins(QMarginsF(left, top, right, bottom));
+
+	p.setPageLayout(pg_lout);
+
+	s->endGroup();
+}
+
+void E2Profile::SetPrinterSettings(QPrinter &p)
+{
+	s->beginGroup("Printer");
+
+	s->setValue("PrinterName", p.printerName());
+	s->setValue("Copies", p.collateCopies());
+	s->setValue("ColorMode", p.colorMode());
+	s->setValue("CopyCount", p.copyCount());
+	s->setValue("Creator", p.creator());
+	s->setValue("DocName", p.docName());
+	//s->setValue("DoubleSide", p.doubleSidedPrinting()); // is part of duplex
+	s->setValue("Duplex", p.duplex());
+	s->setValue("FontEmb", p.fontEmbeddingEnabled());
+	s->setValue("FullPage", p.fullPage());
+	s->setValue("Orientation", p.pageLayout().orientation());
+	s->setValue("OutputName", p.outputFileName());
+	s->setValue("OutputFormat", p.outputFormat());
+	s->setValue("PageOrder", p.pageOrder());
+// 	s->setValue("PaperSize", p.paperSize());
+	s->setValue("PaperSource", p.paperSource());
+	s->setValue("PrintProg", p.printProgram());
+	s->setValue("PrintRange", p.printRange());
+	s->setValue("Resolution", p.resolution());
+
+	qreal left, top, right, bottom;
+	QMarginsF m = p.pageLayout().margins();
+	left = m.left();
+	top = m.top();
+	bottom = m.bottom();
+	right = m.right();
+
+	s->setValue("LeftMargin", left);
+	s->setValue("TopMargin", top);
+	s->setValue("BottomMargin", bottom);
+	s->setValue("RightMargin", right);
+
+	s->endGroup();
+}
+
+#else
 
 void E2Profile::GetPrinterSettings(QPrinter &p)
 {
@@ -596,7 +704,7 @@ void E2Profile::SetPrinterSettings(QPrinter &p)
 
 	s->endGroup();
 }
-
+#endif
 
 int E2Profile::GetMegaPageDelay()
 {
@@ -765,7 +873,11 @@ int E2Profile::GetSerialNumAddress(long &start, int &size, bool &mtype)
 void E2Profile::SetSerialNumAddress(unsigned long start, int size, bool mtype)
 {
 	s->beginGroup("SerialNumber");
+#if USE_QT_VERSION == 4
 	s->setValue("Address", QString().sprintf("0x%04lX", start));
+#else
+	s->setValue("Address", QString().asprintf("0x%04lX", start));
+#endif
 
 	if (size >= 1)
 	{
@@ -1371,7 +1483,11 @@ void E2Profile::SetCalibrationAddress(bool enabled, unsigned long start, int siz
 {
 	s->beginGroup("OscillatorCalibration");
 	s->setValue("Enabled", enabled);
+#if USE_QT_VERSION == 4
 	s->setValue("StartAddress", QString().sprintf("0x%04lX", start));
+#else
+	s->setValue("StartAddress", QString().asprintf("0x%04lX", start));
+#endif
 	if (size >= 1)
 	{
 		s->setValue("Size", size);
@@ -1438,6 +1554,7 @@ void E2Profile::SetCOMAddress(unsigned int com1, unsigned int com2, unsigned int
 
 	if (com1 > 0)
 	{
+#if USE_QT_VERSION == 4
 		if (com2 > 0)
 		{
 			if (com3 > 0)
@@ -1460,6 +1577,30 @@ void E2Profile::SetCOMAddress(unsigned int com1, unsigned int com2, unsigned int
 		{
 			str.sprintf("%X", com1);
 		}
+#else
+		if (com2 > 0)
+		{
+			if (com3 > 0)
+			{
+				if (com4 > 0)
+				{
+					str.asprintf("%X,%X,%X,%X", com1, com2, com3, com4);
+				}
+				else
+				{
+					str.asprintf("%X,%X,%X", com1, com2, com3);
+				}
+			}
+			else
+			{
+				str.asprintf("%X,%X", com1, com2);
+			}
+		}
+		else
+		{
+			str.asprintf("%X", com1);
+		}
+#endif
 
 		s->setValue("LegacyPorts/COMPorts", str);
 	}
@@ -1488,6 +1629,7 @@ void E2Profile::SetLPTAddress(unsigned int lpt1, unsigned int lpt2, unsigned int
 
 	if (lpt1 > 0)
 	{
+#if USE_QT_VERSION == 4
 		if (lpt2 > 0)
 		{
 			if (lpt3 > 0)
@@ -1503,6 +1645,23 @@ void E2Profile::SetLPTAddress(unsigned int lpt1, unsigned int lpt2, unsigned int
 		{
 			str.sprintf("%X", lpt1);
 		}
+#else
+		if (lpt2 > 0)
+		{
+			if (lpt3 > 0)
+			{
+				str.asprintf("%X,%X,%X", lpt1, lpt2, lpt3);
+			}
+			else
+			{
+				str.asprintf("%X,%X", lpt1, lpt2);
+			}
+		}
+		else
+		{
+			str.asprintf("%X", lpt1);
+		}
+#endif
 
 		s->setValue("LegacyPorts/LPTPorts", str);
 	}

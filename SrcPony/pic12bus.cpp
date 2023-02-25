@@ -240,7 +240,7 @@ long Pic12Bus::ReadConfig(quint16 &data)
 #endif
 	IncAddress(1);
 
-	qDebug() << Q_FUNC_INFO << "(" << (hex) << val << ") OUT";
+	qDebug() << Q_FUNC_INFO << "(" << (Qt::hex) << val << ") OUT";
 
 	return OK;
 }
@@ -248,7 +248,7 @@ long Pic12Bus::ReadConfig(quint16 &data)
 
 long Pic12Bus::WriteConfig(quint16 data)
 {
-	qDebug() << Q_FUNC_INFO << "(" << (hex) << data  << ") IN";
+	qDebug() << Q_FUNC_INFO << "(" << (Qt::hex) << data  << ") IN";
 
 	//      Reset();
 
@@ -312,7 +312,7 @@ long Pic12Bus::Read(int addr, quint8 *data, long length, int page_size)
 {
 	long len;
 
-	qDebug() << Q_FUNC_INFO << "(" << addr << ", " << (hex) << data << ", " << (dec) <<  length << ") IN";
+	qDebug() << Q_FUNC_INFO << "(" << addr << ", " << (Qt::hex) << data << ", " << (Qt::dec) <<  length << ") IN";
 
 	ReadStart();
 	length >>= 1;   //contatore da byte a word
@@ -359,7 +359,7 @@ long Pic12Bus::Write(int addr, quint8 const *data, long length, int page_size)
 {
 	long len;
 
-	qDebug() << Q_FUNC_INFO << "(" << addr << ", " << (hex) << data << ", " << (dec) << length << ") IN";
+	qDebug() << Q_FUNC_INFO << "(" << addr << ", " << (Qt::hex) << data << ", " << (Qt::dec) << length << ") IN";
 
 	WriteStart();
 	length >>= 1;   //contatore da byte a word
@@ -411,7 +411,7 @@ int Pic12Bus::WriteProgWord(quint16 val, long rc_addr)
 	int k;
 	int rval = OK;
 
-	qDebug() << Q_FUNC_INFO << "(" << (hex) << val << ", " << (dec) <<  current_address << ") IN";
+	qDebug() << Q_FUNC_INFO << "(" << (Qt::hex) << val << ", " << (Qt::dec) <<  current_address << ") IN";
 
 	//Check for RC calibration location
 	if (current_address == rc_addr)
@@ -522,7 +522,7 @@ int Pic12Bus::ProgramPulse(quint16 val, int verify, int width)
 {
 	int rval = OK;
 
-	qDebug() << Q_FUNC_INFO << "(" << (hex) << val << ", " << (dec) <<  verify << ", " << width << ") IN";
+	qDebug() << Q_FUNC_INFO << "(" << (Qt::hex) << val << ", " << (Qt::dec) <<  verify << ", " << width << ") IN";
 
 	SendCmdCode(LoadProgCode);
 	SendProgCode(val);
