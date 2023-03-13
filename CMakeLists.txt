@@ -10,7 +10,7 @@ IF(WIN32)
 ENDIF()
 
 # set the Qt version to 4, 5 or 6
-SET (USE_QT_VERSION 6)
+SET (USE_QT_VERSION 5)
 
 
 # # SET(FILES_TO_TRANSLATE)
