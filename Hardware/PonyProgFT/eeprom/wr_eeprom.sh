@@ -19,7 +19,7 @@ if [ -f "${FILECONF}" ]; then
 		#rimuoviamo gli zeri inizali lasciandolo in base 10
 		NUM=$((10#$ZNUM))
 		#echo ${NUM}
-		((NUM++))
+		((NUM++)) || true
 		NEWSERIAL=`printf "%06u" ${NUM}`
 		echo "NewSerial: ${NEWSERIAL}"
 		sed -i.old "s/serial=\"FT[0-9]\+\"/serial=\"FT${NEWSERIAL}\"/g" "${FILECONF}"
