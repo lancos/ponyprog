@@ -130,7 +130,7 @@ int MpsseInterface::InitPins()
 		result = ctx.set_bitmode(0, BITMODE_MPSSE);
 		if (result == 0)
 		{
-			ctx.flush();
+			ctx.tcflush();		//ctx.flush(); deprecated
 			cmdbuf.clear();
 
 			int new_data = 0;
