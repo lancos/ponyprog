@@ -932,7 +932,7 @@ int32_t ch341::SetBaudRate(int32_t speed)
 			dv_mod = (mod + 0xFF) / 0x100;
 
 			// calculated, now send to device
-			qDebug() << "set baudrate" << speed << (hex) << (dv_div << 8) + (dv_prescale) << (uint16_t)(dv_mod) << (dec) ;
+			qDebug() << "set baudrate" << speed << (Qt::hex) << (dv_div << 8) + (dv_prescale) << (uint16_t)(dv_mod) << (Qt::dec) ;
 
 			ret = libusb_control_transfer(devHandle, CTRL_OUT, CH341_REQ_WRITE_REG, CH341_REG_BAUD1, (dv_div << 8) + (dv_prescale), NULL, 0, timeout);
 			if (ret < 0)

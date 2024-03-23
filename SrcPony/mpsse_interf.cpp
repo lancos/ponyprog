@@ -121,7 +121,7 @@ int MpsseInterface::InitPins()
 			return E2ERR_OPENFAILED;
 		}
 
-		qDebug() << Q_FUNC_INFO << (hex)
+		qDebug() << Q_FUNC_INFO << (Qt::hex)
 				 << " Ctrl=" << pin_ctrl
 				 << ", Clock=" << pin_clock << ", ClockIn=" << pin_clockin
 				 << ", DataIn=" << pin_datain << ", DataOut=" << pin_dataout
@@ -218,7 +218,7 @@ int MpsseInterface::SetFrequency(uint32_t freq)
 
 int MpsseInterface::Open(int port)
 {
-	qDebug() << Q_FUNC_INFO << "(" << port << (hex) << usb_vp.vid << ":" << usb_vp.pid << ") IN";
+	qDebug() << Q_FUNC_INFO << "(" << port << (Qt::hex) << usb_vp.vid << ":" << usb_vp.pid << ") IN";
 
 	int ret_val = OK;
 
