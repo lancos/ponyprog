@@ -2,8 +2,43 @@
 FileName = PonyProgFT.GBR
 AutoAperture = True
 *************************************************************
-Generating : L1_Top
-      File : PonyProgFT.GTL
+Generating : Mechanical 1
+      File : PonyProgFT.GM1
+
+    Adding Layer      : Mechanical 1
+
+
+Used DCodes :
+    D11
+*************************************************************
+
+*************************************************************
+Generating : Bottom Solder
+      File : PonyProgFT.GBS
+
+    Adding Layer      : Bottom Solder
+
+    Adding Layer      : L4_Bottom
+
+    Adding Layer      : Multi-Layer
+
+
+Used DCodes :
+    D59
+    D60
+    D61
+    D62
+    D63
+    D64
+    D65
+    D66
+*************************************************************
+
+*************************************************************
+Generating : Top Solder
+      File : PonyProgFT.GTS
+
+    Adding Layer      : Top Solder
 
     Adding Layer      : L1_Top
 
@@ -11,12 +46,50 @@ Generating : L1_Top
 
 
 Used DCodes :
-    D10
-    D11
-    D12
-    D13
-    D14
-    D15
+    D37
+    D38
+    D39
+    D40
+    D41
+    D42
+    D43
+    D44
+    D45
+    D46
+    D47
+    D48
+    D49
+    D50
+    D51
+    D52
+    D53
+    D54
+    D55
+    D56
+    D57
+    D58
+    D59
+    D60
+    D61
+    D62
+    D63
+    D64
+    D65
+    D66
+*************************************************************
+
+*************************************************************
+Generating : Top Paste
+      File : PonyProgFT.GTP
+
+    Adding Layer      : Top Paste
+
+    Adding Layer      : L1_Top
+
+    Adding Layer      : Multi-Layer
+
+
+Used DCodes :
     D16
     D17
     D18
@@ -38,58 +111,22 @@ Used DCodes :
     D34
     D35
     D36
-    D37
-    D38
-    D39
-    D40
-    D41
-    D42
-    D43
-    D44
-    D45
-    D46
-    D47
-    D48
-    D49
-    D50
-    D51
 *************************************************************
 
 *************************************************************
-Generating : L2_GND
-      File : PonyProgFT.G1
+Generating : Top Overlay
+      File : PonyProgFT.GTO
 
-    Adding Layer      : L2_GND
-
-    Adding Layer      : Multi-Layer
+    Adding Layer      : Top Overlay
 
 
 Used DCodes :
-    D31
-    D41
-    D45
-    D48
-    D51
-    D52
-*************************************************************
-
-*************************************************************
-Generating : L3_Power
-      File : PonyProgFT.G2
-
-    Adding Layer      : L3_Power
-
-    Adding Layer      : Multi-Layer
-
-
-Used DCodes :
-    D31
-    D41
-    D46
-    D48
-    D49
-    D51
-    D53
+    D10
+    D11
+    D12
+    D13
+    D14
+    D15
 *************************************************************
 
 *************************************************************
@@ -102,43 +139,62 @@ Generating : L4_Bottom
 
 
 Used DCodes :
-    D31
-    D33
-    D37
-    D41
-    D44
-    D45
-    D46
-    D47
-    D48
-    D49
-    D50
-    D51
-    D53
-    D54
+    D10
+    D12
+    D42
+    D67
+    D68
+    D77
+    D78
+    D79
+    D80
+    D81
+    D82
+    D83
+    D85
+    D86
 *************************************************************
 
 *************************************************************
-Generating : Top Overlay
-      File : PonyProgFT.GTO
+Generating : L3_Power
+      File : PonyProgFT.G2
 
-    Adding Layer      : Top Overlay
+    Adding Layer      : L3_Power
+
+    Adding Layer      : Multi-Layer
 
 
 Used DCodes :
-    D37
-    D39
-    D41
-    D55
-    D56
-    D57
+    D10
+    D42
+    D67
+    D78
+    D82
+    D83
+    D85
 *************************************************************
 
 *************************************************************
-Generating : Top Paste
-      File : PonyProgFT.GTP
+Generating : L2_GND
+      File : PonyProgFT.G1
 
-    Adding Layer      : Top Paste
+    Adding Layer      : L2_GND
+
+    Adding Layer      : Multi-Layer
+
+
+Used DCodes :
+    D10
+    D42
+    D67
+    D81
+    D83
+    D84
+*************************************************************
+
+*************************************************************
+Generating : L1_Top
+      File : PonyProgFT.GTL
 
     Adding Layer      : L1_Top
 
@@ -147,11 +203,8 @@ Generating : Top Paste
 
 Used DCodes :
     D10
-    D11
     D12
-    D13
     D14
-    D15
     D16
     D17
     D18
@@ -167,30 +220,13 @@ Used DCodes :
     D28
     D29
     D30
-*************************************************************
-
-*************************************************************
-Generating : Top Solder
-      File : PonyProgFT.GTS
-
-    Adding Layer      : Top Solder
-
-    Adding Layer      : L1_Top
-
-    Adding Layer      : Multi-Layer
-
-
-Used DCodes :
-    D48
-    D58
-    D59
-    D60
-    D61
-    D62
-    D63
-    D64
-    D65
-    D66
+    D31
+    D32
+    D33
+    D34
+    D35
+    D36
+    D42
     D67
     D68
     D69
@@ -208,41 +244,5 @@ Used DCodes :
     D81
     D82
     D83
-    D84
-    D85
-    D86
-*************************************************************
-
-*************************************************************
-Generating : Bottom Solder
-      File : PonyProgFT.GBS
-
-    Adding Layer      : Bottom Solder
-
-    Adding Layer      : L4_Bottom
-
-    Adding Layer      : Multi-Layer
-
-
-Used DCodes :
-    D79
-    D80
-    D81
-    D82
-    D83
-    D84
-    D85
-    D86
-*************************************************************
-
-*************************************************************
-Generating : Mechanical 1
-      File : PonyProgFT.GM1
-
-    Adding Layer      : Mechanical 1
-
-
-Used DCodes :
-    D55
 *************************************************************
 
