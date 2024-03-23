@@ -64,9 +64,9 @@ typedef struct
 {
 	int code;
 	int type;
-} IdType;
+} IdTypePic;
 
-static IdType IdArray[] =
+static IdTypePic IdArray[] =
 {
 	{0x560, PIC1684A},      // 00 0101 011 0 0000
 

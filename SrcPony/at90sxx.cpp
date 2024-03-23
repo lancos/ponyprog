@@ -157,9 +157,9 @@ typedef struct
 	int code1;
 	int code2;
 	int type;
-} IdType;
+} IdTypeAVR;
 
-static IdType IdArray[] =
+static IdTypeAVR IdArray[] =
 {
 	{0x90, 0x01,    AT90S1200},
 
