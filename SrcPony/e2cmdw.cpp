@@ -63,7 +63,7 @@
 
 
 #define STATUSBAR_FORM  "    Size     0 Bytes     CRC  0000h      "
-#define STATUSBAR_PRINT "    Size %5ld Bytes     CRC  %04Xh     %c"
+//#define STATUSBAR_PRINT "    Size %5ld Bytes     CRC  %04Xh     %c"
 
 
 class e2AppWinInfo;
@@ -118,12 +118,12 @@ e2CmdWindow::e2CmdWindow(QWidget *parent) :
 	// to check this
 	fontSize = E2Profile::GetFontSize();	//sysFont.pointSize();
 
-	programStyleSheet = QString().sprintf("font-size: %dpt", fontSize);
+	programStyleSheet = QString("font-size: %1pt").arg(fontSize);	//sprintf("font-size: %dpt", fontSize);
 
 	if (fontSize == -1)
 	{
 		fontSize = sysFont.pixelSize();
-		programStyleSheet = QString().sprintf("font-size: %dpx", fontSize);
+		programStyleSheet = QString("font-size: %1px").arg(fontSize);	//sprintf("font-size: %dpx", fontSize);
 	}
 
 	if (programStyleSheet.length() > 0)
@@ -1464,20 +1464,19 @@ void e2CmdWindow::selectFontSize(QAction *mnu)
 	// for lang menu and for fontsize menu
 	if (sz == -1)
 	{
-		programStyleSheet = QString().sprintf("font-size: %dpx", fontSize);
+		programStyleSheet = QString("font-size: %1px").arg(fontSize);	//sprintf("font-size: %dpx", fontSize);
 	}
 	else
 	{
-		programStyleSheet = QString().sprintf("font-size: %dpt", fontSize);
+		programStyleSheet = QString("font-size: %dpt").arg(fontSize);	//sprintf("font-size: %dpt", fontSize);
 	}
 
 	E2Profile::SetFontSize(fontSize);
 
-	QString sSheet2 = QString("QMenu { %1; }").arg(programStyleSheet);
-
 	setStyleSheet(programStyleSheet);
 
-	//     langMenu->setStyleSheet(sSheet2);
+	//QString sSheet2 = QString("QMenu { %1; }").arg(programStyleSheet);
+	//langMenu->setStyleSheet(sSheet2);
 
 	setFontForWidgets();
 }
@@ -2912,7 +2911,7 @@ int e2CmdWindow::CmdReadCalibration(int idx)
 				if (verbose == verboseAll)
 				{
 					QString str;
-					str = translate(STR_MSGREADCALIBOK) + QString().sprintf(": 0x%02X (%d)", rval, rval);
+					str = translate(STR_MSGREADCALIBOK) + QString(": 0x%1 (%2)").arg(rval, 2, 16, QLatin1Char('0')).arg(rval);		//sprintf(": 0x%02X (%d)", rval, rval);
 
 					QMessageBox note(QMessageBox::Information, "Calibration", str, QMessageBox::Ok);
 					note.setStyleSheet(programStyleSheet);
@@ -3190,7 +3189,7 @@ int e2CmdWindow::CmdProgram()
 		if (verbose != verboseNo)
 		{
 			QString str;
-			str = translate(STR_MSGPROGRAMFAIL) + QString().sprintf(" (%d)", result);
+			str = translate(STR_MSGPROGRAMFAIL) + QString(" (%1)").arg(result);	//sprintf(" (%d)", result);
 
 			QMessageBox note(QMessageBox::Critical, "Program", str, QMessageBox::Close);
 			note.setStyleSheet(programStyleSheet);
@@ -4333,7 +4332,7 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 		if (verbose != verboseNo)
 		{
 			QString str;
-			str = translate(STR_MSGPROGRAMFAIL) + QString().sprintf(" (%d)", result);
+			str = translate(STR_MSGPROGRAMFAIL) + QString(" (%1)").arg(result);	//sprintf(" (%d)", result);
 
 			QMessageBox note(QMessageBox::Critical, "Script information", str, QMessageBox::Close);
 			note.setStyleSheet(programStyleSheet);
@@ -5278,7 +5277,8 @@ void e2CmdWindow::UpdateStatusBar()
 	if (awip)
 	{
 		QString buf;
-		buf.sprintf(STATUSBAR_PRINT, GetDevSize(), awip->GetCRC(), awip->IsBufChanged() ? '*' : ' ');
+		//buf.sprintf(STATUSBAR_PRINT, GetDevSize(), awip->GetCRC(), awip->IsBufChanged() ? '*' : ' ');
+		buf = QString("    Size %1 Bytes     CRC  %2h     %3").arg(GetDevSize(), 5).arg(awip->GetCRC(), 4, 16, QLatin1Char('0')).arg(awip->IsBufChanged() ? '*' : ' ');
 		lblEEPInfo->setText(buf);
 		lblStringID->setText(awip->GetStringID());
 	}
@@ -6481,7 +6481,7 @@ void e2CmdWindow::Print()
 			t << QString("File: " + GetFileName());
 			t << QString("Device: " + awip->GetStringID());
 			t << QString("Note: " + awip->GetComment());
-			t << QString().sprintf("Size  : %ld Bytes    CRC: %04X", GetDevSize(), awip->GetCRC());
+			t << QString("Size  : %1 Bytes    CRC: %2h").arg(GetDevSize()).arg(awip->GetCRC(), 4, 16, QLatin1Char('0'));	//sprintf("Size  : %ld Bytes    CRC: %04X", GetDevSize(), awip->GetCRC());
 
 			for (; k < no_line && curRow < 66; k++)
 			{
@@ -6501,7 +6501,7 @@ void e2CmdWindow::Print()
 
 			doc.documentLayout()->setPaintDevice(&printer);
 
-			doc.setPageSize(printer.pageRect().size()); // This is necessary if you want to hide the page number
+			//doc.setPageSize(printer.pageRect().size()); // This is necessary if you want to hide the page number
 			doc.setHtml(str);
 			doc.print(&printer);
 		}

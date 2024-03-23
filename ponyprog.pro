@@ -342,6 +342,7 @@ CONFIG(debug, debug|release) {
 
 # -Wall are already on the command line (where does it come from?)
 # for old GCC -std=c++11 move to -std=c++0x
+#QMAKE_CXXFLAGS += -flto=4 -Werror=odr -Werror=lto-type-mismatch -Werror=strict-aliasing
 QMAKE_CXXFLAGS += -Wno-unused-parameter
 
 unix: QMAKE_CXXFLAGS += -std=c++11

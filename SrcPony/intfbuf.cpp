@@ -92,28 +92,26 @@ int IntelFileBuf::WriteRecord(QFile &fh, uint8_t *bptr, long curaddr, long recsi
 		int len = recsize;
 		QTextStream out(&fh);
 
-		out << ":";
-
-		//byte count
-		out << QString().sprintf("%02X", len & 0xFF);
+		//start + byte count
+		out << QString(":%1").arg(len & 0xFF, 2, 16, QLatin1Char('0'));	//sprintf("%02X", len & 0xFF)
 		checksum += len & 0xFF;
 
 		//addr field
-		out << QString().sprintf("%04lX", curaddr & 0xFFFF);
+		out << QString("%1").arg(curaddr & 0xFFFF, 4, 16, QLatin1Char('0'));	//sprintf("%04lX", curaddr & 0xFFFF);
 		checksum += (curaddr >> 8) & 0xFF;
 		checksum += curaddr & 0xFF;
 
 		//record type
-		out << QString().sprintf("%02X", fmt & 0xFF);
+		out << QString("%1").arg(fmt & 0xFF, 2, 16, QLatin1Char('0'));	//sprintf("%02X", fmt & 0xFF);
 		checksum += fmt & 0xFF;
 
 		for (j = 0; j < recsize; j++)
 		{
-			out << QString().sprintf("%02X", bptr[curaddr + j]);
+			out << QString("%1").arg(bptr[curaddr + j], 2, 16, QLatin1Char('0'));	//sprintf("%02X", bptr[curaddr + j]);
 			checksum += bptr[curaddr + j];
 		}
 
-		out << QString().sprintf("%02X\n", (~checksum + 1) & 0xFF);
+		out << QString("%1\n").arg((~checksum + 1) & 0xFF, 2, 16, QLatin1Char('0'));	//sprintf("%02X\n", (~checksum + 1) & 0xFF);
 	}
 
 	return rval;
@@ -124,22 +122,20 @@ int IntelFileBuf::WriteAddressRecord(QFile &fh, long curaddr, bool linear_addres
 	int rval = 1;
 	QTextStream out(&fh);
 
-	out << ":";
-
 	int checksum = 0;
 	int len = 2;
 
-	//byte count
-	out << QString().sprintf("%02X", len & 0xFF);
+	//start + byte count
+	out << QString(":%1").arg(len & 0xFF, 2, 16, QLatin1Char('0'));	//sprintf("%02X", len & 0xFF);
 	checksum += len & 0xFF;
 
 	//addr field
-	out << QString().sprintf("%04X", 0);
+	out << QString("0000");	//sprintf("%04X", 0);
 
 	if (linear_address)
 	{
 		//record type
-		out << QString().sprintf("%02X", LIN_ADDR_RECORD & 0xFF);
+		out << QString("%1").arg(LIN_ADDR_RECORD & 0xFF, 2, 16, QLatin1Char('0'));	//sprintf("%02X", LIN_ADDR_RECORD & 0xFF);
 		checksum += LIN_ADDR_RECORD & 0xFF;
 
 		//adjust extended linear address
@@ -148,18 +144,18 @@ int IntelFileBuf::WriteAddressRecord(QFile &fh, long curaddr, bool linear_addres
 	else
 	{
 		//record type
-		out << QString().sprintf("%02X", SEG_ADDR_RECORD & 0xFF);
+		out << QString("%1").arg(SEG_ADDR_RECORD & 0xFF, 2, 16, QLatin1Char('0'));	//sprintf("%02X", SEG_ADDR_RECORD & 0xFF);
 		checksum += SEG_ADDR_RECORD & 0xFF;
 
 		//adjust extended segmented address
 		curaddr >>= 4;
 	}
 
-	out << QString().sprintf("%04lX", curaddr & 0xFFFF);
+	out << QString("%1").arg(curaddr & 0xFFFF, 4, 16, QLatin1Char('0'));	//sprintf("%04lX", curaddr & 0xFFFF);
 	checksum += (curaddr >> 8) & 0xFF;
 	checksum += curaddr & 0xFF;
 
-	out << QString().sprintf("%02X\n", (~checksum + 1) & 0xFF);
+	out << QString("%1\n").arg((~checksum + 1) & 0xFF, 2, 16, QLatin1Char('0'));	//sprintf("%02X\n", (~checksum + 1) & 0xFF);
 
 	return rval;
 }

@@ -1346,6 +1346,8 @@ QString e2AppWinInfo::Dump(int line, int type)
 {
 	long idx;
 	long upperlimit;
+	char lbuf[LINEBUF_SIZE + 1];
+	char tmpbuf[16 + 1];
 
 	if (!buf_ok)
 	{
@@ -1360,17 +1362,13 @@ QString e2AppWinInfo::Dump(int line, int type)
 	{
 		if (type == 0)
 		{
-			char tmpbuf[16 + 1];
-
 			for (int k = 0; k < hex_per_line; k++)
 			{
 				tmpbuf[k] = isprint(buffer[idx + k]) ? buffer[idx + k] : '.';
 			}
-
 			tmpbuf[hex_per_line] = 0;
 
-			linebuf.sprintf("  %06lX) %02X %02X %02X %02X %02X %02X %02X %02X - %02X %02X %02X %02X %02X %02X %02X %02X    %s\n",
-							//                      snprintf(linebuf, LINEBUF_SIZE, "  %06lX) %02X %02X %02X %02X %02X %02X %02X %02X - %02X %02X %02X %02X %02X %02X %02X %02X    %s\n",
+			snprintf(lbuf, LINEBUF_SIZE, "  %06lX) %02X %02X %02X %02X %02X %02X %02X %02X - %02X %02X %02X %02X %02X %02X %02X %02X    %s\n",
 							idx,
 							buffer[idx + 0],
 							buffer[idx + 1],
@@ -1395,13 +1393,11 @@ QString e2AppWinInfo::Dump(int line, int type)
 		}
 		else if (type == 1)
 		{
-			linebuf.sprintf("  %06lX)",     idx);
-			//                      snprintf(linebuf, LINEBUF_SIZE, "  %06lX)",     idx);
+			snprintf(lbuf, LINEBUF_SIZE, "  %06lX)", idx);
 		}
 		else if (type == 2)
 		{
-			linebuf.sprintf(" %02X %02X %02X %02X %02X %02X %02X %02X - %02X %02X %02X %02X %02X %02X %02X %02X  ",
-							//                      snprintf(linebuf, LINEBUF_SIZE, " %02X %02X %02X %02X %02X %02X %02X %02X - %02X %02X %02X %02X %02X %02X %02X %02X  ",
+			snprintf(lbuf, LINEBUF_SIZE, " %02X %02X %02X %02X %02X %02X %02X %02X - %02X %02X %02X %02X %02X %02X %02X %02X  ",
 							buffer[idx + 0],
 							buffer[idx + 1],
 							buffer[idx + 2],
@@ -1423,21 +1419,20 @@ QString e2AppWinInfo::Dump(int line, int type)
 		}
 		else
 		{
-			char tmpbuf[16 + 1];
-
 			for (int k = 0; k < hex_per_line; k++)
 			{
 				tmpbuf[k] = isprint(buffer[idx + k]) ? buffer[idx + k] : '.';
 			}
-
 			tmpbuf[hex_per_line] = 0;
 
-			linebuf.sprintf("  %s\n", tmpbuf);
-			//                      snprintf(linebuf, LINEBUF_SIZE, "  %s\n", tmpbuf);
+			snprintf(lbuf, LINEBUF_SIZE, "  %s\n", tmpbuf);
 		}
 
-		//              linebuf[LINEBUF_SIZE - 1] = '\0';
+		lbuf[LINEBUF_SIZE] = '\0';
+		return QString(lbuf);
 	}
-
-	return linebuf;
+	else
+	{
+		return "";
+	}
 }

@@ -56,9 +56,9 @@ blockDialog::blockDialog(e2CmdWindow *bw, e2AppWinInfo *p, bool readonly, const 
 	lblTo->setText(translate(STR_MSGNUMBLOCK));
 	lblVal->setText(translate(STR_MSGHIGHENDBLK));
 
-	QString str1 = QString().sprintf("%d", (int)((lock >> 4) & 0x0F));
-	QString str2 = QString().sprintf("%d", (int)(lock & 0x0F));
-	QString str3 = QString().sprintf("%d", (int)(fuse & 0x0F));
+	QString str1 = QString("%1").arg((int)((lock >> 4) & 0x0F));	//sprintf("%d", (int)((lock >> 4) & 0x0F));
+	QString str2 = QString("%1").arg((int)(lock & 0x0F));	//sprintf("%d", (int)(lock & 0x0F));
+	QString str3 = QString("%1").arg((int)(fuse & 0x0F));	//sprintf("%d", (int)(fuse & 0x0F));
 
 	txiFrom->setText(str1);
 	txiTo->setText(str2);

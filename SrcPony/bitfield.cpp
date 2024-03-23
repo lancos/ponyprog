@@ -74,7 +74,7 @@ void BitFieldWidget::initWidget()
 			int bitOffset = vecInfo->at(i).bit;
 			lastBit = bitOffset;
 			QString sDes = vecInfo->at(i).ShortDescr;
-			itm->setText(0, QString().sprintf("Bit %d, ", bitOffset) + sDes);
+			itm->setText(0, QString("Bit %1, ").arg(bitOffset) + sDes);
 			if (vecInfo->at(i).LongDescr.length() > 0)
 			{
 				itm->setText(1, vecInfo->at(i).LongDescr);
@@ -309,7 +309,7 @@ void BitFieldWidget::setMaskBits(const QString &cMask)
 	// at begin of string only
 	mskName = "^" + mskName + "\\d+";
 
-	qDebug() << cMask <<  "converted to" << mskName << (bin) << localField << (Qt::dec);
+	qDebug() << cMask <<  "converted to" << mskName << (Qt::bin) << localField << (Qt::dec);
 
 	// search in QTreeWidget the names
 	for (idx = 0; idx < treeWidget->topLevelItemCount(); idx++)

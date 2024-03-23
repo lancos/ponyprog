@@ -69,7 +69,8 @@ static int gpio_open(unsigned int gpio, bool out_dir)
 	int rval;
 
 	//trying with gpio command (you need wiringPi installed)
-	buf.sprintf("export %u %s", gpio, out_dir ? "out" : "in");
+	//buf.sprintf("export %u %s", gpio, out_dir ? "out" : "in");
+	buf = QString("export %1 ").arg(gpio) + QString(out_dir ? "out" : "in");
 // 	rval = system(buf.toLatin1().data());
 	rval = QProcess::execute("gpio", buf.split(" "));
 
@@ -97,7 +98,8 @@ static int gpio_open(unsigned int gpio, bool out_dir)
 
 		if (rval == 0)
 		{
-			buf.sprintf("%s/gpio%d/direction", SYSFS_GPIO_DIR, gpio);
+			//buf.sprintf("%s/gpio%d/direction", SYSFS_GPIO_DIR, gpio);
+			buf = QString(SYSFS_GPIO_DIR) + QString("/gpio%1/direction").arg(gpio);
 			fd = open(buf.toLatin1().data(), O_WRONLY);
 
 			if (fd < 0)
@@ -131,7 +133,8 @@ static int gpio_open(unsigned int gpio, bool out_dir)
 	{
 		int fd;
 
-		buf.sprintf("%s/gpio%d/value", SYSFS_GPIO_DIR, gpio);
+		//buf.sprintf("%s/gpio%d/value", SYSFS_GPIO_DIR, gpio);
+		buf = QString(SYSFS_GPIO_DIR) + QString("/gpio%1/value").arg(gpio);
 		fd = open(buf.toLatin1().data(), out_dir ? O_WRONLY : O_RDONLY);
 
 		if (fd < 0)
@@ -163,7 +166,8 @@ static int gpio_close(unsigned int gpio, int fd)
 	}
 
 	//trying with gpio command (you need wiringPi installed)
-	buf.sprintf("unexport %u", gpio);
+	//buf.sprintf("unexport %u", gpio);
+	buf = QString("unexport %1").arg(gpio);
 // 	rval = system(buf.toLatin1().data());
 	rval = QProcess::execute("gpio", buf.split(" "));
 

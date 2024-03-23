@@ -395,8 +395,8 @@ int At90sxx::QueryType(long &type)
 			detected_type = type;
 		}
 
-		detected_signature.sprintf("%02X-%02X-%02X", code[0], code[1], code[2]);
 		//snprintf(detected_signature, MAXMSG, "%02X-%02X-%02X", code[0], code[1], code[2]);
+		detected_signature = QString("%1-%2-%3").arg(code[0], 2, 16, QLatin1Char('0')).arg(code[1], 2, 16, QLatin1Char('0')).arg(code[2], 2, 16, QLatin1Char('0'));
 
 		rv = type ? OK : DEVICE_UNKNOWN;
 	}

@@ -68,13 +68,13 @@ FillDialog::FillDialog(QWidget *bw, long &cfrom, long &cto, int &cval, long max_
 
 	//TODO: should get strings from E2Profile settings, not local variables
 	QString str;
-	str = QString().sprintf("0x%04lX", mFrom);
+	str = QString("0x%1").arg(mFrom, 4, 16, QLatin1Char('0'));	//sprintf("0x%04lX", mFrom);
 	txiFrom->setText(str);
 
-	str = QString().sprintf("0x%04lX", mTo);
+	str = QString("0x%1").arg(mTo, 4, 16, QLatin1Char('0'));	//sprintf("0x%04lX", mTo);
 	txiTo->setText(str);
 
-	str = QString().sprintf("0x%02X", mVal);
+	str = QString("0x%1").arg(mVal, 2, 16, QLatin1Char('0'));	//sprintf("0x%02X", mVal);
 	txiVal->setText(str);
 
 	connect(pushOk, SIGNAL(clicked()), this, SLOT(onOk()));

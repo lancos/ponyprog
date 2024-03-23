@@ -235,11 +235,11 @@ void fuseModalDialog::displayBitFields()
 	QString s;
 	if (fuseEnabled == true)
 	{
-		s = QString().sprintf("Fuse: 0x%08X  ", fuseBits);
+		s = QString("Fuse: 0x%1  ").arg(fuseBits, 8, 16, QLatin1Char('0'));	//sprintf("Fuse: 0x%08X  ", fuseBits);
 	}
 	if (lockEnabled == true)
 	{
-		s +=  QString().sprintf("Lock: 0x%08X", lockBits);
+		s += QString("Lock: 0x%1").arg(lockBits, 8, 16, QLatin1Char('0'));	//sprintf("Lock: 0x%08X", lockBits);
 	}
 	labelFuseLock->setText(s);
 }
