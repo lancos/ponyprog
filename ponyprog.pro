@@ -307,7 +307,7 @@ unix:!macx: QMAKE_CXXFLAGS += $$system(pkg-config libftdipp1 --cflags)
 unix:!macx: LIBS += $$system(pkg-config libftdipp1 --libs)
 
 win32 {
-    isEmpty(FTDIPATH): FTDIPATH = c:/libftdi1-1.4git_devkit_x86_x64_14June2018
+    isEmpty(FTDIPATH): FTDIPATH = c:/libftdi1-1.5_devkit_x86_x64_19July2020
     !isEmpty(BOOSTPATH): QMAKE_CXXFLAGS += -I $$BOOSTPATH
     QMAKE_CXXFLAGS += -I $$FTDIPATH/include/libftdi -I $$FTDIPATH/include/libusb-1.0 -I $$FTDIPATH/include
     LIBS += -L $$FTDIPATH/lib32 -lftdipp1 -lftdi1 -lusb-1.0
