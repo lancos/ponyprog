@@ -22,7 +22,7 @@ OutputBaseFilename={#APPNAME}-{#APPVERSION}-setup
 RestartIfNeededByRun=yes
 ;AlwaysRestart=yes
 
-MinVersion=5.0
+MinVersion=6.0
 
 [Files]
 Source: "{#APPNAME}.exe"; DestDir: "{app}"
