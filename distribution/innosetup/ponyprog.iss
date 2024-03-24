@@ -22,7 +22,7 @@ OutputBaseFilename={#APPNAME}-{#APPVERSION}-setup
 RestartIfNeededByRun=yes
 ;AlwaysRestart=yes
 
-MinVersion=6.0
+MinVersion=6.1sp1
 
 [Files]
 Source: "{#APPNAME}.exe"; DestDir: "{app}"
@@ -87,7 +87,7 @@ Filename: "{app}\wdi-simple-64.exe"; Flags: "runhidden"; Parameters: " --name Po
 Filename: "{app}\wdi-simple-32.exe"; Flags: "runhidden"; Parameters: " --name PonyProgFT --manufacturer ""Eurek srl"" --vid 0x0403 --pid 0x6e38 --progressbar={wizardhwnd} --timeout 120000"; StatusMsg: "Installing PonyProgFT 32bit USB driver (this may take several seconds) ..."; Check: not IsWin64
 
 [UninstallRun] 
-Filename: "{app}\installdriver.exe"; Parameters: "remove"
+Filename: "{app}\installdriver.exe"; Parameters: "remove"; RunOnceId: "UninstDriver"
 
 ;[Registry]
 ;Root: HKCR; Subkey: ".e2p"; ValueType: string; ValueName: ""; ValueData: "PonyProgFile"; Flags: uninsdeletevalue
