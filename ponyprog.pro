@@ -352,7 +352,7 @@ win32 {
     target.path = $$PWD/distribution/innosetup
 
     ponydeploy.path = $$PWD/distribution/innosetup
-    ponydeploy.extra = windeployqt --no-angle --no-opengl-sw --release --list relative $$PWD/distribution/innosetup/${TARGET}
+    ponydeploy.extra = windeployqt --no-angle --no-opengl-sw --list relative $$PWD/distribution/innosetup/${TARGET}
 
     lang.path = $$PWD/distribution/innosetup/lang
     lang.files = lang/*
