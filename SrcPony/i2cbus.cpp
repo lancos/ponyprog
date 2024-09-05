@@ -486,6 +486,7 @@ void I2CBus::Close(void)
 	qDebug() << Q_FUNC_INFO << "busI=" << (Qt::hex) << busI << (Qt::dec);
 
 	setSCLSDA();
+	busI->SetI2CMode(false);
 	BusIO::Close();
 }
 
