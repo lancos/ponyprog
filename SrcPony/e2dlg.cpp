@@ -560,6 +560,10 @@ void e2Dialog::onTest()
 			{
 				extraMsg = "\n" + translate(STR_EXTRAPROBEMSG_FTPROG);
 			}
+			else if (cmdWin->GetInterfaceType() == EGGLINK_V3)
+			{
+				extraMsg = "\n" + translate(STR_EXTRAPROBEMSG_EGGLINK);
+			}
 		}
 		QMessageBox msgBox(QMessageBox::Critical, "Failed", translate(STR_TEST) + " " + translate(STR_MSGFAILED) + extraMsg, QMessageBox::Ok);
 		msgBox.setStyleSheet(cmdWin->getStyleSheet());
