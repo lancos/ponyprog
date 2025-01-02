@@ -1171,46 +1171,18 @@ int MpsseInterface::TestPort(int port_no)
 			else
 			{
 				//PonyProgFT
-				w.WaitMsec(10);
-				ret_val = GetPresence(0x0700, 0);
-
-				if (ret_val == OK)
-				{
-					SendPins(OutDataMask(pin_enbus, 1));	//en_bus active low
-					SendPins(OutDataMask(pin_ctrl | pin_dataout | pin_clock, 0));
-					SetPower(true);
-					w.WaitMsec(150);
-					int val = GetPins();
-					if (val < 0 || GetCtrlIn(val) != 1)
-					{
-						if (GetDataIn(val) != 1)
-						{
-							ret_val = E2ERR_IOTEST;
-						}
-						else
-						{
-							ret_val = E2ERR_NOTINSTALLED;
-						}
-					}
-					else
-					{
-						SendPins(OutDataMask(pin_ctrl, 1));
-						w.WaitMsec(100);
-						val = GetPins();
-						if (val < 0 || GetCtrlIn(val) != 0)
-						{
-							ret_val = E2ERR_NOTINSTALLED;
-						}
-					}
-					SendPins(OutDataMask(pin_ctrl | pin_dataout | pin_clock, 0));
-					SetPower(false);
-				}
+				TestPonyProgFTStandalone();
 			}
 		}
 		else if (TypeToInterfVidPid(FTDI_JTAGKEY) == usb_vp)
 		{
 			//JtagKey
 			ret_val = OK;
+		}
+		else if (TypeToInterfVidPid(EGGLINK_V3) == usb_vp)
+		{
+			//EGGLINK V3
+			TestPonyProgFTStandalone();
 		}
 		else
 		{
@@ -1221,6 +1193,48 @@ int MpsseInterface::TestPort(int port_no)
 	TestRestore();
 
 	qDebug() << Q_FUNC_INFO << "() = " << ret_val << " OUT";
+
+	return ret_val;
+}
+
+int MpsseInterface::TestPonyProgFTStandalone()
+{
+	int ret_val;
+
+	w.WaitMsec(10);
+	ret_val = GetPresence(0x0700, 0);
+
+	if (ret_val == OK)
+	{
+		SendPins(OutDataMask(pin_enbus, 1));	//en_bus active low
+		SendPins(OutDataMask(pin_ctrl | pin_dataout | pin_clock, 0));
+		SetPower(true);
+		w.WaitMsec(150);
+		int val = GetPins();
+		if (val < 0 || GetCtrlIn(val) != 1)
+		{
+			if (GetDataIn(val) != 1)
+			{
+				ret_val = E2ERR_IOTEST;
+			}
+			else
+			{
+				ret_val = E2ERR_NOTINSTALLED;
+			}
+		}
+		else
+		{
+			SendPins(OutDataMask(pin_ctrl, 1));
+			w.WaitMsec(100);
+			val = GetPins();
+			if (val < 0 || GetCtrlIn(val) != 0)
+			{
+				ret_val = E2ERR_NOTINSTALLED;
+			}
+		}
+		SendPins(OutDataMask(pin_ctrl | pin_dataout | pin_clock, 0));
+		SetPower(false);
+	}
 
 	return ret_val;
 }

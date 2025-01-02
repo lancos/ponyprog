@@ -12,3 +12,6 @@
 
 # PonyProgFT
 SUBSYSTEM=="usb", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6e38", MODE="0666", GROUP="plugdev"
+
+# EGGLINK V3
+SUBSYSTEM=="usb", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="69e0", MODE="0666", GROUP="plugdev"
