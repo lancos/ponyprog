@@ -18,11 +18,11 @@ jobs:
     - name: Install needed packages
       run: sudo apt install pkg-config libusb-1.0-0 libusb-1.0-0-dev libftdi1-2 libftdi1-dev libftdipp1-3 libftdipp1-dev
     - name: Install Qt
-      uses: jurplel/install-qt-action@v2
+      uses: jurplel/install-qt-action@v3
       with:
-        version: '5.9.5'
+        version: '5.15.2'
     - name: Checkout repository and submodules
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         submodules: recursive
     - name: Create Build Environment

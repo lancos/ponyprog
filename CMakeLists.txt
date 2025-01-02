@@ -197,15 +197,15 @@ IF (NOT WIN32)
 
     INCLUDE ( ${LIBFTDI_USE_FILE} )
 ELSE()
-    SET ( BOOST_DIR            "C:/Libraries/boost_1_67_0" )
-    SET ( LIBFTDI_ROOT_DIR     "C:/libftdi1-1.4git_devkit_x86_x64_14June2018" )
+    SET ( BOOST_DIR            "C:/Libraries/boost_1_77_0" )
+    SET ( LIBFTDI_ROOT_DIR     "C:/libftdi1-1.5_devkit_x86_x64_19July2020" )
 
 	SET ( LIBFTDI_LIBRARY      "ftdi1" )
     SET ( LIBFTDIPP_LIBRARY    "ftdipp1" )
 
-    SET ( LIBFTDI_VERSION_STRING "1.4" )
+    SET ( LIBFTDI_VERSION_STRING "1.5" )
     SET ( LIBFTDI_VERSION_MAJOR  "1" )
-    SET ( LIBFTDI_VERSION_MINOR  "4" )
+    SET ( LIBFTDI_VERSION_MINOR  "5" )
 
 	INCLUDE_DIRECTORIES("${BOOST_DIR}")
 	INCLUDE_DIRECTORIES("${LIBFTDI_ROOT_DIR}/include")
