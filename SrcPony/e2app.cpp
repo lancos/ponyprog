@@ -403,6 +403,11 @@ void e2App::SetInterfaceType(HInterfaceType type)
 		busIntp = &ponyprog_ftI;
 		break;
 
+	case EGGLINK_V3:
+		iType = EGGLINK_V3;
+		busIntp = &egglink_v3I;
+		break;
+
 	case SIPROG_API:
 	default:	             //20/07/99 -- to prevent crash
 		iType = SIPROG_API;

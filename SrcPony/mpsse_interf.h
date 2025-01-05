@@ -176,6 +176,8 @@ class MpsseInterface : public BusInterface
 	int GetPins();
 	int GetLowPinsMulti(int bufsiz, uint8_t *buf, int len);
 
+	int TestPonyProgFTStandalone();
+
 	//utility to set/reset/toggle a pin
 	unsigned int OutDataMask(int old_val, int mask, int val)
 	{

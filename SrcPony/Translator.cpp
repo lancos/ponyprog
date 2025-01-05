@@ -544,7 +544,8 @@ QString cTranslator::engText[] =
 	"Save the result in the buffer at given location",
 
 	"Preferences",				//STR_PREFERENCES
-	"Be sure the VTarget is on (check J3) and NO target attached for the test"					//STR_EXTRAPROBEMSG_FTPROG
+	"Be sure the VTarget is on (check J3) and NO target attached for the test",					//STR_EXTRAPROBEMSG_FTPROG
+	"Be sure the VTarget is on (check P1) and NO target attached for the test"					//STR_EXTRAPROBEMSG_EGGLINK
 };
 
 
