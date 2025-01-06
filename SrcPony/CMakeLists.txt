@@ -1,6 +1,7 @@
 #CMakeLists.txt
 
 SET(PONY_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/aboutmdlg.cpp
+                 ${CMAKE_CURRENT_SOURCE_DIR}/ftdi.cpp
                  ${CMAKE_CURRENT_SOURCE_DIR}/usbwatcher.cpp
                  ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
                  ${CMAKE_CURRENT_SOURCE_DIR}/Translator.cpp
@@ -84,6 +85,7 @@ SET(PONY_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/aboutmdlg.cpp
 SET(PONY_NOMOC_HEADERS 
                  ${CMAKE_CURRENT_SOURCE_DIR}/e2app.h 
                  ${CMAKE_CURRENT_SOURCE_DIR}/e2awinfo.h
+                 ${CMAKE_CURRENT_SOURCE_DIR}/ftdi.hpp
                  ${CMAKE_CURRENT_SOURCE_DIR}/Translator.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/globals.h
                  ${CMAKE_CURRENT_SOURCE_DIR}/device.h

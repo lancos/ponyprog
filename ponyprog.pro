@@ -189,13 +189,14 @@ SOURCES  += SrcPony/aboutmdlg.cpp \
             SrcPony/Translator.cpp \
             SrcPony/usbwatcher.cpp \
             SrcPony/prefdialog.cpp \
+            SrcPony/ftdi.cpp \
             qhexedit2/src/chunks.cpp \
             qhexedit2/src/commands.cpp \
             qhexedit2/src/qhexedit.cpp
 
-HEADERS  += SrcPony/e2app.h \ 
+HEADERS  += SrcPony/e2app.h \
             SrcPony/e2awinfo.h \
-            SrcPony/e2cmdw.h \ 
+            SrcPony/e2cmdw.h \
             SrcPony/globals.h \
             SrcPony/device.h \
             SrcPony/microbus.h \
@@ -273,6 +274,7 @@ HEADERS  += SrcPony/e2app.h \
             SrcPony/interfconv.h \
             SrcPony/usbwatcher.h \
             SrcPony/prefdialog.h \
+            SrcPony/ftdi.hpp \
             qhexedit2/src/chunks.h \
             qhexedit2/src/commands.h \
             qhexedit2/src/qhexedit.h
@@ -303,14 +305,14 @@ FORMS    += SrcPony/forms/aboutdlg.ui \
 unix:!macx: LIBS += -L/usr/local/lib 
 
 #libftdi
-unix:!macx: QMAKE_CXXFLAGS += $$system(pkg-config libftdipp1 --cflags)
-unix:!macx: LIBS += $$system(pkg-config libftdipp1 --libs)
+unix:!macx: QMAKE_CXXFLAGS += $$system(pkg-config libftdi1 --cflags)
+unix:!macx: LIBS += $$system(pkg-config libftdi1 --libs)
 
 win32 {
     isEmpty(FTDIPATH): FTDIPATH = c:/libftdi1-1.5_devkit_x86_x64_19July2020
     !isEmpty(BOOSTPATH): QMAKE_CXXFLAGS += -I $$BOOSTPATH
     QMAKE_CXXFLAGS += -I $$FTDIPATH/include/libftdi -I $$FTDIPATH/include/libusb-1.0 -I $$FTDIPATH/include
-    LIBS += -L $$FTDIPATH/lib32 -lftdipp1 -lftdi1 -lusb-1.0
+    LIBS += -L $$FTDIPATH/lib32 -lftdi1 -lusb-1.0
 }
 
 # # Make sure QM translations are generated.
