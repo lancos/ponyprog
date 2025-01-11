@@ -2,7 +2,7 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2021   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2025   Claudio Lanconelli                           //
 //                                                                         //
 //  https://github.com/lancos/ponyprog                                     //
 //                                                                         //
