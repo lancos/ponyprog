@@ -44,8 +44,8 @@ class At90sBus : public SPIBus
 	virtual int ReadDeviceCode(int addr);
 	virtual int WriteLockBits(uint32_t byte, long model = 0);
 	virtual int WriteFuseBits(uint32_t byte, long model = 0);
-	virtual uint32_t ReadLockBits(long model = 0);
-	virtual uint32_t ReadFuseBits(long model = 0);
+	virtual int ReadLockBits(uint32_t &res, long model = 0);
+	virtual int ReadFuseBits(uint32_t &res, long model = 0);
 	virtual long ReadCalibration(int addr = 0);
 
 	void SetFlashPagePolling(bool val);

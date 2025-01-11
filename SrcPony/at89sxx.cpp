@@ -292,12 +292,11 @@ int At89sxx::Verify(int type)
 
 		if (type & CONFIG_TYPE)
 		{
-			uint32_t fval, lval;
-			int fret, lret;
+			uint32_t fval = 0, lval = 0;
 
 			// read the fuses & locks
-			fret = GetBus()->ReadFuseBits(fval, GetAWInfo()->GetEEPId());
-			lret = GetBus()->ReadLockBits(lval, GetAWInfo()->GetEEPId());
+			int fret = GetBus()->ReadFuseBits(fval, GetAWInfo()->GetEEPId());
+			int lret = GetBus()->ReadLockBits(lval, GetAWInfo()->GetEEPId());
 
 			if ((lret == NOTSUPPORTED || GetAWInfo()->GetLockBits() == lval)
 					&& (fret == NOTSUPPORTED || GetAWInfo()->GetFuseBits() == fval))

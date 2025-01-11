@@ -52,8 +52,7 @@ int At90sxx::SecurityRead(uint32_t &bits)
 
 	if (rv > 0)
 	{
-		bits = GetBus()->ReadLockBits(GetAWInfo()->GetEEPId());
-		rv = OK;
+		rv = GetBus()->ReadLockBits(bits, GetAWInfo()->GetEEPId());
 	}
 
 	return rv;
@@ -77,8 +76,7 @@ int At90sxx::FusesRead(uint32_t &bits)
 
 	if (rv > 0)
 	{
-		bits = GetBus()->ReadFuseBits(GetAWInfo()->GetEEPId());
-		rv = OK;
+		rv = GetBus()->ReadFuseBits(bits, GetAWInfo()->GetEEPId());
 	}
 
 	return rv;
@@ -492,15 +490,18 @@ int At90sxx::Read(int probe, int type)
 				}
 			}
 
-			if (rv > 0)
+			if (rv > 0 && (type & CONFIG_TYPE))
 			{
-				if (type & CONFIG_TYPE)
+				// read the fuses
+				uint32_t f = 0;
+				if (GetBus()->ReadFuseBits(f, GetAWInfo()->GetEEPId()) == OK)
 				{
-					// read the fuses
-					uint32_t f = GetBus()->ReadFuseBits(GetAWInfo()->GetEEPId());
 					GetAWInfo()->SetFuseBits(f);
+				}
 
-					f = GetBus()->ReadLockBits(GetAWInfo()->GetEEPId());
+				f = 0;
+				if (GetBus()->ReadLockBits(f, GetAWInfo()->GetEEPId()) == OK)
+				{
 					GetAWInfo()->SetLockBits(f);
 				}
 			}
@@ -598,11 +599,14 @@ int At90sxx::Verify(int type)
 
 		if (type & CONFIG_TYPE)
 		{
-			// read the fuses & locks
-			uint32_t f = GetBus()->ReadFuseBits(GetAWInfo()->GetEEPId());
-			uint32_t l = GetBus()->ReadLockBits(GetAWInfo()->GetEEPId());
+			uint32_t fval = 0, lval = 0;
 
-			if (GetAWInfo()->GetLockBits() == l && GetAWInfo()->GetFuseBits() == f)
+			// read the fuses & locks
+			int fret = GetBus()->ReadFuseBits(fval, GetAWInfo()->GetEEPId());
+			int lret = GetBus()->ReadLockBits(lval, GetAWInfo()->GetEEPId());
+
+			if ((lret == NOTSUPPORTED || GetAWInfo()->GetLockBits() == lval)
+				&& (fret == NOTSUPPORTED || GetAWInfo()->GetFuseBits() == fval))
 			{
 				v_config = OK;
 			}

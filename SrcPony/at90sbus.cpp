@@ -482,11 +482,12 @@ int At90sBus::WriteFuseBits(uint32_t param, long model)
 	return OK;
 }
 
-uint32_t At90sBus::ReadFuseBits(long model)
+int At90sBus::ReadFuseBits(uint32_t &res, long model)
 {
-	uint32_t retval = 0;
+	int retval = OK;
 	uint32_t rv1, rv2, rv3;
 
+	res = 0;
 	switch (model)
 	{
 	case ATtiny22:
@@ -494,7 +495,7 @@ uint32_t At90sBus::ReadFuseBits(long model)
 		SendDataByte(ReadLock1);
 		SendDataByte(0);
 		rv1 = RecDataByte();
-		retval = ~rv1 & 0x20;
+		res = ~rv1 & 0x20;
 		break;
 
 	case AT90S2323:
@@ -505,7 +506,7 @@ uint32_t At90sBus::ReadFuseBits(long model)
 		SendDataByte(ReadLock1);
 		SendDataByte(0);
 		rv1 = RecDataByte();
-		retval = ~rv1 & 0x21;
+		res = ~rv1 & 0x21;
 		break;
 
 	//One byte fuse
@@ -520,7 +521,7 @@ uint32_t At90sBus::ReadFuseBits(long model)
 		SendDataByte(ReadFuse1);
 		SendDataByte(0);
 		rv1 = RecDataByte();
-		retval = ~rv1 & 0xFF;
+		res = ~rv1 & 0xFF;
 		break;
 
 	//Two byte fuse
@@ -545,7 +546,7 @@ uint32_t At90sBus::ReadFuseBits(long model)
 		rv2 = RecDataByte();
 		rv2 = ~rv2 & 0xFF;
 
-		retval = (rv2 << 8) | rv1;
+		res = (rv2 << 8) | rv1;
 		break;
 
 	//Three byte fuse
@@ -598,7 +599,7 @@ uint32_t At90sBus::ReadFuseBits(long model)
 		rv3 = RecDataByte();
 		rv3 = ~rv3 & 0xFF;
 
-		retval = (rv3 << 16) | (rv2 << 8) | rv1;
+		res = (rv3 << 16) | (rv2 << 8) | rv1;
 		break;
 
 	//No fuses
@@ -608,15 +609,16 @@ uint32_t At90sBus::ReadFuseBits(long model)
 	case AT90S8515:
 	default:
 		//No Fuses
+		retval = NOTSUPPORTED;
 		break;
 	}
 
 	return retval;
 }
 
-uint32_t At90sBus::ReadLockBits(long model)
+int At90sBus::ReadLockBits(uint32_t &res, long model)
 {
-	uint32_t retval = 0;
+	int retval = OK;
 	int rv1, rv2;
 
 	switch (model)
@@ -633,7 +635,7 @@ uint32_t At90sBus::ReadLockBits(long model)
 
 		if (code[0] == 0x00 && code[1] == 0x01 && code[2] == 0x02)
 		{
-			retval = 0x06;        //both lock bits programmed
+			res = 0x06;			//both lock bits programmed
 		}
 
 		break;
@@ -649,7 +651,7 @@ uint32_t At90sBus::ReadLockBits(long model)
 		rv2 = rv1 = RecDataByte();
 		rv1 = ~rv1 & 0x80;
 		rv2 = ~rv2 & 0x40;
-		retval = (rv1 >> 6) | (rv2 >> 4);
+		res = (rv1 >> 6) | (rv2 >> 4);
 		break;
 
 	case ATtiny12:
@@ -662,7 +664,7 @@ uint32_t At90sBus::ReadLockBits(long model)
 		SendDataByte(ReadLock1);
 		SendDataByte(0);
 		rv1 = RecDataByte();
-		retval = ~rv1 & 0x06;
+		res = ~rv1 & 0x06;
 		break;
 
 	case ATtiny13:
@@ -682,7 +684,7 @@ uint32_t At90sBus::ReadLockBits(long model)
 		SendDataByte(ReadLock1);
 		SendDataByte(0);
 		rv1 = RecDataByte();
-		retval = ~rv1 & 0x03;
+		res = ~rv1 & 0x03;
 		break;
 
 	case ATmega8:
@@ -717,11 +719,12 @@ uint32_t At90sBus::ReadLockBits(long model)
 		SendDataByte(ReadLock1);
 		SendDataByte(0);
 		rv1 = RecDataByte();
-		retval = ~rv1 & 0x3F;
+		res = ~rv1 & 0x3F;
 		break;
 
 	default:
 		//No locks
+		retval = NOTSUPPORTED;
 		break;
 	}
 

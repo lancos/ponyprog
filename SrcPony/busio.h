@@ -118,12 +118,12 @@ class BusIO
 		(void)model;
 		return OK;
 	}
-	virtual uint32_t ReadLockBits(long model = 0)
+	virtual int ReadLockBits(uint32_t &res, long model = 0)
 	{
 		(void)model;
 		return 0;
 	}
-	virtual uint32_t ReadFuseBits(long model = 0)
+	virtual int ReadFuseBits(uint32_t &res, long model = 0)
 	{
 		(void)model;
 		return 0;
