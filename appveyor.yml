@@ -40,6 +40,8 @@ build_script:
   - cmake --build . --target all
   - cd .. && qmake ponyprog.pro -spec win32-g++ BOOSTPATH=C:/Libraries/boost_1_77_0 FTDIPATH=C:/libftdi1-1.5_devkit_x86_x64_19July2020
   - mingw32-make -j2
+  - cp C:/libftdi1-1.5_devkit_x86_x64_19July2020/bin%BITS%/libftdi1.dll distribution/innosetup
+  - cp C:/libftdi1-1.5_devkit_x86_x64_19July2020/bin%BITS%/libusb-1.0.dll distribution/innosetup
   - mingw32-make win32setup
   - type ponyprog.bat
   - ponyprog.bat
