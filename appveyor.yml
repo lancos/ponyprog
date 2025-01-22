@@ -38,7 +38,7 @@ build_script:
   - cmake -E make_directory build
   - cd build && cmake -G "MinGW Makefiles" -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="c++" -DCMAKE_MAKE_PROGRAM="mingw32-make" -DUSE_DEBUGGER=OFF -DUSE_QT5=ON -DCMAKE_PREFIX_PATH="C:/libftdi1-1.5_devkit_x86_x64_19July2020" -DLIBUSB_SKIP_VERSION_CHECK=ON ..
   - cmake --build . --target all
-  - cd .. && qmake ponyprog.pro -spec win32-g++ BOOSTPATH=C:/Libraries/boost_1_83_0 FTDIPATH=C:/libftdi1-1.5_devkit_x86_x64_19July2020
+  - cd .. && qmake ponyprog.pro -spec win32-g++ FTDIPATH=C:/libftdi1-1.5_devkit_x86_x64_19July2020
   - mingw32-make -j2
   - mingw32-make win32setup
   - type ponyprog.bat
