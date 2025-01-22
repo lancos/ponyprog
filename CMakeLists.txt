@@ -87,6 +87,8 @@ ELSE()
 ENDIF()
 
 
+# SET(APP_VERSION "3.1.4")
+#
 # Set the PonyProg version
 # this for generating of version file from HISTORY file
 # the idea is to descript all changes in this file, last changes with version are in the top of file
@@ -96,13 +98,11 @@ STRING(REGEX MATCH "([0-9]+\\.[0-9]+\\.[0-9]+)" APP_VERSION "${DESCRIBE_STRING}"
 MESSAGE(STATUS "Version info: ${APP_VERSION}")
 SET(VERSION ${APP_VERSION})
 
-#
-# SET(APP_VERSION "3.0.0")
 SET(APP_AUTHOR "Claudio Lanconelli")
 SET(APP_EMAIL "PonyProg2000@gmail.com")
 SET(APP_NAME "PonyProg")
 SET(AUTHORWEB "http://www.LancOS.com")
-SET(APP_YEAR "2022")
+SET(APP_YEAR "2025")
 
 SET(PORTERGQT "Eduard Kalinowski")
 SET(PORTERMAIL "eduard_kalinowski@yahoo.de")

@@ -1,5 +1,7 @@
 Version history
 
+3.1.4	add support EGGLINK-V3 interface
+		fixed i2cbus disable with PonyProgFT
 3.1.3	avoid to manually add extension on file save because the dialog has a check for this purpose
 		fixed script file type by filename extension
 		fixed regression on the script filename handling (name with quotation mark and filename with spaces)
@@ -17,8 +19,8 @@ Version history
 		fix ATiny2313 Struct description (fuse bits)
 		update qhexedit with latest fixes and address hexcaps
 
-3.1.1   Bug fix: correct device selection by menu entries and load file. Translation fixes
-3.1.0   Add USB PonyProgFT interface, redesigned interface dialog, several fixes
-3.0.2   Default build to Qt5, smal fixes to build on non-X86 ARCHs
-3.0.1   Small fixes, Build scripts, compiler warnings, mispelled words
-3.0.0   Project converted to Qt framework
+3.1.1	Bug fix: correct device selection by menu entries and load file. Translation fixes
+3.1.0	Add USB PonyProgFT interface, redesigned interface dialog, several fixes
+3.0.2	Default build to Qt5, small fixes to build on non-X86 ARCHs
+3.0.1	Small fixes, Build scripts, compiler warnings, mispelled words
+3.0.0	Project converted to Qt framework
