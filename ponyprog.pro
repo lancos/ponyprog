@@ -359,11 +359,13 @@ win32 {
     lang.path = $$PWD/distribution/innosetup/lang
     lang.files = lang/*
 
-    inpoutdll.path = $$PWD/distribution/innosetup
-    inpoutdll.files = InpOutLib/Win32/inpout32.dll
+    dlldeps.path = $$PWD/distribution/innosetup
+    dlldeps.files = InpOutLib/Win32/inpout32.dll \
+                    $$FTDIPATH/bin32/libftdi1.dll \
+                    $$FTDIPATH/bin32/libusb-1.0.dll
 
-    inpoutexe.path = $$PWD/distribution/innosetup
-    inpoutexe.files = InpOutLib/InstallDriver/InstallDriver.exe
+    exedeps.path = $$PWD/distribution/innosetup
+    exedeps.files = InpOutLib/InstallDriver/InstallDriver.exe
 
     #DEPLOY_TARGET = $$shell_quote($$shell_path($${OUT_PWD}/release/$${TARGET}$${TARGET_CUSTOM_EXT}))
 
@@ -381,7 +383,7 @@ win32 {
 
     QMAKE_EXTRA_TARGETS += win32setup
 
-    INSTALLS += target lang inpoutexe inpoutdll ponydeploy
+    INSTALLS += target lang exedeps dlldeps ponydeploy
     #QMAKE_POST_LINK = windeployqt --no-angle --no-opengl-sw --release --list relative ${TARGET}
 }
 
