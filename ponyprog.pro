@@ -365,6 +365,9 @@ win32 {
     inpoutexe.path = $$PWD/distribution/innosetup
     inpoutexe.files = InpOutLib/InstallDriver/InstallDriver.exe
 
+    libftdidll.path = $$PWD/distribution/innosetup
+    libftdidll.files = $$FTDIPATH/bin32/libftdi*.dll $$FTDIPATH/bin32/libusb-1*.dll
+
     #DEPLOY_TARGET = $$shell_quote($$shell_path($${OUT_PWD}/release/$${TARGET}$${TARGET_CUSTOM_EXT}))
 
 #    isEmpty(QTDIR):QTDIR = "c:/Qt/Qt$$QT_VERSION/$$QT_VERSION/mingw530_32"
@@ -381,7 +384,7 @@ win32 {
 
     QMAKE_EXTRA_TARGETS += win32setup
 
-    INSTALLS += target lang inpoutexe inpoutdll ponydeploy
+    INSTALLS += target lang inpoutexe inpoutdll libftdidll ponydeploy
     #QMAKE_POST_LINK = windeployqt --no-angle --no-opengl-sw --release --list relative ${TARGET}
 }
 
