@@ -1,32 +1,32 @@
-CLS 
-@echo off
-ECHO "Configure."
+@cls
+@echo on
+@echo "Configure."
 
-ECHO %path%
+if "%1"=="" setlocal
 
-setlocal
-
-SET myCmakePath=c:/Program Files/CMake/bin/
-SET myMinGWPath=c:/Qt/Qt5.9.1/Tools/mingw530_32/bin/
-SET myQtPath=C:/Qt/Qt5.9.1
-
-PATH=%myCmakePath%;%myMinGWPath%;%PATH%
+set QTDIR=C:\Qt\5.15.2\mingw81_32
+set "INNOPATH=C:\Program Files (x86)\Inno Setup 6"
+set "PATH=%QTDIR%\bin;C:\Qt\Tools\mingw810_32\bin;%PATH%;%INNOPATH%"
 
 rd /s /q "build"
-mkdir "build"
+cmake -E make_directory build || exit /b 1
 
 cd build
 
 cmake -G "MinGW Makefiles" ^
--DCMAKE_PREFIX_PATH="%myQtPath%/5.9.1/mingw53_32/;%myQtPath%/5.9.1/mingw53_32/lib/;%myQtPath%/Tools/mingw530_32/i686-w64-mingw32/lib/" ^
--DCMAKE_MODULE_PATH="%myQtPath%/5.9.1/mingw53_32/lib/cmake/;" ^
--DCMAKE_C_COMPILER="gcc"  ^
+-DCMAKE_C_COMPILER="gcc" ^
 -DCMAKE_CXX_COMPILER="c++" ^
 -DCMAKE_MAKE_PROGRAM="mingw32-make" ^
--DUSE_DEBUGGER="OFF" -DUSE_QT5="ON" ..
-
-echo "Compile sources"
-
-mingw32-make 
+-DUSE_DEBUGGER=OFF ^
+-DUSE_QT5=ON ^
+-DCMAKE_PREFIX_PATH="C:/libftdi1-1.5_devkit_x86_x64_19July2020" ^
+-DLIBUSB_SKIP_VERSION_CHECK=ON .. || exit /b 1
+cmake --build . -j%NUMBER_OF_PROCESSORS% --target all || exit /b 1
 
 cd ..
+
+qmake ponyprog.pro -spec win32-g++ FTDIPATH=C:/libftdi1-1.5_devkit_x86_x64_19July2020 || exit /b 1
+
+@echo "Compile sources"
+
+mingw32-make -j%NUMBER_OF_PROCESSORS% || exit /b 1

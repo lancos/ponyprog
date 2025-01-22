@@ -1,34 +1,19 @@
-CLS 
-@echo off
-ECHO "Configure."
-
-ECHO %path%
+@cls
+@echo on
 
 setlocal
 
-SET myCmakePath=c:/Program Files/CMake/bin/
-SET myMinGWPath=c:/Qt/Qt5.9.1/Tools/mingw530_32/bin/
-SET myQtPath=C:/Qt/Qt5.9.1
+call create_exe_binary.bat no_setlocal || exit /b 1
 
-PATH=%myCmakePath%;%myMinGWPath%;%PATH%
+@echo "Create installer"
 
-rd /s /q "build-win"
-mkdir "build-win"
+mingw32-make -j%NUMBER_OF_PROCESSORS% win32setup || exit /b 1
 
-cd "build-win"
+@rem Append exit code check to commands
+echo. > build/ponyprog.bat
+for /f "delims=" %%i in (ponyprog.bat) do (
+	echo %%i ^|^| exit /b 1 >> build/ponyprog.bat
+)
+move /y build\ponyprog.bat ponyprog.bat
 
-cmake -G "MinGW Makefiles" ^
--DCMAKE_PREFIX_PATH="%myQtPath%/5.9.1/mingw53_32/;%myQtPath%/5.9.1/mingw53_32/lib/;%myQtPath%/Tools/mingw530_32/i686-w64-mingw32/lib/" ^
--DCMAKE_MODULE_PATH="%myQtPath%/5.9.1/mingw53_32/lib/cmake/;" ^
--DCMAKE_C_COMPILER="gcc"  ^
--DCMAKE_CXX_COMPILER="c++" ^
--DCMAKE_MAKE_PROGRAM="mingw32-make" ^
--DUSE_DEBUGGER="OFF" ..
-
-ECHO "Compile sources"
-
-mingw32-make 
-
-mingw32-make package-binary-inno
-
-cd ..
+call ponyprog.bat || exit /b 1
