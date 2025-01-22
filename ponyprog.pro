@@ -46,10 +46,10 @@ win32 {
 
 
 # TODO: please check this
-win32:INCLUDEPATH += $$PWD/windows 
+win32:INCLUDEPATH += $$PWD/windows
 win32:DEPENDPATH += $$PWD/windows
 
-win64:INCLUDEPATH += $$PWD/windows 
+win64:INCLUDEPATH += $$PWD/windows
 win64:DEPENDPATH += $$PWD/windows
 
 # TODO: please add this for macx
@@ -292,7 +292,7 @@ FORMS    += SrcPony/forms/aboutdlg.ui \
             SrcPony/forms/prefdialog.ui
 
 # for next version, when script for ts files convertion is implemented
-#TRANSLATIONS += localization/qtbase_cs.ts 
+#TRANSLATIONS += localization/qtbase_cs.ts
 
 # TODO: please check this
 #win32:LIBS += -L$$PWD/windows/
@@ -302,7 +302,7 @@ FORMS    += SrcPony/forms/aboutdlg.ui \
 # macx:LIBS +=
 
 # in case of manually installations, not from repositories
-unix:!macx: LIBS += -L/usr/local/lib 
+unix:!macx: LIBS += -L/usr/local/lib
 
 #libftdi
 unix:!macx: QMAKE_CXXFLAGS += $$system(pkg-config libftdi1 --cflags)
@@ -324,7 +324,7 @@ win32 {
 # # Create new "make lupdate" target.
 # lupdate.target = lupdate
 # lupdate.commands = lupdate $$shell_path($$PWD/rssguard.pro) -ts $$shell_path($$TRANSLATIONS_WO_QT)
-# 
+#
 # QMAKE_EXTRA_TARGETS += lupdate
 # QMAKE_EXTRA_COMPILERS += lrelease
 
@@ -349,7 +349,7 @@ QMAKE_CXXFLAGS += -Wno-unused-parameter
 
 unix: QMAKE_CXXFLAGS += -std=c++11
 
-# EK 2017 
+# EK 2017
 win32 {
     target.path = $$PWD/distribution/innosetup
 
@@ -407,7 +407,7 @@ mac {
   CONFIG -= app_bundle
 
   target.path = $$quote($$PREFIX/Contents/MacOs/)
-  
+
   misc_texts.files = $$TEXTS
   misc_texts.path = $$quote($$PREFIX/Contents/Resources/information/)
 
