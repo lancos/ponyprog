@@ -14,10 +14,17 @@ build:
   verbosity: detailed
 
 clone_script:
+  - set REPO_NAME=%APPVEYOR_PULL_REQUEST_HEAD_REPO_NAME%
+  - set REPO_BRANCH=%APPVEYOR_PULL_REQUEST_HEAD_REPO_BRANCH%
+  - set REPO_COMMIT=%APPVEYOR_PULL_REQUEST_HEAD_COMMIT%
+  - if "%REPO_NAME%"=="" set REPO_NAME=%APPVEYOR_REPO_NAME%
+  - if "%REPO_BRANCH%"=="" set REPO_BRANCH=%APPVEYOR_REPO_BRANCH%
+  - if "%REPO_COMMIT%"=="" set REPO_COMMIT=%APPVEYOR_REPO_COMMIT%
   - cmd: >-
-      git clone -q --branch=%APPVEYOR_REPO_BRANCH% https://github.com/%APPVEYOR_REPO_NAME%.git %APPVEYOR_BUILD_FOLDER%
+      git clone -q --branch=%REPO_BRANCH% https://github.com/%REPO_NAME%.git %APPVEYOR_BUILD_FOLDER%
+      && git log --oneline -n 5
       && cd %APPVEYOR_BUILD_FOLDER%
-      && git checkout -qf %APPVEYOR_REPO_COMMIT%
+      && git checkout -qf %REPO_COMMIT%
       && git submodule update --init --recursive
 
 install:
