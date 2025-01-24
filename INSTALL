@@ -47,11 +47,17 @@ To generate the rpm file run the script :
 
 
 -----------------------------
-BUILD for Windows using mingw
+BUILD for Windows using MinGW
 -----------------------------
-Install QT SDK 5.
+Install QT SDK 5 and CMake.
+Download libftdi1-1.5_devkit_x86_x64_19July2020.zip from SourceForge and install extract it in C:\
 
 To build the executable file run the script:
 # create_exe_binary.bat
 
 You will find ponyprog.exe in the build directory.
+
+To package the installer file, install "Inno Setup" and run:
+# create_inno_package.bat
+
+You will find the setup.exe in distribution/innosetup/Output.
