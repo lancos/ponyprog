@@ -8,8 +8,8 @@ RUN sudo apt update && sudo apt -y install \
         libftdi1-2 \
         libftdi1-dev \
         fakeroot \
-    && sudo apt -y install \
-        wget
+        wget \
+        gpg
 
 RUN wget http://archive.ubuntu.com/ubuntu/pool/main/libf/libftdi1/libftdi1-2_1.5-6build5_amd64.deb \
         http://archive.ubuntu.com/ubuntu/pool/main/libf/libftdi1/libftdi1-dev_1.5-6build5_amd64.deb \
