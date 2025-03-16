@@ -3371,7 +3371,37 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 
 		QString cmdbuf = lst.at(0).toUpper();
 
-		if (cmdbuf == "SELECTDEVICE")
+		if (cmdbuf == "SELECTINTERFACE")
+		{
+			if (n == 3)
+			{
+				bool ok = false;
+				int port_no = lst.at(2).toInt(&ok);
+
+				if (!ok)
+				{
+					result = ScriptError(linecounter, 2, lst.at(2));
+				}
+				else
+				{
+					HInterfaceType interf_type = NameToInterfType(lst.at(1));
+					if (interf_type == LAST_HT)
+					{
+						result = ScriptError(linecounter, 1, lst.at(1));
+					}
+					else
+					{
+						SetInterfaceType(interf_type);
+						SetPort(port_no);
+					}
+				}
+			}
+			else	//Argument missing
+			{
+				result = ScriptError(linecounter, 1, lst.at(1));
+			}
+		}
+		else if (cmdbuf == "SELECTDEVICE")
 		{
 			if (n == 2)
 			{
