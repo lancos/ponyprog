@@ -327,7 +327,6 @@ class e2CmdWindow : public QMainWindow, public e2App, public Ui::MainWindow
 	void addSDEStruct();
 	void addX24CStruct();
 
-
 	int SaveFile(int force_select = 0);
 	int OpenFile(const QString &file = 0);
 	void UpdateStrFromBuf();
@@ -363,7 +362,7 @@ class e2CmdWindow : public QMainWindow, public e2App, public Ui::MainWindow
 // 	void setMenuIndexes();
 	long selectTypeSubtype(const QString &t, const QString &st);
 	int ScriptError(int line_number, int arg_index, const QString &s, const QString msg = "");
-
+	int ScriptError(int line_number, int arg_index, const QStringList &lst, const QString msg = "");
 
   private:
 	QString selectedLang;

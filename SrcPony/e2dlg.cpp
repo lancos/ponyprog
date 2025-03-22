@@ -486,7 +486,6 @@ void e2Dialog::setWidgetsText()
 		}
 	}
 
-
 	cbxInterfUSBNum->clear();
 	cbxInterfUSBNum->addItems(usbList);
 	cbxInterfGPIONum->clear();
@@ -579,7 +578,6 @@ void e2Dialog::onTest()
 	}
 }
 
-
 int e2Dialog::Test(int p, bool open_only) const
 {
 	qDebug() << "e2Dialog::Test() IN *** p=" << p << ", open_only=" << open_only;
@@ -604,7 +602,6 @@ int e2Dialog::Test(int p, bool open_only) const
 	{
 		test = cmdWin->TestPort(p, open_only);
 	}
-
 
 	qDebug() << "e2Dialog::Test() = " << test << " *** OUT";
 

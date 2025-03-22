@@ -3289,14 +3289,20 @@ static QStringList myscantokenizer(char *buf)//, char *arg[], int arglen)
 
 // #define cmdbuf  arg[0]
 
+int e2CmdWindow::ScriptError(int line_number, int arg_index, const QStringList &lst, const QString msg)
+{
+	QString s;
+	QString str;
+
+	if (arg_index < lst.count())
+		s = lst.at(arg_index);
+
+	return ScriptError(line_number, arg_index, s, msg);
+}
+
 int e2CmdWindow::ScriptError(int line_number, int arg_index, const QString &s, const QString msg)
 {
 	QString str;
-
-	//if (s.length() == 0)
-	//{
-	//	arg = "";
-	//}
 
 	if (arg_index == 0)
 	{
@@ -3373,44 +3379,90 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 
 		if (cmdbuf == "SELECTINTERFACE")
 		{
-			if (n == 3)
+			if (n >= 2)
 			{
-				bool ok = false;
-				int port_no = lst.at(2).toInt(&ok);
-
-				if (!ok)
+				HInterfaceType interf_type = NameToInterfType(lst.at(1));
+				if (interf_type == LAST_HT)
 				{
-					result = ScriptError(linecounter, 2, lst.at(2));
+					result = ScriptError(linecounter, 1, lst);
 				}
 				else
 				{
-					HInterfaceType interf_type = NameToInterfType(lst.at(1));
-					if (interf_type == LAST_HT)
+					SetInterfaceType(interf_type);
+					if (TypeToInterfVector(interf_type) == INTERF_USB)
 					{
-						result = ScriptError(linecounter, 1, lst.at(1));
+						QString port_sn;
+
+						if (lst.count() >= 3)
+							port_sn = lst.at(2);
+
+						if (port_sn.length() == 0)
+						{
+							qDebug() << "S/N unspecified, use port 0";
+							SetPort(0);
+						}
+						else
+						{
+							VidPid usb_vp = TypeToInterfVidPid(interf_type);
+							QStringList usblst = MpsseInterface::find_all(usb_vp.vid, usb_vp.pid);
+							if (usblst.count() > 0)
+							{
+								bool found = false;
+
+								for (int j = 0; j < usblst.count(); j++)
+								{
+									QString sernum = usblst.at(j).split(" ").at(0);
+									if (port_sn.compare(sernum) == 0)
+									{
+										qDebug() << "OK__S/N" << sernum;
+										SetPort(j);
+										found = true;
+									}
+									else
+									{
+										qDebug() << "____S/N" << sernum;
+									}
+								}
+								if (!found)
+									qDebug() << port_sn << "Not found";
+							}
+						}
 					}
 					else
 					{
-						SetInterfaceType(interf_type);
-						SetPort(port_no);
+						bool ok = false;
+						int port_no = lst.at(2).toInt(&ok);
+
+						if (!ok || port_no < 1)
+						{
+							result = ScriptError(linecounter, 2, lst);
+						}
+						else
+						{
+							SetPort(port_no - 1);
+						}
 					}
 				}
 			}
+			else if (n == 2)
+			{
+				result = ScriptError(linecounter, 2, lst);
+			}
 			else	//Argument missing
 			{
-				result = ScriptError(linecounter, 1, lst.at(1));
+				result = ScriptError(linecounter, 1, lst);
 			}
 		}
 		else if (cmdbuf == "SELECTDEVICE")
 		{
-			if (n == 2)
+			if (n >= 2)
 			{
 				long new_type;
 				new_type = GetEEPTypeFromString(lst.at(1));
 
 				if (new_type <= 0)
 				{
-					result = ScriptError(linecounter, 1, lst.at(1));
+					result = ScriptError(linecounter, 1, lst);
 				}
 				else
 				{
@@ -3422,7 +3474,7 @@ int e2CmdWindow::CmdRunScript(bool test_mode)
 			}
 			else     //Argument missing
 			{
-				result = ScriptError(linecounter, 1, lst.at(1));
+				result = ScriptError(linecounter, 1, lst);
 			}
 		}
 		else if (cmdbuf == "LOAD-ALL")
