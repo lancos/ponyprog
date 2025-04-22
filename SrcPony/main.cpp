@@ -25,7 +25,6 @@
 //=========================================================================//
 
 #include <QApplication>
-#include <QTextCodec>
 #include <QIcon>
 #include <QString>
 #include <QDebug>

@@ -526,27 +526,109 @@ void E2Profile::SetIMBusSpeed(int speed)
 	s->setValue("BusSpeed/IMBusSpeed", getSpeedName(speed));
 }
 
+#if USE_QT_VERSION == 6
+void E2Profile::GetPrinterSettings(QPrinter &p)
+{
+	s->beginGroup("Printer");
+
+	p.setPrinterName(s->value("PrinterName").toString());
+	p.setCollateCopies(s->value("Copies", false).toBool());
+	p.setColorMode(QPrinter::ColorMode(s->value("ColorMode").toInt()));
+	p.setCopyCount(s->value("CopyCount", 1).toInt());
+	p.setCreator(s->value("Creator", "").toString());
+	p.setDocName(s->value("DocName",  "ponyprog.pdf").toString());
+	p.setDuplex(QPrinter::DuplexMode(s->value("Duplex").toInt()));
+	p.setFontEmbeddingEnabled(s->value("FontEmb", false).toBool());
+	p.setFullPage(s->value("FullPage", false).toBool());
+
+	p.setOutputFileName(s->value("OutputName", "").toString());
+	p.setOutputFormat(QPrinter::OutputFormat(s->value("OutputFormat", QPrinter::PdfFormat).toInt()));
+	p.setPageOrder(QPrinter::PageOrder(s->value("PageOrder").toInt()));
+
+	p.setPaperSource(QPrinter::PaperSource(s->value("PaperSource").toInt()));
+	p.setPrintProgram(s->value("PrintProg", "").toString());
+	p.setPrintRange(QPrinter::PrintRange(s->value("PrintRange").toInt()));
+	p.setResolution(s->value("Resolution", 96).toInt());
+
+	QPageLayout pg_lout;
+	pg_lout.setPageSize(QPageSize((QPageSize::PageSizeId)(s->value("PageSize", QPageSize::A4)).toInt()));
+	pg_lout.setOrientation(((s->value("Orientation", QPageLayout::Portrait).toInt() == 0) ? QPageLayout::Portrait : QPageLayout::Landscape));
+	pg_lout.setUnits(QPageLayout::Millimeter);
+
+	qreal left, top, right, bottom;
+	left = (s->value("LeftMargin", 15).toFloat());
+	top = (s->value("TopMargin", 15).toFloat());
+	right = (s->value("RightMargin", 15).toFloat());
+	bottom = (s->value("BottomMargin", 15).toFloat());
+
+	pg_lout.setMargins(QMarginsF(left, top, right, bottom));
+
+	p.setPageLayout(pg_lout);
+
+	s->endGroup();
+}
+
+void E2Profile::SetPrinterSettings(QPrinter &p)
+{
+	s->beginGroup("Printer");
+
+	s->setValue("PrinterName", p.printerName());
+	s->setValue("Copies", p.collateCopies());
+	s->setValue("ColorMode", p.colorMode());
+	s->setValue("CopyCount", p.copyCount());
+	s->setValue("Creator", p.creator());
+	s->setValue("DocName", p.docName());
+	//s->setValue("DoubleSide", p.doubleSidedPrinting()); // is part of duplex
+	s->setValue("Duplex", p.duplex());
+	s->setValue("FontEmb", p.fontEmbeddingEnabled());
+	s->setValue("FullPage", p.fullPage());
+	s->setValue("Orientation", p.pageLayout().orientation());
+	s->setValue("OutputName", p.outputFileName());
+	s->setValue("OutputFormat", p.outputFormat());
+	s->setValue("PageOrder", p.pageOrder());
+// 	s->setValue("PaperSize", p.paperSize());
+	s->setValue("PaperSource", p.paperSource());
+	s->setValue("PrintProg", p.printProgram());
+	s->setValue("PrintRange", p.printRange());
+	s->setValue("Resolution", p.resolution());
+
+	qreal left, top, right, bottom;
+	QMarginsF m = p.pageLayout().margins();
+	left = m.left();
+	top = m.top();
+	bottom = m.bottom();
+	right = m.right();
+
+	s->setValue("LeftMargin", left);
+	s->setValue("TopMargin", top);
+	s->setValue("BottomMargin", bottom);
+	s->setValue("RightMargin", right);
+
+	s->endGroup();
+}
+
+#else
 
 void E2Profile::GetPrinterSettings(QPrinter &p)
 {
 	s->beginGroup("Printer");
 
 	p.setPrinterName(s->value("PrinterName").toString());
-	p.setPageSize(QPageSize(QPageSize::PageSizeId(s->value("PageSize", QPageSize::A4).toInt())));
+	p.setPageSize(QPrinter::PaperSize(s->value("PageSize", QPrinter::A4).toInt()));
 	p.setCollateCopies(s->value("Copies", false).toBool());
 	p.setColorMode(QPrinter::ColorMode(s->value("ColorMode").toInt()));
 	p.setCopyCount(s->value("CopyCount", 1).toInt());
 	p.setCreator(s->value("Creator", "").toString());
 	p.setDocName(s->value("DocName",  "ponyprog.pdf").toString());
-	//p.setDoubleSidedPrinting(s->value("DoubleSide", false).toBool());
+	p.setDoubleSidedPrinting(s->value("DoubleSide", false).toBool());
 	p.setDuplex(QPrinter::DuplexMode(s->value("Duplex").toInt()));
 	p.setFontEmbeddingEnabled(s->value("FontEmb", false).toBool());
 	p.setFullPage(s->value("FullPage", false).toBool());
-	p.setPageOrientation(QPageLayout::Orientation(s->value("Orientation", QPageLayout::Portrait).toInt()));
+	p.setOrientation(QPrinter::Orientation(s->value("Orientation", QPrinter::Portrait).toInt()));
 	p.setOutputFileName(s->value("OutputName", "").toString());
 	p.setOutputFormat(QPrinter::OutputFormat(s->value("OutputFormat", QPrinter::PdfFormat).toInt()));
 	p.setPageOrder(QPrinter::PageOrder(s->value("PageOrder").toInt()));
-	//p.setPaperSize(QPrinter::PaperSize(s->value("PaperSize").toInt()));
+	p.setPaperSize(QPrinter::PaperSize(s->value("PaperSize").toInt()));
 	p.setPaperSource(QPrinter::PaperSource(s->value("PaperSource").toInt()));
 	p.setPrintProgram(s->value("PrintProg", "").toString());
 	p.setPrintRange(QPrinter::PrintRange(s->value("PrintRange").toInt()));
@@ -557,7 +639,8 @@ void E2Profile::GetPrinterSettings(QPrinter &p)
 	top = (s->value("TopMargin", 15).toFloat());
 	right = (s->value("RightMargin", 15).toFloat());
 	bottom = (s->value("BottomMargin", 15).toFloat());
-	p.setPageMargins(QMarginsF(left, top, right, bottom), QPageLayout::Unit::Millimeter);
+
+	p.setPageMargins(left, top, right, bottom, QPrinter::Millimeter);
 
 	s->endGroup();
 }
@@ -567,35 +650,37 @@ void E2Profile::SetPrinterSettings(QPrinter &p)
 	s->beginGroup("Printer");
 
 	s->setValue("PrinterName", p.printerName());
-	s->setValue("PageSize", p.pageLayout().pageSize().id());
+	s->setValue("PageSize", p.pageSize());
 	s->setValue("Copies", p.collateCopies());
 	s->setValue("ColorMode", p.colorMode());
 	s->setValue("CopyCount", p.copyCount());
 	s->setValue("Creator", p.creator());
 	s->setValue("DocName", p.docName());
-	//s->setValue("DoubleSide", p.doubleSidedPrinting());
+	s->setValue("DoubleSide", p.doubleSidedPrinting());
 	s->setValue("Duplex", p.duplex());
 	s->setValue("FontEmb", p.fontEmbeddingEnabled());
 	s->setValue("FullPage", p.fullPage());
-	s->setValue("Orientation", p.pageLayout().orientation());
+	s->setValue("Orientation", p.orientation());
 	s->setValue("OutputName", p.outputFileName());
 	s->setValue("OutputFormat", p.outputFormat());
 	s->setValue("PageOrder", p.pageOrder());
-	//s->setValue("PaperSize", p.paperSize());
+	s->setValue("PaperSize", p.paperSize());
 	s->setValue("PaperSource", p.paperSource());
 	s->setValue("PrintProg", p.printProgram());
 	s->setValue("PrintRange", p.printRange());
 	s->setValue("Resolution", p.resolution());
 
-	QMarginsF qmf(p.pageLayout().margins());
-	s->setValue("LeftMargin", qmf.left());
-	s->setValue("TopMargin", qmf.top());
-	s->setValue("BottomMargin", qmf.bottom());
-	s->setValue("RightMargin", qmf.right());
+	qreal left, top, right, bottom;
+	p.getPageMargins(&left, &top, &right, &bottom, QPrinter::Millimeter);
+
+	s->setValue("LeftMargin", left);
+	s->setValue("TopMargin", top);
+	s->setValue("BottomMargin", bottom);
+	s->setValue("RightMargin", right);
 
 	s->endGroup();
 }
-
+#endif
 
 int E2Profile::GetMegaPageDelay()
 {
@@ -903,6 +988,20 @@ void E2Profile::SetProgramOptions(long prog_option)
 	s->setValue("WriteSecurityOption",
 				(prog_option & LOCK_YES) ? "YES" : "NO");
 	s->endGroup();
+}
+
+
+QString E2Profile::GetXmlDir()
+{
+	return s->value("XmlDir", "").toString();
+}
+
+void E2Profile::SetXmlDir(const QString &name)
+{
+	if (name.length())
+	{
+		s->setValue("XmlDir", name);
+	}
 }
 
 

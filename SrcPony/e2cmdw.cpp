@@ -37,7 +37,6 @@
 #include <QAbstractTextDocumentLayout>
 #include <QIODevice>
 #include <QBuffer>
-#include <QSound>
 #include <QTextDocument>
 #include <QProcess>
 #include <QDebug>
@@ -47,6 +46,13 @@
 #include "qhexedit.h"
 
 #include "version.h"
+
+#if USE_QT_VERSION == 6
+#include <QSoundEffect>
+#else
+#include <QSound>
+#endif
+
 #include "e2profil.h"
 #include "e2dlg.h"
 #include "e2cmdw.h"             // our header
@@ -471,7 +477,11 @@ bool e2CmdWindow::readLangDir()
 		if (fLang.open(QIODevice::ReadOnly))        //load
 		{
 			QTextStream stream(&fLang);
+#if USE_QT_VERSION == 6
+			stream.setEncoding(QStringConverter::Utf8);
+#else
 			stream.setCodec("UTF-8");
+#endif
 
 			int lines = 0;
 
@@ -2521,7 +2531,13 @@ int e2CmdWindow::PlaySoundMsg(bool val)
 {
 	if (val)
 	{
+#if USE_QT_VERSION == 6
+		QSoundEffect snd;
+		snd.setSource(GetOkSound());
+		snd.play();
+#else
 		QSound::play(GetOkSound());
+#endif
 	}
 
 	return OK;

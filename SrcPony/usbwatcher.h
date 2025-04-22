@@ -2,11 +2,11 @@
 //                                                                         //
 //  PonyProg - Serial Device Programmer                                    //
 //                                                                         //
-//  Copyright (C) 1997-2025   Claudio Lanconelli                           //
+//  Copyright (C) 1997-2021   Claudio Lanconelli                           //
 //                                                                         //
 //  Copyright (C) 2019 LibUSB part, Eduard Kalinowski                      //
 //                                                                         //
-//  https://github.com/lancos/ponyprog                                        //
+//  http://ponyprog.sourceforge.net                                        //
 //                                                                         //
 //-------------------------------------------------------------------------//
 //                                                                         //
@@ -51,20 +51,22 @@ class USBWatcher : public QObject
 
 	void hotplug_notify(bool connected, quint16 vid, quint16 pid)
 	{
+		VidPid *vObj = new VidPid(vid, pid);
 		if (connected)
 		{
-			vUSB.append(VidPid(vid, pid));
+			vUSB.append(vObj);
 			emit notify(true, vid, pid);
 		}
 		else
 		{
-			int idx = vUSB.indexOf(VidPid(vid, pid));
+			int idx = vUSB.indexOf(vObj);
 			if (idx != -1)
 			{
 				vUSB.remove(idx);
 			}
 			emit notify(false, vid, pid);
 		}
+		delete vObj;
 	}
 
   signals:
@@ -76,7 +78,7 @@ class USBWatcher : public QObject
   private:
 	void hotplug_deregister();
 
-	QVector <VidPid> vUSB;
+	QVector <VidPid *> vUSB;
 	libusb_hotplug_callback_handle cbHandle;
 	libusb_context *usb_ctx;
 	QTimer *timer;
