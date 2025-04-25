@@ -9,9 +9,14 @@ IF(WIN32)
     CMAKE_POLICY(SET CMP0020 NEW)
 ENDIF()
 
-# set the Qt version to 5 or 6
-SET (USE_QT_VERSION 6)
+# set the Qt version to 6 or 5
+OPTION (USE_QT5 "Using of Qt5 version for compiling" ON)
 
+IF(${USE_QT5})
+    SET(USE_QT_VERSION 5)
+ELSE(${USE_QT5})
+    SET(USE_QT_VERSION 6)
+ENDIF(${USE_QT5})
 
 # # SET(FILES_TO_TRANSLATE)
 IF(WIN32)
