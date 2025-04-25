@@ -33,6 +33,6 @@
 #define APP_EMAIL \"$$APP_EMAIL\"
 #endif
 
-#define USE_QT_VERSION  $$USE_QT_VERSION
+#define USE_QT_VERSION  $$QT_MAJOR_VERSION
 
 #endif
