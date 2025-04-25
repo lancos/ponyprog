@@ -8,7 +8,7 @@ Name of packages can be different on distributions.
 BUILD for Linux
 ---------------
 On linux systems you need the following packages installed to build: cmake, make, g++ and selected Qt packages
-Other packages needed un ubuntu 18.04: libftdi1-dev libftdipp1-dev libusb-1.0.0-dev
+Other packages needed un ubuntu 20.04: libftdi1-dev libusb-1.0.0-dev
 To build the executable binary file run the script:
 
 # ./create_elf_binary.sh
@@ -17,7 +17,7 @@ In this shell script you can change followed options in the line:
 cmake -DUSE_DEBUGGER=ON -DUSE_QT5=ON ..
 
 USE_DEBUGGER ON/OFF: the debug information in binary file
-USE_QT5      ON/OFF: select Qt5 or Qt4
+USE_QT5      ON/OFF: select Qt5 or Qt6
 USE_PROFILER ON/OFF: include the information for profiling 
 
 
