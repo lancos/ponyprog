@@ -1,5 +1,8 @@
 Version history
 
+3.1.5	add SELECTINTERFACE command to e2s script
+		add support for Qt6 build
+		update qhexedit to version 0.9.0
 3.1.4	add support EGGLINK-V3 interface
 		fixed i2cbus disable with PonyProgFT
 		fixed missing libftdi and libusb dll on Windows
