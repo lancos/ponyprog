@@ -347,7 +347,9 @@ CONFIG(debug, debug|release) {
 #QMAKE_CXXFLAGS += -flto=4 -Werror=odr -Werror=lto-type-mismatch -Werror=strict-aliasing
 QMAKE_CXXFLAGS += -Wno-unused-parameter
 
-unix: QMAKE_CXXFLAGS += -std=c++11
+lessThan(QT_MAJOR_VERSION, 6) {
+	unix: QMAKE_CXXFLAGS += -std=c++11
+}
 
 # EK 2017 
 win32 {
