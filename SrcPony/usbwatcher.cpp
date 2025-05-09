@@ -85,7 +85,6 @@ USBWatcher::USBWatcher()
 	  timer(0),
 	  count(0)
 {
-	vUSB.clear();
 }
 
 USBWatcher::~USBWatcher()

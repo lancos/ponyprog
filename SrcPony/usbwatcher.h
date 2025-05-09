@@ -30,7 +30,6 @@
 #define USBWATCHER_H
 
 #include <QObject>
-#include <QVector>
 #include <QTimer>
 
 #include <libusb-1.0/libusb.h> //Include libsub
@@ -53,16 +52,10 @@ class USBWatcher : public QObject
 	{
 		if (connected)
 		{
-			vUSB.append(VidPid(vid, pid));
 			emit notify(true, vid, pid);
 		}
 		else
 		{
-			int idx = vUSB.indexOf(VidPid(vid, pid));
-			if (idx != -1)
-			{
-				vUSB.remove(idx);
-			}
 			emit notify(false, vid, pid);
 		}
 	}
@@ -76,7 +69,6 @@ class USBWatcher : public QObject
   private:
 	void hotplug_deregister();
 
-	QVector <VidPid> vUSB;
 	libusb_hotplug_callback_handle cbHandle;
 	libusb_context *usb_ctx;
 	QTimer *timer;
