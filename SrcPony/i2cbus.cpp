@@ -88,7 +88,7 @@ ALL
 
 int I2CBus::SendStart()
 {
-	register int err;
+	int err;
 
 	setSDA();
 	ShotDelay(2);		//Help repeated start condition
