@@ -595,11 +595,6 @@ bool cTranslator::loadTranslation(const QString fname)
 		if (llEng == "LANGUAGE_CHARSET")
 		{
 			llEng = stream.readLine();
-#if USE_QT_VERSION == 6
-			stream.setEncoding(QStringConverter::Latin1);
-#else
-			stream.setCodec(llEng.toLatin1());
-#endif
 			continue;
 		}
 

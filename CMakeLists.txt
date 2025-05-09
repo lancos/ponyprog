@@ -86,7 +86,6 @@ ELSE()
   MESSAGE(FATAL_ERROR "-- LibUSB version ${LIBUSB_VERSION} TOO OLD! Please Install this library newer as 1.0.16")
 ENDIF()
 
-
 # SET(APP_VERSION "3.1.4")
 #
 # Set the PonyProg version
