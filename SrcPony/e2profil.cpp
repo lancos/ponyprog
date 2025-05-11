@@ -526,7 +526,6 @@ void E2Profile::SetIMBusSpeed(int speed)
 	s->setValue("BusSpeed/IMBusSpeed", getSpeedName(speed));
 }
 
-#if USE_QT_VERSION == 6
 void E2Profile::GetPrinterSettings(QPrinter &p)
 {
 	s->beginGroup("Printer");
@@ -606,81 +605,6 @@ void E2Profile::SetPrinterSettings(QPrinter &p)
 
 	s->endGroup();
 }
-
-#else
-
-void E2Profile::GetPrinterSettings(QPrinter &p)
-{
-	s->beginGroup("Printer");
-
-	p.setPrinterName(s->value("PrinterName").toString());
-	p.setPageSize(QPrinter::PaperSize(s->value("PageSize", QPrinter::A4).toInt()));
-	p.setCollateCopies(s->value("Copies", false).toBool());
-	p.setColorMode(QPrinter::ColorMode(s->value("ColorMode").toInt()));
-	p.setCopyCount(s->value("CopyCount", 1).toInt());
-	p.setCreator(s->value("Creator", "").toString());
-	p.setDocName(s->value("DocName",  "ponyprog.pdf").toString());
-	p.setDoubleSidedPrinting(s->value("DoubleSide", false).toBool());
-	p.setDuplex(QPrinter::DuplexMode(s->value("Duplex").toInt()));
-	p.setFontEmbeddingEnabled(s->value("FontEmb", false).toBool());
-	p.setFullPage(s->value("FullPage", false).toBool());
-	p.setOrientation(QPrinter::Orientation(s->value("Orientation", QPrinter::Portrait).toInt()));
-	p.setOutputFileName(s->value("OutputName", "").toString());
-	p.setOutputFormat(QPrinter::OutputFormat(s->value("OutputFormat", QPrinter::PdfFormat).toInt()));
-	p.setPageOrder(QPrinter::PageOrder(s->value("PageOrder").toInt()));
-	p.setPaperSize(QPrinter::PaperSize(s->value("PaperSize").toInt()));
-	p.setPaperSource(QPrinter::PaperSource(s->value("PaperSource").toInt()));
-	p.setPrintProgram(s->value("PrintProg", "").toString());
-	p.setPrintRange(QPrinter::PrintRange(s->value("PrintRange").toInt()));
-	p.setResolution(s->value("Resolution", 96).toInt());
-
-	qreal left, top, right, bottom;
-	left = (s->value("LeftMargin", 15).toFloat());
-	top = (s->value("TopMargin", 15).toFloat());
-	right = (s->value("RightMargin", 15).toFloat());
-	bottom = (s->value("BottomMargin", 15).toFloat());
-
-	p.setPageMargins(left, top, right, bottom, QPrinter::Millimeter);
-
-	s->endGroup();
-}
-
-void E2Profile::SetPrinterSettings(QPrinter &p)
-{
-	s->beginGroup("Printer");
-
-	s->setValue("PrinterName", p.printerName());
-	s->setValue("PageSize", p.pageSize());
-	s->setValue("Copies", p.collateCopies());
-	s->setValue("ColorMode", p.colorMode());
-	s->setValue("CopyCount", p.copyCount());
-	s->setValue("Creator", p.creator());
-	s->setValue("DocName", p.docName());
-	s->setValue("DoubleSide", p.doubleSidedPrinting());
-	s->setValue("Duplex", p.duplex());
-	s->setValue("FontEmb", p.fontEmbeddingEnabled());
-	s->setValue("FullPage", p.fullPage());
-	s->setValue("Orientation", p.orientation());
-	s->setValue("OutputName", p.outputFileName());
-	s->setValue("OutputFormat", p.outputFormat());
-	s->setValue("PageOrder", p.pageOrder());
-	s->setValue("PaperSize", p.paperSize());
-	s->setValue("PaperSource", p.paperSource());
-	s->setValue("PrintProg", p.printProgram());
-	s->setValue("PrintRange", p.printRange());
-	s->setValue("Resolution", p.resolution());
-
-	qreal left, top, right, bottom;
-	p.getPageMargins(&left, &top, &right, &bottom, QPrinter::Millimeter);
-
-	s->setValue("LeftMargin", left);
-	s->setValue("TopMargin", top);
-	s->setValue("BottomMargin", bottom);
-	s->setValue("RightMargin", right);
-
-	s->endGroup();
-}
-#endif
 
 int E2Profile::GetMegaPageDelay()
 {
