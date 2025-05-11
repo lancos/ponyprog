@@ -552,7 +552,7 @@ QString cTranslator::engText[] =
 bool cTranslator::loadTranslation(const QString fname)
 {
 	QFile langFile(fname);
-	short vecSize = (short)(sizeof(engText) / sizeof(char *));
+	int vecSize = (int)(sizeof(engText) / sizeof(engText[0]));
 	translateTable.clear();
 	translateTable.resize(vecSize + 1);
 
@@ -738,7 +738,7 @@ QString cTranslator::translate(int id)
 		return "";
 	}
 
-	if (id >= (int)(sizeof(engText) / sizeof(char *)))
+	if (id >= (int)(sizeof(engText) / sizeof(engText[0])))
 	{
 		return "";
 	}
