@@ -577,14 +577,12 @@ void e2Dialog::onTest()
 		}
 		QMessageBox msgBox(QMessageBox::Critical, "Failed", translate(STR_TEST) + " " + translate(STR_MSGFAILED) + extraMsg, QMessageBox::Ok);
 		msgBox.setStyleSheet(cmdWin->getStyleSheet());
-		msgBox.setButtonText(QMessageBox::Ok, translate(STR_CLOSE));
 		msgBox.exec();
 	}
 	else
 	{
 		QMessageBox msgBox(QMessageBox::Information, "Info",  translate(STR_TEST) + " " + translate(STR_OK), QMessageBox::Ok);
 		msgBox.setStyleSheet(cmdWin->getStyleSheet());
-		msgBox.setButtonText(QMessageBox::Ok, translate(STR_CLOSE));
 		msgBox.exec();
 	}
 }

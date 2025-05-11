@@ -178,7 +178,6 @@ e2AppWinInfo::e2AppWinInfo(e2CmdWindow *p, const QString &name, BusIO **busvptr)
 			//TODO: translate message
 			QMessageBox msgBox(QMessageBox::Critical, "Error", "Load I/O driver failed.", QMessageBox::Ok);
 			msgBox.setStyleSheet(cmdWin->getStyleSheet());
-			msgBox.setButtonText(QMessageBox::Ok, "Close");
 			msgBox.exec();
 		}
 
@@ -207,7 +206,6 @@ e2AppWinInfo::e2AppWinInfo(e2CmdWindow *p, const QString &name, BusIO **busvptr)
 				//TODO: translate message
 				QMessageBox msgBox(QMessageBox::Critical, "Error", msg, QMessageBox::Ok);
 				msgBox.setStyleSheet(cmdWin->getStyleSheet());
-				msgBox.setButtonText(QMessageBox::Ok, "Close");
 				msgBox.exec();
 			}
 

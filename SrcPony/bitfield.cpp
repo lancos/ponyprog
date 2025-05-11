@@ -419,17 +419,11 @@ void BitFieldWidget::onBitClicked(QTreeWidgetItem *itm, int col)
 
 	QString fuseName = t.mid(pos + 2);
 
-	if (fuseName == "RSTDISBL")
+	if (fuseName == "RSTDISBL" && st == Qt::Checked)
 	{
-		QMessageBox msgBox(QMessageBox::Warning, "Warning", "Attention! If you disable Reset pin you can't access the the chip anymore", QMessageBox::Yes | QMessageBox::No);
+		QMessageBox msgBox(QMessageBox::Warning, "Warning", "If you disable Reset pin you can't access the the chip anymore", QMessageBox::Ok);
 // 		msgBox.setStyleSheet(programStyleSheet);
-		msgBox.setButtonText(QMessageBox::Yes, "Yes");
-		msgBox.setButtonText(QMessageBox::No, "No");
-		int res = msgBox.exec();
-		if (res == QMessageBox::No)
-		{
-			return;
-		}
+		msgBox.exec();
 	}
 
 	t = t.left(pos);
