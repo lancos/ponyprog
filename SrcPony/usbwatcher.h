@@ -32,7 +32,7 @@
 #include <QObject>
 #include <QTimer>
 
-#include <libusb-1.0/libusb.h> //Include libsub
+#include <libusb.h> //Include libsub
 
 #include "globals.h"
 

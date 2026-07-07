@@ -37,43 +37,52 @@
 
 #include "e2cmdw.h"
 
-#ifdef Q_OS_LINUX
+#if defined(Q_OS_LINUX) && !defined(__FreeBSD__)
 #include <unistd.h>
 
-#if (defined(__x86_64__) || defined(__i386__))	//Qt5 defined(Q_PROCESSOR_X86)
+#if (defined(__x86_64__) || defined(__i386__))
 #include <sys/io.h>
 
 int PortInterface::IOperm(int a, int b, int c)
 {
-	int retval = -1;
+int retval = -1;
 
-	qDebug() << "PortInterface::IOPerm(" << (Qt::hex) << a << ", " << b << ", " << c << (Qt::dec) << ")";
+qDebug() << "PortInterface::IOPerm(" << (Qt::hex) << a << ", " << b << ", " << c << (Qt::dec) << ")";
 
-	if (a + b <= 0x400)     //access to other ports needs iopl(3)
-	{
-		retval = ioperm(a, b, c);
-	}
+if (a + b <= 0x400)
+{
+retval = ioperm(a, b, c);
+}
 
-	qDebug() << "PortInterface::IOPerm() " << retval;
+qDebug() << "PortInterface::IOPerm() " << retval;
 
-	return retval;
+return retval;
 }
 #else
 int PortInterface::IOperm(int a, int b, int c)
 {
-	return -1;
+return -1;
 }
 
 #define outb(x, p)
-#define inb(p)	0
+#define inb(p)0
 #endif
+
+#elif defined(__FreeBSD__)
+#include <sys/types.h>
+#include <machine/cpufunc.h>
+
+int PortInterface::IOperm(int a, int b, int c)
+{
+return 0;
+}
 
 #endif
 
 #ifdef Q_OS_WIN32
 int PortInterface::IOperm(int a, int b, int c)
 {
-	return 0;
+return 0;
 }
 #endif
 

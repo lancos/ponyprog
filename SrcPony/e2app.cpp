@@ -32,11 +32,11 @@
 #include <QString>
 #include <QtCore>
 #include <QDebug>
+#include <signal.h>
 
 #ifdef Q_OS_LINUX
 #include <sys/time.h>
 #include <unistd.h>
-#include <signal.h>
 #endif
 
 #include "microbus.h"
